@@ -64,7 +64,15 @@ svg_DATA = svg/icon_white.svg svg/icon_black.svg \
            svg/eo_Analyzing.svg     svg/eo_Black.svg          \
            svg/eo_Clear.svg         svg/eo_Ponder.svg         \
            svg/eo_Thinking.svg      svg/eo_Unknown.svg        \
-           svg/eo_White.svg
+           svg/eo_White.svg                                   \
+           svg/shogi_bishop.svg   svg/shogi_bishop_promoted.svg \
+           svg/shogi_gold.svg\
+           svg/shogi_king.svg\
+           svg/shogi_knight.svg   svg/shogi_knight_promoted.svg\
+           svg/shogi_lance.svg    svg/shogi_lance_promoted.svg\
+           svg/shogi_pawn.svg     svg/shogi_pawn_promoted.svg\
+           svg/shogi_rook.svg     svg/shogi_rook_promoted.svg\
+           svg/shogi_silver.svg   svg/shogi_silver_promoted.svg
 
 gladedir = $(datadir)/games/xboard/ui
 glade_DATA = gtk/evalgraph.glade \

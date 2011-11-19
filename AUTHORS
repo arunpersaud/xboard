@@ -278,3 +278,10 @@ gtk_helper.c, gtk_helper.h, gtk/mainboard.glade, Makefile.am,
 xboard.c, xboard.conf.in, xboard.h, xedittags.c, xengineoutput.c,
 xevalgraph.c, xgamelist.c, xhistory.c, xoptions.c
 
+15. Ralph Glass
+
+created: shogi_bishop_promoted.svg, shogi_bishop.svg, shogi_gold.svg,
+shogi_king.svg, shogi_knight_promoted.svg, shogi_knight.svg,
+shogi_lance_promoted.svg, shogi_lance.svg, shogi_pawn_promoted.svg,
+shogi_pawn.svg, shogi_rook_promoted.svg, shogi_rook.svg,
+shogi_silver_promoted.svg, shogi_silver.svg
