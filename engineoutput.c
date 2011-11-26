@@ -93,7 +93,7 @@ void MakeEngineOutputTitle()
 	count = currentMove - count;
 	snprintf(buf, MSG_SIZ, "%s (%d reversible plies)", title, count);
 	if(!rule) rule = 100;
-	if(count >= rule - 40 && !appData.icsActive) title = buf;
+	if(count >= rule - 40 && (!appData.icsActive || gameMode == IcsObserving)) title = buf;
 	if(!strcmp(oldTitle, title)) return;
 	safeStrCpy(oldTitle, title, MSG_SIZ);
 	SetEngineOutputTitle(title);
