@@ -3863,6 +3863,7 @@ read_from_ics(isr, closure, data, count, error)
 		    strncmp(why, "Continuing ", 11) == 0) {
 		    gs_gamenum = gamenum;
 		    safeStrCpy(gs_kind, strchr(why, ' ') + 1,sizeof(gs_kind)/sizeof(gs_kind[0]));
+		    if(ics_gamenum == -1) // [HGM] only if we are not already involved in a game (because gin=1 sends us such messages)
 		    VariantSwitch(boards[currentMove], StringToVariant(gs_kind)); // [HGM] variantswitch: even before we get first board
 #if ZIPPY
 		    if (appData.zippyPlay) {
