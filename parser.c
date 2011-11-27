@@ -356,7 +356,7 @@ badMove:// we failed to find algebraic move
 		ff = (BOARD_WIDTH-1)>>1; // this would be d-file
 	        if (boards[yyboardindex][rf][ff] == king) {
 		    /* ICS wild castling */
-        	    ft = castlingType == 1 ? BOARD_LEFT+1 : BOARD_RGHT-3;
+        	    ft = castlingType == 1 ? BOARD_LEFT+1 : (gameInfo.variant == VariantJanus ? BOARD_RGHT-2 : BOARD_RGHT-3);
 		} else {
         	    ff = BOARD_WIDTH>>1; // e-file
 	            ft = castlingType == 1 ? BOARD_RGHT-2 : BOARD_LEFT+2;
