@@ -1682,9 +1682,17 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     Arg args[16];
     XtGeometryResult gres;
     int i;
+    static Dimension oldWidth, oldHeight;
+    static VariantClass oldVariant;
+    static int oldDual = -1;
 
     if(!formWidget) return;
 
+    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
+    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+
+  if(boardWidth != oldWidth || boardHeight != oldHeight || oldDual != twoBoards) { // do resizing stuff only if size actually changed
     /*
      * Enable shell resizing.
      */
@@ -1699,9 +1707,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     XtSetArg(args[0], XtNdefaultDistance, &sep);
     XtGetValues(formWidget, args, 1);
 
-    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
-    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+    oldWidth = boardWidth; oldHeight = boardHeight; oldDual = twoBoards;
     CreateGrid();
     hOffset = boardWidth + 10;
     for(i=0; i<BOARD_WIDTH+BOARD_HEIGHT+2; i++) { // [HGM] dual: grid for second board
@@ -1752,9 +1758,13 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
     XtSetValues(shellWidget, &shellArgs[0], 6);
+  }
 
     // [HGM] pieces: tailor piece bitmaps to needs of specific variant
     // (only for xpm)
+
+    if(gameInfo.variant == oldVariant) return; // and only if variant changed
+
     if(useImages) {
       for(i=0; i<4; i++) {
 	int p;
