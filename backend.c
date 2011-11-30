@@ -4952,6 +4952,11 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
      char promoChar;
 {
     char user_move[MSG_SIZ];
+    char suffix[4];
+
+    if(gameInfo.variant == VariantSChess && promoChar)
+	snprintf(suffix, 4, "=%c", toX == BOARD_WIDTH<<1 ? ToUpper(promoChar) : ToLower(promoChar));
+    else suffix[0] = NULLCHAR;
 
     switch (moveType) {
       default:
@@ -4967,7 +4972,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case WhiteHSideCastleFR:
       case BlackHSideCastleFR:
       /* POP Fabien */
-	snprintf(user_move, MSG_SIZ, "o-o\n");
+	snprintf(user_move, MSG_SIZ, "o-o%s\n", suffix);
 	break;
       case WhiteQueenSideCastle:
       case BlackQueenSideCastle:
@@ -4977,7 +4982,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case WhiteASideCastleFR:
       case BlackASideCastleFR:
       /* POP Fabien */
-	snprintf(user_move, MSG_SIZ, "o-o-o\n");
+	snprintf(user_move, MSG_SIZ, "o-o-o%s\n",suffix);
 	break;
       case WhiteNonPromotion:
       case BlackNonPromotion:
