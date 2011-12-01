@@ -4954,9 +4954,10 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
     char user_move[MSG_SIZ];
     char suffix[4];
 
-    if(gameInfo.variant == VariantSChess && promoChar)
+    if(gameInfo.variant == VariantSChess && promoChar) {
 	snprintf(suffix, 4, "=%c", toX == BOARD_WIDTH<<1 ? ToUpper(promoChar) : ToLower(promoChar));
-    else suffix[0] = NULLCHAR;
+	if(toX == BOARD_WIDTH>>1) moveType = WhitePromotion; // kludge to do gating at Rook
+    } else suffix[0] = NULLCHAR;
 
     switch (moveType) {
       default:
