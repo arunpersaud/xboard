@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard master-20110507\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2011-12-03 08:07-0800\n"
+"POT-Creation-Date: 2011-12-03 08:20-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,114 +23,114 @@ msgstr ""
 msgid "protocol version %d not supported"
 msgstr "通訊協定版本 %d 不被支持"
 
-#: backend.c:898
+#: backend.c:899
 msgid "You did not specify the engine executable"
 msgstr ""
 
-#: backend.c:950
+#: backend.c:951
 #, c-format
 msgid "bad timeControl option %s"
 msgstr "非法的\"timeControl\"(時間控制)選項 %s"
 
-#: backend.c:965
+#: backend.c:966
 #, c-format
 msgid "bad searchTime option %s"
 msgstr "非法的\"searchTime\"(搜尋時間)選項 %s"
 
-#: backend.c:1071
+#: backend.c:1072
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr "變體 %s 只在ICS模式下支持"
 
-#: backend.c:1089
+#: backend.c:1090
 #, c-format
 msgid "Unknown variant name %s"
 msgstr "未知的變體名 %s"
 
-#: backend.c:1332
+#: backend.c:1333
 msgid "Starting chess program"
 msgstr "啟動國際象棋程式"
 
-#: backend.c:1355
+#: backend.c:1356
 msgid "Bad game file"
 msgstr "棋局檔案錯誤"
 
-#: backend.c:1362
+#: backend.c:1363
 msgid "Bad position file"
 msgstr "盤面檔案錯誤"
 
-#: backend.c:1376
+#: backend.c:1377
 msgid "Pick new game"
 msgstr ""
 
-#: backend.c:1441
+#: backend.c:1442
 msgid ""
 "You restarted an already completed tourney\n"
 "One more cycle will now be added to it\n"
 "Games commence in 10 sec"
 msgstr ""
 
-#: backend.c:1448
+#: backend.c:1449
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
 msgstr ""
 
-#: backend.c:1455
+#: backend.c:1456
 msgid "Can't have a match with no chess programs"
 msgstr "沒有象棋程式時無法進行比賽"
 
-#: backend.c:1489
+#: backend.c:1490
 #, c-format
 msgid "Could not open comm port %s"
 msgstr "無法打開通訊連接埠 %s"
 
-#: backend.c:1492
+#: backend.c:1493
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr "無法連接主機 %s 連接埠 %s"
 
-#: backend.c:1548
+#: backend.c:1549
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr "未知的\"initialMode\"(初始模式)選項 %s"
 
-#: backend.c:1574
+#: backend.c:1575
 msgid "AnalyzeFile mode requires a game file"
 msgstr "\"AnalyzeFile\"(分析檔案)模式必須指定一個棋局檔案"
 
-#: backend.c:1601
+#: backend.c:1602
 msgid "Analysis mode requires a chess engine"
 msgstr "\"Analysis\"(分析)模式必須啟動國際象棋引擎"
 
-#: backend.c:1605
+#: backend.c:1606
 msgid "Analysis mode does not work with ICS mode"
 msgstr "\"Analysis\"(分析)模式無法在ICS模式下工作"
 
-#: backend.c:1616
+#: backend.c:1617
 msgid "MachineWhite mode requires a chess engine"
 msgstr "\"MachineWhite\"(電腦執紅)模式必須啟動國際象棋引擎"
 
-#: backend.c:1621
+#: backend.c:1622
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr "\"MachineWhite\"(電腦執紅)模式無法在ICS模式下運行"
 
-#: backend.c:1628
+#: backend.c:1629
 msgid "MachineBlack mode requires a chess engine"
 msgstr "\"MachineBlack\"(電腦執黑)模式必須啟動國際象棋引擎"
 
-#: backend.c:1633
+#: backend.c:1634
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr "\"MachineBlack\"(電腦執黑)模式無法在ICS模式下運行"
 
-#: backend.c:1640
+#: backend.c:1641
 msgid "TwoMachines mode requires a chess engine"
 msgstr "\"TwoMachines\"(分析)模式必須啟動國際象棋引擎"
 
-#: backend.c:1645
+#: backend.c:1646
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr "\"TwoMachines\"(電腦對弈)模式無法在ICS模式下運行"
 
-#: backend.c:1656
+#: backend.c:1657
 msgid "Training mode requires a game file"
 msgstr "\"Training\"(訓練)模式必須指定一個棋局檔案"
 
