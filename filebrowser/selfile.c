@@ -62,6 +62,7 @@ extern int errno;
 
 #include "xstat.h"
 #include "selfile.h"
+#include "../gettext.h"
 
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 1024
@@ -70,6 +71,15 @@ extern int errno;
 #if !defined(SVR4) && !defined(SYSV) && !defined(USG)
 extern char *getwd();
 #endif /* !defined(SVR4) && !defined(SYSV) && !defined(USG) */
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
+
 
 int SFstatus = SEL_FILE_NULL;
 
@@ -288,7 +298,7 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 	i = 0;
 	XtSetArg(arglist[i], XtNtransientFor, toplevel);		i++;
 
-	selFile = XtAppCreateShell("Browse", "SelFile",
+	selFile = XtAppCreateShell(_("Browse"), "SelFile",
 		transientShellWidgetClass, SFdisplay, arglist, i);
 
 	/* Add WM_DELETE_WINDOW protocol */
@@ -391,7 +401,7 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 	XtAddEventHandler(selFileField, ButtonPressMask, False, SFsetFocus, (XtPointer) selFileForm);
 
 	i = 0;
-	XtSetArg(arglist[i], XtNlabel, "Filter on extensions:");	i++;
+	XtSetArg(arglist[i], XtNlabel, _("Filter on extensions:"));	i++;
 	XtSetArg(arglist[i], XtNvertDistance, 5);			i++;
 	XtSetArg(arglist[i], XtNfromVert, selFileField);		i++;
 	XtSetArg(arglist[i], XtNresizable, True);			i++;
@@ -772,15 +782,15 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 	FILE		*fp;
 
 	if (!prompt) {
-		prompt = "Pathname:";
+	        prompt = _("Pathname:");
 	}
 
 	if (!ok) {
-		ok = "OK";
+	        ok = _("OK");
 	}
 
 	if (!cancel) {
-		cancel = "Cancel";
+	        cancel = _("Cancel");
 	}
 
 	if(SFpathFlag != (mode && mode[0] == 'p') || strcmp(SFfilterBuffer, filter)) {
@@ -824,7 +834,7 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 	if (!getwd(SFstartDir)) {
 #endif /* defined(SVR4) || defined(SYSV) || defined(USG) */
 
-		XtAppError(SFapp, "XsraSelFile: can't get current directory");
+	  XtAppError(SFapp, _("XsraSelFile: can't get current directory"));
 	}
 	(void) strcat(SFstartDir, "/");
 	(void) strncpy(SFcurrentDir, SFstartDir, MAXPATHLEN);

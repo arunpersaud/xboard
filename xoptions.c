@@ -352,7 +352,7 @@ Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:") },
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round    (for concurrent playing of a single") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle      tourney with multiple XBoards)") },
-{ 0xD, 150,       0, NULL, (void*) &engineName, "", NULL, TextBox, "Tourney participants:" },
+{ 0xD, 150,       0, NULL, (void*) &engineName, "", NULL, TextBox, N_("Tourney participants:") },
 { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
 { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
 { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles (or Swiss rounds):") },
@@ -751,40 +751,40 @@ int BoardOptionsOK(int n)
 Option boardOptions[] = {
 { 0,   0, 70, NULL, (void*) &appData.whitePieceColor, "", NULL, TextBox, N_("White Piece Color:") },
 { 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#FFFFCC", Button, "      " },
-{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
-{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
-{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("R") },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("G") },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("B") },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("D") },
 { 0,   0, 70, NULL, (void*) &appData.blackPieceColor, "", NULL, TextBox, N_("Black Piece Color:") },
 { 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#202020", Button, "      " },
-{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
-{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
-{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("R") },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("G") },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("B") },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("D") },
 { 0,   0, 70, NULL, (void*) &appData.lightSquareColor, "", NULL, TextBox, N_("Light Square Color:") },
 { 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#C8C365", Button, "      " },
-{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
-{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
-{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("R") },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("G") },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("B") },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("D") },
 { 0,   0, 70, NULL, (void*) &appData.darkSquareColor, "", NULL, TextBox, N_("Dark Square Color:") },
 { 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#77A26D", Button, "      " },
-{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
-{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
-{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("R") },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("G") },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("B") },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("D") },
 { 0,   0, 70, NULL, (void*) &appData.highlightSquareColor, "", NULL, TextBox, N_("Highlight Color:") },
 { 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#FFFF00", Button, "      " },
-{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
-{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
-{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("R") },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("G") },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("B") },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("D") },
 { 0,   0, 70, NULL, (void*) &appData.premoveHighlightColor, "", NULL, TextBox, N_("Premove Highlight Color:") },
 { 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#FF0000", Button, "      " },
-{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
-{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
-{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("R") },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("G") },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("B") },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("D") },
 { 0, 0, 0, NULL, (void*) &appData.upsideDown, "", NULL, CheckBox, N_("Flip Pieces Shogi Style        (Colored buttons restore default)") },
 //{ 0, 0, 0, NULL, (void*) &appData.allWhite, "", NULL, CheckBox, N_("Use Outline Pieces for Black") },
 { 0, 0, 0, NULL, (void*) &appData.monoMode, "", NULL, CheckBox, N_("Mono Mode") },
@@ -1292,7 +1292,7 @@ void EngineMenuProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
+   GenericPopUp(adjudicationOptions, _("Adjudicate non-ICS Games"), 0);
 }
 
 void UciMenuProc(w, event, prms, nprms)
@@ -1438,8 +1438,8 @@ void SaveChanges(int n)
 
 Option commentOptions[] = {
 { 0xD, 200, 250, NULL, (void*) &commentText, "", NULL, TextBox, "" },
-{   0,  0,   50, NULL, (void*) &ClearComment, NULL, NULL, Button, "clear" },
-{   0,  1,  100, NULL, (void*) &SaveChanges, NULL, NULL, Button, "save changes" },
+{   0,  0,   50, NULL, (void*) &ClearComment, NULL, NULL, Button, N_("clear") },
+{   0,  1,  100, NULL, (void*) &SaveChanges, NULL, NULL, Button, N_("save changes") },
 {   0,  1,    0, NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
 };
 
@@ -1491,7 +1491,7 @@ void changeTags(int n)
 Option tagsOptions[] = {
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label,  "" },
 { 0xD, 200, 200, NULL, (void*) &tagsText, "", NULL, TextBox, "" },
-{   0,  0,  100, NULL, (void*) &changeTags, NULL, NULL, Button, "save changes" },
+{   0,  0,  100, NULL, (void*) &changeTags, NULL, NULL, Button, N_("save changes") },
 {   0,  1,    0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }
 };
 
@@ -1676,11 +1676,11 @@ int ShuffleOK(int n)
 }
 
 Option shuffleOptions[] = {
-{   0,  0,   50, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, "shuffle" },
-{ 0,-1,2000000000, NULL, (void*) &appData.defaultFrcPosition, "", NULL, Spin, N_("Start-position number:") },
-{   0,  0,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, "randomize" },
-{   0,  1,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, "pick fixed" },
-{   0,  1,    0, NULL, (void*) &ShuffleOK, "", NULL, EndMark , "" }
+  {   0,  0,   50, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, N_("shuffle") },
+  { 0,-1,2000000000, NULL, (void*) &appData.defaultFrcPosition, "", NULL, Spin, N_("Start-position number:") },
+  {   0,  0,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, N_("randomize") },
+  {   0,  1,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, N_("pick fixed") },
+  {   0,  1,    0, NULL, (void*) &ShuffleOK, "", NULL, EndMark , "" }
 };
 
 void SetRandom(int n)

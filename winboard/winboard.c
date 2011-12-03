@@ -4145,9 +4145,9 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   switch (message) {
   case WM_LBUTTONDOWN:
       if (PtInRect((LPRECT) &whiteRect, pt)) {
-        ClockClick(flipClock);
+        ClockClick(flipClock); break;
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
-	ClockClick(!flipClock);
+	ClockClick(!flipClock); break;
       }
       dragInfo.start.x = dragInfo.start.y = -1;
       dragInfo.from = dragInfo.start;

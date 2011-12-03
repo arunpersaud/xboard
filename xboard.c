@@ -800,7 +800,7 @@ Menu menuBar[] = {
 MenuItem buttonBar[] = {
     {"<<", "<<", ToStartProc},
     {"<", "<", BackwardProc},
-    {PAUSE_BUTTON, PAUSE_BUTTON, PauseProc},
+    {N_(PAUSE_BUTTON), PAUSE_BUTTON, PauseProc},
     {">", ">", ForwardProc},
     {">>", ">>", ToEndProc},
     {NULL, NULL, NULL}
@@ -1682,9 +1682,17 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     Arg args[16];
     XtGeometryResult gres;
     int i;
+    static Dimension oldWidth, oldHeight;
+    static VariantClass oldVariant;
+    static int oldDual = -1;
 
     if(!formWidget) return;
 
+    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
+    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+
+  if(boardWidth != oldWidth || boardHeight != oldHeight || oldDual != twoBoards) { // do resizing stuff only if size actually changed
     /*
      * Enable shell resizing.
      */
@@ -1699,9 +1707,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     XtSetArg(args[0], XtNdefaultDistance, &sep);
     XtGetValues(formWidget, args, 1);
 
-    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
-    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+    oldWidth = boardWidth; oldHeight = boardHeight; oldDual = twoBoards;
     CreateGrid();
     hOffset = boardWidth + 10;
     for(i=0; i<BOARD_WIDTH+BOARD_HEIGHT+2; i++) { // [HGM] dual: grid for second board
@@ -1752,9 +1758,13 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
     XtSetValues(shellWidget, &shellArgs[0], 6);
+  }
 
     // [HGM] pieces: tailor piece bitmaps to needs of specific variant
     // (only for xpm)
+
+    if(gameInfo.variant == oldVariant) return; // and only if variant changed
+
     if(useImages) {
       for(i=0; i<4; i++) {
 	int p;
@@ -5022,7 +5032,7 @@ void FileNamePopUp(label, def, filter, proc, openMode)
     fileOpenMode = openMode;	/*   to use globals here */
     {   // [HGM] use file-selector dialog stolen from Ghostview
 	int index; // this is not supported yet
-	if(openFP = XsraSelFile(shellWidget, label, NULL, NULL, "could not open: ",
+	if(openFP = XsraSelFile(shellWidget, label, NULL, NULL, _("could not open: "),
 			   (def[0] ? def : NULL), filter, openMode, NULL, &openName))
 	  // [HGM] delay to give expose event opportunity to redraw board after browser-dialog popdown before lengthy load starts
 	  ScheduleDelayedEvent(&DelayedLoad, 50);
@@ -6818,17 +6828,18 @@ void AboutProc(w, event, prms, nprms)
 {
     char buf[MSG_SIZ];
 #if ZIPPY
-    char *zippy = " (with Zippy code)";
+    char *zippy = _(" (with Zippy code)");
 #else
     char *zippy = "";
 #endif
-    snprintf(buf, sizeof(buf), "%s%s\n\n%s\n%s\n%s\n\n%s%s\n%s",
-	    programVersion, zippy,
-	    "Copyright 1991 Digital Equipment Corporation",
-	    "Enhancements Copyright 1992-2009 Free Software Foundation",
-	    "Enhancements Copyright 2005 Alessandro Scotti",
-	    PACKAGE, " is free software and carries NO WARRANTY;",
-	    "see the file COPYING for more information.");
+    snprintf(buf, sizeof(buf), 
+_("%s%s\n\n"
+"Copyright 1991 Digital Equipment Corporation\n"
+"Enhancements Copyright 1992-2009 Free Software Foundation\n"
+"Enhancements Copyright 2005 Alessandro Scotti\n\n"
+"%s is free software and carries NO WARRANTY;"
+"see the file COPYING for more information."),
+	    programVersion, zippy, PACKAGE);
     ErrorPopUp(_("About XBoard"), buf, FALSE);
 }
 

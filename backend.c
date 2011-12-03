@@ -834,6 +834,7 @@ InitEngine(ChessProgramState *cps, int n)
       }
 
     InitEngineUCI( installDir, cps );  // [HGM] moved here from winboard.c, to make available in xboard
+    ParseFeatures(appData.featureDefaults, cps);
 }
 
 ChessProgramState *savCps;
@@ -3635,7 +3636,7 @@ read_from_ics(isr, closure, data, count, error)
 			flipView = appData.flipView;
 			DrawPosition(TRUE, boards[currentMove]);
 			DisplayBothClocks();
-			snprintf(str, MSG_SIZ, "%s vs. %s",
+			snprintf(str, MSG_SIZ, _("%s vs. %s"),
 				gameInfo.white, gameInfo.black);
 			DisplayTitle(str);
 			gameMode = IcsIdle;
@@ -3862,6 +3863,7 @@ read_from_ics(isr, closure, data, count, error)
 		    strncmp(why, "Continuing ", 11) == 0) {
 		    gs_gamenum = gamenum;
 		    safeStrCpy(gs_kind, strchr(why, ' ') + 1,sizeof(gs_kind)/sizeof(gs_kind[0]));
+		    if(ics_gamenum == -1) // [HGM] only if we are not already involved in a game (because gin=1 sends us such messages)
 		    VariantSwitch(boards[currentMove], StringToVariant(gs_kind)); // [HGM] variantswitch: even before we get first board
 #if ZIPPY
 		    if (appData.zippyPlay) {
@@ -4049,10 +4051,10 @@ read_from_ics(isr, closure, data, count, error)
 			    char wh[16], bh[16];
 			    PackHolding(wh, white_holding);
 			    PackHolding(bh, black_holding);
-			    snprintf(str, MSG_SIZ,"[%s-%s] %s-%s", wh, bh,
+			    snprintf(str, MSG_SIZ, "[%s-%s] %s-%s", wh, bh,
 				    gameInfo.white, gameInfo.black);
 			} else {
-			  snprintf(str, MSG_SIZ, "%s [%s] vs. %s [%s]",
+			  snprintf(str, MSG_SIZ, _("%s [%s] vs. %s [%s]"),
 				    gameInfo.white, white_holding,
 				    gameInfo.black, black_holding);
 			}
@@ -4776,11 +4778,11 @@ ParseBoard12(string)
 		    basetime, increment, (int) gameInfo.variant);
 	} else {
 	    if(gameInfo.variant == VariantNormal)
-	      snprintf(str, MSG_SIZ, "%s (%d) vs. %s (%d) {%d %d}",
+	      snprintf(str, MSG_SIZ, _("%s (%d) vs. %s (%d) {%d %d}"),
 		    gameInfo.white, white_stren, gameInfo.black, black_stren,
 		    basetime, increment);
 	    else
-	      snprintf(str, MSG_SIZ, "%s (%d) vs. %s (%d) {%d %d %s}",
+	      snprintf(str, MSG_SIZ, _("%s (%d) vs. %s (%d) {%d %d %s}"),
 		    gameInfo.white, white_stren, gameInfo.black, black_stren,
 		    basetime, increment, VariantName(gameInfo.variant));
 	}
@@ -4950,6 +4952,12 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
      char promoChar;
 {
     char user_move[MSG_SIZ];
+    char suffix[4];
+
+    if(gameInfo.variant == VariantSChess && promoChar) {
+	snprintf(suffix, 4, "=%c", toX == BOARD_WIDTH<<1 ? ToUpper(promoChar) : ToLower(promoChar));
+	if(toX == BOARD_WIDTH>>1) moveType = WhitePromotion; // kludge to do gating at Rook
+    } else suffix[0] = NULLCHAR;
 
     switch (moveType) {
       default:
@@ -4965,7 +4973,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case WhiteHSideCastleFR:
       case BlackHSideCastleFR:
       /* POP Fabien */
-	snprintf(user_move, MSG_SIZ, "o-o\n");
+	snprintf(user_move, MSG_SIZ, "o-o%s\n", suffix);
 	break;
       case WhiteQueenSideCastle:
       case BlackQueenSideCastle:
@@ -4975,7 +4983,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case WhiteASideCastleFR:
       case BlackASideCastleFR:
       /* POP Fabien */
-	snprintf(user_move, MSG_SIZ, "o-o-o\n");
+	snprintf(user_move, MSG_SIZ, "o-o-o%s\n",suffix);
 	break;
       case WhiteNonPromotion:
       case BlackNonPromotion:
@@ -5023,8 +5031,8 @@ UploadGameEvent()
     int i, last = forwardMostMove; // make sure ICS reply cannot pre-empt us by clearing fmm
     static char *castlingStrings[4] = { "none", "kside", "qside", "both" };
     if(gameMode == IcsObserving || gameMode == IcsPlayingBlack || gameMode == IcsPlayingWhite) {
-	DisplayError("You cannot do this while you are playing or observing", 0);
-	return;
+      DisplayError(_("You cannot do this while you are playing or observing"), 0);
+      return;
     }
     if(gameMode != IcsExamining) { // is this ever not the case?
 	char buf[MSG_SIZ], *p, *fen, command[MSG_SIZ], bsetup = 0;
@@ -6656,7 +6664,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
       gameMode = MachinePlaysBlack;
       StartClocks();
       SetGameInfo();
-      snprintf(buf, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
+      snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
       DisplayTitle(buf);
       if (first.sendName) {
 	snprintf(buf, MSG_SIZ,"name %s\n", gameInfo.white);
@@ -8656,7 +8664,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 			if(f = fopen(buf, "w")) { // export PV to applicable PV file
 				fprintf(f, "%5.2f/%-2d %s", curscore/100., plylev, pv);
 				fclose(f);
-			} else DisplayError("failed writing PV", 0);
+			} else DisplayError(_("failed writing PV"), 0);
 		}
 
 		tempStats.depth = plylev;
@@ -9539,6 +9547,7 @@ InitChessProgram(cps, setup)
     hintRequested = FALSE;
     bookRequested = FALSE;
 
+    ParseFeatures(appData.features[cps == &second], cps); // [HGM] allow user to overrule features
     /* [HGM] some new WB protocol commands to configure engine are sent now, if engine supports them */
     /*       moved to before sending initstring in 4.3.15, so Polyglot can delay UCI 'isready' to recepton of 'new' */
     if(cps->memSize) { /* [HGM] memory */
@@ -11570,7 +11579,7 @@ LoadGame(f, gameNumber, title, useList)
     yynewfile(f);
 
     if (lg && lg->gameInfo.white && lg->gameInfo.black) {
-      snprintf(buf, sizeof(buf), "%s vs. %s", lg->gameInfo.white,
+      snprintf(buf, sizeof(buf), _("%s vs. %s"), lg->gameInfo.white,
 		lg->gameInfo.black);
 	    DisplayTitle(buf);
     } else if (*title != NULLCHAR) {
@@ -12198,7 +12207,7 @@ SaveGameToFile(filename, append)
 	    DisplayMessage(_("Waiting for access to save file"), "");
 	    flock(fileno(f), LOCK_EX); // [HGM] lock: lock file while we are writing
 	    DisplayMessage(_("Saving game"), "");
-	    if(lseek(fileno(f), 0, SEEK_END) == -1) DisplayError("Bad Seek", errno);     // better safe than sorry...
+	    if(lseek(fileno(f), 0, SEEK_END) == -1) DisplayError(_("Bad Seek"), errno);     // better safe than sorry...
 	    result = SaveGame(f, 0, NULL);
 	    DisplayMessage(buf, "");
 	    return result;
@@ -13185,7 +13194,7 @@ MachineWhiteEvent()
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
-    snprintf(buf, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
+    snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
     DisplayTitle(buf);
     if (first.sendName) {
       snprintf(buf, MSG_SIZ, "name %s\n", gameInfo.black);
@@ -13262,7 +13271,7 @@ MachineBlackEvent()
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
-    snprintf(buf, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
+    snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
     DisplayTitle(buf);
     if (first.sendName) {
       snprintf(buf, MSG_SIZ, "name %s\n", gameInfo.white);
@@ -13307,24 +13316,24 @@ DisplayTwoMachinesTitle()
     char buf[MSG_SIZ];
     if (appData.matchGames > 0) {
         if(appData.tourneyFile[0]) {
-	  snprintf(buf, MSG_SIZ, "%s vs. %s (%d/%d%s)",
+	  snprintf(buf, MSG_SIZ, _("%s vs. %s (%d/%d%s)"),
 		   gameInfo.white, gameInfo.black,
 		   nextGame+1, appData.matchGames+1,
 		   appData.tourneyType>0 ? "gt" : appData.tourneyType<0 ? "sw" : "rr");
         } else 
         if (first.twoMachinesColor[0] == 'w') {
-	  snprintf(buf, MSG_SIZ, "%s vs. %s (%d-%d-%d)",
+	  snprintf(buf, MSG_SIZ, _("%s vs. %s (%d-%d-%d)"),
 		   gameInfo.white, gameInfo.black,
 		   first.matchWins, second.matchWins,
 		   matchGame - 1 - (first.matchWins + second.matchWins));
 	} else {
-	  snprintf(buf, MSG_SIZ, "%s vs. %s (%d-%d-%d)",
+	  snprintf(buf, MSG_SIZ, _("%s vs. %s (%d-%d-%d)"),
 		   gameInfo.white, gameInfo.black,
 		   second.matchWins, first.matchWins,
 		   matchGame - 1 - (first.matchWins + second.matchWins));
 	}
     } else {
-      snprintf(buf, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
+      snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
     }
     DisplayTitle(buf);
 }

@@ -45,6 +45,15 @@
 #include "backend.h"
 #include "moves.h"
 #include "engineoutput.h"
+#include "gettext.h"
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
 
 typedef struct {
     char * name;
@@ -82,8 +91,10 @@ void MakeEngineOutputTitle()
 {
 	static char buf[MSG_SIZ];
 	static char oldTitle[MSG_SIZ];
-	char *title = "Engine Output";
+	char title[MSG_SIZ];
 	int count, rule = 2*appData.ruleMoves;
+
+	snprintf(title, MSG_SIZ, _("Engine Output") );
 
 	if(!EngineOutputIsUp()) return;
 	// figure out value of 50-move counter
@@ -93,7 +104,8 @@ void MakeEngineOutputTitle()
 	count = currentMove - count;
 	snprintf(buf, MSG_SIZ, "%s (%d reversible plies)", title, count);
 	if(!rule) rule = 100;
-	if(count >= rule - 40 && !appData.icsActive) title = buf;
+	if(count >= rule - 40 && (!appData.icsActive || gameMode == IcsObserving)) 
+	  safeStrCpy(title, buf, MSG_SIZ);
 	if(!strcmp(oldTitle, title)) return;
 	safeStrCpy(oldTitle, title, MSG_SIZ);
 	SetEngineOutputTitle(title);
