@@ -676,7 +676,7 @@ int SaveGameListAsText(FILE *f)
     int nItem;
 
     if( !glc || ((ListGame *) gameList.tailPred)->number <= 0 ) {
-        DisplayError("Game list not loaded or empty", 0);
+      DisplayError(_("Game list not loaded or empty"), 0);
         return False;
     }
 
@@ -812,7 +812,7 @@ GameListOptionsCreate()
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNallowShellResize, True);  j++;
     shell = gameListOptShell =
-      XtCreatePopupShell("Game-list options", transientShellWidgetClass,
+      XtCreatePopupShell(_("Game-list options"), transientShellWidgetClass,
 			 shellWidget, args, j);
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,

@@ -37,13 +37,21 @@
 #include "common.h"
 #include "backend.h"
 #include "moves.h"
+#include "gettext.h"
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
 
 #ifdef _MSC_VER
   typedef unsigned __int64 uint64;
 #else
   typedef unsigned long long int uint64;
 #endif
-
 
 #ifdef _MSC_VER
 #  define U64(u) (u##ui64)
@@ -501,7 +509,7 @@ int GetBookMoves(int moveNr, char *book, entry_t entries[])
 	f = fopen(book,"rb");
     }
     if(!f){
-	DisplayError("Polyglot book not valid", 0);
+        DisplayError(_("Polyglot book not valid"), 0);
 	appData.usePolyglotBook = FALSE;
 	return -1;
     }
@@ -561,7 +569,7 @@ char *ProbeBook(int moveNr, char *book)
         total_weight += entries[i].weight;
 	if(total_weight > j) break;
     }
-    if(i >= count) DisplayFatalError("Book Fault", 0, 1); // safety catch, cannot happen
+    if(i >= count) DisplayFatalError(_("Book Fault"), 0, 1); // safety catch, cannot happen
     move_to_string(move_s, entries[i].move);
     if(appData.debugMode) fprintf(debugFP, "book move field = %d\n", entries[i].move);
 
@@ -675,10 +683,10 @@ void SaveToBook(char *text)
     FILE *f;
     if(!count && !currentCount) return;
     f=fopen(appData.polyglotBook, "rb+");
-    if(!f){	DisplayError("Polyglot book not valid", 0); return; }
+    if(!f){	DisplayError(_("Polyglot book not valid"), 0); return; }
     offset=find_key(f, entries[0].key, &entry);
     if(entries[0].key != entry.key && currentCount) {
-	  DisplayError("Hash keys are different", 0);
+          DisplayError(_("Hash keys are different"), 0);
 	  fclose(f);
 	  return;
     }

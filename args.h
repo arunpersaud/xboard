@@ -771,7 +771,7 @@ ExitArgError(char *msg, char *badArg, Boolean quit)
   if( (len > MSG_SIZ) && appData.debugMode )
     fprintf(debugFP, "ExitArgError: buffer truncated. Input: msg=%s badArg=%s\n", msg, badArg);
 
-  if(!quit) { printf("%s in settings file\n", buf); return; } // DisplayError does not work yet at this stage...
+  if(!quit) { printf(_("%s in settings file\n"), buf); return; } // DisplayError does not work yet at this stage...
   DisplayFatalError(buf, 0, 2);
   exit(2);
 }
@@ -781,7 +781,7 @@ ValidateInt(char *s)
 {
   char *p = s;
   if(*p == '-' || *p == '+') p++;
-  while(*p) if(!isdigit(*p++)) ExitArgError("Bad integer value", s, TRUE);
+  while(*p) if(!isdigit(*p++)) ExitArgError(_("Bad integer value"), s, TRUE);
   return atoi(s);
 }
 
@@ -872,7 +872,7 @@ ParseArgs(GetFunc get, void *cl)
       for (ad = argDescriptors; ad->argName != NULL; ad++)
 	if (strcmp(ad->argName, argName + 1) == 0) break;
       if (ad->argName == NULL) {
-	ExitArgError("Unrecognized argument", argName, get != &FileGet); // [HGM] make unknown argument non-fatal
+	ExitArgError(_("Unrecognized argument"), argName, get != &FileGet); // [HGM] make unknown argument non-fatal
 	while (ch != '\n' && ch != NULLCHAR) ch = get(cl); // but skip rest of line it is on
 	continue; // so that when it is in a settings file, it is the only setting that will be purged from it
       }
@@ -961,7 +961,7 @@ ParseArgs(GetFunc get, void *cl)
 	  ch = get(cl);
 	  switch (ch) {
 	  case NULLCHAR:
-	    ExitArgError("Incomplete \\ escape in value for", argName, TRUE);
+	    ExitArgError(_("Incomplete \\ escape in value for"), argName, TRUE);
 	    break;
 	  case 'n':
 	    *q++ = '\n';
@@ -1045,7 +1045,7 @@ ParseArgs(GetFunc get, void *cl)
 	} else {
 	  if (ad->argLoc != NULL) {
 	  } else {
-	    ExitArgError("Failed to open indirection file", argValue, TRUE);
+	    ExitArgError(_("Failed to open indirection file"), argValue, TRUE);
 	  }
 	}
       }
@@ -1062,7 +1062,7 @@ ParseArgs(GetFunc get, void *cl)
 	*(Boolean *) ad->argLoc = FALSE;
 	break;
       default:
-	ExitArgError("Unrecognized boolean argument value", argValue, TRUE);
+	ExitArgError(_("Unrecognized boolean argument value"), argValue, TRUE);
 	break;
       }
       break;
@@ -1090,7 +1090,7 @@ ParseArgs(GetFunc get, void *cl)
       break;
 
     case ArgNone:
-      ExitArgError("Unrecognized argument", argValue, TRUE);
+      ExitArgError(_("Unrecognized argument"), argValue, TRUE);
       break;
     case ArgTwo:
     case ArgTrue:
