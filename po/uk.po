@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.6.0.20111101\n"
+"Project-Id-Version: GNU xboard 4.6.0.20111203\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2011-12-03 08:07-0800\n"
-"PO-Revision-Date: 2011-11-03 14:56+0200\n"
+"POT-Creation-Date: 2011-12-03 08:20-0800\n"
+"PO-Revision-Date: 2011-12-08 18:41+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -40,7 +40,7 @@ msgstr "помилковий параметр searchTime %s"
 #: backend.c:1072
 #, c-format
 msgid "Variant %s supported only in ICS mode"
-msgstr ""
+msgstr "Підтримку варіанта %s передбачено лише у режимі ICS"
 
 #: backend.c:1090
 #, c-format
@@ -61,7 +61,7 @@ msgstr "Помилковий файл позиції"
 
 #: backend.c:1377
 msgid "Pick new game"
-msgstr ""
+msgstr "Виберіть нову гру"
 
 #: backend.c:1442
 msgid ""
@@ -77,7 +77,7 @@ msgstr ""
 
 #: backend.c:1456
 msgid "Can't have a match with no chess programs"
-msgstr ""
+msgstr "Не можна розпочати матч, якщо не встановлено шахових програм"
 
 #: backend.c:1490
 #, c-format
@@ -124,9 +124,7 @@ msgstr "Робота режиму гри комп’ютером білими р
 
 #: backend.c:1641
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
-"Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено "
-"шаховий рушій"
+msgstr "Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено шаховий рушій"
 
 #: backend.c:1646
 msgid "TwoMachines mode does not work with ICS mode"
@@ -156,7 +154,7 @@ msgstr ""
 #: backend.c:2159
 #, c-format
 msgid "recognized '%s' (%d) as variant %s\n"
-msgstr ""
+msgstr "розпізнано «%s» (%d) як варіант %s\n"
 
 #: backend.c:2224 xboard.c:7310
 msgid "Error writing to display"
@@ -169,7 +167,7 @@ msgstr ""
 
 #: backend.c:3489
 msgid "Error gathering move list: two headers"
-msgstr ""
+msgstr "Помилка під час збирання списку ходів: два заголовки"
 
 #: backend.c:3503
 #, c-format
@@ -178,13 +176,13 @@ msgstr "Рейтинги з заголовка: Б %d, Ч %d\n"
 
 #: backend.c:3536
 msgid "Error gathering move list: nested"
-msgstr ""
+msgstr "Помилка під час збирання списку ходів: вкладеність"
 
 #: backend.c:3639 backend.c:6667 backend.c:11582 backend.c:13197
 #: backend.c:13274 backend.c:13336
 #, c-format
 msgid "%s vs. %s"
-msgstr ""
+msgstr "%s проти %s"
 
 #: backend.c:3768
 msgid "Illegal move (rejected by ICS)"
@@ -193,7 +191,7 @@ msgstr "Некоректний хід (заборонено ICS)"
 #: backend.c:4057
 #, c-format
 msgid "%s [%s] vs. %s [%s]"
-msgstr ""
+msgstr "%s [%s] проти %s [%s]"
 
 #: backend.c:4106
 msgid "Connection closed by ICS"
@@ -219,8 +217,7 @@ msgstr ""
 
 #: backend.c:4192 backend.c:9437
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
+msgstr "Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
 
 #: backend.c:4286
 msgid "Error gathering move list: extra board"
@@ -234,12 +231,12 @@ msgstr "Не вдалося обробити хід «%s» з ICS"
 #: backend.c:4781
 #, c-format
 msgid "%s (%d) vs. %s (%d) {%d %d}"
-msgstr ""
+msgstr "%s (%d) проти %s (%d) {%d %d}"
 
 #: backend.c:4785
 #, c-format
 msgid "%s (%d) vs. %s (%d) {%d %d %s}"
-msgstr ""
+msgstr "%s (%d) проти %s (%d) {%d %d %s}"
 
 #: backend.c:4964
 #, c-format
@@ -248,11 +245,11 @@ msgstr ""
 
 #: backend.c:5034
 msgid "You cannot do this while you are playing or observing"
-msgstr ""
+msgstr "Ця дія неможлива у режимі гри або спостереження"
 
 #: backend.c:5912
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
+msgstr "Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
 
 #: backend.c:6264
 msgid "You are playing Black"
@@ -303,7 +300,7 @@ msgstr "Рушієм визначення пар повернуто некоре
 #: backend.c:7924
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
-msgstr ""
+msgstr "Некоректний хід «%s» від комп’ютера %s"
 
 #: backend.c:8149
 msgid "Bad FEN received from engine"
@@ -317,13 +314,12 @@ msgstr "У %s не передбачено аналізу"
 #: backend.c:8359
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
-"Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
+msgstr "Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
 
 #: backend.c:8384
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
-msgstr ""
+msgstr "Не вдалося запустити шахову програму %s %s на %s: %s\n"
 
 #: backend.c:8405
 #, c-format
@@ -346,6 +342,8 @@ msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
+"Комп’ютером запропоновано нічию\n"
+"Скористайтеся пунктом меню «Дія->Нічия», щоб погодитися"
 
 #: backend.c:8667
 msgid "failed writing PV"
@@ -354,7 +352,7 @@ msgstr ""
 #: backend.c:8966
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
-msgstr ""
+msgstr "Неоднозначний хід у виведених ICS даних: «%s»"
 
 #: backend.c:8976
 #, c-format
@@ -582,17 +580,17 @@ msgstr ""
 #: backend.c:12900
 #, c-format
 msgid "Still need to make moves for both games\n"
-msgstr ""
+msgstr "Слід зробити ходити у обох іграх\n"
 
 #: backend.c:12904
 #, c-format
 msgid "Still need to make moves for all %d games\n"
-msgstr ""
+msgstr "Слід зробити ходити у всіх %d іграх\n"
 
 #: backend.c:12911
 #, c-format
 msgid "Still need to make a move for game %s\n"
-msgstr ""
+msgstr "Слід зробити хід у грі %s\n"
 
 #: backend.c:12917
 #, c-format
@@ -607,7 +605,7 @@ msgstr "Програма готова до надсилання пошти\n"
 #: backend.c:12924
 #, c-format
 msgid "Still need to make moves for games %s\n"
-msgstr ""
+msgstr "Слід зробити ходи у іграх %s\n"
 
 #: backend.c:13081
 msgid "Edit comment"
@@ -629,12 +627,12 @@ msgstr "Зараз хід білих"
 #: backend.c:13319
 #, c-format
 msgid "%s vs. %s (%d/%d%s)"
-msgstr ""
+msgstr "%s проти %s (%d/%d%s)"
 
 #: backend.c:13325 backend.c:13330
 #, c-format
 msgid "%s vs. %s (%d-%d-%d)"
-msgstr ""
+msgstr "%s проти %s (%d-%d-%d)"
 
 #: backend.c:13365
 #, c-format
@@ -683,11 +681,11 @@ msgstr "Цю клітинку зайнято"
 
 #: backend.c:13998 backend.c:14024
 msgid "There is no pending offer on this move"
-msgstr ""
+msgstr "У черзі немає пропозицій щодо цього ходу"
 
 #: backend.c:14060 backend.c:14071
 msgid "Your opponent is not out of time"
-msgstr ""
+msgstr "У вашого суперника ще залишився час"
 
 #: backend.c:14137
 msgid "You must make your move before offering a draw"
@@ -699,7 +697,7 @@ msgstr "Ви не вивчаєте гру"
 
 #: backend.c:14471
 msgid "You can't revert while pausing"
-msgstr ""
+msgstr "Скасовувати ходи у призупиненій грі не можна"
 
 #: backend.c:14525 backend.c:14532
 msgid "It is your turn"
@@ -716,27 +714,27 @@ msgstr "Немає підказки"
 #: backend.c:15058
 #, c-format
 msgid "Error writing to %s chess program"
-msgstr ""
+msgstr "Помилка під час спроби запису даних до шахової програми %s"
 
 #: backend.c:15061 backend.c:15097
 #, c-format
 msgid "%s program exits in draw position (%s)"
-msgstr ""
+msgstr "Програма %s завершила роботу у нічийній позиції (%s)"
 
 #: backend.c:15093
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
-msgstr ""
+msgstr "Помилка: шахова програма %s (%s) несподівано завершила роботу"
 
 #: backend.c:15110
 #, c-format
 msgid "Error reading from %s chess program (%s)"
-msgstr ""
+msgstr "Помилка під час спроби читання даних з шахової програми %s (%s)"
 
 #: backend.c:15523
 #, c-format
 msgid "%s engine has too many options\n"
-msgstr ""
+msgstr "Для рушія %s передбачено занадто багато параметрів\n"
 
 #: backend.c:15676
 msgid "Displayed move is not current"
@@ -748,19 +746,19 @@ msgstr "Не вдалося обробити хід"
 
 #: backend.c:15814 backend.c:15836
 msgid "Both flags fell"
-msgstr ""
+msgstr "Обидва прапорці впали"
 
 #: backend.c:15816
 msgid "White's flag fell"
-msgstr ""
+msgstr "Прапорець білих впав"
 
 #: backend.c:15838
 msgid "Black's flag fell"
-msgstr ""
+msgstr "Прапорець чорних впав"
 
 #: backend.c:15972
 msgid "Clock adjustment not allowed in auto-flag mode"
-msgstr ""
+msgstr "Коригування годинника у режимі автоматичних прапорців заборонене"
 
 #: backend.c:16782
 msgid "Bad FEN position in clipboard"
@@ -768,33 +766,32 @@ msgstr ""
 
 #: book.c:512 book.c:686
 msgid "Polyglot book not valid"
-msgstr ""
+msgstr "Некоректна бібліотека позицій"
 
 #: book.c:572
 msgid "Book Fault"
-msgstr ""
+msgstr "Помилка бібліотеки позицій"
 
 #: book.c:689
 msgid "Hash keys are different"
-msgstr ""
+msgstr "Ключі хешів не збігаються"
 
 #: engineoutput.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Engine Output"
 msgstr "Вивід рушія"
 
 #: filebrowser/selfile.c:301
-#, fuzzy
 msgid "Browse"
-msgstr "вибрати"
+msgstr "Вибрати"
 
 #: filebrowser/selfile.c:404
 msgid "Filter on extensions:"
-msgstr ""
+msgstr "Фільтр суфіксів:"
 
 #: filebrowser/selfile.c:785
 msgid "Pathname:"
-msgstr ""
+msgstr "Назва шляху:"
 
 #: filebrowser/selfile.c:789 xgamelist.c:761 xgamelist.c:886 xoptions.c:904
 #: xoptions.c:1207
@@ -802,13 +799,12 @@ msgid "OK"
 msgstr "Гаразд"
 
 #: filebrowser/selfile.c:793
-#, fuzzy
 msgid "Cancel"
-msgstr "скасувати"
+msgstr "Скасувати"
 
 #: filebrowser/selfile.c:837
 msgid "XsraSelFile: can't get current directory"
-msgstr ""
+msgstr "XsraSelFile: не вдалося отримати назву поточного каталогу"
 
 #: xboard.c:615
 msgid "New Game        Ctrl+N"
@@ -1028,7 +1024,7 @@ msgstr "Перегравання      F12"
 
 #: xboard.c:702
 msgid "Call Flag          F5"
-msgstr ""
+msgstr "Перевірити прапорець F5"
 
 #: xboard.c:703
 msgid "Draw                F6"
@@ -1152,11 +1148,11 @@ msgstr "Анімація ходів      Ctrl+Shift+A"
 
 #: xboard.c:752
 msgid "Auto Flag               Ctrl+Shift+F"
-msgstr ""
+msgstr "Автопрапорець           Ctrl+Shift+F"
 
 #: xboard.c:753 xoptions.c:387
 msgid "Auto Flip View"
-msgstr ""
+msgstr "Автоматичне обертання дошки"
 
 #: xboard.c:754 xoptions.c:388
 msgid "Blindfold"
@@ -1192,7 +1188,7 @@ msgstr "Періодичні оновлення"
 
 #: xboard.c:765
 msgid "Ponder Next Move  Ctrl+Shift+P"
-msgstr ""
+msgstr "Обдумати наступний хід Ctrl+Shift+P"
 
 #: xboard.c:766
 msgid "Popup Exit Message"
@@ -1333,7 +1329,7 @@ msgstr "Чорні"
 #: xboard.c:1214
 #, c-format
 msgid "%s: Can't access XPM directory %s\n"
-msgstr ""
+msgstr "%s: не вдалося отримати доступ до каталогу XPM %s\n"
 
 #: xboard.c:1237
 #, c-format
@@ -1362,22 +1358,22 @@ msgstr "%s: нерозпізнаний колір %s\n"
 #: xboard.c:1360
 #, c-format
 msgid "%s: can't parse foreground color in `%s'\n"
-msgstr ""
+msgstr "%s: не вдалося обробити колір тексту у «%s»\n"
 
 #: xboard.c:1746 xboard.c:2496
 #, c-format
 msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
-msgstr ""
+msgstr "%s: помилка у геометричних параметрах titleWidget — %d %d %d %d %d\n"
 
 #: xboard.c:1855
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
-msgstr ""
+msgstr "%s: не вдалося обробити назви кольорів; розфарбовування вимкнено\n"
 
 #: xboard.c:2032
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
-msgstr ""
+msgstr "%s: не вдалося перейти до каталогу CHESSDIR: "
 
 #: xboard.c:2041
 #, c-format
@@ -1396,12 +1392,12 @@ msgstr "%s: помилковий синтаксис boardSize %s\n"
 #: xboard.c:2116
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
-msgstr ""
+msgstr "%s: невідома назва boardSize %s\n"
 
 #: xboard.c:2141
 #, c-format
 msgid "Error expanding path name \"%s\"\n"
-msgstr ""
+msgstr "Помилка під час спроби розгортання адреси каталогу «%s»\n"
 
 #: xboard.c:2146
 #, c-format
@@ -1418,27 +1414,27 @@ msgstr "Найближчий розмір %s: %d\n"
 #: xboard.c:2227
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
-msgstr ""
+msgstr "%s: занадто мало кольорів; спробуємо монохромний режим\n"
 
 #: xboard.c:2243
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
-msgstr ""
+msgstr "білий піксель = 0x%lx, чорний піксель = 0x%lx\n"
 
 #: xboard.c:2462 xboard.c:2472
 #, c-format
 msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
-msgstr ""
+msgstr "%s: помилка у геометричних параметрах messageWidget — %d %d %d %d %d\n"
 
 #: xboard.c:3229
 #, c-format
 msgid "Unable to create font set for %s.\n"
-msgstr ""
+msgstr "Не вдалося створити набір шрифтів для %s.\n"
 
 #: xboard.c:3254
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
-msgstr ""
+msgstr "%s: взірцеві %s не відповідає жоден шрифт\n"
 
 #: xboard.c:3296
 #, c-format
@@ -1454,7 +1450,7 @@ msgstr "%s: помилка завантаження XIM!\n"
 
 #: xboard.c:3546
 msgid "XIM pieces cannot be used in monochrome mode"
-msgstr ""
+msgstr "У монохромному режимі не можна користуватися фігурами XIM"
 
 #: xboard.c:3550
 #, c-format
@@ -1488,17 +1484,17 @@ msgstr "Виконано.\n"
 
 #: xboard.c:3663
 msgid "XPM pieces cannot be used in monochrome mode"
-msgstr ""
+msgstr "У монохромному режимі не можна користуватися фігурами XPM"
 
 #: xboard.c:3673
 #, c-format
 msgid "No builtin XPM pieces of size %d\n"
-msgstr ""
+msgstr "Немає вбудованих фігур XPM розміру %d\n"
 
 #: xboard.c:3683
 #, c-format
 msgid "Error %d loading XPM image \"%s\"\n"
-msgstr ""
+msgstr "Помилка %d під час спроби завантаження зображення XPM «%s»\n"
 
 #: xboard.c:3696
 #, c-format
@@ -1512,37 +1508,37 @@ msgstr ""
 #: xboard.c:3719
 #, c-format
 msgid "(Replace by File:%s:) "
-msgstr ""
+msgstr "(Замінено на File:%s:) "
 
 #: xboard.c:3726 xboard.c:3749 xboard.c:3760
 #, c-format
 msgid "Error %d loading XPM file \"%s\"\n"
-msgstr ""
+msgstr "Помилка %d під час спроби завантаження файла XPM «%s»\n"
 
 #: xboard.c:3850
 #, c-format
 msgid "Can't open bitmap file %s"
-msgstr ""
+msgstr "Не вдалося відкрити файл растрового зображення %s"
 
 #: xboard.c:3853
 #, c-format
 msgid "Invalid bitmap in file %s"
-msgstr ""
+msgstr "Некоректне растрове зображення у файлі %s"
 
 #: xboard.c:3856
 #, c-format
 msgid "Ran out of memory reading bitmap file %s"
-msgstr ""
+msgstr "Під час читання растрового зображення %s було вичерпано обсяг пам’яті"
 
 #: xboard.c:3860
 #, c-format
 msgid "Unknown XReadBitmapFile error %d on file %s"
-msgstr ""
+msgstr "Невідома помилка XReadBitmapFile %d під час обробки файла %s"
 
 #: xboard.c:3864
 #, c-format
 msgid "%s: %s...using built-in\n"
-msgstr ""
+msgstr "%s: %s… використовуємо вбудоване\n"
 
 #: xboard.c:3868
 #, c-format
@@ -1554,9 +1550,8 @@ msgid "Drop"
 msgstr "Викинути"
 
 #: xboard.c:5035
-#, fuzzy
 msgid "could not open: "
-msgstr "Не вдалося обробити хід"
+msgstr "Не вдалося відкрити:"
 
 #: xboard.c:5061 xboard.c:5187 xboard.c:5235 xboard.c:7141 xboard.c:7182
 #: xgamelist.c:767 xgamelist.c:875 xoptions.c:900 xoptions.c:1211
@@ -1601,7 +1596,7 @@ msgstr "Капітан"
 
 #: xboard.c:5184 xboard.c:5243
 msgid "Defer"
-msgstr ""
+msgstr "Зменшити пріоритет"
 
 #: xboard.c:5306
 msgid "ok"
@@ -1609,28 +1604,28 @@ msgstr "гаразд"
 
 #: xboard.c:5503
 msgid "Load game file name?"
-msgstr ""
+msgstr "Назва файла гри для завантаження?"
 
 #: xboard.c:5569
 msgid "Load position file name?"
-msgstr ""
+msgstr "Назва файла позиції для завантаження?"
 
 #: xboard.c:5578
 msgid "Save game file name?"
-msgstr ""
+msgstr "Назва файли гри для збереження?"
 
 #: xboard.c:5590
 msgid "Save position file name?"
-msgstr ""
+msgstr "Назва файла позиції для збереження?"
 
 #: xboard.c:5821
 msgid "Can't open temp file"
-msgstr ""
+msgstr "Не вдалося відкрити тимчасовий файл даних"
 
 #: xboard.c:5911
 #, c-format
 msgid "You are not observing a game"
-msgstr ""
+msgstr "Ви не спостерігаєте за грою"
 
 #: xboard.c:5916
 #, c-format
@@ -1640,7 +1635,7 @@ msgstr ""
 #: xboard.c:5930
 #, c-format
 msgid "ICS engine analyze starting... \n"
-msgstr ""
+msgstr "Розпочинаємо аналіз за допомогою рушія ICS… \n"
 
 #: xboard.c:6831
 msgid " (with Zippy code)"
@@ -1655,8 +1650,7 @@ msgid ""
 "Enhancements Copyright 1992-2009 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information."
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information."
 msgstr ""
 
 #: xboard.c:7028
@@ -1678,11 +1672,11 @@ msgstr "Нотатка"
 #: xboard.c:7095
 #, c-format
 msgid "AskQuestionProc needed 4 parameters, got %d\n"
-msgstr ""
+msgstr "AskQuestionProc потребує 4 параметрів, отримано %d\n"
 
 #: xboard.c:7128
 msgid "Error writing to chess program"
-msgstr ""
+msgstr "Помилка під час спроби запису даних до шахової програми"
 
 #: xboard.c:7180
 msgid "enter"
@@ -1691,30 +1685,30 @@ msgstr "увійти"
 #: xboard.c:7384
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
-msgstr ""
+msgstr "Помилка: невідомий користувач %s (шлях — %s)\n"
 
 #: xboard.c:7778
 msgid "Socket support is not configured in"
-msgstr ""
+msgstr "Підтримку сокетів ще не налаштовано"
 
 #: xboard.c:7869
 msgid "internal rcmd not implemented for Unix"
-msgstr ""
+msgstr "вбудований rcmd ще не реалізовано для Unix"
 
 #: xboard.c:8649
 #, c-format
 msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
-msgstr ""
+msgstr "Анімація ходів: фігура %d перестрибує з %d,%d до %d,%d \n"
 
 #: xboard.c:8650
 #, c-format
 msgid "AnimateMove: piece %d slides from %d,%d to %d,%d \n"
-msgstr ""
+msgstr "Анімація ходів: фігура %d пересувається з %d,%d до %d,%d \n"
 
 #: xengineoutput.c:145
 #, c-format
 msgid "Error %d loading icon image\n"
-msgstr ""
+msgstr "Помилка %d під час завантаження зображення піктограми\n"
 
 #: xengineoutput.c:358
 msgid "NPS"
@@ -1734,7 +1728,7 @@ msgstr "Граф оцінки позиції"
 
 #: xgamelist.c:114
 msgid "no games matched your request"
-msgstr ""
+msgstr "вашому запиту не відповідає жодна гра"
 
 #: xgamelist.c:193 xgamelist.c:423
 msgid "thresholds"
@@ -1742,7 +1736,7 @@ msgstr "порогові значення"
 
 #: xgamelist.c:204 xgamelist.c:450 xgamelist.c:457
 msgid "find position"
-msgstr ""
+msgstr "знайти позицію"
 
 #: xgamelist.c:215 xgamelist.c:435
 msgid "next"
@@ -1787,7 +1781,7 @@ msgstr "Не вибрано гри"
 
 #: xgamelist.c:438
 msgid "Can't go forward any further"
-msgstr ""
+msgstr "Подальший рух вперед списком неможливий"
 
 #: xgamelist.c:442
 msgid "prev"
@@ -1795,12 +1789,11 @@ msgstr "попер"
 
 #: xgamelist.c:541
 msgid "There is no game list"
-msgstr ""
+msgstr "Немає списку ходів гри"
 
 #: xgamelist.c:679
-#, fuzzy
 msgid "Game list not loaded or empty"
-msgstr "Ще не завантажено жодної гри"
+msgstr "Список гри не завантажено або цей список є порожнім"
 
 #: xgamelist.c:775
 msgid "No tag selected"
@@ -1819,9 +1812,8 @@ msgid "factory"
 msgstr ""
 
 #: xgamelist.c:815
-#, fuzzy
 msgid "Game-list options"
-msgstr "Загальні параметри"
+msgstr "Параметри списку гри"
 
 #: xhistory.c:145
 msgid "Move list"
@@ -1829,15 +1821,15 @@ msgstr "Список ходів"
 
 #: xoptions.c:303
 msgid "First Engine"
-msgstr ""
+msgstr "Перший рушій"
 
 #: xoptions.c:303
 msgid "Second Engine"
-msgstr ""
+msgstr "Другий рушій"
 
 #: xoptions.c:352
 msgid "Tournament file:"
-msgstr ""
+msgstr "Файл турніру:"
 
 #: xoptions.c:353
 msgid "Sync after round    (for concurrent playing of a single"
@@ -1848,29 +1840,28 @@ msgid "Sync after cycle      tourney with multiple XBoards)"
 msgstr ""
 
 #: xoptions.c:355
-#, fuzzy
 msgid "Tourney participants:"
-msgstr "Недостатньо учасників"
+msgstr "Учасники турніру:"
 
 #: xoptions.c:356
 msgid "Select Engine:"
-msgstr ""
+msgstr "Виберіть рушій:"
 
 #: xoptions.c:357
 msgid "Tourney type (0 = round-robin, 1 = gauntlet):"
-msgstr ""
+msgstr "Система турніру (0 = кругова, 1 = почергова):"
 
 #: xoptions.c:358
 msgid "Number of tourney cycles (or Swiss rounds):"
-msgstr ""
+msgstr "Кількість раундів турніру (швейцарських раундів):"
 
 #: xoptions.c:359
 msgid "Default Number of Games in Match (or Pairing):"
-msgstr ""
+msgstr "Типова кількість ігор у матчі:"
 
 #: xoptions.c:360
 msgid "Pause between Match Games (msec):"
-msgstr ""
+msgstr "Проміжок між іграми у матчі (у мілісекундах):"
 
 #: xoptions.c:361
 msgid "Save Tourney Games on:"
@@ -1882,15 +1873,15 @@ msgstr ""
 
 #: xoptions.c:363
 msgid "Game Number (-1 or -2 = Auto-Increment):"
-msgstr ""
+msgstr "Номер гри (-1 або -2 = автоматичне збільшення):"
 
 #: xoptions.c:364
 msgid "File with Start Positions:"
-msgstr ""
+msgstr "Файл з початковими позиціями:"
 
 #: xoptions.c:365
 msgid "Position Number (-1 or -2 = Auto-Increment):"
-msgstr ""
+msgstr "Номер позиції (-1 або -2 = автоматичне збільшення):"
 
 #: xoptions.c:366
 msgid "Rewind Index after this many Games (0 = never):"
@@ -1898,7 +1889,7 @@ msgstr ""
 
 #: xoptions.c:367
 msgid "Disable own engine books by default"
-msgstr ""
+msgstr "Типово вимкнути власні бібліотеки позицій рушія"
 
 #: xoptions.c:368
 msgid "Replace Engine"
@@ -1918,11 +1909,11 @@ msgstr ""
 
 #: xoptions.c:385
 msgid "Animate Moving"
-msgstr ""
+msgstr "Анімація ходів"
 
 #: xoptions.c:386
 msgid "Auto Flag"
-msgstr ""
+msgstr "Автопрапорець"
 
 #: xoptions.c:389
 msgid "Drop Menu"
@@ -1930,7 +1921,7 @@ msgstr ""
 
 #: xoptions.c:390
 msgid "Hide Thinking from Human"
-msgstr ""
+msgstr "Приховувати обмірковування від людини"
 
 #: xoptions.c:391
 msgid "Highlight Dragging (Show Move Targets)"
@@ -1938,15 +1929,15 @@ msgstr ""
 
 #: xoptions.c:393
 msgid "Highlight with Arrow"
-msgstr ""
+msgstr "Позначити за допомогою стрілки"
 
 #: xoptions.c:396
 msgid "Periodic Updates (in Analysis Mode)"
-msgstr ""
+msgstr "Періодичні оновлення (у режимі аналізу)"
 
 #: xoptions.c:397 xoptions.c:504
 msgid "Ponder Next Move"
-msgstr ""
+msgstr "Обдумати наступний хід"
 
 #: xoptions.c:398
 msgid "Popup Exit Messages"
@@ -1962,11 +1953,11 @@ msgstr "Показувати координати"
 
 #: xoptions.c:402
 msgid "Show Target Squares"
-msgstr ""
+msgstr "Показувати клітинки призначення"
 
 #: xoptions.c:403
 msgid "Test Legality"
-msgstr ""
+msgstr "Перевіряти коректність"
 
 #: xoptions.c:404
 msgid "Flash Moves (0 = no flashing):"
@@ -1978,7 +1969,7 @@ msgstr ""
 
 #: xoptions.c:406
 msgid "Animation Speed (high = slow):"
-msgstr ""
+msgstr "Швидкість анімації (висока = повільно):"
 
 #: xoptions.c:407
 msgid "Zoom factor in Evaluation Graph:"
@@ -2007,11 +1998,11 @@ msgstr ""
 
 #: xoptions.c:448
 msgid "wild castle"
-msgstr ""
+msgstr "дика тура"
 
 #: xoptions.c:449
 msgid "Superchess"
-msgstr ""
+msgstr "Супершахи"
 
 #: xoptions.c:450
 msgid "no castle"
@@ -2071,7 +2062,7 @@ msgstr "сокіл (10x8)"
 
 #: xoptions.c:464
 msgid "two kings"
-msgstr ""
+msgstr "два королі"
 
 #: xoptions.c:465
 msgid "Capablanca (10x8)"
@@ -2123,7 +2114,7 @@ msgstr ""
 
 #: xoptions.c:477
 msgid "Number of Board Files:"
-msgstr ""
+msgstr "Кількість файлів дошки:"
 
 #: xoptions.c:478
 msgid "Holdings Size:"
@@ -2140,15 +2131,15 @@ msgstr ""
 
 #: xoptions.c:505
 msgid "Maximum Number of CPUs per Engine:"
-msgstr ""
+msgstr "Максимальна кількість процесорів на рушій:"
 
 #: xoptions.c:506
 msgid "Polygot Directory:"
-msgstr ""
+msgstr "Каталог бібліотек Polygot:"
 
 #: xoptions.c:507
 msgid "Hash-Table Size (MB):"
-msgstr ""
+msgstr "Розмір таблиці хешів (у МБ):"
 
 #: xoptions.c:508
 msgid "Nalimov EGTB Path:"
@@ -2156,7 +2147,7 @@ msgstr ""
 
 #: xoptions.c:509
 msgid "EGTB Cache Size (MB):"
-msgstr ""
+msgstr "Розмір кешу EGTB (у МБ):"
 
 #: xoptions.c:510
 msgid "Use GUI Book"
@@ -2164,7 +2155,7 @@ msgstr ""
 
 #: xoptions.c:511
 msgid "Opening-Book Filename:"
-msgstr ""
+msgstr "Назва файла даних дебютів:"
 
 #: xoptions.c:512
 msgid "Book Depth (moves):"
@@ -2192,7 +2183,7 @@ msgstr ""
 
 #: xoptions.c:522
 msgid "Draw if Insufficient Mating Material"
-msgstr ""
+msgstr "Нічия, якщо недостатньо фігур для мату"
 
 #: xoptions.c:523
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
@@ -2256,7 +2247,7 @@ msgstr "Мовчазна гра"
 
 #: xoptions.c:548
 msgid "Seek Graph"
-msgstr ""
+msgstr "Граф викликів"
 
 #: xoptions.c:549
 msgid "Auto-Refresh Seek Graph"
@@ -2312,7 +2303,7 @@ msgstr ""
 
 #: xoptions.c:564
 msgid "Kibitz Text Colors:"
-msgstr ""
+msgstr "Кольори тексту порад:"
 
 #: xoptions.c:565
 msgid "Tell Text Colors:"
@@ -2320,7 +2311,7 @@ msgstr ""
 
 #: xoptions.c:566
 msgid "Challenge Text Colors:"
-msgstr ""
+msgstr "Кольори тексту викликів:"
 
 #: xoptions.c:567
 msgid "Request Text Colors:"
@@ -2568,7 +2559,7 @@ msgstr "Запит:"
 
 #: xoptions.c:672
 msgid "Seek:"
-msgstr ""
+msgstr "Пошук:"
 
 #: xoptions.c:752
 msgid "White Piece Color:"
@@ -2577,22 +2568,22 @@ msgstr ""
 #: xoptions.c:754 xoptions.c:760 xoptions.c:766 xoptions.c:772 xoptions.c:778
 #: xoptions.c:784
 msgid "R"
-msgstr ""
+msgstr "Ч"
 
 #: xoptions.c:755 xoptions.c:761 xoptions.c:767 xoptions.c:773 xoptions.c:779
 #: xoptions.c:785
 msgid "G"
-msgstr ""
+msgstr "З"
 
 #: xoptions.c:756 xoptions.c:762 xoptions.c:768 xoptions.c:774 xoptions.c:780
 #: xoptions.c:786
 msgid "B"
-msgstr ""
+msgstr "С"
 
 #: xoptions.c:757 xoptions.c:763 xoptions.c:769 xoptions.c:775 xoptions.c:781
 #: xoptions.c:787
 msgid "D"
-msgstr ""
+msgstr "Т"
 
 #: xoptions.c:758
 msgid "Black Piece Color:"
@@ -2675,9 +2666,8 @@ msgid "Board Options"
 msgstr ""
 
 #: xoptions.c:1295
-#, fuzzy
 msgid "Adjudicate non-ICS Games"
-msgstr "Визначити виграш білих"
+msgstr ""
 
 #: xoptions.c:1306
 msgid "Common Engine Settings"
@@ -2697,11 +2687,11 @@ msgstr "Параметри партії"
 
 #: xoptions.c:1441
 msgid "clear"
-msgstr ""
+msgstr "спорожнити"
 
 #: xoptions.c:1442 xoptions.c:1494
 msgid "save changes"
-msgstr ""
+msgstr "зберегти зміни"
 
 #: xoptions.c:1501
 msgid "Edit book"
@@ -2709,7 +2699,7 @@ msgstr "Змінити книгу"
 
 #: xoptions.c:1541
 msgid "ICS input box"
-msgstr ""
+msgstr "Поле введення ICS"
 
 #: xoptions.c:1568
 msgid "Type a move"
@@ -2717,7 +2707,7 @@ msgstr ""
 
 #: xoptions.c:1599
 msgid "Engine Settings"
-msgstr ""
+msgstr "Параметри рушія"
 
 #: xoptions.c:1629
 msgid "Select engine from list:"
@@ -2749,7 +2739,7 @@ msgstr ""
 
 #: xoptions.c:1636
 msgid "UCI"
-msgstr ""
+msgstr "UCI"
 
 #: xoptions.c:1637
 msgid "WB protocol v1 (do not wait for engine features)"
@@ -2776,16 +2766,14 @@ msgid "Load engine"
 msgstr ""
 
 #: xoptions.c:1679
-#, fuzzy
 msgid "shuffle"
-msgstr "Перемішати"
+msgstr "перемішати"
 
 #: xoptions.c:1680
 msgid "Start-position number:"
 msgstr "Номер початкової позиції:"
 
 #: xoptions.c:1681
-#, fuzzy
 msgid "randomize"
 msgstr "випадково"
 
