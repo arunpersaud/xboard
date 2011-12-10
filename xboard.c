@@ -1108,11 +1108,11 @@ char globalTranslations[] =
    "\
    :<Key>F1: ManProc() \n \
    :<Key>F2: FlipViewProc() \n \
-   <KeyDown>.: BackwardProc() \n \
-   <KeyUp>.: ForwardProc() \n \
-   Shift<Key>1: AskQuestionProc(\"Direct command\",\
+   :Ctrl<KeyDown>.: BackwardProc() \n \
+   :Ctrl<KeyUp>.: ForwardProc() \n \
+   :Ctrl<Key>1: AskQuestionProc(\"Direct command\",\
                                 \"Send to chess program:\",,1) \n \
-   Shift<Key>2: AskQuestionProc(\"Direct command\",\
+   :Ctrl<Key>2: AskQuestionProc(\"Direct command\",\
                                 \"Send to second chess program:\",,2) \n";
 
 char boardTranslations[] =
