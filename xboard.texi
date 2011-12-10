@@ -2662,7 +2662,7 @@ These and most other standard Xt options are accepted.
 @item -noGUI
 @cindex noGUI, option
 Suppresses all GUI functions of XBoard 
-(to speed up automated ultra-fast engine-engine games, which you dont want to watch). 
+(to speed up automated ultra-fast engine-engine games, which you don't want to watch). 
 There will be no board or clock updates, no printing of moves, 
 and no update of the icon on the task bar in this mode.
 @item -movesound/-xmovesound or -ringBellAfterMoves true/false
