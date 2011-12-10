@@ -67,10 +67,10 @@ extern GameInfo gameInfo;
 extern void ics_printf P((char *format, ...));
 extern void SendToICS P((char *s));
 extern int looking_at P((char *, int *, char *));
-extern void SendToProgram P((char *message, ChessProgramState *cps));
-extern void SendBoard P((ChessProgramState *cps, int moveNum));
-void SendTimeRemaining P((ChessProgramState *cps,
-			  int/*boolean*/ machineWhite));
+extern void SendToProgram P((char *message, ChessEngineState *cps));
+extern void SendBoard P((ChessEngineState *cps, int moveNum));
+void SendTimeRemaining P((ChessEngineState *cps,
+			  int/*boolean*/ engineWhite));
 
 extern char ics_handle[];
 extern char *ics_prefix;

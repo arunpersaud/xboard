@@ -119,14 +119,14 @@ typedef struct {
 
 #define BORDER_X_OFFSET 3
 #define BORDER_Y_OFFSET 27
-#define FIRST_CHESS_PROGRAM	"fairymax"
-#define SECOND_CHESS_PROGRAM	"fairymax"
+#define FIRST_CHESS_ENGINE	"fairymax"
+#define SECOND_CHESS_ENGINE	"fairymax"
 #define FIRST_DIRECTORY         "."
 #define SECOND_DIRECTORY        "."
 #define SOUND_BELL              ""
 #define ICS_NAMES               ""
-#define FCP_NAMES               ""
-#define SCP_NAMES               ""
+#define FCE_NAMES               ""
+#define SCE_NAMES               ""
 #define ICS_TEXT_MENU_DEFAULT   ""
 #define SETTINGS_FILE           SYSCONFDIR"/xboard.conf"
 #define COLOR_BKGD              "white"
@@ -147,7 +147,7 @@ void PlaySound P((char *name));
 void ParseIcsTextColors P((void));
 void InitDrawingSizes P((int i, int j));
 void SendToICS P((char *buf));
-void SendToProgram P((char *message, ChessProgramState *cps));
+void SendToProgram P((char *message, ChessEngineState *cps));
 FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
 		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
 

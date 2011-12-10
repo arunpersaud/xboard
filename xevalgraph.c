@@ -429,7 +429,7 @@ EvalGraphProc(w, event, prms, nprms)
 // This function is the interface to the back-end. It is currently called through the front-end,
 // though, where it shares the HistorySet() wrapper with MoveHistorySet(). Once all front-ends
 // support the eval graph, it would be more logical to call it directly from the back-end.
-void EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo )
+void EvalGraphSet( int first, int last, int current, ChessEngineStats_Move * pvInfo )
 {
     /* [AS] Danger! For now we rely on the pvInfo parameter being a static variable! */
 

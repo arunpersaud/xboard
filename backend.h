@@ -147,9 +147,9 @@ int DrawSeekGraph P(());
 int SeekGraphClick P((ClickType click, int x, int y, int moving));
 void EditPositionEvent P((void));
 void FlipViewEvent P((void));
-void MachineWhiteEvent P((void));
-void MachineBlackEvent P((void));
-void TwoMachinesEvent P((void));
+void EngineWhiteEvent P((void));
+void EngineBlackEvent P((void));
+void TwoEnginesEvent P((void));
 void EditGameEvent P((void));
 void TrainingEvent P((void));
 void IcsClientEvent P((void));
@@ -336,7 +336,7 @@ typedef struct _CPS {
     int maybeThinking;
     ProcRef pr;
     InputSourceRef isr;
-    char *twoMachinesColor; /* "white\n" or "black\n" */
+    char *twoEnginesColor; /* "white\n" or "black\n" */
     char *program;
     char *host;
     char *dir;
@@ -399,11 +399,11 @@ typedef struct _CPS {
     void *programLogo; /* [HGM] logo: bitmap of the logo                    */
     char *fenOverride; /* [HGM} FRC: force FEN casling & ep fields by hand  */
     char userError;    /* [HGM] crash: flag to suppress fatal-error messages*/
-} ChessProgramState;
+} ChessEngineState;
 
-extern ChessProgramState first, second;
+extern ChessEngineState first, second;
 
-/* Search stats from chessprogram */
+/* Search stats from chessengine */
 typedef struct {
   char movelist[2*MSG_SIZ]; /* Last PV we were sent */
   int depth;              /* Current search depth */
@@ -418,19 +418,19 @@ typedef struct {
   int ok_to_send;         /* handshaking between send & recv */
   int line_is_book;       /* 1 if movelist is book moves */
   int seen_stat;          /* 1 if we've seen the stat01: line */
-} ChessProgramStats;
+} ChessEngineStats;
 
-extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
+extern ChessEngineStats_Move pvInfoList[MAX_MOVES];
 extern Boolean shuffleOpenings;
-extern ChessProgramStats programStats;
+extern ChessEngineStats programStats;
 extern int opponentKibitzes; // used by wengineo.c
 extern int errorExitStatus;
-void SettingsPopUp P((ChessProgramState *cps)); // [HGM] really in front-end, but CPS not known in frontend.h
-int WaitForEngine P((ChessProgramState *cps, DelayedEventCallback x));
-void Load P((ChessProgramState *cps, int n));
-int MultiPV P((ChessProgramState *cps));
-void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
-void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
+void SettingsPopUp P((ChessEngineState *cps)); // [HGM] really in front-end, but CPS not known in frontend.h
+int WaitForEngine P((ChessEngineState *cps, DelayedEventCallback x));
+void Load P((ChessEngineState *cps, int n));
+int MultiPV P((ChessEngineState *cps));
+void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessEngineStats_Move * pvInfo ));
+void EvalGraphSet P(( int first, int last, int current, ChessEngineStats_Move * pvInfo ));
 void MakeEngineOutputTitle P((void));
 
 #endif /* _BACKEND */

@@ -58,11 +58,11 @@
 ;
 ; Engines & adjudicatons in engine-engine games
 ;
--firstChessProgram fairymax
--secondChessProgram fairymax
+-firstChessEngine fairymax
+-secondChessEngine fairymax
 -niceEngines 0
 -polyglotDir ""
--adapterCommand 'polyglot -noini -ec "%fcp" -ed "%fd" -uci NalimovCache=%defaultCacheSizeEGTB'
+-adapterCommand 'polyglot -noini -ec "%fce" -ed "%fd" -uci NalimovCache=%defaultCacheSizeEGTB'
 -defaultPathEGTB "/egtb"
 -egtFormats ""
 -testClaims true

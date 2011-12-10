@@ -110,7 +110,7 @@ typedef void ButtonCallback(int n);
 typedef int OKCallback(int n);
 
 int values[MAX_OPTIONS];
-ChessProgramState *currentCps;
+ChessEngineState *currentCps;
 static Option *currentOption;
 static Boolean browserUp;
 ButtonCallback *comboCallback;
@@ -411,7 +411,7 @@ Option generalOptions[] = {
 void Pick(int n)
 {
 	VariantClass v = currentOption[n].value;
-	if(!appData.noChessProgram) {
+	if(!appData.noChessEngine) {
 	    char *name = VariantName(v), buf[MSG_SIZ];
 	    if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
 		/* [HGM] in protocol 2 we check if variant is suported by engine */
@@ -1090,7 +1090,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    else  { XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast; }
 	    if(option[i].max) { XtSetArg(args[j], XtNwidth, option[i].max);  j++; }
 	    if(option[i].textValue) { // special for buttons of New Variant dialog
-		XtSetArg(args[j], XtNsensitive, appData.noChessProgram || option[i].value < 0
+		XtSetArg(args[j], XtNsensitive, appData.noChessEngine || option[i].value < 0
 					 || strstr(first.variants, VariantName(option[i].value))); j++;
 		XtSetArg(args[j], XtNborderWidth, (gameInfo.variant == option[i].value)+1); j++;
 	    }
@@ -1331,7 +1331,7 @@ void MatchOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+   NamesToList(firstChessEngineNames, engineList, engineMnemonic);
    comboCallback = &AddToTourney;
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
@@ -1599,7 +1599,7 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
 }
 
 void
-SettingsPopUp(ChessProgramState *cps)
+SettingsPopUp(ChessEngineState *cps)
 {
    currentCps = cps;
    GenericPopUp(cps->option, _("Engine Settings"), 0);
@@ -1660,7 +1660,7 @@ void LoadEngineProc(w, event, prms, nprms)
    if(engineDir)    free(engineDir);    engineDir = strdup("");
    if(nickName)     free(nickName);     nickName = strdup("");
    if(params)       free(params);       params = strdup("");
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+   NamesToList(firstChessEngineNames, engineList, engineMnemonic);
    GenericPopUp(installOptions, _("Load engine"), 0);
 }
 

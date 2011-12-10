@@ -388,7 +388,7 @@
 		<param name="Local" value="html/12.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="chessProgram">
+		<param name="Keyword" value="chessEngine">
 		<param name="Name" value="Chess Engine Options">
 		<param name="Local" value="html/12.htm#cp">
 		</OBJECT>
@@ -748,7 +748,7 @@
 		<param name="Local" value="html/12.htm#fb">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="fcp">
+		<param name="Keyword" value="fce">
 		<param name="Name" value="Chess Engine Options">
 		<param name="Local" value="html/12.htm#fd">
 		</OBJECT>
@@ -783,14 +783,14 @@
 		<param name="Local" value="html/21.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="firstChessProgram">
+		<param name="Keyword" value="firstChessEngine">
 		<param name="Name" value="Chess Engine Options">
 		<param name="Local" value="html/12.htm#fd">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="firstChessProgramNames">
+		<param name="Keyword" value="firstChessEngineNames">
 		<param name="Name" value="User Interface Options">
-		<param name="Local" value="html/16.htm#firstchessprogramnames">
+		<param name="Local" value="html/16.htm#firstchessenginenames">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="firstDirectory">
@@ -1348,19 +1348,19 @@
 		<param name="Local" value="html/16.htm#wpc">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="Machine Black">
+		<param name="Keyword" value="Engine Black">
 		<param name="Name" value="Mode Menu">
-		<param name="Local" value="html/04.htm#machineblack">
+		<param name="Local" value="html/04.htm#engineblack">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="Machine Both">
+		<param name="Keyword" value="Engine Both">
 		<param name="Name" value="Mode Menu">
-		<param name="Local" value="html/04.htm#machine both">
+		<param name="Local" value="html/04.htm#engine both">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="Machine White">
+		<param name="Keyword" value="Engine White">
 		<param name="Name" value="Mode Menu">
-		<param name="Local" value="html/04.htm#machinewhite">
+		<param name="Local" value="html/04.htm#enginewhite">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Match">
@@ -1488,9 +1488,9 @@
 		<param name="Local" value="html/15.htm#debugfile">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="ncp">
+		<param name="Keyword" value="nce">
 		<param name="Name" value="Other Options">
-		<param name="Local" value="html/18.htm#ncp">
+		<param name="Local" value="html/18.htm#nce">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="New Game">
@@ -1513,9 +1513,9 @@
 		<param name="Local" value="html/12.htm#niceengines">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="noChessProgram">
+		<param name="Keyword" value="noChessEngine">
 		<param name="Name" value="Other Options">
-		<param name="Local" value="html/18.htm#ncp">
+		<param name="Local" value="html/18.htm#nce">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="noGUI">
@@ -1915,7 +1915,7 @@
 		<param name="Local" value="html/15.htm#spf">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="scp">
+		<param name="Keyword" value="sce">
 		<param name="Name" value="Chess Engine Options">
 		<param name="Local" value="html/12.htm#fd">
 		</OBJECT>
@@ -1942,14 +1942,14 @@
 		<param name="Local" value="html/12.htm#st">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="secondChessProgram">
+		<param name="Keyword" value="secondChessEngine">
 		<param name="Name" value="Chess Engine Options">
 		<param name="Local" value="html/12.htm#fd">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="secondChessProgramNames">
+		<param name="Keyword" value="secondChessEngineNames">
 		<param name="Name" value="User Interface Options">
-		<param name="Local" value="html/16.htm#secondchessprogramnames">
+		<param name="Local" value="html/16.htm#secondchessenginenames">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="secondDirectory">
@@ -2358,9 +2358,9 @@
 		<param name="Local" value="html/06.htm#truncategame">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="Two Machines">
+		<param name="Keyword" value="Two Engines">
 		<param name="Name" value="Mode Menu">
-		<param name="Local" value="html/04.htm#twomachines">
+		<param name="Local" value="html/04.htm#twoengines">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Type In Move">

@@ -65,9 +65,9 @@
 #define WRAP_INDENT 200
 
 /* Settable */
-#define FIRST_CHESS_PROGRAM	""
+#define FIRST_CHESS_ENGINE	""
 #define FIRST_DIRECTORY		"."
-#define SECOND_CHESS_PROGRAM	""
+#define SECOND_CHESS_ENGINE	""
 #define SECOND_DIRECTORY	"."
 
 #define CLOCK_FONT_TINY        "Arial:9.0 b"
@@ -251,13 +251,13 @@ M&essage (name),message,1,0\n\
 Pl&ay (name),play,1,1\n\
 "
 
-#define FCP_NAMES "\
+#define FCE_NAMES "\
 fmax /fd=Fairy-Max\n\
 GNUChess\n\
 \"GNUChes5 xboard\"\n\
 "
 
-#define SCP_NAMES "\
+#define SCE_NAMES "\
 fmax /sd=Fairy-Max\n\
 GNUChess\n\
 \"GNUChes5 xboard\"\n\

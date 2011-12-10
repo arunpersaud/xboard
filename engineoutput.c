@@ -236,14 +236,14 @@ static char GetEngineColor( int which )
     char result = ENGINE_COLOR_UNKNOWN;
 
     if( which == 0 || which == 1 ) {
-        ChessProgramState * cps;
+        ChessEngineState * cps;
 
         switch (gameMode) {
-        case MachinePlaysBlack:
+        case EnginePlaysBlack:
         case IcsPlayingBlack:
             result = ENGINE_COLOR_BLACK;
             break;
-        case MachinePlaysWhite:
+        case EnginePlaysWhite:
         case IcsPlayingWhite:
             result = ENGINE_COLOR_WHITE;
             break;
@@ -251,9 +251,9 @@ static char GetEngineColor( int which )
         case AnalyzeFile:
             result = WhiteOnMove(forwardMostMove) ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
             break;
-        case TwoMachinesPlay:
+        case TwoEnginesPlay:
             cps = (which == 0) ? &first : &second;
-            result = cps->twoMachinesColor[0];
+            result = cps->twoEnginesColor[0];
             result = result == 'w' ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
             break;
         default: ; // does not happen, but suppresses pedantic warnings
@@ -268,7 +268,7 @@ static char GetActiveEngineColor()
 {
     char result = ENGINE_COLOR_UNKNOWN;
 
-    if( gameMode == TwoMachinesPlay ) {
+    if( gameMode == TwoEnginesPlay ) {
         result = WhiteOnMove(forwardMostMove) ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
     }
 
@@ -281,15 +281,15 @@ static int IsEnginePondering( int which )
     int result = FALSE;
 
     switch (gameMode) {
-    case MachinePlaysBlack:
+    case EnginePlaysBlack:
     case IcsPlayingBlack:
         if( WhiteOnMove(forwardMostMove) ) result = TRUE;
         break;
-    case MachinePlaysWhite:
+    case EnginePlaysWhite:
     case IcsPlayingWhite:
         if( ! WhiteOnMove(forwardMostMove) ) result = TRUE;
         break;
-    case TwoMachinesPlay:
+    case TwoEnginesPlay:
         if( GetActiveEngineColor() != ENGINE_COLOR_UNKNOWN ) {
             if( GetEngineColor( which ) != GetActiveEngineColor() ) result = TRUE;
         }
@@ -321,15 +321,15 @@ static void VerifyDisplayMode()
 	if(!appData.icsEngineAnalyze) return;
     case AnalyzeMode:
     case AnalyzeFile:
-    case MachinePlaysWhite:
-    case MachinePlaysBlack:
+    case EnginePlaysWhite:
+    case EnginePlaysBlack:
         mode = 0;
         break;
     case IcsPlayingWhite:
     case IcsPlayingBlack:
         mode = appData.zippyPlay && opponentKibitzes; // [HGM] kibitz
         break;
-    case TwoMachinesPlay:
+    case TwoEnginesPlay:
         mode = 1;
         break;
     default:
@@ -433,7 +433,7 @@ static void UpdateControls( EngineOutputData * ed )
 
         SetEngineState( ed->which, STATE_PONDERING, buf );
     }
-    else if( gameMode == TwoMachinesPlay ) {
+    else if( gameMode == TwoEnginesPlay ) {
         SetEngineState( ed->which, STATE_THINKING, "" );
     }
     else if( gameMode == AnalyzeMode || gameMode == AnalyzeFile

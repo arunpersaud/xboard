@@ -160,7 +160,7 @@ int pclose(FILE *);
 #define WHITE_STRING		"white\ngo\n"
 #define BLACK_STRING		"black\ngo\n"
 #define COMPUTER_STRING         "computer\n"
-#define REUSE_CHESS_PROGRAMS    1
+#define REUSE_CHESS_ENGINES     1
 #define WHITE_PIECE_COLOR	"#FFFFCC"
 #define BLACK_PIECE_COLOR	"#202020"
 #define LIGHT_SQUARE_COLOR	"#C8C365"
@@ -216,8 +216,8 @@ int pclose(FILE *);
 #define ZIPPY_REPLAY_TIMEOUT 120
 
 typedef enum {
-    BeginningOfGame, MachinePlaysWhite, MachinePlaysBlack,
-    AnalyzeMode, AnalyzeFile, TwoMachinesPlay,
+    BeginningOfGame, EnginePlaysWhite, EnginePlaysBlack,
+    AnalyzeMode, AnalyzeFile, TwoEnginesPlay,
     EditGame, PlayFromGameFile, EndOfGame, EditPosition, Training,
     IcsIdle, IcsPlayingWhite, IcsPlayingBlack, IcsObserving,
     IcsExamining
@@ -397,11 +397,11 @@ typedef struct {
     float timeIncrement;
     char *engInitString[ENGINES];
     char *computerString[ENGINES];
-    char *chessProgram[ENGINES];
+    char *chessEngine[ENGINES];
     char *directory[ENGINES];
     char *pgnName[ENGINES];
     Boolean firstPlaysBlack;
-    Boolean noChessProgram;
+    Boolean noChessEngine;
     char *host[ENGINES];
     char *bitmapDirectory;
     char *soundDirectory;
@@ -547,7 +547,7 @@ typedef struct {
     int fontForeColorBlack;
     int fontPieceSize; /* Size of font relative to square (percentage) */
     int overrideLineGap; /* If >= 0 overrides the lineGap value of the board size properties */
-    int adjudicateLossThreshold; /* Adjudicate a two-machine game if both engines agree the score is below this for 6 plies */
+    int adjudicateLossThreshold; /* Adjudicate a two-engine game if both engines agree the score is below this for 6 plies */
     int delayBeforeQuit;
     int delayAfterQuit;
     char * nameOfDebugFile;
@@ -730,13 +730,13 @@ typedef struct {
     int holdingsWidth; /* number of files left and right of board, 0 or 2   */
 } GameInfo;
 
-/* [AS] Search stats from chessprogram, for the played move */
+/* [AS] Search stats from chessengine, for the played move */
 // [HGM] moved here from backend.h because it occurs in declarations of front-end functions
 typedef struct {
     int score;  /* Centipawns */
     int depth;  /* Plies */
     int time;   /* Milliseconds */
-} ChessProgramStats_Move;
+} ChessEngineStats_Move;
 
 /* [AS] Layout management */
 typedef struct {
@@ -769,8 +769,8 @@ extern char chatPartner[MAX_CHAT][MSG_SIZ];
 #define secondInitString      engInitString[1]
 #define firstComputerString   computerString[0]
 #define secondComputerString  computerString[1]
-#define firstChessProgram     chessProgram[0]
-#define secondChessProgram    chessProgram[1]
+#define firstChessEngine      chessEngine[0]
+#define secondChessEngine     chessEngine[1]
 #define firstDirectory        directory[0]
 #define secondDirectory       directory[1]
 #define firstProtocolVersion  protocolVersion[0]

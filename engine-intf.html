@@ -149,7 +149,7 @@ While your engine is running under xboard/WinBoard, you can send a
 command directly to the engine by pressing Shift+1 (xboard) or Alt+1
 (WinBoard 4.0.3 and later).  This brings up a dialog that you can type
 your command into.  Press Shift+2 (Alt+2) instead to send to the
-second chess engine in Two Machines mode.  On WinBoard 4.0.2 and earlier,
+second chess engine in Two Engines mode.  On WinBoard 4.0.2 and earlier,
 Ctrl+Alt is used in place of Alt; this had to be changed due to a conflict
 with typing the @-sign on some European keyboards.
 </p>
@@ -1553,7 +1553,7 @@ Examples:
 
 <p>
 xboard relays the result to the user, the ICS, the other engine in Two
-Machines mode, and the PGN save file as required.
+Engines mode, and the PGN save file as required.
 <span class="version43">Note that "definitey over" above means that sending this command 
 will be taken by WinBoard as an unconditional refusal of the engine to play on,
 which might cause you to forfeit if the game was in fact not over.
@@ -1586,7 +1586,7 @@ will have to account for this uncertainty.
 Alternatively, it can use the "RESULT {comment}" command if the string
 "resign" is included in the comment; for example "0-1 {White
 resigns}".  xboard relays the resignation to the user, the ICS, the
-other engine in Two Machines mode, and the PGN save file as required.
+other engine in Two Engines mode, and the PGN save file as required.
 <span class="version44">Note that many interfaces work more smoothly if you resign <em>before</em>
 you move.</span>
 </dd>
@@ -1595,8 +1595,8 @@ you move.</span>
 <dd>If your engine wants to offer a draw by agreement (as opposed to
 claiming a draw by rule), it can send the command "offer draw".
 xboard relays the offer to the user, the ICS, the other engine in Two
-Machines mode, and the PGN save file as required.  In Machine White,
-Machine Black, or Two Machines mode, the offer is considered valid
+Engines mode, and the PGN save file as required.  In Engine White,
+Engine Black, or Two Engines mode, the offer is considered valid
 until your engine has made two more moves.
 <span class="version43">This command must also be used to accept a draw offer.
 Do not use the 1/2-1/2 command for that, as the offer might be no longer valid,
@@ -1613,10 +1613,10 @@ just before WinBoard relays this move to the opponent.
 <dt class="version1">tellopponent MESSAGE</dt>
 <dd class="version1">
 This command lets the engine give a message to its opponent,
-independent of whether the opponent is a user on the local machine or
+independent of whether the opponent is a user on the local computer or
 a remote ICS user (Zippy mode).  MESSAGE consists of any characters,
 including whitespace, to the end of the line.  When the engine is
-playing against a user on the local machine, xboard pops up an
+playing against a user on the local computer, xboard pops up an
 information dialog containing the message.  When the engine is playing
 against an opponent on the ICS (Zippy mode), xboard sends "say
 MESSAGE\n" to the ICS.
@@ -1626,7 +1626,7 @@ MESSAGE\n" to the ICS.
 <dd class="version1">This command lets the engine give a message to people watching the
 game other than the engine's opponent.  MESSAGE consists of any
 characters, including whitespace, to the end of the line.  When the
-engine is playing against a user on the local machine, this command
+engine is playing against a user on the local computer, this command
 does nothing.  When the engine is playing against an opponent on the
 ICS (Zippy mode), xboard sends "whisper MESSAGE\n" to the ICS.
 </dd>
@@ -1634,10 +1634,10 @@ ICS (Zippy mode), xboard sends "whisper MESSAGE\n" to the ICS.
 <dt class="version1">tellall MESSAGE</dt>
 <dd class="version1">This command lets the engine give a message to its opponent and
 other people watching the game, 
-independent of whether the opponent is a user on the local machine or
+independent of whether the opponent is a user on the local computer or
 a remote ICS user (Zippy mode).  MESSAGE consists of any characters,
 including whitespace, to the end of the line.  When the engine is
-playing against a user on the local machine, xboard pops up an
+playing against a user on the local computer, xboard pops up an
 information dialog containing the message.  When the engine is playing
 against an opponent on the ICS (Zippy mode), xboard sends "kibitz
 MESSAGE\n" to the ICS.
@@ -2185,7 +2185,7 @@ feature.
 <div class="version1">
 <p>
 In support of the -firstHost/-secondHost features, which allow a chess
-engine to be run on another machine using the rsh protocol, xboard recognizes
+engine to be run on another computer using the rsh protocol, xboard recognizes
 error messages that are likely to come from rsh as fatal errors.  The following
 messages are currently recognized:
 </p>

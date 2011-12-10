@@ -64,7 +64,7 @@
 
 #define IDM_PossibleAttackMove          1800
 #define IDM_PossibleAttacked            1801
-#define IDM_SayMachineMove              1802
+#define IDM_SayEngineMove              1802
 #define IDM_ReadRow                     1803
 #define IDM_ReadColumn                  1804
 #define IDM_SayCurrentPos               1805
@@ -190,7 +190,7 @@ typedef struct { char *name; int code; } MenuItemDesc;
 MenuItemDesc menuItemJAWS[] = {
 {"Say Clock &Time\tAlt+T",      IDM_SayClockTime },
 {"-", 0 },
-{"Say Last &Move\tAlt+M",       IDM_SayMachineMove },
+{"Say Last &Move\tAlt+M",       IDM_SayEngineMove },
 {"Say W&ho's Turn\tAlt+X",      IDM_SayWhosTurn },
 {"-", 0 },
 {"Say Complete &Position\tAlt+P",IDM_SayAllBoard },
@@ -210,7 +210,7 @@ MenuItemDesc menuItemJAWS[] = {
 
 ACCEL acceleratorsJAWS[] = {
 {FVIRTKEY|FALT, 'T', IDM_SayClockTime },
-{FVIRTKEY|FALT, 'M', IDM_SayMachineMove },
+{FVIRTKEY|FALT, 'M', IDM_SayEngineMove },
 {FVIRTKEY|FALT, 'X', IDM_SayWhosTurn },
 {FVIRTKEY|FALT, 'P', IDM_SayAllBoard },
 {FVIRTKEY|FALT, 'W', IDM_SayWhitePieces },
@@ -914,11 +914,11 @@ SayAllBoard()
 VOID
 SayWhosTurn()
 {
-	if(gameMode == MachinePlaysBlack || gameMode == IcsPlayingWhite) {
+	if(gameMode == EnginePlaysBlack || gameMode == IcsPlayingWhite) {
 		if(WhiteOnMove(currentMove))
 			SayString("It is your turn", FALSE);
 		else	SayString("It is your opponents turn", FALSE);
-	} else if(gameMode == MachinePlaysWhite || gameMode == IcsPlayingBlack) {
+	} else if(gameMode == EnginePlaysWhite || gameMode == IcsPlayingBlack) {
 		if(WhiteOnMove(currentMove))
 			SayString("It is your opponents turn", FALSE);
 		else	SayString("It is your turn", FALSE);
@@ -933,7 +933,7 @@ SayWhosTurn()
 extern char *commentList[];
 
 VOID
-SayMachineMove(int evenIfDuplicate)
+SayEngineMove(int evenIfDuplicate)
 {
 	int len, xPos, yPos, moveNr, secondSpace = 0, castle = 0, n;
 	ChessSquare currentpiece;
@@ -963,11 +963,11 @@ SayMachineMove(int evenIfDuplicate)
 			if(sscanf(messageText+len+1, "%d]%c%f", &depth, &c, &score) > 1) {
 			    if(c == ' ') { // if not explicitly specified, figure out source of thinking output
 				switch(gameMode) {
-				  case MachinePlaysWhite:
+				  case EnginePlaysWhite:
 				  case IcsPlayingWhite:
 				    c = 'W'; break;
 				  case IcsPlayingBlack:
-				  case MachinePlaysBlack:
+				  case EnginePlaysBlack:
 				    c = 'B';
 				  default:
 				    break;
@@ -1253,7 +1253,7 @@ NiceTime(int x)
 		    lastChar = wParam; lastTime = time;\
 		    c = wParam;\
 \
-		    if(gameMode == IcsPlayingWhite || gameMode == MachinePlaysBlack) mine = !mine;\
+		    if(gameMode == IcsPlayingWhite || gameMode == EnginePlaysBlack) mine = !mine;\
 \
 		    if(ToLower(c) == 'x') {\
 			SayPieces(mine ? WhitePlay : BlackPlay);\
@@ -1313,9 +1313,9 @@ NiceTime(int x)
 			SayAllBoard();\
 			break;\
 \
-		case IDM_SayMachineMove:  /* Say the last move made */\
+		case IDM_SayEngineMove:  /* Say the last move made */\
 			timeflag = 1;\
-			SayMachineMove(1);\
+			SayEngineMove(1);\
 			break;\
 \
 		case IDM_SayUpperDiagnols:  /* Says the diagnol positions above you */\
@@ -1395,7 +1395,7 @@ NiceTime(int x)
 
 #define SAY(S) SayString((S), TRUE)
 
-#define SAYMACHINEMOVE() SayMachineMove(0)
+#define SAYENGINEMOVE() SayEngineMove(0)
 
 // After inclusion of this file somewhere early in winboard.c, the remaining part of the patch
 // is scattered over winboard.c for actually calling the routines.

@@ -46,7 +46,7 @@
 #include "evalgraph.h"
 
 /* Module globals */
-ChessProgramStats_Move * currPvInfo;
+ChessEngineStats_Move * currPvInfo;
 int currFirst = 0;
 int currLast = 0;
 int currCurrent = -1;

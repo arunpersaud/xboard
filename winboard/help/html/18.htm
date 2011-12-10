@@ -13,7 +13,7 @@
 
 
 
-<P><B><A NAME="ncp"></A>/ncp</B> or <B>/xncp</B>,<B> </B>or<B> <A NAME="nochessprogram"></A>/noChessProgram<I> true|false</I></B></P>
+<P><B><A NAME="nce"></A>/nce</B> or <B>/xnce</B>,<B> </B>or<B> <A NAME="nochessengine"></A>/noChessEngine<I> true|false</I></B></P>
 
 <P>If this option is True, WinBoard acts as a passive chessboard; it does not start a chess program or connect to ICS. This option also sets clockMode to False. Default: False.</P>
 
@@ -21,7 +21,7 @@
 
 <P><B><A NAME="mode"></A>/mode</B> or <B><A NAME="initialmode"></A>/initialMode <I>modename</I></B></P>
 
-<P>If this option is given, WinBoard selects the given <I>modename</I> from the <A HREF="04.htm">Mode menu</A> after starting and (if applicable) processing the <A HREF="15.htm#loadgamefile">loadGameFile</A> or <A HREF="15.htm#loadpositionfile">loadPositionFile</A> option. Default: "". Other supported values are TwoMachines, AnalyzeFile, Analysis, MachineWhite, MachineBlack, EditGame, EditPosition, and Training.</P>
+<P>If this option is given, WinBoard selects the given <I>modename</I> from the <A HREF="04.htm">Mode menu</A> after starting and (if applicable) processing the <A HREF="15.htm#loadgamefile">loadGameFile</A> or <A HREF="15.htm#loadpositionfile">loadPositionFile</A> option. Default: "". Other supported values are TwoEngines, AnalyzeFile, Analysis, EngineWhite, EngineBlack, EditGame, EditPosition, and Training.</P>
 
 
 
@@ -95,7 +95,7 @@ The winning/drawing conditions in crazyhouse (off-board interposition on mate) i
 <font color="#3333ff">but losers, suicide, giveaway, atomic, and 3check should be OK.</font> 
 In crazyhouse, <font color="#3333ff">WinBoard now does keep track of off-board pieces.
 In shatranj it does implement the baring rule when mate detection is switched on.
-In xiangqi it does implement the rules for perpetual checking and chasing (in Two-Machines mode).</font></P>
+In xiangqi it does implement the rules for perpetual checking and chasing (in Two-Engines mode).</font></P>
 
 
 

@@ -49,7 +49,7 @@ Report bugs and problems with XBoard and WinBoard to
 to start a typescript, run XBoard with the -debug command line option,
 and include the typescript output in your message.  With WinBoard,
 please use the /debug command line option and include the contents of
-the file WinBoard.debug.  Also tell us what kind of machine and what
+the file WinBoard.debug.  Also tell us what kind of computer and what
 operating system version you are using.  On Unix, the command "uname
 -a" will tell you this.  On Windows, right-click on My Computer and
 select Properties.

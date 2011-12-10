@@ -31,7 +31,7 @@
 #include "backend.h"
 Boolean GetArgValue(char *a);				
 
-void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
+void InitEngineUCI( const char * iniDir, ChessEngineState * cps )
 {   // replace engine command line by adapter command with expanded meta-symbols
     if( cps->isUCI ) {
         char *p, *q;
@@ -44,7 +44,7 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
           if(*p == '\\') p++; else
           if(*p == '%') { // substitute marker
             char argName[MSG_SIZ], buf[MSG_SIZ], *s = buf;
-            if(*++p == '%') { // second %, expand as f or s in option name (e.g. %%cp -> fcp)
+            if(*++p == '%') { // second %, expand as f or s in option name (e.g. %%cp -> fce)
               *s++ = cps == &first ? 'f' : 's';
               p++;
             }

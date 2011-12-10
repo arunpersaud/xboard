@@ -11,9 +11,9 @@
 #define IDM_SavePosition                105
 #define IDM_EditPosition                106
 #define IDM_FlipView                    107
-#define IDM_MachineWhite                108
-#define IDM_MachineBlack                109
-#define IDM_TwoMachines                 110
+#define IDM_EngineWhite                 108
+#define IDM_EngineBlack                 109
+#define IDM_TwoEngines                  110
 #define IDM_EditGame                    111
 #define IDM_Forward                     112
 #define IDM_Backward                    113
@@ -68,7 +68,7 @@
 #define IDM_PastePosition               183
 #define IDM_NewVariant                  184  
 #define IDM_TypeInName                  185  
-#define IDM_MachineBoth                 186  
+#define IDM_EngineBoth                  186  
 #define IDM_MuteSounds                  187
 #define IDM_Match                       188
 #define OPT_TCtext1                     202

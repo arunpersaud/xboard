@@ -24,6 +24,6 @@
 #ifndef _XEVALGRAPH_H
 #define _XEVALGRAPH_H 1
 
-void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
+void EvalGraphSet P(( int first, int last, int current, ChessEngineStats_Move * pvInfo ));
 
 #endif

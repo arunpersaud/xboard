@@ -382,13 +382,13 @@ Pl&amp;ay (name),play,1,1</CODE></PRE>
 
 
 
-<P><B><A NAME="firstchessprogramnames"></A>/firstChessProgramNames={<I>names</I>} </B>or <B>/firstChessProgramNames="@<I>filename</I>"</B></P>
+<P><B><A NAME="firstchessenginenames"></A>/firstChessEngineNames={<I>names</I>} </B>or <B>/firstChessEngineNames="@<I>filename</I>"</B></P>
 
-<P>This option lets you customize the first drop-down list of chess engine names that appears in the WinBoard startup dialog. It consists of a list of strings, one per line. If the option value starts with an @ sign, it is the name of a file that contains the strings. When you select a string from the drop-down list, WinBoard prepends the text ”/cp /firstChessProgram=” and adds the result to the command-line options. </P>
+<P>This option lets you customize the first drop-down list of chess engine names that appears in the WinBoard startup dialog. It consists of a list of strings, one per line. If the option value starts with an @ sign, it is the name of a file that contains the strings. When you select a string from the drop-down list, WinBoard prepends the text ”/cp /firstChessEngine=” and adds the result to the command-line options. </P>
 
 <P>There is no graphical user interface to set this option. To change it, edit your <A HREF="19.htm#settings">settings</A> file with a plain text editor such as Notepad. Example:</P>
 
-<PRE><CODE>/firstChessProgramNames={GNUChess
+<PRE><CODE>/firstChessEngineNames={GNUChess
 WCrafty-15_11 /fd="C:\Program Files\Crafty"
 ArasanX /fd="C:\Program Files\Arasan\Arasan 4.1"
 "EXchess xb" /fd=C:\EXchess
@@ -397,13 +397,13 @@ Comet-WB /fd=C:\Comet
 
 
 
-<P><B><A NAME="secondchessprogramnames"></A>/secondChessProgramNames={<I>names</I>}</B> or <B>/secondChessProgramNames="@<I>filename</I>"</B></P>
+<P><B><A NAME="secondchessenginenames"></A>/secondChessEngineNames={<I>names</I>}</B> or <B>/secondChessEngineNames="@<I>filename</I>"</B></P>
 
-<P>This option lets you customize the second drop-down list of chess engine names that appears in the WinBoard startup dialog. It consists of a list of strings, one per line. If the option value starts with an @ sign, it is the name of a file that contains the strings. When you select a string from the drop-down list, WinBoard prepends the text ”/cp /secondChessProgram=” and adds the result to the command-line options.</P>
+<P>This option lets you customize the second drop-down list of chess engine names that appears in the WinBoard startup dialog. It consists of a list of strings, one per line. If the option value starts with an @ sign, it is the name of a file that contains the strings. When you select a string from the drop-down list, WinBoard prepends the text ”/cp /secondChessEngine=” and adds the result to the command-line options.</P>
 
 <P>There is no graphical user interface to set this option. To change it, edit your <A HREF="19.htm#settings">settings</A> file with a plain text editor such as Notepad. Example:</P>
 
-<P><CODE>/secondChessProgramNames={GNUChess<BR>
+<P><CODE>/secondChessEngineNames={GNUChess<BR>
 WCrafty-15_11 /sd="C:\\Program Files\\Crafty\"<BR>
 ArasanX /sd="C:\Program Files\Arasan\Arasan 4.1"<BR>
 "EXchess xb" /sd=C:\EXchess<BR>

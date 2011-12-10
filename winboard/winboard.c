@@ -92,7 +92,7 @@
 #include "help.h"
 #include "wsnap.h"
 
-//void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
+//void InitEngineUCI( const char * iniDir, ChessEngineState * cps );
 
   int myrandom(void);
   void mysrandom(unsigned int seed);
@@ -159,7 +159,7 @@ char installDir[MSG_SIZ];
 int errorExitStatus;
 
 BoardSize boardSize;
-Boolean chessProgram;
+Boolean chessEngine;
 //static int boardX, boardY;
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int squareSize, lineGap, minorSize;
@@ -175,8 +175,8 @@ static int delayedTimerEvent = 0;
 static int buttonCount = 2;
 char *icsTextMenuString;
 char *icsNames;
-char *firstChessProgramNames;
-char *secondChessProgramNames;
+char *firstChessEngineNames;
+char *secondChessEngineNames;
 
 #define PALETTESIZE 256
 
@@ -744,7 +744,7 @@ void ThawUI()
 #define JAWS_ACCEL
 #define JAWS_COPYRIGHT
 #define JAWS_DELETE(X) X
-#define SAYMACHINEMOVE()
+#define SAYENGINEMOVE()
 #define SAY(X)
 #endif
 
@@ -966,7 +966,7 @@ EnsureOnScreen(int *x, int *y, int minX, int minY)
 }
 
 VOID
-LoadLogo(ChessProgramState *cps, int n, Boolean ics)
+LoadLogo(ChessEngineState *cps, int n, Boolean ics)
 {
   char buf[MSG_SIZ], dir[MSG_SIZ];
   GetCurrentDirectory(MSG_SIZ, dir);
@@ -3435,16 +3435,16 @@ DisplayLogos()
 		whiteLogo = second.programLogo; // ICS logo
 		blackLogo = appData.zippyPlay ? first.programLogo : userLogo;
 		break;
-	    case TwoMachinesPlay:
-	        if(first.twoMachinesColor[0] == 'b') {
+	    case TwoEnginesPlay:
+	        if(first.twoEnginesColor[0] == 'b') {
 		    whiteLogo = second.programLogo;
 		    blackLogo = first.programLogo;
 		}
 		break;
-	    case MachinePlaysWhite:
+	    case EnginePlaysWhite:
 		blackLogo = userLogo;
 		break;
-	    case MachinePlaysBlack:
+	    case EnginePlaysBlack:
 		whiteLogo = userLogo;
 		blackLogo = first.programLogo;
 	  }
@@ -4840,12 +4840,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       ExitEvent(0);
       break;
 
-    case IDM_MachineWhite:
-      MachineWhiteEvent();
+    case IDM_EngineWhite:
+      EngineWhiteEvent();
       /*
        * refresh the tags dialog only if it's visible
        */
-      if (gameMode == MachinePlaysWhite && IsWindowVisible(editTagsDialog)) {
+      if (gameMode == EnginePlaysWhite && IsWindowVisible(editTagsDialog)) {
 	  char *tags;
 	  tags = PGNTags(&gameInfo);
 	  TagsPopUp(tags, CmailMsg());
@@ -4854,12 +4854,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       SAY("computer starts playing white");
       break;
 
-    case IDM_MachineBlack:
-      MachineBlackEvent();
+    case IDM_EngineBlack:
+      EngineBlackEvent();
       /*
        * refresh the tags dialog only if it's visible
        */
-      if (gameMode == MachinePlaysBlack && IsWindowVisible(editTagsDialog)) {
+      if (gameMode == EnginePlaysBlack && IsWindowVisible(editTagsDialog)) {
 	  char *tags;
 	  tags = PGNTags(&gameInfo);
 	  TagsPopUp(tags, CmailMsg());
@@ -4872,12 +4872,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       MatchEvent(2); // distinguish from command-line-triggered case (matchMode=1)
       break;
 
-    case IDM_TwoMachines:
-      TwoMachinesEvent();
+    case IDM_TwoEngines:
+      TwoEnginesEvent();
       /*
        * refresh the tags dialog only if it's visible
        */
-      if (gameMode == TwoMachinesPlay && IsWindowVisible(editTagsDialog)) {
+      if (gameMode == TwoEnginesPlay && IsWindowVisible(editTagsDialog)) {
 	  char *tags;
 	  tags = PGNTags(&gameInfo);
 	  TagsPopUp(tags, CmailMsg());
@@ -4960,12 +4960,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_EditProgs1:
-      EditTagsPopUp(firstChessProgramNames, &firstChessProgramNames);
+      EditTagsPopUp(firstChessEngineNames, &firstChessEngineNames);
       break;
 
     case IDM_EditProgs2:
      LoadEnginePopUp(hwndMain);
-//      EditTagsPopUp(secondChessProgramNames, &secondChessProgramNames);
+//      EditTagsPopUp(secondChessEngineNames, &secondChessEngineNames);
       break;
 
     case IDM_EditServers:
@@ -6105,11 +6105,11 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     Translate(hDlg, DLG_Startup);
     /* Initialize the dialog items */
     InitEngineBox(hDlg, GetDlgItem(hDlg, OPT_ChessEngineName),
-	          appData.firstChessProgram, "fd", appData.firstDirectory,
-		  firstChessProgramNames);
+	          appData.firstChessEngine, "fd", appData.firstDirectory,
+		  firstChessEngineNames);
     InitEngineBox(hDlg, GetDlgItem(hDlg, OPT_SecondChessEngineName),
-	          appData.secondChessProgram, singleList ? "fd" : "sd", appData.secondDirectory,
-		  singleList ? firstChessProgramNames : secondChessProgramNames); //[HGM] single: use first list in second combo
+	          appData.secondChessEngine, singleList ? "fd" : "sd", appData.secondDirectory,
+		  singleList ? firstChessEngineNames : secondChessEngineNames); //[HGM] single: use first list in second combo
     hwndCombo = GetDlgItem(hDlg, OPT_ChessServerName);
     InitComboStringsFromOption(hwndCombo, icsNames);    
       snprintf(buf, MSG_SIZ, "%s /icsport=%s", appData.icsHost, appData.icsPort);
@@ -6128,7 +6128,7 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     if (appData.icsActive) {
       CheckDlgButton(hDlg, OPT_ChessServer, BST_CHECKED);
     }
-    else if (appData.noChessProgram) {
+    else if (appData.noChessEngine) {
       CheckDlgButton(hDlg, OPT_View, BST_CHECKED);
     }
     else {
@@ -6142,17 +6142,17 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     switch (LOWORD(wParam)) {
     case IDOK:
       if (IsDlgButtonChecked(hDlg, OPT_ChessEngine)) {
-        safeStrCpy(buf, "/fcp=", sizeof(buf)/sizeof(buf[0]) );
+        safeStrCpy(buf, "/fce=", sizeof(buf)/sizeof(buf[0]) );
 	GetDlgItemText(hDlg, OPT_ChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
         p = buf;
 	ParseArgs(StringGet, &p);
-	safeStrCpy(buf, singleList ? "/fcp=" : "/scp=", sizeof(buf)/sizeof(buf[0]) );
+	safeStrCpy(buf, singleList ? "/fce=" : "/sce=", sizeof(buf)/sizeof(buf[0]) );
 	GetDlgItemText(hDlg, OPT_SecondChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
         p = buf;
 	SwapEngines(singleList); // temporarily swap first and second, to load a second 'first', ...
 	ParseArgs(StringGet, &p);
 	SwapEngines(singleList); // ... and then make it 'second'
-	appData.noChessProgram = FALSE;
+	appData.noChessEngine = FALSE;
 	appData.icsActive = FALSE;
       } else if (IsDlgButtonChecked(hDlg, OPT_ChessServer)) {
         safeStrCpy(buf, "/ics /icshost=", sizeof(buf)/sizeof(buf[0]) );
@@ -6160,13 +6160,13 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         p = buf;
 	ParseArgs(StringGet, &p);
 	if (appData.zippyPlay) {
-	  safeStrCpy(buf, "/fcp=", sizeof(buf)/sizeof(buf[0]) );
+	  safeStrCpy(buf, "/fce=", sizeof(buf)/sizeof(buf[0]) );
   	  GetDlgItemText(hDlg, OPT_ChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
 	  p = buf;
 	  ParseArgs(StringGet, &p);
 	}
       } else if (IsDlgButtonChecked(hDlg, OPT_View)) {
-	appData.noChessProgram = TRUE;
+	appData.noChessEngine = TRUE;
 	appData.icsActive = FALSE;
       } else {
 	MessageBox(hDlg, _("Choose an option, or cancel to exit"),
@@ -6518,7 +6518,7 @@ TypeInNameDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.userName = strdup(move);
       SetUserLogo();
       SetGameInfo();
-      if(gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack) {
+      if(gameMode == EnginePlaysWhite || gameMode == EnginePlaysBlack) {
 	snprintf(move, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
 	DisplayTitle(move);
       }
@@ -7788,11 +7788,11 @@ Enables gnuEnables[] = {
   { IDM_Annotate, MF_BYCOMMAND|MF_GRAYED },
   { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
 
-  // Needed to switch from ncp to GNU mode on Engine Load
+  // Needed to switch from nce to GNU mode on Engine Load
   { ACTION_POS, MF_BYPOSITION|MF_ENABLED },
-  { IDM_MachineWhite, MF_BYCOMMAND|MF_ENABLED },
-  { IDM_MachineBlack, MF_BYCOMMAND|MF_ENABLED },
-  { IDM_TwoMachines, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_EngineWhite, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_EngineBlack, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_TwoEngines, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Match, MF_BYCOMMAND|MF_ENABLED },
   { IDM_AnalysisMode, MF_BYCOMMAND|MF_ENABLED },
   { IDM_AnalyzeFile, MF_BYCOMMAND|MF_ENABLED },
@@ -7809,11 +7809,11 @@ Enables gnuEnables[] = {
 Enables icsEnables[] = {
   { IDM_MailMove, MF_BYCOMMAND|MF_GRAYED },
   { IDM_ReloadCMailMsg, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EngineWhite, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EngineBlack, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_TwoEngines, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Match, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_MachineBoth, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EngineBoth, MF_BYCOMMAND|MF_GRAYED },
   { IDM_AnalysisMode, MF_BYCOMMAND|MF_ENABLED },
   { IDM_AnalyzeFile, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TimeControl, MF_BYCOMMAND|MF_GRAYED },
@@ -7839,12 +7839,12 @@ Enables zippyEnables[] = {
 };
 #endif
 
-Enables ncpEnables[] = {
+Enables nceEnables[] = {
   { IDM_MailMove, MF_BYCOMMAND|MF_GRAYED },
   { IDM_ReloadCMailMsg, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EngineWhite, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EngineBlack, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_TwoEngines, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Match, MF_BYCOMMAND|MF_GRAYED },
   { IDM_AnalysisMode, MF_BYCOMMAND|MF_GRAYED },
   { IDM_AnalyzeFile, MF_BYCOMMAND|MF_GRAYED },
@@ -7857,7 +7857,7 @@ Enables ncpEnables[] = {
   { IDM_TimeControl, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Hint, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Book, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_MachineBoth, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EngineBoth, MF_BYCOMMAND|MF_GRAYED },
   { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },
@@ -7891,7 +7891,7 @@ Enables trainingOffEnables[] = {
   { -1, -1 }
 };
 
-/* These modify either ncpEnables or gnuEnables */
+/* These modify either nceEnables or gnuEnables */
 Enables cmailEnables[] = {
   { IDM_MailMove, MF_BYCOMMAND|MF_ENABLED },
   { IDM_ReloadCMailMsg, MF_BYCOMMAND|MF_ENABLED },
@@ -7903,7 +7903,7 @@ Enables cmailEnables[] = {
   { -1, -1 }
 };
 
-Enables machineThinkingEnables[] = {
+Enables engineThinkingEnables[] = {
   { IDM_LoadGame, MF_BYCOMMAND|MF_GRAYED },
   { IDM_LoadNextGame, MF_BYCOMMAND|MF_GRAYED },
   { IDM_LoadPrevGame, MF_BYCOMMAND|MF_GRAYED },
@@ -7914,9 +7914,9 @@ Enables machineThinkingEnables[] = {
   { IDM_LoadPrevPosition, MF_BYCOMMAND|MF_GRAYED },
   { IDM_ReloadPosition, MF_BYCOMMAND|MF_GRAYED },
   { IDM_PastePosition, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EngineWhite, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EngineBlack, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_TwoEngines, MF_BYCOMMAND|MF_GRAYED },
 //  { IDM_Match, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TypeInMove, MF_BYCOMMAND|MF_GRAYED },
   { IDM_RetractMove, MF_BYCOMMAND|MF_GRAYED },
@@ -7934,9 +7934,9 @@ Enables userThinkingEnables[] = {
   { IDM_LoadPrevPosition, MF_BYCOMMAND|MF_ENABLED },
   { IDM_ReloadPosition, MF_BYCOMMAND|MF_ENABLED },
   { IDM_PastePosition, MF_BYCOMMAND|MF_ENABLED },
-  { IDM_MachineWhite, MF_BYCOMMAND|MF_ENABLED },
-  { IDM_MachineBlack, MF_BYCOMMAND|MF_ENABLED },
-  { IDM_TwoMachines, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_EngineWhite, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_EngineBlack, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_TwoEngines, MF_BYCOMMAND|MF_ENABLED },
 //  { IDM_Match, MF_BYCOMMAND|MF_ENABLED },
   { IDM_TypeInMove, MF_BYCOMMAND|MF_ENABLED },
   { IDM_RetractMove, MF_BYCOMMAND|MF_ENABLED },
@@ -7973,19 +7973,19 @@ ModeHighlight()
   case BeginningOfGame:
     if (appData.icsActive)
       nowChecked = IDM_IcsClient;
-    else if (appData.noChessProgram)
+    else if (appData.noChessEngine)
       nowChecked = IDM_EditGame;
     else
-      nowChecked = IDM_MachineBlack;
+      nowChecked = IDM_EngineBlack;
     break;
-  case MachinePlaysBlack:
-    nowChecked = IDM_MachineBlack;
+  case EnginePlaysBlack:
+    nowChecked = IDM_EngineBlack;
     break;
-  case MachinePlaysWhite:
-    nowChecked = IDM_MachineWhite;
+  case EnginePlaysWhite:
+    nowChecked = IDM_EngineWhite;
     break;
-  case TwoMachinesPlay:
-    nowChecked = IDM_TwoMachines;
+  case TwoEnginesPlay:
+    nowChecked = IDM_TwoEngines;
     break;
   case AnalyzeMode:
     nowChecked = IDM_AnalysisMode;
@@ -8051,7 +8051,7 @@ SetICSMode()
 #if ZIPPY
   if (appData.zippyPlay) {
     SetMenuEnables(hmenu, zippyEnables);
-    if (!appData.noChessProgram)     /* [DM] icsEngineAnalyze */
+    if (!appData.noChessEngine)     /* [DM] icsEngineAnalyze */
          (void) EnableMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
           MF_BYCOMMAND|MF_ENABLED);
   }
@@ -8065,10 +8065,10 @@ SetGNUMode()
 }
 
 VOID
-SetNCPMode()
+SetNCEMode()
 {
   HMENU hmenu = GetMenu(hwndMain);
-  SetMenuEnables(hmenu, ncpEnables);
+  SetMenuEnables(hmenu, nceEnables);
     DrawMenuBar(hwndMain);
 }
 
@@ -8108,19 +8108,19 @@ SetUserThinkingEnables()
 }
 
 VOID
-SetMachineThinkingEnables()
+SetEngineThinkingEnables()
 {
   HMENU hMenu = GetMenu(hwndMain);
   int flags = MF_BYCOMMAND|MF_ENABLED;
 
-  SetMenuEnables(hMenu, machineThinkingEnables);
+  SetMenuEnables(hMenu, engineThinkingEnables);
 
-  if (gameMode == MachinePlaysBlack) {
-    (void)EnableMenuItem(hMenu, IDM_MachineBlack, flags);
-  } else if (gameMode == MachinePlaysWhite) {
-    (void)EnableMenuItem(hMenu, IDM_MachineWhite, flags);
-  } else if (gameMode == TwoMachinesPlay) {
-    (void)EnableMenuItem(hMenu, matchMode ? IDM_Match : IDM_TwoMachines, flags); // [HGM] match
+  if (gameMode == EnginePlaysBlack) {
+    (void)EnableMenuItem(hMenu, IDM_EngineBlack, flags);
+  } else if (gameMode == EnginePlaysWhite) {
+    (void)EnableMenuItem(hMenu, IDM_EngineWhite, flags);
+  } else if (gameMode == TwoEnginesPlay) {
+    (void)EnableMenuItem(hMenu, matchMode ? IDM_Match : IDM_TwoEngines, flags); // [HGM] match
   }
 }
 
@@ -8137,7 +8137,7 @@ DisplayTitle(char *str)
     else 
       host = appData.icsHost;
       snprintf(title, MSG_SIZ, "%s: %s", szTitle, host);
-  } else if (appData.noChessProgram) {
+  } else if (appData.noChessEngine) {
     safeStrCpy(title, szTitle, sizeof(title)/sizeof(title[0]) );
   } else {
     safeStrCpy(title, szTitle, sizeof(title)/sizeof(title[0]) );
@@ -8179,7 +8179,7 @@ DisplayMessage(char *str1, char *str2)
 
   if (hwndMain == NULL || IsIconic(hwndMain)) return;
 
-  SAYMACHINEMOVE();
+  SAYENGINEMOVE();
 
   hdc = GetDC(hwndMain);
   oldFont = SelectObject(hdc, font[boardSize][MESSAGE_FONT]->hf);
@@ -8724,7 +8724,7 @@ void
 DisplayWhiteClock(long timeRemaining, int highlight)
 {
   HDC hdc;
-  char *flag = whiteFlag && gameMode == TwoMachinesPlay ? "(!)" : "";
+  char *flag = whiteFlag && gameMode == TwoEnginesPlay ? "(!)" : "";
 
   if(appData.noGUI) return;
   hdc = GetDC(hwndMain);
@@ -8748,7 +8748,7 @@ void
 DisplayBlackClock(long timeRemaining, int highlight)
 {
   HDC hdc;
-  char *flag = blackFlag && gameMode == TwoMachinesPlay ? "(!)" : "";
+  char *flag = blackFlag && gameMode == TwoEnginesPlay ? "(!)" : "";
 
   if(appData.noGUI) return;
   hdc = GetDC(hwndMain);
@@ -9876,7 +9876,7 @@ Tween(start, mid, finish, factor, frames, nFrames)
 }
 
 void
-SettingsPopUp(ChessProgramState *cps)
+SettingsPopUp(ChessEngineState *cps)
 {     // [HGM] wrapper needed because handles must not be passed through back-end
       EngineOptionsPopup(savedHwnd, cps);
 }

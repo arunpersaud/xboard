@@ -13,7 +13,7 @@
 
 
 
-<P><B><A NAME="cp"></A>/cp</B> or<B> /xcp</B>,<B> </B>or<B> <A NAME="chessprogram"></A>/chessProgram <I>true|false</I></B></P>
+<P><B><A NAME="cp"></A>/cp</B> or<B> /xcp</B>,<B> </B>or<B> <A NAME="chessengine"></A>/chessEngine <I>true|false</I></B></P>
 
 <P>If true, puts WinBoard in chess engine mode. In this mode, you can play against a chess program running on your PC or use it as an analysis partner.</P>
 
@@ -61,7 +61,7 @@
 
 <P><B><A NAME="secondnps"></A><font color="#008000">/secondNPS <I>number</I></font></B></P>
 
-<P><font color="#008000">Tells the chess engine to use an internal time standard based on its node count, rather then wall-clock time, to make its timing decisions. The time in virtual seconds should be obtained by dividing the node count through the given <I>number</I>, like the number was a rate in nodes per second. WinBoard will manage the clocks in accordance with this, relying on the number of nodes reported by the engine in its thinking output. If <I>number</I> equals zero, it can obviously not be used to convert nodes to seconds, and the time reported by the engine is used to decrement the WinBoard clock. The engine is supposed to report in CPU time it uses, rather than wall-clock time in this mode. This option can provide fairer conditions for engine-engine matches on heavily loaded machines, or with very fast games (where the wall clock is too inaccurate). “Show Thinking” must be on for this option to work. Not many engines might support this yet!</font></P>
+<P><font color="#008000">Tells the chess engine to use an internal time standard based on its node count, rather then wall-clock time, to make its timing decisions. The time in virtual seconds should be obtained by dividing the node count through the given <I>number</I>, like the number was a rate in nodes per second. WinBoard will manage the clocks in accordance with this, relying on the number of nodes reported by the engine in its thinking output. If <I>number</I> equals zero, it can obviously not be used to convert nodes to seconds, and the time reported by the engine is used to decrement the WinBoard clock. The engine is supposed to report in CPU time it uses, rather than wall-clock time in this mode. This option can provide fairer conditions for engine-engine matches on heavily loaded computers, or with very fast games (where the wall clock is too inaccurate). “Show Thinking” must be on for this option to work. Not many engines might support this yet!</font></P>
 
 
 
@@ -71,7 +71,7 @@
 
 <P><B><A NAME="secondtimeodds"></A><font color="#008000">/secondTimeOdds <I>factor</I></font></B></P>
 
-<P><font color="#008000">Reduces the time given to the mentioned engine by the given <I>factor</I>. If pondering is off, the effect is indistinguishable from what would happen if the engine was running on a <I>factor</I> times slower machine.</font></P>
+<P><font color="#008000">Reduces the time given to the mentioned engine by the given <I>factor</I>. If pondering is off, the effect is indistinguishable from what would happen if the engine was running on a <I>factor</I> times slower computer.</font></P>
 
 
 
@@ -119,25 +119,25 @@
 
 <P><B><A NAME="fd"></A>/fd </B>or<B> <A NAME="firstdirectory"></A>/firstDirectory <I>dir<BR>
 </I><A NAME="sd"></A>/sd </B>or<B> <A NAME="seconddirectory"></A>/secondDirectory <I>dir</I><SUP> </SUP><BR>
-<A NAME="fcp"></A>/fcp </B>or<B> <A NAME="firstchessprogram"></A>/firstChessProgram <I>command<BR>
-</I><A NAME="scp"></A>/scp </B>or<B> <A NAME="secondchessprogram"></A>/secondChessProgram <I>command</I><SUP> </SUP></B></P>
+<A NAME="fce"></A>/fce </B>or<B> <A NAME="firstchessengine"></A>/firstChessEngine <I>command<BR>
+</I><A NAME="sce"></A>/sce </B>or<B> <A NAME="secondchessengine"></A>/secondChessEngine <I>command</I><SUP> </SUP></B></P>
 
-<P>Names of the chess engines and working directories in which they are to be run. The second chess engine is started only in Two Machines (match) mode. These arguments are parsed as filenames; that is, the \ character is interpreted literally, not as a C-style escape.</P>
+<P>Names of the chess engines and working directories in which they are to be run. The second chess engine is started only in Two Engines (match) mode. These arguments are parsed as filenames; that is, the \ character is interpreted literally, not as a C-style escape.</P>
 
-<P>The <I>dir</I> argument specifies the initial working directory for the chess engine. It should usually be the directory where the engine and its working files are installed. If <I>dir</I> is not an absolute pathname, it is interpreted relative to the directory from which WinBoard.exe itself was loaded. The <I>dir</I> argument is ignored if the chess engine is being run on a remote machine (see firstHost and secondHost below). The default value for <I>dir </I>"", meaning that the chess engine is expected to be installed in the same directory as WinBoard.</P>
+<P>The <I>dir</I> argument specifies the initial working directory for the chess engine. It should usually be the directory where the engine and its working files are installed. If <I>dir</I> is not an absolute pathname, it is interpreted relative to the directory from which WinBoard.exe itself was loaded. The <I>dir</I> argument is ignored if the chess engine is being run on a remote computer (see firstHost and secondHost below). The default value for <I>dir </I>"", meaning that the chess engine is expected to be installed in the same directory as WinBoard.</P>
 
 <P>The <I>command</I> argument is actually the command line to the chess engine, so if the engine itself needs command line arguments, you can include them by enclosing <I>command</I> in single or double quotes. If the engine name or an engine argument has a space in it, use single quotes around the whole <I>command, </I>and inside them use double quotes around each item that contains spaces. If the engine name has more than one period in it (for example, <CODE>QChess1.5.exe</CODE>), you must include the "<CODE>.exe</CODE>" extension; otherwise you can leave it out. The default value for <I>command</I> is "", which brings up the startup dialog to ask which engines you want.</P>
 
 <P>Examples:</P>
 
-<PRE><CODE>WinBoard /cp /fd="C:\Program Files\Crafty" /fcp=WCrafty-15.12.exe /scp=GNUChess
-WinBoard /cp /fd="C:\Miracle Games" /fcp='"Miracle Chess.exe" /wow' /scp=GNUChess</CODE></PRE>
+<PRE><CODE>WinBoard /cp /fd="C:\Program Files\Crafty" /fce=WCrafty-15.12.exe /sce=GNUChess
+WinBoard /cp /fd="C:\Miracle Games" /fce='"Miracle Chess.exe" /wow' /sce=GNUChess</CODE></PRE>
 
-<P><font color="#008000">The basic rule is thus that what is inside the quotes delimiting the argument to /fcp and /scp, all goes to the engine, and is ignored by WinBoard. WinBoard 4.3.13 and later, however, knows an exception to this: If, within the quotes, the word WBopt appears, everything that follows this word will be interpreted as a WinBoard argument, in stead of being passed to the engine on startup of the latter. (The WBopt itself is also not passed to the engine.) This possibility of hiding WinBoard arguments in the engine command is provided in order to create options that follow the engine in a tournament, when a tournament manager like PSWBTM is used to invoke WinBoard. Because, in order to apply to a given engine, some options need to know if they apply to first or second engine, which might vary during the tournament, options hidden inside the engine command-line can contain ‘%s’ which will be replaced at the time the option is used by ‘first’ or ‘second’, as applicable.</font></P>
+<P><font color="#008000">The basic rule is thus that what is inside the quotes delimiting the argument to /fce and /sce, all goes to the engine, and is ignored by WinBoard. WinBoard 4.3.13 and later, however, knows an exception to this: If, within the quotes, the word WBopt appears, everything that follows this word will be interpreted as a WinBoard argument, in stead of being passed to the engine on startup of the latter. (The WBopt itself is also not passed to the engine.) This possibility of hiding WinBoard arguments in the engine command is provided in order to create options that follow the engine in a tournament, when a tournament manager like PSWBTM is used to invoke WinBoard. Because, in order to apply to a given engine, some options need to know if they apply to first or second engine, which might vary during the tournament, options hidden inside the engine command-line can contain ‘%s’ which will be replaced at the time the option is used by ‘first’ or ‘second’, as applicable.</font></P>
 
 <P><font color="#008000">Examples:</font></P>
 
-<font color="#008000"><PRE><CODE>WinBoard /cp /fd="C:\Engines\Crafty" /fcp=”WCrafty-15.12 WBopt /%sTimeOdds=2” /scp=GNUChess</CODE></PRE></font>
+<font color="#008000"><PRE><CODE>WinBoard /cp /fd="C:\Engines\Crafty" /fce=”WCrafty-15.12 WBopt /%sTimeOdds=2” /sce=GNUChess</CODE></PRE></font>
 
 <P><font color="#008000">Meaning that Crafty will have to play with half the time GNUChess will get.</font></P>
 
@@ -148,7 +148,7 @@ WinBoard /cp /fd="C:\Miracle Games" /fcp='"Miracle Chess.exe" /wow' /scp=GNUChes
 <P><B><A NAME="fh"></A>/fh </B>or<B> <A NAME="firsthost"></A>/firstHost <I>host<BR>
 </I><A NAME="sh"></A>/sh </B>or<B> <A NAME="secondhost"></A>/secondHost <I>host</I></B></P>
 
-<P>Hosts on which the chess engines are to run. The default for each is "localhost". If you specify another host, WinBoard<I> </I>uses <A HREF="18.htm#rsh">rsh</A> to run the chess program there. The /fd and /sd flags do not work in conjunction with these flags; if you need a remote chess engine to run somewhere other than your default login directory on the remote machine, you will have to include a "cd" command in the argument to /fcp or /scp.</P>
+<P>Hosts on which the chess engines are to run. The default for each is "localhost". If you specify another host, WinBoard<I> </I>uses <A HREF="18.htm#rsh">rsh</A> to run the chess program there. The /fd and /sd flags do not work in conjunction with these flags; if you need a remote chess engine to run somewhere other than your default login directory on the remote computer, you will have to include a "cd" command in the argument to /fce or /sce.</P>
 
 
 
@@ -174,7 +174,7 @@ WinBoard /cp /fd="C:\Miracle Games" /fcp='"Miracle Chess.exe" /wow' /scp=GNUChes
 
 <P><B><A NAME="fb"></A>/fb </B>or <B>/xfb</B>, or<B> <A NAME="firstplaysblack"></A>/firstPlaysBlack <I>true|false</I></B></P>
 
-<P>In games between two chess programs, the firstChessProgram normally plays white. (This is a change from earlier versions of WinBoard.) If this option is True, firstChessProgram plays black. In a multi-game match, this option affects the colors only for the first game; they still alternate in subsequent games.</P>
+<P>In games between two chess programs, the firstChessEngine normally plays white. (This is a change from earlier versions of WinBoard.) If this option is True, firstChessEngine plays black. In a multi-game match, this option affects the colors only for the first game; they still alternate in subsequent games.</P>
 
 
 
@@ -195,7 +195,7 @@ WinBoard /cp /fd="C:\Miracle Games" /fcp='"Miracle Chess.exe" /wow' /scp=GNUChes
 <P><B><A NAME="firstscoreabs"></A><font color="#ff0000">/firstScoreAbs<I> true|false<BR>
 </I></font><A NAME="secondscoreabs"></A><font color="#ff0000">/secondScoreAbs<I> true|false</I></font></B></P>
 
-<P><font color="#ff0000">If this option is true, the score reported by the engine is taken to be that in favor of white, even when the engine plays black. Important when winboard uses the score for adjudications, or in PGN reporting. This can be a useful option in combination with WBopt in the engine command-line, see under /fcp.</font></P>
+<P><font color="#ff0000">If this option is true, the score reported by the engine is taken to be that in favor of white, even when the engine plays black. Important when winboard uses the score for adjudications, or in PGN reporting. This can be a useful option in combination with WBopt in the engine command-line, see under /fce.</font></P>
 
 
 

@@ -162,7 +162,7 @@ void ics_printf P((char *format, ...));
 void SendToICS P((char *s));
 void SendToICSDelayed P((char *s, long msdelay));
 void SendMoveToICS P((ChessMove moveType, int fromX, int fromY, int toX, int toY, char promoChar));
-void HandleMachineMove P((char *message, ChessProgramState *cps));
+void HandleEngineMove P((char *message, ChessEngineState *cps));
 int AutoPlayOneMove P((void));
 int LoadGameOneMove P((ChessMove readAhead));
 int LoadGameFromFile P((char *filename, int n, char *title, int useList));
@@ -174,22 +174,22 @@ int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 		   /*char*/int promoChar));
 void BackwardInner P((int target));
 void ForwardInner P((int target));
-int Adjudicate P((ChessProgramState *cps));
+int Adjudicate P((ChessEngineState *cps));
 void GameEnds P((ChessMove result, char *resultDetails, int whosays));
 void EditPositionDone P((Boolean fakeRights));
 void PrintOpponents P((FILE *fp));
 void PrintPosition P((FILE *fp, int move));
-void StartChessProgram P((ChessProgramState *cps));
-void SendToProgram P((char *message, ChessProgramState *cps));
-void SendMoveToProgram P((int moveNum, ChessProgramState *cps));
+void StartChessEngine P((ChessEngineState *cps));
+void SendToProgram P((char *message, ChessEngineState *cps));
+void SendMoveToProgram P((int moveNum, ChessEngineState *cps));
 void ReceiveFromProgram P((InputSourceRef isr, VOIDSTAR closure,
 			   char *buf, int count, int error));
-void SendTimeControl P((ChessProgramState *cps,
+void SendTimeControl P((ChessEngineState *cps,
 			int mps, long tc, int inc, int sd, int st));
 char *TimeControlTagValue P((void));
-void Attention P((ChessProgramState *cps));
-void FeedMovesToProgram P((ChessProgramState *cps, int upto));
-int ResurrectChessProgram P((void));
+void Attention P((ChessEngineState *cps));
+void FeedMovesToProgram P((ChessEngineState *cps, int upto));
+int ResurrectChessEngine P((void));
 void DisplayComment P((int moveNumber, char *text));
 void DisplayMove P((int moveNumber));
 
@@ -217,10 +217,10 @@ long NextTickLength P((long));
 void CheckTimeControl P((void));
 void show_bytes P((FILE *, char *, int));
 int string_to_rating P((char *str));
-void ParseFeatures P((char* args, ChessProgramState *cps));
+void ParseFeatures P((char* args, ChessEngineState *cps));
 void InitBackEnd3 P((void));
-void FeatureDone P((ChessProgramState* cps, int val));
-void InitChessProgram P((ChessProgramState *cps, int setup));
+void FeatureDone P((ChessEngineState* cps, int val));
+void InitChessEngine P((ChessEngineState *cps, int setup));
 void OutputKibitz(int window, char *text);
 int PerpetualChase(int first, int last);
 int EngineOutputIsUp();
@@ -229,31 +229,31 @@ void NextMatchGame P((void));
 int NextTourneyGame P((int nr, int *swap));
 int Pairing P((int nr, int nPlayers, int *w, int *b, int *sync));
 FILE *WriteTourneyFile P((char *results, FILE *f));
-void DisplayTwoMachinesTitle P(());
+void DisplayTwoEnginesTitle P(());
 
 #ifdef WIN32
        extern void ConsoleCreate();
 #endif
 
-ChessProgramState *WhitePlayer();
+ChessEngineState *WhitePlayer();
 void InsertIntoMemo P((int which, char *text)); // [HGM] kibitz: in engineo.c
 int VerifyDisplayMode P(());
 
 char *GetInfoFromComment( int, char * ); // [HGM] PV time: returns stripped comment
-void InitEngineUCI( const char * iniDir, ChessProgramState * cps ); // [HGM] moved here from winboard.c
+void InitEngineUCI( const char * iniDir, ChessEngineState * cps ); // [HGM] moved here from winboard.c
 char *ProbeBook P((int moveNr, char *book)); // [HGM] book: returns a book move
-char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [HGM] book
+char *SendMoveToBookUser P((int nr, ChessEngineState *cps, int initial)); // [HGM] book
 void ics_update_width P((int new_width));
 extern char installDir[MSG_SIZ];
 VariantClass startVariant; /* [HGM] nicks: initial variant */
 Boolean abortMatch;
 
 extern int tinyLayout, smallLayout;
-ChessProgramStats programStats;
+ChessEngineStats programStats;
 char lastPV[2][2*MSG_SIZ]; /* [HGM] pv: last PV in thinking output of each engine */
 int endPV = -1;
 static int exiting = 0; /* [HGM] moved to top */
-static int setboardSpoiledMachineBlack = 0 /*, errorExitFlag = 0*/;
+static int setboardSpoiledEngineBlack = 0 /*, errorExitFlag = 0*/;
 int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos */
 Board partnerBoard;     /* [HGM] bughouse: for peeking at partner game          */
 int partnerHighlight[2];
@@ -415,7 +415,7 @@ char cmailMove[CMAIL_MAX_GAMES][MOVE_LEN], cmailMsg[MSG_SIZ];
 char bookOutput[MSG_SIZ*10], thinkOutput[MSG_SIZ*10], lastHint[MSG_SIZ];
 char thinkOutput1[MSG_SIZ*10];
 
-ChessProgramState first, second, pairing;
+ChessEngineState first, second, pairing;
 
 /* premove variables */
 int premoveToX = 0;
@@ -449,7 +449,7 @@ InputSourceRef telnetISR = NULL, fromUserISR = NULL, cmailISR = NULL;
 GameMode gameMode = BeginningOfGame;
 char moveList[MAX_MOVES][MOVE_LEN], parseList[MAX_MOVES][MOVE_LEN * 2];
 char *commentList[MAX_MOVES], *cmailCommentList[CMAIL_MAX_GAMES];
-ChessProgramStats_Move pvInfoList[MAX_MOVES]; /* [AS] Info about engine thinking */
+ChessEngineStats_Move pvInfoList[MAX_MOVES]; /* [AS] Info about engine thinking */
 int hiddenThinkOutputState = 0; /* [AS] */
 int adjudicateLossThreshold = 0; /* [AS] Automatic adjudication */
 int adjudicateLossPlies = 6;
@@ -681,11 +681,11 @@ void
 CommonEngineInit()
 {   // [HGM] moved some code here from InitBackend1 that has to be done after both engines have contributed their settings
     if (appData.firstPlaysBlack) {
-	first.twoMachinesColor = "black\n";
-	second.twoMachinesColor = "white\n";
+	first.twoEnginesColor = "black\n";
+	second.twoEnginesColor = "white\n";
     } else {
-	first.twoMachinesColor = "white\n";
-	second.twoMachinesColor = "black\n";
+	first.twoEnginesColor = "white\n";
+	second.twoEnginesColor = "black\n";
     }
 
     first.other = &second;
@@ -701,7 +701,7 @@ CommonEngineInit()
     }
 
     if(programVersion) free(programVersion);
-    if (appData.noChessProgram) {
+    if (appData.noChessEngine) {
 	programVersion = (char*) malloc(5 + strlen(PACKAGE_STRING));
 	sprintf(programVersion, "%s", PACKAGE_STRING);
     } else {
@@ -712,7 +712,7 @@ CommonEngineInit()
 }
 
 void
-UnloadEngine(ChessProgramState *cps)
+UnloadEngine(ChessEngineState *cps)
 {
 	/* Kill off first chess program */
 	if (cps->isr != NULL)
@@ -731,7 +731,7 @@ UnloadEngine(ChessProgramState *cps)
 }
 
 void
-ClearOptions(ChessProgramState *cps)
+ClearOptions(ChessEngineState *cps)
 {
     int i;
     cps->nrOptions = cps->comboCnt = 0;
@@ -747,7 +747,7 @@ char *engineNames[] = {
 };
 
 void
-InitEngine(ChessProgramState *cps, int n)
+InitEngine(ChessEngineState *cps, int n)
 {   // [HGM] all engine initialiation put in a function that does one engine
 
     ClearOptions(cps);
@@ -759,7 +759,7 @@ InitEngine(ChessProgramState *cps, int n)
     cps->sendTime = 2;
     cps->sendDrawOffers = 1;
 
-    cps->program = appData.chessProgram[n];
+    cps->program = appData.chessEngine[n];
     cps->host = appData.host[n];
     cps->dir = appData.directory[n];
     cps->initString = appData.engInitString[n];
@@ -793,7 +793,7 @@ InitEngine(ChessProgramState *cps, int n)
     /* End of new features added by Tord. */
     cps->fenOverride  = appData.fenOverride[n];
 
-    /* [HGM] time odds: set factor for each machine */
+    /* [HGM] time odds: set factor for each engine */
     cps->timeOdds  = appData.timeOdds[n];
 
     /* [HGM] secondary TC: how to handle sessions that do not fit in 'level'*/
@@ -837,7 +837,7 @@ InitEngine(ChessProgramState *cps, int n)
     ParseFeatures(appData.featureDefaults, cps);
 }
 
-ChessProgramState *savCps;
+ChessEngineState *savCps;
 
 void
 LoadEngine()
@@ -850,7 +850,7 @@ LoadEngine()
 	Reset(TRUE, savCps != &first);
 	EditGameEvent(); // for consistency with other path, as Reset changes mode
     }
-    InitChessProgram(savCps, FALSE);
+    InitChessEngine(savCps, FALSE);
     SendToProgram("force\n", savCps);
     DisplayMessage("", "");
     if (startedFromSetupPosition) SendBoard(savCps, backwardMostMove);
@@ -860,11 +860,11 @@ LoadEngine()
 }
 
 void
-ReplaceEngine(ChessProgramState *cps, int n)
+ReplaceEngine(ChessEngineState *cps, int n)
 {
     EditGameEvent();
     UnloadEngine(cps);
-    appData.noChessProgram = FALSE;
+    appData.noChessEngine = FALSE;
     appData.clockMode = TRUE;
     InitEngine(cps, n);
     UpdateLogos(TRUE);
@@ -882,11 +882,11 @@ static char resetOptions[] =
 	"-firstOptions \"\" -firstNPS -1 -fn \"\"";
 
 void
-Load(ChessProgramState *cps, int i)
+Load(ChessEngineState *cps, int i)
 {
     char *p, *q, buf[MSG_SIZ], command[MSG_SIZ], buf2[MSG_SIZ];
     if(engineLine && engineLine[0]) { // an engine was selected from the combo box
-	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
+	snprintf(buf, MSG_SIZ, "-fce %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
 	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
 	ParseArgsFromString(buf);
@@ -909,7 +909,7 @@ Load(ChessProgramState *cps, int i)
 	snprintf(command, MSG_SIZ, "%s %s", p, params);
 	p = command;
     }
-    appData.chessProgram[i] = strdup(p);
+    appData.chessEngine[i] = strdup(p);
     appData.isUCI[i] = isUCI;
     appData.protocolVersion[i] = v1 ? 1 : PROTOVER;
     appData.hasOwnBookUCI[i] = hasBook;
@@ -918,8 +918,8 @@ Load(ChessProgramState *cps, int i)
     if(addToList) {
 	int len;
 	char quote;
-	q = firstChessProgramNames;
-	if(nickName[0]) snprintf(buf, MSG_SIZ, "\"%s\" -fcp ", nickName); else buf[0] = NULLCHAR;
+	q = firstChessEngineNames;
+	if(nickName[0]) snprintf(buf, MSG_SIZ, "\"%s\" -fce ", nickName); else buf[0] = NULLCHAR;
 	quote = strchr(p, '"') ? '\'' : '"'; // use single quotes around engine command if it contains double quotes
 	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), "%c%s%c -fd \"%s\"%s%s%s%s%s%s%s%s\n",
 			quote, p, quote, appData.directory[i], 
@@ -931,8 +931,8 @@ Load(ChessProgramState *cps, int i)
 			isUCI ? (isUCI == TRUE ? " -fUCI" : gameInfo.variant == VariantShogi ? " -fUSI" : " -fUCCI") : "",
 			storeVariant ? " -variant " : "",
 			storeVariant ? VariantName(gameInfo.variant) : "");
-	firstChessProgramNames = malloc(len = strlen(q) + strlen(buf) + 1);
-	snprintf(firstChessProgramNames, len, "%s%s", q, buf);
+	firstChessEngineNames = malloc(len = strlen(q) + strlen(buf) + 1);
+	snprintf(firstChessEngineNames, len, "%s%s", q, buf);
 	if(q) 	free(q);
     }
     ReplaceEngine(cps, i);
@@ -998,11 +998,11 @@ InitBackEnd1()
 	appData.matchMode = FALSE;
 	appData.matchGames = 0;
 #if ZIPPY
-	appData.noChessProgram = !appData.zippyPlay;
+	appData.noChessEngine = !appData.zippyPlay;
 #else
 	appData.zippyPlay = FALSE;
 	appData.zippyTalk = FALSE;
-	appData.noChessProgram = TRUE;
+	appData.noChessEngine = TRUE;
 #endif
 	if (*appData.icsHelper != NULLCHAR) {
 	    appData.useTelnet = TRUE;
@@ -1041,7 +1041,7 @@ InitBackEnd1()
 
     if (appData.icsActive) {
         appData.clockMode = TRUE;  /* changes dynamically in ICS mode */
-    } else if (appData.noChessProgram) { // [HGM] st: searchTime mode now also is clockMode
+    } else if (appData.noChessEngine) { // [HGM] st: searchTime mode now also is clockMode
 	appData.clockMode = FALSE;
 	first.sendTime = second.sendTime = 0;
     }
@@ -1325,7 +1325,7 @@ InitBackEnd2()
 	if(appData.loadGameIndex >= 0) appData.loadGameIndex = -1;
     }
     Reset(TRUE, FALSE);
-    if (appData.noChessProgram || first.protocolVersion == 1) {
+    if (appData.noChessEngine || first.protocolVersion == 1) {
       InitBackEnd3();
     } else {
       /* kludge: allow timeout for initial "feature" commands */
@@ -1405,7 +1405,7 @@ ReserveGame(int gameNr, char resChar)
     if(nextGame <= appData.matchGames && resChar != ' ' && !abortMatch &&
        (gameNr < 0 || nextGame / appData.defaultMatchGames != gameNr / appData.defaultMatchGames)) {
 	UnloadEngine(&first);  // next game belongs to other pairing;
-	UnloadEngine(&second); // already unload the engines, so TwoMachinesEvent will load new ones.
+	UnloadEngine(&second); // already unload the engines, so TwoEnginesEvent will load new ones.
     }
 }
 
@@ -1424,7 +1424,7 @@ MatchEvent(int mode)
 //	}
 	abortMatch = FALSE;
 	if(mode == 2) appData.matchGames = appData.defaultMatchGames;
-	/* Set up machine vs. machine match */
+	/* Set up engine vs. engine match */
 	nextGame = 0;
 	NextTourneyGame(-1, &dummy); // sets appData.matchGames if this is tourney, to make sure ReserveGame knows it
 	if(appData.tourneyFile[0]) {
@@ -1452,7 +1452,7 @@ MatchEvent(int mode)
 		return;
 	    }
 	} else
-	if (appData.noChessProgram) {  // [HGM] in tourney engines are loaded automatically
+	if (appData.noChessEngine) {  // [HGM] in tourney engines are loaded automatically
 	    DisplayFatalError(_("Can't have a match with no chess programs"),
 			      0, 2);
 	    return;
@@ -1470,9 +1470,9 @@ InitBackEnd3 P((void))
     char buf[MSG_SIZ];
     int err, len;
 
-    InitChessProgram(&first, startedFromSetupPosition);
+    InitChessEngine(&first, startedFromSetupPosition);
 
-    if(!appData.noChessProgram) {  /* [HGM] tidy: redo program version to use name from myname feature */
+    if(!appData.noChessEngine) {  /* [HGM] tidy: redo program version to use name from myname feature */
 	free(programVersion);
 	programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
 	sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
@@ -1506,8 +1506,8 @@ InitBackEnd3 P((void))
 	  AddInputSource(NoProc, FALSE, read_from_player, &fromUserISR);
 	if(appData.keepAlive) // [HGM] alive: schedule sending of dummy 'date' command
 	    ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
-    } else if (appData.noChessProgram) {
-	SetNCPMode();
+    } else if (appData.noChessEngine) {
+	SetNCEMode();
     } else {
 	SetGNUMode();
     }
@@ -1523,22 +1523,22 @@ InitBackEnd3 P((void))
     DisplayMessage("", "");
     if (StrCaseCmp(appData.initialMode, "") == 0) {
       initialMode = BeginningOfGame;
-      if(!appData.icsActive && appData.noChessProgram) { // [HGM] could be fall-back
-        gameMode = MachinePlaysBlack; // "Machine Black" might have been implicitly highlighted
+      if(!appData.icsActive && appData.noChessEngine) { // [HGM] could be fall-back
+        gameMode = EnginePlaysBlack; // "Engine Black" might have been implicitly highlighted
         ModeHighlight(); // make sure XBoard knows it is highlighted, so it will un-highlight it
         gameMode = BeginningOfGame; // in case BeginningOfGame now means "Edit Position"
         ModeHighlight();
       }
-    } else if (StrCaseCmp(appData.initialMode, "TwoMachines") == 0) {
-      initialMode = TwoMachinesPlay;
+    } else if (StrCaseCmp(appData.initialMode, "TwoEngines") == 0) {
+      initialMode = TwoEnginesPlay;
     } else if (StrCaseCmp(appData.initialMode, "AnalyzeFile") == 0) {
       initialMode = AnalyzeFile;
     } else if (StrCaseCmp(appData.initialMode, "Analysis") == 0) {
       initialMode = AnalyzeMode;
-    } else if (StrCaseCmp(appData.initialMode, "MachineWhite") == 0) {
-      initialMode = MachinePlaysWhite;
-    } else if (StrCaseCmp(appData.initialMode, "MachineBlack") == 0) {
-      initialMode = MachinePlaysBlack;
+    } else if (StrCaseCmp(appData.initialMode, "EngineWhite") == 0) {
+      initialMode = EnginePlaysWhite;
+    } else if (StrCaseCmp(appData.initialMode, "EngineBlack") == 0) {
+      initialMode = EnginePlaysBlack;
     } else if (StrCaseCmp(appData.initialMode, "EditGame") == 0) {
       initialMode = EditGame;
     } else if (StrCaseCmp(appData.initialMode, "EditPosition") == 0) {
@@ -1588,7 +1588,7 @@ InitBackEnd3 P((void))
             /* to allow automatic setup of fairy variants with wtm */
             if(initialMode == BeginningOfGame && !blackPlaysFirst) {
                 gameMode = BeginningOfGame;
-                setboardSpoiledMachineBlack = 1;
+                setboardSpoiledEngineBlack = 1;
             }
             /* [HGM] loadPos: make that every new game uses the setup */
             /* from file as long as we do not switch variant          */
@@ -1598,7 +1598,7 @@ InitBackEnd3 P((void))
             }
 	}
 	if (initialMode == AnalyzeMode) {
-	  if (appData.noChessProgram) {
+	  if (appData.noChessEngine) {
 	    DisplayFatalError(_("Analysis mode requires a chess engine"), 0, 2);
 	    return;
 	  }
@@ -1612,42 +1612,42 @@ InitBackEnd3 P((void))
 	  ShowThinkingEvent();
 	  AnalyzeFileEvent();
 	  AnalysisPeriodicEvent(1);
-	} else if (initialMode == MachinePlaysWhite) {
-	  if (appData.noChessProgram) {
-	    DisplayFatalError(_("MachineWhite mode requires a chess engine"),
+	} else if (initialMode == EnginePlaysWhite) {
+	  if (appData.noChessEngine) {
+	    DisplayFatalError(_("EngineWhite mode requires a chess engine"),
 			      0, 2);
 	    return;
 	  }
 	  if (appData.icsActive) {
-	    DisplayFatalError(_("MachineWhite mode does not work with ICS mode"),
+	    DisplayFatalError(_("EngineWhite mode does not work with ICS mode"),
 			      0, 2);
 	    return;
 	  }
-	  MachineWhiteEvent();
-	} else if (initialMode == MachinePlaysBlack) {
-	  if (appData.noChessProgram) {
-	    DisplayFatalError(_("MachineBlack mode requires a chess engine"),
-			      0, 2);
-	    return;
-	  }
-	  if (appData.icsActive) {
-	    DisplayFatalError(_("MachineBlack mode does not work with ICS mode"),
-			      0, 2);
-	    return;
-	  }
-	  MachineBlackEvent();
-	} else if (initialMode == TwoMachinesPlay) {
-	  if (appData.noChessProgram) {
-	    DisplayFatalError(_("TwoMachines mode requires a chess engine"),
+	  EngineWhiteEvent();
+	} else if (initialMode == EnginePlaysBlack) {
+	  if (appData.noChessEngine) {
+	    DisplayFatalError(_("EngineBlack mode requires a chess engine"),
 			      0, 2);
 	    return;
 	  }
 	  if (appData.icsActive) {
-	    DisplayFatalError(_("TwoMachines mode does not work with ICS mode"),
+	    DisplayFatalError(_("EngineBlack mode does not work with ICS mode"),
 			      0, 2);
 	    return;
 	  }
-	  TwoMachinesEvent();
+	  EngineBlackEvent();
+	} else if (initialMode == TwoEnginesPlay) {
+	  if (appData.noChessEngine) {
+	    DisplayFatalError(_("TwoEngines mode requires a chess engine"),
+			      0, 2);
+	    return;
+	  }
+	  if (appData.icsActive) {
+	    DisplayFatalError(_("TwoEngines mode does not work with ICS mode"),
+			      0, 2);
+	    return;
+	  }
+	  TwoEnginesEvent();
 	} else if (initialMode == EditGame) {
 	  EditGameEvent();
 	} else if (initialMode == EditPosition) {
@@ -1877,7 +1877,7 @@ SendToICS(s)
 
 /* This is used for sending logon scripts to the ICS. Sending
    without a delay causes problems when using timestamp on ICC
-   (at least on my machine). */
+   (at least on my computer). */
 void
 SendToICSDelayed(s,msdelay)
      char *s;
@@ -3673,7 +3673,7 @@ read_from_ics(isr, closure, data, count, error)
 
 		    safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 		    strcat(bookMove, bookHit);
-		    HandleMachineMove(bookMove, &first);
+		    HandleEngineMove(bookMove, &first);
 		}
 		continue;
 	    }
@@ -3902,7 +3902,7 @@ read_from_ics(isr, closure, data, count, error)
 		    if (first.pr == NoProc) {
 		      /* Start the next process early so that we'll
 			 be ready for the next challenge */
-		      StartChessProgram(&first);
+		      StartChessEngine(&first);
 		    }
 		    /* Send "new" early, in case this command takes
 		       a long time to finish, so that we'll be ready
@@ -4554,7 +4554,7 @@ ParseBoard12(string)
 		// [HGM] when we will receive the move list we now request, it will be
 		// fed to the engine from the first move on. So if the engine is not
 		// in the initial position now, bring it there.
-		InitChessProgram(&first, 0);
+		InitChessEngine(&first, 0);
 	    }
 #endif
 	    ics_getting_history = H_REQUESTED;
@@ -4825,7 +4825,7 @@ ParseBoard12(string)
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	HandleEngineMove(bookMove, &first);
     }
 #endif
 }
@@ -4868,7 +4868,7 @@ void ics_update_width(new_width)
 void
 SendMoveToProgram(moveNum, cps)
      int moveNum;
-     ChessProgramState *cps;
+     ChessEngineState *cps;
 {
     char buf[MSG_SIZ];
 
@@ -4930,19 +4930,19 @@ SendMoveToProgram(moveNum, cps)
     }
 
     /* [HGM] setting up the opening has brought engine in force mode! */
-    /*       Send 'go' if we are in a mode where machine should play. */
-    if( (moveNum == 0 && setboardSpoiledMachineBlack && cps == &first) &&
-        (gameMode == TwoMachinesPlay   ||
+    /*       Send 'go' if we are in a mode where engine should play. */
+    if( (moveNum == 0 && setboardSpoiledEngineBlack && cps == &first) &&
+        (gameMode == TwoEnginesPlay   ||
 #if ZIPPY
          gameMode == IcsPlayingBlack     || gameMode == IcsPlayingWhite ||
 #endif
-         gameMode == MachinePlaysBlack || gameMode == MachinePlaysWhite) ) {
+         gameMode == EnginePlaysBlack || gameMode == EnginePlaysWhite) ) {
         SendToProgram("go\n", cps);
   if (appData.debugMode) {
     fprintf(debugFP, "(extra)\n");
   }
     }
-    setboardSpoiledMachineBlack = 0;
+    setboardSpoiledEngineBlack = 0;
 }
 
 void
@@ -5388,7 +5388,7 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
 }
 
 int
-MultiPV(ChessProgramState *cps)
+MultiPV(ChessEngineState *cps)
 {	// check if engine supports MultiPV, and if so, return the number of the option that sets it
 	int i;
 	for(i=0; i<cps->nrOptions; i++)
@@ -5449,7 +5449,7 @@ PvToSAN(char *pv)
 Boolean
 LoadPV(int x, int y)
 { // called on right mouse click to load PV
-  int which = gameMode == TwoMachinesPlay && (WhiteOnMove(forwardMostMove) == (second.twoMachinesColor[0] == 'w'));
+  int which = gameMode == TwoEnginesPlay && (WhiteOnMove(forwardMostMove) == (second.twoEnginesColor[0] == 'w'));
   lastX = x; lastY = y;
   ParsePV(lastPV[which], FALSE, TRUE); // load the PV of the thinking engine in the boards array.
   return TRUE;
@@ -6018,7 +6018,7 @@ InitPosition(redraw)
 
 void
 SendBoard(cps, moveNum)
-     ChessProgramState *cps;
+     ChessEngineState *cps;
      int moveNum;
 {
     char message[MSG_SIZ];
@@ -6084,7 +6084,7 @@ SendBoard(cps, moveNum)
 
       SendToProgram(".\n", cps);
     }
-    setboardSpoiledMachineBlack = 0; /* [HGM] assume WB 4.2.7 already solves this after sending setboard */
+    setboardSpoiledEngineBlack = 0; /* [HGM] assume WB 4.2.7 already solves this after sending setboard */
 }
 
 ChessSquare
@@ -6249,7 +6249,7 @@ OKToStartUserMove(x, y)
 
     switch (gameMode) {
       case AnalyzeFile:
-      case TwoMachinesPlay:
+      case TwoEnginesPlay:
       case EndOfGame:
 	return FALSE;
 
@@ -6257,7 +6257,7 @@ OKToStartUserMove(x, y)
       case IcsIdle:
 	return FALSE;
 
-      case MachinePlaysWhite:
+      case EnginePlaysWhite:
       case IcsPlayingBlack:
 	if (appData.zippyPlay) return FALSE;
 	if (white_piece) {
@@ -6266,7 +6266,7 @@ OKToStartUserMove(x, y)
 	}
 	break;
 
-      case MachinePlaysBlack:
+      case EnginePlaysBlack:
       case IcsPlayingWhite:
 	if (appData.zippyPlay) return FALSE;
 	if (!white_piece) {
@@ -6295,7 +6295,7 @@ OKToStartUserMove(x, y)
 
       case BeginningOfGame:
 	if (appData.icsActive) return FALSE;
-	if (!appData.noChessProgram) {
+	if (!appData.noChessEngine) {
 	    if (!white_piece) {
 		DisplayMoveError(_("You are playing White"));
 		return FALSE;
@@ -6333,12 +6333,12 @@ OnlyMove(int *x, int *y, Boolean captures) {
     DisambiguateClosure cl;
     if (appData.zippyPlay || !appData.testLegality) return FALSE;
     switch(gameMode) {
-      case MachinePlaysBlack:
+      case EnginePlaysBlack:
       case IcsPlayingWhite:
       case BeginningOfGame:
 	if(!WhiteOnMove(currentMove)) return FALSE;
 	break;
-      case MachinePlaysWhite:
+      case EnginePlaysWhite:
       case IcsPlayingBlack:
 	if(WhiteOnMove(currentMove)) return FALSE;
 	break;
@@ -6413,7 +6413,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 
     switch (gameMode) {
       case AnalyzeFile:
-      case TwoMachinesPlay:
+      case TwoEnginesPlay:
       case EndOfGame:
       case IcsObserving:
       case IcsIdle:
@@ -6421,7 +6421,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
            perhaps while the mouse button was down. */
         return;
 
-      case MachinePlaysWhite:
+      case EnginePlaysWhite:
 	/* User is moving for Black */
 	if (WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is White's turn"));
@@ -6429,7 +6429,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	}
 	break;
 
-      case MachinePlaysBlack:
+      case EnginePlaysBlack:
 	/* User is moving for White */
 	if (!WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is Black's turn"));
@@ -6640,7 +6640,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   }
 
   /* If we need the chess program but it's dead, restart it */
-  ResurrectChessProgram();
+  ResurrectChessEngine();
 
   /* A user move restarts a paused game*/
   if (pausing)
@@ -6656,12 +6656,12 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   }
 
   if (gameMode == BeginningOfGame) {
-    if (appData.noChessProgram) {
+    if (appData.noChessEngine) {
       gameMode = EditGame;
       SetGameInfo();
     } else {
       char buf[MSG_SIZ];
-      gameMode = MachinePlaysBlack;
+      gameMode = EnginePlaysBlack;
       StartClocks();
       SetGameInfo();
       snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
@@ -6690,9 +6690,9 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
     }
   } else {
     if (first.sendTime && (gameMode == BeginningOfGame ||
-			   gameMode == MachinePlaysWhite ||
-			   gameMode == MachinePlaysBlack)) {
-      SendTimeRemaining(&first, gameMode != MachinePlaysBlack);
+			   gameMode == EnginePlaysWhite ||
+			   gameMode == EnginePlaysBlack)) {
+      SendTimeRemaining(&first, gameMode != EnginePlaysBlack);
     }
     if (gameMode != EditGame && gameMode != PlayFromGameFile) {
 	 // [HGM] book: if program might be playing, let it use book
@@ -6730,10 +6730,10 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
     }
     break;
 
-  case MachinePlaysBlack:
-  case MachinePlaysWhite:
-    /* disable certain menu options while machine is thinking */
-    SetMachineThinkingEnables();
+  case EnginePlaysBlack:
+  case EnginePlaysWhite:
+    /* disable certain menu options while engine is thinking */
+    SetEngineThinkingEnables();
     break;
 
   default:
@@ -6752,7 +6752,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	HandleEngineMove(bookMove, &first);
   }
   return 1;
 }
@@ -6889,8 +6889,8 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	fromX = fromY = -1; // second click on piece after altering default promo piece treated as first click
 
     if(!promoDefaultAltered) { // determine default promotion piece, based on the side the user is moving for
-	int side = (gameMode == IcsPlayingWhite || gameMode == MachinePlaysBlack ||
-		    gameMode != MachinePlaysWhite && gameMode != IcsPlayingBlack && WhiteOnMove(currentMove));
+	int side = (gameMode == IcsPlayingWhite || gameMode == EnginePlaysBlack ||
+		    gameMode != EnginePlaysWhite && gameMode != IcsPlayingBlack && WhiteOnMove(currentMove));
 	defaultPromoChoice = DefaultPromoChoice(side);
     }
 
@@ -7178,14 +7178,14 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 	if(!appData.zippyPlay) goto noZip;
       case AnalyzeMode:
       case AnalyzeFile:
-      case MachinePlaysWhite:
-      case MachinePlaysBlack:
-      case TwoMachinesPlay: // [HGM] pv: use for showing PV
+      case EnginePlaysWhite:
+      case EnginePlaysBlack:
+      case TwoEnginesPlay: // [HGM] pv: use for showing PV
 	if (!appData.dropMenu) {
 	  LoadPV(x, y);
 	  return 2; // flag front-end to grab mouse events
 	}
-	if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
+	if(gameMode == TwoEnginesPlay || gameMode == AnalyzeMode ||
            gameMode == AnalyzeFile || gameMode == IcsObserving) return -1;
       case EditGame:
       noZip:
@@ -7212,7 +7212,7 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
     return whichMenu;
 }
 
-void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cpstats )
+void SendProgramStatsToFrontend( ChessEngineState * cps, ChessEngineStats * cpstats )
 {
 //    char * hint = lastHint;
     FrontEndProgramStats stats;
@@ -7413,14 +7413,14 @@ CompareWithRights(Board b1, Board b2)
 }
 
 int
-Adjudicate(ChessProgramState *cps)
+Adjudicate(ChessEngineState *cps)
 {	// [HGM] some adjudications useful with buggy engines
 	// [HGM] adjudicate: made into separate routine, which now can be called after every move
 	//       In any case it determnes if the game is a claimable draw (filling in EP_STATUS).
 	//       Actually ending the game is now based on the additional internal condition canAdjudicate.
 	//       Only when the game is ended, and the opponent is a computer, this opponent gets the move relayed.
 	int k, count = 0; static int bare = 1;
-	ChessProgramState *engineOpponent = (gameMode == TwoMachinesPlay ? cps->other : (cps ? NULL : &first));
+	ChessEngineState *engineOpponent = (gameMode == TwoEnginesPlay ? cps->other : (cps ? NULL : &first));
 	Boolean canAdjudicate = !appData.icsActive;
 
 	// most tests only when we understand the game, i.e. legality-checking on
@@ -7693,7 +7693,7 @@ Adjudicate(ChessProgramState *cps)
                  * claim draws before making their move to avoid a race
                  * condition occurring after their move
                  */
-		if((gameMode == TwoMachinesPlay ? second.offeredDraw : userOfferedDraw) || first.offeredDraw ) {
+		if((gameMode == TwoEnginesPlay ? second.offeredDraw : userOfferedDraw) || first.offeredDraw ) {
                          char *p = NULL;
                          if((signed char)boards[forwardMostMove][EP_STATUS] == EP_RULE_DRAW)
                              p = "Draw claim: 50-move rule";
@@ -7722,7 +7722,7 @@ Adjudicate(ChessProgramState *cps)
 	return 0;
 }
 
-char *SendMoveToBookUser(int moveNr, ChessProgramState *cps, int initial)
+char *SendMoveToBookUser(int moveNr, ChessEngineState *cps, int initial)
 {   // [HGM] book: this routine intercepts moves to simulate book replies
     char *bookHit = NULL;
 
@@ -7771,29 +7771,29 @@ char *SendMoveToBookUser(int moveNr, ChessProgramState *cps, int initial)
 }
 
 char *savedMessage;
-ChessProgramState *savedState;
+ChessEngineState *savedState;
 void DeferredBookMove(void)
 {
 	if(savedState->lastPing != savedState->lastPong)
 		    ScheduleDelayedEvent(DeferredBookMove, 10);
 	else
-	HandleMachineMove(savedMessage, savedState);
+	HandleEngineMove(savedMessage, savedState);
 }
 
 static int savedWhitePlayer, savedBlackPlayer, pairingReceived;
 
 void
-HandleMachineMove(message, cps)
+HandleEngineMove(message, cps)
      char *message;
-     ChessProgramState *cps;
+     ChessEngineState *cps;
 {
-    char machineMove[MSG_SIZ], buf1[MSG_SIZ*10], buf2[MSG_SIZ];
+    char engineMove[MSG_SIZ], buf1[MSG_SIZ*10], buf2[MSG_SIZ];
     char realname[MSG_SIZ];
     int fromX, fromY, toX, toY;
     ChessMove moveType;
     char promoChar;
     char *p, *pv=buf1;
-    int machineWhite;
+    int engineWhite;
     char *bookHit;
 
     if(cps == &pairing && sscanf(message, "%d-%d", &savedWhitePlayer, &savedBlackPlayer) == 2) {
@@ -7809,7 +7809,7 @@ HandleMachineMove(message, cps)
 
     cps->userError = 0;
 
-FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book hit
+FakeBookMove: // [HGM] book: we jump here to simulate engine moves after book hit
     /*
      * Kludge to ignore BEL characters
      */
@@ -7843,10 +7843,10 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     }
 
     /*
-     * Look for machine move.
+     * Look for engine move.
      */
-    if ((sscanf(message, "%s %s %s", buf1, buf2, machineMove) == 3 && strcmp(buf2, "...") == 0) ||
-	(sscanf(message, "%s %s", buf1, machineMove) == 2 && strcmp(buf1, "move") == 0))
+    if ((sscanf(message, "%s %s %s", buf1, buf2, engineMove) == 3 && strcmp(buf2, "...") == 0) ||
+	(sscanf(message, "%s %s", buf1, engineMove) == 2 && strcmp(buf1, "move") == 0))
     {
         /* This method is only useful on engines that support ping */
         if (cps->lastPing != cps->lastPong) {
@@ -7888,21 +7888,21 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    SendToProgram("undo\n", cps);
 	    return;
 
-	  case MachinePlaysWhite:
+	  case EnginePlaysWhite:
 	  case IcsPlayingWhite:
-	    machineWhite = TRUE;
+	    engineWhite = TRUE;
 	    break;
 
-	  case MachinePlaysBlack:
+	  case EnginePlaysBlack:
 	  case IcsPlayingBlack:
-	    machineWhite = FALSE;
+	    engineWhite = FALSE;
 	    break;
 
-	  case TwoMachinesPlay:
-	    machineWhite = (cps->twoMachinesColor[0] == 'w');
+	  case TwoEnginesPlay:
+	    engineWhite = (cps->twoEnginesColor[0] == 'w');
 	    break;
 	}
-	if (WhiteOnMove(forwardMostMove) != machineWhite) {
+	if (WhiteOnMove(forwardMostMove) != engineWhite) {
 	    if (appData.debugMode) {
 		fprintf(debugFP,
 			"Ignoring move out of turn by %s, gameMode %d"
@@ -7913,21 +7913,21 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	}
 
     if (appData.debugMode) { int f = forwardMostMove;
-        fprintf(debugFP, "machine move %d, castling = %d %d %d %d %d %d\n", f,
+        fprintf(debugFP, "engine move %d, castling = %d %d %d %d %d %d\n", f,
                 boards[f][CASTLING][0],boards[f][CASTLING][1],boards[f][CASTLING][2],
                 boards[f][CASTLING][3],boards[f][CASTLING][4],boards[f][CASTLING][5]);
     }
-        if(cps->alphaRank) AlphaRank(machineMove, 4);
-        if (!ParseOneMove(machineMove, forwardMostMove, &moveType,
+        if(cps->alphaRank) AlphaRank(engineMove, 4);
+        if (!ParseOneMove(engineMove, forwardMostMove, &moveType,
                               &fromX, &fromY, &toX, &toY, &promoChar)) {
-	    /* Machine move could not be parsed; ignore it. */
-	  snprintf(buf1, MSG_SIZ*10, _("Illegal move \"%s\" from %s machine"),
-		    machineMove, _(cps->which));
+	    /* Engine move could not be parsed; ignore it. */
+	  snprintf(buf1, MSG_SIZ*10, _("Illegal move \"%s\" from %s engine"),
+		    engineMove, _(cps->which));
 	    DisplayError(buf1, 0);
             snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d",
-                    machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, moveType);
-	    if (gameMode == TwoMachinesPlay) {
-	      GameEnds(machineWhite ? BlackWins : WhiteWins,
+                    engineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, moveType);
+	    if (gameMode == TwoEnginesPlay) {
+	      GameEnds(engineWhite ? BlackWins : WhiteWins,
                        buf1, GE_XBOARD);
 	    }
 	    return;
@@ -7938,7 +7938,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         /* to make sure an illegal e.p. capture does not slip through,   */
         /* to cause a forfeit on a justified illegal-move complaint      */
         /* of the opponent.                                              */
-        if( gameMode==TwoMachinesPlay && appData.testLegality ) {
+        if( gameMode==TwoEnginesPlay && appData.testLegality ) {
            ChessMove moveType;
            moveType = LegalityTest(boards[forwardMostMove], PosFlags(forwardMostMove),
                              fromY, fromX, toY, toX, promoChar);
@@ -7950,8 +7950,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    }
             if(moveType == IllegalMove) {
 	      snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to illegal move: %s (%c%c%c%c)%c",
-                        machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, 0);
-                GameEnds(machineWhite ? BlackWins : WhiteWins,
+                        engineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, 0);
+                GameEnds(engineWhite ? BlackWins : WhiteWins,
                            buf1, GE_XBOARD);
 		return;
            } else if(gameInfo.variant != VariantFischeRandom && gameInfo.variant != VariantCapaRandom)
@@ -7987,7 +7987,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	MakeMove(fromX, fromY, toX, toY, promoChar);/*updates forwardMostMove*/
 
         /* [AS] Adjudicate game if needed (note: remember that forwardMostMove now points past the last move) */
-        if( gameMode == TwoMachinesPlay && adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
+        if( gameMode == TwoEnginesPlay && adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
             int count = 0;
 
             while( count < adjudicateLossPlies ) {
@@ -8052,7 +8052,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
         hiddenThinkOutputState = 0;
 
 	bookHit = NULL;
-	if (gameMode == TwoMachinesPlay) {
+	if (gameMode == TwoEnginesPlay) {
             /* [HGM] relaying draw offers moved to after reception of move */
             /* and interpreting offer as claim if it brings draw condition */
             if (cps->offeredDraw == 1 && cps->other->sendDrawOffers) {
@@ -8060,13 +8060,13 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
             }
 	    if (cps->other->sendTime) {
 		SendTimeRemaining(cps->other,
-				  cps->other->twoMachinesColor[0] == 'w');
+				  cps->other->twoEnginesColor[0] == 'w');
 	    }
 	    bookHit = SendMoveToBookUser(forwardMostMove-1, cps->other, FALSE);
 	    if (firstMove && !bookHit) {
 		firstMove = FALSE;
 		if (cps->other->useColors) {
-		  SendToProgram(cps->other->twoMachinesColor, cps->other);
+		  SendToProgram(cps->other->twoEnginesColor, cps->other);
 		}
 		SendToProgram("go\n", cps->other);
 	    }
@@ -8081,14 +8081,14 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
 	/*
 	 * Reenable menu items that were disabled while
-	 * machine was thinking
+	 * engine was thinking
 	 */
-	if (gameMode != TwoMachinesPlay)
+	if (gameMode != TwoEnginesPlay)
 	    SetUserThinkingEnables();
 
 	// [HGM] book: after book hit opponent has received move and is now in force mode
 	// force the book reply into it, and then fake that it outputted this move by jumping
-	// back to the beginning of HandleMachineMove, with cps toggled and message set to this move
+	// back to the beginning of HandleEngineMove, with cps toggled and message set to this move
 	if(bookHit) {
 		static char bookMove[MSG_SIZ]; // a bit generous?
 
@@ -8152,8 +8152,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
            Reset(TRUE, FALSE);
            CopyBoard(boards[0], initial_position);
            initialRulePlies = FENrulePlies;
-           if(blackPlaysFirst) gameMode = MachinePlaysWhite;
-           else gameMode = MachinePlaysBlack;
+           if(blackPlaysFirst) gameMode = EnginePlaysWhite;
+           else gameMode = EnginePlaysBlack;
            DrawPosition(FALSE, boards[currentMove]);
         }
 	return;
@@ -8318,7 +8318,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	if (forwardMostMove <= backwardMostMove) return;
 	if (pausing) PauseEvent();
       if(appData.forceIllegal) {
-	    // [HGM] illegal: machine refused move; force position after move into it
+	    // [HGM] illegal: engine refused move; force position after move into it
           SendToProgram("force\n", cps);
           if(!cps->useSetboard) { // hideous kludge on kludge, because SendBoard sucks.
 		// we have a real problem now, as SendBoard will use the a2a3 kludge
@@ -8335,8 +8335,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		    SendBoard(cps, forwardMostMove+1); // kludgeless board
 		}
           } else SendBoard(cps, forwardMostMove); // FEN case, also sets stm properly
-	    if(gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack ||
-		 gameMode == TwoMachinesPlay)
+	    if(gameMode == EnginePlaysWhite || gameMode == EnginePlaysBlack ||
+		 gameMode == TwoEnginesPlay)
               SendToProgram("go\n", cps);
 	    return;
       } else
@@ -8347,8 +8347,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	}
         /* [HGM] illegal-move claim should forfeit game when Xboard */
         /* only passes fully legal moves                            */
-        if( appData.testLegality && gameMode == TwoMachinesPlay ) {
-            GameEnds( cps->twoMachinesColor[0] == 'w' ? BlackWins : WhiteWins,
+        if( appData.testLegality && gameMode == TwoEnginesPlay ) {
+            GameEnds( cps->twoEnginesColor[0] == 'w' ? BlackWins : WhiteWins,
                                 "False illegal-move claim", GE_XBOARD );
             return; // do not take back move we tested as valid
         }
@@ -8385,7 +8385,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		_(cps->which), cps->program, cps->host, message);
 	RemoveInputSource(cps->isr);
 	if(appData.icsActive) DisplayFatalError(buf1, 0, 1); else {
-	    if(cps == &first) appData.noChessProgram = TRUE;
+	    if(cps == &first) appData.noChessEngine = TRUE;
 	    DisplayError(buf1, 0);
 	}
 	return;
@@ -8491,16 +8491,16 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
     } else if (strcmp(message, "resign") == 0 ||
 	       strcmp(message, "computer resigns") == 0) {
 	switch (gameMode) {
-	  case MachinePlaysBlack:
+	  case EnginePlaysBlack:
 	  case IcsPlayingBlack:
             GameEnds(WhiteWins, "Black resigns", GE_ENGINE);
 	    break;
-	  case MachinePlaysWhite:
+	  case EnginePlaysWhite:
 	  case IcsPlayingWhite:
             GameEnds(BlackWins, "White resigns", GE_ENGINE);
 	    break;
-	  case TwoMachinesPlay:
-	    if (cps->twoMachinesColor[0] == 'w')
+	  case TwoEnginesPlay:
+	    if (cps->twoEnginesColor[0] == 'w')
               GameEnds(BlackWins, "White resigns", GE_ENGINE1 + (cps != &first));
 	    else
               GameEnds(WhiteWins, "Black resigns", GE_ENGINE1 + (cps != &first));
@@ -8512,16 +8512,16 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	return;
     } else if (strncmp(message, "opponent mates", 14) == 0) {
 	switch (gameMode) {
-	  case MachinePlaysBlack:
+	  case EnginePlaysBlack:
 	  case IcsPlayingBlack:
             GameEnds(WhiteWins, "White mates", GE_ENGINE);
 	    break;
-	  case MachinePlaysWhite:
+	  case EnginePlaysWhite:
 	  case IcsPlayingWhite:
             GameEnds(BlackWins, "Black mates", GE_ENGINE);
 	    break;
-	  case TwoMachinesPlay:
-	    if (cps->twoMachinesColor[0] == 'w')
+	  case TwoEnginesPlay:
+	    if (cps->twoEnginesColor[0] == 'w')
               GameEnds(BlackWins, "Black mates", GE_ENGINE1 + (cps != &first));
 	    else
               GameEnds(WhiteWins, "White mates", GE_ENGINE1 + (cps != &first));
@@ -8533,16 +8533,16 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	return;
     } else if (strncmp(message, "computer mates", 14) == 0) {
 	switch (gameMode) {
-	  case MachinePlaysBlack:
+	  case EnginePlaysBlack:
 	  case IcsPlayingBlack:
             GameEnds(BlackWins, "Black mates", GE_ENGINE1);
 	    break;
-	  case MachinePlaysWhite:
+	  case EnginePlaysWhite:
 	  case IcsPlayingWhite:
             GameEnds(WhiteWins, "White mates", GE_ENGINE);
 	    break;
-	  case TwoMachinesPlay:
-	    if (cps->twoMachinesColor[0] == 'w')
+	  case TwoEnginesPlay:
+	    if (cps->twoEnginesColor[0] == 'w')
               GameEnds(WhiteWins, "White mates", GE_ENGINE1 + (cps != &first));
 	    else
               GameEnds(BlackWins, "Black mates", GE_ENGINE1 + (cps != &first));
@@ -8573,19 +8573,19 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	}
 #endif
 	cps->offeredDraw = 2; /* valid until this engine moves twice */
-	if (gameMode == TwoMachinesPlay) {
+	if (gameMode == TwoEnginesPlay) {
 	    if (cps->other->offeredDraw) {
 		GameEnds(GameIsDrawn, "Draw agreed", GE_XBOARD);
-            /* [HGM] in two-machine mode we delay relaying draw offer      */
+            /* [HGM] in two-engine mode we delay relaying draw offer      */
             /* until after we also have move, to see if it is really claim */
 	    }
-	} else if (gameMode == MachinePlaysWhite ||
-		   gameMode == MachinePlaysBlack) {
+	} else if (gameMode == EnginePlaysWhite ||
+		   gameMode == EnginePlaysBlack) {
 	  if (userOfferedDraw) {
-	    DisplayInformation(_("Machine accepts your draw offer"));
+	    DisplayInformation(_("Engine accepts your draw offer"));
 	    GameEnds(GameIsDrawn, "Draw agreed", GE_XBOARD);
 	  } else {
-            DisplayInformation(_("Machine offers a draw\nSelect Action / Draw to agree"));
+            DisplayInformation(_("Engine offers a draw\nSelect Action / Draw to agree"));
 	  }
 	}
     }
@@ -8606,11 +8606,11 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	mvname[0] = NULLCHAR;
 
 	switch (gameMode) {
-	  case MachinePlaysBlack:
+	  case EnginePlaysBlack:
 	  case IcsPlayingBlack:
 	    if (WhiteOnMove(forwardMostMove)) prefixHint = TRUE;
 	    break;
-	  case MachinePlaysWhite:
+	  case EnginePlaysWhite:
 	  case IcsPlayingWhite:
 	    if (!WhiteOnMove(forwardMostMove)) prefixHint = TRUE;
 	    break;
@@ -8620,8 +8620,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
           case IcsObserving: /* [DM] icsEngineAnalyze */
             if (!appData.icsEngineAnalyze) ignore = TRUE;
 	    break;
-	  case TwoMachinesPlay:
-	    if ((cps->twoMachinesColor[0] == 'w') != WhiteOnMove(forwardMostMove)) {
+	  case TwoEnginesPlay:
+	    if ((cps->twoEnginesColor[0] == 'w') != WhiteOnMove(forwardMostMove)) {
 		ignore = TRUE;
 	    }
 	    break;
@@ -8631,7 +8631,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	}
 
 	if (!ignore) {
-	    ChessProgramStats tempStats = programStats; // [HGM] info: filter out info lines
+	    ChessEngineStats tempStats = programStats; // [HGM] info: filter out info lines
 	    buf1[0] = NULLCHAR;
 	    if (sscanf(message, "%d%c %d %d " u64Display " %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5) {
@@ -8640,10 +8640,10 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		    time *= 100;
 		}
 
-                /* [AS] Negate score if machine is playing black and reporting absolute scores */
+                /* [AS] Negate score if engine is playing black and reporting absolute scores */
                 if( cps->scoreIsAbsolute &&
-                    ( gameMode == MachinePlaysBlack ||
-                      gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b' ||
+                    ( gameMode == EnginePlaysBlack ||
+                      gameMode == TwoEnginesPlay && cps->twoEnginesColor[0] == 'b' ||
                       gameMode == IcsPlayingBlack ||     // [HGM] also add other situations where engine should report black POV
                      (gameMode == AnalyzeMode || gameMode == AnalyzeFile || gameMode == IcsObserving && appData.icsEngineAnalyze) &&
                      !WhiteOnMove(currentMove)
@@ -8658,8 +8658,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 			char buf[MSG_SIZ];
 			FILE *f;
 			snprintf(buf, MSG_SIZ, "%s", appData.serverMovesName);
-			buf[strlen(buf)-1] = gameMode == MachinePlaysWhite ? 'w' :
-			                     gameMode == MachinePlaysBlack ? 'b' : cps->twoMachinesColor[0];
+			buf[strlen(buf)-1] = gameMode == EnginePlaysWhite ? 'w' :
+			                     gameMode == EnginePlaysBlack ? 'b' : cps->twoEnginesColor[0];
 			if(appData.debugMode) fprintf(debugFP, "write PV on file '%s'\n", buf);
 			if(f = fopen(buf, "w")) { // export PV to applicable PV file
 				fprintf(f, "%5.2f/%-2d %s", curscore/100., plylev, pv);
@@ -8678,11 +8678,11 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
 			if(cps->nps == 0) ticklen = 10*time;                    // use engine reported time
 			else ticklen = (1000. * u64ToDouble(nodes)) / cps->nps; // convert node count to time
-			if(WhiteOnMove(forwardMostMove) && (gameMode == MachinePlaysWhite ||
-						gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'w'))
+			if(WhiteOnMove(forwardMostMove) && (gameMode == EnginePlaysWhite ||
+						gameMode == TwoEnginesPlay && cps->twoEnginesColor[0] == 'w'))
 			     whiteTimeRemaining = timeRemaining[0][forwardMostMove] - ticklen;
-			if(!WhiteOnMove(forwardMostMove) && (gameMode == MachinePlaysBlack ||
-						gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b'))
+			if(!WhiteOnMove(forwardMostMove) && (gameMode == EnginePlaysBlack ||
+						gameMode == TwoEnginesPlay && cps->twoEnginesColor[0] == 'b'))
 			     blackTimeRemaining = timeRemaining[1][forwardMostMove] - ticklen;
 		}
 
@@ -8723,8 +8723,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 */
 		snprintf(thinkOutput, sizeof(thinkOutput)/sizeof(thinkOutput[0]), "[%d]%c%+.2f %s%s",
 			 plylev,
-			 (gameMode == TwoMachinesPlay ?
-			  ToUpper(cps->twoMachinesColor[0]) : ' '),
+			 (gameMode == TwoEnginesPlay ?
+			  ToUpper(cps->twoEnginesColor[0]) : ' '),
 			 ((double) curscore) / 100.0,
 			 prefixHint ? lastHint : "",
 			 prefixHint ? " " : "" );
@@ -8841,14 +8841,14 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	    if (sscanf(message, "%d%c %d %d " u64Display " %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5)
             {
-                ChessProgramStats cpstats;
+                ChessEngineStats cpstats;
 
 		if (plyext != ' ' && plyext != '\t') {
 		    time *= 100;
 		}
 
-                /* [AS] Negate score if machine is playing black and reporting absolute scores */
-                if( cps->scoreIsAbsolute && ((gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) ) {
+                /* [AS] Negate score if engine is playing black and reporting absolute scores */
+                if( cps->scoreIsAbsolute && ((gameMode == EnginePlaysBlack) || (gameMode == TwoEnginesPlay && cps->twoEnginesColor[0] == 'b')) ) {
                     curscore = -curscore;
                 }
 
@@ -9389,14 +9389,14 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
         if(gameInfo.variant == VariantKnightmate)
             king += (int) WhiteUnicorn - (int) WhiteKing;
         if(forwardMostMove == 0) {
-            if(gameMode == MachinePlaysBlack || gameMode == BeginningOfGame)
+            if(gameMode == EnginePlaysBlack || gameMode == BeginningOfGame)
                 fprintf(serverMoves, "%s;", UserName());
-            else if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'b')
+            else if(gameMode == TwoEnginesPlay && first.twoEnginesColor[0] == 'b')
                 fprintf(serverMoves, "%s;", second.tidy);
             fprintf(serverMoves, "%s;", first.tidy);
-            if(gameMode == MachinePlaysWhite)
+            if(gameMode == EnginePlaysWhite)
                 fprintf(serverMoves, "%s;", UserName());
-            else if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'w')
+            else if(gameMode == TwoEnginesPlay && first.twoEnginesColor[0] == 'w')
                 fprintf(serverMoves, "%s;", second.tidy);
         } else fprintf(serverMoves, loadFlag|lastLoadFlag ? ":" : ";");
         lastLoadFlag = loadFlag;
@@ -9504,7 +9504,7 @@ ShowMove(fromX, fromY, toX, toY)
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
 }
 
-void SendEgtPath(ChessProgramState *cps)
+void SendEgtPath(ChessEngineState *cps)
 {       /* [HGM] EGT: match formats given in feature with those given by user, and send info for each match */
 	char buf[MSG_SIZ], name[MSG_SIZ], *p;
 
@@ -9538,12 +9538,12 @@ void SendEgtPath(ChessProgramState *cps)
 }
 
 void
-InitChessProgram(cps, setup)
-     ChessProgramState *cps;
+InitChessEngine(cps, setup)
+     ChessEngineState *cps;
      int setup; /* [HGM] needed to setup FRC opening position */
 {
     char buf[MSG_SIZ], b[MSG_SIZ]; int overruled;
-    if (appData.noChessProgram) return;
+    if (appData.noChessEngine) return;
     hintRequested = FALSE;
     bookRequested = FALSE;
 
@@ -9623,7 +9623,7 @@ InitChessProgram(cps, setup)
           SendToProgram("force\n", cps);
           SendBoard(cps, 0);
           /* engine is now in force mode! Set flag to wake it up after first move. */
-          setboardSpoiledMachineBlack = 1;
+          setboardSpoiledEngineBlack = 1;
     }
 
     if (cps->sendICS) {
@@ -9661,13 +9661,13 @@ InitChessProgram(cps, setup)
 
 
 void
-StartChessProgram(cps)
-     ChessProgramState *cps;
+StartChessEngine(cps)
+     ChessEngineState *cps;
 {
     char buf[MSG_SIZ];
     int err;
 
-    if (appData.noChessProgram) return;
+    if (appData.noChessEngine) return;
     cps->initDone = FALSE;
 
     if (strcmp(cps->host, "localhost") == 0) {
@@ -9689,9 +9689,9 @@ StartChessProgram(cps)
       snprintf(buf, MSG_SIZ, _("Startup failure on '%s'"), cps->program);
 	DisplayError(buf, err); // [HGM] bit of a rough kludge: ignore failure, (which XBoard would do anyway), and let I/O discover it
 	if(cps != &first) return;
-	appData.noChessProgram = TRUE;
+	appData.noChessEngine = TRUE;
 	ThawUI();
-	SetNCPMode();
+	SetNCEMode();
 //	DisplayFatalError(buf, err, 1);
 //	cps->pr = NoProc;
 //	cps->isr = NULL;
@@ -9710,22 +9710,22 @@ StartChessProgram(cps)
 }
 
 void
-TwoMachinesEventIfReady P((void))
+TwoEnginesEventIfReady P((void))
 {
   static int curMess = 0;
   if (first.lastPing != first.lastPong) {
     if(curMess != 1) DisplayMessage("", _("Waiting for first chess program")); curMess = 1;
-    ScheduleDelayedEvent(TwoMachinesEventIfReady, 10); // [HGM] fast: lowered from 1000
+    ScheduleDelayedEvent(TwoEnginesEventIfReady, 10); // [HGM] fast: lowered from 1000
     return;
   }
   if (second.lastPing != second.lastPong) {
     if(curMess != 2) DisplayMessage("", _("Waiting for second chess program")); curMess = 2;
-    ScheduleDelayedEvent(TwoMachinesEventIfReady, 10); // [HGM] fast: lowered from 1000
+    ScheduleDelayedEvent(TwoEnginesEventIfReady, 10); // [HGM] fast: lowered from 1000
     return;
   }
   DisplayMessage("", ""); curMess = 0;
   ThawUI();
-  TwoMachinesEvent();
+  TwoEnginesEvent();
 }
 
 char *
@@ -9821,7 +9821,7 @@ void Substitute(char *participants, int expunge)
 	q = r; while(*q) nPlayers += (*q++ == '\n');
 	p = buf; while(*r && (*p = *r++) != '\n') p++;
 	*p = NULLCHAR;
-	NamesToList(firstChessProgramNames, command, mnemonic);
+	NamesToList(firstChessEngineNames, command, mnemonic);
 	for(i=1; mnemonic[i]; i++) if(!strcmp(buf, mnemonic[i])) break;
 	if(mnemonic[i]) { // The substitute is valid
 	    FILE *f;
@@ -9884,7 +9884,7 @@ CreateTourney(char *name)
 	    if((f = WriteTourneyFile("", NULL)) == NULL) return 0;
 	}
 	fclose(f);
-	appData.noChessProgram = FALSE;
+	appData.noChessEngine = FALSE;
 	appData.clockMode = TRUE;
 	SetGNUMode();
 	return 1;
@@ -9924,7 +9924,7 @@ void SwapEngines(int n)
     char *p;
     if(n == 0) return;
     SWAP(directory, p)
-    SWAP(chessProgram, p)
+    SWAP(chessEngine, p)
     SWAP(isUCI, h)
     SWAP(hasOwnBookUCI, h)
     SWAP(protocolVersion, h)
@@ -9946,7 +9946,7 @@ SetPlayer(int player)
     engineName = strdup(p); if(p = strchr(engineName, '\n')) *p = NULLCHAR;
     for(i=1; command[i]; i++) if(!strcmp(mnemonic[i], engineName)) break;
     if(mnemonic[i]) {
-	snprintf(buf, MSG_SIZ, "-fcp %s", command[i]);
+	snprintf(buf, MSG_SIZ, "-fce %s", command[i]);
 	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
 	appData.firstHasOwnBookUCI = !appData.defNoBook;
 	ParseArgsFromString(buf);
@@ -10036,7 +10036,7 @@ NextTourneyGame(int nr, int *swapColors)
 		    DisplayFatalError(_("No pairing engine specified"), 0, 1);
 		    return 0;
 		}
-		StartChessProgram(&pairing); // starts the pairing engine
+		StartChessEngine(&pairing); // starts the pairing engine
 	    }
 	    snprintf(buf, 1<<16, "results %d %s\n", nPlayers, appData.results);
 	    SendToProgram(buf, &pairing);
@@ -10054,14 +10054,14 @@ NextTourneyGame(int nr, int *swapColors)
     if(first.pr != NoProc || second.pr != NoProc) return 1; // engines already loaded
 
     // redefine engines, engine dir, etc.
-    NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
+    NamesToList(firstChessEngineNames, command, mnemonic); // get mnemonics of installed engines
     SetPlayer(whitePlayer); // find white player amongst it, and parse its engine line
     SwapEngines(1);
     SetPlayer(blackPlayer); // find black player amongst it, and parse its engine line
     SwapEngines(1);         // and make that valid for second engine by swapping
-    InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.
+    InitEngine(&first, 0);  // initialize ChessEngineStates based on new settings.
     InitEngine(&second, 1);
-    CommonEngineInit();     // after this TwoMachinesEvent will create correct engine processes
+    CommonEngineInit();     // after this TwoEnginesEvent will create correct engine processes
     UpdateLogos(FALSE);     // leave display to ModeHiglight()
     return 1;
 }
@@ -10070,18 +10070,18 @@ void
 NextMatchGame()
 {   // performs game initialization that does not invoke engines, and then tries to start the game
     int res, firstWhite, swapColors = 0;
-    if(!NextTourneyGame(nextGame, &swapColors)) return; // this sets matchGame, -fcp / -scp and other options for next game, if needed
+    if(!NextTourneyGame(nextGame, &swapColors)) return; // this sets matchGame, -fce / -sce and other options for next game, if needed
     firstWhite = appData.firstPlaysBlack ^ (matchGame & 1 | appData.sameColorGames > 1); // non-incremental default
     firstWhite ^= swapColors; // reverses if NextTourneyGame says we are in an odd round
-    first.twoMachinesColor =  firstWhite ? "white\n" : "black\n";   // perform actual color assignement
-    second.twoMachinesColor = firstWhite ? "black\n" : "white\n";
-    appData.noChessProgram = (first.pr == NoProc); // kludge to prevent Reset from starting up chess program
+    first.twoEnginesColor =  firstWhite ? "white\n" : "black\n";   // perform actual color assignement
+    second.twoEnginesColor = firstWhite ? "black\n" : "white\n";
+    appData.noChessEngine = (first.pr == NoProc); // kludge to prevent Reset from starting up chess program
     if(appData.loadGameIndex == -2) srandom(appData.seedBase + 68163*(nextGame & ~1)); // deterministic seed to force same opening
     Reset(FALSE, first.pr != NoProc);
     res = LoadGameOrPosition(matchGame); // setup game
-    appData.noChessProgram = FALSE; // LoadGameOrPosition might call Reset too!
+    appData.noChessEngine = FALSE; // LoadGameOrPosition might call Reset too!
     if(!res) return; // abort when bad game/pos file
-    TwoMachinesEvent();
+    TwoEnginesEvent();
 }
 
 void UserAdjudicationEvent( int result )
@@ -10095,7 +10095,7 @@ void UserAdjudicationEvent( int result )
         gameResult = BlackWins;
     }
 
-    if( gameMode == TwoMachinesPlay ) {
+    if( gameMode == TwoEnginesPlay ) {
         GameEnds( gameResult, "User adjudication", GE_XBOARD );
     }
 }
@@ -10186,18 +10186,18 @@ GameEnds(result, resultDetails, whosays)
     if (!isIcsGame || whosays == GE_ICS) {
 	/* OK -- not an ICS game, or ICS said it was done */
 	StopClocks();
-	if (!isIcsGame && !appData.noChessProgram)
+	if (!isIcsGame && !appData.noChessEngine)
 	  SetUserThinkingEnables();
 
-        /* [HGM] if a machine claims the game end we verify this claim */
-        if(gameMode == TwoMachinesPlay && appData.testClaims) {
+        /* [HGM] if a engine claims the game end we verify this claim */
+        if(gameMode == TwoEnginesPlay && appData.testClaims) {
 	    if(appData.testLegality && whosays >= GE_ENGINE1 ) {
                 char claimer;
 		ChessMove trueResult = (ChessMove) -1;
 
                 claimer = whosays == GE_ENGINE1 ?      /* color of claimer */
-                                            first.twoMachinesColor[0] :
-                                            second.twoMachinesColor[0] ;
+                                            first.twoEnginesColor[0] :
+                                            second.twoEnginesColor[0] ;
 
 		// [HGM] losers: because the logic is becoming a bit hairy, determine true result first
 		if((signed char)boards[forwardMostMove][EP_STATUS] == EP_CHECKMATE) {
@@ -10299,9 +10299,9 @@ GameEnds(result, resultDetails, whosays)
             /* would otherwise lose us the PGN.                       */
             /* [HGM] crash: not needed anymore, but doesn't hurt;     */
             /* output during GameEnds should never be fatal anymore   */
-	    if (gameMode == MachinePlaysWhite ||
-		gameMode == MachinePlaysBlack ||
-		gameMode == TwoMachinesPlay ||
+	    if (gameMode == EnginePlaysWhite ||
+		gameMode == EnginePlaysBlack ||
+		gameMode == TwoEnginesPlay ||
 		gameMode == IcsPlayingWhite ||
 		gameMode == IcsPlayingBlack ||
 		gameMode == BeginningOfGame) {
@@ -10312,7 +10312,7 @@ GameEnds(result, resultDetails, whosays)
 		    SendToProgram(buf, &first);
 		}
 		if (second.pr != NoProc &&
-		    gameMode == TwoMachinesPlay) {
+		    gameMode == TwoEnginesPlay) {
 		    SendToProgram(buf, &second);
 		}
 	    }
@@ -10370,7 +10370,7 @@ GameEnds(result, resultDetails, whosays)
 	nextGameMode = gameMode;
     }
 
-    if (appData.noChessProgram) {
+    if (appData.noChessEngine) {
 	gameMode = nextGameMode;
 	ModeHighlight();
 	endingGame = 0; /* [HGM] crash */
@@ -10380,9 +10380,9 @@ GameEnds(result, resultDetails, whosays)
     if (first.reuse) {
 	/* Put first chess program into idle state */
 	if (first.pr != NoProc &&
-	    (gameMode == MachinePlaysWhite ||
-	     gameMode == MachinePlaysBlack ||
-	     gameMode == TwoMachinesPlay ||
+	    (gameMode == EnginePlaysWhite ||
+	     gameMode == EnginePlaysBlack ||
+	     gameMode == TwoEnginesPlay ||
 	     gameMode == IcsPlayingWhite ||
 	     gameMode == IcsPlayingBlack ||
 	     gameMode == BeginningOfGame)) {
@@ -10411,7 +10411,7 @@ GameEnds(result, resultDetails, whosays)
     if (second.reuse) {
 	/* Put second chess program into idle state */
 	if (second.pr != NoProc &&
-	    gameMode == TwoMachinesPlay) {
+	    gameMode == TwoEnginesPlay) {
 	    SendToProgram("force\n", &second);
 	    if (second.usePing) {
 	      char buf[MSG_SIZ];
@@ -10434,12 +10434,12 @@ GameEnds(result, resultDetails, whosays)
 	second.pr = NoProc;
     }
 
-    if (matchMode && (gameMode == TwoMachinesPlay || waitingForGame && exiting)) {
+    if (matchMode && (gameMode == TwoEnginesPlay || waitingForGame && exiting)) {
 	char resChar = '=';
         switch (result) {
 	case WhiteWins:
 	  resChar = '+';
-	  if (first.twoMachinesColor[0] == 'w') {
+	  if (first.twoEnginesColor[0] == 'w') {
 	    first.matchWins++;
 	  } else {
 	    second.matchWins++;
@@ -10447,7 +10447,7 @@ GameEnds(result, resultDetails, whosays)
 	  break;
 	case BlackWins:
 	  resChar = '-';
-	  if (first.twoMachinesColor[0] == 'b') {
+	  if (first.twoEnginesColor[0] == 'b') {
 	    first.matchWins++;
 	  } else {
 	    second.matchWins++;
@@ -10480,14 +10480,14 @@ GameEnds(result, resultDetails, whosays)
 		     first.tidy, second.tidy,
 		     first.matchWins, second.matchWins,
 		     appData.matchGames - (first.matchWins + second.matchWins));
-	    if(!appData.tourneyFile[0]) matchGame++, DisplayTwoMachinesTitle(); // [HGM] update result in window title
+	    if(!appData.tourneyFile[0]) matchGame++, DisplayTwoEnginesTitle(); // [HGM] update result in window title
 	    popupRequested++; // [HGM] crash: postpone to after resetting endingGame
 	    if (appData.firstPlaysBlack) { // [HGM] match: back to original for next match
-		first.twoMachinesColor = "black\n";
-		second.twoMachinesColor = "white\n";
+		first.twoEnginesColor = "black\n";
+		second.twoEnginesColor = "white\n";
 	    } else {
-		first.twoMachinesColor = "white\n";
-		second.twoMachinesColor = "black\n";
+		first.twoEnginesColor = "white\n";
+		second.twoEnginesColor = "black\n";
 	    }
 	}
     }
@@ -10519,7 +10519,7 @@ GameEnds(result, resultDetails, whosays)
    Leaves program in force mode. */
 void
 FeedMovesToProgram(cps, upto)
-     ChessProgramState *cps;
+     ChessEngineState *cps;
      int upto;
 {
     int i;
@@ -10551,23 +10551,23 @@ FeedMovesToProgram(cps, upto)
 
 
 int
-ResurrectChessProgram()
+ResurrectChessEngine()
 {
      /* The chess program may have exited.
 	If so, restart it and feed it all the moves made so far. */
     static int doInit = 0;
 
-    if (appData.noChessProgram) return 1;
+    if (appData.noChessEngine) return 1;
 
     if(matchMode && appData.tourneyFile[0]) { // [HGM] tourney: make sure we get features after engine replacement. (Should we always do this?)
-	if(WaitForEngine(&first, TwoMachinesEventIfReady)) { doInit = 1; return 0; } // request to do init on next visit
+	if(WaitForEngine(&first, TwoEnginesEventIfReady)) { doInit = 1; return 0; } // request to do init on next visit
 	if(!doInit) return 1; // this replaces testing first.pr != NoProc, which is true when we get here, but first time no reason to abort
 	doInit = 0; // we fell through (first time after starting the engine); make sure it doesn't happen again
     } else {
 	if (first.pr != NoProc) return 1;
-	StartChessProgram(&first);
+	StartChessEngine(&first);
     }
-    InitChessProgram(&first, FALSE);
+    InitChessEngine(&first, FALSE);
     FeedMovesToProgram(&first, currentMove);
 
     if (!first.sendTime) {
@@ -10660,10 +10660,10 @@ Reset(redraw, init)
     timeRemaining[1][0] = blackTimeRemaining;
 
     if (first.pr == NoProc) {
-	StartChessProgram(&first);
+	StartChessEngine(&first);
     }
     if (init) {
-	    InitChessProgram(&first, startedFromSetupPosition);
+	    InitChessEngine(&first, startedFromSetupPosition);
     }
     DisplayTitle("");
     DisplayMessage("", "");
@@ -11874,9 +11874,9 @@ LoadGame(f, gameNumber, title, useList)
     }
 
     if (first.pr == NoProc) {
-	StartChessProgram(&first);
+	StartChessEngine(&first);
     }
-    InitChessProgram(&first, FALSE);
+    InitChessEngine(&first, FALSE);
     SendToProgram("force\n", &first);
     if (startedFromSetupPosition) {
 	SendBoard(&first, forwardMostMove);
@@ -12033,9 +12033,9 @@ LoadPosition(f, positionNumber, title)
     lastLoadPositionFP = f;
     lastLoadPositionNumber = positionNumber;
     safeStrCpy(lastLoadPositionTitle, title, sizeof(lastLoadPositionTitle)/sizeof(lastLoadPositionTitle[0]));
-    if (first.pr == NoProc && !appData.noChessProgram) {
-      StartChessProgram(&first);
-      InitChessProgram(&first, FALSE);
+    if (first.pr == NoProc && !appData.noChessEngine) {
+      StartChessEngine(&first);
+      InitChessEngine(&first, FALSE);
     }
     pn = positionNumber;
     if (positionNumber < 0) {
@@ -13015,8 +13015,8 @@ PauseEvent()
     if (pausing) {
 	pausing = FALSE;
 	ModeHighlight();
-	if (gameMode == MachinePlaysWhite ||
-	    gameMode == MachinePlaysBlack) {
+	if (gameMode == EnginePlaysWhite ||
+	    gameMode == EnginePlaysBlack) {
 	    StartClocks();
 	} else {
 	    DisplayBothClocks();
@@ -13054,14 +13054,14 @@ PauseEvent()
 	  case BeginningOfGame:
 	    if (appData.icsActive) return;
 	    /* else fall through */
-	  case MachinePlaysWhite:
-	  case MachinePlaysBlack:
-	  case TwoMachinesPlay:
+	  case EnginePlaysWhite:
+	  case EnginePlaysBlack:
+	  case TwoEnginesPlay:
 	    if (forwardMostMove == 0)
 	      return;		/* don't pause if no one has moved */
-	    if ((gameMode == MachinePlaysWhite &&
+	    if ((gameMode == EnginePlaysWhite &&
 		 !WhiteOnMove(forwardMostMove)) ||
-		(gameMode == MachinePlaysBlack &&
+		(gameMode == EnginePlaysBlack &&
 		 WhiteOnMove(forwardMostMove))) {
 		StopClocks();
 	    }
@@ -13101,7 +13101,7 @@ EditTagsEvent()
 void
 AnalyzeModeEvent()
 {
-    if (appData.noChessProgram || gameMode == AnalyzeMode)
+    if (appData.noChessEngine || gameMode == AnalyzeMode)
       return;
 
     if (gameMode != AnalyzeFile) {
@@ -13109,7 +13109,7 @@ AnalyzeModeEvent()
                EditGameEvent();
                if (gameMode != EditGame) return;
         }
-	ResurrectChessProgram();
+	ResurrectChessEngine();
 	SendToProgram("analyze\n", &first);
 	first.analyzing = TRUE;
 	/*first.maybeThinking = TRUE;*/
@@ -13129,13 +13129,13 @@ AnalyzeModeEvent()
 void
 AnalyzeFileEvent()
 {
-    if (appData.noChessProgram || gameMode == AnalyzeFile)
+    if (appData.noChessEngine || gameMode == AnalyzeFile)
       return;
 
     if (gameMode != AnalyzeMode) {
 	EditGameEvent();
 	if (gameMode != EditGame) return;
-	ResurrectChessProgram();
+	ResurrectChessEngine();
 	SendToProgram("analyze\n", &first);
 	first.analyzing = TRUE;
 	/*first.maybeThinking = TRUE;*/
@@ -13154,17 +13154,17 @@ AnalyzeFileEvent()
 }
 
 void
-MachineWhiteEvent()
+EngineWhiteEvent()
 {
     char buf[MSG_SIZ];
     char *bookHit = NULL;
 
-    if (appData.noChessProgram || (gameMode == MachinePlaysWhite))
+    if (appData.noChessEngine || (gameMode == EnginePlaysWhite))
       return;
 
 
     if (gameMode == PlayFromGameFile ||
-	gameMode == TwoMachinesPlay  ||
+	gameMode == TwoEnginesPlay  ||
 	gameMode == Training         ||
 	gameMode == AnalyzeMode      ||
 	gameMode == EndOfGame)
@@ -13185,12 +13185,12 @@ MachineWhiteEvent()
 	gameMode == AnalyzeFile)
 	TruncateGame();
 
-    ResurrectChessProgram();	/* in case it isn't running */
+    ResurrectChessEngine();	/* in case it isn't running */
     if(gameMode == BeginningOfGame) { /* [HGM] time odds: to get right odds in human mode */
-	gameMode = MachinePlaysWhite;
+	gameMode = EnginePlaysWhite;
 	ResetClocks();
     } else
-    gameMode = MachinePlaysWhite;
+    gameMode = EnginePlaysWhite;
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
@@ -13210,7 +13210,7 @@ MachineWhiteEvent()
       SendToProgram("white\n", &first); // [HGM] book: send 'go' separately
     }
     bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
-    SetMachineThinkingEnables();
+    SetEngineThinkingEnables();
     first.maybeThinking = TRUE;
     StartClocks();
     firstMove = FALSE;
@@ -13230,22 +13230,22 @@ MachineWhiteEvent()
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	HandleEngineMove(bookMove, &first);
     }
 }
 
 void
-MachineBlackEvent()
+EngineBlackEvent()
 {
   char buf[MSG_SIZ];
   char *bookHit = NULL;
 
-    if (appData.noChessProgram || (gameMode == MachinePlaysBlack))
+    if (appData.noChessEngine || (gameMode == EnginePlaysBlack))
 	return;
 
 
     if (gameMode == PlayFromGameFile ||
-	gameMode == TwoMachinesPlay  ||
+	gameMode == TwoEnginesPlay  ||
 	gameMode == Training         ||
 	gameMode == AnalyzeMode      ||
 	gameMode == EndOfGame)
@@ -13266,8 +13266,8 @@ MachineBlackEvent()
 	gameMode == AnalyzeFile)
 	TruncateGame();
 
-    ResurrectChessProgram();	/* in case it isn't running */
-    gameMode = MachinePlaysBlack;
+    ResurrectChessEngine();	/* in case it isn't running */
+    gameMode = EnginePlaysBlack;
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
@@ -13287,7 +13287,7 @@ MachineBlackEvent()
       SendToProgram("black\n", &first); // [HGM] book: 'go' sent separately
     }
     bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
-    SetMachineThinkingEnables();
+    SetEngineThinkingEnables();
     first.maybeThinking = TRUE;
     StartClocks();
 
@@ -13305,13 +13305,13 @@ MachineBlackEvent()
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	HandleEngineMove(bookMove, &first);
     }
 }
 
 
 void
-DisplayTwoMachinesTitle()
+DisplayTwoEnginesTitle()
 {
     char buf[MSG_SIZ];
     if (appData.matchGames > 0) {
@@ -13321,7 +13321,7 @@ DisplayTwoMachinesTitle()
 		   nextGame+1, appData.matchGames+1,
 		   appData.tourneyType>0 ? "gt" : appData.tourneyType<0 ? "sw" : "rr");
         } else 
-        if (first.twoMachinesColor[0] == 'w') {
+        if (first.twoEnginesColor[0] == 'w') {
 	  snprintf(buf, MSG_SIZ, _("%s vs. %s (%d-%d-%d)"),
 		   gameInfo.white, gameInfo.black,
 		   first.matchWins, second.matchWins,
@@ -13352,11 +13352,11 @@ SettingsMenuIfReady()
 }
 
 int
-WaitForEngine(ChessProgramState *cps, DelayedEventCallback retry)
+WaitForEngine(ChessEngineState *cps, DelayedEventCallback retry)
 {
     char buf[MSG_SIZ];
     if (cps->pr == NoProc) {
-	StartChessProgram(cps);
+	StartChessEngine(cps);
 	if (cps->protocolVersion == 1) {
 	  retry();
 	} else {
@@ -13372,24 +13372,24 @@ WaitForEngine(ChessProgramState *cps, DelayedEventCallback retry)
 }
 
 void
-TwoMachinesEvent P((void))
+TwoEnginesEvent P((void))
 {
     int i;
     char buf[MSG_SIZ];
-    ChessProgramState *onmove;
+    ChessEngineState *onmove;
     char *bookHit = NULL;
     static int stalling = 0;
     TimeMark now;
     long wait;
 
-    if (appData.noChessProgram) return;
+    if (appData.noChessEngine) return;
 
     switch (gameMode) {
-      case TwoMachinesPlay:
+      case TwoEnginesPlay:
 	return;
-      case MachinePlaysWhite:
-      case MachinePlaysBlack:
-	if (WhiteOnMove(forwardMostMove) == (gameMode == MachinePlaysWhite)) {
+      case EnginePlaysWhite:
+      case EnginePlaysBlack:
+	if (WhiteOnMove(forwardMostMove) == (gameMode == EnginePlaysWhite)) {
 	    DisplayError(_("Wait until your turn,\nor select Move Now"), 0);
 	    return;
 	}
@@ -13413,20 +13413,20 @@ TwoMachinesEvent P((void))
     }
 
 //    forwardMostMove = currentMove;
-    TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
+    TruncateGame(); // [HGM] vari: EngineWhite and EngineBlack do this...
 
-    if(!ResurrectChessProgram()) return;   /* in case first program isn't running (unbalances its ping due to InitChessProgram!) */
+    if(!ResurrectChessEngine()) return;   /* in case first program isn't running (unbalances its ping due to InitChessEngine!) */
 
-    if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
+    if(WaitForEngine(&second, TwoEnginesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
     if(first.lastPing != first.lastPong) { // [HGM] wait till we are sure first engine has set up position
-      ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
+      ScheduleDelayedEvent(TwoEnginesEventIfReady, 10);
       return;
     }
     if(!stalling) {
-      InitChessProgram(&second, FALSE); // unbalances ping of second engine
+      InitChessEngine(&second, FALSE); // unbalances ping of second engine
       SendToProgram("force\n", &second);
       stalling = 1;
-      ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
+      ScheduleDelayedEvent(TwoEnginesEventIfReady, 10);
       return;
     }
     GetTimeMark(&now); // [HGM] matchpause: implement match pause after engine load
@@ -13434,7 +13434,7 @@ TwoMachinesEvent P((void))
                 appData.matchPause = 10000; /* [HGM] make pause adjustable */
     wait = SubtractTimeMarks(&now, &pauseStart);
     if(wait < appData.matchPause) {
-	ScheduleDelayedEvent(TwoMachinesEventIfReady, appData.matchPause - wait);
+	ScheduleDelayedEvent(TwoEnginesEventIfReady, appData.matchPause - wait);
 	return;
     }
     stalling = 0;
@@ -13442,25 +13442,25 @@ TwoMachinesEvent P((void))
     if (startedFromSetupPosition) {
 	SendBoard(&second, backwardMostMove);
     if (appData.debugMode) {
-        fprintf(debugFP, "Two Machines\n");
+        fprintf(debugFP, "Two Engines\n");
     }
     }
     for (i = backwardMostMove; i < forwardMostMove; i++) {
 	SendMoveToProgram(i, &second);
     }
 
-    gameMode = TwoMachinesPlay;
+    gameMode = TwoEnginesPlay;
     pausing = FALSE;
     ModeHighlight(); // [HGM] logo: this triggers display update of logos
     SetGameInfo();
-    DisplayTwoMachinesTitle();
+    DisplayTwoEnginesTitle();
     firstMove = TRUE;
-    if ((first.twoMachinesColor[0] == 'w') == WhiteOnMove(forwardMostMove)) {
+    if ((first.twoEnginesColor[0] == 'w') == WhiteOnMove(forwardMostMove)) {
 	onmove = &first;
     } else {
 	onmove = &second;
     }
-    if(appData.debugMode) fprintf(debugFP, "New game (%d): %s-%s (%c)\n", matchGame, first.tidy, second.tidy, first.twoMachinesColor[0]);
+    if(appData.debugMode) fprintf(debugFP, "New game (%d): %s-%s (%c)\n", matchGame, first.tidy, second.tidy, first.twoEnginesColor[0]);
     SendToProgram(first.computerString, &first);
     if (first.sendName) {
       snprintf(buf, MSG_SIZ, "name %s\n", second.tidy);
@@ -13479,17 +13479,17 @@ TwoMachinesEvent P((void))
     }
     if (onmove->sendTime) {
       if (onmove->useColors) {
-	SendToProgram(onmove->other->twoMachinesColor, onmove); /*gnu kludge*/
+	SendToProgram(onmove->other->twoEnginesColor, onmove); /*gnu kludge*/
       }
       SendTimeRemaining(onmove, WhiteOnMove(forwardMostMove));
     }
     if (onmove->useColors) {
-      SendToProgram(onmove->twoMachinesColor, onmove);
+      SendToProgram(onmove->twoEnginesColor, onmove);
     }
     bookHit = SendMoveToBookUser(forwardMostMove-1, onmove, TRUE); // [HGM] book: send go or retrieve book move
 //    SendToProgram("go\n", onmove);
     onmove->maybeThinking = TRUE;
-    SetMachineThinkingEnables();
+    SetEngineThinkingEnables();
 
     StartClocks();
 
@@ -13576,8 +13576,8 @@ EditGameEvent()
       case Training:
 	SetTrainingModeOff();
 	break;
-      case MachinePlaysWhite:
-      case MachinePlaysBlack:
+      case EnginePlaysWhite:
+      case EnginePlaysBlack:
       case BeginningOfGame:
 	SendToProgram("force\n", &first);
 	SetUserThinkingEnables();
@@ -13596,13 +13596,13 @@ EditGameEvent()
 	ExitAnalyzeMode();
 	SendToProgram("force\n", &first);
 	break;
-      case TwoMachinesPlay:
+      case TwoEnginesPlay:
 	GameEnds(EndOfFile, NULL, GE_PLAYER);
-	ResurrectChessProgram();
+	ResurrectChessEngine();
 	SetUserThinkingEnables();
 	break;
       case EndOfGame:
-	ResurrectChessProgram();
+	ResurrectChessEngine();
 	break;
       case IcsPlayingBlack:
       case IcsPlayingWhite:
@@ -13631,9 +13631,9 @@ EditGameEvent()
 	DisplayTitle("");
     }
 
-    if (gameMode == MachinePlaysWhite ||
-	gameMode == MachinePlaysBlack ||
-	gameMode == TwoMachinesPlay ||
+    if (gameMode == EnginePlaysWhite ||
+	gameMode == EnginePlaysBlack ||
+	gameMode == TwoEnginesPlay ||
 	gameMode == EndOfGame) {
 	i = forwardMostMove;
 	while (i > currentMove) {
@@ -13703,7 +13703,7 @@ EditPositionDone(Boolean fakeRights)
     int king = gameInfo.variant == VariantKnightmate ? WhiteUnicorn : WhiteKing;
 
     startedFromSetupPosition = TRUE;
-    InitChessProgram(&first, FALSE);
+    InitChessEngine(&first, FALSE);
     if(fakeRights) { // [HGM] suppress this if we just pasted a FEN.
       boards[0][EP_STATUS] = EP_NONE;
       boards[0][CASTLING][2] = boards[0][CASTLING][5] = BOARD_WIDTH>>1;
@@ -13944,7 +13944,7 @@ DropMenuEvent(selection, x, y)
 
     switch (gameMode) {
       case IcsPlayingWhite:
-      case MachinePlaysBlack:
+      case EnginePlaysBlack:
 	if (!WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is Black's turn"));
 	    return;
@@ -13952,7 +13952,7 @@ DropMenuEvent(selection, x, y)
 	moveType = WhiteDrop;
 	break;
       case IcsPlayingBlack:
-      case MachinePlaysWhite:
+      case EnginePlaysWhite:
 	if (WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is White's turn"));
 	    return;
@@ -14049,7 +14049,7 @@ CallFlagEvent()
 	switch (gameMode) {
 	  default:
 	    return;
-	  case MachinePlaysWhite:
+	  case EnginePlaysWhite:
 	    if (whiteFlag) {
 		if (blackFlag)
 		  GameEnds(GameIsDrawn, "Both players ran out of time",
@@ -14060,7 +14060,7 @@ CallFlagEvent()
 		DisplayError(_("Your opponent is not out of time"), 0);
 	    }
 	    break;
-	  case MachinePlaysBlack:
+	  case EnginePlaysBlack:
 	    if (blackFlag) {
 		if (whiteFlag)
 		  GameEnds(GameIsDrawn, "Both players ran out of time",
@@ -14087,7 +14087,7 @@ ClockClick(int which)
 	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
 	  } else if (gameMode == IcsPlayingWhite ||
-	             gameMode == MachinePlaysBlack) {
+	             gameMode == EnginePlaysBlack) {
 	    CallFlagEvent();
 	  }
 	} else { // white clock
@@ -14099,7 +14099,7 @@ ClockClick(int which)
 	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
 	  } else if (gameMode == IcsPlayingBlack ||
-	           gameMode == MachinePlaysWhite) {
+	           gameMode == EnginePlaysWhite) {
 	    CallFlagEvent();
 	  }
 	}
@@ -14184,10 +14184,10 @@ ResignEvent()
 	SendToICS("resign\n");
     } else {
 	switch (gameMode) {
-	  case MachinePlaysWhite:
+	  case EnginePlaysWhite:
 	    GameEnds(WhiteWins, "Black resigns", GE_PLAYER);
 	    break;
-	  case MachinePlaysBlack:
+	  case EnginePlaysBlack:
 	    GameEnds(BlackWins, "White resigns", GE_PLAYER);
 	    break;
 	  case EditGame:
@@ -14479,9 +14479,9 @@ void
 RetractMoveEvent()
 {
     switch (gameMode) {
-      case MachinePlaysWhite:
-      case MachinePlaysBlack:
-	if (WhiteOnMove(forwardMostMove) == (gameMode == MachinePlaysWhite)) {
+      case EnginePlaysWhite:
+      case EnginePlaysBlack:
+	if (WhiteOnMove(forwardMostMove) == (gameMode == EnginePlaysWhite)) {
 	    DisplayError(_("Wait until your turn,\nor select Move Now"), 0);
 	    return;
 	}
@@ -14517,26 +14517,26 @@ RetractMoveEvent()
 void
 MoveNowEvent()
 {
-    ChessProgramState *cps;
+    ChessEngineState *cps;
 
     switch (gameMode) {
-      case MachinePlaysWhite:
+      case EnginePlaysWhite:
 	if (!WhiteOnMove(forwardMostMove)) {
 	    DisplayError(_("It is your turn"), 0);
 	    return;
 	}
 	cps = &first;
 	break;
-      case MachinePlaysBlack:
+      case EnginePlaysBlack:
 	if (WhiteOnMove(forwardMostMove)) {
 	    DisplayError(_("It is your turn"), 0);
 	    return;
 	}
 	cps = &first;
 	break;
-      case TwoMachinesPlay:
+      case TwoEnginesPlay:
 	if (WhiteOnMove(forwardMostMove) ==
-	    (first.twoMachinesColor[0] == 'w')) {
+	    (first.twoEnginesColor[0] == 'w')) {
 	    cps = &first;
 	} else {
 	    cps = &second;
@@ -14576,16 +14576,16 @@ TruncateGame()
 void
 HintEvent()
 {
-    if (appData.noChessProgram) return;
+    if (appData.noChessEngine) return;
     switch (gameMode) {
-      case MachinePlaysWhite:
+      case EnginePlaysWhite:
 	if (WhiteOnMove(forwardMostMove)) {
 	    DisplayError(_("Wait until your turn"), 0);
 	    return;
 	}
 	break;
       case BeginningOfGame:
-      case MachinePlaysBlack:
+      case EnginePlaysBlack:
 	if (!WhiteOnMove(forwardMostMove)) {
 	    DisplayError(_("Wait until your turn"), 0);
 	    return;
@@ -14602,16 +14602,16 @@ HintEvent()
 void
 BookEvent()
 {
-    if (appData.noChessProgram) return;
+    if (appData.noChessEngine) return;
     switch (gameMode) {
-      case MachinePlaysWhite:
+      case EnginePlaysWhite:
 	if (WhiteOnMove(forwardMostMove)) {
 	    DisplayError(_("Wait until your turn"), 0);
 	    return;
 	}
 	break;
       case BeginningOfGame:
-      case MachinePlaysBlack:
+      case EnginePlaysBlack:
 	if (!WhiteOnMove(forwardMostMove)) {
 	    DisplayError(_("Wait until your turn"), 0);
 	    return;
@@ -14620,7 +14620,7 @@ BookEvent()
       case EditPosition:
 	EditPositionDone(TRUE);
 	break;
-      case TwoMachinesPlay:
+      case TwoEnginesPlay:
 	return;
       default:
 	break;
@@ -14735,7 +14735,7 @@ SetGameInfo()
     gameInfo.variant = v;
 
     switch (gameMode) {
-      case MachinePlaysWhite:
+      case EnginePlaysWhite:
 	gameInfo.event = StrSave( appData.pgnEventHeader );
 	gameInfo.site = StrSave(HostName());
 	gameInfo.date = PGNDate();
@@ -14745,7 +14745,7 @@ SetGameInfo()
 	gameInfo.timeControl = TimeControlTagValue();
 	break;
 
-      case MachinePlaysBlack:
+      case EnginePlaysBlack:
 	gameInfo.event = StrSave( appData.pgnEventHeader );
 	gameInfo.site = StrSave(HostName());
 	gameInfo.date = PGNDate();
@@ -14755,7 +14755,7 @@ SetGameInfo()
 	gameInfo.timeControl = TimeControlTagValue();
 	break;
 
-      case TwoMachinesPlay:
+      case TwoEnginesPlay:
 	gameInfo.event = StrSave( appData.pgnEventHeader );
 	gameInfo.site = StrSave(HostName());
 	gameInfo.date = PGNDate();
@@ -14766,7 +14766,7 @@ SetGameInfo()
 	} else {
 	    gameInfo.round = StrSave("-");
 	}
-	if (first.twoMachinesColor[0] == 'w') {
+	if (first.twoEnginesColor[0] == 'w') {
 	    gameInfo.white = StrSave(appData.pgnName[0][0] ? appData.pgnName[0] : first.tidy);
 	    gameInfo.black = StrSave(appData.pgnName[1][0] ? appData.pgnName[1] : second.tidy);
 	} else {
@@ -15034,7 +15034,7 @@ char *GetInfoFromComment( int index, char * text )
 void
 SendToProgram(message, cps)
      char *message;
-     ChessProgramState *cps;
+     ChessEngineState *cps;
 {
     int count, outCount, error;
     char buf[MSG_SIZ];
@@ -15062,7 +15062,7 @@ SendToProgram(message, cps)
 		if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(GameIsDrawn, buf, GE_XBOARD); return; }
                 gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
             } else {
-                ChessMove res = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
+                ChessMove res = cps->twoEnginesColor[0]=='w' ? BlackWins : WhiteWins;
 		if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(res, buf, GE_XBOARD); return; }
                 gameInfo.result = res;
             }
@@ -15083,7 +15083,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
 {
     char *end_str;
     char buf[MSG_SIZ];
-    ChessProgramState *cps = (ChessProgramState *)closure;
+    ChessEngineState *cps = (ChessEngineState *)closure;
 
     if (isr != cps->isr) return; /* Killed intentionally */
     if (count <= 0) {
@@ -15098,7 +15098,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		    if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(GameIsDrawn, buf, GE_XBOARD); return; }
                     gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
                 } else {
-                    ChessMove res = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
+                    ChessMove res = cps->twoEnginesColor[0]=='w' ? BlackWins : WhiteWins;
 		    if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(res, buf, GE_XBOARD); return; }
                     gameInfo.result = res;
                 }
@@ -15164,13 +15164,13 @@ ReceiveFromProgram(isr, closure, message, count, error)
             strstr(message, "tellics") != NULL) return;
     }
 
-    HandleMachineMove(message, cps);
+    HandleEngineMove(message, cps);
 }
 
 
 void
 SendTimeControl(cps, mps, tc, inc, sd, st)
-     ChessProgramState *cps;
+     ChessEngineState *cps;
      int mps, inc, sd, st;
      long tc;
 {
@@ -15178,7 +15178,7 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
     int seconds;
 
     if( timeControl_2 > 0 ) {
-        if( (gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b') ) {
+        if( (gameMode == EnginePlaysBlack) || (gameMode == TwoEnginesPlay && cps->twoEnginesColor[0] == 'b') ) {
             tc = timeControl_2;
         }
     }
@@ -15236,19 +15236,19 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
     }
 }
 
-ChessProgramState *WhitePlayer()
+ChessEngineState *WhitePlayer()
 /* [HGM] return pointer to 'first' or 'second', depending on who plays white */
 {
-    if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'b' ||
-       gameMode == BeginningOfGame || gameMode == MachinePlaysBlack)
+    if(gameMode == TwoEnginesPlay && first.twoEnginesColor[0] == 'b' ||
+       gameMode == BeginningOfGame || gameMode == EnginePlaysBlack)
         return &second;
     return &first;
 }
 
 void
-SendTimeRemaining(cps, machineWhite)
-     ChessProgramState *cps;
-     int /*boolean*/ machineWhite;
+SendTimeRemaining(cps, engineWhite)
+     ChessEngineState *cps;
+     int /*boolean*/ engineWhite;
 {
     char message[MSG_SIZ];
     long time, otime;
@@ -15257,7 +15257,7 @@ SendTimeRemaining(cps, machineWhite)
        or when they have *just* been set or switched; otherwise
        it will be off by the time since the current tick started.
     */
-    if (machineWhite) {
+    if (engineWhite) {
 	time = whiteTimeRemaining / 10;
 	otime = blackTimeRemaining / 10;
     } else {
@@ -15285,7 +15285,7 @@ BoolFeature(p, name, loc, cps)
      char **p;
      char *name;
      int *loc;
-     ChessProgramState *cps;
+     ChessEngineState *cps;
 {
   char buf[MSG_SIZ];
   int len = strlen(name);
@@ -15309,7 +15309,7 @@ IntFeature(p, name, loc, cps)
      char **p;
      char *name;
      int *loc;
-     ChessProgramState *cps;
+     ChessEngineState *cps;
 {
   char buf[MSG_SIZ];
   int len = strlen(name);
@@ -15329,7 +15329,7 @@ StringFeature(p, name, loc, cps)
      char **p;
      char *name;
      char loc[];
-     ChessProgramState *cps;
+     ChessEngineState *cps;
 {
   char buf[MSG_SIZ];
   int len = strlen(name);
@@ -15347,7 +15347,7 @@ StringFeature(p, name, loc, cps)
 }
 
 int
-ParseOption(Option *opt, ChessProgramState *cps)
+ParseOption(Option *opt, ChessEngineState *cps)
 // [HGM] options: process the string that defines an engine option, and determine
 // name, type, default value, and allowed value range
 {
@@ -15439,14 +15439,14 @@ ParseOption(Option *opt, ChessProgramState *cps)
 
 void
 FeatureDone(cps, val)
-     ChessProgramState* cps;
+     ChessEngineState* cps;
      int val;
 {
   DelayedEventCallback cb = GetDelayedEvent();
   if ((cb == InitBackEnd3 && cps == &first) ||
       (cb == SettingsMenuIfReady && cps == &second) ||
       (cb == LoadEngine) ||
-      (cb == TwoMachinesEventIfReady)) {
+      (cb == TwoEnginesEventIfReady)) {
     CancelDelayedEvent();
     ScheduleDelayedEvent(cb, val ? 1 : 3600000);
   }
@@ -15457,7 +15457,7 @@ FeatureDone(cps, val)
 void
 ParseFeatures(args, cps)
      char* args;
-     ChessProgramState *cps;
+     ChessEngineState *cps;
 {
   char *p = args;
   char *q;
@@ -15480,8 +15480,8 @@ ParseFeatures(args, cps)
     }
     if (BoolFeature(&p, "analyze", &cps->analysisSupport, cps)) continue;
     if (StringFeature(&p, "myname", &cps->tidy, cps)) {
-      if (gameMode == TwoMachinesPlay) {
-	DisplayTwoMachinesTitle();
+      if (gameMode == TwoEnginesPlay) {
+	DisplayTwoEnginesTitle();
       } else {
 	DisplayTitle("");
       }
@@ -15574,13 +15574,13 @@ PonderNextMoveEvent(newState)
     if (gameMode == EditPosition) EditPositionDone(TRUE);
     if (newState) {
 	SendToProgram("hard\n", &first);
-	if (gameMode == TwoMachinesPlay) {
+	if (gameMode == TwoEnginesPlay) {
 	    SendToProgram("hard\n", &second);
 	}
     } else {
 	SendToProgram("easy\n", &first);
 	thinkOutput[0] = NULLCHAR;
-	if (gameMode == TwoMachinesPlay) {
+	if (gameMode == TwoEnginesPlay) {
 	    SendToProgram("easy\n", &second);
 	}
     }
@@ -15597,7 +15597,7 @@ NewSettingEvent(option, feature, command, value)
     if (gameMode == EditPosition) EditPositionDone(TRUE);
     snprintf(buf, MSG_SIZ,"%s%s %d\n", (option ? "option ": ""), command, value);
     if(feature == NULL || *feature) SendToProgram(buf, &first);
-    if (gameMode == TwoMachinesPlay) {
+    if (gameMode == TwoEnginesPlay) {
 	if(feature == NULL || feature[(int*)&second - (int*)&first]) SendToProgram(buf, &second);
     }
 }
@@ -15616,13 +15616,13 @@ ShowThinkingEvent()
     if (gameMode == EditPosition) EditPositionDone(TRUE);
     if (oldState) {
 	SendToProgram("post\n", &first);
-	if (gameMode == TwoMachinesPlay) {
+	if (gameMode == TwoEnginesPlay) {
 	    SendToProgram("post\n", &second);
 	}
     } else {
 	SendToProgram("nopost\n", &first);
 	thinkOutput[0] = NULLCHAR;
-	if (gameMode == TwoMachinesPlay) {
+	if (gameMode == TwoEnginesPlay) {
 	    SendToProgram("nopost\n", &second);
 	}
     }
@@ -15642,13 +15642,13 @@ void
 TypeInEvent(char firstChar)
 {
     if ((gameMode == BeginningOfGame && !appData.icsActive) || 
-        gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack ||
+        gameMode == EnginePlaysWhite || gameMode == EnginePlaysBlack ||
 	gameMode == AnalyzeMode || gameMode == EditGame || 
 	gameMode == EditPosition || gameMode == IcsExamining ||
 	gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
 	isdigit(firstChar) && // [HGM] movenum: allow typing in of move nr in 'passive' modes
 		( gameMode == AnalyzeFile || gameMode == PlayFromGameFile ||
-		  gameMode == IcsObserving || gameMode == TwoMachinesPlay    ) ||
+		  gameMode == IcsObserving || gameMode == TwoEnginesPlay    ) ||
 	gameMode == Training) PopUpMoveDialog(firstChar);
 }
 
@@ -15710,7 +15710,7 @@ DisplayMove(moveNumber)
     }
 
     /* [AS] Hide thinking from human user */
-    if( appData.hideThinkingFromHuman && gameMode != TwoMachinesPlay ) {
+    if( appData.hideThinkingFromHuman && gameMode != TwoEnginesPlay ) {
         *cpThinkOutput = NULLCHAR;
         if( thinkOutput[0] != NULLCHAR ) {
             int i;
@@ -15771,15 +15771,15 @@ DisplayComment(moveNumber, text)
  */
 void
 Attention(cps)
-     ChessProgramState *cps;
+     ChessEngineState *cps;
 {
 #if ATTENTION
     if (!cps->useSigint) return;
-    if (appData.noChessProgram || (cps->pr == NoProc)) return;
+    if (appData.noChessEngine || (cps->pr == NoProc)) return;
     switch (gameMode) {
-      case MachinePlaysWhite:
-      case MachinePlaysBlack:
-      case TwoMachinesPlay:
+      case EnginePlaysWhite:
+      case EnginePlaysBlack:
+      case TwoEnginesPlay:
       case IcsPlayingWhite:
       case IcsPlayingBlack:
       case AnalyzeMode:
@@ -15811,9 +15811,9 @@ CheckFlags()
 		}
 	    } else {
 		if (blackFlag) {
-                    if(gameMode != TwoMachinesPlay) DisplayTitle(_("Both flags fell"));
+                    if(gameMode != TwoEnginesPlay) DisplayTitle(_("Both flags fell"));
 		} else {
-                    if(gameMode != TwoMachinesPlay) DisplayTitle(_("White's flag fell"));
+                    if(gameMode != TwoEnginesPlay) DisplayTitle(_("White's flag fell"));
  		    if (appData.autoCallFlag) {
 			GameEnds(BlackWins, "Black wins on time", GE_XBOARD);
 			return TRUE;
@@ -15833,9 +15833,9 @@ CheckFlags()
 		}
 	    } else {
 		if (whiteFlag) {
-                    if(gameMode != TwoMachinesPlay) DisplayTitle(_("Both flags fell"));
+                    if(gameMode != TwoEnginesPlay) DisplayTitle(_("Both flags fell"));
 		} else {
-                    if(gameMode != TwoMachinesPlay) DisplayTitle(_("Black's flag fell"));
+                    if(gameMode != TwoEnginesPlay) DisplayTitle(_("Black's flag fell"));
 		    if (appData.autoCallFlag) {
 			GameEnds(WhiteWins, "White wins on time", GE_XBOARD);
 			return TRUE;
@@ -16117,8 +16117,8 @@ SwitchClocks(int newMoveNr)
     if (flagged || !appData.clockMode) return;
 
     switch (gameMode) {
-      case MachinePlaysBlack:
-      case MachinePlaysWhite:
+      case EnginePlaysBlack:
+      case EnginePlaysWhite:
       case BeginningOfGame:
 	if (pausing) return;
 	break;
@@ -16188,15 +16188,15 @@ StartClocks()
 
    /* [HGM] nps: figure out nps factors, by determining which engine plays white and/or black once and for all */
     whiteNPS = blackNPS = -1;
-    if(gameMode == MachinePlaysWhite || gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'w'
+    if(gameMode == EnginePlaysWhite || gameMode == TwoEnginesPlay && first.twoEnginesColor[0] == 'w'
        || appData.zippyPlay && gameMode == IcsPlayingBlack) // first (perhaps only) engine has white
 	whiteNPS = first.nps;
-    if(gameMode == MachinePlaysBlack || gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'b'
+    if(gameMode == EnginePlaysBlack || gameMode == TwoEnginesPlay && first.twoEnginesColor[0] == 'b'
        || appData.zippyPlay && gameMode == IcsPlayingWhite) // first (perhaps only) engine has black
 	blackNPS = first.nps;
-    if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'b') // second only used in Two-Machines mode
+    if(gameMode == TwoEnginesPlay && first.twoEnginesColor[0] == 'b') // second only used in Two-Engines mode
 	whiteNPS = second.nps;
-    if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'w')
+    if(gameMode == TwoEnginesPlay && first.twoEnginesColor[0] == 'w')
 	blackNPS = second.nps;
     if(appData.debugMode) fprintf(debugFP, "nps: w=%d, b=%d\n", whiteNPS, blackNPS);
 
@@ -16221,7 +16221,7 @@ TimeString(ms)
 
     /* convert milliseconds to seconds, rounding up */
     /* use floating point to avoid strangeness of integer division
-       with negative dividends on many machines */
+       with negative dividends on many computers */
     second = (long) floor(((double) (ms + 999L)) / 1000.0);
 
     if (second < 0) {

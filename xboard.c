@@ -343,15 +343,15 @@ void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
 			    Cardinal *nprms));
 void QuitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void PauseProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void MachineBlackProc P((Widget w, XEvent *event, String *prms,
+void EngineBlackProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
-void MachineWhiteProc P((Widget w, XEvent *event,
+void EngineWhiteProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void AnalyzeModeProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void AnalyzeFileProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
-void TwoMachinesProc P((Widget w, XEvent *event, String *prms,
+void TwoEnginesProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void MatchProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void MatchOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -526,7 +526,7 @@ Position commentX = -1, commentY = -1;
 Dimension commentW, commentH;
 typedef unsigned int BoardSize;
 BoardSize boardSize;
-Boolean chessProgram;
+Boolean chessEngine;
 
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int squareSize, smallLayout = 0, tinyLayout = 0,
@@ -544,8 +544,8 @@ Boolean saveSettingsOnExit;
 char *settingsFileName;
 char *icsTextMenuString;
 char *icsNames;
-char *firstChessProgramNames;
-char *secondChessProgramNames;
+char *firstChessEngineNames;
+char *secondChessEngineNames;
 
 WindowPlacement wpMain;
 WindowPlacement wpConsole;
@@ -678,9 +678,9 @@ MenuItem viewMenu[] = {
 };
 
 MenuItem modeMenu[] = {
-    {N_("Machine White  Ctrl+W"), "Machine White", MachineWhiteProc},
-    {N_("Machine Black  Ctrl+B"), "Machine Black", MachineBlackProc},
-    {N_("Two Machines   Ctrl+T"), "Two Machines", TwoMachinesProc},
+    {N_("Engine White  Ctrl+W"), "Engine White", EngineWhiteProc},
+    {N_("Engine Black  Ctrl+B"), "Engine Black", EngineBlackProc},
+    {N_("Two Engines   Ctrl+T"), "Two Engines", TwoEnginesProc},
     {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", AnalyzeModeProc},
     {N_("Analyze Game   Ctrl+G"), "Analyze File", AnalyzeFileProc },
     {N_("Edit Game         Ctrl+E"), "Edit Game", EditGameProc},
@@ -688,7 +688,7 @@ MenuItem modeMenu[] = {
     {N_("Training"),      "Training", TrainingProc},
     {N_("ICS Client"),    "ICS Client", IcsClientProc},
     {"----", NULL, NothingProc},
-    {N_("Machine Match"),         "Machine Match", MatchProc},
+    {N_("Engine Match"),         "Engine Match", MatchProc},
     {N_("Pause               Pause"),         "Pause", PauseProc},
     {NULL, NULL, NULL}
 };
@@ -942,11 +942,11 @@ XtActionsRec boardActions[] = {
     { "MailMoveProc", MailMoveProc },
     { "ReloadCmailMsgProc", ReloadCmailMsgProc },
     { "QuitProc", QuitProc },
-    { "MachineWhiteProc", MachineWhiteProc },
-    { "MachineBlackProc", MachineBlackProc },
+    { "EngineWhiteProc", EngineWhiteProc },
+    { "EngineBlackProc", EngineBlackProc },
     { "AnalysisModeProc", AnalyzeModeProc },
     { "AnalyzeFileProc", AnalyzeFileProc },
-    { "TwoMachinesProc", TwoMachinesProc },
+    { "TwoEnginesProc", TwoEnginesProc },
     { "IcsClientProc", IcsClientProc },
     { "EditGameProc", EditGameProc },
     { "EditPositionProc", EditPositionProc },
@@ -1061,9 +1061,9 @@ char globalTranslations[] =
    :Ctrl<Key>C: CopyPositionProc() \n \
    :Ctrl<Key>V: PastePositionProc() \n \
    :Ctrl<Key>q: QuitProc() \n \
-   :Ctrl<Key>w: MachineWhiteProc() \n \
-   :Ctrl<Key>b: MachineBlackProc() \n \
-   :Ctrl<Key>t: TwoMachinesProc() \n \
+   :Ctrl<Key>w: EngineWhiteProc() \n \
+   :Ctrl<Key>b: EngineBlackProc() \n \
+   :Ctrl<Key>t: TwoEnginesProc() \n \
    :Ctrl<Key>a: AnalysisModeProc() \n \
    :Ctrl<Key>g: AnalyzeFileProc() \n \
    :Ctrl<Key>e: EditGameProc() \n \
@@ -2848,12 +2848,12 @@ SetMenuEnables(enab)
 Enables icsEnables[] = {
     { "menuFile.Mail Move", False },
     { "menuFile.Reload CMail Message", False },
-    { "menuMode.Machine Black", False },
-    { "menuMode.Machine White", False },
+    { "menuMode.Engine Black", False },
+    { "menuMode.Engine White", False },
     { "menuMode.Analysis Mode", False },
     { "menuMode.Analyze File", False },
-    { "menuMode.Two Machines", False },
-    { "menuMode.Machine Match", False },
+    { "menuMode.Two Engines", False },
+    { "menuMode.Engine Match", False },
 #ifndef ZIPPY
     { "menuEngine.Hint", False },
     { "menuEngine.Book", False },
@@ -2872,15 +2872,15 @@ Enables icsEnables[] = {
     { NULL, False }
 };
 
-Enables ncpEnables[] = {
+Enables nceEnables[] = {
     { "menuFile.Mail Move", False },
     { "menuFile.Reload CMail Message", False },
-    { "menuMode.Machine White", False },
-    { "menuMode.Machine Black", False },
+    { "menuMode.Engine White", False },
+    { "menuMode.Engine Black", False },
     { "menuMode.Analysis Mode", False },
     { "menuMode.Analyze File", False },
-    { "menuMode.Two Machines", False },
-    { "menuMode.Machine Match", False },
+    { "menuMode.Two Engines", False },
+    { "menuMode.Engine Match", False },
     { "menuMode.ICS Client", False },
     { "menuView.ICStex", False },
     { "menuView.ICS Input Box", False },
@@ -2927,13 +2927,13 @@ Enables gnuEnables[] = {
 
     { "menuFile.Mail Move", False },
     { "menuFile.Reload CMail Message", False },
-    // [HGM] The following have been added to make a switch from ncp to GNU mode possible
-    { "menuMode.Machine White", True },
-    { "menuMode.Machine Black", True },
+    // [HGM] The following have been added to make a switch from nce to GNU mode possible
+    { "menuMode.Engine White", True },
+    { "menuMode.Engine Black", True },
     { "menuMode.Analysis Mode", True },
     { "menuMode.Analyze File", True },
-    { "menuMode.Two Machines", True },
-    { "menuMode.Machine Match", True },
+    { "menuMode.Two Engines", True },
+    { "menuMode.Engine Match", True },
     { "menuEngine.Engine #1 Settings", True },
     { "menuEngine.Engine #2 Settings", True },
     { "menuEngine.Hint", True },
@@ -2981,7 +2981,7 @@ Enables trainingOffEnables[] = {
   { NULL, False }
 };
 
-Enables machineThinkingEnables[] = {
+Enables engineThinkingEnables[] = {
   { "menuFile.Load Game", False },
 //  { "menuFile.Load Next Game", False },
 //  { "menuFile.Load Previous Game", False },
@@ -2992,10 +2992,10 @@ Enables machineThinkingEnables[] = {
 //  { "menuFile.Load Previous Position", False },
 //  { "menuFile.Reload Same Position", False },
   { "menuEdit.Paste Position", False },
-  { "menuMode.Machine White", False },
-  { "menuMode.Machine Black", False },
-  { "menuMode.Two Machines", False },
-//  { "menuMode.Machine Match", False },
+  { "menuMode.Engine White", False },
+  { "menuMode.Engine Black", False },
+  { "menuMode.Two Engines", False },
+//  { "menuMode.Engine Match", False },
   { "menuEngine.Retract Move", False },
   { NULL, False }
 };
@@ -3011,10 +3011,10 @@ Enables userThinkingEnables[] = {
 //  { "menuFile.Load Previous Position", True },
 //  { "menuFile.Reload Same Position", True },
   { "menuEdit.Paste Position", True },
-  { "menuMode.Machine White", True },
-  { "menuMode.Machine Black", True },
-  { "menuMode.Two Machines", True },
-//  { "menuMode.Machine Match", True },
+  { "menuMode.Engine White", True },
+  { "menuMode.Engine Black", True },
+  { "menuMode.Two Engines", True },
+//  { "menuMode.Engine Match", True },
   { "menuEngine.Retract Move", True },
   { NULL, False }
 };
@@ -3024,7 +3024,7 @@ void SetICSMode()
   SetMenuEnables(icsEnables);
 
 #if ZIPPY
-  if (appData.zippyPlay && !appData.noChessProgram) { /* [DM] icsEngineAnalyze */
+  if (appData.zippyPlay && !appData.noChessEngine) { /* [DM] icsEngineAnalyze */
      XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
      XtSetSensitive(XtNameToWidget(menuBarWidget, "menuEngine.Engine #1 Settings"), True);
   }
@@ -3032,10 +3032,12 @@ void SetICSMode()
 }
 
 void
-SetNCPMode()
+SetNCEMode()
 {
-  SetMenuEnables(ncpEnables);
+  SetMenuEnables(nceEnables);
 }
+
+
 
 void
 SetGNUMode()
@@ -3071,19 +3073,19 @@ SetTrainingModeOff()
 void
 SetUserThinkingEnables()
 {
-  if (appData.noChessProgram) return;
+  if (appData.noChessEngine) return;
   SetMenuEnables(userThinkingEnables);
 }
 
 void
-SetMachineThinkingEnables()
+SetEngineThinkingEnables()
 {
-  if (appData.noChessProgram) return;
-  SetMenuEnables(machineThinkingEnables);
+  if (appData.noChessEngine) return;
+  SetMenuEnables(engineThinkingEnables);
   switch (gameMode) {
-  case MachinePlaysBlack:
-  case MachinePlaysWhite:
-  case TwoMachinesPlay:
+  case EnginePlaysBlack:
+  case EnginePlaysWhite:
+  case TwoEnginesPlay:
     XtSetSensitive(XtNameToWidget(menuBarWidget,
 				  ModeToWidgetName(gameMode)), True);
     break;
@@ -5364,21 +5366,21 @@ char *ModeToWidgetName(mode)
       case BeginningOfGame:
 	if (appData.icsActive)
 	  return "menuMode.ICS Client";
-	else if (appData.noChessProgram ||
+	else if (appData.noChessEngine ||
 		 *appData.cmailGameName != NULLCHAR)
 	  return "menuMode.Edit Game";
 	else
-	  return "menuMode.Machine Black";
-      case MachinePlaysBlack:
-	return "menuMode.Machine Black";
-      case MachinePlaysWhite:
-	return "menuMode.Machine White";
+	  return "menuMode.Engine Black";
+      case EnginePlaysBlack:
+	return "menuMode.Engine Black";
+      case EnginePlaysWhite:
+	return "menuMode.Engine White";
       case AnalyzeMode:
 	return "menuMode.Analysis Mode";
       case AnalyzeFile:
 	return "menuMode.Analyze File";
-      case TwoMachinesPlay:
-	return "menuMode.Two Machines";
+      case TwoEnginesPlay:
+	return "menuMode.Two Engines";
       case EditGame:
 	return "menuMode.Edit Game";
       case PlayFromGameFile:
@@ -5447,7 +5449,7 @@ void ModeHighlight()
     }
     oldmode = gameMode;
     XtSetArg(args[0], XtNleftBitmap, matchMode && matchGame < appData.matchGames ? xMarkPixmap : None);
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Machine Match"), args, 1);
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Engine Match"), args, 1);
 
     /* Maybe all the enables should be handled here, not just this one */
     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Training"),
@@ -5871,22 +5873,22 @@ void PauseProc(w, event, prms, nprms)
 }
 
 
-void MachineBlackProc(w, event, prms, nprms)
+void EngineBlackProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
      String *prms;
      Cardinal *nprms;
 {
-    MachineBlackEvent();
+    EngineBlackEvent();
 }
 
-void MachineWhiteProc(w, event, prms, nprms)
+void EngineWhiteProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
      String *prms;
      Cardinal *nprms;
 {
-    MachineWhiteEvent();
+    EngineWhiteEvent();
 }
 
 void AnalyzeModeProc(w, event, prms, nprms)
@@ -5956,13 +5958,13 @@ void AnalyzeFileProc(w, event, prms, nprms)
     AnalysisPeriodicEvent(1);
 }
 
-void TwoMachinesProc(w, event, prms, nprms)
+void TwoEnginesProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
      String *prms;
      Cardinal *nprms;
 {
-    TwoMachinesEvent();
+    TwoEnginesEvent();
 }
 
 void MatchProc(w, event, prms, nprms)
@@ -6938,7 +6940,7 @@ void DisplayTitle(text)
       safeStrCpy(icon, programName, sizeof(icon)/sizeof(icon[0]) );
       safeStrCpy(title, FALCON, sizeof(title)/sizeof(title[0]) );
 #endif
-    } else if (appData.noChessProgram) {
+    } else if (appData.noChessEngine) {
       safeStrCpy(icon, programName, sizeof(icon)/sizeof(icon[0]) );
       safeStrCpy(title, programName, sizeof(title)/sizeof(title[0]) );
     } else {

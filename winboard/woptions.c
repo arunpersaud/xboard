@@ -71,7 +71,7 @@ extern HWND engineOutputDialog;
 extern char installDir[];
 extern HWND hCommPort;    /* currently open comm port */
 extern DCB dcb;
-extern BOOLEAN chessProgram;
+extern BOOLEAN chessEngine;
 extern int startedFromPositionFile; /* [HGM] loadPos */
 extern int searchTime;
 
@@ -214,15 +214,15 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 #undef CHECK_BOX
 
     EnableWindow(GetDlgItem(hDlg, OPT_AutoFlag),
-		 appData.icsActive || !appData.noChessProgram);
+		 appData.icsActive || !appData.noChessEngine);
     EnableWindow(GetDlgItem(hDlg, OPT_AutoFlipView),
-		 appData.icsActive || !appData.noChessProgram);
+		 appData.icsActive || !appData.noChessEngine);
     EnableWindow(GetDlgItem(hDlg, OPT_PonderNextMove),
-		 !appData.noChessProgram);
+		 !appData.noChessEngine);
     EnableWindow(GetDlgItem(hDlg, OPT_PeriodicUpdates),
-		 !appData.noChessProgram && !appData.icsActive);
+		 !appData.noChessEngine && !appData.icsActive);
     EnableWindow(GetDlgItem(hDlg, OPT_ShowThinking),
-		 !appData.noChessProgram);
+		 !appData.noChessEngine);
     return TRUE;
 
 
@@ -851,7 +851,7 @@ VariantWhichRadio(HWND hDlg)
   while((j = radioButton[i++]) != -2) {
 	if(j == -1) continue; // no menu button
 	if(IsDlgButtonChecked(hDlg, j) &&
-	   (appData.noChessProgram || strstr(first.variants, VariantName(i-1)))) return (VariantClass) i-1;
+	   (appData.noChessEngine || strstr(first.variants, VariantName(i-1)))) return (VariantClass) i-1;
   }
   return gameInfo.variant; // If no button checked, keep old
 }
@@ -863,7 +863,7 @@ VariantShowRadio(HWND hDlg)
   CheckDlgButton(hDlg, radioButton[gameInfo.variant], TRUE);
   while((j = radioButton[i++]) != -2) {
 	if(j == -1) continue; // no menu button
-	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || strstr(first.variants, VariantName(i-1)));
+	EnableWindow(GetDlgItem(hDlg, j), appData.noChessEngine || strstr(first.variants, VariantName(i-1)));
   }
 }
 
@@ -906,7 +906,7 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       EndDialog(hDlg, TRUE);
 
       v = VariantWhichRadio(hDlg);
-      if(!appData.noChessProgram) {
+      if(!appData.noChessEngine) {
 	char *name = VariantName(v), buf[MSG_SIZ];
 	if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
 	  /* [HGM] in protocol 2 we check if variant is suported by engine */

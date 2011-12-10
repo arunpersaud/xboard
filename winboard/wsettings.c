@@ -39,7 +39,7 @@ extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First"), N_("Second"), NULL };
 char *engineList[1000] = {" "}, *engineMnemonic[1000] = {""};
 void (*okFunc)();
-ChessProgramState *activeCps;
+ChessEngineState *activeCps;
 Option *activeList;
 int InstallOK P((void));
 typedef int ButtonCallback(HWND h);
@@ -274,7 +274,7 @@ AddCR(char *s)
 }
 
 void
-SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
+SetOptionValues(HWND hDlg, ChessEngineState *cps, Option *optionList)
 // Put all current option values in controls, and write option names next to them
 {
     HANDLE hwndCombo;
@@ -335,7 +335,7 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 
 
 int
-GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
+GetOptionValues(HWND hDlg, ChessEngineState *cps, Option *optionList)
 // read out all controls, and if value is altered, remember it and send it to the engine
 {
     HANDLE hwndCombo;
@@ -609,7 +609,7 @@ CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 }
 
 void
-EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
+EngineOptionsPopup(HWND hwnd, ChessEngineState *cps)
 {
     FARPROC lpProc = MakeProcInstance( (FARPROC) SettingsProc, hInst );
 
@@ -681,7 +681,7 @@ void LoadEnginePopUp(HWND hwnd)
     if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
     if(engineLine)   free(engineLine);   engineLine = strdup("");
     if(engineName)   free(engineName);   engineName = strdup("");
-    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+    NamesToList(firstChessEngineNames, engineList, engineMnemonic);
     while(engineList[n]) n++; installOptions[0].max = n;
     snprintf(title, MSG_SIZ, _("Load Engine"));
 
@@ -793,7 +793,7 @@ void TourneyPopup(HWND hwnd)
 {
     int n=0;
 
-    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+    NamesToList(firstChessEngineNames, engineList, engineMnemonic);
     comboCallback = &AddToTourney;
     autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
     twice = FALSE; swiss = appData.tourneyType < 0;

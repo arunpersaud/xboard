@@ -64,12 +64,12 @@ char *T_ P((char *s));
 void ModeHighlight P((void));
 void SetICSMode P((void));
 void SetGNUMode P((void));
-void SetNCPMode P((void));
+void SetNCEMode P((void));
 void SetCmailMode P((void));
 void SetTrainingModeOn P((void));
 void SetTrainingModeOff P((void));
 void SetUserThinkingEnables P((void));
-void SetMachineThinkingEnables P((void));
+void SetEngineThinkingEnables P((void));
 void DisplayTitle P((String title));
 void DisplayMessage P((String message, String extMessage));
 void DisplayError P((String message, int error));
@@ -210,7 +210,7 @@ void ThawUI P((void));
 void ChangeDragPiece P((ChessSquare piece));
 extern char *programName;
 extern int commentUp;
-extern char *firstChessProgramNames;
+extern char *firstChessEngineNames;
 
 void GreyRevert P((Boolean grey));
 

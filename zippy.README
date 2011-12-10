@@ -396,24 +396,24 @@ xboard -zp -ics -icshost freechess.org -icshelper timeseal \
 
 # xboard + Crafty on chessclub.com
 xboard -zp -ics -icshost chessclub.com \
-    -fd /home/crafty -fcp crafty -icshelper timestamp \
+    -fd /home/crafty -fce crafty -icshelper timestamp \
     -zippyPassword beer
 
 # xboard + Crafty on freechess.org
 xboard -zp -ics -icshost freechess.org -autoflag \
-    -fd /home/crafty -fcp crafty -icshelper timeseal \
+    -fd /home/crafty -fce crafty -icshelper timeseal \
     -zippyPassword beer
 
 Windows command lines:
 
 REM WinBoard + GNU Chess on chessclub.com
-WinBoard -zp -ics -icshost chessclub.com -fcp GNUChess -icshelper timestamp -zippyPassword beer
+WinBoard -zp -ics -icshost chessclub.com -fce GNUChess -icshelper timestamp -zippyPassword beer
 
 REM WinBoard + GNU Chess on freechess.org
-WinBoard -zp -ics -icshost freechess.org -fcp GNUChess -icshelper timeseal -zippyPassword beer
+WinBoard -zp -ics -icshost freechess.org -fce GNUChess -icshelper timeseal -zippyPassword beer
 
 REM WinBoard + Crafty on chessclub.com
-WinBoard -zp -ics -icshost chessclub.com -fd C:\Crafty -fcp WCrafty -icshelper timestamp -zippyPassword beer
+WinBoard -zp -ics -icshost chessclub.com -fd C:\Crafty -fce WCrafty -icshelper timestamp -zippyPassword beer
 
 REM WinBoard + Crafty on freechess.org
-WinBoard -zp -ics -icshost freechess.org -fd C:\Crafty -fcp WCrafty -icshelper timestamp -zippyPassword beer
+WinBoard -zp -ics -icshost freechess.org -fd C:\Crafty -fce WCrafty -icshelper timestamp -zippyPassword beer

@@ -1213,10 +1213,10 @@ BEGIN
     END
     POPUP "&Mode"
     BEGIN
-        MENUITEM "Machine &White\tCtrl+W",      IDM_MachineWhite
-        MENUITEM "Machine &Black\tCtrl+B",      IDM_MachineBlack
-        MENUITEM "&Two Machines\tCtrl+T",       IDM_TwoMachines
-//        MENUITEM "Machine Both",                IDM_MachineBoth
+        MENUITEM "Engine &White\tCtrl+W",      IDM_EngineWhite
+        MENUITEM "Engine &Black\tCtrl+B",      IDM_EngineBlack
+        MENUITEM "&Two Engines\tCtrl+T",       IDM_TwoEngines
+//        MENUITEM "Engine Both",                IDM_EngineBoth
         MENUITEM "&Analysis Mode\tCtrl+A",      IDM_AnalysisMode
         MENUITEM "Analyze &Game\tCtrl+G",       IDM_AnalyzeFile
         MENUITEM "&Edit Game\tCtrl+E",          IDM_EditGame
@@ -1224,7 +1224,7 @@ BEGIN
         MENUITEM "Trai&ning",                   IDM_Training, GRAYED
         MENUITEM "&ICS Client",                 IDM_IcsClient
         MENUITEM SEPARATOR
-        MENUITEM "&Machine Match",              IDM_Match
+        MENUITEM "&Engine Match",              IDM_Match
         MENUITEM "&Pause\tPause",               IDM_Pause
     END
     POPUP "&Action"
@@ -1480,9 +1480,9 @@ BEGIN
     "F",            OPT_AutoFlag,           VIRTKEY, SHIFT, CONTROL, NOINVERT
     "H",            OPT_HideThinkFromHuman, VIRTKEY, SHIFT, CONTROL, NOINVERT
     "I",            OPT_ExtraInfoInMoveHistory, VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "W",            IDM_MachineWhite,       VIRTKEY, CONTROL, NOINVERT
-    "B",            IDM_MachineBlack,       VIRTKEY, CONTROL, NOINVERT
-    "T",            IDM_TwoMachines,        VIRTKEY, CONTROL, NOINVERT
+    "W",            IDM_EngineWhite,        VIRTKEY, CONTROL, NOINVERT
+    "B",            IDM_EngineBlack,        VIRTKEY, CONTROL, NOINVERT
+    "T",            IDM_TwoEngines,         VIRTKEY, CONTROL, NOINVERT
     "E",            IDM_EditGame,           VIRTKEY, CONTROL, NOINVERT
     "E",            IDM_EditPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
     "G",            IDM_AnalyzeFile,        VIRTKEY, CONTROL, NOINVERT

@@ -93,6 +93,12 @@ typedef struct {
 } ArgDescriptor;
 
 typedef struct {
+  char *DeprecatedArgName; /* the deprecated option name */
+  char *MapToNewArgName;  /* if it's a simple rename, automatically use the new option */
+  char *Message;          /* a message to the user what he should do, use NULL for renames and an automated message will be printed */
+} ArgDeprecated;
+
+typedef struct {
   char *item;
   char *command;
   Boolean getname;
@@ -138,6 +144,23 @@ char *defaultTextAttribs[] =
   "#000000"
 };
 
+/* command line options that have been deprecated and will be removed in future versions */
+ArgDeprecated argDeprecated[] = {
+  {"firstChessProgram", "firstChessEngine", NULL},
+  {"fcp", "fce", NULL},
+  {"secondChessProgram", "secondChessEngine", NULL},
+  {"scp", "sce", NULL},
+  {"ncp", "nce", NULL},
+  {"xncp", "nce", NULL},
+  {"-ncp", "nce", NULL},
+  {"noChessProgram", "noChessEngine", NULL},
+  {"reuseChessPrograms", "reuseChessEngines", NULL},
+  {"chessProgram", "chessEngine", NULL},
+  {"firstChessProgramNames", "firstChessEngineNames", NULL},
+  {"secondChessProgramNames", "secondChessEngineNames", NULL},
+  { NULL, NULL, NULL}
+};
+
 ArgDescriptor argDescriptors[] = {
   /* positional arguments */
   { "loadGameFile", ArgFilename, (void *) &appData.loadGameFile, FALSE, INVALID },
@@ -165,20 +188,18 @@ ArgDescriptor argDescriptors[] = {
     FALSE, (ArgIniType) COMPUTER_STRING },
   { "secondComputerString", ArgString, (void *) &appData.secondComputerString,
     FALSE, (ArgIniType) COMPUTER_STRING },
-  { "firstChessProgram", ArgFilename, (void *) &appData.firstChessProgram,
-    FALSE, (ArgIniType) FIRST_CHESS_PROGRAM },
-  { "fcp", ArgFilename, (void *) &appData.firstChessProgram, FALSE, INVALID },
-  { "secondChessProgram", ArgFilename, (void *) &appData.secondChessProgram,
-    FALSE, (ArgIniType) SECOND_CHESS_PROGRAM },
-  { "scp", ArgFilename, (void *) &appData.secondChessProgram, FALSE, INVALID },
+  { "firstChessEngine", ArgFilename, (void *) &appData.firstChessEngine,
+    FALSE, (ArgIniType) FIRST_CHESS_ENGINE },
+  { "fce", ArgFilename, (void *) &appData.firstChessEngine, FALSE, INVALID },
+  { "secondChessEngine", ArgFilename, (void *) &appData.secondChessEngine,
+    FALSE, (ArgIniType) SECOND_CHESS_ENGINE },
+  { "sce", ArgFilename, (void *) &appData.secondChessEngine, FALSE, INVALID },
   { "firstPlaysBlack", ArgBoolean, (void *) &appData.firstPlaysBlack, FALSE, FALSE },
   { "fb", ArgTrue, (void *) &appData.firstPlaysBlack, FALSE, FALSE },
   { "xfb", ArgFalse, (void *) &appData.firstPlaysBlack, FALSE, INVALID },
   { "-fb", ArgFalse, (void *) &appData.firstPlaysBlack, FALSE, INVALID },
-  { "noChessProgram", ArgBoolean, (void *) &appData.noChessProgram, FALSE, FALSE },
-  { "ncp", ArgTrue, (void *) &appData.noChessProgram, FALSE, INVALID },
-  { "xncp", ArgFalse, (void *) &appData.noChessProgram, FALSE, INVALID },
-  { "-ncp", ArgFalse, (void *) &appData.noChessProgram, FALSE, INVALID },
+  { "noChessEngine", ArgBoolean, (void *) &appData.noChessEngine, FALSE, FALSE },
+  { "nce", ArgTrue, (void *) &appData.noChessEngine, FALSE, INVALID },
   { "firstHost", ArgString, (void *) &appData.firstHost, FALSE, (ArgIniType) FIRST_HOST },
   { "fh", ArgString, (void *) &appData.firstHost, FALSE, INVALID },
   { "secondHost", ArgString, (void *) &appData.secondHost, FALSE, (ArgIniType) SECOND_HOST },
@@ -380,6 +401,7 @@ ArgDescriptor argDescriptors[] = {
   { "testLegality", ArgBoolean, (void *) &appData.testLegality, TRUE, (ArgIniType) TRUE },
   { "legal", ArgTrue, (void *) &appData.testLegality, FALSE, INVALID },
   { "xlegal", ArgFalse, (void *) &appData.testLegality, FALSE, INVALID },
+
   { "-legal", ArgFalse, (void *) &appData.testLegality, FALSE, INVALID },
   { "premove", ArgBoolean, (void *) &appData.premove, TRUE, (ArgIniType) TRUE },
   { "pre", ArgTrue, (void *) &appData.premove, FALSE, INVALID },
@@ -465,7 +487,7 @@ ArgDescriptor argDescriptors[] = {
   { "reuse", ArgTrue, (void *) &appData.reuseFirst, FALSE, INVALID },
   { "xreuse", ArgFalse, (void *) &appData.reuseFirst, FALSE, INVALID },
   { "-reuse", ArgFalse, (void *) &appData.reuseFirst, FALSE, INVALID },
-  { "reuseChessPrograms", ArgBoolean,
+  { "reuseChessEngines", ArgBoolean,
     (void *) &appData.reuseFirst, FALSE, INVALID }, /* backward compat only */
   { "reuseSecond", ArgBoolean, (void *) &appData.reuseSecond, FALSE, (ArgIniType) TRUE },
   { "reuse2", ArgTrue, (void *) &appData.reuseSecond, FALSE, INVALID },
@@ -478,17 +500,17 @@ ArgDescriptor argDescriptors[] = {
   { "opt", ArgSettingsFilename, (void *) NULL, FALSE, INVALID },
   { "saveSettingsFile", ArgFilename, (void *) &settingsFileName, FALSE, INVALID },
   { "saveSettingsOnExit", ArgBoolean, (void *) &saveSettingsOnExit, TRUE, (ArgIniType) TRUE },
-  { "chessProgram", ArgBoolean, (void *) &chessProgram, FALSE, (ArgIniType) FALSE },
-  { "cp", ArgTrue, (void *) &chessProgram, FALSE, INVALID },
-  { "xcp", ArgFalse, (void *) &chessProgram, FALSE, INVALID },
-  { "-cp", ArgFalse, (void *) &chessProgram, FALSE, INVALID },
+  { "chessEngine", ArgBoolean, (void *) &chessEngine, FALSE, (ArgIniType) FALSE },
+  { "cp", ArgTrue, (void *) &chessEngine, FALSE, INVALID },
+  { "xcp", ArgFalse, (void *) &chessEngine, FALSE, INVALID },
+  { "-cp", ArgFalse, (void *) &chessEngine, FALSE, INVALID },
   { "icsMenu", ArgString, (void *) &icsTextMenuString, TRUE, (ArgIniType) ICS_TEXT_MENU_DEFAULT },
   { "icsNames", ArgString, (void *) &icsNames, TRUE, (ArgIniType) ICS_NAMES },
   { "singleEngineList", ArgBoolean, (void *) &singleList, !XBOARD, (ArgIniType) FALSE },
-  { "firstChessProgramNames", ArgString, (void *) &firstChessProgramNames,
-    TRUE, (ArgIniType) FCP_NAMES },
-  { "secondChessProgramNames", ArgString, (void *) &secondChessProgramNames,
-    !XBOARD, (ArgIniType) SCP_NAMES },
+  { "firstChessEngineNames", ArgString, (void *) &firstChessEngineNames,
+    TRUE, (ArgIniType) FCE_NAMES },
+  { "secondChessEngineNames", ArgString, (void *) &secondChessEngineNames,
+    !XBOARD, (ArgIniType) SCE_NAMES },
   { "initialMode", ArgString, (void *) &appData.initialMode, FALSE, (ArgIniType) "" },
   { "mode", ArgString, (void *) &appData.initialMode, FALSE, INVALID },
   { "variant", ArgString, (void *) &appData.variant, FALSE, (ArgIniType) "normal" },
@@ -551,7 +573,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondHasOwnBookUCI", ArgBoolean, (void *) &appData.secondHasOwnBookUCI, FALSE, (ArgIniType) TRUE },
   { "sNoOwnBookUCI", ArgFalse, (void *) &appData.secondHasOwnBookUCI, FALSE, INVALID },
   { "secondXBook", ArgFalse, (void *) &appData.secondHasOwnBookUCI, FALSE, INVALID },
-  { "adapterCommand", ArgFilename, (void *) &appData.adapterCommand, TRUE, (ArgIniType) "polyglot -noini -ec \"%fcp\" -ed \"%fd\"" },
+  { "adapterCommand", ArgFilename, (void *) &appData.adapterCommand, TRUE, (ArgIniType) "polyglot -noini -ec \"%fce\" -ed \"%fd\"" },
   { "uxiAdapter", ArgFilename, (void *) &appData.ucciAdapter, TRUE, (ArgIniType) "" },
   { "polyglotDir", ArgFilename, (void *) &appData.polyglotDir, TRUE, (ArgIniType) "" },
   { "usePolyglotBook", ArgBoolean, (void *) &appData.usePolyglotBook, TRUE, (ArgIniType) FALSE },
@@ -845,6 +867,7 @@ ParseArgs(GetFunc get, void *cl)
   char argName[MAX_ARG_LEN];
   char argValue[MAX_ARG_LEN];
   ArgDescriptor *ad;
+  ArgDeprecated *adep;
   char start;
   char *q;
   int i, octval;
@@ -872,9 +895,49 @@ ParseArgs(GetFunc get, void *cl)
       for (ad = argDescriptors; ad->argName != NULL; ad++)
 	if (strcmp(ad->argName, argName + 1) == 0) break;
       if (ad->argName == NULL) {
-	ExitArgError(_("Unrecognized argument"), argName, get != &FileGet); // [HGM] make unknown argument non-fatal
-	while (ch != '\n' && ch != NULLCHAR) ch = get(cl); // but skip rest of line it is on
-	continue; // so that when it is in a settings file, it is the only setting that will be purged from it
+
+	/* check if option is deprecated */
+	for (adep = argDeprecated; adep->DeprecatedArgName != NULL; adep++)
+	  {
+	    if (strcmp(adep->DeprecatedArgName, argName + 1) == 0)
+	      {
+		if(adep->MapToNewArgName != NULL)
+		  {
+		    /* search for replacement if available */
+		    for (ad = argDescriptors; ad->argName != NULL; ad++)
+		      if (strcmp(ad->argName, adep->MapToNewArgName) == 0) break;
+
+		    /* should always find a match, print and error and exit if not */
+		    if(ad->argName==NULL)
+		      DisplayFatalError( _("Deprecated option: can't find renamed option.\n\n"),0,2);
+		    
+		    /* print out a warning to the user to update option */
+		    if(adep->Message)
+		      printf(_(" Deprecated option: %s %s\n\n"),adep->DeprecatedArgName,_(adep->Message));
+		    else
+		      printf(_(" Deprecated option: please use %s instead of %s in the future.\n   "
+			       "(option has been automatically remapped for this session)\n\n"),
+			     adep->MapToNewArgName,adep->DeprecatedArgName);
+		  }
+		else
+		  {
+		    if(adep->Message)
+		      printf(_(" Deprecated option: %s %s\n\n"),adep->DeprecatedArgName,_(adep->Message));
+		    else
+		      printf(_("This option is not valid anymore: %s \n Please see the manual for more information.\n\n"),
+			     adep->DeprecatedArgName);
+		  }
+
+		break;
+	      }
+	  }
+
+	if(adep->DeprecatedArgName == NULL)
+	  {
+	    ExitArgError(_("Unrecognized argument"), argName, get != &FileGet); // [HGM] make unknown argument non-fatal
+	    while (ch != '\n' && ch != NULLCHAR) ch = get(cl); // but skip rest of line it is on
+	    continue; // so that when it is in a settings file, it is the only setting that will be purged from it
+	  }
       }
     } else if (ch == '@') {
       /* Indirection file */
@@ -1258,8 +1321,8 @@ InitAppData(char *lpCmdLine)
    * tournament managers can use WB options (such as /timeOdds) that follow
    * the engines.
    */
-  if(appData.firstChessProgram != NULL) {
-      char *p = StrStr(appData.firstChessProgram, "WBopt");
+  if(appData.firstChessEngine != NULL) {
+      char *p = StrStr(appData.firstChessEngine, "WBopt");
       static char *f = "first";
       char buf[MSG_SIZ], *q = buf;
       int len;
@@ -1275,8 +1338,8 @@ InitAppData(char *lpCmdLine)
 	}
   }
   // now do same for second chess program
-  if(appData.secondChessProgram != NULL) {
-      char *p = StrStr(appData.secondChessProgram, "WBopt");
+  if(appData.secondChessEngine != NULL) {
+      char *p = StrStr(appData.secondChessEngine, "WBopt");
       static char *s = "second";
       char buf[MSG_SIZ], *q = buf;
       int len;
@@ -1293,16 +1356,16 @@ InitAppData(char *lpCmdLine)
   }
 
   /* Propagate options that affect others */
-  if (appData.matchMode || appData.matchGames) chessProgram = TRUE;
-  if (appData.icsActive || appData.noChessProgram) {
-     chessProgram = FALSE;  /* not local chess program mode */
+  if (appData.matchMode || appData.matchGames) chessEngine = TRUE;
+  if (appData.icsActive || appData.noChessEngine) {
+     chessEngine = FALSE;  /* not local chess program mode */
   }
 
   /* Open startup dialog if needed */
-  if ((!appData.noChessProgram && !chessProgram && !appData.icsActive) ||
+  if ((!appData.noChessEngine && !chessEngine && !appData.icsActive) ||
       (appData.icsActive && *appData.icsHost == NULLCHAR) ||
-      (chessProgram && (*appData.firstChessProgram == NULLCHAR ||
-                        *appData.secondChessProgram == NULLCHAR)))
+      (chessEngine && (*appData.firstChessEngine == NULLCHAR ||
+                        *appData.secondChessEngine == NULLCHAR)))
 		PopUpStartupDialog();
 
   /* Make sure save files land in the right (?) directory */

@@ -37,7 +37,7 @@
 #define OPEN   0
 
 /* Module globals */
-ChessProgramStats_Move * currPvInfo;
+ChessEngineStats_Move * currPvInfo;
 extern int currFirst;
 extern int currLast;
 extern int currCurrent;

@@ -97,7 +97,7 @@ to help update it.</i></p>
       <li><a href="#tag-C.5">[C.5] When I try to run WinBoard, I get the message "Failed to start chess program gnuchess on localhost: NO LANGFILE (file gnuchess.lan not found)".</a></li>
       <li><a href="#tag-C.6">[C.6] I want to use XBoard or WinBoard as an Internet Chess Server interface, but the ICS Client option is grayed out on the menu.</a></li> 
       <li><a href="#tag-C.7">[C.7] How do I give command-line options to a Windows program like WinBoard?</a></li>
-      <li><a href="#tag-C.9">[C.9] When I exit from WinBoard after using it to play against a chess program on my machine, the chess program keeps running in the background.</a></li>
+      <li><a href="#tag-C.9">[C.9] When I exit from WinBoard after using it to play against a chess program on my computer, the chess program keeps running in the background.</a></li>
       <li><a href="#tag-C.12">[C.12] Why do my ICS opponents often get extra time after they make their moves? Why do I sometimes lose time off my clock after I make my move?</a></li>
       <li><a href="#tag-C.13">[C.13] I can't run WinBoard unless I delete the WinBoard.ini file each time!</a></li>
       <li><a href="#tag-C.15">[C.15] I get errors compiling XBoard's parser.c.</a></li>
@@ -344,7 +344,7 @@ chessboard on the screen, accepts moves made with the mouse, and loads
 and saves games in Portable Game Notation (PGN).  XBoard is free software.
 It serves as a front-end for many different chess services, including:</p>
 
-<p><strong>Chess engines</strong> that will run on your machine and
+<p><strong>Chess engines</strong> that will run on your computer and
 play a game against you or help you analyze, such as GNU Chess and
 Crafty (topic <a href="#tag-D.3">[D.3]</a> below).</p>
 
@@ -507,7 +507,7 @@ compiler should do.</p>
 <h3><a name="tag-B.8">[B.8] Can I use XBoard or WinBoard to play a game
   of chess with another human?</a></h3>
 
-<p>The only way for two humans on different machines to play chess in
+<p>The only way for two humans on different computers to play chess in
 real time using XBoard/WinBoard is to use an Internet Chess Server
 as an intermediary.  That is, each player runs his own copy of XBoard
 or WinBoard, both of them log into an ICS, and they play a game there.
@@ -532,7 +532,7 @@ is not easy.  See <a href="http://www.tim-mann.org/ics.html#ownics"
 <p>The cmail program included with XBoard lets you play email postal games with
 another human; see topic <a href="#tag-B.6">[B.6]</a>.</p>
 
-<p>Two humans can play chess on the same machine using one copy of
+<p>Two humans can play chess on the same computer using one copy of
 XBoard/WinBoard in
 Edit Game mode, but the clocks don't run in this mode, so it's of limited
 usefulness.</p>
@@ -609,17 +609,17 @@ copy of WinBoard and set up the association.</p>
 with XBoard?</a></h3>
 
 <p>First, get the appropriate version of timestamp or timeseal for your
-machine from ftp.chessclub.com or ftp.freechess.org.
+computer from ftp.chessclub.com or ftp.freechess.org.
 Second, be sure that you can connect using XBoard <I>without</I>
 timestamp/timeseal.  Third, be sure that you can connect using
 timestamp/timeseal without XBoard.  See the help files on ICC and FICS
 or ask people online if you have problems.</p>
 
-<p>If you are in a completely ordinary situation, where your machine
-is directly on the Internet and you can connect to ICC or FICS 
-without timestamp/timeseal using
-just the command "xboard -ics" or "xboard -ics -icshost freechess.org",
-change that command to one of the following:</p>
+<p>If you are in a completely ordinary situation, where your computer
+is directly on the Internet and you can connect to ICC or FICS without
+timestamp/timeseal using just the command "xboard -ics" or "xboard
+-ics -icshost freechess.org", change that command to one of the
+following:</p>
 
 <pre>
     xboard -ics -icshost chessclub.com -icshelper timestamp
@@ -627,19 +627,19 @@ change that command to one of the following:</p>
     xboard -ics -icshost freechess.org -icshelper timeseal
 </pre>
 
-<p>If you have a firewall between your machine and the ICS, see topic
+<p>If you have a firewall between your computer and the ICS, see topic
 <a href="#tag-B.19">[B.19]</a>.</p>
 
 <p>If you normally have to use the "/icscomm" command line option on
-xboard to log into a second machine, and then telnet to ICC or FICS
+xboard to log into a second computer, and then telnet to ICC or FICS
 from there, you are going to have to run the Unix version of timestamp
-or timeseal on the second machine.  (If the second machine is not
+or timeseal on the second computer.  (If the second computer is not
 running Unix, you are out of luck.)  Get the appropriate version of
-timestamp or timeseal onto the shell machine via FTP; see the help
+timestamp or timeseal onto the shell computer via FTP; see the help
 files on ICC and FICS for instructions.  Then simply run it when you
 would normally run telnet.  In this configuration you are not
-protected against lag between your PC and the shell machine, or for
-lag caused by heavy load on the shell machine itself from other users.</p>
+protected against lag between your PC and the shell computer, or for
+lag caused by heavy load on the shell computer itself from other users.</p>
 
 <p>For further information on timestamp and timeseal, see the help
 files on ICC and FICS.</p>
@@ -659,19 +659,19 @@ timeseal.exe are included in the WinBoard distribution.  They both
 function identically to the Unix versions, as documented in "help
 timestamp" on ICC and "help timeseal" on FICS.</p>
 
-<p>If you have a firewall between your machine and the ICS, see topic
+<p>If you have a firewall between your computer and the ICS, see topic
 <a href="#tag-B.19">[B.19]</a>.</p>
 
 <p>If you normally have to use the "/icscomm" command line option on
 WinBoard to log into a shell account, and then telnet to ICC or FICS
 from there, you are going to have to run the Unix version of timestamp
-or timeseal on the shell machine.  (If the shell account is not on a
-Unix machine, you are out of luck.)  Get the appropriate version of
-timestamp or timeseal onto the shell machine via FTP; see the help
+or timeseal on the shell computer.  (If the shell account is not on a
+Unix computer, you are out of luck.)  Get the appropriate version of
+timestamp or timeseal onto the shell computer via FTP; see the help
 files on ICC and FICS for instructions.  Then simply run it when you
 would normally run telnet.  In this configuration you are not protected
-against lag between your PC and the shell machine, or for lag caused by
-heavy load on the shell machine itself from other users.</p>
+against lag between your PC and the shell computer, or for lag caused by
+heavy load on the shell computer itself from other users.</p>
 
 <p>For further information on timestamp and timeseal, see the help
 files on ICC and FICS.</p>
@@ -826,7 +826,7 @@ Help file).  If you can telnet to a chess server in some way, then you
 can almost certainly connect to it with xboard/WinBoard, though in
 some cases you may not be able to run timestamp or timeseal.  The
 timestamp and timeseal protocols require a clean, 8-bit wide TCP
-connection from your machine to the ICS, which some firewalls do not
+connection from your computer to the ICS, which some firewalls do not
 provide.</p>
 
 <p>If you have a SOCKS firewall and are using <strong>XBoard</strong>,
@@ -858,7 +858,7 @@ work, complete with timestamp or timeseal!</p>
 
 <p>Start by getting SocksCap32.  This software is freely available
 from <a href="http://www.socks.nec.com/">http://www.socks.nec.com/</a>.
-Install it on your machine, read the documentation, and learn to use
+Install it on your computer, read the documentation, and learn to use
 it.  You may find it useful with many other programs besides WinBoard.</p>
 
 <p>Next, <strong>don't</strong> socksify WinBoard.  Socksifying
@@ -1046,7 +1046,7 @@ pid=$$
       ( while [ true ] ; do
           xboard -iconic -ics -icshost $host \
                  -zt -zp -xbell -xanimate \
-                 -xautosave -xquiet -fcp "gnuchessx -h" \
+                 -xautosave -xquiet -fce "gnuchessx -h" \
                  -icslogon $zippylogon -xexit -autoflag -xautoraise $*
           sleep 600
         done ) &gt; $out 2&gt;&amp;1 &amp;
@@ -1074,8 +1074,8 @@ you make a blunder. </p>
 <p>Many chess coaches will let you switch sides after
 they get a stronger position so that you can get experience playing
 positions where you are winning.  You can try this with XBoard/WinBoard
-by using the Machine White or Machine Black menu command to make the
-machine take over your position.</p>
+by using the Engine White or Engine Black menu command to make the
+engine take over your position.</p>
 
 <p>The -depth command-line option to XBoard/WinBoard can also be used to
 weaken the engine (see the man page or Help file).  It's a bit of a
@@ -1213,7 +1213,7 @@ missing header files, missing libraries, or undefined symbols.
 </a></h3>
 
 <p>Perhaps you have the X server and client programs installed on your
-machine, but not the X header files and link-time libraries.  If so,
+computer, but not the X header files and link-time libraries.  If so,
 you can run existing X programs, but you cannot compile a new X
 program from source code.  In this case the XBoard configure script
 will fail and will tell you to look at this question in the FAQ.  Many
@@ -1335,7 +1335,7 @@ LANGFILE (file gnuchess.lan not found)".</a></h3>
 
 <p>This message means that WinBoard is trying to run GNU Chess, but
 GNU Chess cannot find a file that it needs, named gnuchess.lan.
-If you see it, you've probably customized WinBoard's /fcp, /fd, /scp,
+If you see it, you've probably customized WinBoard's /fce, /fd, /sce,
 and/or /sd options and made a mistake in the process.  Review what
 you did, and see the WinBoard help file.</p>
 
@@ -1390,7 +1390,7 @@ command-line options to the end.</li>
 <hr />
 <h3><a name="tag-C.9">[C.9]
 When I exit from WinBoard after using it to play against a chess
-program on my machine, the chess program keeps running in the background.
+program on my computer, the chess program keeps running in the background.
 </a></h3>
 
 <p>Be sure you have the current versions of WinBoard and the chess
@@ -1458,7 +1458,7 @@ I get errors compiling XBoard's parser.c.
 copy included with XBoard 4.0.2 was generated by lex on Tru64 Unix and
 has problems compiling and linking on current GNU/Linux versions.  The
 copy included with XBoard 4.0.3 was generated by flex on a GNU/Linux
-machine, but it too won't necessarily work on other versions of Unix.
+computer, but it too won't necessarily work on other versions of Unix.
 If you have this problem, you can fix it by deleting parser.c and
 letting the Makefile re-create it from parser.l.  This will work if
 you have either lex or flex on your system.  Flex is available in all
@@ -1580,7 +1580,7 @@ some program that has used up all 256 of your colors.  Netscape tends
 to do this, or maybe you have a background image that uses up all of
 your colors.</p>
 
-<p>If you have a modern machine, you probably have enough display
+<p>If you have a modern computer, you probably have enough display
 memory to run your X server with 16-, 24-, or 32-bit color depth.  If
 you're using "startx" to start the X server, try giving the command as
 "<tt>startx -- -bpp 24</tt>" (or 16, or 32).  On newer X servers you
@@ -1655,7 +1655,7 @@ written for X version 10, and you may or may not be able to build and run it
 on an X11 system.</p>
 
 <p>XChess has only one significant feature that is not present in XBoard: Two
-humans can play chess using XChess on different machines, without using the
+humans can play chess using XChess on different computers, without using the
 Internet Chess Server as an intermediary.  This feature is of interest only if
 you don't have network connectivity to the Internet Chess Server.</p>
 
@@ -1687,7 +1687,7 @@ href="ftp://ftp.cis.uab.edu/pub/hyatt/"
 >ftp://ftp.cis.uab.edu/pub/hyatt/</a>.  Start by getting the <a
 href="ftp://ftp.cis.uab.edu/pub/hyatt/read.me" >read.me</a> file and
 reading it.  Among other things, this file contains instructions on
-how to install Crafty as a command-line application on your machine.</p>
+how to install Crafty as a command-line application on your computer.</p>
 
 <p>There is a Crafty mailing list.
 To subscribe, send email to 
@@ -1698,13 +1698,13 @@ majordomo<a name="nospam05">&#x40;</a>cis.uab.edu, with
 <h3><a name="tag-D.4">[D.4] How do I use Crafty with XBoard?</a></h3>
 
 <p>First, you need to get Crafty and install it as a command-line
-application on your machine.  See topic <a href="#tag-D.3">[D.3]</a>.</p>
+application on your computer.  See topic <a href="#tag-D.3">[D.3]</a>.</p>
 
-<p>To use Crafty with XBoard, give the -fcp
+<p>To use Crafty with XBoard, give the -fce
 parameter like this:</p>
 
 <pre>
-    xboard -fcp "./crafty" -fd <I>crafty_directory</I>
+    xboard -fce "./crafty" -fd <I>crafty_directory</I>
 </pre>
 
 <p>Here <I>crafty_directory</I> is the directory where you installed Crafty.
@@ -1718,7 +1718,7 @@ both XBoard and Crafty.</p>
 <h3><a name="tag-D.5">[D.5] How do I use Crafty with WinBoard?</a></h3>
 
 <p>First, you need to get Crafty and install it as a command-line
-application on your machine.  See topic <a href="#tag-D.3">[D.3]</a>.
+application on your computer.  See topic <a href="#tag-D.3">[D.3]</a>.
 It is best to use the latest version of Crafty with the latest version
 of WinBoard to make sure all features are compatible and function
 correctly.  You can install Crafty in any directory you like.</p>
@@ -1747,11 +1747,11 @@ get the error message "Failed to start first chess program fairymax
 on localhost: fairymax: No such file or directory."</p>
 
 <p>If you have GNU Chess 5, the command should be "gnuchess xboard"
-instead.  To make XBoard use this command, give the -fcp parameter
+instead.  To make XBoard use this command, give the -fce parameter
 like this:</p>
 
 <pre>
-    xboard -fcp "gnuchess xboard" 
+    xboard -fce "gnuchess xboard" 
 </pre>
 
 If you instaled GNU Chess as a package, the operating system usually 
@@ -1761,7 +1761,7 @@ If GNU Chess is installed in a non-compliant way, e.g. together
 with its book file in a user directory, you must use:
 
 <pre>
-    xboard -fd <I>gnuchess_directory</I> -fcp "./gnuchess xboard" 
+    xboard -fd <I>gnuchess_directory</I> -fce "./gnuchess xboard" 
 </pre>
 
 <p>Here <I>gnuchess_directory</I> is the directory where you installed
@@ -1770,11 +1770,11 @@ In all cases you can add more xboard options at the end of the command
 line.</p>
 
 <p>If you want to use GNU Chess 4, the command should be "gnuchessx"
-instead.  To make XBoard use this command, give the -fcp parameter
+instead.  To make XBoard use this command, give the -fce parameter
 like this:</p>
 
 <pre>
-    xboard -fcp "gnuchessx" 
+    xboard -fce "gnuchessx" 
 </pre>
 
 <p>The same applies for non-compliant installs as for GNU Chess 5:
@@ -1816,7 +1816,7 @@ Then to run the engine with WinBoard,
 you have to enter the command:
 </p>
 <pre>
-        winboard /fcp="Engine.exe" /fd="..\NewEngine"
+        winboard /fce="Engine.exe" /fd="..\NewEngine"
 </pre>
 <p>
 Sometimes engines need parameters on their command line,
@@ -1874,9 +1874,9 @@ option to the command that invokes XBoard / WinBoard,
 to tell it that the engine is UCI:
 </p>
 <pre>
-        xboard -fcp "fruit" -fUCI
+        xboard -fce "fruit" -fUCI
 
-        winboard /fcp="Fruit_21.exe" /fd="..\Fruit" /fUCI
+        winboard /fce="Fruit_21.exe" /fd="..\Fruit" /fUCI
 </pre>
 <p>
 The second method is more complicated, but also more versatile.
@@ -1890,9 +1890,9 @@ you can force Polyglot to use this file with engine settings
 by invoking it explicitly from XBoard / WinBoard:
 </p>
 <pre>
-        xboard -fcp "polyglot INIFILE"
+        xboard -fce "polyglot INIFILE"
 
-        winboard /fcp="polyglot INIFILE" /fd="POLYGLOTDIR"
+        winboard /fce="polyglot INIFILE" /fd="POLYGLOTDIR"
 </pre>
 <p>
 INIFILE is the name of the polyglot.ini file (possibly a path name,

@@ -170,7 +170,7 @@ sub parse_flags {
     $LOAD_XBOARD = 1 unless $ENV{'CMAIL_NO_XBOARD'} ;
     $REUSE       = 1 ;
     @TD_FLAGS    = ("-td", $TIME_DELAY) ;
-    @NCP_FLAGS   = ("-ncp") ;
+    @NCE_FLAGS   = ("-nce") ;
 
     ## ################################################################# ##
     ## Define the usage string
@@ -229,9 +229,9 @@ sub parse_flags {
 	                                  {@TD_FLAGS    = ($ARGV,
 							   shift)      ;}
 	elsif ("$ARGV" =~ /^-noChessComputer$/)
-	                                  {@NCP_FLAGS   = ($ARGV,
+	                                  {@NCE_FLAGS   = ($ARGV,
 							   shift)      ;}
-	elsif ("$ARGV" =~ /^-[x]?ncp$/)	  {@NCP_FLAGS	= ($ARGV)      ;}
+	elsif ("$ARGV" =~ /^-[x]?nce$/)	  {@NCE_FLAGS	= ($ARGV)      ;}
 	elsif ("$ARGV" eq "-event")	  {$PGN_EVENT	= shift        ;}
 	elsif ("$ARGV" eq "-site")	  {$PGN_SITE	= shift        ;}
 	elsif ("$ARGV" eq "-round")	  {$PGN_ROUND	= shift        ;}
@@ -495,7 +495,7 @@ sub play_game {
 		local ($date) = &get_date_from_games (@ARCHIVE) ;
 		$XBOARD_ARGS = join (' ', (("-lgf",
 					    "'$ARCDIR/$PGN_GAME.$date.archive'"),
-					   @NCP_FLAGS,
+					   @NCE_FLAGS,
 					   "-xics",
 					   @TD_FLAGS,
 					   @DEBUG_FLAGS,
@@ -503,7 +503,7 @@ sub play_game {
 	    } else {
 		$XBOARD_ARGS = join (' ', (("-cmail", "'$PGN_GAME'"),
 					   @TD_FLAGS,
-					   @NCP_FLAGS,
+					   @NCE_FLAGS,
 					   "-xics",
 					   @DEBUG_FLAGS,
 					   @UNREC_ARGS)) ;
@@ -511,7 +511,7 @@ sub play_game {
 	} else {
 	    $PGN_GAME = "unknown.cmail" ;
 	    $XBOARD_ARGS = join (' ', (("-lgf", "'$PGN_GAME'"),
-				       @NCP_FLAGS,
+				       @NCE_FLAGS,
 				       "-xics",
 				       @TD_FLAGS,
 				       @DEBUG_FLAGS,

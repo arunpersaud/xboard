@@ -34,7 +34,7 @@ xboard @- X graphical user interface for chess
 .br
 .B xboard -ics -icshost hostname [options]
 .br
-.B xboard -ncp [options]
+.B xboard -nce [options]
 .br
 .B |pxboard
 .br
@@ -86,18 +86,17 @@ major mode from the command line when you start up XBoard.
 
 @table @asis
 @item xboard [options]
-As an interface to GNU Chess or another chess engine running on your
-machine, XBoard lets you play a game against the machine,
-set up arbitrary positions, force variations, watch a game between two
-chess engines, interactively analyze your stored games or set up and
-analyze arbitrary positions.  (Note: Not all chess engines support
-analysis.)
+As an interface to GNU Chess or another chess engine installed on your
+computer. XBoard lets you play a game against the chess engine, set up
+arbitrary positions, force variations, watch a game between two chess
+engines, interactively analyze your stored games or set up and analyze
+arbitrary positions.  (Note: Not all chess engines support analysis.)
 @item xboard -ics -icshost hostname [options]
 As Internet Chess Server (ICS) interface, XBoard
 lets you play against other ICS users, observe games
 they are playing, or review games that have recently finished.  Most
 of the ICS "wild" chess variants are supported, including bughouse.
-@item xboard -ncp [options]
+@item xboard -nce [options]
 XBoard can also be used simply
 as an electronic chessboard to play through games. It will read and
 write game files and allow you to play through variations
@@ -132,7 +131,7 @@ put a piece on it, and the piece to drop is selected by sweeping
 the mouse vertically with the button held down.
 
 The default function of the right mouse button in other modes is 
-to display the position the chess program thinks it will end up in.
+to display the position the chess engine thinks it will end up in.
 While moving the mouse vertically with this button pressed 
 XBoard will step through the principal variation to show how 
 this position will be reached.
@@ -380,8 +379,8 @@ not run. The @kbd{Ctrl-E} key is a keyboard equivalent.
 
 In chess engine mode, the chess engine continues to check moves for legality
 but does not participate in the game. You can bring the chess engine
-into the game by selecting @samp{Machine White}, @samp{Machine Black},
-or @samp{Two Machines}.
+into the game by selecting @samp{Engine White}, @samp{Engine Black},
+or @samp{Two Engines}.
 
 In ICS mode, the moves are not sent to the ICS: @samp{Edit Game} takes
 XBoard out of ICS Client mode and lets you edit games locally.
@@ -642,16 +641,16 @@ a duplicate of the Game List dialog in the Options menu.
 @cindex Menu, Mode
 @cindex Mode Menu
 @table @asis
-@item Machine White
-@cindex Machine White, Menu Item
+@item Engine White
+@cindex Engine White, Menu Item
 Tells the chess engine to play White. 
 The @kbd{Ctrl-W} key is a keyboard equivalent.
-@item Machine Black
-@cindex Machine Black, Menu Item
+@item Engine Black
+@cindex Engine Black, Menu Item
 Tells the chess engine to play Black.
 The @kbd{Ctrl-B} key is a keyboard equivalent.
-@item Two Machines
-@cindex Two Machines, Menu Item
+@item Two Engines
+@cindex Two Engines, Menu Item
 Plays a game between two chess engines.
 The @kbd{Ctrl-T} key is a keyboard equivalent.
 @item Analysis Mode
@@ -737,9 +736,9 @@ drag pieces to arbitrary squares while examining on ICC, but you can
 do so in @kbd{bsetup} mode on FICS.  In addition, the menu commands
 @samp{Forward}, @samp{Backward}, @samp{Pause}, and @samp{Stop Examining}
 have special functions in this mode; see below.
-@item Machine Match
-@cindex Machine match, Menu Item
-Starts a match between two chess programs,
+@item Engine Match
+@cindex Engine match, Menu Item
+Starts a match between two chess engines,
 with a number of games and other parameters set through
 the @samp{Match Options} menu dialog.
 When a match is already running, selecting this item will make
@@ -837,7 +836,7 @@ You must be connected to an ICS for this to work.
 @cindex Adjudicate to White, Menu Item
 @cindex Adjudicate to Black, Menu Item
 @cindex Adjudicate Draw, Menu Item
-Terminate an ongoing game in Two-Machines mode (including match mode),
+Terminate an ongoing game in Two-Engines mode (including match mode),
 with as result a win for white, for black, or a draw, respectively.
 The PGN file of the game will accompany the result string
 by the comment "user adjudication".
@@ -884,7 +883,7 @@ you can tick ‘WB protocol v1’ to speed up the loading process.
 @cindex Engine #1 Settings, Menu Item
 @cindex Engine #2 Settings, Menu Item
 Pop up a menu dialog to alter the settings specific to the applicable engine.
-(The second engine is only accessible once it has been used in Two-Machines mode.)
+(The second engine is only accessible once it has been used in Two-Engines mode.)
 For each parameter the engine allows to be set,
 a control element will appear in this dialog that can be used to alter the value.
 Depending on the type of parameter (text string, number, multiple choice,
@@ -1013,7 +1012,7 @@ If this option is off, the chess engine's notion of the score and best
 line of play from the current position is displayed as it is
 thinking. The score indicates how many pawns ahead (or if negative,
 behind) the chess engine thinks it is. In matches between two
-machines, the score is prefixed by @samp{W} or @samp{B} to indicate
+engines, the score is prefixed by @samp{W} or @samp{B} to indicate
 whether it is showing White's thinking or Black's, and only the thinking
 of the engine that is on move is shown.
 The shifted @kbd{Ctrl-H} key is a keyboard equivalent.
@@ -1188,11 +1187,11 @@ The following options occur in a dialog summoned by the
 ICS Options menu item.
 @itemx Auto Kibitz
 @cindex Auto Kibitz, Menu Item
-Setting this option when playingwith or aginst a chess program on an ICS
+Setting this option when playing with or against a chess engine on an ICS
 will cause the last line of thinking output of the engine before its move
 to be sent to the ICS in a kibitz command.
 In addition, any kibitz message received through the ICS from
-an opponent chess program will be diverted to the engine-output window,
+an opponent chess engine will be diverted to the engine-output window,
 (and suppressed in the console),
 where you can play through its PV by right-clicking it.
 @itemx Auto Comment
@@ -1321,8 +1320,8 @@ through the accompanying text edits.
 @item Match Options
 @cindex Match Options, Menu Item
 Summons a dialog where you can set options important for playing automatic 
-matches between two chess programs 
-(e.g. by using the @samp{Machine Match} menu item in the @samp{Mode} menu).
+matches between two chess engines 
+(e.g. by using the @samp{Engine Match} menu item in the @samp{Mode} menu).
 @itemx Tournament file
 @cindex Tournament file, Menu item
 To run a tournament, XBoard needs a file to record its progress, 
@@ -1537,8 +1536,8 @@ written to the settings file, so they will also apply in future sessions.
 Note that some settings are 'volatile', and are not saved,
 because XBoard considers it too unlikely that you want those to apply
 next time.
-In particular this applies to the Chess program names, and all options
-giving information on those Chess programs (such as their directory,
+In particular this applies to the chess engine names, and all options
+giving information on those chess engines (such as their directory,
 if they have their own opening book, if they are UCI or native XBoard),
 or the variant you are playing.
 Such options would still be understood when they appear in the settings
@@ -1635,7 +1634,7 @@ FlipViewProc, ForwardProc, GetMoveListProc, HighlightLastMoveProc,
 HintProc, IcsAlarmProc, IcsClientProc, IcsInputBoxProc,
 InfoProc, LoadGameProc, LoadNextGameProc, LoadNextPositionProc,
 LoadPositionProc, LoadPrevGameProc, LoadPrevPositionProc,
-LoadSelectedProc, MachineBlackProc, MachineWhiteProc, MailMoveProc,
+LoadSelectedProc, EngineBlackProc, EngineWhiteProc, MailMoveProc,
 ManProc, MoveNowProc, MoveSoundProc, NothingProc, OldSaveStyleProc,
 PasteGameProc, PastePositionProc, PauseProc, PeriodicUpdatesProc,
 PonderNextMoveProc, PopupExitMessageProc, PopupMoveErrorsProc,
@@ -1644,7 +1643,7 @@ ReloadGameProc, ReloadPositionProc, RematchProc, ResetProc,
 ResignProc, RetractMoveProc, RevertProc, SaveGameProc,
 SavePositionProc, ShowCoordsProc, ShowGameListProc, ShowThinkingProc,
 StopExaminingProc, StopObservingProc, TestLegalityProc, ToEndProc,
-ToStartProc, TrainingProc, TruncateGameProc, and TwoMachinesProc.
+ToStartProc, TrainingProc, TruncateGameProc, and TwoEnginesProc.
 @end example
 
 @node Options
@@ -1743,7 +1742,7 @@ of nodes reported by the engine in its thinking output. If the given number equa
 it can obviously not be used to convert nodes to seconds, and the time reported 
 by the engine is used to decrement the XBoard clock in stead. The engine is supposed to 
 report in CPU time it uses, rather than wall-clock time, in this mode. This option 
-can provide fairer conditions for engine-engine matches on heavily loaded machines, 
+can provide fairer conditions for engine-engine matches on heavily loaded computers, 
 or with very fast games (where the wall clock is too inaccurate). 
 @code{showThinking} must be on for this option to work. Default: -1 (off).
 Not many engines might support this yet!
@@ -1753,7 +1752,7 @@ Not many engines might support this yet!
 @cindex secondTimeOdds, option
 Reduces the time given to the mentioned engine by the given factor. 
 If pondering is off, the effect is indistinguishable from what would happen 
-if the engine was running on an n-times slower machine. Default: 1.
+if the engine was running on an n-times slower computer. Default: 1.
 @item -timeOddsMode mode
 @cindex timeOddsMode, option
 This option determines how the case is handled where both engines have a time-odds handicap. 
@@ -1807,22 +1806,22 @@ without alternating colors.
 Otherwise the same applies as for the @samp{-matchGames} option,
 over which it takes precedence if both are specified. (See there.)
 Default: 0 (do not run a match).
-@item -fcp or -firstChessProgram program
-@cindex fcp, option
-@cindex firstChessProgram, option
+@item -fce or -firstChessEngine program
+@cindex fce, option
+@cindex firstChessEngine, option
 Name of first chess engine.
 Default: @file{Fairy-Max}.
-@item -scp or -secondChessProgram program
-@cindex scp, option
-@cindex secondChessProgram, option
+@item -sce or -secondChessEngine program
+@cindex sce, option
+@cindex secondChessEngine, option
 Name of second chess engine, if needed.
-A second chess engine is started only in Two Machines (match) mode.
+A second chess engine is started only in Two Engines (match) mode.
 Default: @file{Fairy-Max}.
 @item -fb/-xfb or -firstPlaysBlack true/false
 @cindex fb, option
 @cindex firstPlaysBlack, option
-In games between two chess engines, firstChessProgram normally plays
-white.  If this option is true, firstChessProgram plays black.  In a
+In games between two chess engines, firstChessEngine normally plays
+white.  If this option is true, firstChessEngine plays black.  In a
 multi-game match, this option affects the colors only for the first
 game; they still alternate in subsequent games.
 @item -fh or -firstHost host
@@ -1991,13 +1990,13 @@ as the need arises.
 @cindex adapterCommand, option
 The string conatins the command that should be issued by XBoard
 to start an engine that is accompanied by the @code{fUCI} option.
-Any identifier following a percent sign in the command (e.g. %fcp)
+Any identifier following a percent sign in the command (e.g. %fce)
 will be considered the name of an XBoard option, and be replaced
 by the value of that option at the time the engine is started.
 For starting the second engine, any leading "f" or "first" in
 the option name will first be replaced by "s" or "second",
 before finding its value.
-Default: 'polyglot -noini -ec "%fcp" -ed "%fd"'
+Default: 'polyglot -noini -ec "%fce" -ed "%fd"'
 @item -uxiAdapter string
 @cindex uxiAdapter, option
 Similar to @code{adapterCommand}, but used for engines accompanied
@@ -2065,11 +2064,11 @@ xboard will relay the path name for this format to the engine through an egtpath
 One egtpath command for each matching format will be sent. 
 Popular formats are "nalimov" DTM tablebases and "scorpio" bitbases.
 Default: "".
-@item -firstChessProgramNames=@{names@}
+@item -firstChessEngineNames=@{names@}
 This option lets you customize the drop-down list of chess engine names 
 that appears in the @samp{Load Engine} and @samp{Match Options} dialog. 
 It consists of a list of strings, one per line. 
-When an engine is loaded, the corresponding line is prefixed with "-fcp ",
+When an engine is loaded, the corresponding line is prefixed with "-fce ",
 and processed like it appeared on the command line.
 That means that apart from the engine command,
 it can contain any list of XBoard options you want to use with this engine.
@@ -3092,9 +3091,9 @@ as repeats, XBoard is fully e.p. and castling aware!
 @section Other options
 @cindex Options, miscellaneous
 @table @asis
-@item -ncp/-xncp or -noChessProgram true/false
-@cindex ncp, option
-@cindex noChessProgram, option
+@item -nce/-xnce or -noChessEngine true/false
+@cindex nce, option
+@cindex noChessEngine, option
 If this option is true, XBoard acts as a passive chessboard; it
 does not start a chess engine at all. Turning on this option
 also turns off clockMode. Default: false.
@@ -3105,7 +3104,7 @@ If this option is given, XBoard selects the given modename
 from the Mode menu after starting and (if applicable) processing the
 loadGameFile or loadPositionFile option. Default: "" (no selection). 
 Other supported values are 
-MachineWhite, MachineBlack, TwoMachines, Analysis, 
+EngineWhite, EngineBlack, TwoEngines, Analysis, 
 AnalyzeFile, EditGame, EditPosition, and Training.
 @item -variant varname
 @cindex variant, option
@@ -3393,8 +3392,8 @@ and @samp{Stop Examining} on the @ref{Edit Menu}, @ref{Mode Menu}, and
 @node Firewalls
 @chapter Firewalls
 By default, XBoard communicates with an Internet Chess Server
-by opening a TCP socket directly from the machine it is running on
-to the ICS. If there is a firewall between your machine and the ICS,
+by opening a TCP socket directly from the computer it is running on
+to the ICS. If there is a firewall between your computer and the ICS,
 this won't work. Here are some recipes for getting around common
 kinds of firewalls using special options to XBoard.
 Important: See the paragraph in the below about extra echoes, in
@@ -3615,7 +3614,7 @@ WinBoard development section.
 Please use the @file{script} program to start a typescript, run 
 XBoard with the @samp{-debug} option, and include the typescript
 output in your message.
-Also tell us what kind of machine and what operating system version
+Also tell us what kind of computer and what operating system version
 you are using.  The command @samp{uname -a} will often tell you this.
 
 If you improve XBoard, please send a message about your changes,
@@ -3774,7 +3773,7 @@ The PGN Mode tag (default @samp{EM}, Electronic Mail).
 @item Other options
 Any option flags not listed above are passed through to XBoard.
 Invoking XBoard through CMail changes the default values of two XBoard
-options: The default value for @samp{-noChessProgram} is changed to
+options: The default value for @samp{-noChessEngine} is changed to
 true; that is, by default no chess engine is started.  The default
 value for @samp{-timeDelay} is changed to 0; that is, by default
 XBoard immediately goes to the end of the game as played so far,
@@ -3926,7 +3925,7 @@ will work well with the latest version of XBoard.
 Crafty can be obtained from its author's FTP site:
 ftp://ftp.cis.uab.edu/hyatt/.
 
-To use Crafty with XBoard, give the -fcp and -fd options as follows, where
+To use Crafty with XBoard, give the -fce and -fd options as follows, where
 <crafty's directory> is the directory in which you installed Crafty
 and placed its book and other support files.
 

@@ -93,8 +93,8 @@ extern char *getenv();
 #include "backend.h"
 #include "backendz.h"
 
-char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [HGM] book
-void HandleMachineMove P((char *message, ChessProgramState *cps));
+char *SendMoveToBookUser P((int nr, ChessEngineState *cps, int initial)); // [HGM] book
+void HandleEngineMove P((char *message, ChessEngineState *cps));
 
 static char zippyPartner[MSG_SIZ];
 static char zippyLastOpp[MSG_SIZ];
@@ -1137,7 +1137,7 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	HandleEngineMove(bookMove, &first);
     }
 }
 

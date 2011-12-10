@@ -13,9 +13,9 @@
 # exits.  So if you save a news article by piping it into this script,
 # you immediately get back control of your news reader.
 #
-# The script turns on -noChessProgram mode by default.  If you want a
-# chess program started, give the -xncp option.
+# The script turns on -noChessEngine mode by default.  If you want a
+# chess program started, give the -xnce option.
 #
 tmp=`mktemp "${TMPDIR:-/tmp}/pxboard.$$.XXXXXX"` || exit 1
 cat > "$tmp"
-( xboard -ncp -lgf "$tmp" "$@" ; rm "$tmp" ) &
+( xboard -nce -lgf "$tmp" "$@" ; rm "$tmp" ) &

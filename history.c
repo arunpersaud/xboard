@@ -55,7 +55,7 @@ static int lastGames;
 static char lastLastMove[ MOVE_LEN ];
 
 static MoveHistoryString * currMovelist;
-static ChessProgramStats_Move * currPvInfo;
+static ChessEngineStats_Move * currPvInfo;
 static int currFirst = 0;
 static int currLast = 0;
 static int currCurrent = -1;
@@ -231,7 +231,7 @@ void UpdateMoveHistory()
 }
 
 // back-end
-void MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo )
+void MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessEngineStats_Move * pvInfo )
 {
     /* [AS] Danger! For now we rely on the movelist parameter being a static variable! */
 
