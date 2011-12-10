@@ -183,9 +183,7 @@ and defers reading and writing of user settings to a user-specific
 file like ~/.xboardrc in the user's home directory.
 
 When XBoard is iconized, its graphical icon is a white knight if
-it is White's turn to move, a black knight if it is Black's turn.  See
-Iconize in @ref{Keys} below if you have problems getting this
-feature to work.
+it is White's turn to move, a black knight if it is Black's turn.
 
 @node Menus
 @chapter Menus, buttons, and keys
@@ -1584,14 +1582,6 @@ Shows the current XBoard version number.
 @cindex Keys
 @cindex Shortcut keys
 @table @asis
-@item Iconize
-Pressing the @kbd{-} key iconizes XBoard. The graphical
-icon displays a white knight if it is White's move, or a black knight
-if it is Black's move. If your X window manager displays only text
-icons, not graphical ones, check its documentation; there is probably
-a way to enable graphical icons.  If you get black and white reversed,
-we would like to hear about it; see @ref{Problems} below for
-instructions on how to report this problem.
 @item Load Next Game
 @cindex Load Next Game, Menu Item
 Loads the next game from the last game record file you loaded.
@@ -1636,7 +1626,7 @@ BlindfoldProc, BookProc, CallFlagProc, CopyGameProc, CopyPositionProc,
 DebugProc, DeclineProc, DrawProc, EditCommentProc, EditGameProc,
 EditPositionProc, EditTagsProc, EnterKeyProc, FlashMovesProc,
 FlipViewProc, ForwardProc, GetMoveListProc, HighlightLastMoveProc,
-HintProc, Iconify, IcsAlarmProc, IcsClientProc, IcsInputBoxProc,
+HintProc, IcsAlarmProc, IcsClientProc, IcsInputBoxProc,
 InfoProc, LoadGameProc, LoadNextGameProc, LoadNextPositionProc,
 LoadPositionProc, LoadPrevGameProc, LoadPrevPositionProc,
 LoadSelectedProc, MachineBlackProc, MachineWhiteProc, MailMoveProc,
