@@ -163,7 +163,7 @@ void SpinCallback(w, client_data, call_data)
 
     GetWidgetText(&currentOption[data], &val);
     sscanf(val, "%d", &j);
-    if (strcmp(name, "browse") == 0) {
+    if (strcmp(name, _("browse")) == 0) {
 	char *q=val, *r;
 	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
 	if(!strcmp(r, "") && !currentCps && currentOption[data].type == FileName && currentOption[data].textValue)
@@ -1034,12 +1034,14 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
 	    XtSetArg(args[j], XtNright, XtChainRight); j++;
 	    if(option[i].type == FileName || option[i].type == PathName) {
-		w = 50; msg = _("browse");
+		msg = _("browse");
+		/* automatically scale to width of text */
+		XtSetArg(args[j], XtNwidth, (XtArgVal) NULL );  j++;
 	    } else {
-		XtSetArg(args[j], XtNheight, 10);  j++;
 		w = 20; msg = "+";
+		XtSetArg(args[j], XtNheight, 10);  j++;
+		XtSetArg(args[j], XtNwidth,   w);  j++;
 	    }
-	    XtSetArg(args[j], XtNwidth, w);  j++;
 	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
 	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
 
