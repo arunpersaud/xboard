@@ -200,7 +200,7 @@ void ComboSelect(w, addr, index) // callback for all combo items
     int j = 255 & (intptr_t) addr;
 
     values[i] = j; // store in temporary, for transfer at OK
-    XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
+    XtSetArg(args[0], XtNlabel, ((char**)currentOption[i].textValue)[j]);
     XtSetValues(currentOption[i].handle, args, 1);
 
     if(currentOption[i].min & 1 && !currentCps && comboCallback) (comboCallback)(i);
