@@ -387,6 +387,9 @@ void StopExaminingProc P((Widget w, XEvent *event, String *prms,
 void UploadProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void TempBackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void TempForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+Boolean TempBackwardActive = False;
 void ToStartProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ToEndProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void RevertProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -980,6 +983,8 @@ XtActionsRec boardActions[] = {
     { "UploadProc", UploadProc },
     { "BackwardProc", BackwardProc },
     { "ForwardProc", ForwardProc },
+    { "TempBackwardProc", TempBackwardProc },
+    { "TempForwardProc", TempForwardProc },
     { "ToStartProc", ToStartProc },
     { "ToEndProc", ToEndProc },
     { "RevertProc", RevertProc },
@@ -1108,8 +1113,8 @@ char globalTranslations[] =
    "\
    :<Key>F1: ManProc() \n \
    :<Key>F2: FlipViewProc() \n \
-   :Ctrl<KeyDown>.: BackwardProc() \n \
-   :Ctrl<KeyUp>.: ForwardProc() \n \
+   :Ctrl<KeyDown>.: TempBackwardProc() \n \
+   :Ctrl<KeyUp>.: TempForwardProc() \n \
    :Ctrl<Key>1: AskQuestionProc(\"Direct command\",\
                                 \"Send to chess program:\",,1) \n \
    :Ctrl<Key>2: AskQuestionProc(\"Direct command\",\
@@ -6239,6 +6244,37 @@ void BackwardProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     BackwardEvent();
+}
+
+void TempBackwardProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+	if (!TempBackwardActive) {
+		TempBackwardActive = True;
+		BackwardEvent();
+	}
+}
+
+void TempForwardProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+	/* Check to see if triggered by a key release event for a repeating key.
+	 * If so the next queued event will be a key press of the same key at the same time */
+	if (XEventsQueued(xDisplay, QueuedAfterReading)) {
+		XEvent next;
+		XPeekEvent(xDisplay, &next);
+		if (next.type == KeyPress && next.xkey.time == event->xkey.time &&
+			next.xkey.keycode == event->xkey.keycode)
+				return;
+	}
+    ForwardEvent();
+	TempBackwardActive = False;
 }
 
 void ToStartProc(w, event, prms, nprms)
