@@ -222,7 +222,7 @@ void CreateComboPopup(parent, name, n, mb)
     XtSetArg(args[j], XtNwidth, 100);  j++;
 //    XtSetArg(args[j], XtNright, XtChainRight);  j++;
     while (mb[i] != NULL) {
-	    XtSetArg(args[j], XtNlabel, _(mb[i]));
+	    XtSetArg(args[j], XtNlabel, mb[i]);
 	    entry = XtCreateManagedWidget(mb[i], smeBSBObjectClass,
 					  menu, args, j+1);
 	    XtAddCallback(entry, XtNcallback,
