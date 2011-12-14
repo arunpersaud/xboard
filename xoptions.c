@@ -200,7 +200,13 @@ void ComboSelect(w, addr, index) // callback for all combo items
     int j = 255 & (intptr_t) addr;
 
     values[i] = j; // store in temporary, for transfer at OK
-    XtSetArg(args[0], XtNlabel, ((char**)currentOption[i].textValue)[j]);
+
+    /* empty strings are used as defaults in some comboboxes, only use gettext if we need to */
+    if(strlen(((char**)currentOption[i].textValue)[j]))
+      XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
+    else
+      XtSetArg(args[0], XtNlabel, ((char**)currentOption[i].textValue)[j]);
+
     XtSetValues(currentOption[i].handle, args, 1);
 
     if(currentOption[i].min & 1 && !currentCps && comboCallback) (comboCallback)(i);
@@ -221,15 +227,19 @@ void CreateComboPopup(parent, name, n, mb)
     j = 0;
     XtSetArg(args[j], XtNwidth, 100);  j++;
 //    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    while (mb[i] != NULL) {
-	    XtSetArg(args[j], XtNlabel, mb[i]);
-	    entry = XtCreateManagedWidget(mb[i], smeBSBObjectClass,
-					  menu, args, j+1);
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) ComboSelect,
-			  (caddr_t)(intptr_t) (256*n+i));
+    while (mb[i] != NULL) 
+      {
+	if ( strlen(mb[i]) )
+	  XtSetArg(args[j], XtNlabel, _(mb[i]));
+	else
+	  XtSetArg(args[j], XtNlabel, mb[i]);
+	entry = XtCreateManagedWidget(mb[i], smeBSBObjectClass,
+				      menu, args, j+1);
+	XtAddCallback(entry, XtNcallback,
+		      (XtCallbackProc) ComboSelect,
+		      (caddr_t)(intptr_t) (256*n+i));
 	i++;
-    }
+      }
 }
 
 
