@@ -201,39 +201,38 @@ void ComboSelect(w, addr, index) // callback for all combo items
 
     values[i] = j; // store in temporary, for transfer at OK
 
-    /* empty strings are used as defaults in some comboboxes, only use gettext if we need to */
-    if(strlen(((char**)currentOption[i].textValue)[j]))
-      XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
-    else
+    if(currentOption[i].min & NO_GETTEXT)
       XtSetArg(args[0], XtNlabel, ((char**)currentOption[i].textValue)[j]);
+    else
+      XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
 
     XtSetValues(currentOption[i].handle, args, 1);
 
-    if(currentOption[i].min & 1 && !currentCps && comboCallback) (comboCallback)(i);
+    if(currentOption[i].min & COMBO_CALLBACK && !currentCps && comboCallback) (comboCallback)(i);
 }
 
-void CreateComboPopup(parent, name, n, mb)
+void CreateComboPopup(parent, option, n)
      Widget parent;
-     String name;
+     Option *option;
      int n;
-     char *mb[];
 {
     int i=0, j;
     Widget menu, entry;
     Arg args[16];
 
-    menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
+    menu = XtCreatePopupShell(option->name, simpleMenuWidgetClass,
 			      parent, NULL, 0);
     j = 0;
     XtSetArg(args[j], XtNwidth, 100);  j++;
 //    XtSetArg(args[j], XtNright, XtChainRight);  j++;
+    char **mb = (char **) option->textValue;
     while (mb[i] != NULL) 
       {
-	if ( strlen(mb[i]) )
-	  XtSetArg(args[j], XtNlabel, _(mb[i]));
-	else
+	if (option->min & NO_GETTEXT)
 	  XtSetArg(args[j], XtNlabel, mb[i]);
-	entry = XtCreateManagedWidget(mb[i], smeBSBObjectClass,
+	else
+	  XtSetArg(args[j], XtNlabel, _(mb[i]));
+	entry = XtCreateManagedWidget((String) mb[i], smeBSBObjectClass,
 				      menu, args, j+1);
 	XtAddCallback(entry, XtNcallback,
 		      (XtCallbackProc) ComboSelect,
@@ -363,7 +362,8 @@ Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round    (for concurrent playing of a single") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle      tourney with multiple XBoards)") },
 { 0xD, 150,       0, NULL, (void*) &engineName, "", NULL, TextBox, N_("Tourney participants:") },
-{ 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
+{ 0,  COMBO_CALLBACK | NO_GETTEXT,
+		  0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
 { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
 { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles (or Swiss rounds):") },
 { 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Default Number of Games in Match (or Pairing):") },
@@ -1142,7 +1142,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNlabel, _(((char**)option[i].textValue)[option[i].value]));  j++;
 	    option[i].handle = (void*)
 		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));
-	    CreateComboPopup(last, option[i].name, i, (char **) option[i].textValue);
+	    CreateComboPopup(last, option + i, i);
 	    values[i] = option[i].value;
 	    break;
 	  case Break:
@@ -1644,7 +1644,7 @@ int InstallOK(int n)
 }
 
 Option installOptions[] = {
-{   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
+{   0,  NO_GETTEXT, 0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
 {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
 {   0,  0,    0, NULL, (void*) &useNick, NULL, NULL, CheckBox, N_("Use nickname in PGN player tags of engine-engine games") },
