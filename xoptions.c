@@ -638,7 +638,7 @@ char *soundNames[] = {
 char *soundFiles[] = { // sound files corresponding to above names
 	"",
 	"$",
-	"*", // kludge alert: as first thing in the dialog readout this is replaced with the user-given .WAV filename
+	NULL, // kludge alert: as first thing in the dialog readout this is replaced with the user-given .WAV filename
 	"honkhonk.wav",
 	"cymbal.wav",
 	"ding1.wav",
@@ -1289,7 +1289,7 @@ void SoundOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   soundFiles[2] = "*";
+   soundFiles[2] = strdup("*");
    GenericPopUp(soundOptions, _("Sound Options"), 0);
 }
 
