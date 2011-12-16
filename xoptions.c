@@ -954,7 +954,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	if(!n) { DisplayNote(_("Engine has no options")); currentCps = NULL; return 0; }
 	if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
 	height = n / width + 1;
-	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = 1; // OK on same line
+	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = SAME_ROW; // OK on same line
 	currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }
      i = 0;
@@ -1096,10 +1096,14 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	  case SaveButton:
 	  case Button:
 	    j=0;
-	    XtSetArg(args[j], XtNfromVert, option[i].min & 1 ? lastrow : last);  j++;
+	    if(option[i].min & SAME_ROW) {
+		XtSetArg(args[j], XtNfromVert, lastrow);  j++;
+		XtSetArg(args[j], XtNfromHoriz, last);  j++;
+	    } else {
+		XtSetArg(args[j], XtNfromVert, last);  j++;
+		XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast;
+	    }
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
-	    if(option[i].min & 1) { XtSetArg(args[j], XtNfromHoriz, last);  j++; }
-	    else  { XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast; }
 	    if(option[i].max) { XtSetArg(args[j], XtNwidth, option[i].max);  j++; }
 	    if(option[i].textValue) { // special for buttons of New Variant dialog
 		XtSetArg(args[j], XtNsensitive, appData.noChessProgram || option[i].value < 0
@@ -1182,7 +1186,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     for(h=0; h<height; h++) {
 	i = h + c*height;
 	if(option[i].type == EndMark) break;
-	if(!texts[h]) continue;
+	if(!texts[h]) continue; // Note: texts[h] can be undefined (giving errors in valgrind), but then both if's below will be false.
 	j=0;
 	if(option[i].type == Spin) {
 	    XtSetArg(args[j], XtNwidth, maxWidth);  j++;
@@ -1195,10 +1199,10 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     }
   }
 
-  if(!(option[i].min & 2)) {
+  if(!(option[i].min & NO_OK)) {
     j=0;
-    if(option[i].min & 1) {
-	for(j=i-1; option[j+1].min&1 && option[j].type == Button; j--) {
+    if(option[i].min & SAME_ROW) {
+	for(j=i-1; option[j+1].min & SAME_ROW && option[j].type == Button; j--) {
 	    XtSetArg(args[0], XtNtop, XtChainBottom);
 	    XtSetArg(args[1], XtNbottom, XtChainBottom);
 	    XtSetValues(option[j].handle, args, 2);
