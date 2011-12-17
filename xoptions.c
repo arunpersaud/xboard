@@ -1289,6 +1289,7 @@ void SoundOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+   free(soundFiles[2]);
    soundFiles[2] = strdup("*");
    GenericPopUp(soundOptions, _("Sound Options"), 0);
 }
