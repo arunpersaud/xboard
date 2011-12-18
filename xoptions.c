@@ -155,7 +155,7 @@ void SpinCallback(w, client_data, call_data)
     String name, val;
     Arg args[16];
     char buf[MSG_SIZ], *p;
-    int j;
+    int j = 0; // Initialiasation is necessary because the text value may be non-numeric causing the scanf conversion to fail
     int data = (intptr_t) client_data;
 
     XtSetArg(args[0], XtNlabel, &name);
