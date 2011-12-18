@@ -813,7 +813,7 @@ int GenericReadout(int selected)
     String val;
     Arg args[16];
     char buf[MSG_SIZ], **dest;
-    float x = 0.0; // Initialise because sscanf() will fail if non-numeric text is entered
+    float x;
 	for(i=0; ; i++) { // send all options that had to be OK-ed to engine
 	    if(selected >= 0) { if(i < selected) continue; else if(i > selected) break; }
 	    switch(currentOption[i].type) {
@@ -838,6 +838,7 @@ int GenericReadout(int selected)
 		case Fractional:
 		    XtSetArg(args[0], XtNstring, &val);
 		    XtGetValues(currentOption[i].handle, args, 1);
+		    x = 0.0; // Initialise because sscanf() will fail if non-numeric text is entered
 		    sscanf(val, "%f", &x);
 		    if(x > currentOption[i].max) x = currentOption[i].max;
 		    if(x < currentOption[i].min) x = currentOption[i].min;
