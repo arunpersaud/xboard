@@ -5643,11 +5643,19 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
     *value_return = targets_tmp;
     *type_return = XA_ATOM;
     *length_return = 2;
+#if 0
+    // This code leads to a read of value_return out of bounds on 64-bit systems.
+    // Other code which I have seen always sets *format_return to 32 independent of
+    // sizeof(Atom) without adjusting *length_return. For instance see TextConvertSelection()
+    // at http://cgit.freedesktop.org/xorg/lib/libXaw/tree/src/Text.c -- BJ
     *format_return = 8 * sizeof(Atom);
     if (*format_return > 32) {
       *length_return *= *format_return / 32;
       *format_return = 32;
     }
+#else
+    *format_return = 32;
+#endif
     return True;
   } else {
     return False;
@@ -5752,11 +5760,19 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
     *value_return = targets_tmp;
     *type_return = XA_ATOM;
     *length_return = 2;
+#if 0
+    // This code leads to a read of value_return out of bounds on 64-bit systems.
+    // Other code which I have seen always sets *format_return to 32 independent of
+    // sizeof(Atom) without adjusting *length_return. For instance see TextConvertSelection()
+    // at http://cgit.freedesktop.org/xorg/lib/libXaw/tree/src/Text.c -- BJ
     *format_return = 8 * sizeof(Atom);
     if (*format_return > 32) {
       *length_return *= *format_return / 32;
       *format_return = 32;
     }
+#else
+    *format_return = 32;
+#endif
     return True;
   } else {
     return False;
