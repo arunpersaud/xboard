@@ -813,7 +813,7 @@ int GenericReadout(int selected)
     String val;
     Arg args[16];
     char buf[MSG_SIZ], **dest;
-    float x;
+    float x = 0.0; // Initialise because sscanf() will fail if non-numeric text is entered
 	for(i=0; ; i++) { // send all options that had to be OK-ed to engine
 	    if(selected >= 0) { if(i < selected) continue; else if(i > selected) break; }
 	    switch(currentOption[i].type) {
