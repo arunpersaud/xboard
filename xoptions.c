@@ -155,7 +155,7 @@ void SpinCallback(w, client_data, call_data)
     String name, val;
     Arg args[16];
     char buf[MSG_SIZ], *p;
-    int j;
+    int j = 0; // Initialiasation is necessary because the text value may be non-numeric causing the scanf conversion to fail
     int data = (intptr_t) client_data;
 
     XtSetArg(args[0], XtNlabel, &name);
@@ -163,7 +163,7 @@ void SpinCallback(w, client_data, call_data)
 
     GetWidgetText(&currentOption[data], &val);
     sscanf(val, "%d", &j);
-    if (strcmp(name, "browse") == 0) {
+    if (strcmp(name, _("browse")) == 0) {
 	char *q=val, *r;
 	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
 	if(!strcmp(r, "") && !currentCps && currentOption[data].type == FileName && currentOption[data].textValue)
@@ -200,36 +200,45 @@ void ComboSelect(w, addr, index) // callback for all combo items
     int j = 255 & (intptr_t) addr;
 
     values[i] = j; // store in temporary, for transfer at OK
-    XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
+
+    if(currentOption[i].min & NO_GETTEXT)
+      XtSetArg(args[0], XtNlabel, ((char**)currentOption[i].textValue)[j]);
+    else
+      XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
+
     XtSetValues(currentOption[i].handle, args, 1);
 
-    if(currentOption[i].min & 1 && !currentCps && comboCallback) (comboCallback)(i);
+    if(currentOption[i].min & COMBO_CALLBACK && !currentCps && comboCallback) (comboCallback)(i);
 }
 
-void CreateComboPopup(parent, name, n, mb)
+void CreateComboPopup(parent, option, n)
      Widget parent;
-     String name;
+     Option *option;
      int n;
-     char *mb[];
 {
     int i=0, j;
     Widget menu, entry;
     Arg args[16];
 
-    menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
+    menu = XtCreatePopupShell(option->name, simpleMenuWidgetClass,
 			      parent, NULL, 0);
     j = 0;
     XtSetArg(args[j], XtNwidth, 100);  j++;
 //    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    while (mb[i] != NULL) {
-	    XtSetArg(args[j], XtNlabel, _(mb[i]));
-	    entry = XtCreateManagedWidget(mb[i], smeBSBObjectClass,
-					  menu, args, j+1);
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) ComboSelect,
-			  (caddr_t)(intptr_t) (256*n+i));
+    char **mb = (char **) option->textValue;
+    while (mb[i] != NULL) 
+      {
+	if (option->min & NO_GETTEXT)
+	  XtSetArg(args[j], XtNlabel, mb[i]);
+	else
+	  XtSetArg(args[j], XtNlabel, _(mb[i]));
+	entry = XtCreateManagedWidget((String) mb[i], smeBSBObjectClass,
+				      menu, args, j+1);
+	XtAddCallback(entry, XtNcallback,
+		      (XtCallbackProc) ComboSelect,
+		      (caddr_t)(intptr_t) (256*n+i));
 	i++;
-    }
+      }
 }
 
 
@@ -353,7 +362,8 @@ Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round    (for concurrent playing of a single") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle      tourney with multiple XBoards)") },
 { 0xD, 150,       0, NULL, (void*) &engineName, "", NULL, TextBox, N_("Tourney participants:") },
-{ 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
+{ 0,  COMBO_CALLBACK | NO_GETTEXT,
+		  0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
 { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
 { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles (or Swiss rounds):") },
 { 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Default Number of Games in Match (or Pairing):") },
@@ -628,7 +638,7 @@ char *soundNames[] = {
 char *soundFiles[] = { // sound files corresponding to above names
 	"",
 	"$",
-	"*", // kludge alert: as first thing in the dialog readout this is replaced with the user-given .WAV filename
+	NULL, // kludge alert: as first thing in the dialog readout this is replaced with the user-given .WAV filename
 	"honkhonk.wav",
 	"cymbal.wav",
 	"ding1.wav",
@@ -828,6 +838,7 @@ int GenericReadout(int selected)
 		case Fractional:
 		    XtSetArg(args[0], XtNstring, &val);
 		    XtGetValues(currentOption[i].handle, args, 1);
+		    x = 0.0; // Initialise because sscanf() will fail if non-numeric text is entered
 		    sscanf(val, "%f", &x);
 		    if(x > currentOption[i].max) x = currentOption[i].max;
 		    if(x < currentOption[i].min) x = currentOption[i].min;
@@ -944,7 +955,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	if(!n) { DisplayNote(_("Engine has no options")); currentCps = NULL; return 0; }
 	if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
 	height = n / width + 1;
-	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = 1; // OK on same line
+	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = SAME_ROW; // OK on same line
 	currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }
      i = 0;
@@ -1034,12 +1045,14 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
 	    XtSetArg(args[j], XtNright, XtChainRight); j++;
 	    if(option[i].type == FileName || option[i].type == PathName) {
-		w = 50; msg = _("browse");
+		msg = _("browse");
+		/* automatically scale to width of text */
+		XtSetArg(args[j], XtNwidth, (XtArgVal) NULL );  j++;
 	    } else {
-		XtSetArg(args[j], XtNheight, 10);  j++;
 		w = 20; msg = "+";
+		XtSetArg(args[j], XtNheight, 10);  j++;
+		XtSetArg(args[j], XtNwidth,   w);  j++;
 	    }
-	    XtSetArg(args[j], XtNwidth, w);  j++;
 	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
 	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
 
@@ -1084,10 +1097,14 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	  case SaveButton:
 	  case Button:
 	    j=0;
-	    XtSetArg(args[j], XtNfromVert, option[i].min & 1 ? lastrow : last);  j++;
+	    if(option[i].min & SAME_ROW) {
+		XtSetArg(args[j], XtNfromVert, lastrow);  j++;
+		XtSetArg(args[j], XtNfromHoriz, last);  j++;
+	    } else {
+		XtSetArg(args[j], XtNfromVert, last);  j++;
+		XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast;
+	    }
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
-	    if(option[i].min & 1) { XtSetArg(args[j], XtNfromHoriz, last);  j++; }
-	    else  { XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast; }
 	    if(option[i].max) { XtSetArg(args[j], XtNwidth, option[i].max);  j++; }
 	    if(option[i].textValue) { // special for buttons of New Variant dialog
 		XtSetArg(args[j], XtNsensitive, appData.noChessProgram || option[i].value < 0
@@ -1130,7 +1147,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNlabel, _(((char**)option[i].textValue)[option[i].value]));  j++;
 	    option[i].handle = (void*)
 		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));
-	    CreateComboPopup(last, option[i].name, i, (char **) option[i].textValue);
+	    CreateComboPopup(last, option + i, i);
 	    values[i] = option[i].value;
 	    break;
 	  case Break:
@@ -1170,7 +1187,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     for(h=0; h<height; h++) {
 	i = h + c*height;
 	if(option[i].type == EndMark) break;
-	if(!texts[h]) continue;
+	if(!texts[h]) continue; // Note: texts[h] can be undefined (giving errors in valgrind), but then both if's below will be false.
 	j=0;
 	if(option[i].type == Spin) {
 	    XtSetArg(args[j], XtNwidth, maxWidth);  j++;
@@ -1183,10 +1200,10 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     }
   }
 
-  if(!(option[i].min & 2)) {
+  if(!(option[i].min & NO_OK)) {
     j=0;
-    if(option[i].min & 1) {
-	for(j=i-1; option[j+1].min&1 && option[j].type == Button; j--) {
+    if(option[i].min & SAME_ROW) {
+	for(j=i-1; option[j+1].min & SAME_ROW && option[j].type == Button; j--) {
 	    XtSetArg(args[0], XtNtop, XtChainBottom);
 	    XtSetArg(args[1], XtNbottom, XtChainBottom);
 	    XtSetValues(option[j].handle, args, 2);
@@ -1273,7 +1290,8 @@ void SoundOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   soundFiles[2] = "*";
+   free(soundFiles[2]);
+   soundFiles[2] = strdup("*");
    GenericPopUp(soundOptions, _("Sound Options"), 0);
 }
 
@@ -1573,12 +1591,18 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
 {
     char buf[10], keys[32];
     KeySym sym;
-    KeyCode metaL, metaR;
+    KeyCode metaL, metaR, ctrlL, ctrlR;
     int n = XLookupString(&(event->xkey), buf, 10, &sym, NULL);
     XQueryKeymap(xDisplay,keys);
     metaL = XKeysymToKeycode(xDisplay, XK_Meta_L);
     metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
-    if ( n == 1 && *buf >= 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) { // printable, no alt
+    ctrlL = XKeysymToKeycode(xDisplay, XK_Control_L);
+    ctrlR = XKeysymToKeycode(xDisplay, XK_Control_R);
+    if ( n == 1 && *buf >= 32 // printable
+	 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7)) // no alt key pressed
+	 && !(keys[ctrlL>>3]&1<<(ctrlL&7)) && !(keys[ctrlR>>3]&1<<(ctrlR&7)) // no ctrl key pressed
+       )
+      {
 	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
 	    if(shells[4]) { // box already exists: append to current contents
 		char *p, newText[MSG_SIZ];
@@ -1626,7 +1650,7 @@ int InstallOK(int n)
 }
 
 Option installOptions[] = {
-{   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
+{   0,  NO_GETTEXT, 0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
 {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
 {   0,  0,    0, NULL, (void*) &useNick, NULL, NULL, CheckBox, N_("Use nickname in PGN player tags of engine-engine games") },

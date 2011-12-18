@@ -387,6 +387,9 @@ void StopExaminingProc P((Widget w, XEvent *event, String *prms,
 void UploadProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void TempBackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void TempForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+Boolean TempBackwardActive = False;
 void ToStartProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ToEndProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void RevertProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -444,7 +447,6 @@ void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void Iconify P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
 void DisplayTitle P((char *title));
 void ICSInitScript P((void));
@@ -921,7 +923,6 @@ XtActionsRec boardActions[] = {
     { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
-    { "Iconify", Iconify },
     { "ResetProc", ResetProc },
     { "NewVariantProc", NewVariantProc },
     { "LoadGameProc", LoadGameProc },
@@ -982,6 +983,8 @@ XtActionsRec boardActions[] = {
     { "UploadProc", UploadProc },
     { "BackwardProc", BackwardProc },
     { "ForwardProc", ForwardProc },
+    { "TempBackwardProc", TempBackwardProc },
+    { "TempForwardProc", TempForwardProc },
     { "ToStartProc", ToStartProc },
     { "ToEndProc", ToEndProc },
     { "RevertProc", RevertProc },
@@ -1108,14 +1111,13 @@ char globalTranslations[] =
    :Ctrl<Key>H: HideThinkingProc() \n "
 #endif
    "\
-   :<Key>-: Iconify() \n \
    :<Key>F1: ManProc() \n \
    :<Key>F2: FlipViewProc() \n \
-   <KeyDown>.: BackwardProc() \n \
-   <KeyUp>.: ForwardProc() \n \
-   Shift<Key>1: AskQuestionProc(\"Direct command\",\
+   :Ctrl<KeyDown>.: TempBackwardProc() \n \
+   :Ctrl<KeyUp>.: TempForwardProc() \n \
+   :Ctrl<Key>1: AskQuestionProc(\"Direct command\",\
                                 \"Send to chess program:\",,1) \n \
-   Shift<Key>2: AskQuestionProc(\"Direct command\",\
+   :Ctrl<Key>2: AskQuestionProc(\"Direct command\",\
                                 \"Send to second chess program:\",,2) \n";
 
 char boardTranslations[] =
@@ -5641,11 +5643,19 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
     *value_return = targets_tmp;
     *type_return = XA_ATOM;
     *length_return = 2;
+#if 0
+    // This code leads to a read of value_return out of bounds on 64-bit systems.
+    // Other code which I have seen always sets *format_return to 32 independent of
+    // sizeof(Atom) without adjusting *length_return. For instance see TextConvertSelection()
+    // at http://cgit.freedesktop.org/xorg/lib/libXaw/tree/src/Text.c -- BJ
     *format_return = 8 * sizeof(Atom);
     if (*format_return > 32) {
       *length_return *= *format_return / 32;
       *format_return = 32;
     }
+#else
+    *format_return = 32;
+#endif
     return True;
   } else {
     return False;
@@ -5750,11 +5760,19 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
     *value_return = targets_tmp;
     *type_return = XA_ATOM;
     *length_return = 2;
+#if 0
+    // This code leads to a read of value_return out of bounds on 64-bit systems.
+    // Other code which I have seen always sets *format_return to 32 independent of
+    // sizeof(Atom) without adjusting *length_return. For instance see TextConvertSelection()
+    // at http://cgit.freedesktop.org/xorg/lib/libXaw/tree/src/Text.c -- BJ
     *format_return = 8 * sizeof(Atom);
     if (*format_return > 32) {
       *length_return *= *format_return / 32;
       *format_return = 32;
     }
+#else
+    *format_return = 32;
+#endif
     return True;
   } else {
     return False;
@@ -6242,6 +6260,37 @@ void BackwardProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     BackwardEvent();
+}
+
+void TempBackwardProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+	if (!TempBackwardActive) {
+		TempBackwardActive = True;
+		BackwardEvent();
+	}
+}
+
+void TempForwardProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+	/* Check to see if triggered by a key release event for a repeating key.
+	 * If so the next queued event will be a key press of the same key at the same time */
+	if (XEventsQueued(xDisplay, QueuedAfterReading)) {
+		XEvent next;
+		XPeekEvent(xDisplay, &next);
+		if (next.type == KeyPress && next.xkey.time == event->xkey.time &&
+			next.xkey.keycode == event->xkey.keycode)
+				return;
+	}
+    ForwardEvent();
+	TempBackwardActive = False;
 }
 
 void ToStartProc(w, event, prms, nprms)
@@ -6868,19 +6917,6 @@ void NothingProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     return;
-}
-
-void Iconify(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    fromX = fromY = -1;
-    XtSetArg(args[0], XtNiconic, True);
-    XtSetValues(shellWidget, args, 1);
 }
 
 void DisplayMessage(message, extMessage)

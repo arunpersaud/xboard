@@ -319,9 +319,17 @@ int Explode P((Board board, int fromX, int fromY, int toX, int toY));
 typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton,
 		 FileName, PathName, Slider, Message, Fractional, Label, Break, EndMark } Control;
 
+/* Flags Option.min used for ComboBox: */
+#define COMBO_CALLBACK	(1 << 0)
+#define NO_GETTEXT	(1 << 1)
+
+/* Flags for Option.min used for Button, SaveButton, EndMark: */
+#define SAME_ROW	(1 << 0)
+#define NO_OK		(1 << 1)
+
 typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
     int value;          // current setting, starts as default
-    int min;
+    int min;		// Also used for flags
     int max;
     void *handle;       // for use by front end
     void *target;       // for use by front end

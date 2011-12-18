@@ -901,7 +901,7 @@ ParseArgs(GetFunc get, void *cl)
 
     while (ch == ' ' || ch == '=' || ch == ':' || ch == '\t') ch = get(cl);
     if (ch == NULLCHAR || ch == '\n') {
-      ExitArgError("No value provided for argument", argName, TRUE);
+      ExitArgError(_("No value provided for argument"), argName, TRUE);
     }
     q = argValue;
     if (ch == '{') {
