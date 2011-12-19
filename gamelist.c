@@ -42,6 +42,7 @@
 #include "frontend.h"
 #include "backend.h"
 #include "parser.h"
+#include "moves.h"
 
 
 /* Variables
