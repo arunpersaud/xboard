@@ -5124,6 +5124,7 @@ void PromotionPopUp()
     Position x, y;
     Dimension bw_width, pw_width;
     int j;
+    char *PromoChars = "wglcqrbnkac+=\0";
 
     j = 0;
     XtSetArg(args[j], XtNwidth, &bw_width); j++;
@@ -5147,47 +5148,33 @@ void PromotionPopUp()
 
   if(gameInfo.variant != VariantShogi) {
    if(gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove)) {
-      XawDialogAddButton(dialog, _("Warlord"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("General"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("Lieutenant"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("Captain"), PromotionCallback,
-			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("Warlord"), PromotionCallback, PromoChars + 0);
+      XawDialogAddButton(dialog, _("General"), PromotionCallback, PromoChars + 1);
+      XawDialogAddButton(dialog, _("Lieutenant"), PromotionCallback, PromoChars + 2);
+      XawDialogAddButton(dialog, _("Captain"), PromotionCallback, PromoChars + 3);
     } else {
-    XawDialogAddButton(dialog, _("Queen"), PromotionCallback,
-		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("Rook"), PromotionCallback,
-		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("Bishop"), PromotionCallback,
-		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("Knight"), PromotionCallback,
-		       (XtPointer) dialog);
+    XawDialogAddButton(dialog, _("Queen"), PromotionCallback, PromoChars + 4);
+    XawDialogAddButton(dialog, _("Rook"), PromotionCallback, PromoChars + 5);
+    XawDialogAddButton(dialog, _("Bishop"), PromotionCallback, PromoChars + 6);
+    XawDialogAddButton(dialog, _("Knight"), PromotionCallback, PromoChars + 7);
     }
     if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
         gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
         gameInfo.variant == VariantGiveaway) {
-      XawDialogAddButton(dialog, _("King"), PromotionCallback,
-			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("King"), PromotionCallback, PromoChars + 8);
     }
     if(gameInfo.variant == VariantCapablanca ||
        gameInfo.variant == VariantGothic ||
        gameInfo.variant == VariantCapaRandom) {
-      XawDialogAddButton(dialog, _("Archbishop"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("Chancellor"), PromotionCallback,
-			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("Archbishop"), PromotionCallback, PromoChars + 9);
+      XawDialogAddButton(dialog, _("Chancellor"), PromotionCallback, PromoChars + 10);
     }
   } else // [HGM] shogi
   {
-      XawDialogAddButton(dialog, _("Promote"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("Defer"), PromotionCallback,
-			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("Promote"), PromotionCallback, PromoChars + 11);
+      XawDialogAddButton(dialog, _("Defer"), PromotionCallback, PromoChars + 12);
   }
-    XawDialogAddButton(dialog, _("cancel"), PromotionCallback,
-		       (XtPointer) dialog);
+    XawDialogAddButton(dialog, _("cancel"), PromotionCallback, PromoChars + 13);
 
     XtRealizeWidget(promotionShell);
     CatchDeleteWindow(promotionShell, "PromotionPopDown");
@@ -5223,31 +5210,17 @@ void PromotionCallback(w, client_data, call_data)
      Widget w;
      XtPointer client_data, call_data;
 {
-    String name;
-    Arg args[16];
-    int promoChar;
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
+    int promoChar = * (const char *) client_data;
 
     PromotionPopDown();
 
     if (fromX == -1) return;
 
-    if (strcmp(name, _("cancel")) == 0) {
+    if (! promoChar) {
 	fromX = fromY = -1;
 	ClearHighlights();
 	return;
-    } else if (strcmp(name, _("Knight")) == 0) {
-	promoChar = 'n';
-    } else if (strcmp(name, _("Promote")) == 0) {
-	promoChar = '+';
-    } else if (strcmp(name, _("Defer")) == 0) {
-	promoChar = '=';
-    } else {
-	promoChar = ToLower(name[0]);
     }
-
     UserMoveEvent(fromX, fromY, toX, toY, promoChar);
 
     if (!appData.highlightLastMove || gotPremove) ClearHighlights();
