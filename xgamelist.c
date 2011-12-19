@@ -479,6 +479,8 @@ GameListPopUp(fp, filename)
     if (glc == NULL) {
 	glc = (GameListClosure *) calloc(1, sizeof(GameListClosure));
 	glc->x = glc->y = -1;
+	glc->filename = NULL;
+	glc->shell = NULL;
     }
 
     GameListPrepare(False); // [HGM] filter: code put in separate routine
@@ -487,7 +489,6 @@ GameListPopUp(fp, filename)
 
     if (glc->filename != NULL) free(glc->filename);
     glc->filename = StrSave(filename);
-
 
     if (glc->shell == NULL) {
 	glc->shell = GameListCreate(filename, GameListCallback, glc);
