@@ -392,7 +392,7 @@ GameListReplace(int page)
   XawListChange(listwidg, list, 0, 0, True);
   XtSetValues(listwidg, &arg, 1);
   XawListHighlight(listwidg, 0);
-  snprintf(buf, MSG_SIZ, "%s- %d/%d games (%d-%d-%d)", glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
+  snprintf(buf, MSG_SIZ, _("%s - %d/%d games (%d-%d-%d)"), glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
   XtSetArg(arg, XtNtitle, buf);
   XtSetValues(glc->shell, &arg, 1);
 }

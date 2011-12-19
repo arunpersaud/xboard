@@ -43,6 +43,15 @@
 #include "backend.h"
 #include "parser.h"
 #include "moves.h"
+#include "gettext.h"
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
 
 
 /* Variables
@@ -363,7 +372,7 @@ int GameListBuild(f)
 	    break;
 	}
 	if(gameNumber % 1000 == 0) {
-	    snprintf(buf, MSG_SIZ,"Reading game file (%d)", gameNumber);
+	    snprintf(buf, MSG_SIZ, _("Reading game file (%d)"), gameNumber);
 	    DisplayTitle(buf);
 	}
     }
