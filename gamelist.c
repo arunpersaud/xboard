@@ -217,10 +217,9 @@ int GameListBuild(f)
     int error, scratch=100, plyNr=0, fromX, fromY, toX, toY;
     int offset;
     char lastComment[MSG_SIZ], buf[MSG_SIZ];
-struct {
-    long sec;  /* Assuming this is >= 32 bits */
-    int ms;    /* Assuming this is >= 16 bits */
-} t,t2; GetTimeMark(&t);
+    TimeMark t, t2;
+
+    GetTimeMark(&t);
     GameListFree(&gameList);
     yynewfile(f);
     gameNumber = 0;

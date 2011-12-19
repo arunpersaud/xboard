@@ -441,4 +441,13 @@ void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int cu
 void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 void MakeEngineOutputTitle P((void));
 
+/* A point in time */
+typedef struct {
+    long sec;  /* Assuming this is >= 32 bits */
+    int ms;    /* Assuming this is >= 16 bits */
+} TimeMark;
+
+void GetTimeMark P((TimeMark *));
+long SubtractTimeMarks P((TimeMark *, TimeMark *));
+
 #endif /* _BACKEND */

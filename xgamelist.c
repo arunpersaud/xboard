@@ -335,11 +335,9 @@ GameListPrepare(int byPos)
     int nstrings;
     ListGame *lg;
     char **st, *line;
-struct {
-    long sec;  /* Assuming this is >= 32 bits */
-    int ms;    /* Assuming this is >= 16 bits */
-} t,t2; GetTimeMark(&t);
+    TimeMark t, t2;
 
+    GetTimeMark(&t);
     if(st = glc->strings) while(*st) free(*st++);
     nstrings = ((ListGame *) gameList.tailPred)->number;
     glc->strings = (char **) malloc((nstrings + 1) * sizeof(char *));

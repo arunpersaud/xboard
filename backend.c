@@ -147,12 +147,6 @@ extern int gettimeofday(struct timeval *, struct timezone *);
 #endif
 
 
-/* A point in time */
-typedef struct {
-    long sec;  /* Assuming this is >= 32 bits */
-    int ms;    /* Assuming this is >= 16 bits */
-} TimeMark;
-
 int establish P((void));
 void read_from_player P((InputSourceRef isr, VOIDSTAR closure,
 			 char *buf, int count, int error));
@@ -210,8 +204,6 @@ void CopyPlayerNameIntoFileName P((char **, char *));
 char *SavePart P((char *));
 int SaveGameOldStyle P((FILE *));
 int SaveGamePGN P((FILE *));
-void GetTimeMark P((TimeMark *));
-long SubtractTimeMarks P((TimeMark *, TimeMark *));
 int CheckFlags P((void));
 long NextTickLength P((long));
 void CheckTimeControl P((void));
