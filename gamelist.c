@@ -352,10 +352,11 @@ int GameListBuild(f)
 	    if (currentListGame->gameInfo.resultDetails != NULL) {
 		free(currentListGame->gameInfo.resultDetails);
 	    }
-	    if(yy_text[0] == '{') { char *p;
-	      safeStrCpy(lastComment, yy_text+1, sizeof(lastComment)/sizeof(lastComment[0]));
-	      if(p = strchr(lastComment, '}')) *p = 0;
-	      currentListGame->gameInfo.resultDetails = StrSave(lastComment);
+	    if(yy_text[0] == '{') {
+		char *p;
+		safeStrCpy(lastComment, yy_text+1, sizeof(lastComment)/sizeof(lastComment[0]));
+		if((p = strchr(lastComment, '}'))) *p = 0;
+		currentListGame->gameInfo.resultDetails = StrSave(lastComment);
 	    }
 	    break;
 	  default:
@@ -382,7 +383,7 @@ int GameListBuild(f)
 	}
     }
   }
-GetTimeMark(&t2);printf("GameListBuild %d msec\n", SubtractTimeMarks(&t2,&t));
+GetTimeMark(&t2);printf("GameListBuild %ld msec\n", SubtractTimeMarks(&t2,&t));
     quickFlag = 0;
     PackGame(boards[scratch]); // for appending end-of-game marker.
     DisplayTitle("WinBoard");
