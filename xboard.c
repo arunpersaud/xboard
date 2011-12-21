@@ -4639,6 +4639,12 @@ void DrawSquare(row, column, piece, do_flash)
 	}
     }
     if(!partnerUp && marker[row][column]) {
+	if(appData.monoMode) {
+	    XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? darkSquareGC : lightSquareGC,
+		    x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
+	    XDrawArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? lightSquareGC : darkSquareGC,
+		    x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
+	} else
 	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC,
 		x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
     }
