@@ -10473,6 +10473,7 @@ GameEnds(result, resultDetails, whosays)
 		     first.matchWins, second.matchWins,
 		     appData.matchGames - (first.matchWins + second.matchWins));
 	    if(!appData.tourneyFile[0]) matchGame++, DisplayTwoMachinesTitle(); // [HGM] update result in window title
+	    if(strcmp(ranking, "busy") && appData.afterTourney && appData.afterTourney[0]) RunCommand(appData.afterTourney);
 	    popupRequested++; // [HGM] crash: postpone to after resetting endingGame
 	    if (appData.firstPlaysBlack) { // [HGM] match: back to original for next match
 		first.twoMachinesColor = "black\n";
