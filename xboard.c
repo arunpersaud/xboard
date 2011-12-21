@@ -1943,7 +1943,7 @@ CreateAnyPieces()
 #if HAVE_LIBXPM
     if (appData.monoMode && // [HGM] no sense to go on to certain doom
        (appData.bitmapDirectory == NULL || appData.bitmapDirectory[0] == NULLCHAR))
-	    appData.bitmapDirectory = DEF_BITMAP_DIR;
+	    appData.bitmapDirectory = strdup(DEF_BITMAP_DIR);
 
     if (appData.bitmapDirectory[0] != NULLCHAR) {
       CreatePieces();
@@ -8897,7 +8897,7 @@ void SquareToPos(int rank, int file, int *x, int *y)
 /* Draw an arrow between two points using current settings */
 void DrawArrowBetweenPoints( int s_x, int s_y, int d_x, int d_y )
 {
-    XPoint arrow[7];
+    XPoint arrow[8];
     double dx, dy, j, k, x, y;
 
     if( d_x == s_x ) {
@@ -8994,6 +8994,7 @@ void DrawArrowBetweenPoints( int s_x, int s_y, int d_x, int d_y )
     }
 
     XFillPolygon(xDisplay, xBoardWindow, highlineGC, arrow, 7, Nonconvex, CoordModeOrigin);
+    if(appData.monoMode) arrow[7] = arrow[0], XDrawLines(xDisplay, xBoardWindow, darkSquareGC, arrow, 8, CoordModeOrigin);
 //    Polygon( hdc, arrow, 7 );
 }
 
