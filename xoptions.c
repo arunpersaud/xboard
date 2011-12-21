@@ -936,7 +936,8 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     unsigned int mask;
     char def[MSG_SIZ], *msg;
     static char pane[6] = "paneX";
-    Widget texts[100], forelast = NULL, anchor, widest, lastrow = NULL;
+    Widget texts[100], forelast = NULL, anchor, widest, lastrow = NULL, browse = NULL;
+    Dimension bWidth = 50;
 
     if(shellUp[dlgNr]) return 0; // already up		
     if(dlgNr && shells[dlgNr]) {
@@ -1045,7 +1046,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
 	    XtSetArg(args[j], XtNright, XtChainRight); j++;
 	    if(option[i].type == FileName || option[i].type == PathName) {
-		msg = _("browse");
+		msg = _("browse"); w = 0;
 		/* automatically scale to width of text */
 		XtSetArg(args[j], XtNwidth, (XtArgVal) NULL );  j++;
 	    } else {
@@ -1055,6 +1056,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    }
 	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
 	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
+	    if(w == 0) browse = edit;
 
 	    if(option[i].type != Spin) break;
 
@@ -1162,6 +1164,11 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 
     // make an attempt to align all spins and textbox controls
     maxWidth = maxTextWidth = 0;
+    if(browse != NULL) {
+	j=0;
+	XtSetArg(args[j], XtNwidth, &bWidth);  j++;
+	XtGetValues(browse, args, j);
+    }
     for(h=0; h<height; h++) {
 	i = h + c*height;
 	if(option[i].type == EndMark) break;
@@ -1196,6 +1203,12 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	if(option[i].type == TextBox || option[i].type == ComboBox || option[i].type == PathName || option[i].type == FileName) {
 	    XtSetArg(args[j], XtNwidth, maxTextWidth);  j++;
 	    XtSetValues(texts[h], args, j);
+	    if(bWidth != 50 && (option[i].type == FileName || option[i].type == PathName)) {
+		int tWidth = (option[i].max ? option[i].max : 205) - 5 - bWidth;
+		j = 0;
+		XtSetArg(args[j], XtNwidth, tWidth);  j++;
+		XtSetValues(option[i].handle, args, j);
+	    }
 	}
     }
   }
