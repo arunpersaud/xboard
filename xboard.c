@@ -1686,7 +1686,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     int i;
     static Dimension oldWidth, oldHeight;
     static VariantClass oldVariant;
-    static int oldDual = -1;
+    static int oldDual = -1, oldMono = -1;
 
     if(!formWidget) return;
 
@@ -1765,7 +1765,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     // [HGM] pieces: tailor piece bitmaps to needs of specific variant
     // (only for xpm)
 
-    if(gameInfo.variant == oldVariant) return; // and only if variant changed
+  if(gameInfo.variant != oldVariant) { // and only if variant changed
 
     if(useImages) {
       for(i=0; i<4; i++) {
@@ -1833,9 +1833,12 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 	}
       }
     }
+  }
 #if HAVE_LIBXPM
+  if(appData.monoMode == oldMono)
     CreateAnimVars();
 #endif
+  oldMono = appData.monoMode;
 }
 #endif
 
