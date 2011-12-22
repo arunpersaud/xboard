@@ -102,10 +102,11 @@ void MakeEngineOutputTitle()
 	while( (signed char)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove ) count--;
 	if( count == backwardMostMove ) count -= initialRulePlies;
 	count = currentMove - count;
-	snprintf(buf, MSG_SIZ, "%s (%d reversible plies)", title, count);
 	if(!rule) rule = 100;
-	if(count >= rule - 40 && (!appData.icsActive || gameMode == IcsObserving)) 
-	  safeStrCpy(title, buf, MSG_SIZ);
+	if(count >= rule - 40 && (!appData.icsActive || gameMode == IcsObserving)) {
+		snprintf(buf, MSG_SIZ, _("%s (%d reversible plies)"), title, count);
+		safeStrCpy(title, buf, MSG_SIZ);
+	}
 	if(!strcmp(oldTitle, title)) return;
 	safeStrCpy(oldTitle, title, MSG_SIZ);
 	SetEngineOutputTitle(title);
