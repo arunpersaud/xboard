@@ -768,7 +768,7 @@ ExitArgError(char *msg, char *badArg, Boolean quit)
   int len;
 
   len = snprintf(buf,MSG_SIZ, "%s %s", msg, badArg);
-  if( (len > MSG_SIZ) && appData.debugMode )
+  if( (len >= MSG_SIZ) && appData.debugMode )
     fprintf(debugFP, "ExitArgError: buffer truncated. Input: msg=%s badArg=%s\n", msg, badArg);
 
   if(!quit) { printf(_("%s in settings file\n"), buf); return; } // DisplayError does not work yet at this stage...
@@ -820,7 +820,7 @@ ParseSettingsFile(char *name, char **addr)
   if(!ok && strchr(name, '.') == NULL)
     { // append default file-name extension '.ini' when needed
       len = snprintf(buf,MSG_SIZ, "%s.ini", name);
-      if( (len > MSG_SIZ) && appData.debugMode )
+      if( (len >= MSG_SIZ) && appData.debugMode )
 	fprintf(debugFP, "ParseSettingsFile: buffer truncated. Input: name=%s \n",name);
 
       ok = MySearchPath(installDir, buf, fullname);
@@ -1267,7 +1267,7 @@ InitAppData(char *lpCmdLine)
       if(p != NULL)
 	{ // engine command line contains WinBoard options
           len = snprintf(buf, MSG_SIZ, p+6, f, f, f, f, f, f, f, f, f, f); // replace %s in them by "first"
-	  if( (len > MSG_SIZ) && appData.debugMode )
+	  if( (len >= MSG_SIZ) && appData.debugMode )
 	    fprintf(debugFP, "InitAppData: buffer truncated.\n");
 
           ParseArgs(StringGet, &q);
@@ -1284,7 +1284,7 @@ InitAppData(char *lpCmdLine)
       if(p != NULL)
 	{ // engine command line contains WinBoard options
           len = snprintf(buf,MSG_SIZ, p+6, s, s, s, s, s, s, s, s, s, s); // replace %s in them by "first"
-	  if( (len > MSG_SIZ) && appData.debugMode )
+	  if( (len >= MSG_SIZ) && appData.debugMode )
 	    fprintf(debugFP, "InitAppData: buffer truncated.\n");
 
           ParseArgs(StringGet, &q);
@@ -1483,13 +1483,13 @@ GetArgValue(char *name)
       return TRUE;
     case ArgInt:
       len = snprintf(name, MSG_SIZ, "%d", *(int*) ad->argLoc);
-      if( (len > MSG_SIZ) && appData.debugMode )
+      if( (len >= MSG_SIZ) && appData.debugMode )
 	fprintf(debugFP, "GetArgValue: buffer truncated.\n");
 
       return TRUE;
     case ArgBoolean:
       len = snprintf(name, MSG_SIZ, "%s", *(Boolean*) ad->argLoc ? "true" : "false");
-      if( (len > MSG_SIZ) && appData.debugMode )
+      if( (len >= MSG_SIZ) && appData.debugMode )
 	fprintf(debugFP, "GetArgValue: buffer truncated.\n");
 
       return TRUE;

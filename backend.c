@@ -815,7 +815,7 @@ InitEngine(ChessProgramState *cps, int n)
 
 	len = snprintf(buf, MSG_SIZ, _("protocol version %d not supported"),
 		       appData.protocolVersion[n]);
-	if( (len > MSG_SIZ) && appData.debugMode )
+	if( (len >= MSG_SIZ) && appData.debugMode )
 	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
 
 	DisplayFatalError(buf, 0, 2);
@@ -1062,7 +1062,7 @@ InitBackEnd1()
       case VariantKriegspiel:   /* need to hide pieces and move details */
 	/* case VariantFischeRandom: (Fabien: moved below) */
 	len = snprintf(buf,MSG_SIZ, _("Variant %s supported only in ICS mode"), appData.variant);
-	if( (len > MSG_SIZ) && appData.debugMode )
+	if( (len >= MSG_SIZ) && appData.debugMode )
 	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
 
 	DisplayFatalError(buf, 0, 2);
@@ -1080,7 +1080,7 @@ InitBackEnd1()
       case Variant36:
       default:
 	len = snprintf(buf, MSG_SIZ, _("Unknown variant name %s"), appData.variant);
-	if( (len > MSG_SIZ) && appData.debugMode )
+	if( (len >= MSG_SIZ) && appData.debugMode )
 	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
 
 	DisplayFatalError(buf, 0, 2);
@@ -1485,7 +1485,7 @@ InitBackEnd3 P((void))
 	      len = snprintf(buf, MSG_SIZ, _("Could not connect to host %s, port %s"),
 			appData.icsHost, appData.icsPort);
 
-	    if( (len > MSG_SIZ) && appData.debugMode )
+	    if( (len >= MSG_SIZ) && appData.debugMode )
 	      fprintf(debugFP, "InitBackEnd3: buffer truncated.\n");
 
 	    DisplayFatalError(buf, err, 1);
@@ -1539,7 +1539,7 @@ InitBackEnd3 P((void))
       initialMode = Training;
     } else {
       len = snprintf(buf, MSG_SIZ, _("Unknown initialMode %s"), appData.initialMode);
-      if( (len > MSG_SIZ) && appData.debugMode )
+      if( (len >= MSG_SIZ) && appData.debugMode )
 	fprintf(debugFP, "InitBackEnd3: buffer truncated.\n");
 
       DisplayFatalError(buf, 0, 2);
@@ -2138,7 +2138,7 @@ StringToVariant(e)
 	  break;
 	default:
 	  len = snprintf(buf, MSG_SIZ, _("Unknown wild type %d"), wnum);
-	  if( (len > MSG_SIZ) && appData.debugMode )
+	  if( (len >= MSG_SIZ) && appData.debugMode )
 	    fprintf(debugFP, "StringToVariant: buffer truncated.\n");
 
 	  DisplayError(buf, 0);
