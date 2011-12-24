@@ -736,7 +736,15 @@ void GenLegalCallback(board, flags, kind, rf, ff, rt, ft, closure)
 
     if (!(flags & F_IGNORE_CHECK) ) {
       int check, promo = (gameInfo.variant == VariantSpartan && kind == BlackPromotion);
-      if(promo) board[rf][ff] = BlackKing; // [HGM] spartan: promote to King before check-test
+      if(promo) {
+	    int r, f, kings=0;
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT;	f++)
+		kings += (board[r][f] == BlackKing);
+	    if(kings >= 2)
+	      promo = 0;
+	    else
+		board[rf][ff] = BlackKing; // [HGM] spartan: promote to King before check-test
+	}
 	check = CheckTest(board, flags, rf, ff, rt, ft,
 		  kind == WhiteCapturesEnPassant ||
 		  kind == BlackCapturesEnPassant);
