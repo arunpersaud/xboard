@@ -1011,16 +1011,18 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
     if(gameInfo.variant == VariantKnightmate)
         king = flags & F_WHITE_ON_MOVE ? WhiteUnicorn : BlackUnicorn;
 
-    if (rf >= 0) {
+    if (rt >= 0) {
 	if (enPassant) {
 	    captured = board[rf][ft];
 	    board[rf][ft] = EmptySquare;
 	} else {
 	    captured = board[rt][ft];
 	}
-	board[rt][ft] = board[rf][ff];
-	board[rf][ff] = EmptySquare;
-    } else board[rt][ft] = ff; // [HGM] drop
+	if(rf == DROP_RANK) board[rt][ft] = ff; else { // [HGM] drop
+	    board[rt][ft] = board[rf][ff];
+	    board[rf][ff] = EmptySquare;
+	}
+    }
 
     /* For compatibility with ICS wild 9, we scan the board in the
        order a1, a2, a3, ... b1, b2, ..., h8 to find the first king,
@@ -1047,15 +1049,16 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
 
   undo_move:
 
-    if (rf >= 0) {
-	board[rf][ff] = board[rt][ft];
+    if (rt >= 0) {
+	if(rf != DROP_RANK) // [HGM] drop
+	    board[rf][ff] = board[rt][ft];
 	if (enPassant) {
 	    board[rf][ft] = captured;
 	    board[rt][ft] = EmptySquare;
 	} else {
 	    board[rt][ft] = captured;
 	}
-    } else board[rt][ft] = EmptySquare; // [HGM] drop
+    }
 
     return cl.fking < BOARD_RGHT ? cl.check : 1000; // [HGM] atomic: return 1000 if we have no king
 }
