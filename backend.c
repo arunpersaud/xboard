@@ -6023,21 +6023,25 @@ SendBoard(cps, moveNum)
 
     } else {
       ChessSquare *bp;
-      int i, j;
+      int i, j, left=0, right=BOARD_WIDTH;
       /* Kludge to set black to move, avoiding the troublesome and now
        * deprecated "black" command.
        */
       if (!WhiteOnMove(moveNum)) // [HGM] but better a deprecated command than an illegal move...
         SendToProgram(boards[0][1][BOARD_LEFT] == WhitePawn ? "a2a3\n" : "black\n", cps);
 
+      if(!cps->extendedEdit) left = BOARD_LEFT, right = BOARD_RGHT; // only board proper
+
       SendToProgram("edit\n", cps);
       SendToProgram("#\n", cps);
       for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
-	bp = &boards[moveNum][i][BOARD_LEFT];
-        for (j = BOARD_LEFT; j < BOARD_RGHT; j++, bp++) {
+	bp = &boards[moveNum][i][left];
+        for (j = left; j < right; j++, bp++) {
+	  if(j == BOARD_LEFT-1 || j == BOARD_RGHT) continue;
 	  if ((int) *bp < (int) BlackPawn) {
-	    snprintf(message, MSG_SIZ, "%c%c%c\n", PieceToChar(*bp),
-                    AAA + j, ONE + i);
+	    if(j == BOARD_RGHT+1)
+		 snprintf(message, MSG_SIZ, "%c@%d\n", PieceToChar(*bp), bp[-1]);
+	    else snprintf(message, MSG_SIZ, "%c%c%c\n", PieceToChar(*bp), AAA + j, ONE + i);
             if(message[0] == '+' || message[0] == '~') {
 	      snprintf(message, MSG_SIZ,"%c%c%c+\n",
                         PieceToChar((ChessSquare)(DEMOTED *bp)),
@@ -6054,11 +6058,14 @@ SendBoard(cps, moveNum)
 
       SendToProgram("c\n", cps);
       for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
-	bp = &boards[moveNum][i][BOARD_LEFT];
-        for (j = BOARD_LEFT; j < BOARD_RGHT; j++, bp++) {
+	bp = &boards[moveNum][i][left];
+        for (j = left; j < right; j++, bp++) {
+	  if(j == BOARD_LEFT-1 || j == BOARD_RGHT) continue;
 	  if (((int) *bp != (int) EmptySquare)
 	      && ((int) *bp >= (int) BlackPawn)) {
-	    snprintf(message,MSG_SIZ, "%c%c%c\n", ToUpper(PieceToChar(*bp)),
+	    if(j == BOARD_LEFT-2)
+		 snprintf(message, MSG_SIZ, "%c@%d\n", ToUpper(PieceToChar(*bp)), bp[1]);
+	    else snprintf(message,MSG_SIZ, "%c%c%c\n", ToUpper(PieceToChar(*bp)),
                     AAA + j, ONE + i);
             if(message[0] == '+' || message[0] == '~') {
 	      snprintf(message, MSG_SIZ,"%c%c%c+\n",
@@ -15462,6 +15469,7 @@ ParseFeatures(args, cps)
     if (*p == NULLCHAR) return;
 
     if (BoolFeature(&p, "setboard", &cps->useSetboard, cps)) continue;
+    if (BoolFeature(&p, "xedit", &cps->extendedEdit, cps)) continue;
     if (BoolFeature(&p, "time", &cps->sendTime, cps)) continue;
     if (BoolFeature(&p, "draw", &cps->sendDrawOffers, cps)) continue;
     if (BoolFeature(&p, "sigint", &cps->useSigint, cps)) continue;

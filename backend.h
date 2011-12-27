@@ -358,6 +358,7 @@ typedef struct _CPS {
     int offeredDraw; /* countdown */
     int reuse;
     int useSetboard; /* 0=use "edit"; 1=use "setboard" */
+    int extendedEdit;/* 1=also set holdings with "edit" */
     int useSAN;      /* 0=use coordinate notation; 1=use SAN */
     int usePing;     /* 0=not OK to use ping; 1=OK */
     int lastPing;
