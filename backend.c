@@ -8359,6 +8359,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		parseList[currentMove], _(cps->which));
 	DisplayMoveError(buf1);
 	DrawPosition(FALSE, boards[currentMove]);
+
+	SetUserThinkingEnables();
 	return;
     }
     if (strncmp(message, "time", 4) == 0 && StrStr(message, "Illegal")) {
