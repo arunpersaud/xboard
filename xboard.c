@@ -3952,10 +3952,12 @@ void CreateMenuBarPopup(parent, name, mb)
 Widget CreateMenuBar(mb)
      Menu *mb;
 {
-    int j;
+    int j, nChar=0, nr=0, boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     Widget anchor, menuBar;
     Arg args[16];
     char menuName[MSG_SIZ];
+
+    while(mb[nr].name != NULL) nChar += strlen(_(mb[nr++].name)) + 3;
 
     j = 0;
     XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
@@ -3977,6 +3979,7 @@ Widget CreateMenuBar(mb)
 	}
       else {
 	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
+	XtSetArg(args[j], XtNwidth, (boardWidth-40)*(strlen(_(mb->name)) + 3)/nChar); j++;
       }
 
 	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
