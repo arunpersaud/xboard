@@ -3126,6 +3126,8 @@ read_from_ics(isr, closure, data, count, error)
 		}
 	    } // [HGM] kibitz: end of patch
 
+	    if(looking_at(buf, &i, "* rating adjustment: * --> *\n")) continue;
+
 	    // [HGM] chat: intercept tells by users for which we have an open chat window
 	    channel = -1;
 	    if(started == STARTED_NONE && (looking_at(buf, &i, "* tells you:") || looking_at(buf, &i, "* says:") ||
