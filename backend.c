@@ -4431,6 +4431,13 @@ ParseBoard12(string)
            board[k][1] = board[k][BOARD_WIDTH-2] = (ChessSquare) 0;;
       }
     }
+    if(moveNum==0 && gameInfo.variant == VariantSChess) {
+      board[5][BOARD_RGHT+1] = WhiteAngel;
+      board[6][BOARD_RGHT+1] = WhiteMarshall;
+      board[1][0] = BlackMarshall;
+      board[2][0] = BlackAngel;
+      board[1][1] = board[2][1] = board[5][BOARD_RGHT] = board[6][BOARD_RGHT] = 1;
+    }
     CopyBoard(boards[moveNum], board);
     boards[moveNum][HOLDINGS_SET] = 0; // [HGM] indicate holdings not set
     if (moveNum == 0) {
