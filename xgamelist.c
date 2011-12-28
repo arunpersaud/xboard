@@ -363,7 +363,7 @@ GameListPrepare(int byPos)
 	lg->position = pos;
 	lg = (ListGame *) lg->node.succ;
      }
-GetTimeMark(&t2);printf("GameListPrepare %d msec\n", SubtractTimeMarks(&t2,&t));
+GetTimeMark(&t2);printf("GameListPrepare %ld msec\n", SubtractTimeMarks(&t2,&t));
      DisplayTitle("XBoard");
     *st = NULL;
     return listLength;
