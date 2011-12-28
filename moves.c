@@ -1284,7 +1284,7 @@ int MateTest(board, flags)
 	return inCheck ? MT_CHECK : MT_NONE;
     } else {
         if(gameInfo.holdingsWidth && gameInfo.variant != VariantSuper && gameInfo.variant != VariantGreat
-                                                                      && gameInfo.variant != VariantGrand) { // drop game
+                                 && gameInfo.variant != VariantSChess && gameInfo.variant != VariantGrand) { // drop game
             int r, f, n, holdings = flags & F_WHITE_ON_MOVE ? BOARD_WIDTH-1 : 0;
             for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) if(board[r][f] == EmptySquare) // all empty squares
                 for(n=0; n<BOARD_HEIGHT; n++) // all pieces in hand
