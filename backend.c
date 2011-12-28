@@ -4473,6 +4473,7 @@ ParseBoard12(string)
             if(board[BOARD_HEIGHT-1][i] == BlackRook) j = i;
         initialRights[4] = boards[moveNum][CASTLING][4] = (castle_bl == 0 && gameInfo.variant != VariantFischeRandom ? NoRights : j);
 
+	boards[moveNum][CASTLING][2] = boards[moveNum][CASTLING][5] = NoRights;
 	if(gameInfo.variant == VariantKnightmate) { wKing = WhiteUnicorn; bKing = BlackUnicorn; }
         for(k=BOARD_LEFT; k<BOARD_RGHT; k++)
             if(board[0][k] == wKing) initialRights[2] = boards[moveNum][CASTLING][2] = k;
