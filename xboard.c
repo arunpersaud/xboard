@@ -238,6 +238,8 @@ typedef struct {
     String name;
     String ref;
     MenuItem *mi;
+    int textWidth;
+    Widget subMenu;
 } Menu;
 
 int main P((int argc, char **argv));
@@ -253,7 +255,7 @@ void CreateXPMPieces P((void));
 void CreateXPMBoard P((char *s, int n));
 void CreatePieces P((void));
 void CreatePieceMenus P((void));
-Widget CreateMenuBar P((Menu *mb));
+Widget CreateMenuBar P((Menu *mb, int boardWidth));
 Widget CreateButtonBar P ((MenuItem *mi));
 #if ENABLE_NLS
 char *InsertPxlSize P((char *pattern, int targetPxlSize));
@@ -2278,7 +2280,7 @@ XBoard square size (hint): %d\n\
     XtGetValues(formWidget, args, 1);
 
     j = 0;
-    widgetList[j++] = menuBarWidget = CreateMenuBar(menuBar);
+    widgetList[j++] = menuBarWidget = CreateMenuBar(menuBar, boardWidth);
     XtSetArg(args[0], XtNtop,    XtChainTop);
     XtSetArg(args[1], XtNbottom, XtChainTop);
     XtSetArg(args[2], XtNright,  XtChainLeft);
@@ -3949,15 +3951,16 @@ void CreateMenuBarPopup(parent, name, mb)
     }
 }
 
-Widget CreateMenuBar(mb)
+Widget CreateMenuBar(mb, boardWidth)
      Menu *mb;
+     int boardWidth;
 {
-    int j, nChar=0, nr=0, boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-    Widget anchor, menuBar;
+    int i, j, nr = 0, wtot = 0, widths[10];
+    Widget menuBar;
     Arg args[16];
     char menuName[MSG_SIZ];
-
-    while(mb[nr].name != NULL) nChar += strlen(_(mb[nr++].name)) + 3;
+    Dimension w;
+    Menu *ma = mb;
 
     j = 0;
     XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
@@ -3979,14 +3982,28 @@ Widget CreateMenuBar(mb)
 	}
       else {
 	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
-	XtSetArg(args[j], XtNwidth, (boardWidth-40)*(strlen(_(mb->name)) + 3)/nChar); j++;
       }
 
 	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
-	anchor = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
+	mb->subMenu = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
 				       menuBar, args, j);
 	CreateMenuBarPopup(menuBar, menuName, mb);
+	j = 0;
+	XtSetArg(args[j], XtNwidth, &w);                   j++;
+	XtGetValues(mb->subMenu, args, j);
+	wtot += mb->textWidth = widths[nr++] = w;
 	mb++;
+    }
+    while(wtot > boardWidth - 40) {
+	int wmax=0, imax=0;
+	for(i=0; i<nr; i++) if(widths[i] > wmax) wmax = widths[imax=i];
+	widths[imax]--;
+	wtot--;
+    }
+    for(i=0; i<nr; i++) if(widths[i] != ma[i].textWidth) {
+	j = 0;
+	XtSetArg(args[j], XtNwidth, widths[i]);                   j++;
+	XtSetValues(ma[i].subMenu, args, j);
     }
     return menuBar;
 }
