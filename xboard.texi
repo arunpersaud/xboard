@@ -2739,6 +2739,13 @@ If smallLayout is 1 and @code{titleInWindow} is true,
 the window layout is rearranged to make more room for the title.
 If tinyLayout is 1, the labels on the menu bar are abbreviated
 to one character each and the buttons in the button bar are made narrower.
+@item -overrideLineGap n
+@cindex overrideLineGap, option
+When n >= 0, this forces the width of the black border between squares
+to n pixels for any board size. Mostly used to suppress the grid
+entirely by setting n = 0, e.g. in xiangqi or just getting a prettier
+picture. When n < 0 this the size-dependent width of the grid lines
+is used. Default: -1.
 @item -coords/-xcoords or -showCoords true/false
 @cindex coords, option
 @cindex showCoords, option
