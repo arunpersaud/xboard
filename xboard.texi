@@ -1583,7 +1583,7 @@ Shows the current XBoard version number.
 @cindex Shortcut keys
 @table @asis
 @item Show last move
-By hitting @kbd{Ctrl+.} the last move will be re-animated.
+By hitting @kbd{Enter} the last move will be re-animated.
 @item Send a command directly to the chess engine
 Using @kbd{Ctrl+1} a popup window will prompt you for a command that
 will be send directly to the first chess engines.  @kbd{Ctrl+2} does the

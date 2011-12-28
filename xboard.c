@@ -1115,8 +1115,8 @@ char globalTranslations[] =
    "\
    :<Key>F1: ManProc() \n \
    :<Key>F2: FlipViewProc() \n \
-   :Ctrl<KeyDown>.: TempBackwardProc() \n \
-   :Ctrl<KeyUp>.: TempForwardProc() \n \
+   :<KeyDown>Return: TempBackwardProc() \n \
+   :<KeyUp>Return: TempForwardProc() \n \
    :Ctrl<Key>1: AskQuestionProc(\"Direct command\",\
                                 \"Send to chess program:\",,1) \n \
    :Ctrl<Key>2: AskQuestionProc(\"Direct command\",\
