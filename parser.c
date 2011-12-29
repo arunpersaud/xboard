@@ -133,7 +133,7 @@ char PromoSuffix(char **p)
     char *start = *p;
     if(**p == 'e' && (Match("ep", p) || Match("e.p.", p))) { *p = start; return NULLCHAR; } // non-compliant e.p. suffix is no promoChar!
     if(**p == '+' && gameInfo.variant == VariantShogi) { (*p)++; return '+'; } 
-    if(**p == '=') (*p)++; //optional =
+    if(**p == '=' || (gameInfo.variant == VariantSChess) && **p == '/') (*p)++; // optional = (or / for Seirawan gating)
     if(**p == '(' && (*p)[2] == ')' && isalpha( (*p)[1] )) { (*p) += 3; return (*p)[-2]; }
     if(isalpha(**p)) return *(*p)++;
     if(*p != start) return '='; // must be the optional =
@@ -341,6 +341,9 @@ badMove:// we failed to find algebraic move
 		    Match("OO", p) || Match("oo", p) || Match("00", p)) castlingType = 1;
 	    if(castlingType) { //code from old parser, collapsed for both castling types, and streamlined a bit
 		int rf, ff, rt, ft; ChessSquare king;
+		char promo=NULLCHAR;
+
+		if(gameInfo.variant == VariantSChess) promo = PromoSuffix(p);
 
 		if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
 
@@ -372,12 +375,12 @@ badMove:// we failed to find algebraic move
 		    if (appData.debugMode) fprintf(debugFP, "Parser FRC (type=%d) %d %d\n", castlingType, ff, ft);
 		    if(ff == NoRights || ft == NoRights) return ImpossibleMove;
 		}
-		sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
+		sprintf(currentMoveString, "%c%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE,promo);
 		if (appData.debugMode) fprintf(debugFP, "(%d-type) castling %d %d\n", castlingType, ff, ft);
 
 	        return (int) LegalityTest(boards[yyboardindex],
 			      PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: e.p.!
-			      rf, ff, rt, ft, NULLCHAR);
+			      rf, ff, rt, ft, promo);
 	    }
 	}
 
