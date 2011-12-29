@@ -737,7 +737,8 @@ void ThawUI()
 #define JAWS_INIT
 #define JAWS_ARGS
 #define JAWS_ALT_INTERCEPT
-#define JAWS_KB_NAVIGATION
+#define JAWS_KBUP_NAVIGATION
+#define JAWS_KBDOWN_NAVIGATION
 #define JAWS_MENU_ITEMS
 #define JAWS_SILENCE
 #define JAWS_REPLAY
@@ -4573,6 +4574,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   char fileTitle[MSG_SIZ];
   char buf[MSG_SIZ];
   static SnapData sd;
+  static int peek=0;
 
   switch (message) {
 
@@ -4600,7 +4602,23 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     MouseEvent(hwnd, message, wParam, lParam);
     break;
 
-  JAWS_KB_NAVIGATION
+  case WM_KEYUP:
+    if((char)wParam == '\b') {
+      ForwardEvent(); peek = 0;
+    }
+
+    JAWS_KBUP_NAVIGATION
+
+    break;
+
+  case WM_KEYDOWN:
+    if((char)wParam == '\b') {
+      if(!peek) BackwardEvent(), peek = 1;
+    }
+
+    JAWS_KBDOWN_NAVIGATION
+
+    break;
 
   case WM_CHAR:
     

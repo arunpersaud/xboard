@@ -1240,9 +1240,8 @@ NiceTime(int x)
       }\
       return 0;\
 
-#define JAWS_KB_NAVIGATION \
+#define JAWS_KBDOWN_NAVIGATION \
 \
-	case WM_KEYDOWN:\
 \
 		if(GetKeyState(VK_MENU) < 0 && GetKeyState(VK_CONTROL) < 0) {\
 		    /* Control + Alt + letter used for speaking piece positions */\
@@ -1279,14 +1278,13 @@ NiceTime(int x)
 			KeyboardMove(hwnd, message, wParam, lParam);\
 			break;\
 		}\
-		break;\
-	case WM_KEYUP:\
+
+#define JAWS_KBUP_NAVIGATION \
 		switch (wParam) {\
 		case VK_SPACE:\
 			KeyboardMove(hwnd, message, wParam, lParam);\
 			break;\
 		}\
-		break;\
 
 #define JAWS_MENU_ITEMS \
 		case IDM_PossibleAttackMove:  /*What can I possible attack from here */\
