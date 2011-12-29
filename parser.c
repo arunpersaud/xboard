@@ -323,7 +323,8 @@ badMove:// we failed to find algebraic move
 		do (*p)++; while(isdigit(**p) || isalpha(**p) || **p == '+' ||
 				**p == '-' || **p == '=' || **p == '_' || **p == '#');
 		SkipWhite(p);
-		if(*(*p)++ == '"') {
+		if(**p == '"') {
+		    (*p)++;
 		    while(**p != '\n' && (*(*p)++ != '"'|| (*p)[-2] == '\\')); // look for unescaped quote
 		    if((*p)[-1] !='"') { *p = oldp; Scan(']', p); return Comment; } // string closing delimiter missing
 		    SkipWhite(p); if(*(*p)++ == ']') return PGNTag;
