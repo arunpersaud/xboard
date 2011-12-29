@@ -10660,6 +10660,7 @@ Reset(redraw, init)
     ModeHighlight();
     if(appData.icsActive) gameInfo.variant = VariantNormal;
     currentMove = forwardMostMove = backwardMostMove = 0;
+    MarkTargetSquares(1);
     InitPosition(redraw);
     for (i = 0; i < MAX_MOVES; i++) {
 	if (commentList[i] != NULL) {
