@@ -3974,16 +3974,7 @@ Widget CreateMenuBar(mb, boardWidth)
 	strncat(menuName, mb->ref, MSG_SIZ - strlen(menuName) - 1);
 	j = 0;
 	XtSetArg(args[j], XtNmenuName, XtNewString(menuName));  j++;
-	if (tinyLayout) {
-	    char shortName[2];
-            shortName[0] = mb->name[0];
-	    shortName[1] = NULLCHAR;
-	    XtSetArg(args[j], XtNlabel, XtNewString(shortName)); j++;
-	}
-      else {
-	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
-      }
-
+	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name)));  j++;
 	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
 	mb->subMenu = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
 				       menuBar, args, j);
