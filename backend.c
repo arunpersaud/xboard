@@ -14903,6 +14903,7 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
     while (*text == '\n') text++;
     len = strlen(text);
     while (len > 0 && text[len - 1] == '\n') len--;
+    text[len] = NULLCHAR;
 
     if (len == 0) return;
 
