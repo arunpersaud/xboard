@@ -646,6 +646,8 @@ ArgDescriptor argDescriptors[] = {
   { "stretch", ArgInt, (void *) &appData.stretch, FALSE, (ArgIniType) 1 },
   { "ignoreColors", ArgBoolean, (void *) &appData.ignoreColors, FALSE, FALSE },
   { "findMirrorImage", ArgBoolean, (void *) &appData.findMirror, FALSE, FALSE },
+  { "viewer", ArgTrue, (void *) &appData.viewer, FALSE, FALSE },
+  { "viewerOptions", ArgString, (void *) &appData.viewerOptions, TRUE, (ArgIniType) "-ncp -engineOutputUp false -saveSettingsOnExit false" },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },
@@ -1247,6 +1249,8 @@ InitAppData(char *lpCmdLine)
 
   /* Parse command line */
   ParseArgs(StringGet, &lpCmdLine);
+
+  if(appData.viewer && appData.viewerOptions[0]) ParseArgsFromString(appData.viewerOptions);
 
   /* [HGM] make sure board size is acceptable */
   if(appData.NrFiles > BOARD_FILES ||

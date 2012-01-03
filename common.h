@@ -563,6 +563,8 @@ typedef struct {
     Boolean useStickyWindows;
     Boolean bgObserve;   /* [HGM] bughouse */
     Boolean dualBoard;   /* [HGM] dual     */
+    Boolean viewer;
+    char * viewerOptions;
     int adjudicateDrawMoves;
     Boolean autoDisplayComment;
     Boolean autoDisplayTags;

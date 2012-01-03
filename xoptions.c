@@ -595,6 +595,8 @@ Option loadOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.autoDisplayComment, "", NULL, CheckBox, N_("Auto-Display Comment") },
 { 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Auto-Play speed of loaded games\n(0 = instant, -1 = off):") },
 { 0, -1, 10000000, NULL, (void*) &appData.timeDelay, "", NULL, Fractional, N_("Seconds per Move:") },
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label,  N_("\noptions to use in game-viewer mode:") },
+{ 0, 0, 300, NULL, (void*) &appData.viewerOptions, "", NULL, TextBox,  "" },
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label,  N_("\nThresholds for position filtering in game list:") },
 { 0, 0, 5000, NULL, (void*) &appData.eloThreshold1, "", NULL, Spin, N_("Elo of strongest player at least:") },
 { 0, 0, 5000, NULL, (void*) &appData.eloThreshold2, "", NULL, Spin, N_("Elo of weakest player at least:") },
