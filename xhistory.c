@@ -1,6 +1,7 @@
 /*
  * New (WinBoard-style) Move history for XBoard
  *
+ * Copyright 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify

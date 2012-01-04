@@ -1,13 +1,24 @@
-// New PGN parser by by HGM. I was dissatisfied with the old flex-generated parser for several reasons:
-// 1) It required flex to build
-// 2) It was not possible to use variant-dependent syntax, which gave trouble for '+' as Sogi promoChar vs check symbol
-// 3) It could not handle double-digit rank numbers
-// 4) It could not handle PSN moves, with (alpha rank and file digit)
-// 5) Having more than 12 ranks would require extension of the rules anyway
-// 6) It was cumbersome to maintain, which much code duplication that had to be kept in sync when changing something
-// 7) It needed special handling for packaging, because we wanted to include parser.c for people who had no flex
-// 8) It was quite large because of the table-driven flex algorithm.
-// This new parser suffers from none of that. It might even accomodate traditional Xiangqi notation at some future time.
+/*
+ * parser.c --
+ *
+ * Copyright 2011, 2012 Free Software Foundation, Inc.
+ * ------------------------------------------------------------------------
+ *
+ * GNU XBoard is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * GNU XBoard is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.  *
+ *
+ *------------------------------------------------------------------------
+ ** See the file ChangeLog for a revision history.  */
 
 #include "config.h"
 #include <stdio.h>

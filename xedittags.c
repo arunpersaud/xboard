@@ -1,7 +1,7 @@
 /*
  * xedittags.c -- Tags edit window, part of X front end for XBoard
  *
- * Copyright 1995, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * Copyright 1995, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * ------------------------------------------------------------------------
  *

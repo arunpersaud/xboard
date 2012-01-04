@@ -4,7 +4,7 @@
 	Program to convert pieces from ZIICS format to XPM & XIM format.
 	(C version)  By Frank McIngvale <frankm@hiwaay.net>.
 
-	Copyright (C) 1996, 2009, 2010, 2011 Free Software Foundation, Inc.
+	Copyright (C) 1996, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
 
 	NOTICE: The piece images distributed with ZIICS are
 	    copyrighted works of their original creators.  Images 
