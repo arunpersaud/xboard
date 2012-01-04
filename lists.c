@@ -43,8 +43,8 @@
 /* Check, if List l is empty; returns TRUE, if it is, FALSE
  * otherwise.
  */
-int ListEmpty(l)
-    List *l;
+int
+ListEmpty (List *l)
 {
     return(l->head == (ListNode *) &l->tail);
 }
@@ -52,8 +52,8 @@ int ListEmpty(l)
 
 /* Initialize a list. Must be executed before list is used.
  */
-void ListNew(l)
-    List *l;
+void
+ListNew (List *l)
 {
     l->head = (ListNode *) &l->tail;
     l->tail = NULL;
@@ -63,8 +63,8 @@ void ListNew(l)
 
 /* Remove node n from the list it is inside.
  */
-void ListRemove(n)
-    ListNode *n;
+void
+ListRemove (ListNode *n)
 {
     if (n->succ != NULL) {  /*  Be safe  */
 	n->pred->succ = n->succ;
@@ -77,8 +77,8 @@ void ListRemove(n)
 
 /* Delete node n.
  */
-void ListNodeFree(n)
-    ListNode *n;
+void
+ListNodeFree (ListNode *n)
 {
     if (n) {
 	ListRemove(n);
@@ -89,8 +89,8 @@ void ListNodeFree(n)
 
 /* Create a list node with size s. Returns NULL, if out of memory.
  */
-ListNode *ListNodeCreate(s)
-    size_t s;
+ListNode *
+ListNodeCreate (size_t s)
 {
     ListNode *n;
 
@@ -104,8 +104,8 @@ ListNode *ListNodeCreate(s)
 
 /* Insert node n into the list of node m after m.
  */
-void ListInsert(m, n)
-    ListNode *m, *n;
+void
+ListInsert (ListNode *m, ListNode *n)
 {
     n->succ = m->succ;
     n->pred = m;
@@ -116,9 +116,8 @@ void ListInsert(m, n)
 
 /* Add node n to the head of list l.
  */
-void ListAddHead(l, n)
-    List *l;
-    ListNode *n;
+void
+ListAddHead (List *l, ListNode *n)
 {
     ListInsert((ListNode *) &l->head, n);
 }
@@ -126,9 +125,8 @@ void ListAddHead(l, n)
 
 /* Add node n to the tail of list l.
  */
-void ListAddTail(l, n)
-    List *l;
-    ListNode *n;
+void
+ListAddTail (List *l, ListNode *n)
 {
     ListInsert((ListNode *) l->tailPred, n);
 }
@@ -137,9 +135,8 @@ void ListAddTail(l, n)
 /* Return element with number n of list l. (NULL, if n doesn't exist.)
  * Counting starts with 0.
  */
-ListNode *ListElem(l, n)
-    List *l;
-    int n;
+ListNode *
+ListElem (List *l, int n)
 {
     ListNode *ln;
 

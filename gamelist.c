@@ -70,7 +70,7 @@ static int GameListNewGame P((ListGame **));
 
 /* [AS] Wildcard pattern matching */
 Boolean
-HasPattern( const char * text, const char * pattern )
+HasPattern (const char * text, const char * pattern)
 {
     while( *pattern != '\0' ) {
         if( *pattern == '*' ) {
@@ -102,7 +102,7 @@ HasPattern( const char * text, const char * pattern )
 }
 
 Boolean
-SearchPattern( const char * text, const char * pattern )
+SearchPattern (const char * text, const char * pattern)
 {
     Boolean result = TRUE;
 
@@ -128,8 +128,8 @@ SearchPattern( const char * text, const char * pattern )
 
 /* Delete a ListGame; implies removint it from a list.
  */
-static void GameListDeleteGame(listGame)
-    ListGame *listGame;
+static void
+GameListDeleteGame (ListGame *listGame)
 {
     if (listGame) {
 	if (listGame->gameInfo.event) free(listGame->gameInfo.event);
@@ -150,10 +150,10 @@ static void GameListDeleteGame(listGame)
 
 /* Free the previous list of games.
  */
-static void GameListFree(gameList)
-    List *gameList;
+static void
+GameListFree (List *gameList)
 {
-    while (!ListEmpty(gameList))
+  while (!ListEmpty(gameList))
     {
 	GameListDeleteGame((ListGame *) gameList->head);
     }
@@ -163,8 +163,8 @@ static void GameListFree(gameList)
 
 /* Initialize a new GameInfo structure.
  */
-void GameListInitGameInfo(gameInfo)
-    GameInfo *gameInfo;
+void
+GameListInitGameInfo (GameInfo *gameInfo)
 {
     gameInfo->event = NULL;
     gameInfo->site = NULL;
@@ -189,8 +189,8 @@ void GameListInitGameInfo(gameInfo)
  *
  * Note, that the ListGame is *not* added to any list
  */
-static ListGame *GameListCreate()
-
+static ListGame *
+GameListCreate ()
 {
     ListGame *listGame;
 
@@ -203,8 +203,8 @@ static ListGame *GameListCreate()
 
 /* Creates a new game for the gamelist.
  */
-static int GameListNewGame(listGamePtr)
-     ListGame **listGamePtr;
+static int
+GameListNewGame (ListGame **listGamePtr)
 {
     if (!(*listGamePtr = (ListGame *) GameListCreate())) {
 	GameListFree(&gameList);
@@ -218,8 +218,8 @@ static int GameListNewGame(listGamePtr)
 /* Build the list of games in the open file f.
  * Returns 0 for success or error number.
  */
-int GameListBuild(f)
-    FILE *f;
+int
+GameListBuild (FILE *f)
 {
     ChessMove cm, lastStart;
     int gameNumber;
@@ -404,8 +404,8 @@ GetTimeMark(&t2);printf("GameListBuild %ld msec\n", SubtractTimeMarks(&t2,&t));
 
 /* Clear an existing GameInfo structure.
  */
-void ClearGameInfo(gameInfo)
-    GameInfo *gameInfo;
+void
+ClearGameInfo (GameInfo *gameInfo)
 {
     if (gameInfo->event != NULL) {
 	free(gameInfo->event);
@@ -445,9 +445,7 @@ void ClearGameInfo(gameInfo)
 
 /* [AS] Replaced by "dynamic" tag selection below */
 char *
-GameListLineOld(number, gameInfo)
-     int number;
-     GameInfo *gameInfo;
+GameListLineOld (int number, GameInfo *gameInfo)
 {
     char *event = (gameInfo->event && strcmp(gameInfo->event, "?") != 0) ?
 		     gameInfo->event : gameInfo->site ? gameInfo->site : "?";
@@ -464,7 +462,8 @@ GameListLineOld(number, gameInfo)
 
 #define MAX_FIELD_LEN   80  /* To avoid overflowing the buffer */
 
-char * GameListLine( int number, GameInfo * gameInfo )
+char *
+GameListLine (int number, GameInfo * gameInfo)
 {
     char buffer[2*MSG_SIZ];
     char * buf = buffer;
@@ -541,7 +540,8 @@ char * GameListLine( int number, GameInfo * gameInfo )
     return strdup( buffer );
 }
 
-char * GameListLineFull( int number, GameInfo * gameInfo )
+char *
+GameListLineFull (int number, GameInfo * gameInfo)
 {
     char * event = gameInfo->event ? gameInfo->event : "?";
     char * site = gameInfo->site ? gameInfo->site : "?";
@@ -589,7 +589,8 @@ static GLT_Item GLT_ItemInfo[] = {
 char lpUserGLT[LPUSERGLT_SIZE];
 
 // back-end: convert the tag id-char to a full tag name
-char * GLT_FindItem( char id )
+char *
+GLT_FindItem (char id)
 {
     char * result = 0;
 
@@ -609,7 +610,7 @@ char * GLT_FindItem( char id )
 
 // back-end: build the list of tag names
 void
-GLT_TagsToList( char * tags )
+GLT_TagsToList (char *tags)
 {
     char * pc = tags;
 
@@ -636,7 +637,7 @@ GLT_TagsToList( char * tags )
 
 // back-end: retrieve item from dialog and translate to id-char
 char
-GLT_ListItemToTag( int index )
+GLT_ListItemToTag (int index)
 {
     char result = '\0';
     char name[MSG_SIZ];
@@ -659,7 +660,7 @@ GLT_ListItemToTag( int index )
 
 // back-end: add items id-chars one-by-one to temp tags string
 void
-GLT_ParseList()
+GLT_ParseList ()
 {
     char * pc = lpUserGLT;
     int idx = 0;

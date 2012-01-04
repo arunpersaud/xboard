@@ -132,15 +132,15 @@ z2xpm z2xpm_tab[NR_ZIICS_COLORS] = {
   { 14, '*', "light_square", "gray" },
   { 2, '.', "dark_square", "green" } };
 
-void fatal( str )
-	 char *str;
+void
+fatal (char *str)
 {
   printf("Fatal error: %s\n", str );
   exit(1);
 }
 
-z2xim *lookup_xim_color( color )
-	 int color;
+z2xim *
+lookup_xim_color (int color)
 {
   int i;
 
@@ -156,8 +156,8 @@ z2xim *lookup_xim_color( color )
   return NULL;					/* Make compiler happy */
 }
 
-z2xpm *lookup_xpm_color( color )
-	 int color;
+z2xpm *
+lookup_xpm_color (int color)
 {
   int i;
 
@@ -175,8 +175,8 @@ z2xpm *lookup_xpm_color( color )
 
 char *src_name;
 
-int up8( i )
-	 int i;
+int
+up8 (int i)
 {
   int r;
 
@@ -187,8 +187,8 @@ int up8( i )
   return i + 8 - r;
 }
 
-unsigned int vga_imagesize( w, h )
-	 int w, h;
+unsigned int
+vga_imagesize (int w, int h)
 {
   int w8;
   unsigned int s;
@@ -200,9 +200,8 @@ unsigned int vga_imagesize( w, h )
   return s;
 }
 
-unsigned char *decode_byte( dest, b, w )
-	 unsigned char *dest, *b;
-	 int w;
+unsigned char *
+decode_byte (unsigned char *dest, unsigned char *b, int w)
 {
   int i, j;
   unsigned char byte, bit;
@@ -232,9 +231,8 @@ unsigned char *decode_byte( dest, b, w )
    SRC is in packed pixel format.
    DEST is filled with 1 BYTE per PIXEL.
 */
-unsigned char *decode_line( dest, src, w )
-	 unsigned char *dest, *src;
-	 int w;
+unsigned char *
+decode_line (unsigned char *dest, unsigned char *src, int w)
 {
   unsigned int w8;
   unsigned int bpp;
@@ -266,9 +264,8 @@ unsigned char *decode_line( dest, src, w )
   return (src + bpp * 4);
 }
 
-int write_xim_header( fp, w, h )
-	 FILE *fp;
-	 int w, h;
+int
+write_xim_header (FILE *fp, int w, int h)
 {
   fputc( w, fp );
   fputc( h, fp );
@@ -276,9 +273,8 @@ int write_xim_header( fp, w, h )
   return 0;
 }
 
-int write_xpm_header( fp, w, h )
-	 FILE *fp;
-	 int w, h;
+int
+write_xpm_header (FILE *fp, int w, int h)
 {
   int i;
   z2xpm *cv;
@@ -308,10 +304,8 @@ int write_xpm_header( fp, w, h )
   return 0;
 }
 
-void create_piece_xim( outname, fpin, W, H )
-	 char *outname;
-	 FILE *fpin;
-	 int W, H;
+void
+create_piece_xim (char *outname, FILE *fpin, int W, int H)
 {
   FILE *fpout;
   int w, h, i, j, c;
@@ -366,10 +360,8 @@ void create_piece_xim( outname, fpin, W, H )
   fclose( fpout );
 }
 
-void create_piece_xpm( outname, fpin, W, H )
-	 char *outname;
-	 FILE *fpin;
-	 int W, H;
+void
+create_piece_xpm (char *outname, FILE *fpin, int W, int H)
 {
   FILE *fpout;
   int w, h, i, j, c;
@@ -435,8 +427,8 @@ char *pname[] = { "Pawn", "Rook", "King", "Queen", "Bishop", "Knight" };
 /* The suborder - Light/Light, Light/Dark, etc. */
 char *prefixes[] = { "ll", "ld", "dl", "dd" };
 
-int process_file_xim( filename )
-	 char *filename;
+int
+process_file_xim (char *filename)
 {
   int w, h, piece, kind, c;
   int nr_pieces = 6;
@@ -502,8 +494,8 @@ int process_file_xim( filename )
   return 0;
 }
 
-int process_file_xpm( filename )
-	 char *filename;
+int
+process_file_xpm (char *filename)
 {
   int w, h, piece, kind, c;
   int nr_pieces = 6;
@@ -569,9 +561,8 @@ int process_file_xpm( filename )
   return 0;
 }
 
-int main( argc, argv )
-	 int argc;
-	 char *argv[];
+int
+main (int argc, char **argv)
 {
   int i;
   

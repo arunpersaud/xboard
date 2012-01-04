@@ -134,7 +134,8 @@ typedef struct {
 
 //static void UpdateControls( EngineOutputData * ed );
 
-void ReadIcon(char *pixData[], int iconNr)
+void
+ReadIcon (char *pixData[], int iconNr)
 {
     int r;
 
@@ -147,7 +148,8 @@ void ReadIcon(char *pixData[], int iconNr)
 	}
 }
 
-static void InitializeEngineOutput()
+static void
+InitializeEngineOutput ()
 {
         ReadIcon(WHITE_14,   nColorWhite);
         ReadIcon(BLACK_14,   nColorBlack);
@@ -159,7 +161,8 @@ static void InitializeEngineOutput()
         ReadIcon(ANALYZE_14, nAnalyzing);
 }
 
-void DoSetWindowText(int which, int field, char *s_label)
+void
+DoSetWindowText (int which, int field, char *s_label)
 {
 	Arg arg;
 
@@ -167,14 +170,16 @@ void DoSetWindowText(int which, int field, char *s_label)
 	XtSetValues(outputField[which][field], &arg, 1);
 }
 
-void SetEngineOutputTitle(char *title)
+void
+SetEngineOutputTitle (char *title)
 {
 	Arg arg;
 	XtSetArg(arg, XtNtitle, (XtArgVal) title);
 	XtSetValues(engineOutputShell, &arg, 1);
 }
 
-void InsertIntoMemo( int which, char * text, int where )
+void
+InsertIntoMemo (int which, char * text, int where)
 {
 	XawTextBlock t;
 	Widget edit;
@@ -193,7 +198,8 @@ void InsertIntoMemo( int which, char * text, int where )
 	}
 }
 
-void SetIcon( int which, int field, int nIcon )
+void
+SetIcon (int which, int field, int nIcon)
 {
     Arg arg;
 
@@ -203,7 +209,8 @@ void SetIcon( int which, int field, int nIcon )
     }
 }
 
-void DoClearMemo(int which)
+void
+DoClearMemo (int which)
 {
     Widget edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
     Arg arg;
@@ -257,8 +264,8 @@ StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 }
 
 static void
-MemoCB(Widget w, XtPointer client_data, Atom *selection,
-	   Atom *type, XtPointer value, unsigned long *len, int *format)
+MemoCB (Widget w, XtPointer client_data, Atom *selection,
+	Atom *type, XtPointer value, unsigned long *len, int *format)
 {
   if (value==NULL || *len==0) return; /* nothing had been selected to copy */
   selected_fen_position = value;
@@ -270,11 +277,8 @@ MemoCB(Widget w, XtPointer client_data, Atom *selection,
 		   NULL/* transfer_done_proc */);
 }
 
-void CopyMemoProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
+void
+CopyMemoProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     if(appData.pasteSelection) return;
     if (selected_fen_position) free(selected_fen_position);
@@ -292,10 +296,8 @@ void CopyMemoProc(w, event, prms, nprms)
 
 // The following routines are mutated clones of the commentPopUp routines
 
-void PositionControlSet(which, shell, form, bw_width)
-     int which;
-     Widget shell, form;
-     Dimension bw_width;
+void
+PositionControlSet (int which, Widget shell, Widget form, Dimension bw_width)
 {
     Arg args[16];
     Widget edit, NameWidget, ColorWidget, ModeWidget, MoveWidget, NodesWidget;
@@ -398,8 +400,8 @@ void PositionControlSet(which, shell, form, bw_width)
     XtSetValues(edit, args, j);
 }
 
-Widget EngineOutputCreate(name, text)
-     char *name, *text;
+Widget
+EngineOutputCreate (char *name, char *text)
 {
     Arg args[16];
     Widget shell, layout, form, form2;
@@ -490,8 +492,8 @@ Widget EngineOutputCreate(name, text)
     return shell;
 }
 
-void ResizeWindowControls(mode)
-	int mode;
+void
+ResizeWindowControls (int mode)
 {
     Widget form1, form2;
     Arg args[16];
@@ -528,7 +530,7 @@ void ResizeWindowControls(mode)
 }
 
 void
-EngineOutputPopUp()
+EngineOutputPopUp ()
 {
     Arg args[16];
     int j;
@@ -572,7 +574,8 @@ EngineOutputPopUp()
     ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
 }
 
-void EngineOutputPopDown()
+void
+EngineOutputPopDown ()
 {
     Arg args[16];
     int j;
@@ -600,22 +603,20 @@ void EngineOutputPopDown()
     ShowThinkingEvent(); // [HGM] thinking: might need to shut off thinking output
 }
 
-int EngineOutputIsUp()
+int
+EngineOutputIsUp ()
 {
     return engineOutputDialogUp;
 }
 
-int EngineOutputDialogExists()
+int
+EngineOutputDialogExists ()
 {
     return engineOutputShell != NULL;
 }
 
 void
-EngineOutputProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+EngineOutputProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
   if (engineOutputDialogUp) {
     EngineOutputPopDown();

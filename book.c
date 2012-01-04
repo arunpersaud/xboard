@@ -282,7 +282,8 @@ uint64 *RandomEnPassant =Random64+772;
 uint64 *RandomTurn      =Random64+780;
 
 
-uint64 hash(int moveNr)
+uint64
+hash (int moveNr)
 {
     int r, f, p_enc, squareNr, pieceGroup;
     uint64 key=0, holdingsKey=0, Zobrist;
@@ -378,7 +379,8 @@ uint64 hash(int moveNr)
 
 #define MOVE_BUF 100
 
-int int_from_file(FILE *f, int l, uint64 *r)
+int
+int_from_file (FILE *f, int l, uint64 *r)
 {
     int i,c;
     for(i=0;i<l;i++){
@@ -391,7 +393,8 @@ int int_from_file(FILE *f, int l, uint64 *r)
     return 0;
 }
 
-int entry_from_file(FILE *f, entry_t *entry)
+int
+entry_from_file (FILE *f, entry_t *entry)
 {
     int ret;
     uint64 r;
@@ -413,7 +416,8 @@ int entry_from_file(FILE *f, entry_t *entry)
     return 0;
 }
 
-int find_key(FILE *f, uint64 key, entry_t *entry)
+int
+find_key (FILE *f, uint64 key, entry_t *entry)
 {
     int first, last, middle;
     entry_t first_entry=entry_none, last_entry,middle_entry;
@@ -443,7 +447,8 @@ int find_key(FILE *f, uint64 key, entry_t *entry)
     }
 }
 
-void move_to_string(char move_s[6], uint16 move)
+void
+move_to_string (char move_s[6], uint16 move)
 {
     int f,fr,ff,t,tr,tf,p;
     int width = BOARD_RGHT - BOARD_LEFT, size; // allow for alternative board formats
@@ -491,7 +496,8 @@ void move_to_string(char move_s[6], uint16 move)
     }
 }
 
-int GetBookMoves(int moveNr, char *book, entry_t entries[])
+int
+GetBookMoves (int moveNr, char *book, entry_t entries[])
 {   // retrieve all entries for given position from book in 'entries', return number.
     static FILE *f = NULL;
     static char curBook[MSG_SIZ];
@@ -538,8 +544,9 @@ int GetBookMoves(int moveNr, char *book, entry_t entries[])
     return count;
 }
 
-char *ProbeBook(int moveNr, char *book)
-{   // 
+char *
+ProbeBook (int moveNr, char *book)
+{
     entry_t entries[MOVE_BUF];
     int count;
     int i, j;
@@ -579,7 +586,8 @@ char *ProbeBook(int moveNr, char *book)
 extern char yy_textstr[];
 entry_t lastEntries[MOVE_BUF];
 
-char *MovesToText(int count, entry_t *entries)
+char *
+MovesToText (int count, entry_t *entries)
 {
 	int i, totalWeight = 0;
 	char algMove[6];
@@ -599,7 +607,8 @@ char *MovesToText(int count, entry_t *entries)
 	return p;
 }
 
-int TextToMoves(char *text, int moveNum, entry_t *entries)
+int
+TextToMoves (char *text, int moveNum, entry_t *entries)
 {
 	int i, w, count=0;
       uint64 hashKey = hash(moveNum);
@@ -638,7 +647,8 @@ int TextToMoves(char *text, int moveNum, entry_t *entries)
 Boolean bookUp;
 int currentCount;
 
-Boolean DisplayBook(int moveNr)
+Boolean
+DisplayBook (int moveNr)
 {
     entry_t entries[MOVE_BUF];
     int count;
@@ -652,19 +662,22 @@ Boolean DisplayBook(int moveNr)
     return TRUE;
 }
 
-void EditBookEvent()
+void
+EditBookEvent ()
 {
       bookUp = TRUE;
 	bookUp = DisplayBook(currentMove);
 }
 
-void int_to_file(FILE *f, int l, uint64 r)
+void
+int_to_file (FILE *f, int l, uint64 r)
 {
     int i;
     for(i=l-1;i>=0;i--) fputc(r>>8*i & 255, f);
 }
 
-void entry_to_file(FILE *f, entry_t *entry)
+void
+entry_to_file (FILE *f, entry_t *entry)
 {
     int_to_file(f,8,entry->key);
     int_to_file(f,2,entry->move);
@@ -675,7 +688,8 @@ void entry_to_file(FILE *f, entry_t *entry)
 
 char buf1[4096], buf2[4096];
 
-void SaveToBook(char *text)
+void
+SaveToBook (char *text)
 {
     entry_t entries[MOVE_BUF], entry;
     int count = TextToMoves(text, currentMove, entries);

@@ -105,7 +105,8 @@ static time_t zippyLastGameEnd;
 extern void mysrandom(unsigned int seed);
 extern int myrandom(void);
 
-void ZippyInit()
+void
+ZippyInit ()
 {
     char *p;
 
@@ -304,8 +305,8 @@ char *swifties[] = {
 
 #define MAX_SPEECH 250
 
-void Speak(how, whom)
-     char *how, *whom;
+void
+Speak (char *how, char *whom)
 {
     static FILE *zipfile = NULL;
     static struct stat zipstat;
@@ -381,8 +382,8 @@ void Speak(how, whom)
     Speak(how, whom);  /* tail recursion */
 }
 
-int ZippyCalled(str)
-     char *str;
+int
+ZippyCalled (char *str)
 {
     return ics_handle[0] != NULLCHAR && StrCaseStr(str, ics_handle) != NULL;
 }
@@ -392,12 +393,14 @@ static int num_opps=0;
 
 extern ColorClass curColor;
 
-static void SetCurColor( ColorClass color )
+static void
+SetCurColor (ColorClass color)
 {
     curColor = color;
 }
 
-static void ColorizeEx( ColorClass color, int cont )
+static void
+ColorizeEx (ColorClass color, int cont)
 {
     if( appData.colorize ) {
         Colorize( color, cont );
@@ -405,9 +408,8 @@ static void ColorizeEx( ColorClass color, int cont )
     }
 }
 
-int ZippyControl(buf, i)
-     char *buf;
-     int *i;
+int
+ZippyControl (char *buf, int *i)
 {
     char *player, *p;
     char reply[MSG_SIZ];
@@ -580,9 +582,8 @@ int ZippyControl(buf, i)
     return FALSE;
 }
 
-int ZippyConverse(buf, i)
-     char *buf;
-     int *i;
+int
+ZippyConverse(char *buf, int *i)
 {
     static char lastgreet[MSG_SIZ];
     char reply[MSG_SIZ];
@@ -732,8 +733,8 @@ int ZippyConverse(buf, i)
     return FALSE;
 }
 
-void ZippyGameStart(white, black)
-     char *white, *black;
+void
+ZippyGameStart (char *white, char* black)
 {
     if (!first.initDone) {
       /* Game is starting prematurely.  We can't deal with this */
@@ -750,9 +751,8 @@ void ZippyGameStart(white, black)
     }
 }
 
-void ZippyGameEnd(result, resultDetails)
-     ChessMove result;
-     char *resultDetails;
+void
+ZippyGameEnd (ChessMove result, char *resultDetails)
 {
     if (appData.zippyAcceptOnly[0] == NULLCHAR &&
 	appData.zippyGameEnd[0] != NULLCHAR) {
@@ -770,8 +770,8 @@ void ZippyGameEnd(result, resultDetails)
  * Routines to implement Zippy playing chess
  */
 
-void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
-     char *srated, *swild, *sbase, *sincrement, *opponent;
+void
+ZippyHandleChallenge (char *srated, char *swild, char *sbase, char *sincrement, char *opponent)
 {
     char buf[MSG_SIZ];
     int base, increment, i=0;
@@ -859,9 +859,8 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
 
 
 /* Accept matches */
-int ZippyMatch(buf, i)
-     char *buf;
-     int *i;
+int
+ZippyMatch (char *buf, int *i)
 {
     if (looking_at(buf, i, "* * match * * requested with * (*)")) {
 
@@ -979,8 +978,8 @@ int ZippyMatch(buf, i)
 /* Initialize chess program with data from the first board
  * of a new or resumed game.
  */
-void ZippyFirstBoard(moveNum, basetime, increment)
-     int moveNum, basetime, increment;
+void
+ZippyFirstBoard (int moveNum, int basetime, int increment)
 {
     char buf[MSG_SIZ];
     int w, b;
@@ -1143,8 +1142,7 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 
 
 void
-ZippyHoldings(white_holding, black_holding, new_piece)
-     char *white_holding, *black_holding, *new_piece;
+ZippyHoldings (char *white_holding, char *black_holding, char *new_piece)
 {
     char buf[MSG_SIZ];
     if (gameMode != IcsPlayingBlack && gameMode != IcsPlayingWhite) return;

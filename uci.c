@@ -33,7 +33,8 @@
 #include "backend.h"
 Boolean GetArgValue(char *a);				
 
-void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
+void
+InitEngineUCI (const char *iniDir, ChessProgramState *cps)
 {   // replace engine command line by adapter command with expanded meta-symbols
     if( cps->isUCI ) {
         char *p, *q;

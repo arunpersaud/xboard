@@ -89,7 +89,8 @@ static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
 
 extern int initialRulePlies;
 
-void MakeEngineOutputTitle()
+void
+MakeEngineOutputTitle ()
 {
 	static char buf[MSG_SIZ];
 	static char oldTitle[MSG_SIZ];
@@ -115,7 +116,8 @@ void MakeEngineOutputTitle()
 }
 
 // back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
-void SetEngineState( int which, int state, char * state_data )
+void
+SetEngineState (int which, int state, char * state_data)
 {
     int x_which = 1 - which;
 
@@ -147,7 +149,8 @@ void SetEngineState( int which, int state, char * state_data )
 }
 
 // back end, now the front-end wrapper ClearMemo is used, and ed no longer contains handles.
-void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by back-end
+void
+SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-end
 {
     EngineOutputData ed;
     int clearMemo = FALSE;
@@ -234,7 +237,8 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
 #define ENGINE_COLOR_UNKNOWN    ' '
 
 // pure back end
-static char GetEngineColor( int which )
+static char
+GetEngineColor (int which)
 {
     char result = ENGINE_COLOR_UNKNOWN;
 
@@ -267,7 +271,8 @@ static char GetEngineColor( int which )
 }
 
 // pure back end
-static char GetActiveEngineColor()
+static char
+GetActiveEngineColor ()
 {
     char result = ENGINE_COLOR_UNKNOWN;
 
@@ -279,7 +284,8 @@ static char GetActiveEngineColor()
 }
 
 // pure back end
-static int IsEnginePondering( int which )
+static int
+IsEnginePondering (int which)
 {
     int result = FALSE;
 
@@ -304,7 +310,8 @@ static int IsEnginePondering( int which )
 }
 
 // back end
-static void SetDisplayMode( int mode )
+static void
+SetDisplayMode (int mode)
 {
     if( windowMode != mode ) {
         windowMode = mode;
@@ -314,7 +321,8 @@ static void SetDisplayMode( int mode )
 }
 
 // pure back end
-static void VerifyDisplayMode()
+static void
+VerifyDisplayMode ()
 {
     int mode;
 
@@ -344,7 +352,8 @@ static void VerifyDisplayMode()
 }
 
 // back end. Determine what icon to set in the color-icon field, and print it
-void SetEngineColorIcon( int which )
+void
+SetEngineColorIcon (int which)
 {
     char color = GetEngineColor(which);
     int nicon = 0;
@@ -363,7 +372,8 @@ void SetEngineColorIcon( int which )
 
 // [HGM] multivar: sort Thinking Output within one depth on score
 
-static int InsertionPoint( int len, EngineOutputData * ed )
+static int
+InsertionPoint (int len, EngineOutputData *ed)
 {
 	int i, offs = 0, newScore = ed->score, n = ed->which;
 
@@ -395,7 +405,8 @@ static int InsertionPoint( int len, EngineOutputData * ed )
 
 
 // pure back end, now SetWindowText is called via wrapper DoSetWindowText
-static void UpdateControls( EngineOutputData * ed )
+static void
+UpdateControls (EngineOutputData *ed)
 {
 //    int isPondering = FALSE;
 
@@ -536,7 +547,8 @@ static void UpdateControls( EngineOutputData * ed )
 }
 
 // [HGM] kibitz: write kibitz line; split window for it if necessary
-void OutputKibitz(int window, char *text)
+void
+OutputKibitz (int window, char *text)
 {
 	static int currentLineEnd[2];
 	int where = 0;

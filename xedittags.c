@@ -93,32 +93,28 @@ extern char *getenv();
 
 Position tagsX = -1, tagsY = -1;
 
-void TagsPopUp(tags, msg)
-     char *tags, *msg;
+void
+TagsPopUp (char *tags, char *msg)
 {
     NewTagsPopup(tags, cmailMsgLoaded ? msg : NULL);
 }
 
 
-void EditTagsPopUp(tags, dest)
-     char *tags;
-     char **dest;
+void
+EditTagsPopUp (char *tags, char **dest)
 {
     NewTagsPopup(tags, NULL);
 }
 
-void TagsPopDown()
+void
+TagsPopDown()
 {
     PopDown(2);
     bookUp = False;
 }
 
 void
-EditTagsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+EditTagsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[5];
     int j;

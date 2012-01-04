@@ -1171,10 +1171,7 @@ static int xpm_avail[MAXSQSIZE];
 
 /* Extract piece size from filename */
 static int
-xpm_getsize(name, len, ext)
-     char *name;
-     int len;
-     char *ext;
+xpm_getsize (char *name, int len, char *ext)
 {
     char *p, *d;
     char buf[10];
@@ -1198,9 +1195,7 @@ xpm_getsize(name, len, ext)
 
 /* Setup xpm_avail */
 static int
-xpm_getavail(dirname, ext)
-     char *dirname;
-     char *ext;
+xpm_getavail (char *dirname, char *ext)
 {
     DIR *dir;
     struct dirent *ent;
@@ -1232,9 +1227,7 @@ xpm_getavail(dirname, ext)
 }
 
 void
-xpm_print_avail(fp, ext)
-     FILE *fp;
-     char *ext;
+xpm_print_avail (FILE *fp, char *ext)
 {
     int i;
 
@@ -1247,10 +1240,7 @@ xpm_print_avail(fp, ext)
 
 /* Return XPM piecesize closest to size */
 int
-xpm_closest_to(dirname, size, ext)
-     char *dirname;
-     int size;
-     char *ext;
+xpm_closest_to (char *dirname, int size, char *ext)
 {
     int i;
     int sm_diff = MAXSQSIZE;
@@ -1285,10 +1275,7 @@ xpm_closest_to(dirname, size, ext)
    read the directory, so we can't collect a list of
    filenames, etc., so we can't do any size-fitting. */
 int
-xpm_closest_to(dirname, size, ext)
-     char *dirname;
-     int size;
-     char *ext;
+xpm_closest_to (char *dirname, int size, char *ext)
 {
     fprintf(stderr, _("\
 Warning: No DIR structure found on this system --\n\
@@ -1308,9 +1295,7 @@ TextColors textColors[(int)NColorClasses];
 
 /* String is: "fg, bg, attr". Which is 0, 1, 2 */
 static int
-parse_color(str, which)
-     char *str;
-     int which;
+parse_color (char *str, int which)
 {
     char *p, buf[100], *d;
     int i;
@@ -1356,9 +1341,7 @@ parse_color(str, which)
 }
 
 static int
-parse_cpair(cc, str)
-     ColorClass cc;
-     char *str;
+parse_cpair (ColorClass cc, char *str)
 {
     if ((textColors[(int)cc].fg=parse_color(str, 0)) == -2) {
 	fprintf(stderr, _("%s: can't parse foreground color in `%s'\n"),
@@ -1378,7 +1361,7 @@ parse_cpair(cc, str)
 /* Arrange to catch delete-window events */
 Atom wm_delete_window;
 void
-CatchDeleteWindow(Widget w, String procname)
+CatchDeleteWindow (Widget w, String procname)
 {
   char buf[MSG_SIZ];
   XSetWMProtocols(xDisplay, XtWindow(w), &wm_delete_window, 1);
@@ -1387,7 +1370,7 @@ CatchDeleteWindow(Widget w, String procname)
 }
 
 void
-BoardToTop()
+BoardToTop ()
 {
   Arg args[16];
   XtSetArg(args[0], XtNiconic, False);
@@ -1445,7 +1428,7 @@ Boolean fontIsSet[NUM_FONTS], fontValid[NUM_FONTS][MAX_SIZE];
 char *fontTable[NUM_FONTS][MAX_SIZE];
 
 void
-ParseFont(char *name, int number)
+ParseFont (char *name, int number)
 { // in XBoard, only 2 of the fonts are currently implemented, and we just copy their name
   int size;
   if(sscanf(name, "size%d:", &size)) {
@@ -1474,7 +1457,7 @@ ParseFont(char *name, int number)
 }
 
 void
-SetFontDefaults()
+SetFontDefaults ()
 { // only 2 fonts currently
   appData.clockFont = CLOCK_FONT_NAME;
   appData.coordFont = COORD_FONT_NAME;
@@ -1482,41 +1465,41 @@ SetFontDefaults()
 }
 
 void
-CreateFonts()
+CreateFonts ()
 { // no-op, until we identify the code for this already in XBoard and move it here
 }
 
 void
-ParseColor(int n, char *name)
+ParseColor (int n, char *name)
 { // in XBoard, just copy the color-name string
   if(colorVariable[n]) *(char**)colorVariable[n] = strdup(name);
 }
 
 void
-ParseTextAttribs(ColorClass cc, char *s)
+ParseTextAttribs (ColorClass cc, char *s)
 {
     (&appData.colorShout)[cc] = strdup(s);
 }
 
 void
-ParseBoardSize(void *addr, char *name)
+ParseBoardSize (void *addr, char *name)
 {
     appData.boardSize = strdup(name);
 }
 
 void
-LoadAllSounds()
+LoadAllSounds ()
 { // In XBoard the sound-playing program takes care of obtaining the actual sound
 }
 
 void
-SetCommPortDefaults()
+SetCommPortDefaults ()
 { // for now, this is a no-op, as the corresponding option does not exist in XBoard
 }
 
 // [HGM] args: these three cases taken out to stay in front-end
 void
-SaveFontArg(FILE *f, ArgDescriptor *ad)
+SaveFontArg (FILE *f, ArgDescriptor *ad)
 {
   char *name;
   int i, n = (int)(intptr_t)ad->argLoc;
@@ -1544,38 +1527,38 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
 }
 
 void
-ExportSounds()
+ExportSounds ()
 { // nothing to do, as the sounds are at all times represented by their text-string names already
 }
 
 void
-SaveAttribsArg(FILE *f, ArgDescriptor *ad)
+SaveAttribsArg (FILE *f, ArgDescriptor *ad)
 {	// here the "argLoc" defines a table index. It could have contained the 'ta' pointer itself, though
 	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, (&appData.colorShout)[(int)(intptr_t)ad->argLoc]);
 }
 
 void
-SaveColor(FILE *f, ArgDescriptor *ad)
+SaveColor (FILE *f, ArgDescriptor *ad)
 {	// in WinBoard the color is an int and has to be converted to text. In X it would be a string already?
 	if(colorVariable[(int)(intptr_t)ad->argLoc])
 	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, *(char**)colorVariable[(int)(intptr_t)ad->argLoc]);
 }
 
 void
-SaveBoardSize(FILE *f, char *name, void *addr)
+SaveBoardSize (FILE *f, char *name, void *addr)
 { // wrapper to shield back-end from BoardSize & sizeInfo
   fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", name, appData.boardSize);
 }
 
 void
-ParseCommPortSettings(char *s)
+ParseCommPortSettings (char *s)
 { // no such option in XBoard (yet)
 }
 
 extern Widget engineOutputShell;
 
 void
-GetActualPlacement(Widget wg, WindowPlacement *wp)
+GetActualPlacement (Widget wg, WindowPlacement *wp)
 {
   Arg args[16];
   Dimension w, h;
@@ -1597,7 +1580,7 @@ GetActualPlacement(Widget wg, WindowPlacement *wp)
 }
 
 void
-GetWindowCoords()
+GetWindowCoords ()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
   GetActualPlacement(shellWidget, &wpMain);
@@ -1610,12 +1593,12 @@ GetWindowCoords()
 }
 
 void
-PrintCommPortSettings(FILE *f, char *name)
+PrintCommPortSettings (FILE *f, char *name)
 { // This option does not exist in XBoard
 }
 
 int
-MySearchPath(char *installDir, char *name, char *fullname)
+MySearchPath (char *installDir, char *name, char *fullname)
 { // just append installDir and name. Perhaps ExpandPath should be used here?
   name = ExpandPathName(name);
   if(name && name[0] == '/')
@@ -1627,7 +1610,7 @@ MySearchPath(char *installDir, char *name, char *fullname)
 }
 
 int
-MyGetFullPathName(char *name, char *fullname)
+MyGetFullPathName (char *name, char *fullname)
 { // should use ExpandPath?
   name = ExpandPathName(name);
   safeStrCpy(fullname, name, MSG_SIZ );
@@ -1635,24 +1618,24 @@ MyGetFullPathName(char *name, char *fullname)
 }
 
 void
-EnsureOnScreen(int *x, int *y, int minX, int minY)
+EnsureOnScreen (int *x, int *y, int minX, int minY)
 {
   return;
 }
 
 int
-MainWindowUp()
+MainWindowUp ()
 { // [HGM] args: allows testing if main window is realized from back-end
   return xBoardWindow != 0;
 }
 
 void
-PopUpStartupDialog()
+PopUpStartupDialog ()
 {  // start menu not implemented in XBoard
 }
 
 char *
-ConvertToLine(int argc, char **argv)
+ConvertToLine (int argc, char **argv)
 {
   static char line[128*1024], buf[1024];
   int i;
@@ -1680,7 +1663,8 @@ extern Boolean twoBoards, partnerUp;
   // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
 #else
 #define BoardSize int
-void InitDrawingSizes(BoardSize boardSize, int flags)
+void
+InitDrawingSizes (BoardSize boardSize, int flags)
 {   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
     Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
     Arg args[16];
@@ -1844,7 +1828,8 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 }
 #endif
 
-void ParseIcsTextColors()
+void
+ParseIcsTextColors ()
 {   // [HGM] tken out of main(), so it can be called from ICS-Options dialog
     if (parse_cpair(ColorShout, appData.colorShout) < 0 ||
 	parse_cpair(ColorSShout, appData.colorSShout) < 0 ||
@@ -1866,7 +1851,8 @@ void ParseIcsTextColors()
       }
 }
 
-int MakeColors()
+int
+MakeColors ()
 {   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
     XrmValue vFrom, vTo;
     int forceMono = False;
@@ -1943,7 +1929,7 @@ int MakeColors()
 }
 
 void
-CreateAnyPieces()
+CreateAnyPieces ()
 {   // [HGM] taken out of main
 #if HAVE_LIBXPM
     if (appData.monoMode && // [HGM] no sense to go on to certain doom
@@ -1965,9 +1951,7 @@ CreateAnyPieces()
 }
 
 int
-main(argc, argv)
-     int argc;
-     char **argv;
+main (int argc, char **argv)
 {
     int i, j, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
     XSetWindowAttributes window_attributes;
@@ -2721,7 +2705,7 @@ XBoard square size (hint): %d\n\
 static Boolean noEcho;
 
 void
-ShutDownFrontEnd()
+ShutDownFrontEnd ()
 {
     if (appData.icsActive && oldICSInteractionTitle != NULL) {
         DisplayIcsInteractionTitle(oldICSInteractionTitle);
@@ -2732,21 +2716,20 @@ ShutDownFrontEnd()
     if(noEcho) EchoOn();
 }
 
-RETSIGTYPE TermSizeSigHandler(int sig)
+RETSIGTYPE
+TermSizeSigHandler (int sig)
 {
     update_ics_width();
 }
 
 RETSIGTYPE
-IntSigHandler(sig)
-     int sig;
+IntSigHandler (int sig)
 {
     ExitEvent(sig);
 }
 
 RETSIGTYPE
-CmailSigHandler(sig)
-     int sig;
+CmailSigHandler (int sig)
 {
     int dummy = 0;
     int error;
@@ -2760,12 +2743,7 @@ CmailSigHandler(sig)
 }
 
 void
-CmailSigHandlerCallBack(isr, closure, message, count, error)
-     InputSourceRef isr;
-     VOIDSTAR closure;
-     char *message;
-     int count;
-     int error;
+CmailSigHandlerCallBack (InputSourceRef isr, VOIDSTAR closure, char *message, int count, int error)
 {
     BoardToTop();
     ReloadCmailMsgEvent(TRUE);	/* Reload cmail msg  */
@@ -2774,7 +2752,7 @@ CmailSigHandlerCallBack(isr, closure, message, count, error)
 
 
 void
-ICSInitScript()
+ICSInitScript ()
 {
   /* try to open the icsLogon script, either in the location given
    * or in the users HOME directory
@@ -2806,7 +2784,7 @@ ICSInitScript()
 }
 
 void
-ResetFrontEnd()
+ResetFrontEnd ()
 {
     CommentPopDown();
     TagsPopDown();
@@ -2819,8 +2797,7 @@ typedef struct {
 } Enables;
 
 void
-GreyRevert(grey)
-     Boolean grey;
+GreyRevert (Boolean grey)
 {
     Widget w;
     if (!menuBarWidget) return;
@@ -2839,8 +2816,7 @@ GreyRevert(grey)
 }
 
 void
-SetMenuEnables(enab)
-     Enables *enab;
+SetMenuEnables (Enables *enab)
 {
   Widget w;
   if (!menuBarWidget) return;
@@ -3029,7 +3005,8 @@ Enables userThinkingEnables[] = {
   { NULL, False }
 };
 
-void SetICSMode()
+void
+SetICSMode ()
 {
   SetMenuEnables(icsEnables);
 
@@ -3042,25 +3019,25 @@ void SetICSMode()
 }
 
 void
-SetNCPMode()
+SetNCPMode ()
 {
   SetMenuEnables(ncpEnables);
 }
 
 void
-SetGNUMode()
+SetGNUMode ()
 {
   SetMenuEnables(gnuEnables);
 }
 
 void
-SetCmailMode()
+SetCmailMode ()
 {
   SetMenuEnables(cmailEnables);
 }
 
 void
-SetTrainingModeOn()
+SetTrainingModeOn ()
 {
   SetMenuEnables(trainingOnEnables);
   if (appData.showButtonBar) {
@@ -3070,7 +3047,7 @@ SetTrainingModeOn()
 }
 
 void
-SetTrainingModeOff()
+SetTrainingModeOff ()
 {
   SetMenuEnables(trainingOffEnables);
   if (appData.showButtonBar) {
@@ -3079,14 +3056,14 @@ SetTrainingModeOff()
 }
 
 void
-SetUserThinkingEnables()
+SetUserThinkingEnables ()
 {
   if (appData.noChessProgram) return;
   SetMenuEnables(userThinkingEnables);
 }
 
 void
-SetMachineThinkingEnables()
+SetMachineThinkingEnables ()
 {
   if (appData.noChessProgram) return;
   SetMenuEnables(machineThinkingEnables);
@@ -3108,7 +3085,7 @@ static char *history[HISTORY_SIZE];
 int histIn = 0, histP = 0;
 
 void
-SaveInHistory(char *cmd)
+SaveInHistory (char *cmd)
 {
   if (history[histIn] != NULL) {
     free(history[histIn]);
@@ -3125,7 +3102,7 @@ SaveInHistory(char *cmd)
 }
 
 char *
-PrevInHistory(char *cmd)
+PrevInHistory (char *cmd)
 {
   int newhp;
   if (histP == histIn) {
@@ -3139,7 +3116,7 @@ PrevInHistory(char *cmd)
 }
 
 char *
-NextInHistory()
+NextInHistory ()
 {
   if (histP == histIn) return NULL;
   histP = (histP + 1) % HISTORY_SIZE;
@@ -3151,9 +3128,7 @@ NextInHistory()
 
 #ifdef ENABLE_NLS
 char *
-InsertPxlSize(pattern, targetPxlSize)
-     char *pattern;
-     int targetPxlSize;
+InsertPxlSize (char *pattern, int targetPxlSize)
 {
     char *base_fnt_lst, strInt[12], *p, *q;
     int alternatives, i, len, strIntLen;
@@ -3204,8 +3179,7 @@ InsertPxlSize(pattern, targetPxlSize)
 }
 
 XFontSet
-CreateFontSet(base_fnt_lst)
-     char *base_fnt_lst;
+CreateFontSet (char *base_fnt_lst)
 {
     XFontSet fntSet;
     char **missing_list;
@@ -3249,9 +3223,7 @@ CreateFontSet(base_fnt_lst)
  * longer needed.
  */
 char *
-FindFont(pattern, targetPxlSize)
-     char *pattern;
-     int targetPxlSize;
+FindFont (char *pattern, int targetPxlSize)
 {
     char **fonts, *p, *best, *scalable, *scalableTail;
     int i, j, nfonts, minerr, err, pxlSize;
@@ -3308,7 +3280,8 @@ FindFont(pattern, targetPxlSize)
 }
 #endif
 
-void DeleteGCs()
+void
+DeleteGCs ()
 {   // [HGM] deletes GCs that are to be remade, to prevent resource leak;
     // must be called before all non-first callse to CreateGCs()
     XtReleaseGC(shellWidget, highlineGC);
@@ -3333,7 +3306,8 @@ void DeleteGCs()
     }
 }
 
-void CreateGCs(int redo)
+void
+CreateGCs (int redo)
 {
     XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
       | GCBackground | GCFunction | GCPlaneMask;
@@ -3438,12 +3412,8 @@ void CreateGCs(int redo)
     }
 }
 
-void loadXIM(xim, xmask, filename, dest, mask)
-     XImage *xim;
-     XImage *xmask;
-     char *filename;
-     Pixmap *dest;
-     Pixmap *mask;
+void
+loadXIM (XImage *xim, XImage *xmask, char *filename, Pixmap *dest, Pixmap *mask)
 {
     int x, y, w, h, p;
     FILE *fp;
@@ -3526,7 +3496,8 @@ void loadXIM(xim, xmask, filename, dest, mask)
 
 char pieceBitmapNames[] = "pnbrqfeacwmohijgdvlsukpnsl";
 
-void CreateXIMPieces()
+void
+CreateXIMPieces ()
 {
     int piece, kind;
     char buf[MSG_SIZ];
@@ -3614,7 +3585,8 @@ void CreateXIMPieces()
 static VariantClass oldVariant = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
 
 #if HAVE_LIBXPM
-void CreateXPMBoard(char *s, int kind)
+void
+CreateXPMBoard (char *s, int kind)
 {
     XpmAttributes attr;
     attr.valuemask = 0;
@@ -3624,7 +3596,8 @@ void CreateXPMBoard(char *s, int kind)
     }
 }
 
-void FreeXPMPieces()
+void
+FreeXPMPieces ()
 {   // [HGM] to prevent resoucre leak on calling CreaeXPMPieces() a second time,
     // thisroutine has to be called t free the old piece pixmaps
     int piece, kind;
@@ -3636,7 +3609,8 @@ void FreeXPMPieces()
     }
 }
 
-void CreateXPMPieces()
+void
+CreateXPMPieces ()
 {
     int piece, kind, r;
     char buf[MSG_SIZ];
@@ -3804,7 +3778,8 @@ void CreatePieces()
 }
 #else
 /* With built-in bitmaps */
-void CreatePieces()
+void
+CreatePieces ()
 {
     BuiltInBits* bib = builtInBits;
     int piece, kind;
@@ -3833,11 +3808,8 @@ void CreatePieces()
 }
 #endif
 
-void ReadBitmap(pm, name, bits, wreq, hreq)
-     Pixmap *pm;
-     String name;
-     unsigned char bits[];
-     u_int wreq, hreq;
+void
+ReadBitmap (Pixmap *pm, String name, unsigned char bits[], u_int wreq, u_int hreq)
 {
     int x_hot, y_hot;
     u_int w, h;
@@ -3884,7 +3856,8 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
     }
 }
 
-void CreateGrid()
+void
+CreateGrid ()
 {
     int i, j;
 
@@ -3909,20 +3882,16 @@ void CreateGrid()
     }
 }
 
-static void MenuBarSelect(w, addr, index)
-     Widget w;
-     caddr_t addr;
-     caddr_t index;
+static void
+MenuBarSelect (Widget w, caddr_t addr, caddr_t index)
 {
     XtActionProc proc = (XtActionProc) addr;
 
     (proc)(NULL, NULL, NULL, NULL);
 }
 
-void CreateMenuBarPopup(parent, name, mb)
-     Widget parent;
-     String name;
-     Menu *mb;
+void
+CreateMenuBarPopup (Widget parent, String name, Menu *mb)
 {
     int j;
     Widget menu, entry;
@@ -3951,9 +3920,8 @@ void CreateMenuBarPopup(parent, name, mb)
     }
 }
 
-Widget CreateMenuBar(mb, boardWidth)
-     Menu *mb;
-     int boardWidth;
+Widget
+CreateMenuBar (Menu *mb, int boardWidth)
 {
     int i, j, nr = 0, wtot = 0, widths[10];
     Widget menuBar;
@@ -3999,8 +3967,8 @@ Widget CreateMenuBar(mb, boardWidth)
     return menuBar;
 }
 
-Widget CreateButtonBar(mi)
-     MenuItem *mi;
+Widget
+CreateButtonBar (MenuItem *mi)
 {
     int j;
     Widget button, buttonBar;
@@ -4034,9 +4002,7 @@ Widget CreateButtonBar(mi)
 }
 
 Widget
-CreatePieceMenu(name, color)
-     char *name;
-     int color;
+CreatePieceMenu (char *name, int color)
 {
     int i;
     Widget entry, menu;
@@ -4070,7 +4036,7 @@ CreatePieceMenu(name, color)
 }
 
 void
-CreatePieceMenus()
+CreatePieceMenus ()
 {
     int i;
     Widget entry;
@@ -4105,7 +4071,8 @@ CreatePieceMenus()
     }
 }
 
-void SetupDropMenu()
+void
+SetupDropMenu ()
 {
     int i, j, count;
     char label[32];
@@ -4129,11 +4096,8 @@ void SetupDropMenu()
     }
 }
 
-void PieceMenuPopup(w, event, params, num_params)
-     Widget w;
-     XEvent *event;
-     String *params;
-     Cardinal *num_params;
+void
+PieceMenuPopup (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     String whichMenu; int menuNr = -2;
     shiftKey = strcmp(params[0], "menuW"); // used to indicate black
@@ -4151,39 +4115,29 @@ void PieceMenuPopup(w, event, params, num_params)
     XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
 }
 
-static void PieceMenuSelect(w, piece, junk)
-     Widget w;
-     ChessSquare piece;
-     caddr_t junk;
+static void
+PieceMenuSelect (Widget w, ChessSquare piece, caddr_t junk)
 {
     if (pmFromX < 0 || pmFromY < 0) return;
     EditPositionMenuEvent(piece, pmFromX, pmFromY);
 }
 
-static void DropMenuSelect(w, piece, junk)
-     Widget w;
-     ChessSquare piece;
-     caddr_t junk;
+static void
+DropMenuSelect (Widget w, ChessSquare piece, caddr_t junk)
 {
     if (pmFromX < 0 || pmFromY < 0) return;
     DropMenuEvent(piece, pmFromX, pmFromY);
 }
 
-void WhiteClock(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+WhiteClock (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     shiftKey = prms[0][0] & 1;
     ClockClick(0);
 }
 
-void BlackClock(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+BlackClock (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     shiftKey = prms[0][0] & 1;
     ClockClick(1);
@@ -4194,8 +4148,8 @@ void BlackClock(w, event, prms, nprms)
  * If the user selects on a border boundary, return -1; if off the board,
  *   return -2.  Otherwise map the event coordinate to the square.
  */
-int EventToSquare(x, limit)
-     int x;
+int
+EventToSquare (int x, int limit)
 {
     if (x <= 0)
       return -2;
@@ -4210,15 +4164,14 @@ int EventToSquare(x, limit)
     return x;
 }
 
-static void do_flash_delay(msec)
-     unsigned long msec;
+static void
+do_flash_delay (unsigned long msec)
 {
     TimeDelay(msec);
 }
 
-static void drawHighlight(file, rank, gc)
-     int file, rank;
-     GC gc;
+static void
+drawHighlight (int file, int rank, GC gc)
 {
     int x, y;
 
@@ -4242,8 +4195,7 @@ int hi1X = -1, hi1Y = -1, hi2X = -1, hi2Y = -1;
 int pm1X = -1, pm1Y = -1, pm2X = -1, pm2Y = -1;
 
 void
-SetHighlights(fromX, fromY, toX, toY)
-     int fromX, fromY, toX, toY;
+SetHighlights (int fromX, int fromY, int toX, int toY)
 {
     if (hi1X != fromX || hi1Y != fromY) {
 	if (hi1X >= 0 && hi1Y >= 0) {
@@ -4272,15 +4224,14 @@ SetHighlights(fromX, fromY, toX, toY)
 }
 
 void
-ClearHighlights()
+ClearHighlights ()
 {
     SetHighlights(-1, -1, -1, -1);
 }
 
 
 void
-SetPremoveHighlights(fromX, fromY, toX, toY)
-     int fromX, fromY, toX, toY;
+SetPremoveHighlights (int fromX, int fromY, int toX, int toY)
 {
     if (pm1X != fromX || pm1Y != fromY) {
 	if (pm1X >= 0 && pm1Y >= 0) {
@@ -4305,13 +4256,13 @@ SetPremoveHighlights(fromX, fromY, toX, toY)
 }
 
 void
-ClearPremoveHighlights()
+ClearPremoveHighlights ()
 {
   SetPremoveHighlights(-1, -1, -1, -1);
 }
 
-static int CutOutSquare(x, y, x0, y0, kind)
-     int x, y, *x0, *y0, kind;
+static int
+CutOutSquare (int x, int y, int *x0, int *y0, int  kind)
 {
     int W = BOARD_WIDTH, H = BOARD_HEIGHT;
     int nx = x/(squareSize + lineGap), ny = y/(squareSize + lineGap);
@@ -4328,10 +4279,8 @@ static int CutOutSquare(x, y, x0, y0, kind)
     return 1;
 }
 
-static void BlankSquare(x, y, color, piece, dest, fac)
-     int x, y, color, fac;
-     ChessSquare piece;
-     Drawable dest;
+static void
+BlankSquare (int x, int y, int color, ChessSquare piece, Drawable dest, int fac)
 {   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
     int x0, y0;
     if (useImages && color != 2 && (useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
@@ -4376,10 +4325,8 @@ static void BlankSquare(x, y, color, piece, dest, fac)
    I split out the routines to draw a piece so that I could
    make a generic flash routine.
 */
-static void monoDrawPiece_1bit(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
+static void
+monoDrawPiece_1bit (ChessSquare piece, int square_color, int x, int y, Drawable dest)
 {
     /* Avoid XCopyPlane on 1-bit screens to work around Sun bug */
     switch (square_color) {
@@ -4402,10 +4349,8 @@ static void monoDrawPiece_1bit(piece, square_color, x, y, dest)
     }
 }
 
-static void monoDrawPiece(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
+static void
+monoDrawPiece (ChessSquare piece, int square_color, int x, int y, Drawable dest)
 {
     switch (square_color) {
       case 1: /* light */
@@ -4427,10 +4372,8 @@ static void monoDrawPiece(piece, square_color, x, y, dest)
     }
 }
 
-static void colorDrawPiece(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
+static void
+colorDrawPiece (ChessSquare piece, int square_color, int x, int y, Drawable dest)
 {
     if(pieceToSolid(piece) == NULL) return; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
     switch (square_color) {
@@ -4456,10 +4399,8 @@ static void colorDrawPiece(piece, square_color, x, y, dest)
     }
 }
 
-static void colorDrawPieceImage(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
+static void
+colorDrawPieceImage (ChessSquare piece, int square_color, int x, int y, Drawable dest)
 {
     int kind, p = piece;
 
@@ -4499,7 +4440,8 @@ static void colorDrawPieceImage(piece, square_color, x, y, dest)
 
 typedef void (*DrawFunc)();
 
-DrawFunc ChooseDrawFunc()
+DrawFunc
+ChooseDrawFunc ()
 {
     if (appData.monoMode) {
 	if (DefaultDepth(xDisplay, xScreen) == 1) {
@@ -4516,8 +4458,8 @@ DrawFunc ChooseDrawFunc()
 }
 
 /* [HR] determine square color depending on chess variant. */
-static int SquareColor(row, column)
-     int row, column;
+static int
+SquareColor (int row, int column)
 {
     int square_color;
 
@@ -4541,9 +4483,8 @@ static int SquareColor(row, column)
     return square_color;
 }
 
-void DrawSquare(row, column, piece, do_flash)
-     int row, column, do_flash;
-     ChessSquare piece;
+void
+DrawSquare (int row, int column, ChessSquare piece, int do_flash)
 {
     int square_color, x, y, direction, font_ascent, font_descent;
     int i;
@@ -4666,10 +4607,8 @@ void DrawSquare(row, column, piece, do_flash)
 
 
 /* Why is this needed on some versions of X? */
-void EventProc(widget, unused, event)
-     Widget widget;
-     caddr_t unused;
-     XEvent *event;
+void
+EventProc (Widget widget, caddr_t unused, XEvent *event)
 {
     if (!XtIsRealized(widget))
       return;
@@ -4692,17 +4631,16 @@ void EventProc(widget, unused, event)
 }
 /* end why */
 
-void DrawPosition(fullRedraw, board)
-     /*Boolean*/int fullRedraw;
-     Board board;
+void
+DrawPosition (int fullRedraw, Board board)
 {
     XDrawPosition(boardWidget, fullRedraw, board);
 }
 
 /* Returns 1 if there are "too many" differences between b1 and b2
    (i.e. more than 1 move was made) */
-static int too_many_diffs(b1, b2)
-     Board b1, b2;
+static int
+too_many_diffs (Board b1, Board b2)
 {
     int i, j;
     int c = 0;
@@ -4735,9 +4673,8 @@ static int castling_matrix[4][5] = {
    Note: Only handles a max of 1 castling move, so be sure
    to call too_many_diffs() first.
    */
-static int check_castle_draw(newb, oldb, rrow, rcol)
-     Board newb, oldb;
-     int *rrow, *rcol;
+static int
+check_castle_draw (Board newb, Board oldb, int *rrow, int *rcol)
 {
     int i, *r, j;
     int match;
@@ -4766,22 +4703,26 @@ static int check_castle_draw(newb, oldb, rrow, rcol)
 }
 
 // [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph
-void DrawSeekAxis( int x, int y, int xTo, int yTo )
+void
+DrawSeekAxis (int x, int y, int xTo, int yTo)
 {
       XDrawLine(xDisplay, xBoardWindow, lineGC, x, y, xTo, yTo);
 }
 
-void DrawSeekBackground( int left, int top, int right, int bottom )
+void
+DrawSeekBackground (int left, int top, int right, int bottom)
 {
     XFillRectangle(xDisplay, xBoardWindow, lightSquareGC, left, top, right-left, bottom-top);
 }
 
-void DrawSeekText(char *buf, int x, int y)
+void
+DrawSeekText (char *buf, int x, int y)
 {
     XDrawString(xDisplay, xBoardWindow, coordGC, x, y+4, buf, strlen(buf));
 }
 
-void DrawSeekDot(int x, int y, int colorNr)
+void
+DrawSeekDot (int x, int y, int colorNr)
 {
     int square = colorNr & 0x80;
     GC color;
@@ -4800,10 +4741,8 @@ static int damage[2][BOARD_RANKS][BOARD_FILES];
 /*
  * event handler for redrawing the board
  */
-void XDrawPosition(w, repaint, board)
-     Widget w;
-     /*Boolean*/int repaint;
-     Board board;
+void
+XDrawPosition (Widget w, int repaint, Board board)
 {
     int i, j, do_flash;
     static int lastFlipView = 0;
@@ -4910,11 +4849,8 @@ void XDrawPosition(w, repaint, board)
 /*
  * event handler for redrawing the board
  */
-void DrawPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+DrawPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     XDrawPosition(w, True, NULL);
 }
@@ -4930,11 +4866,8 @@ void DrawPositionProc(w, event, prms, nprms)
 //       move, (which will weed out the illegal selfcaptures and moves into the holdings, and flag promotions),
 //       and at the end FinishMove() to perform the move after optional promotion popups.
 //       For now I patched it to allow self-capture with King, and suppress clicks between board and holdings.
-void HandleUserMove(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+HandleUserMove (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     if (w != boardWidget || errorExitStatus != -1) return;
     if(nprms) shiftKey = !strcmp(prms[0], "1");
@@ -4956,22 +4889,23 @@ void HandleUserMove(w, event, prms, nprms)
     if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
 }
 
-void AnimateUserMove (Widget w, XEvent * event,
-		      String * params, Cardinal * nParams)
+void
+AnimateUserMove (Widget w, XEvent *event, String *params, Cardinal *nParams)
 {
     if(!PromoScroll(event->xmotion.x, event->xmotion.y))
     DragPieceMove(event->xmotion.x, event->xmotion.y);
 }
 
-void HandlePV (Widget w, XEvent * event,
-		      String * params, Cardinal * nParams)
+void
+HandlePV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {   // [HGM] pv: walk PV
     MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 }
 
 static int savedIndex;  /* gross that this is global */
 
-void CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
+void
+CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {
 	String val;
 	XawTextPosition index, dummy;
@@ -4985,23 +4919,24 @@ void CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams
 	LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
 }
 
-void EditCommentPopUp(index, title, text)
-     int index;
-     char *title, *text;
+void
+EditCommentPopUp (int index, char *title, char *text)
 {
     savedIndex = index;
     if (text == NULL) text = "";
     NewCommentPopup(title, text, index);
 }
 
-void ICSInputBoxPopUp()
+void
+ICSInputBoxPopUp ()
 {
     InputBoxPopup();
 }
 
 extern Option boxOptions[];
 
-void ICSInputSendText()
+void
+ICSInputSendText ()
 {
     Widget edit;
     int j;
@@ -5018,19 +4953,21 @@ void ICSInputSendText()
     XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
 }
 
-void ICSInputBoxPopDown()
+void
+ICSInputBoxPopDown ()
 {
     PopDown(4);
 }
 
-void CommentPopUp(title, text)
-     char *title, *text;
+void
+CommentPopUp (char *title, char *text)
 {
     savedIndex = currentMove; // [HGM] vari
     NewCommentPopup(title, text, currentMove);
 }
 
-void CommentPopDown()
+void
+CommentPopDown ()
 {
     PopDown(1);
 }
@@ -5038,17 +4975,14 @@ void CommentPopDown()
 static char *openName;
 FILE *openFP;
 
-void DelayedLoad()
+void
+DelayedLoad ()
 {
   (void) (*fileProc)(openFP, 0, openName);
 }
 
-void FileNamePopUp(label, def, filter, proc, openMode)
-     char *label;
-     char *def;
-     char *filter;
-     FileProc proc;
-     char *openMode;
+void
+FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMode)
 {
     fileProc = proc;		/* I can't see a way not */
     fileOpenMode = openMode;	/*   to use globals here */
@@ -5061,7 +4995,8 @@ void FileNamePopUp(label, def, filter, proc, openMode)
     }
 }
 
-void FileNamePopDown()
+void
+FileNamePopDown ()
 {
     if (!filenameUp) return;
     XtPopdown(fileNameShell);
@@ -5070,9 +5005,8 @@ void FileNamePopDown()
     ModeHighlight();
 }
 
-void FileNameCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
+void
+FileNameCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String name;
     Arg args[16];
@@ -5088,11 +5022,8 @@ void FileNameCallback(w, client_data, call_data)
     FileNameAction(w, NULL, NULL, NULL);
 }
 
-void FileNameAction(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+FileNameAction (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     char buf[MSG_SIZ];
     String name;
@@ -5137,7 +5068,8 @@ void FileNameAction(w, event, prms, nprms)
     ModeHighlight();
 }
 
-void PromotionPopUp()
+void
+PromotionPopUp ()
 {
     Arg args[16];
     Widget dialog, layout;
@@ -5218,7 +5150,8 @@ void PromotionPopUp()
     promotionUp = True;
 }
 
-void PromotionPopDown()
+void
+PromotionPopDown ()
 {
     if (!promotionUp) return;
     XtPopdown(promotionShell);
@@ -5226,9 +5159,8 @@ void PromotionPopDown()
     promotionUp = False;
 }
 
-void PromotionCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
+void
+PromotionCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     int promoChar = * (const char *) client_data;
 
@@ -5249,9 +5181,8 @@ void PromotionCallback(w, client_data, call_data)
 }
 
 
-void ErrorCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
+void
+ErrorCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     errorUp = False;
     XtPopdown(w = XtParent(XtParent(XtParent(w))));
@@ -5260,7 +5191,8 @@ void ErrorCallback(w, client_data, call_data)
 }
 
 
-void ErrorPopDown()
+void
+ErrorPopDown ()
 {
     if (!errorUp) return;
     errorUp = False;
@@ -5269,9 +5201,8 @@ void ErrorPopDown()
     if (errorExitStatus != -1) ExitEvent(errorExitStatus);
 }
 
-void ErrorPopUp(title, label, modal)
-     char *title, *label;
-     int modal;
+void
+ErrorPopUp (char *title, char *label, int modal)
 {
     Arg args[16];
     Widget dialog, layout;
@@ -5339,7 +5270,9 @@ void ErrorPopUp(title, label, modal)
 
 /* Disable all user input other than deleting the window */
 static int frozen = 0;
-void FreezeUI()
+
+void
+FreezeUI ()
 {
   if (frozen) return;
   /* Grab by a widget that doesn't accept input */
@@ -5348,15 +5281,16 @@ void FreezeUI()
 }
 
 /* Undo a FreezeUI */
-void ThawUI()
+void
+ThawUI ()
 {
   if (!frozen) return;
   XtRemoveGrab(messageWidget);
   frozen = 0;
 }
 
-char *ModeToWidgetName(mode)
-     GameMode mode;
+char *
+ModeToWidgetName (GameMode mode)
 {
     switch (mode) {
       case BeginningOfGame:
@@ -5397,7 +5331,8 @@ char *ModeToWidgetName(mode)
     }
 }
 
-void ModeHighlight()
+void
+ModeHighlight ()
 {
     Arg args[16];
     static int oldPausing = FALSE;
@@ -5456,19 +5391,14 @@ void ModeHighlight()
 /*
  * Button/menu procedures
  */
-void ResetProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ResetProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ResetGameEvent();
 }
 
-int LoadGamePopUp(f, gameNumber, title)
-     FILE *f;
-     int gameNumber;
-     char *title;
+int
+LoadGamePopUp (FILE *f, int gameNumber, char *title)
 {
     cmailMsgLoaded = FALSE;
     if (gameNumber == 0) {
@@ -5486,11 +5416,8 @@ int LoadGamePopUp(f, gameNumber, title)
     return LoadGame(f, gameNumber, title, FALSE);
 }
 
-void LoadGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+LoadGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
@@ -5498,65 +5425,44 @@ void LoadGameProc(w, event, prms, nprms)
     FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb");
 }
 
-void LoadNextGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+LoadNextGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ReloadGame(1);
 }
 
-void LoadPrevGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+LoadPrevGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ReloadGame(-1);
 }
 
-void ReloadGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ReloadGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ReloadGame(0);
 }
 
-void LoadNextPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+LoadNextPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ReloadPosition(1);
 }
 
-void LoadPrevPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+LoadPrevPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ReloadPosition(-1);
 }
 
-void ReloadPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ReloadPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ReloadPosition(0);
 }
 
-void LoadPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+LoadPositionProc(Widget w, XEvent *event, String *prms, Cardinal *nprms) 
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
@@ -5564,11 +5470,8 @@ void LoadPositionProc(w, event, prms, nprms)
     FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb");
 }
 
-void SaveGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+SaveGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     FileNamePopUp(_("Save game file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
@@ -5576,11 +5479,8 @@ void SaveGameProc(w, event, prms, nprms)
 		  SaveGame, "a");
 }
 
-void SavePositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+SavePositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     FileNamePopUp(_("Save position file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
@@ -5588,20 +5488,14 @@ void SavePositionProc(w, event, prms, nprms)
 		  SavePosition, "a");
 }
 
-void ReloadCmailMsgProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ReloadCmailMsgProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ReloadCmailMsgEvent(FALSE);
 }
 
-void MailMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+MailMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     MailMoveEvent();
 }
@@ -5610,9 +5504,9 @@ void MailMoveProc(w, event, prms, nprms)
 char *selected_fen_position=NULL;
 
 Boolean
-SendPositionSelection(Widget w, Atom *selection, Atom *target,
-		 Atom *type_return, XtPointer *value_return,
-		 unsigned long *length_return, int *format_return)
+SendPositionSelection (Widget w, Atom *selection, Atom *target,
+		       Atom *type_return, XtPointer *value_return,
+		       unsigned long *length_return, int *format_return)
 {
   char *selection_tmp;
 
@@ -5658,12 +5552,9 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
 /* note: when called from menu all parameters are NULL, so no clue what the
  * Widget which was clicked on was, or what the click event was
  */
-void CopyPositionProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
-  {
+void
+CopyPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{
     /*
      * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
      * have a notion of a position that is selected but not copied.
@@ -5683,12 +5574,12 @@ void CopyPositionProc(w, event, prms, nprms)
 		   SendPositionSelection,
 		   NULL/* lose_ownership_proc */ ,
 		   NULL/* transfer_done_proc */);
-  }
+}
 
 /* function called when the data to Paste is ready */
 static void
-PastePositionCB(Widget w, XtPointer client_data, Atom *selection,
-	   Atom *type, XtPointer value, unsigned long *len, int *format)
+PastePositionCB (Widget w, XtPointer client_data, Atom *selection,
+		 Atom *type, XtPointer value, unsigned long *len, int *format)
 {
   char *fenstr=value;
   if (value==NULL || *len==0) return; /* nothing had been selected to copy */
@@ -5719,9 +5610,9 @@ void PastePositionProc(w, event, prms, nprms)
 }
 
 static Boolean
-SendGameSelection(Widget w, Atom *selection, Atom *target,
-		  Atom *type_return, XtPointer *value_return,
-		  unsigned long *length_return, int *format_return)
+SendGameSelection (Widget w, Atom *selection, Atom *target,
+		   Atom *type_return, XtPointer *value_return,
+		   unsigned long *length_return, int *format_return)
 {
   char *selection_tmp;
 
@@ -5772,7 +5663,8 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
   }
 }
 
-void CopySomething()
+void
+CopySomething ()
 {
   /*
    * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
@@ -5794,11 +5686,8 @@ void CopySomething()
 /* note: when called from menu all parameters are NULL, so no clue what the
  * Widget which was clicked on was, or what the click event was
  */
-void CopyGameProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
+void
+CopyGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
   int ret;
 
@@ -5808,11 +5697,8 @@ void CopyGameProc(w, event, prms, nprms)
   CopySomething();
 }
 
-void CopyGameListProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
+void
+CopyGameListProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
   if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
   CopySomething();
@@ -5820,8 +5706,8 @@ void CopyGameListProc(w, event, prms, nprms)
 
 /* function called when the data to Paste is ready */
 static void
-PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
-	    Atom *type, XtPointer value, unsigned long *len, int *format)
+PasteGameCB (Widget w, XtPointer client_data, Atom *selection,
+	     Atom *type, XtPointer value, unsigned long *len, int *format)
 {
   FILE* f;
   if (value == NULL || *len == 0) {
@@ -5840,11 +5726,8 @@ PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
 
 /* called when Paste Game button is pressed,
  * all parameters will be NULL */
-void PasteGameProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
+void
+PasteGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     XtGetSelectionValue(menuBarWidget,
       appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
@@ -5860,54 +5743,39 @@ void PasteGameProc(w, event, prms, nprms)
 }
 
 
-void AutoSaveGame()
+void
+AutoSaveGame ()
 {
     SaveGameProc(NULL, NULL, NULL, NULL);
 }
 
 
-void QuitProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+QuitProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ExitEvent(0);
 }
 
-void PauseProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+PauseProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     PauseEvent();
 }
 
-
-void MachineBlackProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+MachineBlackProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     MachineBlackEvent();
 }
 
-void MachineWhiteProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+MachineWhiteProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     MachineWhiteEvent();
 }
 
-void AnalyzeModeProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AnalyzeModeProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     char buf[MSG_SIZ];
 
@@ -5948,11 +5816,8 @@ void AnalyzeModeProc(w, event, prms, nprms)
     AnalyzeModeEvent();
 }
 
-void AnalyzeFileProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AnalyzeFileProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     if (!first.analysisSupport) {
       char buf[MSG_SIZ];
@@ -5970,65 +5835,44 @@ void AnalyzeFileProc(w, event, prms, nprms)
     AnalysisPeriodicEvent(1);
 }
 
-void TwoMachinesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+TwoMachinesProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     TwoMachinesEvent();
 }
 
-void MatchProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+MatchProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     MatchEvent(2);
 }
 
-void IcsClientProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+IcsClientProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     IcsClientEvent();
 }
 
-void EditGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+EditGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     EditGameEvent();
 }
 
-void EditPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+EditPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     EditPositionEvent();
 }
 
-void TrainingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+TrainingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     TrainingEvent();
 }
 
-void EditCommentProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+EditCommentProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[5];
     int j;
@@ -6041,129 +5885,87 @@ void EditCommentProc(w, event, prms, nprms)
 	EditCommentEvent();
 }
 
-void IcsInputBoxProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+IcsInputBoxProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     if (!PopDown(4)) ICSInputBoxPopUp();
 }
 
-void AcceptProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AcceptProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     AcceptEvent();
 }
 
-void DeclineProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+DeclineProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     DeclineEvent();
 }
 
-void RematchProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+RematchProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     RematchEvent();
 }
 
-void CallFlagProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+CallFlagProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     CallFlagEvent();
 }
 
-void DrawProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+DrawProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     DrawEvent();
 }
 
-void AbortProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AbortProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     AbortEvent();
 }
 
-void AdjournProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AdjournProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     AdjournEvent();
 }
 
-void ResignProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ResignProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ResignEvent();
 }
 
-void AdjuWhiteProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AdjuWhiteProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     UserAdjudicationEvent(+1);
 }
 
-void AdjuBlackProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AdjuBlackProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     UserAdjudicationEvent(-1);
 }
 
-void AdjuDrawProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AdjuDrawProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     UserAdjudicationEvent(0);
 }
 
-void EnterKeyProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+EnterKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     if (shellUp[4] == True)
       ICSInputSendText();
 }
 
-void UpKeyProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+UpKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] input: let up-arrow recall previous line from history
     Widget edit;
     int j;
@@ -6186,11 +5988,8 @@ void UpKeyProc(w, event, prms, nprms)
     }
 }
 
-void DownKeyProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+DownKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] input: let down-arrow recall next line from history
     Widget edit;
     String val;
@@ -6208,58 +6007,40 @@ void DownKeyProc(w, event, prms, nprms)
     }
 }
 
-void StopObservingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+StopObservingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     StopObservingEvent();
 }
 
-void StopExaminingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+StopExaminingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     StopExaminingEvent();
 }
 
-void UploadProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+UploadProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     UploadGameEvent();
 }
 
 
-void ForwardProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ForwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ForwardEvent();
 }
 
 
-void BackwardProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+BackwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     BackwardEvent();
 }
 
-void TempBackwardProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+TempBackwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
 	if (!TempBackwardActive) {
 		TempBackwardActive = True;
@@ -6267,11 +6048,8 @@ void TempBackwardProc(w, event, prms, nprms)
 	}
 }
 
-void TempForwardProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+TempForwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
 	/* Check to see if triggered by a key release event for a repeating key.
 	 * If so the next queued event will be a key press of the same key at the same time */
@@ -6286,83 +6064,57 @@ void TempForwardProc(w, event, prms, nprms)
 	TempBackwardActive = False;
 }
 
-void ToStartProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ToStartProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ToStartEvent();
 }
 
-void ToEndProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ToEndProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     ToEndEvent();
 }
 
-void RevertProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+RevertProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     RevertEvent(False);
 }
 
-void AnnotateProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AnnotateProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     RevertEvent(True);
 }
 
-void TruncateGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+TruncateGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     TruncateGameEvent();
 }
-void RetractMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+
+void
+RetractMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     RetractMoveEvent();
 }
 
-void MoveNowProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+MoveNowProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     MoveNowEvent();
 }
 
-void FlipViewProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+FlipViewProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     flipView = !flipView;
     DrawPosition(True, NULL);
 }
 
-void PonderNextMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+PonderNextMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6379,11 +6131,8 @@ void PonderNextMoveProc(w, event, prms, nprms)
 }
 
 #ifndef OPTIONSDIALOG
-void AlwaysQueenProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AlwaysQueenProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6398,11 +6147,8 @@ void AlwaysQueenProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void AnimateDraggingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AnimateDraggingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6418,11 +6164,8 @@ void AnimateDraggingProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void AnimateMovingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AnimateMovingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6438,11 +6181,8 @@ void AnimateMovingProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void AutoflagProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AutoflagProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6457,11 +6197,8 @@ void AutoflagProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void AutoflipProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AutoflipProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6476,11 +6213,8 @@ void AutoflipProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void BlindfoldProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+BlindfoldProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6497,11 +6231,8 @@ void BlindfoldProc(w, event, prms, nprms)
     DrawPosition(True, NULL);
 }
 
-void TestLegalityProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+TestLegalityProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6517,11 +6248,8 @@ void TestLegalityProc(w, event, prms, nprms)
 }
 
 
-void FlashMovesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+FlashMovesProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6541,11 +6269,8 @@ void FlashMovesProc(w, event, prms, nprms)
 }
 
 #if HIGHDRAG
-void HighlightDraggingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+HighlightDraggingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6561,11 +6286,8 @@ void HighlightDraggingProc(w, event, prms, nprms)
 }
 #endif
 
-void HighlightLastMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+HighlightLastMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6580,11 +6302,8 @@ void HighlightLastMoveProc(w, event, prms, nprms)
 			       "menuOptions.Highlight Last Move"), args, 1);
 }
 
-void HighlightArrowProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+HighlightArrowProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6600,11 +6319,8 @@ void HighlightArrowProc(w, event, prms, nprms)
 }
 
 #if 0
-void IcsAlarmProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+IcsAlarmProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6620,11 +6336,8 @@ void IcsAlarmProc(w, event, prms, nprms)
 }
 #endif
 
-void MoveSoundProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+MoveSoundProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6639,11 +6352,8 @@ void MoveSoundProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void OneClickProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+OneClickProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6658,11 +6368,8 @@ void OneClickProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void PeriodicUpdatesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+PeriodicUpdatesProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6677,11 +6384,8 @@ void PeriodicUpdatesProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void PopupExitMessageProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+PopupExitMessageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6696,11 +6400,8 @@ void PopupExitMessageProc(w, event, prms, nprms)
 			       "menuOptions.Popup Exit Message"), args, 1);
 }
 
-void PopupMoveErrorsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+PopupMoveErrorsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6716,11 +6417,8 @@ void PopupMoveErrorsProc(w, event, prms, nprms)
 }
 
 #if 0
-void PremoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+PremoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6736,11 +6434,8 @@ void PremoveProc(w, event, prms, nprms)
 }
 #endif
 
-void ShowCoordsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ShowCoordsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6757,21 +6452,15 @@ void ShowCoordsProc(w, event, prms, nprms)
     DrawPosition(True, NULL);
 }
 
-void ShowThinkingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ShowThinkingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
     ShowThinkingEvent();
 }
 
-void HideThinkingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+HideThinkingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6788,11 +6477,8 @@ void HideThinkingProc(w, event, prms, nprms)
 }
 #endif
 
-void SaveOnExitProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+SaveOnExitProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
 
@@ -6807,20 +6493,14 @@ void SaveOnExitProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void SaveSettingsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+SaveSettingsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
      SaveSettings(settingsFileName);
 }
 
-void InfoProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+InfoProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     char buf[MSG_SIZ];
     snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
@@ -6828,11 +6508,8 @@ void InfoProc(w, event, prms, nprms)
     system(buf);
 }
 
-void ManProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+ManProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     char buf[MSG_SIZ];
     String name;
@@ -6844,29 +6521,20 @@ void ManProc(w, event, prms, nprms)
     system(buf);
 }
 
-void HintProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+HintProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     HintEvent();
 }
 
-void BookProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+BookProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     BookEvent();
 }
 
-void AboutProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AboutProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     char buf[MSG_SIZ];
 #if ZIPPY
@@ -6885,35 +6553,26 @@ _("%s%s\n\n"
     ErrorPopUp(_("About XBoard"), buf, FALSE);
 }
 
-void DebugProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+DebugProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     appData.debugMode = !appData.debugMode;
 }
 
-void AboutGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AboutGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     AboutGameEvent();
 }
 
-void NothingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+NothingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     return;
 }
 
-void DisplayMessage(message, extMessage)
-     char *message, *extMessage;
+void
+DisplayMessage (char *message, char *extMessage)
 {
   /* display a message in the message widget */
 
@@ -6947,8 +6606,8 @@ void DisplayMessage(message, extMessage)
   return;
 }
 
-void DisplayTitle(text)
-     char *text;
+void
+DisplayTitle (char *text)
 {
     Arg args[16];
     int i;
@@ -6999,9 +6658,7 @@ void DisplayTitle(text)
 
 
 void
-DisplayError(message, error)
-     String message;
-     int error;
+DisplayError (String message, int error)
 {
     char buf[MSG_SIZ];
 
@@ -7021,8 +6678,8 @@ DisplayError(message, error)
 }
 
 
-void DisplayMoveError(message)
-     String message;
+void
+DisplayMoveError (String message)
 {
     fromX = fromY = -1;
     ClearHighlights();
@@ -7038,9 +6695,8 @@ void DisplayMoveError(message)
 }
 
 
-void DisplayFatalError(message, error, status)
-     String message;
-     int error, status;
+void
+DisplayFatalError (String message, int error, int status)
 {
     char buf[MSG_SIZ];
 
@@ -7060,30 +6716,28 @@ void DisplayFatalError(message, error, status)
     }
 }
 
-void DisplayInformation(message)
-     String message;
+void
+DisplayInformation (String message)
 {
     ErrorPopDown();
     ErrorPopUp(_("Information"), message, TRUE);
 }
 
-void DisplayNote(message)
-     String message;
+void
+DisplayNote (String message)
 {
     ErrorPopDown();
     ErrorPopUp(_("Note"), message, FALSE);
 }
 
 static int
-NullXErrorCheck(dpy, error_event)
-     Display *dpy;
-     XErrorEvent *error_event;
+NullXErrorCheck (Display *dpy, XErrorEvent *error_event)
 {
     return 0;
 }
 
-void DisplayIcsInteractionTitle(message)
-     String message;
+void
+DisplayIcsInteractionTitle (String message)
 {
   if (oldICSInteractionTitle == NULL) {
     /* Magic to find the old window title, adapted from vim */
@@ -7114,11 +6768,8 @@ void DisplayIcsInteractionTitle(message)
 char pendingReplyPrefix[MSG_SIZ];
 ProcRef pendingReplyPR;
 
-void AskQuestionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AskQuestionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     if (*nprms != 4) {
 	fprintf(stderr, _("AskQuestionProc needed 4 parameters, got %d\n"),
@@ -7128,7 +6779,8 @@ void AskQuestionProc(w, event, prms, nprms)
     AskQuestionEvent(prms[0], prms[1], prms[2], prms[3]);
 }
 
-void AskQuestionPopDown()
+void
+AskQuestionPopDown ()
 {
     if (!askQuestionUp) return;
     XtPopdown(askQuestionShell);
@@ -7136,11 +6788,8 @@ void AskQuestionPopDown()
     askQuestionUp = False;
 }
 
-void AskQuestionReplyAction(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+void
+AskQuestionReplyAction (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     char buf[MSG_SIZ];
     int err;
@@ -7157,9 +6806,8 @@ void AskQuestionReplyAction(w, event, prms, nprms)
     if (err) DisplayFatalError(_("Error writing to chess program"), err, 0);
 }
 
-void AskQuestionCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
+void
+AskQuestionCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String name;
     Arg args[16];
@@ -7174,9 +6822,8 @@ void AskQuestionCallback(w, client_data, call_data)
     }
 }
 
-void AskQuestion(title, question, replyPrefix, pr)
-     char *title, *question, *replyPrefix;
-     ProcRef pr;
+void
+AskQuestion (char *title, char *question, char *replyPrefix, ProcRef pr)
 {
     Arg args[16];
     Widget popup, layout, dialog, edit;
@@ -7230,8 +6877,7 @@ void AskQuestion(title, question, replyPrefix, pr)
 
 
 void
-PlaySound(name)
-     char *name;
+PlaySound (char *name)
 {
   if (*name == NULLCHAR) {
     return;
@@ -7248,71 +6894,69 @@ PlaySound(name)
 }
 
 void
-RingBell()
+RingBell ()
 {
   PlaySound(appData.soundMove);
 }
 
 void
-PlayIcsWinSound()
+PlayIcsWinSound ()
 {
   PlaySound(appData.soundIcsWin);
 }
 
 void
-PlayIcsLossSound()
+PlayIcsLossSound ()
 {
   PlaySound(appData.soundIcsLoss);
 }
 
 void
-PlayIcsDrawSound()
+PlayIcsDrawSound ()
 {
   PlaySound(appData.soundIcsDraw);
 }
 
 void
-PlayIcsUnfinishedSound()
+PlayIcsUnfinishedSound ()
 {
   PlaySound(appData.soundIcsUnfinished);
 }
 
 void
-PlayAlarmSound()
+PlayAlarmSound ()
 {
   PlaySound(appData.soundIcsAlarm);
 }
 
 void
-PlayTellSound()
+PlayTellSound ()
 {
   PlaySound(appData.soundTell);
 }
 
 void
-EchoOn()
+EchoOn ()
 {
     system("stty echo");
     noEcho = False;
 }
 
 void
-EchoOff()
+EchoOff ()
 {
     system("stty -echo");
     noEcho = True;
 }
 
 void
-RunCommand(char *buf)
+RunCommand (char *buf)
 {
     system(buf);
 }
 
 void
-Colorize(cc, continuation)
-     ColorClass cc;
-     int continuation;
+Colorize (ColorClass cc, int continuation)
 {
     char buf[MSG_SIZ];
     int count, outCount, error;
@@ -7375,14 +7019,14 @@ Colorize(cc, continuation)
     }
 }
 
-char *UserName()
+char *
+UserName ()
 {
     return getpwuid(getuid())->pw_name;
 }
 
 static char *
-ExpandPathName(path)
-     char *path;
+ExpandPathName (char *path)
 {
     static char static_buf[4*MSG_SIZ];
     char *d, *s, buf[4*MSG_SIZ];
@@ -7424,7 +7068,8 @@ ExpandPathName(path)
     return static_buf;
 }
 
-char *HostName()
+char *
+HostName ()
 {
     static char host_name[MSG_SIZ];
 
@@ -7445,15 +7090,14 @@ XtIntervalId delayedEventTimerXID = 0;
 DelayedEventCallback delayedEventCallback = 0;
 
 void
-FireDelayedEvent()
+FireDelayedEvent ()
 {
     delayedEventTimerXID = 0;
     delayedEventCallback();
 }
 
 void
-ScheduleDelayedEvent(cb, millisec)
-     DelayedEventCallback cb; long millisec;
+ScheduleDelayedEvent (DelayedEventCallback cb, long millisec)
 {
     if(delayedEventTimerXID && delayedEventCallback == cb)
 	// [HGM] alive: replace, rather than add or flush identical event
@@ -7465,7 +7109,7 @@ ScheduleDelayedEvent(cb, millisec)
 }
 
 DelayedEventCallback
-GetDelayedEvent()
+GetDelayedEvent ()
 {
   if (delayedEventTimerXID) {
     return delayedEventCallback;
@@ -7475,7 +7119,7 @@ GetDelayedEvent()
 }
 
 void
-CancelDelayedEvent()
+CancelDelayedEvent ()
 {
   if (delayedEventTimerXID) {
     XtRemoveTimeOut(delayedEventTimerXID);
@@ -7485,12 +7129,14 @@ CancelDelayedEvent()
 
 XtIntervalId loadGameTimerXID = 0;
 
-int LoadGameTimerRunning()
+int
+LoadGameTimerRunning ()
 {
     return loadGameTimerXID != 0;
 }
 
-int StopLoadGameTimer()
+int
+StopLoadGameTimer ()
 {
     if (loadGameTimerXID != 0) {
 	XtRemoveTimeOut(loadGameTimerXID);
@@ -7502,17 +7148,14 @@ int StopLoadGameTimer()
 }
 
 void
-LoadGameTimerCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+LoadGameTimerCallback (XtPointer arg, XtIntervalId *id)
 {
     loadGameTimerXID = 0;
     AutoPlayGameLoop();
 }
 
 void
-StartLoadGameTimer(millisec)
-     long millisec;
+StartLoadGameTimer (long millisec)
 {
     loadGameTimerXID =
       XtAppAddTimeOut(appContext, millisec,
@@ -7523,9 +7166,7 @@ StartLoadGameTimer(millisec)
 XtIntervalId analysisClockXID = 0;
 
 void
-AnalysisClockCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+AnalysisClockCallback (XtPointer arg, XtIntervalId *id)
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile
          || appData.icsEngineAnalyze) { // [DM]
@@ -7535,7 +7176,7 @@ AnalysisClockCallback(arg, id)
 }
 
 void
-StartAnalysisClock()
+StartAnalysisClock ()
 {
     analysisClockXID =
       XtAppAddTimeOut(appContext, 2000,
@@ -7545,12 +7186,14 @@ StartAnalysisClock()
 
 XtIntervalId clockTimerXID = 0;
 
-int ClockTimerRunning()
+int
+ClockTimerRunning ()
 {
     return clockTimerXID != 0;
 }
 
-int StopClockTimer()
+int
+StopClockTimer ()
 {
     if (clockTimerXID != 0) {
 	XtRemoveTimeOut(clockTimerXID);
@@ -7562,17 +7205,14 @@ int StopClockTimer()
 }
 
 void
-ClockTimerCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+ClockTimerCallback (XtPointer arg, XtIntervalId *id)
 {
     clockTimerXID = 0;
     DecrementClocks();
 }
 
 void
-StartClockTimer(millisec)
-     long millisec;
+StartClockTimer (long millisec)
 {
     clockTimerXID =
       XtAppAddTimeOut(appContext, millisec,
@@ -7581,11 +7221,7 @@ StartClockTimer(millisec)
 }
 
 void
-DisplayTimerLabel(w, color, timer, highlight)
-     Widget w;
-     char *color;
-     long timer;
-     int highlight;
+DisplayTimerLabel (Widget w, char *color, long timer, int highlight)
 {
     char buf[MSG_SIZ];
     Arg args[16];
@@ -7619,9 +7255,7 @@ DisplayTimerLabel(w, color, timer, highlight)
 }
 
 void
-DisplayWhiteClock(timeRemaining, highlight)
-     long timeRemaining;
-     int highlight;
+DisplayWhiteClock (long timeRemaining, int highlight)
 {
     Arg args[16];
 
@@ -7635,9 +7269,7 @@ DisplayWhiteClock(timeRemaining, highlight)
 }
 
 void
-DisplayBlackClock(timeRemaining, highlight)
-     long timeRemaining;
-     int highlight;
+DisplayBlackClock (long timeRemaining, int highlight)
 {
     Arg args[16];
 
@@ -7664,10 +7296,8 @@ typedef struct {
 } ChildProc;
 
 
-int StartChildProcess(cmdLine, dir, pr)
-     char *cmdLine;
-     char *dir;
-     ProcRef *pr;
+int
+StartChildProcess (char *cmdLine, char *dir, ProcRef *pr)
 {
     char *argv[64], *p;
     int i, pid;
@@ -7739,15 +7369,14 @@ int StartChildProcess(cmdLine, dir, pr)
 }
 
 // [HGM] kill: implement the 'hard killing' of AS's Winboard_x
-static RETSIGTYPE AlarmCallBack(int n)
+static RETSIGTYPE
+AlarmCallBack (int n)
 {
     return;
 }
 
 void
-DestroyChildProcess(pr, signalType)
-     ProcRef pr;
-     int signalType;
+DestroyChildProcess (ProcRef pr, int signalType)
 {
     ChildProc *cp = (ChildProc *) pr;
 
@@ -7774,8 +7403,7 @@ DestroyChildProcess(pr, signalType)
 }
 
 void
-InterruptChildProcess(pr)
-     ProcRef pr;
+InterruptChildProcess (ProcRef pr)
 {
     ChildProc *cp = (ChildProc *) pr;
 
@@ -7783,10 +7411,8 @@ InterruptChildProcess(pr)
     (void) kill(cp->pid, SIGINT); /* stop it thinking */
 }
 
-int OpenTelnet(host, port, pr)
-     char *host;
-     char *port;
-     ProcRef *pr;
+int
+OpenTelnet (char *host, char *port, ProcRef *pr)
 {
     char cmdLine[MSG_SIZ];
 
@@ -7798,10 +7424,8 @@ int OpenTelnet(host, port, pr)
     return StartChildProcess(cmdLine, "", pr);
 }
 
-int OpenTCP(host, port, pr)
-     char *host;
-     char *port;
-     ProcRef *pr;
+int
+OpenTCP (char *host, char *port, ProcRef *pr)
 {
 #if OMIT_SOCKETS
     DisplayFatalError(_("Socket support is not configured in"), 0, 2);
@@ -7853,9 +7477,8 @@ int OpenTCP(host, port, pr)
     return 0;
 }
 
-int OpenCommPort(name, pr)
-     char *name;
-     ProcRef *pr;
+int
+OpenCommPort (char *name, ProcRef *pr)
 {
     int fd;
     ChildProc *cp;
@@ -7873,8 +7496,8 @@ int OpenCommPort(name, pr)
     return 0;
 }
 
-int OpenLoopback(pr)
-     ProcRef *pr;
+int
+OpenLoopback (ProcRef *pr)
 {
     ChildProc *cp;
     int to[2], from[2];
@@ -7891,9 +7514,8 @@ int OpenLoopback(pr)
     return 0;
 }
 
-int OpenRcmd(host, user, cmd, pr)
-     char *host, *user, *cmd;
-     ProcRef *pr;
+int
+OpenRcmd (char *host, char *user, char *cmd, ProcRef *pr)
 {
     DisplayFatalError(_("internal rcmd not implemented for Unix"), 0, 1);
     return -1;
@@ -7913,10 +7535,7 @@ typedef struct {
 } InputSource;
 
 void
-DoInputCallback(closure, source, xid)
-     caddr_t closure;
-     int *source;
-     XtInputId *xid;
+DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 {
     InputSource *is = (InputSource *) closure;
     int count;
@@ -7954,11 +7573,8 @@ DoInputCallback(closure, source, xid)
     }
 }
 
-InputSourceRef AddInputSource(pr, lineByLine, func, closure)
-     ProcRef pr;
-     int lineByLine;
-     InputCallback func;
-     VOIDSTAR closure;
+InputSourceRef
+AddInputSource (ProcRef pr, int lineByLine, InputCallback func, VOIDSTAR closure)
 {
     InputSource *is;
     ChildProc *cp = (ChildProc *) pr;
@@ -7986,8 +7602,7 @@ InputSourceRef AddInputSource(pr, lineByLine, func, closure)
 }
 
 void
-RemoveInputSource(isr)
-     InputSourceRef isr;
+RemoveInputSource (InputSourceRef isr)
 {
     InputSource *is = (InputSource *) isr;
 
@@ -7996,11 +7611,8 @@ RemoveInputSource(isr)
     is->xid = 0;
 }
 
-int OutputToProcess(pr, message, count, outError)
-     ProcRef pr;
-     char *message;
-     int count;
-     int *outError;
+int
+OutputToProcess (ProcRef pr, char *message, int count, int *outError)
 {
     static int line = 0;
     ChildProc *cp = (ChildProc *) pr;
@@ -8044,12 +7656,8 @@ int OutputToProcess(pr, message, count, outError)
    between each character. This is needed when sending the logon
    script to ICC, which for some reason doesn't like the
    instantaneous send. */
-int OutputToProcessDelayed(pr, message, count, outError, msdelay)
-     ProcRef pr;
-     char *message;
-     int count;
-     int *outError;
-     long msdelay;
+int
+OutputToProcessDelayed (ProcRef pr, char *message, int count, int *outError, long msdelay)
 {
     ChildProc *cp = (ChildProc *) pr;
     int outCount = 0;
@@ -8091,8 +7699,7 @@ int OutputToProcessDelayed(pr, message, count, outError, msdelay)
 static int xpmDone = 0;
 
 static void
-CreateAnimMasks (pieceDepth)
-     int pieceDepth;
+CreateAnimMasks (int pieceDepth)
 {
   ChessSquare   piece;
   Pixmap	buf;
@@ -8170,9 +7777,7 @@ CreateAnimMasks (pieceDepth)
 }
 
 static void
-InitAnimState (anim, info)
-  AnimState * anim;
-  XWindowAttributes * info;
+InitAnimState (AnimState *anim, XWindowAttributes *info)
 {
   XtGCMask  mask;
   XGCValues values;
@@ -8222,8 +7827,8 @@ CreateAnimVars ()
 
 static Boolean frameWaiting;
 
-static RETSIGTYPE FrameAlarm (sig)
-     int sig;
+static RETSIGTYPE
+FrameAlarm (int sig)
 {
   frameWaiting = False;
   /* In case System-V style signals.  Needed?? */
@@ -8231,8 +7836,7 @@ static RETSIGTYPE FrameAlarm (sig)
 }
 
 static void
-FrameDelay (time)
-     int time;
+FrameDelay (int time)
 {
   struct itimerval delay;
 
@@ -8256,8 +7860,7 @@ FrameDelay (time)
 #else
 
 static void
-FrameDelay (time)
-     int time;
+FrameDelay (int time)
 {
   XSync(xDisplay, False);
   if (time > 0)
@@ -8267,7 +7870,7 @@ FrameDelay (time)
 #endif
 
 void
-DoSleep(int n)
+DoSleep (int n)
 {
     FrameDelay(n);
 }
@@ -8275,8 +7878,7 @@ DoSleep(int n)
 /*	Convert board position to corner of screen rect and color	*/
 
 static void
-ScreenSquare(column, row, pt, color)
-     int column; int row; XPoint * pt; int * color;
+ScreenSquare (int column, int row, XPoint *pt, int *color)
 {
   if (flipView) {
     pt->x = lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
@@ -8291,8 +7893,7 @@ ScreenSquare(column, row, pt, color)
 /*	Convert window coords to square			*/
 
 static void
-BoardSquare(x, y, column, row)
-     int x; int y; int * column; int * row;
+BoardSquare (int x, int y, int *column, int *row)
 {
   *column = EventToSquare(x, BOARD_WIDTH);
   if (flipView && *column >= 0)
@@ -8310,8 +7911,7 @@ BoardSquare(x, y, column, row)
 #define Min(a, b) ((a) < (b) ? (a) : (b))
 
 static void
-SetRect(rect, x, y, width, height)
-     XRectangle * rect; int x; int y; int width; int height;
+SetRect (XRectangle *rect, int x, int y, int width, int height)
 {
   rect->x = x;
   rect->y = y;
@@ -8324,9 +7924,7 @@ SetRect(rect, x, y, width, height)
 	that rect within new. */
 
 static Boolean
-Intersect(old, new, size, area, pt)
-     XPoint * old; XPoint * new;
-     int size; XRectangle * area; XPoint * pt;
+Intersect ( XPoint *old, XPoint *new, int size, XRectangle *area, XPoint *pt)
 {
   if (old->x > new->x + size || new->x > old->x + size ||
       old->y > new->y + size || new->y > old->y + size) {
@@ -8344,9 +7942,7 @@ Intersect(old, new, size, area, pt)
 	in the old that do not intersect with the new.   */
 
 static void
-CalcUpdateRects(old, new, size, update, nUpdates)
-     XPoint * old; XPoint * new; int size;
-     XRectangle update[]; int * nUpdates;
+CalcUpdateRects (XPoint *old, XPoint *new, int size, XRectangle update[], int *nUpdates)
 {
   int	     count;
 
@@ -8392,10 +7988,7 @@ CalcUpdateRects(old, new, size, update, nUpdates)
 	noticeable.						*/
 
 static void
-Tween(start, mid, finish, factor, frames, nFrames)
-     XPoint * start; XPoint * mid;
-     XPoint * finish; int factor;
-     XPoint frames[]; int * nFrames;
+Tween (XPoint *start, XPoint *mid, XPoint *finish, int factor, XPoint frames[], int *nFrames)
 {
   int fraction, n, count;
 
@@ -8430,8 +8023,7 @@ Tween(start, mid, finish, factor, frames, nFrames)
 /*	Draw a piece on the screen without disturbing what's there	*/
 
 static void
-SelectGCMask(piece, clip, outline, mask)
-     ChessSquare piece; GC * clip; GC * outline; Pixmap * mask;
+SelectGCMask (ChessSquare piece, GC *clip, GC *outline, Pixmap *mask)
 {
   GC source;
 
@@ -8471,8 +8063,7 @@ SelectGCMask(piece, clip, outline, mask)
 }
 
 static void
-OverlayPiece(piece, clip, outline,  dest)
-     ChessSquare piece; GC clip; GC outline; Drawable dest;
+OverlayPiece (ChessSquare piece, GC clip, GC outline,  Drawable dest)
 {
   int	kind;
 
@@ -8502,11 +8093,7 @@ OverlayPiece(piece, clip, outline,  dest)
 /* Animate the movement of a single piece */
 
 static void
-BeginAnimation(anim, piece, startColor, start)
-     AnimState *anim;
-     ChessSquare piece;
-     int startColor;
-     XPoint * start;
+BeginAnimation (AnimState *anim, ChessSquare piece, int startColor, XPoint *start)
 {
   Pixmap mask;
 
@@ -8521,10 +8108,7 @@ BeginAnimation(anim, piece, startColor, start)
 }
 
 static void
-AnimationFrame(anim, frame, piece)
-     AnimState *anim;
-     XPoint *frame;
-     ChessSquare piece;
+AnimationFrame (AnimState *anim, XPoint *frame, ChessSquare piece)
 {
   XRectangle updates[4];
   XRectangle overlap;
@@ -8574,9 +8158,7 @@ AnimationFrame(anim, frame, piece)
 }
 
 static void
-EndAnimation (anim, finish)
-     AnimState *anim;
-     XPoint *finish;
+EndAnimation (AnimState *anim, XPoint *finish)
 {
   XRectangle updates[4];
   XRectangle overlap;
@@ -8601,11 +8183,7 @@ EndAnimation (anim, finish)
 }
 
 static void
-FrameSequence(anim, piece, startColor, start, finish, frames, nFrames)
-     AnimState *anim;
-     ChessSquare piece; int startColor;
-     XPoint * start; XPoint * finish;
-     XPoint frames[]; int nFrames;
+FrameSequence (AnimState *anim, ChessSquare piece, int startColor, XPoint *start, XPoint *finish, XPoint frames[], int nFrames)
 {
   int n;
 
@@ -8618,7 +8196,7 @@ FrameSequence(anim, piece, startColor, start, finish, frames, nFrames)
 }
 
 void
-AnimateAtomicCapture(Board board, int fromX, int fromY, int toX, int toY)
+AnimateAtomicCapture (Board board, int fromX, int fromY, int toX, int toY)
 {
     int i, x, y;
     ChessSquare piece = board[fromY][toY];
@@ -8643,12 +8221,7 @@ AnimateAtomicCapture(Board board, int fromX, int fromY, int toX, int toY)
 /* Main control logic for deciding what to animate and how */
 
 void
-AnimateMove(board, fromX, fromY, toX, toY)
-     Board board;
-     int fromX;
-     int fromY;
-     int toX;
-     int toY;
+AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
 {
   ChessSquare piece;
   int hop;
@@ -8713,8 +8286,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
 }
 
 void
-DragPieceBegin(x, y, instantly)
-     int x; int y; Boolean instantly;
+DragPieceBegin (int x, int y, Boolean instantly)
 {
     int	 boardX, boardY, color;
     XPoint corner;
@@ -8767,7 +8339,7 @@ DragPieceBegin(x, y, instantly)
 }
 
 void
-ChangeDragPiece(ChessSquare piece)
+ChangeDragPiece (ChessSquare piece)
 {
   Pixmap mask;
   player.dragPiece = piece;
@@ -8777,8 +8349,7 @@ ChangeDragPiece(ChessSquare piece)
 }
 
 static void
-DragPieceMove(x, y)
-     int x; int y;
+DragPieceMove (int x, int y)
 {
     XPoint corner;
 
@@ -8804,8 +8375,7 @@ DragPieceMove(x, y)
 }
 
 void
-DragPieceEnd(x, y)
-     int x; int y;
+DragPieceEnd (int x, int y)
 {
     int boardX, boardY, color;
     XPoint corner;
@@ -8851,7 +8421,8 @@ DrawDragPiece ()
 }
 
 #include <sys/ioctl.h>
-int get_term_width()
+int
+get_term_width ()
 {
     int fd, default_width;
 
@@ -8871,7 +8442,7 @@ int get_term_width()
 }
 
 void
-update_ics_width()
+update_ics_width ()
 {
   static int old_width = 0;
   int new_width = get_term_width();
@@ -8881,7 +8452,8 @@ update_ics_width()
   old_width = new_width;
 }
 
-void NotifyFrontendLogin()
+void
+NotifyFrontendLogin ()
 {
     update_ics_width();
 }
@@ -8893,17 +8465,20 @@ static double A_WIDTH = 5; /* Width of arrow body */
 #define A_HEIGHT_FACTOR 6   /* Length of arrow "point", relative to body width */
 #define A_WIDTH_FACTOR  3   /* Width of arrow "point", relative to body width */
 
-static double Sqr( double x )
+static double
+Sqr (double x)
 {
     return x*x;
 }
 
-static int Round( double x )
+static int
+Round (double x)
 {
     return (int) (x + 0.5);
 }
 
-void SquareToPos(int rank, int file, int *x, int *y)
+void
+SquareToPos (int rank, int file, int *x, int *y)
 {
     if (flipView) {
 	*x = lineGap + ((BOARD_WIDTH-1)-file) * (squareSize + lineGap);
@@ -8915,7 +8490,8 @@ void SquareToPos(int rank, int file, int *x, int *y)
 }
 
 /* Draw an arrow between two points using current settings */
-void DrawArrowBetweenPoints( int s_x, int s_y, int d_x, int d_y )
+void
+DrawArrowBetweenPoints (int s_x, int s_y, int d_x, int d_y)
 {
     XPoint arrow[8];
     double dx, dy, j, k, x, y;
@@ -9019,7 +8595,8 @@ void DrawArrowBetweenPoints( int s_x, int s_y, int d_x, int d_y )
 }
 
 /* [AS] Draw an arrow between two squares */
-void DrawArrowBetweenSquares( int s_col, int s_row, int d_col, int d_row )
+void
+DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
 {
     int s_x, s_y, d_x, d_y, hor, vert, i;
 
@@ -9069,18 +8646,21 @@ void DrawArrowBetweenSquares( int s_col, int s_row, int d_col, int d_row )
     }
 }
 
-Boolean IsDrawArrowEnabled()
+Boolean
+IsDrawArrowEnabled ()
 {
     return appData.highlightMoveWithArrow && squareSize >= 32;
 }
 
-void DrawArrowHighlight(int fromX, int fromY, int toX,int toY)
+void
+DrawArrowHighlight (int fromX, int fromY, int toX,int toY)
 {
     if( IsDrawArrowEnabled() && fromX >= 0 && fromY >= 0 && toX >= 0 && toY >= 0)
         DrawArrowBetweenSquares(fromX, fromY, toX, toY);
 }
 
-void UpdateLogos(int displ)
+void
+UpdateLogos (int displ)
 {
     return; // no logos in XBoard yet
 }

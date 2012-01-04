@@ -70,25 +70,29 @@ extern Option historyOptions[];
 
 // ------------- low-level front-end actions called by MoveHistory back-end -----------------
 
-void HighlightMove( int from, int to, Boolean highlight )
+void
+HighlightMove (int from, int to, Boolean highlight)
 {
     if(highlight)
 	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
 }
 
-void ClearHistoryMemo()
+void
+ClearHistoryMemo ()
 {
     ClearTextWidget(&historyOptions[0]);
 }
 
 // the bold argument says 0 = normal, 1 = bold typeface
 // the colorNr argument says 0 = font-default, 1 = gray
-int AppendToHistoryMemo( char * text, int bold, int colorNr )
+int
+AppendToHistoryMemo (char * text, int bold, int colorNr)
 {
     return AppendText(&historyOptions[0], text); // for now ignore bold & color stuff, as Xaw cannot handle that
 }
 
-void ScrollToCurrent(int caretPos)
+void
+ScrollToCurrent (int caretPos)
 {
     Arg args[10];
     char *s;
@@ -131,17 +135,20 @@ Option historyOptions[] = {
 
 // ------------ standard entry points into MoveHistory code -----------
 
-Boolean MoveHistoryIsUp()
+Boolean
+MoveHistoryIsUp ()
 {
     return shellUp[7];
 }
 
-Boolean MoveHistoryDialogExists()
+Boolean
+MoveHistoryDialogExists ()
 {
     return shells[7] != NULL;
 }
 
-void HistoryPopUp()
+void
+HistoryPopUp ()
 {
     if(GenericPopUp(historyOptions, _("Move list"), 7))
 	XtOverrideTranslations(historyOptions[0].handle, XtParseTranslationTable(historyTranslations));
@@ -149,11 +156,7 @@ void HistoryPopUp()
 }
 
 void
-HistoryShowProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+HistoryShowProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
   if (!shellUp[7]) {
     ASSIGN(historyText, "");
