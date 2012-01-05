@@ -1584,10 +1584,6 @@ Shows the current XBoard version number.
 @table @asis
 @item Show last move
 By hitting @kbd{Enter} the last move will be re-animated.
-@item Send a command directly to the chess engine
-Using @kbd{Ctrl+1} a popup window will prompt you for a command that
-will be send directly to the first chess engines.  @kbd{Ctrl+2} does the
-same for a second chess engine, if present.
 @item Load Next Game
 @cindex Load Next Game, Menu Item
 Loads the next game from the last game record file you loaded.

@@ -1116,11 +1116,7 @@ char globalTranslations[] =
    :<Key>F1: ManProc() \n \
    :<Key>F2: FlipViewProc() \n \
    :<KeyDown>Return: TempBackwardProc() \n \
-   :<KeyUp>Return: TempForwardProc() \n \
-   :Ctrl<Key>1: AskQuestionProc(\"Direct command\",\
-                                \"Send to chess program:\",,1) \n \
-   :Ctrl<Key>2: AskQuestionProc(\"Direct command\",\
-                                \"Send to second chess program:\",,2) \n";
+   :<KeyUp>Return: TempForwardProc() \n";
 
 char boardTranslations[] =
    "<Btn1Down>: HandleUserMove(0) \n \
