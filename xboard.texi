@@ -1017,13 +1017,6 @@ machines, the score is prefixed by @samp{W} or @samp{B} to indicate
 whether it is showing White's thinking or Black's, and only the thinking
 of the engine that is on move is shown.
 The shifted @kbd{Ctrl-H} key is a keyboard equivalent.
-@itemx Highlight Dragging
-@cindex Highlight Dragging, Menu Item
-If Highlight Dragging is on, and the option -showTargetSquares is also on
-in the settings file, all squares a piece that is 'picked up' with the mouse
-can legally move to are highighted with a fat colored dot in the
-highlightColor (non-captures) or premoveHighlightColor (captures).
-Legality testing must be on for XBoard to know how the piece moves.
 @itemx Highlight Last Move
 @cindex Highlight Last Move, Menu Item
 If Highlight Last Move is on, after a move is made, the starting and
@@ -1095,8 +1088,10 @@ If this option is on, XBoard displays algebraic coordinates
 along the board's left and bottom edges.
 @itemx Show Target Squares
 @cindex Show Target Squares, Menu Item
-This option must be on for the @samp{Highlight Dragging} described
-above to work.
+If this option is on, all squares a piece that is 'picked up' with the mouse
+can legally move to are highighted with a fat colored dot in the
+highlightColor (non-captures) or premoveHighlightColor (captures).
+Legality testing must be on for XBoard to know how the piece moves.
 @itemx Test Legality
 @cindex Test Legality, Menu Item
 If this option is on, XBoard tests whether the moves you try to make
@@ -1845,9 +1840,10 @@ itself.  (See the CHESSDIR environment variable.)
 This option is effective only when the chess engine is being run
 on the local host; it does not work if the engine is run remotely
 using the -fh or -sh option.
-@item -initString string
+@item -initString string or -firstInitString
 @itemx -secondInitString string
 @cindex initString, option
+@cindex firstInitString, option
 @cindex secondInitString, option
 The string that is sent to initialize each chess engine for a new game.
 Default:
@@ -2024,7 +2020,23 @@ and XBoard will select the book moves for it. Default: "".
 @cindex firstXBook, option
 @cindex secondXBook, option
 Indicates if the mentioned engine has its own opening book it should play from,
-rather than using the external book through XBoard. Default: false.
+rather than using the external book through XBoard. 
+Default: depends on setting of the option @code{discourageOwnBooks}.
+@item -discourageOwnBooks true/false
+@cindex discourageOwnBooks, option
+When set, newly loaded engines will be assumed to use the GUI book, 
+unless they explicitly specify differently.
+Otherwise they will be assumed to not use the GUI book,
+unless the specify differently (e.g. with @code{firstXBook}).
+Default: false.
+@item -bookDepth n
+@cindex bookDepth, option
+Limits the use of the GUI book to the first n moves of each side.
+Default: 12.
+@item -bookVariation n
+@cindex bookVariation, option
+A value n from 0 to 100 tunes the choice of moves from the GUI books
+from totally random to best-only. Default: 50
 @item -fn string or -firstPgnName string
 @itemx -sn string or -secondPgnName string
 @cindex firstPgnName, option
@@ -2081,6 +2093,19 @@ To change it, edit your settings file with a plain text editor.
 @cindex Tournament Options
 @cindex Options, Tournament
 @table @asis
+@item -defaultMatchGames n
+@cindex defaultMatchGames, option
+Sets the number of games that will be used for a match between two engines
+started from the menu to n. Also used as games per pairing in other tournament
+formats.  Default: 10.
+@item -matchPause n
+@cindex matchPause, option
+Specifies the duration of the pause between two games of a match or tournament
+between engines as n milliseconds.
+Especially engines that do not support ping need this option, 
+to prevent that the move they are thinking on when an opponent unexpectedly
+resigns will be counted for the next game, (leading to illegal moves there).
+Default: 10000.
 @item -tf filename or -tourneyFile filename
 @cindex tf, option
 @cindex tourneyFile, option
@@ -2136,12 +2161,21 @@ To the latter the pairing engine should answer with “A-B”,
 where A and B are participant numbers (in the range 1-N). 
 (There should be no reply to the results command.) Default: empty string.
 @item -afterGame string
+@itemx -afterTourney string
 @cindex afterGame, option
+@cindex afterTourney, option
 When non-empty, the given string will be executed as a system command 
-after each tournament game.
+after each tournament game, orafterthe tourney completes, respectively.
 This can be used, for example, to autmatically run a cross-table generator
 on the PGN file where games are saved, to update the tourney standings.
 Default: ""
+@item -syncAfterRound true/false
+@itemx -syncAfterCycle true/false
+@cindex syncAfterRound, option
+@cindex syncAfterCycle, option
+Controls whether different instances of XBoard concurrently running the 
+same tournament will wait for each other.
+Defaults: sync after cycle, but not after round.
 @item -seedBase number
 @cindex seedBase, option
 Used to store the seed of the pseudo-random-number generator in the
@@ -2352,14 +2386,11 @@ board immediately.
 This feature is still experimental and largely unfinished.
 There is no animation or highlighting of moves on the secondary board.
 Default: false.
-@item -oneClickMove true/false
-@cindex oneClickMove, option
-When set, this option allows you to enter moves by only clicking the to-
-or from-square, when only a single legal move to or from that square
-is possible.
-Double-clicking a piece (or clicking an already selected piece)
-will instruct that piece to make the only capture it can legally do.
-Default: false.
+@item -disguisePromotedPieces true/false
+@cindex disguisePromotedPieces, option
+When set promoted Pawns in crazyhouse/bughouse are displayed identical
+to primordial pieces of the same type, rather than distinguishable.
+Default: true.
 @item -moves/-xmoves or -getMoveList true/false
 @cindex moves, option
 @cindex getMoveList, option
@@ -2380,19 +2411,34 @@ Controls a color change of the board as a warning your time is running out.
 @cindex pre, option
 @cindex premove, option
 Sets the Premove menu option. @xref{Options Menu}. Default: true.
+@item -prewhite/-xprewhite or -premoveWhite
+@itemx -preblack/-xpreblack or -premoveBlack
+@itemx -premoveWhiteText string
+@itemx -premoveBlackText string
+@cindex prewhite, option
+@cindex premoveWhite, option
+@cindex preblack, option
+@cindex premoveBlack, option
+@cindex premoveWhiteText, option
+@cindex premoveBlackText, option
+Set the menu options for specifying the first move for either color. 
+@xref{Options Menu}. Defaults: false and empty strings, so no pre-moves.
 @item -quiet/-xquiet or -quietPlay true/false
 @cindex quiet, option
 @cindex quietPlay, option
 Sets the Quiet Play menu option.  @xref{Options Menu}.  Default: false.
-@item -colorizeMessages or -colorize
+@item -colorizeMessages or -colorize/-xcolorize
 @cindex Colors
 @cindex colorize, option
+@cindex colorizeMessages, option
 Setting colorizeMessages
 to true tells XBoard to colorize the messages received from
 the ICS.  Colorization works only if your xterm 
 supports ISO 6429 escape sequences for changing text colors.
+Default: true.
 @item -colorShout foreground,background,bold
 @itemx -colorSShout foreground,background,bold
+@itemx -colorCShout foreground,background,bold
 @itemx -colorChannel1 foreground,background,bold
 @itemx -colorChannel foreground,background,bold
 @itemx -colorKibitz foreground,background,bold
@@ -2404,6 +2450,7 @@ supports ISO 6429 escape sequences for changing text colors.
 @cindex Colors
 @cindex colorShout, option
 @cindex colorSShout, option
+@cindex colorCShout, option
 @cindex colorChannel1, option
 @cindex colorChannel, option
 @cindex colorKibitz, option
@@ -2427,6 +2474,7 @@ is assumed; if bold is omitted, 0 is assumed.
 Here is an example of how to set the colors in your @file{.Xresources} file.
 The colors shown here are the default values; you will get
 them if you turn @code{-colorize} on without specifying your own colors.
+CShout is synonymous with SShout.
 
 @example
 xboard*colorizeMessages: true	
@@ -2458,7 +2506,9 @@ This option specifies where XBoard will look for sound files,
 when these are not given as an absolute path name.
 @item -soundShout filename
 @itemx -soundSShout filename
+@itemx -soundCShout filename
 @itemx -soundChannel filename
+@itemx -soundChannel1 filename
 @itemx -soundKibitz filename
 @itemx -soundTell filename
 @itemx -soundChallenge filename
@@ -2466,7 +2516,9 @@ when these are not given as an absolute path name.
 @itemx -soundSeek filename
 @cindex soundShout, option
 @cindex soundSShout, option
+@cindex soundCShout, option
 @cindex soundChannel, option
+@cindex soundChannel1, option
 @cindex soundKibitz, option
 @cindex soundTell, option
 @cindex soundChallenge, option
@@ -2475,6 +2527,7 @@ when these are not given as an absolute path name.
 These sounds are triggered in the same way as the colorization events
 described above.  They all default to "", no sound.  They are played
 only if the colorizeMessages is on.
+CShout is synonymous with SShout.
 @item -soundMove filename
 @cindex soundMove, option
 This sound is used by the Move Sound menu option.  Default: "$".
@@ -2645,6 +2698,10 @@ and will be used to contain system-wide default setings, amongst which
 a -saveSettingsFile and -settingsFile options to specify a settings file
 accessible to the individual user, such as ~/.xboardrc in the user's
 home directory.
+@item -saveSettingsOnExit true/false
+@cindex saveSettingsOnExit, option
+Controls saving of options on the settings file.  @xref{Options Menu}.
+Default: true.
 @end table
 
 @node User interface options
@@ -2667,6 +2724,14 @@ Suppresses all GUI functions of XBoard
 (to speed up automated ultra-fast engine-engine games, which you don't want to watch). 
 There will be no board or clock updates, no printing of moves, 
 and no update of the icon on the task bar in this mode.
+@item -oneClickMove true/false
+@cindex oneClickMove, option
+When set, this option allows you to enter moves by only clicking the to-
+or from-square, when only a single legal move to or from that square
+is possible.
+Double-clicking a piece (or clicking an already selected piece)
+will instruct that piece to make the only capture it can legally do.
+Default: false.
 @item -movesound/-xmovesound or -ringBellAfterMoves true/false
 @cindex movesound, option
 @cindex bell, option
@@ -2801,8 +2866,7 @@ specify @code{monoMode}; XBoard will determine if it is necessary.
 @cindex showTargetSquares, option
 Determines whether XBoard can highlight the squares a piece has
 legal moves to, when you grab that piece with the mouse.
-If this option is set, this feature can be controlled through
-the Highlight Dragging menu item.
+Default: false.
 @item -flashCount count
 @itemx -flashRate rate
 @itemx -flash/-xflash
@@ -2835,6 +2899,10 @@ Sets the Highlight with Arrow menu option. @xref{Options Menu}. Default: false.
 @cindex blind, option
 @cindex blindfold, option
 Sets the Blindfold menu option.  @xref{Options Menu}.  Default: false.
+@item -periodic/-xperiodic or -periodicUpdates true/false
+@cindex periodic, option
+@cindex periodicUpdates, option
+Controls updating of current move andnode counts in analysis mode. Default: true.
 @item fSAN
 @itemx sSAN
 @cindex fSAN, option
@@ -2844,6 +2912,11 @@ to SAN before it is further processed.
 Warning: this might lose engine output not understood by the parser,
 and uses a lot of CPU power.
 Default: the PV is displayed exactly as the engine produced it.
+@item -showEvalInMoveHistory true/false
+@cindex showEvalInMoveHistory, option
+Controls whether the evaluation scores and search depth of engine moves
+are displayed with the move in the move-history window.
+Default: true.
 @item -clockFont font
 @cindex clockFont, option
 @cindex Font, clock
@@ -2931,6 +3004,7 @@ sets, see @ref{zic2xpm} below.
 @itemx -lightSquareColor color
 @itemx -darkSquareColor color
 @itemx -highlightSquareColor color
+@itemx -preoveHighlightColor color
 @itemx -lowTimeWarningColor color
 @cindex Colors
 @cindex whitePieceColor, option
@@ -2938,6 +3012,7 @@ sets, see @ref{zic2xpm} below.
 @cindex lightSquareColor, option
 @cindex darkSquareColor, option
 @cindex highlightSquareColor, option
+@cindex premoveHighlightColor, option
 @cindex lowTimeWarningColor, option
 Colors to use for the pieces, squares, and square highlights.
 Defaults:
@@ -3197,8 +3272,8 @@ Specifies the number of the opening position in shuffle games like Chess960.
 A value of -1 means the position is randomly generated by XBoard
 at the beginning of every game.
 Default: -1
-@item -pieceToSquareTable string
-@cindex pieceToSquareTable, option
+@item -pieceToCharTable string
+@cindex pieceToCharTable, option
 The characters that are used to represent the piece types XBoard knows in FEN 
 diagrams and SAN moves. The string argument has to have an even length 
 (or it will be ignored), as white and black pieces have to be given separately 
@@ -3218,6 +3293,23 @@ revert to its non-promoted version on capture (rather than to a Pawn).
 Note that promoted pieces are represented by pieces 11 further in the list.
 You should not have to use this option often: each variant has its own default 
 setting for the piece representation in FEN, which should be sufficient in normal use.
+Default: ""
+@item -pieceNickNames string
+@cindex pieceNickNames, option
+The characters in the string are interpreted the same way as in the
+@code{pieceToCharTable} option. But on input, piece-ID letters are
+first looked up in the nicknames, and only if not defined there,
+in the normal pieceToCharTable. This allows you to have two letters
+designate the same piece, (e.g. N as an alternative to H for Horse
+in Xiangqi), to make reading of non-compliant notations easier.
+Default: ""
+@item -colorNickNames string
+@cindex colorNickNames, option
+The side-to-move field in a FEN will be first matched against the letters
+in the string (first character for white, second for black),
+before it is matched to the regular 'w' and 'b'.
+This makes it easier to read non-compliant FENs,
+which, say, use 'r' for white.
 Default: ""
 @item -debug/-xdebug or -debugMode true/false
 @cindex debug, option
