@@ -67,8 +67,12 @@ dist_svgicon_DATA = xboard.svg
 ### desktop files for KDE and gnome
 
 Applicationsdir = $(datadir)/applications
-Applications_DATA = xboard.desktop
+Applications_DATA = xboard.desktop xboard-fen-viewer.desktop \
+                    xboard-pgn-viewer.desktop xboard-tourney.desktop
 
+### mime definitions for association of fen, png and tourney files
+Mimedir = $(datadir)/mime/packages
+Mime_DATA = xboard.xml
 
 ### directory and files for bitmaps
 
@@ -142,7 +146,9 @@ dist_bitmaps_DATA = \
 ### directory and files for pixmaps
 
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
-dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
+dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm \
+                    pixmaps/cross32.xpm pixmaps/cross48.xpm \
+                    pixmaps/board32.xpm pixmaps/board48.xpm
 
 
 ### directory and files for sound files
@@ -171,3 +177,28 @@ distclean-local:
 
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 	$(srcdir)/texi2man $(srcdir)/xboard.texi > xboard.man || (rm -f xboard.man ; false)
+
+install-data-hook: install-mime-database
+uninstall-hook: uninstall-mime-database
+install-mime-database:
+	@-if test -z "$(DESTDIR)"; then \
+		xdg-mime install --mode system --novendor $(Mimedir)/xboard.xml ;\
+		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-pgn-viewer.desktop;\
+		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-fen-viewer.desktop;\
+		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-tourney.desktop;\
+		xdg-icon-resource install --context mimetypes --size 32 $(pixmapsdir)/board32.xpm application-x-chess-pgn;\
+		xdg-icon-resource install --context mimetypes --size 32 $(pixmapsdir)/cross32.xpm x-xboard-pgn;\
+		xdg-icon-resource install --context mimetypes --size 48 $(pixmapsdir)/board48.xpm application-x-chess-pgn;\
+		xdg-icon-resource install --context mimetypes --size 48 $(pixmapsdir)/cross48.xpm x-xboard-pgn;\
+	fi
+uninstall-mime-database:
+	@-if test -z "$(DESTDIR)"; then \
+		xdg-mime uninstall --mode system --novendor xboard.xml;\
+		xdg-desktop-menu uninstall --mode system --novendor xboard-pgn-viewer.desktop;\
+		xdg-desktop-menu uninstall --mode system --novendor xboard-fen-viewer.desktop;\
+		xdg-desktop-menu uninstall --mode system --novendor xboard-tourney.desktop;\
+		xdg-icon-resource uninstall --context mimetypes --size 32 board32.xpm application-x-chess-pgn;\
+		xdg-icon-resource uninstall --context mimetypes --size 32 cross32.xpm x-xboard-pgn;\
+		xdg-icon-resource uninstall --context mimetypes --size 48 board48.xpm application-x-chess-pgn;\
+		xdg-icon-resource uninstall --context mimetypes --size 48 cross48.xpm x-xboard-pgn;\
+	fi
