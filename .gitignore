@@ -16,6 +16,9 @@ depcomp
 mdate-sh
 missing
 ./parser.c
+po/*gmo
+po/POTFILES
+po/stamp-po
 stamp-h
 stamp-h1
 stamp-vti
