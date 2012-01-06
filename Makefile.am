@@ -35,6 +35,7 @@ SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@
 EXTRA_DIST = pixmaps bitmaps sounds winboard filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
+	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
 	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS
 
