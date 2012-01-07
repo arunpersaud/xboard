@@ -70,10 +70,6 @@ dist_svgicon_DATA = xboard.svg
 Applicationsdir = $(datadir)/applications
 Applications_DATA = xboard.desktop
 
-### mime definitions for association of fen, png and tourney files
-Mimedir = $(datadir)/mime/packages
-Mime_DATA = xboard.xml
-
 ### directory and files for bitmaps
 
 bitmapsdir = $(datadir)/games/xboard/bitmaps/default
@@ -179,7 +175,7 @@ install-data-hook: install-mime-database
 uninstall-hook: uninstall-mime-database
 install-mime-database:
 	@-if test -z "$(DESTDIR)"; then \
-		xdg-mime install --mode system --novendor $(Mimedir)/xboard.xml ;\
+		xdg-mime install --mode system --novendor xboard.xml ;\
 		xdg-desktop-menu install --mode system --novendor xboard-pgn-viewer.desktop;\
 		xdg-desktop-menu install --mode system --novendor xboard-fen-viewer.desktop;\
 		xdg-desktop-menu install --mode system --novendor xboard-tourney.desktop;\
