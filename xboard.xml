@@ -51,7 +51,7 @@
   </mime-type>
   <mime-type type="application/x-xboard-trn">
     <comment>XBoard tournament</comment>
-    <generic-icon name="x-xboard-trn"/>
+    <generic-icon name="application-x-xboard-trn"/>
     <glob pattern="*.trn"/>
     <sub-class-of type="text/plain"/>
     <magic priority="50">

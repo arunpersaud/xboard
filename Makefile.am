@@ -147,10 +147,7 @@ dist_bitmaps_DATA = \
 ### directory and files for pixmaps
 
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
-dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm \
-                    pixmaps/cross32.xpm pixmaps/cross48.xpm \
-                    pixmaps/board32.xpm pixmaps/board48.xpm
-
+dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
 
 ### directory and files for sound files
 
@@ -187,10 +184,10 @@ install-mime-database:
 		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-pgn-viewer.desktop;\
 		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-fen-viewer.desktop;\
 		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-tourney.desktop;\
-		xdg-icon-resource install --context mimetypes --size 32 $(pixmapsdir)/board32.xpm application-x-chess-pgn;\
-		xdg-icon-resource install --context mimetypes --size 32 $(pixmapsdir)/cross32.xpm x-xboard-pgn;\
-		xdg-icon-resource install --context mimetypes --size 48 $(pixmapsdir)/board48.xpm application-x-chess-pgn;\
-		xdg-icon-resource install --context mimetypes --size 48 $(pixmapsdir)/cross48.xpm x-xboard-pgn;\
+		xdg-icon-resource install --context mimetypes --size 32 pixmaps/board32.xpm application-x-chess-pgn;\
+		xdg-icon-resource install --context mimetypes --size 32 pixmaps/cross32.xpm application-x-xboard-trn;\
+		xdg-icon-resource install --context mimetypes --size 48 pixmaps/board48.xpm application-x-chess-pgn;\
+		xdg-icon-resource install --context mimetypes --size 48 pixmaps/cross48.xpm application-x-xboard-trn;\
 	fi
 uninstall-mime-database:
 	@-if test -z "$(DESTDIR)"; then \
@@ -199,7 +196,7 @@ uninstall-mime-database:
 		xdg-desktop-menu uninstall --mode system --novendor xboard-fen-viewer.desktop;\
 		xdg-desktop-menu uninstall --mode system --novendor xboard-tourney.desktop;\
 		xdg-icon-resource uninstall --context mimetypes --size 32 board32.xpm application-x-chess-pgn;\
-		xdg-icon-resource uninstall --context mimetypes --size 32 cross32.xpm x-xboard-pgn;\
+		xdg-icon-resource uninstall --context mimetypes --size 32 cross32.xpm application-x-xboard-trn;\
 		xdg-icon-resource uninstall --context mimetypes --size 48 board48.xpm application-x-chess-pgn;\
-		xdg-icon-resource uninstall --context mimetypes --size 48 cross48.xpm x-xboard-pgn;\
+		xdg-icon-resource uninstall --context mimetypes --size 48 cross48.xpm application-x-xboard-trn;\
 	fi
