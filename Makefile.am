@@ -68,8 +68,7 @@ dist_svgicon_DATA = xboard.svg
 ### desktop files for KDE and gnome
 
 Applicationsdir = $(datadir)/applications
-Applications_DATA = xboard.desktop xboard-fen-viewer.desktop \
-                    xboard-pgn-viewer.desktop xboard-tourney.desktop
+Applications_DATA = xboard.desktop
 
 ### mime definitions for association of fen, png and tourney files
 Mimedir = $(datadir)/mime/packages
@@ -181,9 +180,9 @@ uninstall-hook: uninstall-mime-database
 install-mime-database:
 	@-if test -z "$(DESTDIR)"; then \
 		xdg-mime install --mode system --novendor $(Mimedir)/xboard.xml ;\
-		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-pgn-viewer.desktop;\
-		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-fen-viewer.desktop;\
-		xdg-desktop-menu install --mode system --novendor $(Applicationsdir)/xboard-tourney.desktop;\
+		xdg-desktop-menu install --mode system --novendor xboard-pgn-viewer.desktop;\
+		xdg-desktop-menu install --mode system --novendor xboard-fen-viewer.desktop;\
+		xdg-desktop-menu install --mode system --novendor xboard-tourney.desktop;\
 		xdg-icon-resource install --context mimetypes --size 32 pixmaps/board32.xpm application-x-chess-pgn;\
 		xdg-icon-resource install --context mimetypes --size 32 pixmaps/cross32.xpm application-x-xboard-trn;\
 		xdg-icon-resource install --context mimetypes --size 48 pixmaps/board48.xpm application-x-chess-pgn;\
