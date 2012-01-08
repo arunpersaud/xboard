@@ -30,6 +30,7 @@
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib.h>
+#include <glib/gi18n.h>
 
 #include "common.h"
 
@@ -47,7 +48,7 @@ gchar* get_glade_filename(filename)
       if (g_file_test (gladefilename, G_FILE_TEST_EXISTS) == FALSE)
 	{
 	  g_free(gladefilename);
-	  printf ("Error: can not find ui-file for %s\n",filename);
+	  printf (_("Error: can not find ui-file for %s\n"), filename);
 	  return NULL;
 	}
     }
@@ -105,7 +106,7 @@ gchar* get_svg_filename(filename)
       if (g_file_test (svgfilename, G_FILE_TEST_EXISTS) == FALSE)
 	{
 	  g_free(svgfilename);
-	  printf ("Error: can not find svg-file for %s\n",filename);
+	  printf (_("Error: can not find svg-file for %s\n"), filename);
 	  return NULL;
 	}
     }
@@ -118,20 +119,22 @@ load_pixbuf(char *filename,int size)
 {
   GdkPixbuf *image;
   gchar *svgfilename;
+  GError *err = NULL;
 
   /* prepend directory path to filename */
   /* this will be either "svg/" if running from compile directory */ 
   /* or "/usr/local/share/games/xboard/svg/" if running installed version */ 
   svgfilename = get_svg_filename(filename);
 
-  if(size)
-    image = gdk_pixbuf_new_from_file_at_size(svgfilename,size,size,NULL);
+  if (size)
+    image = gdk_pixbuf_new_from_file_at_size(svgfilename, size, size, &err);
   else
-    image = gdk_pixbuf_new_from_file(svgfilename,NULL);
+    image = gdk_pixbuf_new_from_file(svgfilename, &err);
 
-  if(image == NULL)
+  if (err)
     {
-      printf("Error: couldn't load svg file: %s\n", filename);
+      printf(_("Error: couldn't load svg file: %s: %s\n"), filename, err->message);
+      g_error_free (err);
       //exit(EXIT_FAILURE);
     }
   return image;
