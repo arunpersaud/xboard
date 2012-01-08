@@ -141,7 +141,7 @@ void NewCommentPopup P((char *title, char *text, int index));
 void GetWidgetText P((Option *opt, char **buf));
 void ClearTextWidget P((GtkWidget *w));
 void InputBoxPopup P((void));
-void PlaySound P((char *name));
+void MyPlaySound P((char *name));
 void ParseIcsTextColors P((void));
 void InitDrawingSizes P((int i, int j));
 void SendToICS P((char *buf));

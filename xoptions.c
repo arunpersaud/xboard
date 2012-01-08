@@ -595,7 +595,7 @@ char *soundFiles[] = { // sound files corresponding to above names
 void Test(int n)
 {    
     GenericReadout(2);
-    if(soundFiles[values[3]]) PlaySound(soundFiles[values[3]]);
+    if(soundFiles[values[3]]) MyPlaySound(soundFiles[values[3]]);
 }
 
 Option soundOptions[] = {
