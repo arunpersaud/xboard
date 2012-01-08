@@ -212,7 +212,7 @@ static void DisplayEvalGraph()
   return;
 }
 
-gboolean EvalGraphEventProc(widget, event)
+G_MODULE_EXPORT gboolean EvalGraphEventProc(widget, event)
      GtkWidget *widget;
      GdkEvent *event;
 {
@@ -356,7 +356,7 @@ int EvalGraphDialogExists()
   return GUI_EvalGraph != NULL;
 }
 
-void EvalGraphProcGTK(object, user_data)
+G_MODULE_EXPORT void EvalGraphProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {

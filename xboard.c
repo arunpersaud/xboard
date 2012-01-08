@@ -222,12 +222,12 @@ char *FindFont P((char *pattern, int targetPxlSize));
 //static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 int EventToSquare P((int x, int limit));
 void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
-gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data));
-void MoveTypeInProc P((GdkEventKey *eventkey));
+G_MODULE_EXPORT gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data));
+G_MODULE_EXPORT void MoveTypeInProc P((GdkEventKey *eventkey));
 gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
-gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
-gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
-void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
+G_MODULE_EXPORT gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
+G_MODULE_EXPORT gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
+G_MODULE_EXPORT void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
 //void HandlePV P((Widget w, XEvent * event,
 //		     String * params, Cardinal * nParams));
 //void WhiteClock P((Widget w, XEvent *event,
@@ -2783,7 +2783,7 @@ void ScalePixbufs() {
 }
 
 /* The user has resized the main window so redraw the board with the correct size */
-gboolean ConfigureProc(widget, event, data)
+G_MODULE_EXPORT gboolean ConfigureProc(widget, event, data)
      GtkWidget *widget;
      GdkEvent *event;
      gpointer data;
@@ -2826,7 +2826,7 @@ gboolean ConfigureProc(widget, event, data)
 
 /* callback for expose event on the main GtkDrawingArea (boardwidgetGTK) */
 /* causes board to be redrawn */
-gboolean EventProcGTK(widget, event, data)
+G_MODULE_EXPORT gboolean EventProcGTK(widget, event, data)
      GtkWidget *widget;
      GdkEventExpose *event;
      gpointer data;
@@ -3156,7 +3156,7 @@ void GTKDrawPosition(w, repaint, board)
     DrawDragPiece();
 }
 
-gboolean KeyPressProc(window, eventkey, data)
+G_MODULE_EXPORT gboolean KeyPressProc(window, eventkey, data)
      GtkWindow *window;
      GdkEventKey  *eventkey;
      gpointer data;
@@ -3194,7 +3194,7 @@ gboolean KeyPressProc(window, eventkey, data)
     return False;
 }
 
-gboolean ButtonPressProc(window, eventbutton, data)
+G_MODULE_EXPORT gboolean ButtonPressProc(window, eventbutton, data)
      GtkWindow *window;
      GdkEventButton  *eventbutton;
      gpointer data;
@@ -3251,7 +3251,7 @@ gboolean HandleUserMoveGTK(window, eventbutton, data)
     return False;
 }
 
-void
+G_MODULE_EXPORT void
 AnimateUserMove (GtkWidget *w, GdkEventMotion *event)
 {
   int x, y;
@@ -3760,7 +3760,7 @@ void ModeHighlight()
 /*
  * Button/menu procedures
  */
-void ResetProcGTK(object, user_data)
+G_MODULE_EXPORT void ResetProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3790,7 +3790,7 @@ int LoadGamePopUp(f, gameNumber, title)
     return LoadGame(f, gameNumber, title, FALSE);
 }
 
-void LoadGameProcGTK(object, user_data)
+G_MODULE_EXPORT void LoadGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3827,21 +3827,21 @@ void ReloadGameProc(w, event, prms, nprms)
     ReloadGame(0);
 }
 */
-void LoadNextPositionProcGTK(object, user_data)
+G_MODULE_EXPORT void LoadNextPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     ReloadPosition(1);
 }
 
-void LoadPrevPositionProcGTK(object, user_data)
+G_MODULE_EXPORT void LoadPrevPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     ReloadPosition(-1);
 }
 /*
-void ReloadPositionProc(w, event, prms, nprms)
+G_MODULE_EXPORT void ReloadPositionProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
      String *prms;
@@ -3850,7 +3850,7 @@ void ReloadPositionProc(w, event, prms, nprms)
     ReloadPosition(0);
 }
 */
-void LoadPositionProcGTK(object, user_data)
+G_MODULE_EXPORT void LoadPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3860,7 +3860,7 @@ void LoadPositionProcGTK(object, user_data)
     FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb", OPEN);
 }
 
-void SaveGameProcGTK(object, user_data)
+G_MODULE_EXPORT void SaveGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3870,7 +3870,7 @@ void SaveGameProcGTK(object, user_data)
 		  SaveGame, "a",SAVE);
 }
 
-void SavePositionProcGTK(object, user_data)
+G_MODULE_EXPORT void SavePositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3880,14 +3880,14 @@ void SavePositionProcGTK(object, user_data)
 		  SavePosition, "a",SAVE);
 }
 
-void ReloadCmailMsgProcGTK(object, user_data)
+G_MODULE_EXPORT void ReloadCmailMsgProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     ReloadCmailMsgEvent(FALSE);
 }
 
-void MailMoveProcGTK(object, user_data)
+G_MODULE_EXPORT void MailMoveProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3895,7 +3895,7 @@ void MailMoveProcGTK(object, user_data)
 }
 
 
-void CopyPositionProcGTK(object, user_data)
+G_MODULE_EXPORT void CopyPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3912,7 +3912,7 @@ void CopyPositionProcGTK(object, user_data)
     gtk_clipboard_set_text(cb, selected_fen_position, -1);
 }
 
-void PastePositionProcGTK(object, user_data)
+G_MODULE_EXPORT void PastePositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3965,7 +3965,7 @@ void CopyFileToClipboard(gchar *filename)
     g_free(selection_tmp);    
 }
 
-void CopyGameProcGTK(object, user_data)
+G_MODULE_EXPORT void CopyGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3976,7 +3976,7 @@ void CopyGameProcGTK(object, user_data)
     CopyFileToClipboard(gameCopyFilename);
 }
 
-void CopyGameListProcGTK(object, user_data)
+G_MODULE_EXPORT void CopyGameListProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -3984,7 +3984,7 @@ void CopyGameListProcGTK(object, user_data)
     CopyFileToClipboard(gameCopyFilename);
 }
 
-void PasteGameProcGTK(object, user_data)
+G_MODULE_EXPORT void PasteGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -4025,35 +4025,35 @@ void AutoSaveGame()
 
 /* exit the application */
 
-void
+G_MODULE_EXPORT void
 QuitProcGTK(GtkObject *object, gpointer user_data)
 {
     ExitEvent(0);
     gtk_main_quit();
 }
 
-void PauseProcGTK(object, user_data)
+G_MODULE_EXPORT void PauseProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     PauseEvent();
 }
 
-void MachineBlackProcGTK(object, user_data)
+G_MODULE_EXPORT void MachineBlackProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     MachineBlackEvent();
 }
 
-void MachineWhiteProcGTK(object, user_data)
+G_MODULE_EXPORT void MachineWhiteProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     MachineWhiteEvent();
 }
 
-void AnalyzeModeProcGTK(object, user_data)
+G_MODULE_EXPORT void AnalyzeModeProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -4092,7 +4092,7 @@ void AnalyzeModeProcGTK(object, user_data)
     AnalyzeModeEvent();
 }
 
-void AnalyzeFileProcGTK(object, user_data)
+G_MODULE_EXPORT void AnalyzeFileProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -4108,49 +4108,49 @@ void AnalyzeFileProcGTK(object, user_data)
     AnalysisPeriodicEvent(1);
 }
 
-void TwoMachinesProcGTK(object, user_data)
+G_MODULE_EXPORT void TwoMachinesProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     TwoMachinesEvent();
 }
 
-void MatchProcGTK(object, user_data)
+G_MODULE_EXPORT void MatchProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     MatchEvent(2);
 }
 
-void IcsClientProcGTK(object, user_data)
+G_MODULE_EXPORT void IcsClientProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     IcsClientEvent();
 }
 
-void EditGameProcGTK(object, user_data)
+G_MODULE_EXPORT void EditGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     EditGameEvent();
 }
 
-void EditPositionProcGTK(object, user_data)
+G_MODULE_EXPORT void EditPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     EditPositionEvent();
 }
 
-void TrainingProcGTK(object, user_data)
+G_MODULE_EXPORT void TrainingProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     TrainingEvent();
 }
 
-void EditCommentProcGTK(object, user_data)
+G_MODULE_EXPORT void EditCommentProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {    
@@ -4162,175 +4162,175 @@ void EditCommentProcGTK(object, user_data)
     }
 }
 
-void IcsInputBoxProcGTK(object, user_data)
+G_MODULE_EXPORT void IcsInputBoxProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     if (!PopDown(4)) ICSInputBoxPopUp();
 }
 
-void AcceptProcGTK(object, user_data)
+G_MODULE_EXPORT void AcceptProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     AcceptEvent();
 }
 
-void DeclineProcGTK(object, user_data)
+G_MODULE_EXPORT void DeclineProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     DeclineEvent();
 }
 
-void RematchProcGTK(object, user_data)
+G_MODULE_EXPORT void RematchProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     RematchEvent();
 }
 
-void CallFlagProcGTK(object, user_data)
+G_MODULE_EXPORT void CallFlagProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     CallFlagEvent();
 }
 
-void DrawProcGTK(object, user_data)
+G_MODULE_EXPORT void DrawProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     DrawEvent();
 }
 
-void AbortProcGTK(object, user_data)
+G_MODULE_EXPORT void AbortProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     AbortEvent();
 }
 
-void AdjournProcGTK(object, user_data)
+G_MODULE_EXPORT void AdjournProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     AdjournEvent();
 }
 
-void ResignProcGTK(object, user_data)
+G_MODULE_EXPORT void ResignProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     ResignEvent();
 }
 
-void AdjuWhiteProcGTK(object, user_data)
+G_MODULE_EXPORT void AdjuWhiteProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     UserAdjudicationEvent(+1);
 }
 
-void AdjuBlackProcGTK(object, user_data)
+G_MODULE_EXPORT void AdjuBlackProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     UserAdjudicationEvent(-1);
 }
 
-void AdjuDrawProcGTK(object, user_data)
+G_MODULE_EXPORT void AdjuDrawProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     UserAdjudicationEvent(0);
 }
 
-void StopObservingProcGTK(object, user_data)
+G_MODULE_EXPORT void StopObservingProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     StopObservingEvent();
 }
 
-void StopExaminingProcGTK(object, user_data)
+G_MODULE_EXPORT void StopExaminingProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     StopExaminingEvent();
 }
 
-void UploadProcGTK(object, user_data)
+G_MODULE_EXPORT void UploadProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     UploadGameEvent();
 }
 
-void ForwardProcGTK(object, user_data)
+G_MODULE_EXPORT void ForwardProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     ForwardEvent();
 }
 
-void BackwardProcGTK(object, user_data)
+G_MODULE_EXPORT void BackwardProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     BackwardEvent();
 }
 
-void ToStartProcGTK(object, user_data)
+G_MODULE_EXPORT void ToStartProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     ToStartEvent();
 }
 
-void ToEndProcGTK(object, user_data)
+G_MODULE_EXPORT void ToEndProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     ToEndEvent();
 }
 
-void RevertProcGTK(object, user_data)
+G_MODULE_EXPORT void RevertProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     RevertEvent(False);
 }
 
-void AnnotateProcGTK(object, user_data)
+G_MODULE_EXPORT void AnnotateProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     RevertEvent(True);
 }
 
-void TruncateGameProcGTK(object, user_data)
+G_MODULE_EXPORT void TruncateGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     TruncateGameEvent();
 }
 
-void RetractMoveProcGTK(object, user_data)
+G_MODULE_EXPORT void RetractMoveProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     RetractMoveEvent();
 }
 
-void MoveNowProcGTK(object, user_data)
+G_MODULE_EXPORT void MoveNowProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     MoveNowEvent();
 }
 
-void FlipViewProcGTK(object, user_data)
+G_MODULE_EXPORT void FlipViewProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -4338,7 +4338,7 @@ void FlipViewProcGTK(object, user_data)
     DrawPosition(True, NULL);
 }
 /*
-void PonderNextMoveProc(w, event, prms, nprms)
+G_MODULE_EXPORT void PonderNextMoveProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
      String *prms;
@@ -4347,21 +4347,21 @@ void PonderNextMoveProc(w, event, prms, nprms)
     PonderNextMoveEvent(!appData.ponderNextMove);
 }
 */
-void SaveOnExitProcGTK(object, user_data)
+G_MODULE_EXPORT void SaveOnExitProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     saveSettingsOnExit = !saveSettingsOnExit;
 }
 
-void SaveSettingsProcGTK(object, user_data)
+G_MODULE_EXPORT void SaveSettingsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     SaveSettings(settingsFileName);
 }
 
-void InfoProcGTK(object, user_data)
+G_MODULE_EXPORT void InfoProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -4371,7 +4371,7 @@ void InfoProcGTK(object, user_data)
     system(buf);
 }
 
-void ManProcGTK(object, user_data)
+G_MODULE_EXPORT void ManProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -4383,21 +4383,21 @@ void ManProcGTK(object, user_data)
     system(buf);
 }
 
-void HintProcGTK(object, user_data)
+G_MODULE_EXPORT void HintProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     HintEvent();
 }
 
-void BookProcGTK(object, user_data)
+G_MODULE_EXPORT void BookProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     BookEvent();
 }
 
-void AboutProcGTK(object, user_data)
+G_MODULE_EXPORT void AboutProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {

@@ -1214,14 +1214,14 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     return 1;
 }
 
-void IcsOptionsProcGTK(object, user_data)
+G_MODULE_EXPORT void IcsOptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     GenericPopUp(icsOptions, _("ICS Options"), 0);
 }
 
-void LoadOptionsProcGTK(object, user_data)
+G_MODULE_EXPORT void LoadOptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1229,14 +1229,14 @@ void LoadOptionsProcGTK(object, user_data)
     GenericPopUp(loadOptions, _("Load Game Options"), 0);
 }
 
-void SaveOptionsProcGTK(object, user_data)
+G_MODULE_EXPORT void SaveOptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     GenericPopUp(saveOptions, _("Save Game Options"), 0);
 }
 
-void SoundOptionsProcGTK(object, user_data)
+G_MODULE_EXPORT void SoundOptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1244,21 +1244,21 @@ void SoundOptionsProcGTK(object, user_data)
    GenericPopUp(soundOptions, _("Sound Options"), 0);
 }
 
-void BoardOptionsProcGTK(object, user_data)
+G_MODULE_EXPORT void BoardOptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     GenericPopUp(boardOptions, _("Board Options"), 0);
 }
 
-void EngineMenuProcGTK(object, user_data)
+G_MODULE_EXPORT void EngineMenuProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
 }
 
-void UciMenuProcGTK(object, user_data)
+G_MODULE_EXPORT void UciMenuProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1267,14 +1267,14 @@ void UciMenuProcGTK(object, user_data)
    GenericPopUp(commonEngineOptions, _("Common Engine Settings"), 0);
 }
 
-void NewVariantProcGTK(object, user_data)
+G_MODULE_EXPORT void NewVariantProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     GenericPopUp(variantDescriptors, _("New Variant"), 0);
 }
 
-void OptionsProcGTK(object, user_data)
+G_MODULE_EXPORT void OptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1282,7 +1282,7 @@ void OptionsProcGTK(object, user_data)
    GenericPopUp(generalOptions, _("General Options"), 0);   
 }
 
-void MatchOptionsProcGTK(object, user_data)
+G_MODULE_EXPORT void MatchOptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1336,7 +1336,7 @@ void SendText(int n)
     }
 }
 
-void IcsTextProcGTK(object, user_data)
+G_MODULE_EXPORT void IcsTextProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1698,14 +1698,14 @@ SettingsPopUp(ChessProgramState *cps)
    GenericPopUp(cps->option, _("Engine Settings"), 0);
 }
 
-void FirstSettingsProcGTK(object, user_data)
+G_MODULE_EXPORT void FirstSettingsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     SettingsPopUp(&first);
 }
 
-void SecondSettingsProcGTK(object, user_data)
+G_MODULE_EXPORT void SecondSettingsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1737,7 +1737,7 @@ Option installOptions[] = {
 {   0,  1,    0, NULL, (void*) &InstallOK, "", NULL, EndMark , "" }
 };
 
-void LoadEngineProcGTK(object, user_data)
+G_MODULE_EXPORT void LoadEngineProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1751,7 +1751,7 @@ void LoadEngineProcGTK(object, user_data)
    GenericPopUp(installOptions, _("Load engine"), 0);
 }
 
-void EditBookProcGTK(object, user_data)
+G_MODULE_EXPORT void EditBookProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1782,7 +1782,7 @@ void SetRandom(int n)
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(shuffleOptions[0].handle), True);
 }
 
-void ShuffleMenuProcGTK(object, user_data)
+G_MODULE_EXPORT void ShuffleMenuProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -1870,7 +1870,7 @@ void SetTcType(int n)
     }
 }
 
-void TimeControlProcGTK(object, user_data)
+G_MODULE_EXPORT void TimeControlProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {

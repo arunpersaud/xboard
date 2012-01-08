@@ -243,7 +243,7 @@ GameListDestroy()
   return;
 }
 
-void ShowGameListProcGTK(object, user_data)
+G_MODULE_EXPORT void ShowGameListProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -630,7 +630,7 @@ GameListOptionsCreate()
 }
 */
 
-void GameListOptionsPopUpGTK(object, user_data)
+G_MODULE_EXPORT void GameListOptionsPopUpGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {

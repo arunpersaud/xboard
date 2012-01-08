@@ -178,7 +178,7 @@ void HistoryPopUp()
     SetCheckMenuItemActive(NULL, 7, True); // set GTK menu item to checked     
 }
 
-void HistoryShowProcGTK(object, user_data)
+G_MODULE_EXPORT void HistoryShowProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {

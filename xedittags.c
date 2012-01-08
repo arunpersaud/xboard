@@ -60,7 +60,7 @@ void TagsPopDown()
     bookUp = False;
 }
 
-void EditTagsProcGTK(object, user_data)
+G_MODULE_EXPORT void EditTagsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {

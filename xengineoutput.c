@@ -454,7 +454,7 @@ int EngineOutputDialogExists()
     return engineOutputShellGTK != NULL;
 }
 
-void EngineOutputProcGTK(object, user_data)
+G_MODULE_EXPORT void EngineOutputProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
