@@ -32,6 +32,12 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 SUBDIRS = po
 xboard_LDADD = -lm @LIBINTL@ @GTK_LIBS@
 
+if WIN32
+  AM_CFLAGS = -mms-bitfields
+  AM_LDFLAGS = -Wl,-subsystem,windows
+  xboard_LDADD += -lws2_32 -lwinmm
+endif
+
 svgdir = $(datadir)/games/xboard/svg
 svg_DATA = svg/icon_white.svg svg/icon_black.svg \
            svg/DarkSquare.svg svg/LightSquare.svg svg/NeutralSquare.svg \

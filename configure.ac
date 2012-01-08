@@ -113,6 +113,13 @@ dnl | test if user wants ot use Xaw3d or Xaw
 
 AC_CANONICAL_HOST
 
+case "${host}" in
+  i[[3456789]]86-mingw32*) WIN32="yes" ;;
+  *cygwin*) WIN32="yes" ;;
+  *) WIN32="no" ;;
+esac
+AM_CONDITIONAL([WIN32], test "$WIN32" = "yes")
+
 dnl| The following info is mostly gathered from GNU Emacs 19.24.  Basically,
 dnl| we are trying to find out whether this is a System-V derivative in
 dnl| which pipes don't work with select() and if so, whether there is anything
