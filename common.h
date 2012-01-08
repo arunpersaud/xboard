@@ -65,6 +65,15 @@ typedef void *VOIDSTAR;
 typedef char *VOIDSTAR;
 #endif
 
+// True/False were defined in <X11/Xlib.h> (now removed)
+#define True 1
+#define False 0
+
+// These typedefs were defined in <X11/Intrinsic.h> (now removed)
+typedef unsigned short	Dimension;  /* Size in pixels			*/
+typedef short		Position;   /* Offset from 0 coordinate		*/
+typedef unsigned long	Pixel;	    /* Index into colormap		*/
+
 #ifdef WIN32
 typedef char Boolean;
 typedef char *String;
@@ -81,16 +90,8 @@ int pclose(FILE *);
 #endif
 
 #else
-//#include <X11/Intrinsic.h>
-// These typedefs were defined in <X11/Intrinsic.h> (now removed)
 typedef char		Boolean;
-typedef unsigned short	Dimension;  /* Size in pixels			*/
 typedef char *String;
-typedef short		Position;   /* Offset from 0 coordinate		*/
-typedef unsigned long	Pixel;	    /* Index into colormap		*/
-// True/False were defined in <X11/Xlib.h> (now removed)
-#define True 1
-#define False 0
 
 #endif
 #endif
