@@ -1139,15 +1139,6 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
                  0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 #endif
     ShowWindow(hwndConsole, nCmdShow);
-    if(appData.chatBoxes) { // [HGM] chat: open chat boxes
-      char buf[MSG_SIZ], *p = buf, *q;
-	safeStrCpy(buf, appData.chatBoxes, sizeof(buf)/sizeof(buf[0]) );
-      do {
-	q = strchr(p, ';');
-	if(q) *q++ = 0;
-	if(*p) ChatPopUp(p);
-      } while(p=q);
-    }
     SetActiveWindow(hwndConsole);
   }
   if(!appData.noGUI)   UpdateWindow(hwnd);  else ShowWindow(hwnd, SW_MINIMIZE);
@@ -8554,6 +8545,16 @@ DisplayIcsInteractionTitle(char *str)
 
     snprintf(consoleTitle, MSG_SIZ, "%s: %s", szConsoleTitle, str);
   SetWindowText(hwndConsole, consoleTitle);
+
+    if(appData.chatBoxes) { // [HGM] chat: open chat boxes
+      char buf[MSG_SIZ], *p = buf, *q;
+	safeStrCpy(buf, appData.chatBoxes, sizeof(buf)/sizeof(buf[0]) );
+      do {
+	q = strchr(p, ';');
+	if(q) *q++ = 0;
+	if(*p) ChatPopUp(p);
+      } while(p=q);
+    }
 }
 
 void
