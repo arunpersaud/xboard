@@ -3524,7 +3524,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 	    if (looking_at(buf, &i, "% ") ||
 		((started == STARTED_MOVES || started == STARTED_MOVES_NOHIDE)
 		 && looking_at(buf, &i, "}*"))) { char *bookHit = NULL; // [HGM] book
-		if(ics_type == ICS_ICC && soughtPending) { // [HGM] seekgraph: on ICC sought-list has no termination line
+		if(soughtPending) { // [HGM] seekgraph: on ICC sought-list has no termination line
 		    soughtPending = FALSE;
 		    seekGraphUp = TRUE;
 		    DrawSeekGraph();
