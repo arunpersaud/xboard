@@ -1485,6 +1485,7 @@ BEGIN
     "T",            IDM_TwoMachines,        VIRTKEY, CONTROL, NOINVERT
     "E",            IDM_EditGame,           VIRTKEY, CONTROL, NOINVERT
     "E",            IDM_EditPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "D",            IDM_Debug,              VIRTKEY, CONTROL, NOINVERT
     "G",            IDM_AnalyzeFile,        VIRTKEY, CONTROL, NOINVERT
     "M",            IDM_MoveNow,            VIRTKEY, CONTROL, NOINVERT
     "X",            IDM_RetractMove,        VIRTKEY, CONTROL, NOINVERT
