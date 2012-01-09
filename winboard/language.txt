@@ -460,6 +460,9 @@ BOARD OPTIONS
 "Monochrome" === ""
 "All White" === ""
 "Flip Black" === ""
+"Use Board Textures" === ""
+"Use Piece Font" === ""
+"Suppress Grid" === ""
 "Size" === ""
 
 BOARD SIZES (translate as number?)

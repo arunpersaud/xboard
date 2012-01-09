@@ -625,6 +625,7 @@
 #define OPT_SamplePieceFont             1979
 #define OPT_ChoosePieceFont             1980
 #define OPT_GameListFind                1981
+#define OPT_Grid                        1983
 
 
 // Next default values for new objects

@@ -302,7 +302,7 @@ int dialogItems[][41	] = {
   OPT_ChooseLightSquareColor, OPT_ChooseDarkSquareColor, OPT_ChooseWhitePieceColor,
   OPT_ChooseBlackPieceColor, OPT_ChooseHighlightSquareColor, OPT_ChoosePremoveHighlightColor,
   OPT_Monochrome, OPT_AllWhite, OPT_UpsideDown, OPT_DefaultBoardColors, GPB_Colors,
-  IDC_Light, IDC_Dark, IDC_White, IDC_Black, IDC_High, IDC_PreHigh, GPB_Size, OPT_Bitmaps, OPT_PieceFont }, 
+  IDC_Light, IDC_Dark, IDC_White, IDC_Black, IDC_High, IDC_PreHigh, GPB_Size, OPT_Bitmaps, OPT_PieceFont, OPT_Grid }, 
 { DLG_NewVariant, IDOK, IDCANCEL, OPT_VariantNormal, OPT_VariantFRC, OPT_VariantWildcastle,
   OPT_VariantNocastle, OPT_VariantLosers, OPT_VariantGiveaway, OPT_VariantSuicide,
   OPT_Variant3Check, OPT_VariantTwoKings, OPT_VariantAtomic, OPT_VariantCrazyhouse,
