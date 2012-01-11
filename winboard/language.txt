@@ -954,6 +954,10 @@ backend.c
 "No response from ICS" === ""
 "You cannot do this while you are playing or observing" === ""
 "Click in holdings to choose piece" === ""
+"failed writing PV" === ""
+"Bad Seek" === ""
+"%s (%d reversible plies)" === ""
+"Reading game file (%d)" === ""
 
 END-OF-GAME MESSAGES (should they be translated?)
 ## I think that only for visualization and not for PGN, as PGN files are shared all around the world
