@@ -11218,7 +11218,7 @@ PackGame (Board board)
     if(movePtr > dataSize) {
 	if(appData.debugMode) fprintf(debugFP, "move-cache overflow, enlarge to %d MB\n", dataSize/128);
 	dataSize *= 8; // increase size by factor 8 (512KB -> 4MB -> 32MB -> 256MB -> 2GB)
-	if(dataSize) newSpace = (Move*) calloc(8*dataSize + 1000, sizeof(Move));
+	if(dataSize) newSpace = (Move*) calloc(dataSize + 1000, sizeof(Move));
 	if(newSpace) {
 	    int i;
 	    Move *p = moveDatabase, *q = newSpace;
