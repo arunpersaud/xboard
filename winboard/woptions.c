@@ -2716,7 +2716,7 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
     Translate(hDlg, DLG_TimeControl);
     /* Initialize the dialog items */
-    if (appData.clockMode && !appData.icsActive) {
+    if (/*appData.clockMode &&*/ !appData.icsActive) { // [HGM] even if !clockMode, we could want to set it in tournament dialog
       if (searchTime) {
 	CheckRadioButton(hDlg, OPT_TCUseMoves, OPT_TCUseFixed,
 			 OPT_TCUseFixed);
