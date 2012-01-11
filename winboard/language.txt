@@ -956,6 +956,7 @@ backend.c
 "Click in holdings to choose piece" === ""
 "failed writing PV" === ""
 "Bad Seek" === ""
+"vs." === ""
 "%s (%d reversible plies)" === ""
 "Reading game file (%d)" === ""
 

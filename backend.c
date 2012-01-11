@@ -3601,8 +3601,8 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			flipView = appData.flipView;
 			DrawPosition(TRUE, boards[currentMove]);
 			DisplayBothClocks();
-			snprintf(str, MSG_SIZ, _("%s vs. %s"),
-				gameInfo.white, gameInfo.black);
+			snprintf(str, MSG_SIZ, "%s %s %s",
+				gameInfo.white, _("vs."),  gameInfo.black);
 			DisplayTitle(str);
 			gameMode = IcsIdle;
 		    } else {
@@ -4019,8 +4019,8 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			    snprintf(str, MSG_SIZ, "[%s-%s] %s-%s", wh, bh,
 				    gameInfo.white, gameInfo.black);
 			} else {
-			  snprintf(str, MSG_SIZ, _("%s [%s] vs. %s [%s]"),
-				    gameInfo.white, white_holding,
+			  snprintf(str, MSG_SIZ, "%s [%s] %s %s [%s]",
+				    gameInfo.white, white_holding, _("vs."),
 				    gameInfo.black, black_holding);
 			}
 			if(!partnerUp) // [HGM] bughouse: when peeking at partner game we already know what he captured...
@@ -4750,12 +4750,12 @@ ParseBoard12 (char *string)
 		    basetime, increment, (int) gameInfo.variant);
 	} else {
 	    if(gameInfo.variant == VariantNormal)
-	      snprintf(str, MSG_SIZ, _("%s (%d) vs. %s (%d) {%d %d}"),
-		    gameInfo.white, white_stren, gameInfo.black, black_stren,
+	      snprintf(str, MSG_SIZ, "%s (%d) %s %s (%d) {%d %d}",
+		    gameInfo.white, white_stren, _("vs."), gameInfo.black, black_stren,
 		    basetime, increment);
 	    else
-	      snprintf(str, MSG_SIZ, _("%s (%d) vs. %s (%d) {%d %d %s}"),
-		    gameInfo.white, white_stren, gameInfo.black, black_stren,
+	      snprintf(str, MSG_SIZ, "%s (%d) %s %s (%d) {%d %d %s}",
+		    gameInfo.white, white_stren, _("vs."), gameInfo.black, black_stren,
 		    basetime, increment, VariantName(gameInfo.variant));
 	}
 	DisplayTitle(str);
@@ -6625,7 +6625,7 @@ FinishMove (ChessMove moveType, int fromX, int fromY, int toX, int toY, int prom
       gameMode = MachinePlaysBlack;
       StartClocks();
       SetGameInfo();
-      snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
+      snprintf(buf, MSG_SIZ, "%s %s %s", gameInfo.white, _("vs."), gameInfo.black);
       DisplayTitle(buf);
       if (first.sendName) {
 	snprintf(buf, MSG_SIZ,"name %s\n", gameInfo.white);
@@ -11529,7 +11529,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
     yynewfile(f);
 
     if (lg && lg->gameInfo.white && lg->gameInfo.black) {
-      snprintf(buf, sizeof(buf), _("%s vs. %s"), lg->gameInfo.white,
+      snprintf(buf, sizeof(buf), "%s %s %s", lg->gameInfo.white, _("vs."),
 		lg->gameInfo.black);
 	    DisplayTitle(buf);
     } else if (*title != NULLCHAR) {
@@ -13122,7 +13122,7 @@ MachineWhiteEvent ()
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
-    snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
+    snprintf(buf, MSG_SIZ, "%s %s %s", gameInfo.white, _("vs."), gameInfo.black);
     DisplayTitle(buf);
     if (first.sendName) {
       snprintf(buf, MSG_SIZ, "name %s\n", gameInfo.black);
@@ -13199,7 +13199,7 @@ MachineBlackEvent ()
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
-    snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
+    snprintf(buf, MSG_SIZ, "%s %s %s", gameInfo.white, _("vs."), gameInfo.black);
     DisplayTitle(buf);
     if (first.sendName) {
       snprintf(buf, MSG_SIZ, "name %s\n", gameInfo.white);
@@ -13244,24 +13244,24 @@ DisplayTwoMachinesTitle ()
     char buf[MSG_SIZ];
     if (appData.matchGames > 0) {
         if(appData.tourneyFile[0]) {
-	  snprintf(buf, MSG_SIZ, _("%s vs. %s (%d/%d%s)"),
-		   gameInfo.white, gameInfo.black,
+	  snprintf(buf, MSG_SIZ, "%s %s %s (%d/%d%s)",
+		   gameInfo.white, _("vs."), gameInfo.black,
 		   nextGame+1, appData.matchGames+1,
 		   appData.tourneyType>0 ? "gt" : appData.tourneyType<0 ? "sw" : "rr");
         } else 
         if (first.twoMachinesColor[0] == 'w') {
-	  snprintf(buf, MSG_SIZ, _("%s vs. %s (%d-%d-%d)"),
-		   gameInfo.white, gameInfo.black,
+	  snprintf(buf, MSG_SIZ, "%s %s %s (%d-%d-%d)",
+		   gameInfo.white, _("vs."),  gameInfo.black,
 		   first.matchWins, second.matchWins,
 		   matchGame - 1 - (first.matchWins + second.matchWins));
 	} else {
-	  snprintf(buf, MSG_SIZ, _("%s vs. %s (%d-%d-%d)"),
-		   gameInfo.white, gameInfo.black,
+	  snprintf(buf, MSG_SIZ, "%s %s %s (%d-%d-%d)",
+		   gameInfo.white, _("vs."), gameInfo.black,
 		   second.matchWins, first.matchWins,
 		   matchGame - 1 - (first.matchWins + second.matchWins));
 	}
     } else {
-      snprintf(buf, MSG_SIZ, _("%s vs. %s"), gameInfo.white, gameInfo.black);
+      snprintf(buf, MSG_SIZ, "%s %s %s", gameInfo.white, _("vs."), gameInfo.black);
     }
     DisplayTitle(buf);
 }
