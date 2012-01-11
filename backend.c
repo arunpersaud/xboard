@@ -15366,7 +15366,7 @@ ParseFeatures (char *args, ChessProgramState *cps)
       continue;
     }
     if (BoolFeature(&p, "analyze", &cps->analysisSupport, cps)) continue;
-    if (StringFeature(&p, "myname", &cps->tidy, cps)) {
+    if (StringFeature(&p, "myname", cps->tidy, cps)) {
       if (gameMode == TwoMachinesPlay) {
 	DisplayTwoMachinesTitle();
       } else {
@@ -15374,7 +15374,7 @@ ParseFeatures (char *args, ChessProgramState *cps)
       }
       continue;
     }
-    if (StringFeature(&p, "variants", &cps->variants, cps)) continue;
+    if (StringFeature(&p, "variants", cps->variants, cps)) continue;
     if (BoolFeature(&p, "san", &cps->useSAN, cps)) continue;
     if (BoolFeature(&p, "ping", &cps->usePing, cps)) continue;
     if (BoolFeature(&p, "playother", &cps->usePlayother, cps)) continue;
@@ -15398,8 +15398,8 @@ ParseFeatures (char *args, ChessProgramState *cps)
     if (IntFeature(&p, "level", &cps->maxNrOfSessions, cps)) continue;
     if (BoolFeature(&p, "memory", &cps->memSize, cps)) continue;
     if (BoolFeature(&p, "smp", &cps->maxCores, cps)) continue;
-    if (StringFeature(&p, "egt", &cps->egtFormats, cps)) continue;
-    if (StringFeature(&p, "option", &(cps->option[cps->nrOptions].name), cps)) {
+    if (StringFeature(&p, "egt", cps->egtFormats, cps)) continue;
+    if (StringFeature(&p, "option", cps->option[cps->nrOptions].name, cps)) {
 	if(!ParseOption(&(cps->option[cps->nrOptions++]), cps)) { // [HGM] options: add option feature
 	  snprintf(buf, MSG_SIZ, "rejected option %s\n", cps->option[--cps->nrOptions].name);
 	    SendToProgram(buf, cps);
