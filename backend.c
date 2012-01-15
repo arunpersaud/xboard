@@ -2929,6 +2929,9 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			    OutputKibitz(suppressKibitz, parse);
 			} else {
 			    char tmp[MSG_SIZ];
+			    if(gameMode == IcsObserving) // restore original ICS messages
+			      snprintf(tmp, MSG_SIZ, "%s kibitzes: %s", star_match[0], parse);
+			    else
 			    snprintf(tmp, MSG_SIZ, _("your opponent kibitzes: %s"), parse);
 			    SendToPlayer(tmp, strlen(tmp));
 			}
