@@ -3065,7 +3065,8 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 	    if (appData.autoKibitz && started == STARTED_NONE &&
                 !appData.icsEngineAnalyze &&                     // [HGM] [DM] ICS analyze
 		(gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack || gameMode == IcsObserving)) {
-		if((looking_at(buf, &i, "* kibitzes: ") || looking_at(buf, &i, "* whispers: ")) &&
+		if((looking_at(buf, &i, "\n* kibitzes: ") || looking_at(buf, &i, "\n* whispers: ") ||
+		    looking_at(buf, &i, "* kibitzes: ") || looking_at(buf, &i, "* whispers: ")) &&
 		   (StrStr(star_match[0], gameInfo.white) == star_match[0] ||
 		    StrStr(star_match[0], gameInfo.black) == star_match[0]   )) { // kibitz of self or opponent
 		    	suppressKibitz = TRUE;
