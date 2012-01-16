@@ -2582,6 +2582,7 @@ int
 SeekGraphClick (ClickType click, int x, int y, int moving)
 {
     static int lastDown = 0, displayed = 0, lastSecond;
+    if(y < 0) return FALSE;
     if(!seekGraphUp) { // initiate cration of seek graph by requesting seek-ad list
 	if(click == Release || moving) return FALSE;
 	nrOfSeekAds = 0;
@@ -14161,6 +14162,7 @@ ForwardInner (int target)
     if (gameMode == EditPosition)
       return;
 
+    seekGraphUp = FALSE;
     MarkTargetSquares(1);
 
     if (gameMode == PlayFromGameFile && !pausing)
@@ -14267,6 +14269,7 @@ BackwardInner (int target)
 		target, currentMove, forwardMostMove);
 
     if (gameMode == EditPosition) return;
+    seekGraphUp = FALSE;
     MarkTargetSquares(1);
     if (currentMove <= backwardMostMove) {
 	ClearHighlights();
