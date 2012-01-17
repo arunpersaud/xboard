@@ -8544,7 +8544,7 @@ DisplayIcsInteractionTitle(char *str)
   char consoleTitle[MSG_SIZ];
 
     snprintf(consoleTitle, MSG_SIZ, "%s: %s", szConsoleTitle, str);
-  SetWindowText(hwndConsole, consoleTitle);
+    SetWindowText(hwndConsole, consoleTitle);
 
     if(appData.chatBoxes) { // [HGM] chat: open chat boxes
       char buf[MSG_SIZ], *p = buf, *q;
@@ -8555,6 +8555,8 @@ DisplayIcsInteractionTitle(char *str)
 	if(*p) ChatPopUp(p);
       } while(p=q);
     }
+
+    SetActiveWindow(hwndMain);
 }
 
 void
