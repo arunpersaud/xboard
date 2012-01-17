@@ -880,6 +880,7 @@ Load (ChessProgramState *cps, int i)
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
 	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
+	appData.firstProtocolVersion = PROTOVER;
 	ParseArgsFromString(buf);
 	SwapEngines(i);
 	ReplaceEngine(cps, i);
@@ -9911,7 +9912,7 @@ SetPlayer (int player)
     if(mnemonic[i]) {
 	snprintf(buf, MSG_SIZ, "-fcp %s", command[i]);
 	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
-	appData.firstHasOwnBookUCI = !appData.defNoBook;
+	appData.firstHasOwnBookUCI = !appData.defNoBook; appData.protocolVersion[0] = PROTOVER;
 	ParseArgsFromString(buf);
     }
     free(engineName);
