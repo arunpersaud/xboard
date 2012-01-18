@@ -1397,9 +1397,13 @@ ReserveGame (int gameNr, char resChar)
     free(p); appData.results = q;
     if(nextGame <= appData.matchGames && resChar != ' ' && !abortMatch &&
        (gameNr < 0 || nextGame / appData.defaultMatchGames != gameNr / appData.defaultMatchGames)) {
+      int round = appData.defaultMatchGames * appData.tourneyType;
+      if(gameNr < 0 || appData.tourneyType < 1 ||  // gauntlet engine can always stay loaded as first engine
+	 appData.tourneyType > 1 && nextGame/round != gameNr/round) // in multi-gauntlet change only after round
 	UnloadEngine(&first);  // next game belongs to other pairing;
 	UnloadEngine(&second); // already unload the engines, so TwoMachinesEvent will load new ones.
     }
+    if(appData.debugMode) fprintf(debugFP, "Reserved, next=%d, nr=%d, procs=(%x,%x)\n", nextGame, gameNr, first.pr, second.pr);
 }
 
 void
@@ -9954,6 +9958,9 @@ Pairing (int nr, int nPlayers, int *whitePlayer, int *blackPlayer, int *syncInte
 	    *blackPlayer = curRound + (nPlayers-1)/2 - curPairing;
 	    if(*blackPlayer >= nPlayers-1+(nPlayers&1)) *blackPlayer -= nPlayers-1+(nPlayers&1);
 	}
+    } else if(appData.tourneyType > 1) {
+	*blackPlayer = curPairing; // in multi-gauntlet, assign gauntlet engines to second, so first an be kept loaded during round
+	*whitePlayer = curRound + appData.tourneyType;
     } else if(appData.tourneyType > 0) {
 	*whitePlayer = curPairing;
 	*blackPlayer = curRound + appData.tourneyType;
@@ -10015,16 +10022,20 @@ NextTourneyGame (int nr, int *swapColors)
 	matchGame = 1; roundNr = nr / syncInterval + 1;
     }
 
-    if(first.pr != NoProc || second.pr != NoProc) return 1; // engines already loaded
+    if(first.pr != NoProc && second.pr != NoProc) return 1; // engines already loaded
 
     // redefine engines, engine dir, etc.
     NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
-    SetPlayer(whitePlayer); // find white player amongst it, and parse its engine line
-    SwapEngines(1);
-    SetPlayer(blackPlayer); // find black player amongst it, and parse its engine line
-    SwapEngines(1);         // and make that valid for second engine by swapping
-    InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.
-    InitEngine(&second, 1);
+    if(first.pr == NoProc || nr < 0) {
+      SetPlayer(whitePlayer); // find white player amongst it, and parse its engine line
+      InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.
+    }
+    if(second.pr == NoProc) {
+      SwapEngines(1);
+      SetPlayer(blackPlayer); // find black player amongst it, and parse its engine line
+      SwapEngines(1);         // and make that valid for second engine by swapping
+      InitEngine(&second, 1);
+    }
     CommonEngineInit();     // after this TwoMachinesEvent will create correct engine processes
     UpdateLogos(FALSE);     // leave display to ModeHiglight()
     return 1;
