@@ -4213,6 +4213,8 @@ SetHighlights (int fromX, int fromY, int toX, int toY)
 	    drawHighlight(toX, toY, highlineGC);
 	}
     }
+    if(toX<0) // clearing the highlights must have damaged arrow
+	DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y); // for now, redraw it (should really be cleared!)
     hi1X = fromX;
     hi1Y = fromY;
     hi2X = toX;
@@ -8590,11 +8592,25 @@ DrawArrowBetweenPoints (int s_x, int s_y, int d_x, int d_y)
 //    Polygon( hdc, arrow, 7 );
 }
 
+void
+ArrowDamage (int s_col, int s_row, int d_col, int d_row)
+{
+    int hor, vert, i;
+    hor = 64*s_col + 32; vert = 64*s_row + 32;
+    for(i=0; i<= 64; i++) {
+            damage[0][vert+6>>6][hor+6>>6] = True;
+            damage[0][vert-6>>6][hor+6>>6] = True;
+            damage[0][vert+6>>6][hor-6>>6] = True;
+            damage[0][vert-6>>6][hor-6>>6] = True;
+            hor += d_col - s_col; vert += d_row - s_row;
+    }
+}
+
 /* [AS] Draw an arrow between two squares */
 void
 DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
 {
-    int s_x, s_y, d_x, d_y, hor, vert, i;
+    int s_x, s_y, d_x, d_y;
 
     if( s_col == d_col && s_row == d_row ) {
         return;
@@ -8631,15 +8647,7 @@ DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
     A_WIDTH = squareSize / 14.; //[HGM] make float
 
     DrawArrowBetweenPoints( s_x, s_y, d_x, d_y );
-
-    hor = 64*s_col + 32; vert = 64*s_row + 32;
-    for(i=0; i<= 64; i++) {
-            damage[0][vert+6>>6][hor+6>>6] = True;
-            damage[0][vert-6>>6][hor+6>>6] = True;
-            damage[0][vert+6>>6][hor-6>>6] = True;
-            damage[0][vert-6>>6][hor-6>>6] = True;
-            hor += d_col - s_col; vert += d_row - s_row;
-    }
+    ArrowDamage(s_col, s_row, d_col, d_row);
 }
 
 Boolean
