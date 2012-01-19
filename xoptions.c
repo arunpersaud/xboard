@@ -130,7 +130,7 @@ SetWidgetText (Option *opt, char *buf, int n)
     Arg arg;
     XtSetArg(arg, XtNstring, buf);
     XtSetValues(opt->handle, &arg, 1);
-    SetFocus(opt->handle, shells[n], NULL, False);
+    if(n >= 0) SetFocus(opt->handle, shells[n], NULL, False);
 }
 
 void
@@ -825,6 +825,50 @@ Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.pixmapDirectory, "", NULL, PathName, N_("Directory with Pixmap Pieces:") },
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
+
+void
+GenericUpdate (int selected)
+{
+    int i, j;
+    char buf[MSG_SIZ];
+    float x;
+	for(i=0; ; i++) {
+	    if(selected >= 0) { if(i < selected) continue; else if(i > selected) break; }
+	    switch(currentOption[i].type) {
+		case TextBox:
+		case FileName:
+		case PathName:
+		    SetWidgetText(&currentOption[i],  *(char**) currentOption[i].target, -1);
+		    break;
+		case Spin:
+		    sprintf(buf, "%d", *(int*) currentOption[i].target);
+		    SetWidgetText(&currentOption[i], buf, -1);
+		    break;
+		case Fractional:
+		    sprintf(buf, "%4.2f", *(float*) currentOption[i].target);
+		    SetWidgetText(&currentOption[i], buf, -1);
+		    break;
+		case CheckBox:
+		    SetWidgetState(&currentOption[i],  *(Boolean*) currentOption[i].target);
+		    break;
+		case ComboBox:
+		    for(j=0; currentOption[i].choice[j]; j++)
+			if(*(char**)currentOption[i].target && !strcmp(*(char**)currentOption[i].target, currentOption[i].choice[j])) break;
+		    values[i] = currentOption[i].value = j + (currentOption[i].choice[j] == NULL);
+		    // TODO: actually display this
+		    break;
+		case EndMark:
+		    return;
+	    default:
+		printf("GenericUpdate: unexpected case in switch.\n");
+		case Button:
+		case SaveButton:
+		case Label:
+		case Break:
+	      break;
+	    }
+	}
+}
 
 int
 GenericReadout (int selected)
