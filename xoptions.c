@@ -253,6 +253,7 @@ int MakeColors P((void));
 void CreateGCs P((int redo));
 void CreateAnyPieces P((void));
 int GenericReadout P((int selected));
+void GenericUpdate P((int selected));
 Widget shells[10];
 Widget marked[10];
 Boolean shellUp[10];
@@ -362,6 +363,21 @@ UpgradeParticipant ()
     Substitute(strdup(engineName), False);
 }
 
+void
+CloneTourney ()
+{
+    FILE *f;
+    char *name;
+    GetWidgetText(currentOption, &name);
+    if(name && name[0] && (f = fopen(name, "r")) ) {
+	char *saveSaveFile;
+	saveSaveFile = appData.saveGameFile; appData.saveGameFile = NULL; // this is a persistent option, protect from change
+	ParseArgsFromFile(f);
+	engineName = appData.participants; GenericUpdate(-1);
+	FREE(appData.saveGameFile); appData.saveGameFile = saveSaveFile;
+    } else DisplayError(_("First you must specify an existing tourney file to clone"), 0);
+}
+
 Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:") },
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round    (for concurrent playing of a single") },
@@ -382,6 +398,7 @@ Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &appData.defNoBook, "", NULL, CheckBox, N_("Disable own engine books by default") },
 { 0,  0,          0, NULL, (void*) &ReplaceParticipant, NULL, NULL, Button, N_("Replace Engine") },
 { 0,  1,          0, NULL, (void*) &UpgradeParticipant, NULL, NULL, Button, N_("Upgrade Engine") },
+{ 0,  1,          0, NULL, (void*) &CloneTourney, NULL, NULL, Button, N_("Clone Tourney") },
 { 0, 1, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 

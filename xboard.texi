@@ -1365,7 +1365,7 @@ XBoard’s intrinsic tournament manager support round-robins (type = 0),
 where each participant plays every other participant, and (multi-)gauntlets, 
 where one (or a few) so-called ‘gauntlet engines’ play an independent set of opponents. 
 In the latter case, you specify the number of gauntlet engines. 
-E.g. if you specified 10 engine, and tourney type = 2, 
+E.g. if you specified 10 engines, and tourney type = 2, 
 the first 2 engines each play the remaining 8. 
 A value of -1 instructs XBoard to play Swiss; for this to work an external
 pairing engine must be specified through the @code{pairingEngine} option.
@@ -1395,9 +1395,9 @@ File where the tournament games are saved
 @itemx Rewind Index after
 @cindex Game File with Opening Lines, Menu Item
 @cindex File with Start Positions, Menu Item
-@itemx Game Number, Menu Item
-@itemx Position Number, Menu Item
-@itemx Rewind Index after, Menu Item
+@cindex Game Number, Menu Item
+@cindex Position Number, Menu Item
+@cindex Rewind Index after, Menu Item
 These items optionally specify the file with move sequences or board positions the tourney 
 games should start from.
 The corresponding numbers specify the number of the game or position in the file.
@@ -1416,7 +1416,7 @@ Default: No game or position file will be used. The default index if such a file
 @cindex Replace Engine, Menu Item
 @cindex Upgrade Engine, Menu Item
 With these two buttons you can alter the participants of an already running tournament.
-After opening the Match Options dialog on an XBoard that iw playing fo the tourney,
+After opening the Match Options dialog on an XBoard that is playing for the tourney,
 you will see all the tourney parameters in the dialog fields.
 You can then replace the name of one engine by that of another
 by editing the @samp{participants} field.
@@ -1428,6 +1428,14 @@ be invalidated, and they will be replayed with the substitute engine.
 In this latter case the engine must not be playing when you do this,
 but otherwise there is no need to pause the tournament play
 for making a substitution.
+@itemx Clone Tourney
+@cindex CloneTourney, Menu Item
+Pressing this button after you have specified an existing tournament file
+will copy the contents of the latter to the dialog,
+and then puts the originally proposed name for the tourney file back.
+You can then run a tourney with the same parameters
+(possibly after changing the proposed name of the tourney file for the new tourney)
+by pressing 'OK'.
 
 @item Load Game Options
 @cindex Load Game Options, Menu Item
