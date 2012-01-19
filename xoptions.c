@@ -83,6 +83,7 @@ extern char *getenv();
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
 static Widget previous = NULL;
+extern Pixel timerBackgroundPixel;
 
 void
 SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
@@ -727,7 +728,7 @@ SetColor (char *colorName, Option *box)
 	    } else {
 		buttonColor = *(Pixel *) vTo.addr;
 	    }
-	} else buttonColor = (Pixel) 0;
+	} else buttonColor = timerBackgroundPixel;
 	XtSetArg(args[0], XtNbackground, buttonColor);;
 	XtSetValues(box->handle, args, 1);
 }
