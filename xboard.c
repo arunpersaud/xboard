@@ -1817,7 +1817,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     }
   }
 #if HAVE_LIBXPM
-  if(appData.monoMode == oldMono)
+  if(appData.monoMode != oldMono)
     CreateAnimVars();
 #endif
   oldMono = appData.monoMode;
