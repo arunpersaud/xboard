@@ -960,7 +960,7 @@ XtActionsRec boardActions[] = {
     { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
     { "ShowMoveListProc", HistoryShowProc},
-    { "EditTagsProc", EditCommentProc },
+    { "EditTagsProc", EditTagsProc },
     { "EditBookProc", EditBookProc },
     { "EditCommentProc", EditCommentProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
