@@ -756,6 +756,8 @@ extern WindowPlacement wpMoveHistory;
 extern WindowPlacement wpGameList;
 extern WindowPlacement wpTags;
 
+#define MAXENGINES 2000
+
 // [HGM] chat	
 #define MAX_CHAT 5
 extern int chatCount;

@@ -9762,7 +9762,6 @@ WriteTourneyFile (char *results, FILE *f)
     return f;
 }
 
-#define MAXENGINES 1000
 char *command[MAXENGINES], *mnemonic[MAXENGINES];
 
 void

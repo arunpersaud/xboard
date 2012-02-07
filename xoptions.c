@@ -311,7 +311,7 @@ char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params, *t
 Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
-char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
+char *engineList[MAXENGINES] = {" "}, *engineMnemonic[MAXENGINES] = {""};
 
 int
 AppendText (Option *opt, char *s)
