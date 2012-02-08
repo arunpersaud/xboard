@@ -873,6 +873,25 @@ static char resetOptions[] =
 	"-firstOptions \"\" -firstNPS -1 -fn \"\"";
 
 void
+FloatToFront(char **list, char *engineLine)
+{
+    char buf[MSG_SIZ], tidy[MSG_SIZ], *p = buf, *q, *r = buf;
+    int i=0;
+    if(appData.recentEngines <= 0) return;
+    TidyProgramName(engineLine, "localhost", tidy+1);
+    tidy[0] = buf[0] = '\n'; strcat(tidy, "\n");
+    strncpy(buf+1, *list, MSG_SIZ-50);
+    if(p = strstr(buf, tidy)) { // tidy name appears in list
+	q = strchr(++p, '\n'); if(q == NULL) return; // malformed, don't touch
+	while(*p++ = *++q); // squeeze out
+    }
+    strcat(tidy, buf+1); // put list behind tidy name
+    p = tidy + 1; while(q = strchr(p, '\n')) i++, r = p, p = q + 1; // count entries in new list
+    if(i > appData.recentEngines) *r = NULLCHAR; // if maximum rached, strip off last
+    ASSIGN(*list, tidy+1);
+}
+
+void
 Load (ChessProgramState *cps, int i)
 {
     char *p, *q, buf[MSG_SIZ], command[MSG_SIZ], buf2[MSG_SIZ];
@@ -884,6 +903,7 @@ Load (ChessProgramState *cps, int i)
 	ParseArgsFromString(buf);
 	SwapEngines(i);
 	ReplaceEngine(cps, i);
+	FloatToFront(&appData.recentEngineList, engineLine);
 	return;
     }
     p = engineName;
@@ -926,6 +946,7 @@ Load (ChessProgramState *cps, int i)
 	firstChessProgramNames = malloc(len = strlen(q) + strlen(buf) + 1);
 	snprintf(firstChessProgramNames, len, "%s%s", q, buf);
 	if(q) 	free(q);
+	FloatToFront(&appData.recentEngineList, buf);
     }
     ReplaceEngine(cps, i);
 }
@@ -1473,6 +1494,7 @@ InitBackEnd3 P((void))
 	free(programVersion);
 	programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
 	sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
+	FloatToFront(&appData.recentEngineList, appData.firstChessProgram);
     }
 
     if (appData.icsActive) {
@@ -9904,11 +9926,11 @@ SwapEngines (int n)
     SWAP(engOptions, p)
 }
 
-void
-SetPlayer (int player)
+int
+SetPlayer (int player, char *p)
 {   // [HGM] find the engine line of the partcipant given by number, and parse its options.
     int i;
-    char buf[MSG_SIZ], *engineName, *p = appData.participants;
+    char buf[MSG_SIZ], *engineName;
     for(i=0; i<player; i++) p = strchr(p, '\n') + 1;
     engineName = strdup(p); if(p = strchr(engineName, '\n')) *p = NULLCHAR;
     for(i=1; command[i]; i++) if(!strcmp(mnemonic[i], engineName)) break;
@@ -9919,6 +9941,23 @@ SetPlayer (int player)
 	ParseArgsFromString(buf);
     }
     free(engineName);
+    return i;
+}
+
+char *recentEngines;
+
+void
+RecentEngineEvent (int nr)
+{
+    int n;
+//    SwapEngines(1); // bump first to second
+//    ReplaceEngine(&second, 1); // and load it there
+    NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
+    n = SetPlayer(nr, recentEngines); // select new (using original menu order!)
+    if(mnemonic[n]) { // if somehow the engine with the selected nickname is no longer found in the list, we skip
+	ReplaceEngine(&first, 0);
+	FloatToFront(&appData.recentEngineList, command[n]);
+    }
 }
 
 int
@@ -10026,12 +10065,12 @@ NextTourneyGame (int nr, int *swapColors)
     // redefine engines, engine dir, etc.
     NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
     if(first.pr == NoProc || nr < 0) {
-      SetPlayer(whitePlayer); // find white player amongst it, and parse its engine line
+      SetPlayer(whitePlayer, appData.participants); // find white player amongst it, and parse its engine line
       InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.
     }
     if(second.pr == NoProc) {
       SwapEngines(1);
-      SetPlayer(blackPlayer); // find black player amongst it, and parse its engine line
+      SetPlayer(blackPlayer, appData.participants); // find black player amongst it, and parse its engine line
       SwapEngines(1);         // and make that valid for second engine by swapping
       InitEngine(&second, 1);
     }

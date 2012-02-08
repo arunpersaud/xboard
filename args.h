@@ -485,6 +485,8 @@ ArgDescriptor argDescriptors[] = {
   { "icsMenu", ArgString, (void *) &icsTextMenuString, TRUE, (ArgIniType) ICS_TEXT_MENU_DEFAULT },
   { "icsNames", ArgString, (void *) &icsNames, TRUE, (ArgIniType) ICS_NAMES },
   { "singleEngineList", ArgBoolean, (void *) &singleList, !XBOARD, (ArgIniType) FALSE },
+  { "recentEngines", ArgInt, (void *) &appData.recentEngines, TRUE, (ArgIniType) 6 },
+  { "recentEngineList", ArgString, (void *) &appData.recentEngineList, TRUE, (ArgIniType) "" },
   { "firstChessProgramNames", ArgString, (void *) &firstChessProgramNames,
     TRUE, (ArgIniType) FCP_NAMES },
   { "secondChessProgramNames", ArgString, (void *) &secondChessProgramNames,

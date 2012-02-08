@@ -670,6 +670,8 @@ typedef struct {
     Boolean scoreWhite;
     Boolean pvSAN[ENGINES];
 
+    int recentEngines;
+    char *recentEngineList;
     char *tourneyFile;
     char *defName;
     char *processes;

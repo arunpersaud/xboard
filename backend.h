@@ -208,6 +208,7 @@ void ExitAnalyzeMode P((void));
 void AnalyzeModeEvent P((void));
 void AnalyzeFileEvent P((void));
 void MatchEvent P((int mode));
+void RecentEngineEvent P((int nr));
 void TypeInEvent P((char first));
 void TypeInDoneEvent P((char *move));
 void InitPosition P((int redraw));
@@ -434,6 +435,7 @@ extern Boolean shuffleOpenings;
 extern ChessProgramStats programStats;
 extern int opponentKibitzes; // used by wengineo.c
 extern int errorExitStatus;
+extern char *recentEngines;
 void SettingsPopUp P((ChessProgramState *cps)); // [HGM] really in front-end, but CPS not known in frontend.h
 int WaitForEngine P((ChessProgramState *cps, DelayedEventCallback x));
 void Load P((ChessProgramState *cps, int n));

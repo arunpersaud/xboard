@@ -492,6 +492,29 @@ TranslateMenus(int addLanguage)
 
 #endif
 
+#define IDM_RecentEngines 3000
+
+void
+RecentEngineMenu (char *s)
+{
+    if(appData.recentEngines > 0 && *s) { // feature is on, and list non-empty
+	HMENU mainMenu = GetMenu(hwndMain);
+	HMENU subMenu = GetSubMenu(mainMenu, 5); // Engine menu
+	int i=IDM_RecentEngines;
+	recentEngines = strdup(appData.recentEngineList); // remember them as they are in menu
+	AppendMenu(subMenu, MF_SEPARATOR, (UINT_PTR) 0, NULL);
+	while(*s) {
+	  char *p = strchr(s, '\n');
+	  if(p == NULL) return; // malformed!
+	  *p = NULLCHAR;
+	  AppendMenu(subMenu, MF_ENABLED|MF_STRING|MF_UNCHECKED, (UINT_PTR) i++, (LPCTSTR) s);
+	  *p = '\n';
+	  s = p+1;
+	}
+    }
+}
+
+
 typedef struct {
   char *name;
   int squareSize;
@@ -1095,6 +1118,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
 
   InitDrawingSizes(boardSize, 0);
+  RecentEngineMenu(appData.recentEngineList);
   InitMenuChecks();
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
 
@@ -5443,6 +5467,9 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     default:
+      if(wmId >= IDM_RecentEngines && wmId < IDM_RecentEngines + appData.recentEngines)
+          RecentEngineEvent(wmId - 3000);
+      else
       if(wmId > IDM_English && wmId < IDM_English+20) {
           LoadLanguageFile(languageFile[wmId - IDM_English - 1]);
           TranslateMenus(0);
