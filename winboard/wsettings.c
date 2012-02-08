@@ -480,6 +480,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		}
 		if(j < 0) break;
 		if(comboCallback && activeList[j].type == ComboBox && HIWORD(wParam) == CBN_SELCHANGE) {
+		    if(j > 5) break; // Yegh! Must solve problem with more than one ombobox in dialog
 		    (*comboCallback)(hDlg);
 		    break;
 		} else
@@ -628,6 +629,7 @@ EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
 
 int InstallOK()
 {
+    if(engineLine[0] == '#') { DisplayError(_("Select single engine from the group"), 0); return 0; }
     if(isUCCI) isUCI = 2;
     if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
     return 1;
@@ -670,10 +672,27 @@ GenericPopup(HWND hwnd, Option *optionList)
     return;
 }
 
+int
+EnterGroup(HWND hDlg)
+{
+    char buf[MSG_SIZ];
+    HANDLE hwndCombo = GetDlgItem(hDlg, 2001+2*1);
+    int i = ComboBox_GetCurSel(hwndCombo);
+    if(i == 0) buf[0] = NULLCHAR; // back to top level
+    else if(engineList[i][0] == '#') safeStrCpy(buf, engineList[i], MSG_SIZ); // group header, open group
+    else return 0; // normal line, select engine
+    installOptions[0].max = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
+    SendMessage(hwndCombo, CB_RESETCONTENT, 0, 0);
+    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) buf);
+    for(i=1; i<installOptions[0].max; i++) {
+	    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) engineMnemonic[i]);
+    }
+    SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) 0, (LPARAM) buf);
+    return 0;
+}
+
 void LoadEnginePopUp(HWND hwnd)
 {
-    int n=0;
-
     isUCI = isUCCI = storeVariant = v1 = useNick = FALSE; addToList = hasBook = TRUE; // defaults
     if(engineDir)    free(engineDir);    engineDir = strdup("");
     if(params)       free(params);       params = strdup("");
@@ -681,9 +700,9 @@ void LoadEnginePopUp(HWND hwnd)
     if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
     if(engineLine)   free(engineLine);   engineLine = strdup("");
     if(engineName)   free(engineName);   engineName = strdup("");
-    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
-    while(engineList[n]) n++; installOptions[0].max = n;
+    installOptions[0].max = NamesToList(firstChessProgramNames, engineList, engineMnemonic, ""); // only top level
     snprintf(title, MSG_SIZ, _("Load Engine"));
+    comboCallback = &EnterGroup;
 
     GenericPopup(hwnd, installOptions);
 }
@@ -751,7 +770,7 @@ Option tourneyOptions[] = {
   { 0,  0,          4, NULL, (void*) &tfName, "", NULL, FileName, N_("Tournament file:") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("If you specify an existing file, the rest of this dialog will be ignored.") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("Otherwise, the file will be created, with the settings you specify below:") },
-  { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
+  { 0,  1,          0, NULL, (void*) &engineChoice, (char*) engineMnemonic, engineMnemonic, ComboBox, N_("Select Engine:") },
   { 0xD, 7,         0, NULL, (void*) &appData.participants, "", NULL, TextBox, N_("Tourney participants:") },
   { 0,  0,          0, NULL, (void*) &swiss, "", NULL, CheckBox, N_("Use Swiss pairing engine (cycles = rounds)") },
   { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0=RR, 1=gauntlet):") },
@@ -779,25 +798,34 @@ Option tourneyOptions[] = {
 
 int AddToTourney(HWND hDlg)
 {
-    char buf[MSG_SIZ];
-//    GetDlgItemText( hDlg, 2001+2*7, buf, MSG_SIZ-3 ); // this gives the previous selection !!!
-//    strncat(buf, "\r\n", MSG_SIZ);
-    int i = ComboBox_GetCurSel(GetDlgItem(hDlg, 2001+2*7));
-    snprintf(buf, MSG_SIZ, "%s\r\n", engineMnemonic[i+1]);
+  char buf[MSG_SIZ];
+  HANDLE hwndCombo = GetDlgItem(hDlg, 2001+2*7);
+  int i = ComboBox_GetCurSel(hwndCombo);
+  if(i == 0) buf[0] = NULLCHAR; // back to top level
+  else if(engineList[i][0] == '#') safeStrCpy(buf, engineList[i], MSG_SIZ); // group header, open group
+  else { // normal line, select engine
+    snprintf(buf, MSG_SIZ, "%s\r\n", engineMnemonic[i]);
     SendMessage( GetDlgItem(hDlg, 2001+2*9), EM_SETSEL, 99999, 99999 );
     SendMessage( GetDlgItem(hDlg, 2001+2*9), EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) buf );
     return 0;
+  }
+  installOptions[0].max = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
+  SendMessage(hwndCombo, CB_RESETCONTENT, 0, 0);
+  SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) buf);
+  for(i=1; i<installOptions[0].max; i++) {
+    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) engineMnemonic[i]);
+  }
+  SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) 0, (LPARAM) buf);
+  return 0;
 }
 
 void TourneyPopup(HWND hwnd)
 {
-    int n=0;
-
-    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+    int n = NamesToList(firstChessProgramNames, engineList, engineMnemonic, "");
     comboCallback = &AddToTourney;
     autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
     twice = FALSE; swiss = appData.tourneyType < 0;
-    while(engineList[n]) n++; tourneyOptions[3].max = n-1;
+    tourneyOptions[3].max = n;
     snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
     ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
 

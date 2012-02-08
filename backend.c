@@ -9808,7 +9808,7 @@ Substitute (char *participants, int expunge)
 	q = r; while(*q) nPlayers += (*q++ == '\n');
 	p = buf; while(*r && (*p = *r++) != '\n') p++;
 	*p = NULLCHAR;
-	NamesToList(firstChessProgramNames, command, mnemonic);
+	NamesToList(firstChessProgramNames, command, mnemonic, "all");
 	for(i=1; mnemonic[i]; i++) if(!strcmp(buf, mnemonic[i])) break;
 	if(mnemonic[i]) { // The substitute is valid
 	    FILE *f;
@@ -9877,19 +9877,28 @@ CreateTourney (char *name)
 	return 1;
 }
 
-void
-NamesToList (char *names, char **engineList, char **engineMnemonic)
+int
+NamesToList (char *names, char **engineList, char **engineMnemonic, char *group)
 {
     char buf[MSG_SIZ], *p, *q;
-    int i=1;
-    while(*names) {
-	p = names; q = buf;
+    int i=1, header, skip, all = !strcmp(group, "all"), depth = 0;
+    skip = !all && group[0]; // if group requested, we start in skip mode
+    for(;*names && depth >= 0 && i < MAXENGINES-1; names = p) {
+	p = names; q = buf; header = 0;
 	while(*p && *p != '\n') *q++ = *p++;
 	*q = 0;
+	if(*p == '\n') p++;
+	if(buf[0] == '#') {
+	    if(strstr(buf, "# end") == buf) { depth--; continue; } // leave group, and suppress printing label
+	    depth++; // we must be entering a new group
+	    if(all) continue; // suppress printing group headers when complete list requested
+	    header = 1;
+	    if(skip && !strcmp(group, buf)) { depth = 0; skip = FALSE; } // start when we reach requested group
+	}
+	if(depth != header && !all || skip) continue; // skip contents of group (but print first-level header)
 	if(engineList[i]) free(engineList[i]);
 	engineList[i] = strdup(buf);
-	if(*p == '\n') p++;
-	TidyProgramName(engineList[i], "localhost", buf);
+	if(buf[0] != '#') TidyProgramName(engineList[i], "localhost", buf); // group headers not tidied
 	if(engineMnemonic[i]) free(engineMnemonic[i]);
 	if((q = strstr(engineList[i]+2, "variant")) && q[-2]== ' ' && (q[-1]=='/' || q[-1]=='-') && (q[7]==' ' || q[7]=='=')) {
 	    strcat(buf, " (");
@@ -9897,10 +9906,10 @@ NamesToList (char *names, char **engineList, char **engineMnemonic)
 	    strcat(buf, ")");
 	}
 	engineMnemonic[i] = strdup(buf);
-	names = p; i++;
-      if(i > MAXENGINES - 2) break;
+	i++;
     }
     engineList[i] = engineMnemonic[i] = NULL;
+    return i;
 }
 
 // following implemented as macro to avoid type limitations
@@ -9952,7 +9961,7 @@ RecentEngineEvent (int nr)
     int n;
 //    SwapEngines(1); // bump first to second
 //    ReplaceEngine(&second, 1); // and load it there
-    NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
+    NamesToList(firstChessProgramNames, command, mnemonic, "all"); // get mnemonics of installed engines
     n = SetPlayer(nr, recentEngines); // select new (using original menu order!)
     if(mnemonic[n]) { // if somehow the engine with the selected nickname is no longer found in the list, we skip
 	ReplaceEngine(&first, 0);
@@ -10063,7 +10072,7 @@ NextTourneyGame (int nr, int *swapColors)
     if(first.pr != NoProc && second.pr != NoProc) return 1; // engines already loaded
 
     // redefine engines, engine dir, etc.
-    NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
+    NamesToList(firstChessProgramNames, command, mnemonic, "all"); // get mnemonics of installed engines
     if(first.pr == NoProc || nr < 0) {
       SetPlayer(whitePlayer, appData.participants); // find white player amongst it, and parse its engine line
       InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.

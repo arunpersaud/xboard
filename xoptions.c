@@ -1413,7 +1413,7 @@ OptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 MatchOptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+   NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
    comboCallback = &AddToTourney;
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
@@ -1742,7 +1742,7 @@ LoadEngineProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
    if(engineDir)    free(engineDir);    engineDir = strdup("");
    if(nickName)     free(nickName);     nickName = strdup("");
    if(params)       free(params);       params = strdup("");
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+   NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
    GenericPopUp(installOptions, _("Load engine"), 0);
 }
 

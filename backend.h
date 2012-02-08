@@ -304,7 +304,7 @@ void InitSearch P((void));
 int GameContainsPosition P((FILE *f, ListGame *lg));
 void GLT_TagsToList P(( char * tags ));
 void GLT_ParseList P((void));
-void NamesToList P((char *name, char **engines, char **mnemonics));
+int NamesToList P((char *name, char **engines, char **mnemonics, char *group));
 int CreateTourney P((char *name));
 char *MakeName P((char *templ));
 void SwapEngines P((int n));
