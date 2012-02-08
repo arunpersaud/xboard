@@ -14648,7 +14648,7 @@ PrintOpponents (FILE *fp)
 void
 TidyProgramName (char *prog, char *host, char buf[MSG_SIZ])
 {
-    char *p, *q;
+    char *p, *q, c;
     int local = (strcmp(host, "localhost") == 0);
     while (!local && (p = strchr(prog, ';')) != NULL) {
 	p++;
@@ -14665,7 +14665,8 @@ TidyProgramName (char *prog, char *host, char buf[MSG_SIZ])
     while (p >= prog && *p != '/' && *p != '\\') p--;
     p++;
     if(p == prog && *p == '"') p++;
-    if (q - p >= 4 && StrCaseCmp(q - 4, ".exe") == 0) q -= 4;
+    c = *q; *q = 0;
+    if (q - p >= 4 && StrCaseCmp(q - 4, ".exe") == 0) *q = c, q -= 4; else *q = c;
     memcpy(buf, p, q - p);
     buf[q - p] = NULLCHAR;
     if (!local) {
