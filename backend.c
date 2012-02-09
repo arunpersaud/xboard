@@ -393,6 +393,7 @@ PosFlags (index)
 }
 
 FILE *gameFileFP, *debugFP;
+char *currentDebugFile; // [HGM] debug split: to remember name
 
 /*
     [AS] Note: sometimes, the sscanf() function is used to parse the input
@@ -1325,6 +1326,7 @@ InitBackEnd2 ()
     if (appData.debugMode) {
 	fprintf(debugFP, "%s\n", programVersion);
     }
+    ASSIGN(currentDebugFile, appData.nameOfDebugFile); // [HGM] debug split: remember initial name in use
 
     set_cont_sequence(appData.wrapContSeq);
     if (appData.matchGames > 0) {
@@ -13404,6 +13406,17 @@ TwoMachinesEvent P((void))
 	break;
     }
 
+    if(matchMode && appData.debugMode) { // [HGM] debug split: game is part of a match; we might have to create a debug file just for this game
+	snprintf(buf, MSG_SIZ, appData.nameOfDebugFile, nextGame+1); // expand name of debug file with %d in it
+	if(strcmp(buf, currentDebugFile)) { // name has changed
+	    FILE *f = fopen(buf, "w");
+	    if(f) { // if opening the new file failed, just keep using the old one
+		ASSIGN(currentDebugFile, buf);
+		fclose(debugFP);
+		debugFP = f;
+	    }
+	}
+    }
 //    forwardMostMove = currentMove;
     TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
 
@@ -13429,6 +13442,7 @@ TwoMachinesEvent P((void))
 	ScheduleDelayedEvent(TwoMachinesEventIfReady, appData.matchPause - wait);
 	return;
     }
+    // we are now committed to starting the game
     stalling = 0;
     DisplayMessage("", "");
     if (startedFromSetupPosition) {
