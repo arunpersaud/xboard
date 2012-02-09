@@ -5468,7 +5468,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     default:
       if(wmId >= IDM_RecentEngines && wmId < IDM_RecentEngines + appData.recentEngines)
-          RecentEngineEvent(wmId - 3000);
+          RecentEngineEvent(wmId - IDM_RecentEngines);
       else
       if(wmId > IDM_English && wmId < IDM_English+20) {
           LoadLanguageFile(languageFile[wmId - IDM_English - 1]);
