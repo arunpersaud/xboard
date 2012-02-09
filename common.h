@@ -684,6 +684,7 @@ typedef struct {
     int seedBase;
     Boolean roundSync;
     Boolean cycleSync;
+    Boolean numberTag;
 } AppData, *AppDataPtr;
 
 /*  PGN tags (for showing in the game list) */

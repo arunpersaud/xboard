@@ -581,6 +581,7 @@ ArgDescriptor argDescriptors[] = {
   { "syncAfterRound", ArgBoolean, (void *) &appData.roundSync, FALSE, (ArgIniType) FALSE },
   { "syncAfterCycle", ArgBoolean, (void *) &appData.cycleSync, FALSE, (ArgIniType) TRUE },
   { "seedBase", ArgInt, (void *) &appData.seedBase, FALSE, (ArgIniType) 1 },
+  { "pgnNumberTag", ArgBoolean, (void *) &appData.numberTag, TRUE, (ArgIniType) FALSE },
   { "afterGame", ArgString, (void *) &appData.afterGame, FALSE, INVALID },
   { "afterTourney", ArgString, (void *) &appData.afterTourney, FALSE, INVALID },
 

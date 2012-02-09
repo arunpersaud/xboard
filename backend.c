@@ -12330,6 +12330,8 @@ SaveGamePGN (FILE *f)
 
     PrintPGNTags(f, &gameInfo);
 
+    if(appData.numberTag && matchMode) fprintf(f, "[Number \"%d\"]\n", nextGame+1); // [HGM] number tag
+
     if (backwardMostMove > 0 || startedFromSetupPosition) {
         char *fen = PositionToFEN(backwardMostMove, NULL);
         fprintf(f, "[FEN \"%s\"]\n[SetUp \"1\"]\n", fen);
