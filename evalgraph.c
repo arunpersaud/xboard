@@ -102,7 +102,8 @@ MakeEvalTitle (char *title)
 
     if( depth <=0 ) return title;
     if( currCurrent & 1 ) score = -score; /* Flip score for black */
-    snprintf(buf, MSG_SIZ, "%s {%s%.2f/%-2d %d}", title, score>0 ? "+" : " ", score/100., depth, (currPvInfo[currCurrent].time+50)/100);
+    snprintf(buf, MSG_SIZ, "%s {%d: %s%.2f/%-2d %d}", title, currCurrent/2+1, 
+				score>0 ? "+" : " ", score/100., depth, (currPvInfo[currCurrent].time+50)/100);
 
     return buf;
 }
