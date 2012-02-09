@@ -15635,6 +15635,14 @@ TypeInDoneEvent (char *move)
 	  ToNrEvent(2*n-1);
 	  return;
 	}
+	// undocumented kludge: allow command-line option to be typed in!
+	// (potentially fatal, and does not implement the effect of the option.)
+	// should only be used for options that are values on which future decisions will be made,
+	// and definitely not on options that would be used during initialization.
+	if(strstr(move, "!!! -") == move) {
+	    ParseArgsFromString(move+4);
+	    return;
+        }
 
       if (gameMode != EditGame && currentMove != forwardMostMove && 
 	gameMode != Training) {
