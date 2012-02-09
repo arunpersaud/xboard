@@ -37,7 +37,7 @@ char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
 Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick, isUCCI;
 extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First"), N_("Second"), NULL };
-char *engineList[1000] = {" "}, *engineMnemonic[1000] = {""};
+char *engineList[MAXENGINES] = {" "}, *engineMnemonic[MAXENGINES] = {""};
 void (*okFunc)();
 ChessProgramState *activeCps;
 Option *activeList;
