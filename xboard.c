@@ -8247,11 +8247,6 @@ AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
   hop = abs(fromX-toX) == 1 && abs(fromY-toY) == 2 || abs(fromX-toX) == 2 && abs(fromY-toY) == 1;
 #endif
 
-  if (appData.debugMode) {
-      fprintf(debugFP, hop ? _("AnimateMove: piece %d hops from %d,%d to %d,%d \n") :
-                             _("AnimateMove: piece %d slides from %d,%d to %d,%d \n"),
-             piece, fromX, fromY, toX, toY);  }
-
   ScreenSquare(fromX, fromY, &start, &startColor);
   ScreenSquare(toX, toY, &finish, &endColor);
 

@@ -1242,11 +1242,9 @@ GetTimeQuota (int movenr, int lastUsed, char *tcString)
     char *s = tcString;
 
     if(!*s) return 0; // empty TC string means we ran out of the last sudden-death version
-    if(appData.debugMode) fprintf(debugFP, "TC string = '%s'\n", tcString);
     do {
         if(moves) NextSessionFromString(&s, &moves, &time, &increment, &incType);
         nextSession = s; suddenDeath = moves == 0 && increment == 0;
-        if(appData.debugMode) fprintf(debugFP, "mps=%d tc=%d inc=%d\n", moves, (int) time, (int) increment);
         if(movenr == -1) return time;    /* last move before new session     */
         if(incType == '*') increment = 0; else // for sandclock, time is added while not thinking
         if(incType == '!' && lastUsed < increment) increment = lastUsed;
@@ -1426,7 +1424,7 @@ ReserveGame (int gameNr, char resChar)
 	UnloadEngine(&first);  // next game belongs to other pairing;
 	UnloadEngine(&second); // already unload the engines, so TwoMachinesEvent will load new ones.
     }
-    if(appData.debugMode) fprintf(debugFP, "Reserved, next=%d, nr=%d, procs=(%x,%x)\n", nextGame, gameNr, first.pr, second.pr);
+    if(appData.debugMode) fprintf(debugFP, "Reserved, next=%d, nr=%d\n", nextGame, gameNr);
 }
 
 void
@@ -7563,14 +7561,6 @@ Adjudicate (ChessProgramState *cps)
                      }
                 } else moveCount = 6;
 	    }
-	if (appData.debugMode) { int i;
-	    fprintf(debugFP, "repeat test fmm=%d bmm=%d ep=%d, reps=%d\n",
-		    forwardMostMove, backwardMostMove, boards[backwardMostMove][EP_STATUS],
-		    appData.drawRepeats);
-	    for( i=forwardMostMove; i>=backwardMostMove; i-- )
-	      fprintf(debugFP, "%d ep=%d\n", i, (signed char)boards[i][EP_STATUS]);
-
-	}
 
 	// Repetition draws and 50-move rule can be applied independently of legality testing
 
@@ -7906,11 +7896,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    return;
 	}
 
-    if (appData.debugMode) { int f = forwardMostMove;
-        fprintf(debugFP, "machine move %d, castling = %d %d %d %d %d %d\n", f,
-                boards[f][CASTLING][0],boards[f][CASTLING][1],boards[f][CASTLING][2],
-                boards[f][CASTLING][3],boards[f][CASTLING][4],boards[f][CASTLING][5]);
-    }
         if(cps->alphaRank) AlphaRank(machineMove, 4);
         if (!ParseOneMove(machineMove, forwardMostMove, &moveType,
                               &fromX, &fromY, &toX, &toY, &promoChar)) {
@@ -7936,12 +7921,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
            ChessMove moveType;
            moveType = LegalityTest(boards[forwardMostMove], PosFlags(forwardMostMove),
                              fromY, fromX, toY, toX, promoChar);
-	    if (appData.debugMode) {
-                int i;
-                for(i=0; i< nrCastlingRights; i++) fprintf(debugFP, "(%d,%d) ",
-                    boards[forwardMostMove][CASTLING][i], castlingRank[i]);
-                fprintf(debugFP, "castling rights\n");
-	    }
             if(moveType == IllegalMove) {
 	      snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to illegal move: %s (%c%c%c%c)%c",
                         machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, 0);
@@ -9459,9 +9438,6 @@ MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
       case MT_STAINMATE:
 	strcat(parseList[forwardMostMove - 1], "#");
 	break;
-    }
-    if (appData.debugMode) {
-        fprintf(debugFP, "move: %s, parse: %s (%c)\n", moveList[forwardMostMove-1], parseList[forwardMostMove-1], moveList[forwardMostMove-1][4]);
     }
 
 }
@@ -15251,9 +15227,6 @@ SendTimeRemaining (ChessProgramState *cps, int machineWhite)
     }
     /* [HGM] translate opponent's time by time-odds factor */
     otime = (otime * cps->other->timeOdds) / cps->timeOdds;
-    if (appData.debugMode) {
-        fprintf(debugFP, "time odds: %f %f \n", cps->timeOdds, cps->other->timeOdds);
-    }
 
     if (time <= 0) time = 1;
     if (otime <= 0) otime = 1;

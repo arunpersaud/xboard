@@ -220,7 +220,6 @@ NextUnit (char **p)
 	    type[1] = NOTHING; // disambiguator goes in first two positions
 	    n = 4;
 	}
-if(appData.debugMode)fprintf(debugFP, "trial %d,%d,%d,%d  type %d%d%d%d\n", coord[0], coord[1], coord[2], coord[3], type[0], type[1], type[2], type[3]);
 	// we always get here; move must be completely read now, with to-square coord(s) at end
 	if(n == 3) { // incomplete to-square. Could be Xiangqi traditional, or stuff like fxg
 	    if(piece && type[1] == NOTHING && type[0] == NUMERIC && type[2] == NUMERIC && 

@@ -1161,7 +1161,6 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
-printf("%d\n",textHeight);
 	    if(textHeight < 24) dialog = last; else
 		dialog = XtCreateManagedWidget(" ", labelWidgetClass, form, args, j);
 	    j=0;
