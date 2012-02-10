@@ -24,10 +24,12 @@
 -fontSizeTolerance 4
 -pixmapDirectory ""
 -bitmapDirectory ""
+-useBoardTexture true
 -liteBackTextureFile  "@pixmapsdir@/wood_l.xpm"
 -darkBackTextureFile  "@pixmapsdir@/wood_d.xpm"
 -overrideLineGap 1
 -highlightMoveWithArrow true
+-recentEngines 0
 ;
 ; Behavior
 ;
@@ -60,6 +62,11 @@
 ;
 -firstChessProgram fairymax
 -secondChessProgram fairymax
+-firstChessProgramNames {"Fairy-Max" -fcp fairymax
+"Fruit 2.1" -fcp fruit -fUCI
+"Crafty" -fcp crafty
+"GNU Chess" -fcp gnuchess
+}
 -niceEngines 0
 -polyglotDir ""
 -adapterCommand 'polyglot -noini -ec "%fcp" -ed "%fd" -uci NalimovCache=%defaultCacheSizeEGTB'
