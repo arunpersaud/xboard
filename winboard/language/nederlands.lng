@@ -1,20 +1,18 @@
 ## WinBoard language file
 ##
 ## Dutch / Nederlands
-## v1.1
+## v1.2
 ##
 ## Translation by H.G.Muller (July 19, 2011)
 ## Vertaald door H.G.Muller (19 juli 2011)
 ## http://www.open-aurec.com/wbforum
 ##    3-oct-2011. H.G.Muller. Added a few missing translations.
 ##    7-oct-2011. H.G.Muller. Redid Load Options dialog, new Tournament dialog strings
+##   10-feb-2012. H.G.Muller. Added some strings in Load Engine, Tournament and Board dialogs
 ##
 ## If you revise this, please insert your date, name and description.
 ## AUB uw naam en datum hierboven bijschrijven als u dit bestand bijwerkt
 ##
-## For example:
-## TRANSLATION OF FOR EXAMPLE
-##   24-ago-2010. Juan Pérez (j@xyz.p). Corrected translation for xyzzy.
 
 winboard.rc
 
@@ -202,8 +200,8 @@ TIME CONTROL DIALOG
 "Plus number of seconds per move:" === "Plus aantal seconden per zet:"
 "Maximum seconds per move:" === "Maximum seconden per zet"
 "Time-Odds Factors:" === "Tijdvoorgift Factoren:"
-"Engine #1:" === "Schaakprog 1"
-"Engine #2:" === "Schaakprog 2"
+"Engine #1:" === "Schaakprog 1:"
+"Engine #2:" === "Schaakprog 2:"
 
 LOAD OPTIONS DIALOG
 
@@ -436,6 +434,9 @@ BOARD OPTIONS
 "Monochrome" === "Zwart-Wit"
 "All White" === "Beiden Wit"
 "Flip Black" === "Zwart Omkeren"
+"Use Board Textures" === "Bord inkleuren"
+"Use Piece Font" === "Externe stukken"
+"Suppress Grid" === "Onderdruk belijning"
 "Size" === "Bordgrootte"
 
 BOARD SIZES (translate as number?)
@@ -472,6 +473,7 @@ FONTS
 "Tags" === "P G N Titels"
 "Comments" === "Commentaar"
 "I C S Interaction" === "I C S Interactie"
+"Piece Font" === "Externe stukken"
 
 "&Color..." === "Kleur..."
 "Move History, Engine Output" === "Zettenlijst, Overwogen Zetten"
@@ -988,6 +990,8 @@ END-OF-GAME MESSAGES (should they be translated?)
 "Force current variant with this engine" === "Alleen met huidige schaakvariant"
 "Load mentioned engine as" === "&Gebruik schaakprogramma als"
 "Load Engine" === "Wisselen Schaakprogramma"
+"You did not specify the engine executable" === "U heeft geen schaakprogramma (.exe bestand) gespecificeerd"
+"Select single engine from the group" === "Kies een schaakprogramma uit deze groep"
 
 # TOURNAMENT OPTIONS DIALOG
 
@@ -1017,6 +1021,9 @@ END-OF-GAME MESSAGES (should they be translated?)
 "Time Control..." === "Speelduur..."
 "Common Engine..." === "Glob. Instellingen..."
 "Clone Tourney" === "Kloon Toernooi"
+"Make all use GUI book by default" === "Gebruik openingsboek voor iedereen"
+"You must supply a tournament file,\nfor storing the tourney progress" === "U moet een toernooibestand specificeren,\nwaarin de voortgang kan worden bijgehouden"
+"Not enough participants" === "Niet genoeg deelnemers voor een dergelijk toernooi"
 
 JAWS strings
 
