@@ -1154,8 +1154,18 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    break;
 	  case CheckBox:
 	    if(!currentCps) option[i].value = *(Boolean*)option[i].target;
-	    j=0;
+	    j=0; // space holder
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNwidth, 10);  j++;
+	    XtSetArg(args[j], XtNheight, textHeight-22);  j++;
+	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
+	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
+printf("%d\n",textHeight);
+	    if(textHeight < 24) dialog = last; else
+		dialog = XtCreateManagedWidget(" ", labelWidgetClass, form, args, j);
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, dialog);  j++;
 	    XtSetArg(args[j], XtNwidth, 10);  j++;
 	    XtSetArg(args[j], XtNheight, 10);  j++;
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;

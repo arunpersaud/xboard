@@ -2314,9 +2314,7 @@ XBoard square size (hint): %d\n\
 		     messageArgs, XtNumber(messageArgs));
     XtSetArg(args[0], XtNtop,    XtChainTop);
     XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetValues(messageWidget, args, 2);
-    XtSetArg(args[0], XtNheight, &textHeight); // [HGM] get height for use in generic popup
-    XtGetValues(messageWidget, args, 1);
+    XtSetValues(messageWidget, args, 3);
 
     widgetList[j++] = boardWidget =
       XtCreateWidget("board", widgetClass, formWidget, boardArgs,
@@ -2462,6 +2460,7 @@ XBoard square size (hint): %d\n\
       fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
 	      programName, gres, w, h, wr, hr);
     }
+    textHeight = hr; // [HGM] save height for use in generic popup
     /* !! end hack */
     XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
     XtSetArg(args[1], XtNright, XtChainRight);
