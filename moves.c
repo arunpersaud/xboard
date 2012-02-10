@@ -1097,7 +1097,7 @@ LegalityTestCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
 ChessMove
 LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoChar)
 {
-    LegalityTestClosure cl; ChessSquare piece, filterPiece, *castlingRights = board[CASTLING];
+    LegalityTestClosure cl; ChessSquare piece, filterPiece;
 
     if(quickFlag) flags = flags & ~1 | quickFlag & 1; // [HGM] speed: in quick mode quickFlag specifies side-to-move.
     if(rf == DROP_RANK) return LegalDrop(board, flags, ff, rt, ft);
