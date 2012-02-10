@@ -3,6 +3,716 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2012-02-09 22:44:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix non-bug in WinBoard
+
+The IDM_RecentEngines was not used in symbolic form everywhere.
+
+2012-02-09 18:46:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix MAXENGINES in WinBoard
+
+The front-end arrays for expanding the engine list measured 1000 entries,
+in stead of MAXENGINES, leading them to overflow.
+
+2012-02-09 13:05:42 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement kludge to set options through Move Type-in
+
+A leading "!!! " will cause the rest of the line to be parsed as
+command line. Very dangerous, as an unknown option (e.g. because of a typo)
+will cause a fatal error, which makes XBoard exit.
+
+2012-02-09 13:04:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put move number in Eval Graph title
+
+
+2012-02-09 13:00:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement -pgnNumberTag option
+
+A new (persistent) boolean option controls if the sequence number is to
+be written in saved tourney games as a Number tag, to make it easier
+to correlate games with debug files.
+
+2012-02-09 12:55:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Create separate debug fil for each tourney game
+
+Users can now apecify a -debugfile with %d in its name, and this will
+be replaced by the sequence number of the game. TwoMachinesEvent then
+starts by opening a new file when the name has changed, so that each
+game will go to a different file, with recognizable name.
+
+2012-02-09 12:51:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in WB combobox readout
+
+The previous patch exposed a latent bug in the readout of the generic popup.
+
+2012-02-08 23:25:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow grouping of engines in engine list
+
+Lines "# GROUPNAME" and "# end" enclose a group in -firstChessProgramNames.
+
+2012-02-08 17:47:46 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix TidyProgramName
+
+A trailing .exe was not removed if the engine name was quoted.
+
+2012-02-08 17:45:42 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put recently used engines in WB menu
+
+A new option -recentEngines specifies how many engines should be listed.
+The list of nicknames is stored in the ettings file as -recentEngineList.
+The engines are appended to the Engine menu.
+
+2012-02-04 19:37:51 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix registering of EditTagsProg
+
+This was registered with X as EditCommentProc!
+
+2012-02-07 23:04:49 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Increase max nr of engines to 2000
+
+Move the #define for MAXENGINES also to common.h, so that both the
+Load and Tourney dialog use the same maximum.
+
+2012-01-19 23:01:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix fix of switch to mono-mode
+
+The previous fix had == in stead of != for testing if mono-mode had changed.
+
+2012-01-19 22:21:38 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make New Variant dialog visible in mono-mode
+
+All colored buttons did get a black background, and also black text...
+Use timer background color in stead, which is white.
+
+2012-01-19 20:48:37 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Incease size of WB array of translated items
+
+For the BoardOptions dialog 42 items are now needed
+
+2012-01-19 17:18:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Clone Tourney button XBoard
+
+This makes use of the new GenericUpdate().
+
+2012-01-19 16:34:13 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement GenericUpdate function
+
+This does the opposite from GenericReadout: it copies the current
+parameter values into the dialog.
+
+2012-01-19 12:19:27 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix arrow damage with highlightDragging XB
+
+With highlight dragging the highlights of the previous moves are cleared
+when lifting the piece. Logically, this should also clear the arrow, but
+to do that requires a board redraw, which is not done at this stage. (And
+even then this would only be effective after marking the arrow damage,
+which is not done yet either). As a temporary fix, we repair the arrow
+by redrawing it.
+  This patch has moved marking of the arrow damage from DrawArrowHighlight
+to a separate routine, so a future better fix can also call that when the
+arrow should be erased.
+
+2012-01-18 16:01:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Prevent unnecessary loading of engines
+
+For engines that can be reused, the unloading at the end of a pairing
+is in some cases wasteful, as the same engine will be used in the next
+pairing as well. In simple gauntlets the gauntlet engine will always
+stay first engine, while in multi-gauntlets the oppent engine will stay
+the same for an entire round. In these cases unloading is now suppressed.
+
+2012-01-17 22:22:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Reset protocol version before loading new engine
+
+The protocol version was not reset, so if the previous engine was v1,
+the newly loaded engine would not be sent a protover command, so
+that its features would remain unknown!
+
+2012-01-17 19:33:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Give focus to board window after ICS login
+
+toprevent that the focus remains on any popped up chat boxes, it is
+explicitlly set otherwise. The board window is preferred over the
+ICS interaction window, because you can type from there to the ICS anyway,
+and it makes all accelerator keys available.
+
+2012-01-16 14:37:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix seek-graph popup and  popdown
+
+Clicking outside the board area in WB (e.g.on the clocks) would also
+trigger seek-graph 'popup'. This is now suppressed by testing for
+y-coord > 0. In addition, the seek graph is automaticaly taken down
+when we step to another position in the current game (using buttons,
+arrow keys or whatever).
+
+2012-01-15 21:29:11 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress empty lines when observing on VICS
+
+Capture of the engine kibitzes when observing an engine game with
+-autoKibitz on was still leaking a linefeed on the Variant ICS
+(but not FICS or ICC!?).
+
+2012-01-15 21:24:12 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix printing non-numeric kibitz with -autoKibitz
+
+Messages that were not considered kibitzed engine PV info for lack of
+numeric content, were kibitzed as coming from "your opponent", which
+is nonsense if you were iobserving, and masked the source. Fortunately
+star_match[0] is still holding the original name, at that point.
+
+2012-01-11 17:33:29 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix 4 warnings
+
+
+2012-01-11 17:00:38 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use same translation of "vs." everywhere
+
+
+2012-01-11 17:08:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add new translations to WB language file
+
+
+2012-01-11 16:20:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix re-allocation of PGN-cache memory
+
+It  allocated 8 times too much!
+
+2012-01-11 12:47:38 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix height board dialog
+
+
+2012-01-11 12:34:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Enable WB time-control dialog even when no clock mode
+
+The dialog could be called from the tournament dialog to set a TCfor
+the tourney even when currently in game-viewer mode, so it'd better work.
+
+2012-01-11 12:28:43 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Exempt variant seirawan from -disguisePromoted inheritance
+
+This is not a variant where promoted Pawns have to be distingushed
+from primordial pieces, as captured pieces do not go into the holdings.
+
+2012-01-09 21:23:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add control for overrideLineGap in WB Board dialog
+
+Make it a checkbox to choose between 0 and -1.
+
+2012-01-09 20:56:40 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Ctrl-D as alternative to Ctrl+Alt+F12 in WinBoard
+
+The acellerator key Ctrl+Alt+F12 seems reserved on Windows 7.
+
+2012-01-09 20:52:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix seek graph for VICS
+
+The sought command on the open-source ICS code is ICC-like (no terminating
+line), although the server is FICS like. So also accept prompt as seek-graph
+trigger on FICS.
+
+2012-01-09 20:27:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Open WB startup chat boxes only after logged on
+
+The init code for opening the chat boxes ismoved to DisplayIcsTitle().
+
+2012-01-07 20:31:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Install mime types directly
+
+
+2012-01-07 20:29:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Install desktop files directly
+
+
+2012-01-07 20:19:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Install icons directly
+
+Rather than letting make-install copy the pixmaps to the XBoard data
+directory they are installed directly from the source files. The name
+of the TRN icon was also corrected and changed.
+
+2012-01-05 18:41:13 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file and remove duplicate control
+
+Some missing option descriptions were added. The highlight-dragging
+control was removed from the General Options dialog, as it did the same
+as Show Target Squares. -highlightDragging wa changed to a volatile option
+with default value true, making it effectively disappear as an XBoard
+option. (In WinBoard it is still persistent.)
+
+2012-01-05 15:55:54 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove the direct commands to the engines
+
+
+2012-01-05 21:15:11 -0800 Arun Persaud <arun@nubati.net>:
+forgot to list new desktop files in EXTRA_DIST section in Makefile.am
+
+
+2012-01-05 20:08:23 -0800 Arun Persaud <arun@nubati.net>:
+added some autogenerated po files to .gitignore
+
+
+2012-01-05 20:05:44 -0800 Arun Persaud <arun@nubati.net>:
+added desktop and mime-type association to autoconf install process
+
+This should install and uninstall the mime assocciation and also the icons.
+Also renamed the desktop files to avoid possible name collisions.
+
+2012-01-03 21:30:59 -0800 Arun Persaud <arun@nubati.net>:
+code cleanup: make function definition confirm to GNU coding style
+
+change everything in the main directory to
+
+void
+funcname (int a, int b)
+
+format
+
+2012-01-03 18:43:18 -0800 Arun Persaud <arun@nubati.net>:
+Updated copyright notice to 2012
+
+
+2012-01-03 21:32:04 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement -viewerOptions
+
+A mechanism is added to allow the user to configure persistently if the
+game viewer that starts on clicking PGN files will use -ncp mode, or
+load an egine for analysis (or, in fact, do anything). This by introducing
+a persistent string option -viewerOptions, which will be parsed as a
+command line after the real command line when the option -viewer was present.
+
+2012-01-03 11:29:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash in auto-comment
+
+Trailing linefeeds in AppendComment were not properly stripped off,
+leading to a mismatch between the allocted and used memory, and thus
+possible buffer overruns.
+
+2012-01-02 23:46:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash at match end
+
+The -afterTourney option had broken old-style matches, because the ranking
+string that was tested for "busy" is not set there at all, and remains a
+NULL pointer, which strcmp doesn't like.
+
+2012-01-01 19:56:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add desktop files for PGN viewer and tournament player
+
+The desktop files define startup commands for handling PGN, FEN and
+tourney files, calling xboard with the proper command-line options.
+
+2012-01-01 19:53:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add xml file for defining mime types
+
+The file xboard.xml defines application/x-chess-pgn, aplication/x-chess-fen
+and application/x-xboard-trn as mime types for *.pgn, *.fen and *.trn files,
+so these files can be associated with XBoard in various modes.
+
+2012-01-01 19:41:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add icons for PGN and tourney files
+
+Icons are provided in two sizes: 32x32 and 48x48.
+
+2011-12-29 19:55:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Clear square markers on new game
+
+Now that the markers can stay on after a first click, they need to be
+explicitly cleared when moving to another board, including a new game.
+
+2011-12-29 15:51:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Abandon single-letter menus in tinyLayout
+
+Now that the items on the main menu bar are clipped, it iso longer
+necessary to abbreviate them.
+
+2011-12-29 15:38:46 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement peeking previous position in WinBoard
+
+The backspace key is used to temporarily display the previous position.
+
+2011-12-29 15:32:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parsing of faulty PGN tags
+
+A closing bracket could be missed in a malformed tag
+
+2011-12-29 15:29:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parser for variant seirawan
+
+The new parser didnot understand gating suffixes with /, and did not
+allow any suffix at all on SAN castling moves.
+
+2011-12-28 22:32:38 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Try to not confuse ICS rating adustments as shouts
+
+An explicit pattern match for the rating adjustment is added before
+matching the shouts.
+
+2011-12-28 22:21:54 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Describe -overrideLineGap option in texi file
+
+
+2011-12-28 22:03:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use <Enter> in stead of Ctrl+. for peeking last move
+
+I commented out the explicit detection of the Ctrl key, as this
+is not needed when there are no 'unnatural' Ctrl keystrokes used
+for binding.
+
+2011-12-28 19:37:49 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Next try for menu-bar sizing
+
+This time request the width needed to just fit everything, and then start
+shaving off pixels from the currently largest until the entire thing fits.
+
+2011-12-28 15:17:49 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Clip texts on menu bar
+
+The width of the items on the main menu bar is restricted so the bar
+will never exceed board width.
+
+2011-12-28 14:01:53 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix format in temporary timing printf
+
+
+2011-12-28 13:38:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Don't test drops as mate evasions in variant seirawan
+
+
+2011-12-28 13:36:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ICS castling rights
+
+Copying the castling rights together with CopyBoard seems to have
+broken handling of ICS rights, where ParseBoard12 prepares a board
+in a local variable, an copies it before parsing the rights.
+
+2011-12-28 13:35:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix initial holdings ICS seirawan games
+
+
+2011-12-27 18:31:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix sending of S-Chess gating moves to ICS
+
+Normal moves did not get the gating suffix sent.
+
+2011-12-27 17:56:07 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix menu grayout after illegal move
+
+TheThinkingEnables were not reset to user state after the engine rejected
+the entered move as illegal.
+
+2011-12-27 13:26:36 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow setting of holdings with edit command
+
+For the benefit of Fairy-Max' Seirawan Chess implementation, the edit command
+no also sends holdings contents (if the engine sent feature xedit=1), encoded
+as pieceType + '@' + holdingsCount (if the count is non-zero).
+
+2011-12-24 17:54:16 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix out-of-bounds access in check test
+
+Thepath to make the check test work with drops had broken the test
+after null move (both have rf<0), which led to corruption of the high
+word of the black clock.
+
+2011-12-24 17:51:22 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix legality of Spartan promotion to king
+
+In the check test promotion to King is only allowed if there are not
+yet 2 kings.
+
+2011-12-21 22:17:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix switching back from mono-mode XB
+
+Suppressing unnecesary X-server calls in InitDrawingSizes had broken
+switching back from monoMode, because the animVars have to be recreated
+for that, and this was only done when the variant changed.
+
+2011-12-21 22:09:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix showTargetSquares in mono-mode XB
+
+Make the marker dots black (captures) and white, and draw a circle
+in the opposite color around them in monoMode.
+
+2011-12-21 22:00:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix arrow highlighting in mono-mode XB
+
+Draw a line around it in darkSquare color in monoMode.
+
+2011-12-21 17:48:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix alignment of generic browse button XBoard
+
+The width ofthe browse button is now read back after creating it,
+and subtracted from the preceding text edit.
+
+2011-12-21 14:41:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -afterTourney option
+
+Only the instance pinting the tourney result will execute this.
+
+2011-12-22 21:01:43 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix buffer possible overflow when writings tags
+
+PGNTagsStatic() could overflow its buffer and is removed. PGNTags() do the work instead of calling it.
+It starts by calculation the required buffer size and then allocate the buffer.
+PrintPGNTags() now prints directly to the file without having a buffer.
+
+2011-12-22 15:01:31 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+One more string marked for translation
+
+And it is moved inside the if statement that uses it.
+
+2011-12-22 14:30:08 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix checking of return value from snprintf()
+
+snprintf() returns the needed space excluding the trailing 0 byte, so
+it has truncated if the returned valued is greater than or EQUAL TO the buffersize
+
+2011-12-19 16:49:31 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix unportable memory initialisation
+
+Memory sat to zero by calloc() cannot safely be assumed to have the pointer value NULL
+
+2011-12-19 13:16:58 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Add 2 strings for translation
+
+
+2011-12-19 11:25:11 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Remove the last 2 compile warnings in gamelist.h
+
+
+2011-12-19 11:17:48 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Add #include "moves.h" to gamelist.c for def. of CopyBoard()
+
+
+2011-12-19 11:11:34 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Definition of TimeMark moved from 3 c files to backend.h
+
+
+2011-12-19 01:21:46 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Transfer a pointer to the promoChar from PromotionPopUp() to PromotionCallback(). Fixes #34980
+
+
+2011-12-18 17:24:07 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Duh! Initialise the argument to sscanf() inside the loop, so it always gets a known value when sscanf() fails.
+
+
+2011-12-18 17:18:12 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Give numeric options the value 0 if a non-numeric text is entered (one more place). Before the value ended up undefined.
+
+
+2011-12-18 17:08:46 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Give numeric options the value 0 if a non-numeric text is entered. Before the value ended up undefined.
+
+
+2011-12-18 15:41:46 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix possible crash on 64-bit systems when copying game or position
+
+The two convertproc's for X selections caused reads out of bounds on 64-bit systems.
+I hope that this is the right solution. I am not experienced with X stuff, but it
+follows that I have seen in other programs, testing shows that copying still works,
+and the reading out of bounds have disappearinged with this patch.
+
+2011-12-18 13:26:20 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix a possible crash in the file browser
+
+If the OK button was selected in the file browser when no file was selected
+there was a read out of bounds which could crash xboard
+
+2011-12-17 22:54:34 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix a memory leak in Sound Options
+
+
+2011-12-16 02:57:20 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix crash when selecting user soundfile due to free() of not malloc()'ed memory
+
+
+2011-12-16 02:32:37 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Make GenericPopUp() more readable by using more named flags instead of numerals
+
+Defines the flags SAME_ROW (value 1) and NO_OK (value 2) for use with buttons and endmarks.
+There should no functional change.
+Also add a code comment where a condition depends on an uninitialised value. There is no direct harm, as both
+branches do the same (that is nothing) when the value is uninitialised.
+
+2011-12-15 02:51:36 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Add NO_GETTEXT flag for combobox. Fix bug #34991
+
+Define NO_GETTEXT flag to avoid calling gettext() for comboboxes, and define COMBO_CALLBACK
+flag to call comboCallback() when an item is selected in a combobox (no new code for this,
+just a symbolic value instead of a number). The flags are used for the min field of struct Option.
+NO_GETTEXT is used for the Select engine combobixes in the Match Options and Load engine windows.
+
+2011-12-13 19:48:37 -0800 Arun Persaud <arun@nubati.net>:
+only translate entries in CreateComboPopup if strlen>0; fixes #34991
+
+
+2011-12-12 19:06:26 -0800 Byrial Jensen <byrial@vip.cybercity.dk>:
+fix for repeating key issue, with this allissues this bug should be closed; fixes #35000
+
+
+2011-12-12 18:45:05 -0800 Arun Persaud <arun@nubati.net>:
+also don't translate selection in ComboSelect; fixes #34991
+
+
+2011-12-12 18:40:23 -0800 Arun Persaud <arun@nubati.net>:
+make entries in CreateComboPopup not translateable; fixes #34991
+
+
+2011-12-10 16:06:47 -0800 Arun Persaud <arun@nubati.net>:
+fix translation for engine list; fixes #34991
+
+* click on browse button should be recognized in translated versions
+* width of button should auto-scale
+
+2011-12-10 11:04:17 -0800 Arun Persaud <arun@nubati.net>:
+change keybindings that don't use ctrl, make MoveTypeInProc ctrl aware; fixes #35000
+
+two keybindings were using keys without modifiers, adjusted these to use the ctrl key.
+Furthermore when typing in moves we need to check if ctrl was pressed and ignore those inputs.
+
+Also added documentation for these keybindings.
+
+2011-12-10 10:51:18 -0800 Arun Persaud <arun@nubati.net>:
+replaced unicode character for "'" in xboard.texi
+
+
+2011-12-10 10:08:48 -0800 Arun Persaud <arun@nubati.net>:
+removed Iconify function. Should be handled by the window manager.
+
+
+2011-12-08 20:53:13 -0800 Arun Persaud <arun@nubati.net>:
+marked an error messages for translation
+
+
+2011-12-08 20:33:29 -0800 Arun Persaud <arun@nubati.net>:
+translation: updated uk.po
+
+
+2011-12-03 17:52:23 -0800 Arun Persaud <arun@nubati.net>:
+fixed size of XBoard icon to 48x48
+
+the icon gets installed in the 48x48 directory, but was >200 pixel wide. This gave a warning during rpm creation.
+
+2011-12-03 08:07:32 -0800 Arun Persaud <arun@nubati.net>:
+updated pot file
+
+marked a lot of new strings for translation
+
+2011-12-03 08:06:42 -0800 Arun Persaud <arun@nubati.net>:
+added new files to po/POTFILES.in
+
+
+2011-12-02 22:13:36 -0800 Arun Persaud <arun@nubati.net>:
+marked more strings for translation
+
+
+2011-12-02 20:08:01 -0800 Arun Persaud <arun@nubati.net>:
+translation: added danish translation
+
+
+2011-12-01 18:45:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Change encoding of seirawan ICS gating-castlings
+
+In stead of using upper/lower-case promoChar, the ICS now uses
+RxK notation, like WinBoard writes in SAN, for better consistency.
+
+2011-11-30 15:38:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put promo-suffix on ICS move in variant seirawan castlings
+
+The distinction upper-case / lowercase determines gating at R / K
+
+2011-11-28 11:56:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Refrain from making unnecessary resize X request
+
+The window resizing code in InitDrawingSizes is suppressed when no
+change is needed. Similarly, changing piece bitmaps is suppressed when
+we stay in the same variant (and InitDrawingSizes is called e.g. because
+of chaging lineGap through the Board dialog).
+
+2011-11-27 22:27:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parsing of O-O castling in variant janus
+
+The new parser did not realize it meant e1i1 rather than wild e1h1.
+
+2011-11-26 22:28:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Show 50-move counter also when observing ICS games
+
+To not cheat 50-move display was suppressed in ICS mode,
+but for observing a game this made no sense.
+
+2011-11-26 22:22:07 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Ignore ICS game starts when already in game
+
+The advance switching of the variant on game-start messages was
+disruptive for users with gin=1, which also sends such messages
+for other games than your own. For now fixed by only reacting on
+them when idle (detected by invalid game number).
+
+2011-11-11 18:16:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix WinBoard  clock-click bug
+
+Clicking on the clock in WinBoard also called the LeftClick routine
+for handling clicks on the board. This led to the from-square being set
+to some inalid value, so that the next genuine board click was interpreted
+as a to-click, with undesired effects, especially with legality testing off
+or in EditPosition mode, where weird things are accepted.
+
+2011-11-06 17:20:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add feature-override options
+
+A few (dangerous) options are added to allow a user to override
+engine features, or change their defaults, by supplying a string
+with feature commands (e.g. "sigint=0") which tricks XBoard into
+thinking the engine sent that. There is a -featureDefaults which is
+processed before the engine features, and -first/secondFeatures
+which is parsed just before engine initialization.
+  This goes horribly wrong when the user wouldtry silly things like
+including 'option' or 'done' features!
+
+2011-11-05 12:32:39 -0700 Arun Persaud <arun@nubati.net>:
+translation: updated uk.po
+
+
+2011-11-04 21:58:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix handling of -secondOptions option
+
+The -firstOptions and -secondOptions settigs were not swapped when
+-singleEngieList was true, so the second engine's options would never
+be set in that case, but used for the first engine.
+
+2011-11-04 21:55:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Accept setup command in variant fairy even with legality testing on
+
+Variant fairy does not really have a defined opening position, but lots
+of pieces defined, so we might want to play with legality checking on,
+but still rely on the engine for the opening position
+
+2011-11-04 21:52:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Set pieceToCharTable by setup command even when ignoring FEN
+
+When the user starts from a set-up position, the egines default
+openingposition has to be ignored, but the pieceToCharTable would
+still be relevant.
+
+2011-11-04 21:48:24 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Change default sweep-promotion choicein queenless variants
+
+The initial scanning of the sweep piece until a defined piece is found
+is now in the increasing direction (still starting at Queen), so that
+the fairy pieces are suggested before R, B and N.
+
+2011-11-03 16:38:57 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Clear board markers when moving to other position
+
+Now the markers from -showTargetSquares would stay on after a first click
+for the benefit of a click-click move, they would also stay on when not
+finishing the move, but operating the < > buttons in stead to call up
+other positions. ForwardInner and BackwardInner now clear the markers,
+like they also cleared highlights.
+
+2011-11-01 18:30:22 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
 2011-10-25 15:32:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix two warnings
 
