@@ -10047,11 +10047,11 @@ NextTourneyGame (int nr, int *swapColors)
 	matchGame = 1; roundNr = nr / syncInterval + 1;
     }
 
-    if(first.pr != NoProc && second.pr != NoProc) return 1; // engines already loaded
+    if(first.pr != NoProc && second.pr != NoProc || nr<0) return 1; // engines already loaded
 
     // redefine engines, engine dir, etc.
     NamesToList(firstChessProgramNames, command, mnemonic, "all"); // get mnemonics of installed engines
-    if(first.pr == NoProc || nr < 0) {
+    if(first.pr == NoProc) {
       SetPlayer(whitePlayer, appData.participants); // find white player amongst it, and parse its engine line
       InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.
     }
