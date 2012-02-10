@@ -2,6 +2,7 @@ backend.c
 book.c
 engineoutput.c
 filebrowser/selfile.c
+gamelist.c
 xboard.c
 xedittags.c
 xengineoutput.c

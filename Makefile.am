@@ -35,6 +35,7 @@ SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@
 EXTRA_DIST = pixmaps bitmaps sounds winboard filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
+	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
 	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS
 
@@ -68,7 +69,6 @@ dist_svgicon_DATA = xboard.svg
 
 Applicationsdir = $(datadir)/applications
 Applications_DATA = xboard.desktop
-
 
 ### directory and files for bitmaps
 
@@ -144,7 +144,6 @@ dist_bitmaps_DATA = \
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
 dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
 
-
 ### directory and files for sound files
 
 soundsdir = $(datadir)/games/xboard/sounds
@@ -171,3 +170,28 @@ distclean-local:
 
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 	$(srcdir)/texi2man $(srcdir)/xboard.texi > xboard.man || (rm -f xboard.man ; false)
+
+install-data-hook: install-mime-database
+uninstall-hook: uninstall-mime-database
+install-mime-database:
+	@-if test -z "$(DESTDIR)"; then \
+		xdg-mime install --mode system --novendor xboard.xml ;\
+		xdg-desktop-menu install --mode system --novendor xboard-pgn-viewer.desktop;\
+		xdg-desktop-menu install --mode system --novendor xboard-fen-viewer.desktop;\
+		xdg-desktop-menu install --mode system --novendor xboard-tourney.desktop;\
+		xdg-icon-resource install --context mimetypes --size 32 pixmaps/board32.xpm application-x-chess-pgn;\
+		xdg-icon-resource install --context mimetypes --size 32 pixmaps/cross32.xpm application-x-xboard-trn;\
+		xdg-icon-resource install --context mimetypes --size 48 pixmaps/board48.xpm application-x-chess-pgn;\
+		xdg-icon-resource install --context mimetypes --size 48 pixmaps/cross48.xpm application-x-xboard-trn;\
+	fi
+uninstall-mime-database:
+	@-if test -z "$(DESTDIR)"; then \
+		xdg-mime uninstall --mode system --novendor xboard.xml;\
+		xdg-desktop-menu uninstall --mode system --novendor xboard-pgn-viewer.desktop;\
+		xdg-desktop-menu uninstall --mode system --novendor xboard-fen-viewer.desktop;\
+		xdg-desktop-menu uninstall --mode system --novendor xboard-tourney.desktop;\
+		xdg-icon-resource uninstall --context mimetypes --size 32 board32.xpm application-x-chess-pgn;\
+		xdg-icon-resource uninstall --context mimetypes --size 32 cross32.xpm application-x-xboard-trn;\
+		xdg-icon-resource uninstall --context mimetypes --size 48 board48.xpm application-x-chess-pgn;\
+		xdg-icon-resource uninstall --context mimetypes --size 48 cross48.xpm application-x-xboard-trn;\
+	fi

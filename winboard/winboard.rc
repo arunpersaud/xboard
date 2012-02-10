@@ -44,7 +44,7 @@ BEGIN
     LTEXT           "Chessboard for Windows",400,25,15,121,8
     LTEXT           "Copyright 1991 Digital Equipment Corporation",201,6,34,
                     149,8
-    LTEXT           "Enhancements Copyright 1992-2011  Free Software Foundation",
+    LTEXT           "Enhancements Copyright 1992-2012  Free Software Foundation",
                     OPT_TCtext1,6,45,121,17
     CONTROL         "",OPT_TCTime,"Static",SS_BLACKRECT,4,28,159,1
     LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,5,160,8
@@ -592,7 +592,7 @@ BEGIN
     GROUPBOX        "Alarm",GPB_Alarm,174,71,124,30
 END
 
-DLG_BoardOptions DIALOG DISCARDABLE  0, 0, 224, 250
+DLG_BoardOptions DIALOG DISCARDABLE  0, 0, 224, 262
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Board Options"
 FONT 8, "MS Sans Serif"
@@ -649,6 +649,8 @@ BEGIN
                     WS_TABSTOP,140,203,73,10
     CONTROL         "Use Piece Font",OPT_PieceFont,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,140,215,73,10
+    CONTROL         "Suppress Grid",OPT_Grid,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,140,227,73,10
     PUSHBUTTON      "Defaults",OPT_DefaultBoardColors,80,206,50,15
     EDITTEXT        OPT_DarkSquareColor,80,112,25,15,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
@@ -660,7 +662,7 @@ BEGIN
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
     EDITTEXT        OPT_HighlightSquareColor,80,166,25,15,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    GROUPBOX        "Colors",GPB_Colors,4,84,215,142
+    GROUPBOX        "Colors",GPB_Colors,4,84,215,154
     EDITTEXT        OPT_PremoveHighlightColor,80,184,25,15,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
     LTEXT           "Light Squares",IDC_Light,10,98,60,10
@@ -674,8 +676,8 @@ BEGIN
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
     EDITTEXT        OPT_SampleDarkSquare,144,138,39,36,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    DEFPUSHBUTTON   "OK",IDOK,84,232,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,140,232,50,14
+    DEFPUSHBUTTON   "OK",IDOK,84,244,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,140,244,50,14
 END
 
 DLG_NewVariant DIALOG DISCARDABLE  0, 0, 224, 250
@@ -1485,6 +1487,7 @@ BEGIN
     "T",            IDM_TwoMachines,        VIRTKEY, CONTROL, NOINVERT
     "E",            IDM_EditGame,           VIRTKEY, CONTROL, NOINVERT
     "E",            IDM_EditPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "D",            IDM_Debug,              VIRTKEY, CONTROL, NOINVERT
     "G",            IDM_AnalyzeFile,        VIRTKEY, CONTROL, NOINVERT
     "M",            IDM_MoveNow,            VIRTKEY, CONTROL, NOINVERT
     "X",            IDM_RetractMove,        VIRTKEY, CONTROL, NOINVERT

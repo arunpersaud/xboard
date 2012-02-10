@@ -5,6 +5,8 @@
  *
  * Copyright 2005 Alessandro Scotti
  *
+ * Enhancments Copyright 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
+ *
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -60,14 +62,16 @@ int MarginW = 4;
 int MarginH = 4;
 
 // back-end
-static void DrawLine( int x1, int y1, int x2, int y2, int penType )
+static void
+DrawLine (int x1, int y1, int x2, int y2, int penType)
 {
     DrawSegment( x1, y1, NULL, NULL, PEN_NONE );
     DrawSegment( x2, y2, NULL, NULL, penType );
 }
 
 // back-end
-static void DrawLineEx( int x1, int y1, int x2, int y2, int penType )
+static void
+DrawLineEx (int x1, int y1, int x2, int y2, int penType)
 {
     int savX, savY;
     DrawSegment( x1, y1, &savX, &savY, PEN_NONE );
@@ -76,7 +80,8 @@ static void DrawLineEx( int x1, int y1, int x2, int y2, int penType )
 }
 
 // back-end
-static int GetPvScore( int index )
+static int
+GetPvScore (int index)
 {
     int score = currPvInfo[ index ].score;
 
@@ -85,7 +90,8 @@ static int GetPvScore( int index )
     return score;
 }
 
-char* MakeEvalTitle( char * title)
+char *
+MakeEvalTitle (char *title)
 {
     int score, depth;
     static char buf[MSG_SIZ];
@@ -96,7 +102,8 @@ char* MakeEvalTitle( char * title)
 
     if( depth <=0 ) return title;
     if( currCurrent & 1 ) score = -score; /* Flip score for black */
-    snprintf(buf, MSG_SIZ, "%s {%s%.2f/%-2d %d}", title, score>0 ? "+" : " ", score/100., depth, (currPvInfo[currCurrent].time+50)/100);
+    snprintf(buf, MSG_SIZ, "%s {%d: %s%.2f/%-2d %d}", title, currCurrent/2+1, 
+				score>0 ? "+" : " ", score/100., depth, (currPvInfo[currCurrent].time+50)/100);
 
     return buf;
 }
@@ -108,7 +115,8 @@ char* MakeEvalTitle( char * title)
 
     Note: height can be negative!
 */
-static int GetValueY( int value )
+static int
+GetValueY (int value)
 {
     if( value < -range*700 ) value = -range*700;
     if( value > +range*700 ) value = +range*700;
@@ -120,7 +128,8 @@ static int GetValueY( int value )
 
 // the brush selection is made part of the DrawLine, by passing a style argument
 // the wrapper for doing the text output makes this back-end
-static void DrawAxisSegmentHoriz( int value, Boolean drawValue )
+static void
+DrawAxisSegmentHoriz (int value, Boolean drawValue)
 {
     int y = GetValueY( range*value*100 );
 
@@ -139,7 +148,8 @@ static void DrawAxisSegmentHoriz( int value, Boolean drawValue )
 
 // The DrawLines again must select their own brush.
 // the initial brush selection is useless? BkMode needed for dotted line and text
-static void DrawAxis()
+static void
+DrawAxis ()
 {
     int cy = nHeightPB / 2, space = nHeightPB/(6 + appData.zoom);
     
@@ -156,7 +166,8 @@ static void DrawAxis()
 }
 
 // back-end
-static void DrawHistogram( int x, int y, int width, int value, int side )
+static void
+DrawHistogram (int x, int y, int width, int value, int side)
 {
     int left, top, right, bottom;
 
@@ -185,7 +196,8 @@ static void DrawHistogram( int x, int y, int width, int value, int side )
 }
 
 // back-end
-static void DrawSeparator( int index, int x )
+static void
+DrawSeparator (int index, int x)
 {
     if( index > 0 ) {
         if( index == currCurrent ) {
@@ -199,7 +211,8 @@ static void DrawSeparator( int index, int x )
 
 // made back-end by replacing MoveToEx and LineTo by DrawSegment
 /* Actually draw histogram as a diagram, cause there's too much data */
-static void DrawHistogramAsDiagram( int cy, int paint_width, int hist_count )
+static void
+DrawHistogramAsDiagram (int cy, int paint_width, int hist_count)
 {
     double step;
     int i;
@@ -241,7 +254,8 @@ static void DrawHistogramAsDiagram( int cy, int paint_width, int hist_count )
 }
 
 // back-end, delete pen selection
-static void DrawHistogramFull( int cy, int hist_width, int hist_count )
+static void
+DrawHistogramFull (int cy, int hist_width, int hist_count)
 {
     int i;
 
@@ -269,7 +283,8 @@ typedef struct {
 } VisualizationData;
 
 // back-end
-static Boolean InitVisualization( VisualizationData * vd )
+static Boolean
+InitVisualization (VisualizationData *vd)
 {
     Boolean result = FALSE;
 
@@ -293,7 +308,8 @@ static Boolean InitVisualization( VisualizationData * vd )
 }
 
 // back-end
-static void DrawHistograms()
+static void
+DrawHistograms ()
 {
     VisualizationData vd;
 
@@ -308,7 +324,8 @@ static void DrawHistograms()
 }
 
 // back-end
-int GetMoveIndexFromPoint( int x, int y )
+int
+GetMoveIndexFromPoint (int x, int y)
 {
     int result = -1;
     int start_x = MarginX + MarginW;
@@ -341,7 +358,8 @@ int GetMoveIndexFromPoint( int x, int y )
 }
 
 // init and display part split of so they can be moved to front end
-void PaintEvalGraph( void )
+void
+PaintEvalGraph (void)
 {
     VariantClass v = gameInfo.variant;
     range = (gameInfo.holdingsWidth && v != VariantSuper && v != VariantGreat && v != VariantSChess) ? 2 : 1; // [HGM] double range in drop games
@@ -350,4 +368,3 @@ void PaintEvalGraph( void )
     DrawAxis();
     DrawHistograms();
 }
-

@@ -1,4 +1,4 @@
-.\" Copyright (C) 1996, 2009, 2010, 2011 Free Software Foundation, Inc.
+.\" Copyright (C) 1996, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
 .\" See section COPYING below.
 .TH zic2xpm 6 "11 Apr 1996" "zic2xpm 2.0" "Games"
 .SH NAME

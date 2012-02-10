@@ -5,7 +5,7 @@
  * Massachusetts. 
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -249,7 +249,7 @@ Boolean barbaric; // flag indicating if translation is needed
 #define ABOUTBOX -1  /* not sure why these are needed */
 #define ABOUTBOX2 -1
 
-int dialogItems[][41	] = {
+int dialogItems[][42] = {
 { ABOUTBOX, IDOK, OPT_MESS, 400 }, 
 { DLG_TimeControl, IDC_Babble, OPT_TCUseMoves, OPT_TCUseInc, OPT_TCUseFixed, 
   OPT_TCtext1, OPT_TCtext2, OPT_TCitext1, OPT_TCitext2, OPT_TCftext, GPB_Factors,   IDC_Factor1, IDC_Factor2, IDOK, IDCANCEL }, 
@@ -302,7 +302,7 @@ int dialogItems[][41	] = {
   OPT_ChooseLightSquareColor, OPT_ChooseDarkSquareColor, OPT_ChooseWhitePieceColor,
   OPT_ChooseBlackPieceColor, OPT_ChooseHighlightSquareColor, OPT_ChoosePremoveHighlightColor,
   OPT_Monochrome, OPT_AllWhite, OPT_UpsideDown, OPT_DefaultBoardColors, GPB_Colors,
-  IDC_Light, IDC_Dark, IDC_White, IDC_Black, IDC_High, IDC_PreHigh, GPB_Size, OPT_Bitmaps, OPT_PieceFont }, 
+  IDC_Light, IDC_Dark, IDC_White, IDC_Black, IDC_High, IDC_PreHigh, GPB_Size, OPT_Bitmaps, OPT_PieceFont, OPT_Grid }, 
 { DLG_NewVariant, IDOK, IDCANCEL, OPT_VariantNormal, OPT_VariantFRC, OPT_VariantWildcastle,
   OPT_VariantNocastle, OPT_VariantLosers, OPT_VariantGiveaway, OPT_VariantSuicide,
   OPT_Variant3Check, OPT_VariantTwoKings, OPT_VariantAtomic, OPT_VariantCrazyhouse,
@@ -491,6 +491,29 @@ TranslateMenus(int addLanguage)
 }
 
 #endif
+
+#define IDM_RecentEngines 3000
+
+void
+RecentEngineMenu (char *s)
+{
+    if(appData.recentEngines > 0 && *s) { // feature is on, and list non-empty
+	HMENU mainMenu = GetMenu(hwndMain);
+	HMENU subMenu = GetSubMenu(mainMenu, 5); // Engine menu
+	int i=IDM_RecentEngines;
+	recentEngines = strdup(appData.recentEngineList); // remember them as they are in menu
+	AppendMenu(subMenu, MF_SEPARATOR, (UINT_PTR) 0, NULL);
+	while(*s) {
+	  char *p = strchr(s, '\n');
+	  if(p == NULL) return; // malformed!
+	  *p = NULLCHAR;
+	  AppendMenu(subMenu, MF_ENABLED|MF_STRING|MF_UNCHECKED, (UINT_PTR) i++, (LPCTSTR) s);
+	  *p = '\n';
+	  s = p+1;
+	}
+    }
+}
+
 
 typedef struct {
   char *name;
@@ -737,7 +760,8 @@ void ThawUI()
 #define JAWS_INIT
 #define JAWS_ARGS
 #define JAWS_ALT_INTERCEPT
-#define JAWS_KB_NAVIGATION
+#define JAWS_KBUP_NAVIGATION
+#define JAWS_KBDOWN_NAVIGATION
 #define JAWS_MENU_ITEMS
 #define JAWS_SILENCE
 #define JAWS_REPLAY
@@ -1094,6 +1118,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
 
   InitDrawingSizes(boardSize, 0);
+  RecentEngineMenu(appData.recentEngineList);
   InitMenuChecks();
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
 
@@ -1138,15 +1163,6 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
                  0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 #endif
     ShowWindow(hwndConsole, nCmdShow);
-    if(appData.chatBoxes) { // [HGM] chat: open chat boxes
-      char buf[MSG_SIZ], *p = buf, *q;
-	safeStrCpy(buf, appData.chatBoxes, sizeof(buf)/sizeof(buf[0]) );
-      do {
-	q = strchr(p, ';');
-	if(q) *q++ = 0;
-	if(*p) ChatPopUp(p);
-      } while(p=q);
-    }
     SetActiveWindow(hwndConsole);
   }
   if(!appData.noGUI)   UpdateWindow(hwnd);  else ShowWindow(hwnd, SW_MINIMIZE);
@@ -4573,6 +4589,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   char fileTitle[MSG_SIZ];
   char buf[MSG_SIZ];
   static SnapData sd;
+  static int peek=0;
 
   switch (message) {
 
@@ -4600,7 +4617,23 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     MouseEvent(hwnd, message, wParam, lParam);
     break;
 
-  JAWS_KB_NAVIGATION
+  case WM_KEYUP:
+    if((char)wParam == '\b') {
+      ForwardEvent(); peek = 0;
+    }
+
+    JAWS_KBUP_NAVIGATION
+
+    break;
+
+  case WM_KEYDOWN:
+    if((char)wParam == '\b') {
+      if(!peek) BackwardEvent(), peek = 1;
+    }
+
+    JAWS_KBDOWN_NAVIGATION
+
+    break;
 
   case WM_CHAR:
     
@@ -5434,6 +5467,9 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     default:
+      if(wmId >= IDM_RecentEngines && wmId < IDM_RecentEngines + appData.recentEngines)
+          RecentEngineEvent(wmId - IDM_RecentEngines);
+      else
       if(wmId > IDM_English && wmId < IDM_English+20) {
           LoadLanguageFile(languageFile[wmId - IDM_English - 1]);
           TranslateMenus(0);
@@ -8535,7 +8571,19 @@ DisplayIcsInteractionTitle(char *str)
   char consoleTitle[MSG_SIZ];
 
     snprintf(consoleTitle, MSG_SIZ, "%s: %s", szConsoleTitle, str);
-  SetWindowText(hwndConsole, consoleTitle);
+    SetWindowText(hwndConsole, consoleTitle);
+
+    if(appData.chatBoxes) { // [HGM] chat: open chat boxes
+      char buf[MSG_SIZ], *p = buf, *q;
+	safeStrCpy(buf, appData.chatBoxes, sizeof(buf)/sizeof(buf[0]) );
+      do {
+	q = strchr(p, ';');
+	if(q) *q++ = 0;
+	if(*p) ChatPopUp(p);
+      } while(p=q);
+    }
+
+    SetActiveWindow(hwndMain);
 }
 
 void

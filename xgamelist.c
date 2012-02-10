@@ -1,7 +1,7 @@
 /*
  * xgamelist.c -- Game list window, part of X front end for XBoard
  *
- * Copyright 1995, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * Copyright 1995, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -125,10 +125,7 @@ typedef struct {
 static GameListClosure *glc = NULL;
 
 Widget
-GameListCreate(name, callback, client_data)
-     char *name;
-     XtCallbackProc callback;
-     XtPointer client_data;
+GameListCreate (char *name, XtCallbackProc callback, XtPointer client_data)
 {
     Arg args[16];
     Widget shell, form, viewport, listwidg, layout, label;
@@ -330,16 +327,14 @@ extern int soughtCounts[];
 extern Board soughtBoard;
 
 static int
-GameListPrepare(int byPos)
+GameListPrepare (int byPos)
 {   // [HGM] filter: put in separate routine, to make callable from call-back
     int nstrings;
     ListGame *lg;
     char **st, *line;
-struct {
-    long sec;  /* Assuming this is >= 32 bits */
-    int ms;    /* Assuming this is >= 16 bits */
-} t,t2; GetTimeMark(&t);
+    TimeMark t, t2;
 
+    GetTimeMark(&t);
     if(st = glc->strings) while(*st) free(*st++);
     nstrings = ((ListGame *) gameList.tailPred)->number;
     glc->strings = (char **) malloc((nstrings + 1) * sizeof(char *));
@@ -365,7 +360,7 @@ struct {
 	lg->position = pos;
 	lg = (ListGame *) lg->node.succ;
      }
-GetTimeMark(&t2);printf("GameListPrepare %d msec\n", SubtractTimeMarks(&t2,&t));
+GetTimeMark(&t2);printf("GameListPrepare %ld msec\n", SubtractTimeMarks(&t2,&t));
      DisplayTitle("XBoard");
     *st = NULL;
     return listLength;
@@ -375,7 +370,7 @@ static char *list[1003];
 int listEnd;
 
 static void
-GameListReplace(int page)
+GameListReplace (int page)
 {
   // filter: put in separate routine, to make callable from call-back
   Widget listwidg;
@@ -394,15 +389,13 @@ GameListReplace(int page)
   XawListChange(listwidg, list, 0, 0, True);
   XtSetValues(listwidg, &arg, 1);
   XawListHighlight(listwidg, 0);
-  snprintf(buf, MSG_SIZ, "%s- %d/%d games (%d-%d-%d)", glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
+  snprintf(buf, MSG_SIZ, _("%s - %d/%d games (%d-%d-%d)"), glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
   XtSetArg(arg, XtNtitle, buf);
   XtSetValues(glc->shell, &arg, 1);
 }
 
 void
-GameListCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
+GameListCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String name;
     Arg args[16];
@@ -470,9 +463,7 @@ GameListCallback(w, client_data, call_data)
 }
 
 void
-GameListPopUp(fp, filename)
-     FILE *fp;
-     char *filename;
+GameListPopUp (FILE *fp, char *filename)
 {
     Arg args[16];
     int j;
@@ -481,6 +472,8 @@ GameListPopUp(fp, filename)
     if (glc == NULL) {
 	glc = (GameListClosure *) calloc(1, sizeof(GameListClosure));
 	glc->x = glc->y = -1;
+	glc->filename = NULL;
+	glc->shell = NULL;
     }
 
     GameListPrepare(False); // [HGM] filter: code put in separate routine
@@ -489,7 +482,6 @@ GameListPopUp(fp, filename)
 
     if (glc->filename != NULL) free(glc->filename);
     glc->filename = StrSave(filename);
-
 
     if (glc->shell == NULL) {
 	glc->shell = GameListCreate(filename, GameListCallback, glc);
@@ -511,7 +503,7 @@ GameListPopUp(fp, filename)
 }
 
 void
-GameListDestroy()
+GameListDestroy ()
 {
     if (glc == NULL) return;
     GameListPopDown();
@@ -528,11 +520,7 @@ GameListDestroy()
 }
 
 void
-ShowGameListProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+ShowGameListProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Arg args[16];
     int j;
@@ -555,11 +543,7 @@ ShowGameListProc(w, event, prms, nprms)
 }
 
 void
-LoadSelectedProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+LoadSelectedProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     Widget listwidg;
     XawListReturnStruct *rs;
@@ -603,11 +587,7 @@ LoadSelectedProc(w, event, prms, nprms)
 }
 
 void
-SetFilterProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+SetFilterProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
 	Arg args[16];
         String name;
@@ -626,7 +606,7 @@ SetFilterProc(w, event, prms, nprms)
 }
 
 void
-GameListPopDown()
+GameListPopDown ()
 {
     Arg args[16];
     int j;
@@ -652,8 +632,7 @@ GameListPopDown()
 }
 
 void
-GameListHighlight(index)
-     int index;
+GameListHighlight (int index)
 {
     Widget listwidg;
     int i=0; char **st;
@@ -665,12 +644,13 @@ GameListHighlight(index)
 }
 
 Boolean
-GameListIsUp()
+GameListIsUp ()
 {
     return glc && glc->up;
 }
 
-int SaveGameListAsText(FILE *f)
+int
+SaveGameListAsText (FILE *f)
 {
     ListGame * lg = (ListGame *) gameList.head;
     int nItem;
@@ -706,32 +686,36 @@ Widget gameListOptShell, listwidg;
 char *strings[20];
 int stringPtr;
 
-void GLT_ClearList()
+void
+GLT_ClearList ()
 {
     strings[0] = NULL;
     stringPtr = 0;
 }
 
-void GLT_AddToList(char *name)
+void
+GLT_AddToList (char *name)
 {
     strings[stringPtr++] = name;
     strings[stringPtr] = NULL;
 }
 
-Boolean GLT_GetFromList(int index, char *name)
+Boolean
+GLT_GetFromList (int index, char *name)
 {
   safeStrCpy(name, strings[index], MSG_SIZ);
   return TRUE;
 }
 
-void GLT_DeSelectList()
+void
+GLT_DeSelectList ()
 {
     XawListChange(listwidg, strings, 0, 0, True);
     XawListHighlight(listwidg, 0);
 }
 
 void
-GameListOptionsPopDown()
+GameListOptionsPopDown ()
 {
   if (gameListOptShell == NULL) return;
 
@@ -742,9 +726,7 @@ GameListOptionsPopDown()
 }
 
 void
-GameListOptionsCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
+GameListOptionsCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String name;
     Arg args[16];
@@ -795,7 +777,7 @@ GameListOptionsCallback(w, client_data, call_data)
 }
 
 Widget
-GameListOptionsCreate()
+GameListOptionsCreate ()
 {
     Arg args[16];
     Widget shell, form, viewport, layout;
@@ -896,7 +878,7 @@ GameListOptionsCreate()
 }
 
 void
-GameListOptionsPopUp(Widget w, XEvent *event, String *prms, Cardinal *nprms)
+GameListOptionsPopUp (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
   if (gameListOptShell == NULL)
     gameListOptShell = GameListOptionsCreate();

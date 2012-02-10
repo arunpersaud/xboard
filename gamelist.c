@@ -1,7 +1,7 @@
 /*
  * gamelist.c -- Functions to manage a gamelist
  *
- * Copyright 1995, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * Copyright 1995, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -42,6 +42,16 @@
 #include "frontend.h"
 #include "backend.h"
 #include "parser.h"
+#include "moves.h"
+#include "gettext.h"
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
 
 
 /* Variables
@@ -60,7 +70,7 @@ static int GameListNewGame P((ListGame **));
 
 /* [AS] Wildcard pattern matching */
 Boolean
-HasPattern( const char * text, const char * pattern )
+HasPattern (const char * text, const char * pattern)
 {
     while( *pattern != '\0' ) {
         if( *pattern == '*' ) {
@@ -92,7 +102,7 @@ HasPattern( const char * text, const char * pattern )
 }
 
 Boolean
-SearchPattern( const char * text, const char * pattern )
+SearchPattern (const char * text, const char * pattern)
 {
     Boolean result = TRUE;
 
@@ -118,8 +128,8 @@ SearchPattern( const char * text, const char * pattern )
 
 /* Delete a ListGame; implies removint it from a list.
  */
-static void GameListDeleteGame(listGame)
-    ListGame *listGame;
+static void
+GameListDeleteGame (ListGame *listGame)
 {
     if (listGame) {
 	if (listGame->gameInfo.event) free(listGame->gameInfo.event);
@@ -140,10 +150,10 @@ static void GameListDeleteGame(listGame)
 
 /* Free the previous list of games.
  */
-static void GameListFree(gameList)
-    List *gameList;
+static void
+GameListFree (List *gameList)
 {
-    while (!ListEmpty(gameList))
+  while (!ListEmpty(gameList))
     {
 	GameListDeleteGame((ListGame *) gameList->head);
     }
@@ -153,8 +163,8 @@ static void GameListFree(gameList)
 
 /* Initialize a new GameInfo structure.
  */
-void GameListInitGameInfo(gameInfo)
-    GameInfo *gameInfo;
+void
+GameListInitGameInfo (GameInfo *gameInfo)
 {
     gameInfo->event = NULL;
     gameInfo->site = NULL;
@@ -179,8 +189,8 @@ void GameListInitGameInfo(gameInfo)
  *
  * Note, that the ListGame is *not* added to any list
  */
-static ListGame *GameListCreate()
-
+static ListGame *
+GameListCreate ()
 {
     ListGame *listGame;
 
@@ -193,8 +203,8 @@ static ListGame *GameListCreate()
 
 /* Creates a new game for the gamelist.
  */
-static int GameListNewGame(listGamePtr)
-     ListGame **listGamePtr;
+static int
+GameListNewGame (ListGame **listGamePtr)
 {
     if (!(*listGamePtr = (ListGame *) GameListCreate())) {
 	GameListFree(&gameList);
@@ -208,8 +218,8 @@ static int GameListNewGame(listGamePtr)
 /* Build the list of games in the open file f.
  * Returns 0 for success or error number.
  */
-int GameListBuild(f)
-    FILE *f;
+int
+GameListBuild (FILE *f)
 {
     ChessMove cm, lastStart;
     int gameNumber;
@@ -217,10 +227,9 @@ int GameListBuild(f)
     int error, scratch=100, plyNr=0, fromX, fromY, toX, toY;
     int offset;
     char lastComment[MSG_SIZ], buf[MSG_SIZ];
-struct {
-    long sec;  /* Assuming this is >= 32 bits */
-    int ms;    /* Assuming this is >= 16 bits */
-} t,t2; GetTimeMark(&t);
+    TimeMark t, t2;
+
+    GetTimeMark(&t);
     GameListFree(&gameList);
     yynewfile(f);
     gameNumber = 0;
@@ -352,17 +361,18 @@ struct {
 	    if (currentListGame->gameInfo.resultDetails != NULL) {
 		free(currentListGame->gameInfo.resultDetails);
 	    }
-	    if(yy_text[0] == '{') { char *p;
-	      safeStrCpy(lastComment, yy_text+1, sizeof(lastComment)/sizeof(lastComment[0]));
-	      if(p = strchr(lastComment, '}')) *p = 0;
-	      currentListGame->gameInfo.resultDetails = StrSave(lastComment);
+	    if(yy_text[0] == '{') {
+		char *p;
+		safeStrCpy(lastComment, yy_text+1, sizeof(lastComment)/sizeof(lastComment[0]));
+		if((p = strchr(lastComment, '}'))) *p = 0;
+		currentListGame->gameInfo.resultDetails = StrSave(lastComment);
 	    }
 	    break;
 	  default:
 	    break;
 	}
 	if(gameNumber % 1000 == 0) {
-	    snprintf(buf, MSG_SIZ,"Reading game file (%d)", gameNumber);
+	    snprintf(buf, MSG_SIZ, _("Reading game file (%d)"), gameNumber);
 	    DisplayTitle(buf);
 	}
     }
@@ -382,7 +392,7 @@ struct {
 	}
     }
   }
-GetTimeMark(&t2);printf("GameListBuild %d msec\n", SubtractTimeMarks(&t2,&t));
+GetTimeMark(&t2);printf("GameListBuild %ld msec\n", SubtractTimeMarks(&t2,&t));
     quickFlag = 0;
     PackGame(boards[scratch]); // for appending end-of-game marker.
     DisplayTitle("WinBoard");
@@ -394,8 +404,8 @@ GetTimeMark(&t2);printf("GameListBuild %d msec\n", SubtractTimeMarks(&t2,&t));
 
 /* Clear an existing GameInfo structure.
  */
-void ClearGameInfo(gameInfo)
-    GameInfo *gameInfo;
+void
+ClearGameInfo (GameInfo *gameInfo)
 {
     if (gameInfo->event != NULL) {
 	free(gameInfo->event);
@@ -435,9 +445,7 @@ void ClearGameInfo(gameInfo)
 
 /* [AS] Replaced by "dynamic" tag selection below */
 char *
-GameListLineOld(number, gameInfo)
-     int number;
-     GameInfo *gameInfo;
+GameListLineOld (int number, GameInfo *gameInfo)
 {
     char *event = (gameInfo->event && strcmp(gameInfo->event, "?") != 0) ?
 		     gameInfo->event : gameInfo->site ? gameInfo->site : "?";
@@ -454,7 +462,8 @@ GameListLineOld(number, gameInfo)
 
 #define MAX_FIELD_LEN   80  /* To avoid overflowing the buffer */
 
-char * GameListLine( int number, GameInfo * gameInfo )
+char *
+GameListLine (int number, GameInfo * gameInfo)
 {
     char buffer[2*MSG_SIZ];
     char * buf = buffer;
@@ -531,7 +540,8 @@ char * GameListLine( int number, GameInfo * gameInfo )
     return strdup( buffer );
 }
 
-char * GameListLineFull( int number, GameInfo * gameInfo )
+char *
+GameListLineFull (int number, GameInfo * gameInfo)
 {
     char * event = gameInfo->event ? gameInfo->event : "?";
     char * site = gameInfo->site ? gameInfo->site : "?";
@@ -579,7 +589,8 @@ static GLT_Item GLT_ItemInfo[] = {
 char lpUserGLT[LPUSERGLT_SIZE];
 
 // back-end: convert the tag id-char to a full tag name
-char * GLT_FindItem( char id )
+char *
+GLT_FindItem (char id)
 {
     char * result = 0;
 
@@ -599,7 +610,7 @@ char * GLT_FindItem( char id )
 
 // back-end: build the list of tag names
 void
-GLT_TagsToList( char * tags )
+GLT_TagsToList (char *tags)
 {
     char * pc = tags;
 
@@ -626,7 +637,7 @@ GLT_TagsToList( char * tags )
 
 // back-end: retrieve item from dialog and translate to id-char
 char
-GLT_ListItemToTag( int index )
+GLT_ListItemToTag (int index)
 {
     char result = '\0';
     char name[MSG_SIZ];
@@ -649,7 +660,7 @@ GLT_ListItemToTag( int index )
 
 // back-end: add items id-chars one-by-one to temp tags string
 void
-GLT_ParseList()
+GLT_ParseList ()
 {
     char * pc = lpUserGLT;
     int idx = 0;

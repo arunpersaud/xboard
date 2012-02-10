@@ -5,7 +5,7 @@
  * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -208,6 +208,7 @@ void ExitAnalyzeMode P((void));
 void AnalyzeModeEvent P((void));
 void AnalyzeFileEvent P((void));
 void MatchEvent P((int mode));
+void RecentEngineEvent P((int nr));
 void TypeInEvent P((char first));
 void TypeInDoneEvent P((char *move));
 void InitPosition P((int redraw));
@@ -303,7 +304,7 @@ void InitSearch P((void));
 int GameContainsPosition P((FILE *f, ListGame *lg));
 void GLT_TagsToList P(( char * tags ));
 void GLT_ParseList P((void));
-void NamesToList P((char *name, char **engines, char **mnemonics));
+int NamesToList P((char *name, char **engines, char **mnemonics, char *group));
 int CreateTourney P((char *name));
 char *MakeName P((char *templ));
 void SwapEngines P((int n));
@@ -358,6 +359,7 @@ typedef struct _CPS {
     int offeredDraw; /* countdown */
     int reuse;
     int useSetboard; /* 0=use "edit"; 1=use "setboard" */
+    int extendedEdit;/* 1=also set holdings with "edit" */
     int useSAN;      /* 0=use coordinate notation; 1=use SAN */
     int usePing;     /* 0=not OK to use ping; 1=OK */
     int lastPing;
@@ -433,6 +435,7 @@ extern Boolean shuffleOpenings;
 extern ChessProgramStats programStats;
 extern int opponentKibitzes; // used by wengineo.c
 extern int errorExitStatus;
+extern char *recentEngines;
 void SettingsPopUp P((ChessProgramState *cps)); // [HGM] really in front-end, but CPS not known in frontend.h
 int WaitForEngine P((ChessProgramState *cps, DelayedEventCallback x));
 void Load P((ChessProgramState *cps, int n));
@@ -440,5 +443,14 @@ int MultiPV P((ChessProgramState *cps));
 void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 void MakeEngineOutputTitle P((void));
+
+/* A point in time */
+typedef struct {
+    long sec;  /* Assuming this is >= 32 bits */
+    int ms;    /* Assuming this is >= 16 bits */
+} TimeMark;
+
+void GetTimeMark P((TimeMark *));
+long SubtractTimeMarks P((TimeMark *, TimeMark *));
 
 #endif /* _BACKEND */

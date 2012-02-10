@@ -1,7 +1,7 @@
 /*
  * pgntags.c -- Functions to manage PGN tags
  *
- * Copyright 1995, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * Copyright 1995, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -47,15 +47,11 @@
 #include "backend.h"
 #include "parser.h"
 
-static char *PGNTagsStatic P((GameInfo *));
-
-
 
 /* Parse PGN tags; returns 0 for success or error number
  */
-int ParsePGNTag(tag, gameInfo)
-    char *tag;
-    GameInfo *gameInfo;
+int
+ParsePGNTag (char *tag, GameInfo *gameInfo)
 {
     char *name, *value, *p, *oldTags;
     int len;
@@ -144,85 +140,84 @@ int ParsePGNTag(tag, gameInfo)
 }
 
 
-
-/* Return a static buffer with a game's data.
- */
-static char *PGNTagsStatic(gameInfo)
-    GameInfo *gameInfo;
+/* Print game info */
+void
+PrintPGNTags (FILE *fp, GameInfo *gameInfo)
 {
-    static char buf[8192];
-    char buf1[MSG_SIZ];
-
-    buf[0] = NULLCHAR;
-
-    snprintf(buf1, MSG_SIZ, "[Event \"%s\"]\n",
-	    gameInfo->event ? gameInfo->event : "?");
-    strcat(buf, buf1);
-    snprintf(buf1, MSG_SIZ, "[Site \"%s\"]\n",
-	    gameInfo->site ? gameInfo->site : "?");
-    strcat(buf, buf1);
-    snprintf(buf1, MSG_SIZ, "[Date \"%s\"]\n",
-	    gameInfo->date ? gameInfo->date : "?");
-    strcat(buf, buf1);
-    snprintf(buf1, MSG_SIZ, "[Round \"%s\"]\n",
-	    gameInfo->round ? gameInfo->round : "-");
-    strcat(buf, buf1);
-    snprintf(buf1, MSG_SIZ, "[White \"%s\"]\n",
-	    gameInfo->white ? gameInfo->white : "?");
-    strcat(buf, buf1);
-    snprintf(buf1, MSG_SIZ, "[Black \"%s\"]\n",
-	    gameInfo->black ? gameInfo->black : "?");
-    strcat(buf, buf1);
-    snprintf(buf1, MSG_SIZ, "[Result \"%s\"]\n", PGNResult(gameInfo->result));
-    strcat(buf, buf1);
-
-    if (gameInfo->whiteRating >= 0 ) {
-	snprintf(buf1, MSG_SIZ, "[WhiteElo \"%d\"]\n", gameInfo->whiteRating );
-	strcat(buf, buf1);
-    }
-    if ( gameInfo->blackRating >= 0 ) {
-	snprintf(buf1, MSG_SIZ, "[BlackElo \"%d\"]\n", gameInfo->blackRating );
-	strcat(buf, buf1);
-    }
-    if (gameInfo->timeControl != NULL) {
-	snprintf(buf1, MSG_SIZ, "[TimeControl \"%s\"]\n", gameInfo->timeControl);
-	strcat(buf, buf1);
-    }
-    if (gameInfo->variant != VariantNormal) {
-        snprintf(buf1, MSG_SIZ, "[Variant \"%s\"]\n", VariantName(gameInfo->variant));
-	strcat(buf, buf1);
-    }
-    if (gameInfo->extraTags != NULL) {
-	strcat(buf, gameInfo->extraTags);
-    }
-    return buf;
-}
-
-
-
-/* Print game info
- */
-void PrintPGNTags(fp, gameInfo)
-     FILE *fp;
-     GameInfo *gameInfo;
-{
-    fprintf(fp, "%s", PGNTagsStatic(gameInfo));
+    fprintf(fp, "[Event \"%s\"]\n", gameInfo->event ? gameInfo->event : "?");
+    fprintf(fp, "[Site \"%s\"]\n", gameInfo->site ? gameInfo->site : "?");
+    fprintf(fp, "[Date \"%s\"]\n", gameInfo->date ? gameInfo->date : "?");
+    fprintf(fp, "[Round \"%s\"]\n", gameInfo->round ? gameInfo->round : "-");
+    fprintf(fp, "[White \"%s\"]\n", gameInfo->white ? gameInfo->white : "?");
+    fprintf(fp, "[Black \"%s\"]\n", gameInfo->black ? gameInfo->black : "?");
+    fprintf(fp, "[Result \"%s\"]\n", PGNResult(gameInfo->result));
+    if (gameInfo->whiteRating >= 0)
+	fprintf(fp, "[WhiteElo \"%d\"]\n", gameInfo->whiteRating);
+    if (gameInfo->blackRating >= 0)
+	fprintf(fp, "[BlackElo \"%d\"]\n", gameInfo->blackRating);
+    if (gameInfo->timeControl)
+	fprintf(fp, "[TimeControl \"%s\"]\n", gameInfo->timeControl);
+    if (gameInfo->variant != VariantNormal)
+        fprintf(fp, "[Variant \"%s\"]\n", VariantName(gameInfo->variant));
+    if (gameInfo->extraTags)
+	fputs(gameInfo->extraTags, fp);
 }
 
 
 /* Return a non-static buffer with a games info.
  */
-char *PGNTags(gameInfo)
-    GameInfo *gameInfo;
+char *
+PGNTags (GameInfo *gameInfo)
 {
-    return StrSave(PGNTagsStatic(gameInfo));
+    size_t len;
+    char *buf;
+    char *p;
+
+    // First calculate the needed buffer size.
+    // Then we don't have to check the buffer size later.
+    len = 12 + 11 + 11 + 12 + 12 + 12 + 25 + 1; // The first 7 tags
+    if (gameInfo->event) len += strlen(gameInfo->event);
+    if (gameInfo->site)  len += strlen(gameInfo->site);
+    if (gameInfo->date)  len += strlen(gameInfo->date);
+    if (gameInfo->round) len += strlen(gameInfo->round);
+    if (gameInfo->white) len += strlen(gameInfo->white);
+    if (gameInfo->black) len += strlen(gameInfo->black);
+    if (gameInfo->whiteRating >= 0) len += 40;
+    if (gameInfo->blackRating >= 0) len += 40;
+    if (gameInfo->timeControl) len += strlen(gameInfo->timeControl) + 20;
+    if (gameInfo->variant != VariantNormal) len += 50;
+    if (gameInfo->extraTags) len += strlen(gameInfo->extraTags);
+
+    buf = malloc(len);
+    if (!buf)
+	return 0;
+
+    p = buf;
+    p += sprintf(p, "[Event \"%s\"]\n", gameInfo->event ? gameInfo->event : "?");
+    p += sprintf(p, "[Site \"%s\"]\n", gameInfo->site ? gameInfo->site : "?");
+    p += sprintf(p, "[Date \"%s\"]\n", gameInfo->date ? gameInfo->date : "?");
+    p += sprintf(p, "[Round \"%s\"]\n", gameInfo->round ? gameInfo->round : "-");
+    p += sprintf(p, "[White \"%s\"]\n", gameInfo->white ? gameInfo->white : "?");
+    p += sprintf(p, "[Black \"%s\"]\n", gameInfo->black ? gameInfo->black : "?");
+    p += sprintf(p, "[Result \"%s\"]\n", PGNResult(gameInfo->result));
+    if (gameInfo->whiteRating >= 0)
+	p += sprintf(p, "[WhiteElo \"%d\"]\n", gameInfo->whiteRating);
+    if (gameInfo->blackRating >= 0)
+	p += sprintf(p, "[BlackElo \"%d\"]\n", gameInfo->blackRating);
+    if (gameInfo->timeControl)
+	p += sprintf(p, "[TimeControl \"%s\"]\n", gameInfo->timeControl);
+    if (gameInfo->variant != VariantNormal)
+        p += sprintf(p, "[Variant \"%s\"]\n", VariantName(gameInfo->variant));
+    if (gameInfo->extraTags)
+	strcpy(p, gameInfo->extraTags);
+    return buf;
 }
 
 
 /* Returns pointer to a static string with a result.
  */
-char *PGNResult(result)
-     ChessMove result;
+char *
+PGNResult (ChessMove result)
 {
     switch (result) {
       case GameUnfinished:
@@ -239,9 +234,7 @@ char *PGNResult(result)
 
 /* Returns 0 for success, nonzero for error */
 int
-ReplaceTags(tags, gameInfo)
-     char *tags;
-     GameInfo *gameInfo;
+ReplaceTags (char *tags, GameInfo *gameInfo)
 {
     ChessMove moveType;
     int err;

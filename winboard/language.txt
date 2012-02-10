@@ -196,7 +196,7 @@ ABOUTBOX
 "OK" === ""
 "Chessboard for Windows" === ""
 "Copyright 1991 Digital Equipment Corporation" === ""
-"Enhancements Copyright 1992-2011  Free Software Foundation" === ""
+"Enhancements Copyright 1992-2012  Free Software Foundation" === ""
 "Enhancements Copyright 2005\r\nAlessandro Scotti" === ""
 ## What happened with H.G.Muller? [He sold his copyrights to FSF for $1]
 ## The following string of 6 spaces can be translated to an acknowledgement of the translator,
@@ -460,6 +460,9 @@ BOARD OPTIONS
 "Monochrome" === ""
 "All White" === ""
 "Flip Black" === ""
+"Use Board Textures" === ""
+"Use Piece Font" === ""
+"Suppress Grid" === ""
 "Size" === ""
 
 BOARD SIZES (translate as number?)
@@ -951,6 +954,11 @@ backend.c
 "No response from ICS" === ""
 "You cannot do this while you are playing or observing" === ""
 "Click in holdings to choose piece" === ""
+"failed writing PV" === ""
+"Bad Seek" === ""
+"vs." === ""
+"%s (%d reversible plies)" === ""
+"Reading game file (%d)" === ""
 
 END-OF-GAME MESSAGES (should they be translated?)
 ## I think that only for visualization and not for PGN, as PGN files are shared all around the world

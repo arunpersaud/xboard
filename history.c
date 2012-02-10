@@ -6,6 +6,8 @@
  *
  * Copyright 2005 Alessandro Scotti
  *
+ * Enhancements Copyright 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
+ *
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -70,7 +72,8 @@ static HistoryMove histMoves[ MAX_MOVES ];
 /* Note: in the following code a "Memo" is a Rich Edit control (it's Delphi lingo) */
 
 // back-end after replacing Windows data-types by equivalents
-static Boolean OnlyCurrentPositionChanged()
+static Boolean
+OnlyCurrentPositionChanged ()
 {
     Boolean result = FALSE;
 
@@ -96,7 +99,8 @@ static Boolean OnlyCurrentPositionChanged()
 }
 
 // back-end, after replacing Windows data types
-static Boolean OneMoveAppended()
+static Boolean
+OneMoveAppended ()
 {
     Boolean result = FALSE;
 
@@ -115,7 +119,8 @@ static Boolean OneMoveAppended()
 }
 
 // back-end, now that color and font-style are passed as numbers
-static void AppendMoveToMemo( int index )
+static void
+AppendMoveToMemo (int index)
 {
     char buf[64];
 
@@ -150,7 +155,8 @@ static void AppendMoveToMemo( int index )
 }
 
 // back-end
-void RefreshMemoContent()
+void
+RefreshMemoContent ()
 {
     int i;
 
@@ -162,7 +168,8 @@ void RefreshMemoContent()
 }
 
 // back-end part taken out of HighlightMove to determine character positions
-static void DoHighlight(int index, int onoff)
+static void
+DoHighlight (int index, int onoff)
 {
     if( index >= 0 && index < MAX_MOVES ) {
         HighlightMove( histMoves[index].memoOffset, 
@@ -171,7 +178,8 @@ static void DoHighlight(int index, int onoff)
 }
 
 // back-end, now that a wrapper is provided for the front-end code to do the actual scrolling
-void MemoContentUpdated()
+void
+MemoContentUpdated ()
 {
     int caretPos;
 
@@ -200,7 +208,8 @@ void MemoContentUpdated()
 }
 
 // back-end. Must be called as double-click call-back on move-history text edit
-void FindMoveByCharIndex( int char_index )
+void
+FindMoveByCharIndex (int char_index)
 {
     int index;
 
@@ -214,7 +223,8 @@ void FindMoveByCharIndex( int char_index )
 }
 
 // back-end. In WinBoard called by call-back, but could be called directly by SetIfExists?
-void UpdateMoveHistory()
+void
+UpdateMoveHistory ()
 {
         /* Update the GUI */
         if( OnlyCurrentPositionChanged() ) {
@@ -231,7 +241,8 @@ void UpdateMoveHistory()
 }
 
 // back-end
-void MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo )
+void
+MoveHistorySet (char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo)
 {
     /* [AS] Danger! For now we rely on the movelist parameter being a static variable! */
 

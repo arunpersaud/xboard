@@ -5,7 +5,7 @@
  * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -423,7 +423,7 @@ ArgDescriptor argDescriptors[] = {
   { "xhighlight", ArgFalse, (void *) &appData.highlightLastMove, FALSE, INVALID },
   { "-highlight", ArgFalse, (void *) &appData.highlightLastMove, FALSE, INVALID },
   { "highlightDragging", ArgBoolean,
-    (void *) &appData.highlightDragging, TRUE, INVALID },
+    (void *) &appData.highlightDragging, !XBOARD, (ArgIniType) TRUE },
   { "highdrag", ArgTrue, (void *) &appData.highlightDragging, FALSE, INVALID },
   { "xhighdrag", ArgFalse, (void *) &appData.highlightDragging, FALSE, INVALID },
   { "-highdrag", ArgFalse, (void *) &appData.highlightDragging, FALSE, INVALID },
@@ -485,6 +485,8 @@ ArgDescriptor argDescriptors[] = {
   { "icsMenu", ArgString, (void *) &icsTextMenuString, TRUE, (ArgIniType) ICS_TEXT_MENU_DEFAULT },
   { "icsNames", ArgString, (void *) &icsNames, TRUE, (ArgIniType) ICS_NAMES },
   { "singleEngineList", ArgBoolean, (void *) &singleList, !XBOARD, (ArgIniType) FALSE },
+  { "recentEngines", ArgInt, (void *) &appData.recentEngines, TRUE, (ArgIniType) 6 },
+  { "recentEngineList", ArgString, (void *) &appData.recentEngineList, TRUE, (ArgIniType) "" },
   { "firstChessProgramNames", ArgString, (void *) &firstChessProgramNames,
     TRUE, (ArgIniType) FCP_NAMES },
   { "secondChessProgramNames", ArgString, (void *) &secondChessProgramNames,
@@ -579,7 +581,9 @@ ArgDescriptor argDescriptors[] = {
   { "syncAfterRound", ArgBoolean, (void *) &appData.roundSync, FALSE, (ArgIniType) FALSE },
   { "syncAfterCycle", ArgBoolean, (void *) &appData.cycleSync, FALSE, (ArgIniType) TRUE },
   { "seedBase", ArgInt, (void *) &appData.seedBase, FALSE, (ArgIniType) 1 },
+  { "pgnNumberTag", ArgBoolean, (void *) &appData.numberTag, TRUE, (ArgIniType) FALSE },
   { "afterGame", ArgString, (void *) &appData.afterGame, FALSE, INVALID },
+  { "afterTourney", ArgString, (void *) &appData.afterTourney, FALSE, INVALID },
 
   /* [HGM] board-size, adjudication and misc. options */
   { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },
@@ -625,7 +629,7 @@ ArgDescriptor argDescriptors[] = {
   { "keepAlive", ArgInt, (void *) &appData.keepAlive, FALSE, INVALID },
   { "icstype", ArgInt, (void *) &ics_type, FALSE, INVALID },
   { "forceIllegalMoves", ArgTrue, (void *) &appData.forceIllegal, FALSE, INVALID },
-  { "showTargetSquares", ArgBoolean, (void *) &appData.markers, TRUE, FALSE },
+  { "showTargetSquares", ArgBoolean, (void *) &appData.markers, TRUE, (ArgIniType) FALSE },
   { "firstPgnName", ArgString, (void *) &appData.pgnName[0], FALSE, (ArgIniType) "" },
   { "fn", ArgString, (void *) &appData.pgnName[0], FALSE, INVALID },
   { "secondPgnName", ArgString, (void *) &appData.pgnName[1], FALSE, (ArgIniType) "" },
@@ -645,6 +649,8 @@ ArgDescriptor argDescriptors[] = {
   { "stretch", ArgInt, (void *) &appData.stretch, FALSE, (ArgIniType) 1 },
   { "ignoreColors", ArgBoolean, (void *) &appData.ignoreColors, FALSE, FALSE },
   { "findMirrorImage", ArgBoolean, (void *) &appData.findMirror, FALSE, FALSE },
+  { "viewer", ArgTrue, (void *) &appData.viewer, FALSE, FALSE },
+  { "viewerOptions", ArgString, (void *) &appData.viewerOptions, TRUE, (ArgIniType) "-ncp -engineOutputUp false -saveSettingsOnExit false" },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },
@@ -768,7 +774,7 @@ ExitArgError(char *msg, char *badArg, Boolean quit)
   int len;
 
   len = snprintf(buf,MSG_SIZ, "%s %s", msg, badArg);
-  if( (len > MSG_SIZ) && appData.debugMode )
+  if( (len >= MSG_SIZ) && appData.debugMode )
     fprintf(debugFP, "ExitArgError: buffer truncated. Input: msg=%s badArg=%s\n", msg, badArg);
 
   if(!quit) { printf(_("%s in settings file\n"), buf); return; } // DisplayError does not work yet at this stage...
@@ -820,7 +826,7 @@ ParseSettingsFile(char *name, char **addr)
   if(!ok && strchr(name, '.') == NULL)
     { // append default file-name extension '.ini' when needed
       len = snprintf(buf,MSG_SIZ, "%s.ini", name);
-      if( (len > MSG_SIZ) && appData.debugMode )
+      if( (len >= MSG_SIZ) && appData.debugMode )
 	fprintf(debugFP, "ParseSettingsFile: buffer truncated. Input: name=%s \n",name);
 
       ok = MySearchPath(installDir, buf, fullname);
@@ -1247,6 +1253,8 @@ InitAppData(char *lpCmdLine)
   /* Parse command line */
   ParseArgs(StringGet, &lpCmdLine);
 
+  if(appData.viewer && appData.viewerOptions[0]) ParseArgsFromString(appData.viewerOptions);
+
   /* [HGM] make sure board size is acceptable */
   if(appData.NrFiles > BOARD_FILES ||
      appData.NrRanks > BOARD_RANKS   )
@@ -1267,7 +1275,7 @@ InitAppData(char *lpCmdLine)
       if(p != NULL)
 	{ // engine command line contains WinBoard options
           len = snprintf(buf, MSG_SIZ, p+6, f, f, f, f, f, f, f, f, f, f); // replace %s in them by "first"
-	  if( (len > MSG_SIZ) && appData.debugMode )
+	  if( (len >= MSG_SIZ) && appData.debugMode )
 	    fprintf(debugFP, "InitAppData: buffer truncated.\n");
 
           ParseArgs(StringGet, &q);
@@ -1284,7 +1292,7 @@ InitAppData(char *lpCmdLine)
       if(p != NULL)
 	{ // engine command line contains WinBoard options
           len = snprintf(buf,MSG_SIZ, p+6, s, s, s, s, s, s, s, s, s, s); // replace %s in them by "first"
-	  if( (len > MSG_SIZ) && appData.debugMode )
+	  if( (len >= MSG_SIZ) && appData.debugMode )
 	    fprintf(debugFP, "InitAppData: buffer truncated.\n");
 
           ParseArgs(StringGet, &q);
@@ -1483,13 +1491,13 @@ GetArgValue(char *name)
       return TRUE;
     case ArgInt:
       len = snprintf(name, MSG_SIZ, "%d", *(int*) ad->argLoc);
-      if( (len > MSG_SIZ) && appData.debugMode )
+      if( (len >= MSG_SIZ) && appData.debugMode )
 	fprintf(debugFP, "GetArgValue: buffer truncated.\n");
 
       return TRUE;
     case ArgBoolean:
       len = snprintf(name, MSG_SIZ, "%s", *(Boolean*) ad->argLoc ? "true" : "false");
-      if( (len > MSG_SIZ) && appData.debugMode )
+      if( (len >= MSG_SIZ) && appData.debugMode )
 	fprintf(debugFP, "GetArgValue: buffer truncated.\n");
 
       return TRUE;

@@ -5,7 +5,7 @@
  * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -72,21 +72,21 @@ int PosFlags(int index);
 extern signed char initialRights[BOARD_FILES]; /* [HGM] all rights enabled, set in InitPosition */
 int quickFlag;
 
-int WhitePiece(piece)
-     ChessSquare piece;
+int
+WhitePiece (ChessSquare piece)
 {
     return (int) piece >= (int) WhitePawn && (int) piece < (int) BlackPawn;
 }
 
-int BlackPiece(piece)
-     ChessSquare piece;
+int
+BlackPiece (ChessSquare piece)
 {
     return (int) piece >= (int) BlackPawn && (int) piece < (int) EmptySquare;
 }
 
 #if 0
-int SameColor(piece1, piece2)
-     ChessSquare piece1, piece2;
+int
+SameColor (ChessSquare piece1, ChessSquare piece2)
 {
     return ((int) piece1 >= (int) WhitePawn &&   /* [HGM] can be > King ! */
             (int) piece1 <  (int) BlackPawn &&
@@ -109,15 +109,15 @@ char pieceToChar[] = {
                         'x' };
 char pieceNickName[EmptySquare];
 
-char PieceToChar(p)
-     ChessSquare p;
+char
+PieceToChar (ChessSquare p)
 {
     if((int)p < 0 || (int)p >= (int)EmptySquare) return('x'); /* [HGM] for safety */
     return pieceToChar[(int) p];
 }
 
-int PieceToNumber(p)  /* [HGM] holdings: count piece type, ignoring non-participating piece types */
-     ChessSquare p;
+int
+PieceToNumber (ChessSquare p)  /* [HGM] holdings: count piece type, ignoring non-participating piece types */
 {
     int i=0;
     ChessSquare start = (int)p >= (int)BlackPawn ? BlackPawn : WhitePawn;
@@ -126,8 +126,8 @@ int PieceToNumber(p)  /* [HGM] holdings: count piece type, ignoring non-particip
     return i;
 }
 
-ChessSquare CharToPiece(c)
-     int c;
+ChessSquare
+CharToPiece (int c)
 {
      int i;
      if(c == '.') return EmptySquare;
@@ -138,8 +138,8 @@ ChessSquare CharToPiece(c)
      return EmptySquare;
 }
 
-void CopyBoard(to, from)
-     Board to, from;
+void
+CopyBoard (Board to, Board from)
 {
     int i, j;
 
@@ -151,8 +151,8 @@ void CopyBoard(to, from)
     to[HOLDINGS_SET] = 0; // flag used in ICS play
 }
 
-int CompareBoards(board1, board2)
-     Board board1, board2;
+int
+CompareBoards (Board board1, Board board2)
 {
     int i, j;
 
@@ -173,12 +173,9 @@ int CompareBoards(board1, board2)
    EP_UNKNOWN if we don't know and want to allow all e.p. captures.
    Promotion moves generated are to Queen only.
 */
-void GenPseudoLegal(board, flags, callback, closure, filter)
-     Board board;
-     int flags;
-     MoveCallback callback;
-     VOIDSTAR closure;
-     ChessSquare filter; // [HGM] speed: only do moves with this piece type
+void
+GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure, ChessSquare filter)
+// speed: only do moves with this piece type
 {
     int rf, ff;
     int i, j, d, s, fs, rs, rt, ft, m;
@@ -723,12 +720,8 @@ extern void GenLegalCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
 				VOIDSTAR closure));
 
-void GenLegalCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void 
+GenLegalCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
     register GenLegalClosure *cl = (GenLegalClosure *) closure;
 
@@ -736,7 +729,15 @@ void GenLegalCallback(board, flags, kind, rf, ff, rt, ft, closure)
 
     if (!(flags & F_IGNORE_CHECK) ) {
       int check, promo = (gameInfo.variant == VariantSpartan && kind == BlackPromotion);
-      if(promo) board[rf][ff] = BlackKing; // [HGM] spartan: promote to King before check-test
+      if(promo) {
+	    int r, f, kings=0;
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT;	f++)
+		kings += (board[r][f] == BlackKing);
+	    if(kings >= 2)
+	      promo = 0;
+	    else
+		board[rf][ff] = BlackKing; // [HGM] spartan: promote to King before check-test
+	}
 	check = CheckTest(board, flags, rf, ff, rt, ft,
 		  kind == WhiteCapturesEnPassant ||
 		  kind == BlackCapturesEnPassant);
@@ -775,12 +776,8 @@ typedef struct {
    true if castling is not yet ruled out by a move of the king or
    rook.  Return TRUE if the player on move is currently in check and
    F_IGNORE_CHECK is not set.  [HGM] add castlingRights parameter */
-int GenLegal(board, flags, callback, closure, filter)
-     Board board;
-     int flags;
-     MoveCallback callback;
-     VOIDSTAR closure;
-     ChessSquare filter;
+int
+GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, ChessSquare filter)
 {
     GenLegalClosure cl;
     int ff, ft, k, left, right, swap;
@@ -964,12 +961,8 @@ extern void CheckTestCallback P((Board board, int flags, ChessMove kind,
 				 VOIDSTAR closure));
 
 
-void CheckTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void
+CheckTestCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
     register CheckTestClosure *cl = (CheckTestClosure *) closure;
 
@@ -988,10 +981,8 @@ void CheckTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
    back rank is not accounted for (i.e., we still return nonzero), as
    this is illegal anyway.  Return value is the number of times the
    king is in check. */
-int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
-     Board board;
-     int flags;
-     int rf, ff, rt, ft, enPassant;
+int
+CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant)
 {
     CheckTestClosure cl;
     ChessSquare king = flags & F_WHITE_ON_MOVE ? WhiteKing : BlackKing;
@@ -1003,16 +994,18 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
     if(gameInfo.variant == VariantKnightmate)
         king = flags & F_WHITE_ON_MOVE ? WhiteUnicorn : BlackUnicorn;
 
-    if (rf >= 0) {
+    if (rt >= 0) {
 	if (enPassant) {
 	    captured = board[rf][ft];
 	    board[rf][ft] = EmptySquare;
 	} else {
 	    captured = board[rt][ft];
 	}
-	board[rt][ft] = board[rf][ff];
-	board[rf][ff] = EmptySquare;
-    } else board[rt][ft] = ff; // [HGM] drop
+	if(rf == DROP_RANK) board[rt][ft] = ff; else { // [HGM] drop
+	    board[rt][ft] = board[rf][ff];
+	    board[rf][ff] = EmptySquare;
+	}
+    }
 
     /* For compatibility with ICS wild 9, we scan the board in the
        order a1, a2, a3, ... b1, b2, ..., h8 to find the first king,
@@ -1039,24 +1032,22 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
 
   undo_move:
 
-    if (rf >= 0) {
-	board[rf][ff] = board[rt][ft];
+    if (rt >= 0) {
+	if(rf != DROP_RANK) // [HGM] drop
+	    board[rf][ff] = board[rt][ft];
 	if (enPassant) {
 	    board[rf][ft] = captured;
 	    board[rt][ft] = EmptySquare;
 	} else {
 	    board[rt][ft] = captured;
 	}
-    } else board[rt][ft] = EmptySquare; // [HGM] drop
+    }
 
     return cl.fking < BOARD_RGHT ? cl.check : 1000; // [HGM] atomic: return 1000 if we have no king
 }
 
-ChessMove LegalDrop(board, flags, piece, rt, ft)
-     Board board;
-     int flags;
-     ChessSquare piece;
-     int rt, ft;
+ChessMove
+LegalDrop (Board board, int flags, ChessSquare piece, int rt, int ft)
 {   // [HGM] put drop legality testing in separate routine for clarity
     int n;
 if(appData.debugMode) fprintf(debugFP, "LegalDrop: %d @ %d,%d)\n", piece, ft, rt);
@@ -1092,12 +1083,8 @@ extern void LegalityTestCallback P((Board board, int flags, ChessMove kind,
 				    int rf, int ff, int rt, int ft,
 				    VOIDSTAR closure));
 
-void LegalityTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void
+LegalityTestCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
     register LegalityTestClosure *cl = (LegalityTestClosure *) closure;
 
@@ -1110,10 +1097,8 @@ void LegalityTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
       cl->kind = kind;
 }
 
-ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
-     Board board;
-     int flags;
-     int rf, ff, rt, ft, promoChar;
+ChessMove
+LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoChar)
 {
     LegalityTestClosure cl; ChessSquare piece, filterPiece, *castlingRights = board[CASTLING];
 
@@ -1224,12 +1209,8 @@ extern void MateTestCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
 				VOIDSTAR closure));
 
-void MateTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void
+MateTestCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
     register MateTestClosure *cl = (MateTestClosure *) closure;
 
@@ -1237,9 +1218,8 @@ void MateTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
 }
 
 /* Return MT_NONE, MT_CHECK, MT_CHECKMATE, or MT_STALEMATE */
-int MateTest(board, flags)
-     Board board;
-     int flags;
+int
+MateTest (Board board, int flags)
 {
     MateTestClosure cl;
     int inCheck, r, f, myPieces=0, hisPieces=0, nrKing=0;
@@ -1273,7 +1253,7 @@ int MateTest(board, flags)
 	return inCheck ? MT_CHECK : MT_NONE;
     } else {
         if(gameInfo.holdingsWidth && gameInfo.variant != VariantSuper && gameInfo.variant != VariantGreat
-                                                                      && gameInfo.variant != VariantGrand) { // drop game
+                                 && gameInfo.variant != VariantSChess && gameInfo.variant != VariantGrand) { // drop game
             int r, f, n, holdings = flags & F_WHITE_ON_MOVE ? BOARD_WIDTH-1 : 0;
             for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) if(board[r][f] == EmptySquare) // all empty squares
                 for(n=0; n<BOARD_HEIGHT; n++) // all pieces in hand
@@ -1299,12 +1279,8 @@ extern void DisambiguateCallback P((Board board, int flags, ChessMove kind,
 				    int rf, int ff, int rt, int ft,
 				    VOIDSTAR closure));
 
-void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void
+DisambiguateCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
     register DisambiguateClosure *cl = (DisambiguateClosure *) closure;
     int wildCard = FALSE; ChessSquare piece = board[rf][ff];
@@ -1337,10 +1313,8 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
     }
 }
 
-void Disambiguate(board, flags, closure)
-     Board board;
-     int flags;
-     DisambiguateClosure *closure;
+void
+Disambiguate (Board board, int flags, DisambiguateClosure *closure)
 {
     int illegal = 0; char c = closure->promoCharIn;
 
@@ -1472,12 +1446,8 @@ extern void CoordsToAlgebraicCallback P((Board board, int flags,
 					 ChessMove kind, int rf, int ff,
 					 int rt, int ft, VOIDSTAR closure));
 
-void CoordsToAlgebraicCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void
+CoordsToAlgebraicCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
     register CoordsToAlgebraicClosure *cl =
       (CoordsToAlgebraicClosure *) closure;
@@ -1506,12 +1476,8 @@ void CoordsToAlgebraicCallback(board, flags, kind, rf, ff, rt, ft, closure)
 /* Convert coordinates to normal algebraic notation.
    promoChar must be NULLCHAR or 'x' if not a promotion.
 */
-ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
-     Board board;
-     int flags;
-     int rf, ff, rt, ft;
-     int promoChar;
-     char out[MOVE_LEN];
+ChessMove
+CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int promoChar, char out[MOVE_LEN])
 {
     ChessSquare piece;
     ChessMove kind;
@@ -1755,12 +1721,8 @@ extern void AtacksCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
 				VOIDSTAR closure));
 
-void AttacksCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void
+AttacksCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {   // For adding captures that can lead to chase indictment to the chaseStack
     if(board[rt][ft] == EmptySquare) return;                               // non-capture
     if(board[rt][ft] == WhitePawn && rt <  BOARD_HEIGHT/2) return;         // Pawn before river can be chased
@@ -1779,12 +1741,8 @@ extern void ExistingAtacksCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
 				VOIDSTAR closure));
 
-void ExistingAttacksCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void
+ExistingAttacksCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {   // for removing pre-exsting captures from the chaseStack, to be left with newly created ones
     int i;
     register ChaseClosure *cl = (ChaseClosure *) closure; //closure tells us the move played in the repeat loop
@@ -1808,12 +1766,8 @@ extern void ProtectedCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
 				VOIDSTAR closure));
 
-void ProtectedCallback(board, flags, kind, rf, ff, rt, ft, closure)
-     Board board;
-     int flags;
-     ChessMove kind;
-     int rf, ff, rt, ft;
-     VOIDSTAR closure;
+void
+ProtectedCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {   // for determining if a piece (given through the closure) is protected
     register ChaseClosure *cl = (ChaseClosure *) closure; // closure tells us where to recapture
 
@@ -1824,7 +1778,8 @@ void ProtectedCallback(board, flags, kind, rf, ff, rt, ft, closure)
 
 extern char moveList[MAX_MOVES][MOVE_LEN];
 
-int PerpetualChase(int first, int last)
+int
+PerpetualChase (int first, int last)
 {   // this routine detects if the side to move in the 'first' position is perpetually chasing (when not checking)
     int i, j, k, tail;
     ChaseClosure cl;

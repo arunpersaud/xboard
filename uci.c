@@ -5,6 +5,8 @@
  *
  * Copyright 2006 Alessandro Scotti
  *
+ * Enhancement Copyright 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
+ *
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -31,7 +33,8 @@
 #include "backend.h"
 Boolean GetArgValue(char *a);				
 
-void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
+void
+InitEngineUCI (const char *iniDir, ChessProgramState *cps)
 {   // replace engine command line by adapter command with expanded meta-symbols
     if( cps->isUCI ) {
         char *p, *q;

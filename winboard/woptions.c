@@ -1,7 +1,7 @@
 /*
  * woptions.c -- Options dialog box routines for WinBoard
  *
- * Copyright 2000, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * Copyright 2000, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -516,7 +516,7 @@ BoardOptionsWhichRadio(HWND hDlg)
 LRESULT CALLBACK
 BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  static Boolean  mono, white, flip, fonts, bitmaps;
+  static Boolean  mono, white, flip, fonts, bitmaps, grid;
   static BoardSize size;
   static COLORREF lsc, dsc, wpc, bpc, hsc, phc;
   static HBITMAP pieces[3];
@@ -599,6 +599,9 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     if (appData.useFont)
       CheckDlgButton(hDlg, OPT_PieceFont, TRUE);
 
+    if (appData.overrideLineGap >= 0)
+      CheckDlgButton(hDlg, OPT_Grid, TRUE);
+
     pieces[0] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "s");
     pieces[1] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "w");
     pieces[2] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "o");
@@ -615,6 +618,7 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     size = boardSize;
     bitmaps = appData.useBitmaps;
     fonts = appData.useFont;
+    grid = appData.overrideLineGap >= 0;
 
     SetBoardOptionEnables(hDlg);
     return TRUE;
@@ -664,6 +668,7 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
           (white != appData.allWhite) ||
           (fonts != appData.useFont) ||
           (bitmaps != appData.useBitmaps) ||
+          (grid != appData.overrideLineGap >= 0) ||
 	  (phc  != premoveHighlightColor)) {
 
 	  lightSquareColor = lsc;
@@ -677,6 +682,7 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
           appData.upsideDown = flip;
           appData.useFont = fonts;
           appData.useBitmaps = bitmaps;
+          if(grid != appData.overrideLineGap >= 0) appData.overrideLineGap = grid - 1;
 
 	  InitDrawingColors();
 	  InitDrawingSizes(boardSize, 0);
@@ -781,6 +787,10 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     case OPT_PieceFont:
       fonts = !fonts;
+      break;
+
+    case OPT_Grid:
+      grid = !grid;
       break;
     }
     break;
@@ -2706,7 +2716,7 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
     Translate(hDlg, DLG_TimeControl);
     /* Initialize the dialog items */
-    if (appData.clockMode && !appData.icsActive) {
+    if (/*appData.clockMode &&*/ !appData.icsActive) { // [HGM] even if !clockMode, we could want to set it in tournament dialog
       if (searchTime) {
 	CheckRadioButton(hDlg, OPT_TCUseMoves, OPT_TCUseFixed,
 			 OPT_TCUseFixed);

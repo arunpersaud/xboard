@@ -5,7 +5,7 @@
  * Massachusetts. 
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -563,6 +563,8 @@ typedef struct {
     Boolean useStickyWindows;
     Boolean bgObserve;   /* [HGM] bughouse */
     Boolean dualBoard;   /* [HGM] dual     */
+    Boolean viewer;
+    char * viewerOptions;
     int adjudicateDrawMoves;
     Boolean autoDisplayComment;
     Boolean autoDisplayTags;
@@ -668,17 +670,21 @@ typedef struct {
     Boolean scoreWhite;
     Boolean pvSAN[ENGINES];
 
+    int recentEngines;
+    char *recentEngineList;
     char *tourneyFile;
     char *defName;
     char *processes;
     char *results;
     char *participants;
     char *afterGame;
+    char *afterTourney;
     int tourneyType;
     int tourneyCycles;
     int seedBase;
     Boolean roundSync;
     Boolean cycleSync;
+    Boolean numberTag;
 } AppData, *AppDataPtr;
 
 /*  PGN tags (for showing in the game list) */
@@ -752,6 +758,8 @@ extern WindowPlacement wpEvalGraph;
 extern WindowPlacement wpMoveHistory;
 extern WindowPlacement wpGameList;
 extern WindowPlacement wpTags;
+
+#define MAXENGINES 2000
 
 // [HGM] chat	
 #define MAX_CHAT 5

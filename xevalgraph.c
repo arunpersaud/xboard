@@ -6,7 +6,7 @@
  *
  * Copyright 2005 Alessandro Scotti
  *
- * Enhancements Copyright 2009, 2010, 2011 Free Software Foundation, Inc.
+ * Enhancements Copyright 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * ------------------------------------------------------------------------
  *
@@ -117,7 +117,8 @@ static HBITMAP hbmPB = NULL;
 #endif
 
 // [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end)
-void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
+void
+DrawSegment (int x, int y, int *lastX, int *lastY, int penType)
 {
   static int curX, curY;
 
@@ -128,7 +129,8 @@ void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
 }
 
 // front-end wrapper for drawing functions to do rectangles
-void DrawRectangle( int left, int top, int right, int bottom, int side, int style )
+void
+DrawRectangle (int left, int top, int right, int bottom, int side, int style)
 {
     XFillRectangle(yDisplay, eGraphWindow, hbrHist[side], left, top, right-left, bottom-top);
     if(style != FILLED)
@@ -136,14 +138,16 @@ void DrawRectangle( int left, int top, int right, int bottom, int side, int styl
 }
 
 // front-end wrapper for putting text in graph
-void DrawEvalText(char *buf, int cbBuf, int y)
+void
+DrawEvalText (char *buf, int cbBuf, int y)
 {
     // the magic constants 7 and 5 should really be derived from the font size somehow
     XDrawString(yDisplay, eGraphWindow, coordGC, MarginX - 2 - 7*cbBuf, y+5, buf, cbBuf);
 }
 
 // front-end
-static Pixel MakeColor(char *color )
+static Pixel
+MakeColor (char *color)
 {
     XrmValue vFrom, vTo;
 
@@ -155,7 +159,8 @@ static Pixel MakeColor(char *color )
     return *(Pixel *) vTo.addr;
 }
 
-static GC CreateGC(int width, char *fg, char *bg, int style)
+static GC
+CreateGC (int width, char *fg, char *bg, int style)
 {
     XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
       | GCBackground | GCFunction | GCPlaneMask;
@@ -174,7 +179,8 @@ static GC CreateGC(int width, char *fg, char *bg, int style)
 
 // front-end. Create pens, device context and buffer bitmap for global use, copy result to display
 // The back-end part n the middle has been taken out and moed to PainEvalGraph()
-static void DisplayEvalGraph()
+static void
+DisplayEvalGraph ()
 {
     int j;
     int width;
@@ -205,7 +211,8 @@ static void DisplayEvalGraph()
     XSync(yDisplay, False);
 }
 
-static void InitializeEvalGraph()
+static void
+InitializeEvalGraph ()
 {
   pens[PEN_BLACK]      = CreateGC(1, "black", "black", LineSolid);
   pens[PEN_DOTTED]     = CreateGC(1, "#A0A0A0", "#A0A0A0", LineOnOffDash);
@@ -217,10 +224,8 @@ static void InitializeEvalGraph()
   hbrHist[2] = CreateGC(3, "#E0E0F0", "#E0E0F0", LineSolid);; // background (a bit blueish, for contrst with yellow curve)
 }
 
-void EvalClick(widget, unused, event)
-     Widget widget;
-     caddr_t unused;
-     XEvent *event;
+void
+EvalClick (Widget widget, caddr_t unused, XEvent *event)
 {
         if( widget && event->type == ButtonPress ) {
             int index = GetMoveIndexFromPoint( event->xbutton.x, event->xbutton.y );
@@ -233,10 +238,8 @@ void EvalClick(widget, unused, event)
 
 // This (cloned from EventProc in xboard.c) is needed as event handler, to prevent
 // the graph being wiped out after covering / uncovering by other windows.
-void EvalEventProc(widget, unused, event)
-     Widget widget;
-     caddr_t unused;
-     XEvent *event;
+void
+EvalEventProc (Widget widget, caddr_t unused, XEvent *event)
 {
     if (!XtIsRealized(widget))
       return;
@@ -252,8 +255,8 @@ void EvalEventProc(widget, unused, event)
 }
 // The following routines are mutated clones of the commentPopUp routines
 
-Widget EvalGraphCreate(name)
-     char *name;
+Widget
+EvalGraphCreate (char *name)
 {
     Arg args[16];
     Widget shell, layout, form;
@@ -341,7 +344,7 @@ Widget EvalGraphCreate(name)
 }
 
 void
-EvalGraphPopUp()
+EvalGraphPopUp ()
 {
     Arg args[16];
     int j;
@@ -376,7 +379,8 @@ EvalGraphPopUp()
 //    ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
 }
 
-void EvalGraphPopDown()
+void
+EvalGraphPopDown ()
 {
     Arg args[16];
     int j;
@@ -403,22 +407,20 @@ void EvalGraphPopDown()
 //    ShowThinkingEvent(); // [HGM] thinking: might need to shut off thinking output
 }
 
-Boolean EvalGraphIsUp()
+Boolean
+EvalGraphIsUp ()
 {
     return evalGraphDialogUp;
 }
 
-int EvalGraphDialogExists()
+int
+EvalGraphDialogExists ()
 {
     return evalGraphShell != NULL;
 }
 
 void
-EvalGraphProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+EvalGraphProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
   if (evalGraphDialogUp) {
     EvalGraphPopDown();
@@ -429,7 +431,8 @@ EvalGraphProc(w, event, prms, nprms)
 // This function is the interface to the back-end. It is currently called through the front-end,
 // though, where it shares the HistorySet() wrapper with MoveHistorySet(). Once all front-ends
 // support the eval graph, it would be more logical to call it directly from the back-end.
-void EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo )
+void
+EvalGraphSet (int first, int last, int current, ChessProgramStats_Move * pvInfo)
 {
     /* [AS] Danger! For now we rely on the pvInfo parameter being a static variable! */
 

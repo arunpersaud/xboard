@@ -5,7 +5,7 @@
  * Massachusetts. 
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  *
  * The following terms apply to Digital Equipment Corporation's copyright
  * interest in XBoard:
@@ -72,8 +72,8 @@
 #if !USE_PTYS
 /* This code is for systems where pipes work properly */
 
-void SetUpChildIO(to_prog, from_prog)
-     int to_prog[2], from_prog[2];
+void
+SetUpChildIO (int to_prog[2], int from_prog[2])
 {
     signal(SIGPIPE, SIG_IGN);
     pipe(to_prog);
@@ -99,8 +99,8 @@ void SetUpChildIO(to_prog, from_prog)
 
 int PseudoTTY P((char pty_name[]));
 
-int SetUpChildIO(to_prog, from_prog)
-     int to_prog[2], from_prog[2];
+int
+SetUpChildIO (int to_prog[2], int from_prog[2])
 {
     char pty_name[MSG_SIZ];
 
@@ -127,8 +127,8 @@ int SetUpChildIO(to_prog, from_prog)
 #if HAVE_GRANTPT
 /* This code is for SVR4 */
 
-int PseudoTTY(pty_name)
-     char pty_name[];
+int
+PseudoTTY (char pty_name[])
 {
     extern char *ptsname();
     char *ptss;
@@ -147,8 +147,8 @@ int PseudoTTY(pty_name)
 #if HAVE__GETPTY
 /* This code is for IRIX */
 
-int PseudoTTY(pty_name)
-     char pty_name[];
+int
+PseudoTTY (char pty_name[])
 {
     int fd;
     char *ptyn;
@@ -163,8 +163,8 @@ int PseudoTTY(pty_name)
 #if HAVE_LIBSEQ
 /* This code is for Sequent DYNIX/ptx.  Untested. --tpm */
 
-int PseudoTTY(pty_name)
-     char pty_name[];
+int
+PseudoTTY (char pty_name[])
 {
     int fd;
     char *slave, *master;
@@ -186,8 +186,8 @@ int PseudoTTY(pty_name)
 #define LAST_PTY_LETTER 'z'
 #endif
 
-int PseudoTTY(pty_name)
-     char pty_name[];
+int
+PseudoTTY (char pty_name[])
 {
   struct stat stb;
   register c, i;

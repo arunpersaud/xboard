@@ -1,13 +1,24 @@
-// New PGN parser by by HGM. I was dissatisfied with the old flex-generated parser for several reasons:
-// 1) It required flex to build
-// 2) It was not possible to use variant-dependent syntax, which gave trouble for '+' as Sogi promoChar vs check symbol
-// 3) It could not handle double-digit rank numbers
-// 4) It could not handle PSN moves, with (alpha rank and file digit)
-// 5) Having more than 12 ranks would require extension of the rules anyway
-// 6) It was cumbersome to maintain, which much code duplication that had to be kept in sync when changing something
-// 7) It needed special handling for packaging, because we wanted to include parser.c for people who had no flex
-// 8) It was quite large because of the table-driven flex algorithm.
-// This new parser suffers from none of that. It might even accomodate traditional Xiangqi notation at some future time.
+/*
+ * parser.c --
+ *
+ * Copyright 2011, 2012 Free Software Foundation, Inc.
+ * ------------------------------------------------------------------------
+ *
+ * GNU XBoard is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * GNU XBoard is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.  *
+ *
+ *------------------------------------------------------------------------
+ ** See the file ChangeLog for a revision history.  */
 
 #include "config.h"
 #include <stdio.h>
@@ -40,7 +51,8 @@ static char fromString = 0, lastChar = '\n';
 #define ALPHABETIC 2
 #define BADNUMBER (-2000000000)
 
-int ReadLine()
+int
+ReadLine ()
 {   // Read one line from the input file, and append to the buffer
     char c, *start = inPtr;
     if(fromString) return 0; // parsing string, so the end is a hard end
@@ -55,7 +67,8 @@ int ReadLine()
     return 1;
 }
 
-int Scan(char c, char **p)
+int
+Scan (char c, char **p)
 {   // line-spanning skip to mentioned character or EOF
     do {
 	while(**p) if(*(*p)++ == c) return 0;
@@ -64,7 +77,8 @@ int Scan(char c, char **p)
     return 1;
 }
 
-int SkipWhite(char **p)
+int
+SkipWhite (char **p)
 {   // skip spaces tabs and newlines; return 1 if anything was skipped
     char *start = *p;
     do{
@@ -73,7 +87,8 @@ int SkipWhite(char **p)
     return *p != start;
 }
 
-inline int Match(char *pattern, char **ptr)
+inline int
+Match (char *pattern, char **ptr)
 {
     char *p = pattern, *s = *ptr;
     while(*p && (*p == *s++ || s[-1] == '\r' && *p--)) p++;
@@ -84,7 +99,8 @@ inline int Match(char *pattern, char **ptr)
     return 0; // no match, no ptr update
 }
 
-inline int Word(char *pattern, char **p)
+inline int
+Word (char *pattern, char **p)
 {
     if(Match(pattern, p)) return 1;
     if(*pattern >= 'a' && *pattern <= 'z' && *pattern - **p == 'a' - 'A') { // capitalized
@@ -95,15 +111,16 @@ inline int Word(char *pattern, char **p)
     return 0;
 }
 
-int Verb(char *pattern, char **p)
+int
+Verb (char *pattern, char **p)
 {
     int res = Word(pattern, p);
     if(res && !Match("s", p)) Match("ed", p); // eat conjugation suffix, if any
     return res;
 }
 
-
-int Number(char **p)
+int
+Number (char **p)
 {
     int val = 0;
     if(**p < '0' || **p > '9') return BADNUMBER;
@@ -113,7 +130,8 @@ int Number(char **p)
     return val;
 }
 
-int RdTime(char c, char **p)
+int
+RdTime (char c, char **p)
 {
     char *start = ++(*p), *sec; // increment *p, as it was pointing to the opening ( or {
     if(Number(p) == BADNUMBER) return 0;
@@ -128,19 +146,21 @@ int RdTime(char c, char **p)
     return 0;
 }
 
-char PromoSuffix(char **p)
+char
+PromoSuffix (char **p)
 {
     char *start = *p;
     if(**p == 'e' && (Match("ep", p) || Match("e.p.", p))) { *p = start; return NULLCHAR; } // non-compliant e.p. suffix is no promoChar!
     if(**p == '+' && gameInfo.variant == VariantShogi) { (*p)++; return '+'; } 
-    if(**p == '=') (*p)++; //optional =
+    if(**p == '=' || (gameInfo.variant == VariantSChess) && **p == '/') (*p)++; // optional = (or / for Seirawan gating)
     if(**p == '(' && (*p)[2] == ')' && isalpha( (*p)[1] )) { (*p) += 3; return (*p)[-2]; }
     if(isalpha(**p)) return *(*p)++;
     if(*p != start) return '='; // must be the optional =
     return NULLCHAR; // no suffix detected
 }
 
-int NextUnit(char **p)
+int
+NextUnit (char **p)
 {	// Main parser routine
 	int coord[4], n, result, piece, i;
 	char type[4], promoted, separator, slash, *oldp, *commentEnd, c;
@@ -323,7 +343,8 @@ badMove:// we failed to find algebraic move
 		do (*p)++; while(isdigit(**p) || isalpha(**p) || **p == '+' ||
 				**p == '-' || **p == '=' || **p == '_' || **p == '#');
 		SkipWhite(p);
-		if(*(*p)++ == '"') {
+		if(**p == '"') {
+		    (*p)++;
 		    while(**p != '\n' && (*(*p)++ != '"'|| (*p)[-2] == '\\')); // look for unescaped quote
 		    if((*p)[-1] !='"') { *p = oldp; Scan(']', p); return Comment; } // string closing delimiter missing
 		    SkipWhite(p); if(*(*p)++ == ']') return PGNTag;
@@ -341,6 +362,9 @@ badMove:// we failed to find algebraic move
 		    Match("OO", p) || Match("oo", p) || Match("00", p)) castlingType = 1;
 	    if(castlingType) { //code from old parser, collapsed for both castling types, and streamlined a bit
 		int rf, ff, rt, ft; ChessSquare king;
+		char promo=NULLCHAR;
+
+		if(gameInfo.variant == VariantSChess) promo = PromoSuffix(p);
 
 		if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
 
@@ -372,12 +396,12 @@ badMove:// we failed to find algebraic move
 		    if (appData.debugMode) fprintf(debugFP, "Parser FRC (type=%d) %d %d\n", castlingType, ff, ft);
 		    if(ff == NoRights || ft == NoRights) return ImpossibleMove;
 		}
-		sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
+		sprintf(currentMoveString, "%c%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE,promo);
 		if (appData.debugMode) fprintf(debugFP, "(%d-type) castling %d %d\n", castlingType, ff, ft);
 
 	        return (int) LegalityTest(boards[yyboardindex],
 			      PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: e.p.!
-			      rf, ff, rt, ft, NULLCHAR);
+			      rf, ff, rt, ft, promo);
 	    }
 	}
 
@@ -518,12 +542,14 @@ badMove:// we failed to find algebraic move
 /*
     Return offset of next pattern in the current file.
 */
-int yyoffset()
+int
+yyoffset ()
 {
     return ftell(inputFile) - (inPtr - parsePtr); // subtract what is read but not yet parsed
 }
 
-void yynewfile (FILE *f)
+void
+yynewfile (FILE *f)
 {   // prepare parse buffer for reading file
     inputFile = f;
     inPtr = parsePtr = inputBuf;
@@ -532,14 +558,16 @@ void yynewfile (FILE *f)
     *inPtr = NULLCHAR; // make sure we will start by reading a line
 }
 
-void yynewstr P((char *s))
+void
+yynewstr P((char *s))
 {
     parsePtr = s;
     inputFile = NULL;
     fromString = 1;
 }
 
-int yylex()
+int
+yylex ()
 {   // this replaces the flex-generated parser
     int result = NextUnit(&parsePtr);
     char *p = parseStart, *q = yytext;
@@ -549,7 +577,8 @@ int yylex()
     return result;
 }
 
-int Myylex()
+int
+Myylex ()
 {   // [HGM] wrapper for yylex, which treats nesting of parentheses
     int symbol, nestingLevel = 0, i=0;
     char *p;
@@ -569,7 +598,8 @@ int Myylex()
     return symbol;
 }
 
-ChessMove yylexstr(int boardIndex, char *s, char *buf, int buflen)
+ChessMove
+yylexstr (int boardIndex, char *s, char *buf, int buflen)
 {
     ChessMove ret;
     char *savPP = parsePtr;
@@ -583,4 +613,3 @@ ChessMove yylexstr(int boardIndex, char *s, char *buf, int buflen)
     fromString = 0;
     return ret;
 }
-
