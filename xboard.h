@@ -169,6 +169,7 @@ extern char *icsTextMenuString;
 extern char ICSInputTranslations[];
 extern char *selected_fen_position;
 extern GC coordGC;
+extern Dimension textHeight; // of message widget in board window
 
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */

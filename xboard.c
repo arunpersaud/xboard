@@ -540,6 +540,7 @@ int squareSize, smallLayout = 0, tinyLayout = 0,
   ICSInputBoxUp = False, askQuestionUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
   errorUp = False, errorExitStatus = -1, lineGap, defaultLineGap;
+Dimension textHeight;
 Pixel timerForegroundPixel, timerBackgroundPixel;
 Pixel buttonForegroundPixel, buttonBackgroundPixel;
 char *chessDir, *programName, *programVersion,
@@ -2314,6 +2315,8 @@ XBoard square size (hint): %d\n\
     XtSetArg(args[0], XtNtop,    XtChainTop);
     XtSetArg(args[1], XtNbottom, XtChainTop);
     XtSetValues(messageWidget, args, 2);
+    XtSetArg(args[0], XtNheight, &textHeight); // [HGM] get height for use in generic popup
+    XtGetValues(messageWidget, args, 1);
 
     widgetList[j++] = boardWidget =
       XtCreateWidget("board", widgetClass, formWidget, boardArgs,

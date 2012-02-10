@@ -1095,8 +1095,9 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
 	    XtSetArg(args[j], XtNborderWidth, 1); j++;
 	    XtSetArg(args[j], XtNwidth, w); j++;
+	    XtSetArg(args[j], XtNheight, textHeight);  j++; // [HGM] use message widget
 	    if(option[i].type == TextBox && option[i].min) {
-		XtSetArg(args[j], XtNheight, option[i].min); j++;
+		XtSetArg(args[j-1], XtNheight, option[i].min); // overwrite
 		if(option[i].value & 1) { XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++; }
 		if(option[i].value & 2) { XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollAlways);  j++; }
 		if(option[i].value & 4) { XtSetArg(args[j], XtNautoFill, True);  j++; }
