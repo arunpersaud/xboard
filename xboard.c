@@ -2314,7 +2314,7 @@ XBoard square size (hint): %d\n\
 		     messageArgs, XtNumber(messageArgs));
     XtSetArg(args[0], XtNtop,    XtChainTop);
     XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetValues(messageWidget, args, 3);
+    XtSetValues(messageWidget, args, 2);
 
     widgetList[j++] = boardWidget =
       XtCreateWidget("board", widgetClass, formWidget, boardArgs,
