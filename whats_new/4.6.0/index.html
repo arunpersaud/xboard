@@ -35,6 +35,10 @@
 <a href="#tag-D13">How close is the 50-move draw?</a>
 </li><li>
 <a href="#tag-D14">Sign of the engine scores</a>
+</li><li>
+<a href="#tag-D18">Loading frequently used engines</a>
+</li><li>
+<a href="#tag-D19">Collapsing groups of engines</a>
 </li></ul>
 
 </td><td>
@@ -54,6 +58,10 @@
 <a href="#tag-D8">Searching a position in a PGN file</a>
 </li><li>
 <a href="#tag-D3">Editing the opening book</a>
+</li><li>
+<a href="#tag-D21">Recording game sequence number in PGN</a>
+</li><li>
+<a href="#tag-D20">Each tourney game its own debug file</a>
 </li></ul>
 
 <h3>XBoard -&gt; WinBoard Convergence</h3>
@@ -616,6 +624,20 @@ this means you can now limit the annotation to any selected part of the game,
 starting where it gets interesting.
 </p>
 
+<table cellpadding="10"><tbody><tr><td>
+<img src="Recent.jpg">
+</td><td>
+<h2><a name="tag-D18">Quickly loading recently used engines</a></h2>
+<p>
+WinBoard now keeps track of which engines are used (as first engine at startup, or through the Load Engine dialog).
+This information is stored in the settings file as the string option -recentEngineList,
+and next time you start WinBoard, this list will be displayed at the bottom of the Engine menu.
+When you select one of these items, the corresponding engine will be loaded as first engine,
+exactly like you went to Load Engine, selected it from the combobox, and pressed OK.
+</p><p>
+By default WinBoard would show the 6 most-recently used engines in the menu, in order of least-recent use.
+This number can be changed with the aid of the presistent option -recentEngines.
+</p>
 <h2><a name="tag-D17">Another interpretation of Asia rules</a></h2>
 <p>
 For perpetual-chase detection in Xiangqi XBoard had been relying on the legal-moves-only interpretation of Asia rules,
@@ -626,6 +648,57 @@ So we have switched to an interpretation where one does consider captures that l
 or recaptures that leave the King in a check that already existed before the capture
 (provided these are the only checks it is left in).
 </p>
+</td></tr></tbody></table>
+
+<table cellpadding="10"><tbody><tr><td>
+<h2><a name="tag-D19">Structuring the list of installed engines</a></h2>
+<p>
+The engine list (-firstChessProgramNames, for those used to editing the ini file)
+upto now has always been a large, unstructured pool of engines.
+From now on it is possible to group the engines, by including "# GROUPNAME" and "# end" tags amongst the engine lines.
+These tags delimit a group of engines, and the GROUPNAME could be any text you like.
+(The only important thing is that it starts with a # sign.)
+Engines belonging to such a group will normally not be displayed in the comboboxes for selecting engines
+in the Load Engine and Tournament Options dialogs.
+In stead they will be 'collapsed' to their group tag. (End tags will always be invisible.)
+</p><p>
+A group can be 'opened' by selecting the group tag from the combobox.
+This does not really select anything (e.g. no engine will be added to the tourney participants when you do this).
+So you have to make a selection from the combobox again, but now you will see the contents of the group there, and nothing else!
+The group will remain selected, so you can select multiple engines from it,
+until you close the dialog, or select the group header (first item).
+In the latter case you revert back to 'top-level view' of the combo-box,
+as when you first entered the dialog.
+</p><p>
+This grouping can be applied recursively.
+I.e., you can make groups within groups.
+</p>
+</td><td>
+<img src="GroupAll.png">
+</td><td>
+<img src="GroupXQ.png">
+</td></tr></tbody></table>
+
+<table cellpadding="10"><tbody><tr><td valign="top">
+<h2><a name="tag-D21">The PGN Number tag</a></h2>
+<p>
+A (persistent) Boolean option -pgnNumberTag has been added to enablee writing a Number tag in PGN files saved during a tourney,
+containing the (unique) sequence number of the game within that tourney.
+This number corresponds to the one used in the debug file name,
+so the correct debug file for the game can be easily found.
+</p>
+</td><td valign="top">
+<h2><a name="tag-D20">A separate debug file for every tourney game</a></h2>
+<p>
+XBoard and WinBoard normally use one debug file for an entire session.
+But now it is possible to let them create a separate debug file for each game in a tournament.
+All you have to do is request a -debugfile name that contains %d in it.
+XBoard will then replace this %d by the sequence number of the game,
+and continue using that new file to write the debug information on.
+E.g. using -debugfile "debugs/game%d.txt" will create files game1.txt, game2.txt etc.
+in the directory 'debugs' (which must pre-exist!).
+</p>
+</td></tr></tbody></table>
 
 </td></tr></tbody></table>
 
@@ -653,7 +726,7 @@ Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
 
 <p>Updated:
 <!-- timestamp start -->
-$Date: 2012/01/11 04:40:09 $
+$Date: 2012/02/10 07:45:12 $
 <!-- timestamp end -->
 </p>
 </div>
