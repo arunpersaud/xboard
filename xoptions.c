@@ -220,13 +220,13 @@ CreateComboPopup (Widget parent, Option *option, int n)
     int i=0, j;
     Widget menu, entry;
     Arg args[16];
+    char **mb = (char **) option->textValue;
 
+    if(mb[0] == NULL) return; // avoid empty menus, as they cause crash
     menu = XtCreatePopupShell(option->name, simpleMenuWidgetClass,
 			      parent, NULL, 0);
     j = 0;
     XtSetArg(args[j], XtNwidth, 100);  j++;
-//    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    char **mb = (char **) option->textValue;
     while (mb[i] != NULL) 
       {
 	if (option->min & NO_GETTEXT)
