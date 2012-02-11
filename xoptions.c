@@ -1155,17 +1155,6 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    break;
 	  case CheckBox:
 	    if(!currentCps) option[i].value = *(Boolean*)option[i].target;
-#if 0
-	    j=0; // space holder
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNwidth, 10);  j++;
-	    XtSetArg(args[j], XtNheight, textHeight-22);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
-	    if(textHeight < 24) dialog = last; else
-		dialog = XtCreateManagedWidget(" ", labelWidgetClass, form, args, j);
-#endif
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNvertDistance, (textHeight+2)/4 + 3);  j++;
@@ -1183,7 +1172,7 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, option[i].type != Label ? dialog : NULL);  j++;
-	    XtSetArg(args[j], XtNheight, textHeight);  j++;
+	    if(option[i].type != Label) XtSetArg(args[j], XtNheight, textHeight),  j++;
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
