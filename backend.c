@@ -14204,7 +14204,7 @@ StopExaminingEvent ()
 void
 ForwardInner (int target)
 {
-    int limit;
+    int limit; int oldSeekGraphUp = seekGraphUp;
 
     if (appData.debugMode)
 	fprintf(debugFP, "ForwardInner(%d), current %d, forward %d\n",
@@ -14261,7 +14261,7 @@ ForwardInner (int target)
     }
     DisplayBothClocks();
     DisplayMove(currentMove - 1);
-    DrawPosition(FALSE, boards[currentMove]);
+    DrawPosition(oldSeekGraphUp, boards[currentMove]);
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
     if ( !matchMode && gameMode != Training) { // [HGM] PV info: routine tests if empty
 	DisplayComment(currentMove - 1, commentList[currentMove]);
