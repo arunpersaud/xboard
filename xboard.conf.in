@@ -36,6 +36,7 @@
 ; Behavior
 ;
 -sweepPromotions true
+-pieceMenu false
 -showTargetSquares true
 -seekGraph true
 -soundProgram "aplay -q"
