@@ -799,9 +799,13 @@ BoardOptionsOK (int n)
 Option boardOptions[] = {
 { 0,   0, 70, NULL, (void*) &appData.whitePieceColor, "", NULL, TextBox, N_("White Piece Color:") },
 { 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#FFFFCC", Button, "      " },
+/* TRANSLATORS: R = single letter for the color red */
 {    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("R") },
+/* TRANSLATORS: G = single letter for the color green */
 {    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("G") },
+/* TRANSLATORS: B = single letter for the color blue */
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("B") },
+/* TRANSLATORS: D = single letter to make a color darker */
 {    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, N_("D") },
 { 0,   0, 70, NULL, (void*) &appData.blackPieceColor, "", NULL, TextBox, N_("Black Piece Color:") },
 { 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#202020", Button, "      " },
