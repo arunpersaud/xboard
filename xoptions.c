@@ -1095,9 +1095,8 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
 	    XtSetArg(args[j], XtNborderWidth, 1); j++;
 	    XtSetArg(args[j], XtNwidth, w); j++;
-	    XtSetArg(args[j], XtNheight, textHeight);  j++; // [HGM] use message widget
 	    if(option[i].type == TextBox && option[i].min) {
-		XtSetArg(args[j-1], XtNheight, option[i].min); // overwrite
+		XtSetArg(args[j], XtNheight, option[i].min); j++;
 		if(option[i].value & 1) { XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++; }
 		if(option[i].value & 2) { XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollAlways);  j++; }
 		if(option[i].value & 4) { XtSetArg(args[j], XtNautoFill, True);  j++; }
@@ -1131,9 +1130,10 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 		msg = _("browse"); w = 0;
 		/* automatically scale to width of text */
 		XtSetArg(args[j], XtNwidth, (XtArgVal) NULL );  j++;
+		if(textHeight) XtSetArg(args[j], XtNheight, textHeight),  j++;
 	    } else {
 		w = 20; msg = "+";
-		XtSetArg(args[j], XtNheight, 10);  j++;
+		XtSetArg(args[j], XtNheight, textHeight/2);  j++;
 		XtSetArg(args[j], XtNwidth,   w);  j++;
 	    }
 	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
@@ -1145,7 +1145,8 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, edit);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
-	    XtSetArg(args[j], XtNheight, 10);  j++;
+	    XtSetArg(args[j], XtNvertDistance, -1);  j++;
+	    XtSetArg(args[j], XtNheight, textHeight/2);  j++;
 	    XtSetArg(args[j], XtNwidth, 20);  j++;
 	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
 	    XtSetArg(args[j], XtNright, XtChainRight); j++;
@@ -1154,6 +1155,7 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    break;
 	  case CheckBox:
 	    if(!currentCps) option[i].value = *(Boolean*)option[i].target;
+#if 0
 	    j=0; // space holder
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNwidth, 10);  j++;
@@ -1163,10 +1165,12 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    if(textHeight < 24) dialog = last; else
 		dialog = XtCreateManagedWidget(" ", labelWidgetClass, form, args, j);
+#endif
 	    j=0;
-	    XtSetArg(args[j], XtNfromVert, dialog);  j++;
-	    XtSetArg(args[j], XtNwidth, 10);  j++;
-	    XtSetArg(args[j], XtNheight, 10);  j++;
+	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNvertDistance, (textHeight+2)/4 + 3);  j++;
+	    XtSetArg(args[j], XtNwidth, textHeight/2);  j++;
+	    XtSetArg(args[j], XtNheight, textHeight/2);  j++;
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNstate, option[i].value);  j++;
@@ -1179,6 +1183,7 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, option[i].type != Label ? dialog : NULL);  j++;
+	    XtSetArg(args[j], XtNheight, textHeight);  j++;
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
@@ -1198,6 +1203,7 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 		XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast;
 	    }
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
+	    if(textHeight) XtSetArg(args[j], XtNheight, textHeight),  j++;
 	    if(option[i].max) { XtSetArg(args[j], XtNwidth, option[i].max);  j++; }
 	    if(option[i].textValue) { // special for buttons of New Variant dialog
 		XtSetArg(args[j], XtNsensitive, appData.noChessProgram || option[i].value < 0
@@ -1238,6 +1244,7 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 	    XtSetArg(args[j], XtNlabel, _(((char**)option[i].textValue)[option[i].value]));  j++;
+	    if(textHeight) XtSetArg(args[j], XtNheight, textHeight),  j++;
 	    option[i].handle = (void*)
 		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));
 	    CreateComboPopup(last, option + i, i);
@@ -1325,6 +1332,7 @@ GenericPopUp (Option *option, char *title, int dlgNr)
     XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
+    if(textHeight) XtSetArg(args[j], XtNheight, textHeight),  j++;
     b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
     XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer)(intptr_t) dlgNr + (dlgNr<<16));
 

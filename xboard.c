@@ -2175,10 +2175,13 @@ XBoard square size (hint): %d\n\
       /* For the coordFont, use the 0th font of the fontset. */
       XFontSet coordFontSet = CreateFontSet(appData.coordFont);
       XFontStruct **font_struct_list;
+      XFontSetExtents *fontSize;
       char **font_name_list;
       XFontsOfFontSet(coordFontSet, &font_struct_list, &font_name_list);
       coordFontID = XLoadFont(xDisplay, font_name_list[0]);
       coordFontStruct = XQueryFont(xDisplay, coordFontID);
+      fontSize = XExtentsOfFontSet(fontSet); // [HGM] figure out how much vertical space font takes
+      textHeight = fontSize->max_logical_extent.height + 5; // add borderWidth
     }
 #else
     appData.font = FindFont(appData.font, fontPxlSize);
@@ -2460,8 +2463,8 @@ XBoard square size (hint): %d\n\
       fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
 	      programName, gres, w, h, wr, hr);
     }
-    textHeight = hr; // [HGM] save height for use in generic popup
     /* !! end hack */
+    if(!textHeight) textHeight = hr; // [HGM] if !NLS textHeight is still undefined, and we grab it from here
     XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
     XtSetArg(args[1], XtNright, XtChainRight);
     XtSetValues(messageWidget, args, 2);
