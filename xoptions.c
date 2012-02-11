@@ -113,6 +113,7 @@ typedef int OKCallback(int n);
 
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
+int dialogError;
 static Option *currentOption;
 static Boolean browserUp;
 ButtonCallback *comboCallback;
@@ -303,7 +304,7 @@ PopDown (int n)
 void
 GenericPopDown (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    if(browserUp) return; // prevent closing dialog when it has an open file-browse daughter
+    if(browserUp || dialogError) return; // prevent closing dialog when it has an open file-browse daughter
     PopDown(prms[0][0] - '0');
 }
 

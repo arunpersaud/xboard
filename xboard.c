@@ -5222,7 +5222,7 @@ PromotionCallback (Widget w, XtPointer client_data, XtPointer call_data)
 void
 ErrorCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    errorUp = False;
+    dialogError = errorUp = False;
     XtPopdown(w = XtParent(XtParent(XtParent(w))));
     XtDestroyWidget(w);
     if (errorExitStatus != -1) ExitEvent(errorExitStatus);
@@ -5233,7 +5233,7 @@ void
 ErrorPopDown ()
 {
     if (!errorUp) return;
-    errorUp = False;
+    dialogError = errorUp = False;
     XtPopdown(errorShell);
     XtDestroyWidget(errorShell);
     if (errorExitStatus != -1) ExitEvent(errorExitStatus);
@@ -5256,7 +5256,7 @@ ErrorPopUp (char *title, char *label, int modal)
     XtSetArg(args[i], XtNtitle, title); i++;
     errorShell =
       XtCreatePopupShell("errorpopup", transientShellWidgetClass,
-			 shellWidget, args, i);
+			 shellUp[0] ? (dialogError = modal = TRUE, shells[0]) : shellWidget, args, i);
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, errorShell,
 			    layoutArgs, XtNumber(layoutArgs));
