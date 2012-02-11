@@ -29,7 +29,7 @@
 -darkBackTextureFile  "@pixmapsdir@/wood_d.xpm"
 -overrideLineGap 1
 -highlightMoveWithArrow true
--recentEngines 0
+-recentEngines 4
 ;
 ; Behavior
 ;
@@ -62,7 +62,7 @@
 ;
 -firstChessProgram fairymax
 -secondChessProgram fairymax
--firstChessProgramNames {"Fairy-Max" -fcp fairymax
+-firstChessProgramNames {fairymax
 "Fruit 2.1" -fcp fruit -fUCI
 "Crafty" -fcp crafty
 "GNU Chess" -fcp gnuchess

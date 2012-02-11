@@ -3891,6 +3891,39 @@ MenuBarSelect (Widget w, caddr_t addr, caddr_t index)
     (proc)(NULL, NULL, NULL, NULL);
 }
 
+static void
+MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
+{
+    RecentEngineEvent((int) addr);
+}
+
+void
+AppendEnginesToMenu (Widget menu, char *list)
+{
+    int i=0, j;
+    Widget entry;
+    MenuItem *mi;
+    Arg args[16];
+    char *p;
+
+    if(appData.recentEngines <= 0) return;
+    recentEngines = strdup(list);
+    j = 0;
+    XtSetArg(args[j], XtNleftMargin, 20);   j++;
+    XtSetArg(args[j], XtNrightMargin, 20);  j++;
+    while (*list) {
+	p = strchr(list, '\n'); if(p == NULL) break;
+	if(i == 0) XtCreateManagedWidget(_("----"), smeLineObjectClass, menu, args, j); // at least one valid item to add
+	*p = 0;
+	XtSetArg(args[j], XtNlabel, XtNewString(list));
+	entry = XtCreateManagedWidget("engine", smeBSBObjectClass, menu, args, j+1);
+	XtAddCallback(entry, XtNcallback,
+			  (XtCallbackProc) MenuEngineSelect,
+			  (caddr_t) i);
+	i++; *p = '\n'; list = p + 1;
+    }
+}
+
 void
 CreateMenuBarPopup (Widget parent, String name, Menu *mb)
 {
@@ -3919,6 +3952,7 @@ CreateMenuBarPopup (Widget parent, String name, Menu *mb)
 	}
 	mi++;
     }
+    if(!strcmp(mb->name, "Engine")) AppendEnginesToMenu(menu, appData.recentEngineList);
 }
 
 Widget
