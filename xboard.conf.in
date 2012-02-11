@@ -30,6 +30,8 @@
 -overrideLineGap 1
 -highlightMoveWithArrow true
 -recentEngines 4
+-gameListW 500
+-gameListH 300
 ;
 ; Behavior
 ;
