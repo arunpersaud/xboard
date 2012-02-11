@@ -33,6 +33,9 @@
 ;
 ; Behavior
 ;
+-sweepPromotions true
+-showTargetSquares true
+-seekGraph true
 -soundProgram "aplay -q"
 -soundDirectory "@soundsdir@"
 -soundTell phone.wav
