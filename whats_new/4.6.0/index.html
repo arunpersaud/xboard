@@ -221,7 +221,7 @@ through -fcp and -scp options on the command line when XBoard is started.
 (WinBoard at least had a startup dialog, where you could select engines
 through a combobox, displaying a list of engines configured in the
 settings file.)
-This experimental patch allows you to change engines during a session,
+This new feature allows you to change engines during a session,
 (or even during a game!),
 through a new menu dialog.
 </p><p>
@@ -635,9 +635,9 @@ starting where it gets interesting.
 </td><td>
 <h2><a name="tag-D18">Quickly loading recently used engines</a></h2>
 <p>
-WinBoard now keeps track of which engines are used (as first engine at startup, or through the Load Engine dialog).
+XBoard and WinBoard now keep track of which engines are used (as first engine at startup, or through the Load Engine dialog).
 This information is stored in the settings file as the string option -recentEngineList,
-and next time you start WinBoard, this list will be displayed at the bottom of the Engine menu.
+and next time you start XBoard, this list will be displayed at the bottom of the Engine menu.
 When you select one of these items, the corresponding engine will be loaded as first engine,
 exactly like you went to Load Engine, selected it from the combobox, and pressed OK.
 </p><p>
@@ -703,6 +703,28 @@ XBoard will then replace this %d by the sequence number of the game,
 and continue using that new file to write the debug information on.
 E.g. using -debugfile "debugs/game%d.txt" will create files game1.txt, game2.txt etc.
 in the directory 'debugs' (which must pre-exist!).
+</p>
+</td></tr></tbody></table>
+
+<h2><a name="tag-D22">Associating file types with icons and actions</a></h2>
+<table cellpadding="10"><tbody><tr><td valign="top">
+<img src="Icons.png">
+</td><td valign="top">
+<p>
+New in the installation of XBoard 4.6.0 is that it now causes several mime types to be associated with XBoard,
+and will define icons for them.
+This means that clicking a PGN file with games in it will now automatically launch XBoard
+as game viewer.
+A control is added in the Load Options dialog, where the user can further configure what he wants XBoard to do
+when viewing games.
+E.g. whether a Chess engine should be involved for analysis, and if so, which one.
+Similarly, clicking a FEN file with Chess positions will start XBoard as position viewer.
+</p><p>
+A third type for which XBoard will make associations are TRN tournament files.
+These files are created when you start an engine tournament throught the Match Options dialog.
+When you click on them, XBoard will be launched to play on that tournament.
+This makes it easy to let multiple instances of XBoard work for the same tourney,
+playing the games in parallel.
 </p>
 </td></tr></tbody></table>
 
