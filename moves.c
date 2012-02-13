@@ -1088,9 +1088,6 @@ LegalityTestCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
 {
     register LegalityTestClosure *cl = (LegalityTestClosure *) closure;
 
-//    if (appData.debugMode) {
-//        fprintf(debugFP, "Legality test: %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
-//    }
     if(board[rt][ft] != EmptySquare || kind==WhiteCapturesEnPassant || kind==BlackCapturesEnPassant)
 	cl->captures++; // [HGM] losers: count legal captures
     if (rf == cl->rf && ff == cl->ff && rt == cl->rt && ft == cl->ft)
@@ -1100,18 +1097,13 @@ LegalityTestCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
 ChessMove
 LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoChar)
 {
-    LegalityTestClosure cl; ChessSquare piece, filterPiece, *castlingRights = board[CASTLING];
+    LegalityTestClosure cl; ChessSquare piece, filterPiece;
 
     if(quickFlag) flags = flags & ~1 | quickFlag & 1; // [HGM] speed: in quick mode quickFlag specifies side-to-move.
     if(rf == DROP_RANK) return LegalDrop(board, flags, ff, rt, ft);
     piece = filterPiece = board[rf][ff];
     if(PieceToChar(piece) == '~') filterPiece = DEMOTED piece; 
 
-    if (appData.debugMode) {
-        int i;
-        for(i=0; i<6; i++) fprintf(debugFP, "%d ", castlingRights[i]);
-        fprintf(debugFP, "Legality test? %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
-    }
     /* [HGM] Cobra and Falcon are wildcard pieces; consider all their moves legal */
     /* (perhaps we should disallow moves that obviously leave us in check?)              */
     if(piece == WhiteFalcon || piece == BlackFalcon ||
@@ -1234,7 +1226,6 @@ MateTest (Board board, int flags)
 	    else hisPieces++;
 	}
     }
-    if(appData.debugMode) fprintf(debugFP, "MateTest: K=%d, my=%d, his=%d\n", nrKing, myPieces, hisPieces);
     switch(gameInfo.variant) { // [HGM] losers: extinction wins
 	case VariantShatranj:
 		if(hisPieces == 1) return myPieces > 1 ? MT_BARE : MT_DRAW;
@@ -1501,8 +1492,6 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
     piece = board[rf][ff];
     if(PieceToChar(piece)=='~') piece = (ChessSquare)(DEMOTED piece);
 
-  if (appData.debugMode)
-          fprintf(debugFP, "CoordsToAlgebraic, piece=%d (%d,%d)-(%d,%d) %c\n", (int)piece,ff,rf,ft,rt,promoChar >= ' ' ? promoChar : '-');
     switch (piece) {
       case WhitePawn:
       case BlackPawn:
@@ -1532,8 +1521,6 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 	}
 	/* Use promotion suffix style "=Q" */
 	*outp = NULLCHAR;
-  if (appData.debugMode)
-          fprintf(debugFP, "movetype=%d, promochar=%d=%c\n", (int)kind, promoChar, promoChar >= ' ' ? promoChar : '-');
         if (promoChar != NULLCHAR) {
             if(gameInfo.variant == VariantShogi) {
                 /* [HGM] ... but not in Shogi! */

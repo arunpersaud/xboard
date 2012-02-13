@@ -127,7 +127,7 @@ displayed next to the board.
 Old behavior, where right-clicking a square brings up a menu
 where you can select what piece to drop on it can still be 
 selected through the @samp{Drop Menu} option.
-But only in Edit Position mode right clicking a square is still used to
+Only in Edit Position mode right and middle clicking a square is still used to
 put a piece on it, and the piece to drop is selected by sweeping
 the mouse vertically with the button held down.
 
@@ -220,9 +220,12 @@ appropriate command from the Action menu, not @samp{New Game}.
 Similar to @samp{New Game}, but allows you to specify a particular initial position 
 (according to a standardized numbering system)
 in chess variants which use randomized opening positions (e.g. Chess960).
-The selected opening position will persistently be chosen on any following
-New Game command until you use this menu to select another. Selecting
-position number -1 will produce a newly randomized position on any new game.
+You can also press the @samp{Pick Fixed} button to let XBoard generate
+a random number for you.
+The thus selected opening position will then persistently be chosen on any following
+New Game command until you use this menu to select another. 
+Selecting position number -1 (or pushing the @samp{Randomize} button)
+will produce a newly randomized position on any new game.
 Using this menu item in variants that normally do not shuffle their opening position
 does cause these variants to become shuffle variants until you use the
 @samp{New Shuffle Game} menu to explicitly switch the randomization off,
@@ -685,7 +688,7 @@ with an engine loaded (zippy mode); the engine then will analyse
 the positions as they occur in the observed game.
 @item Analyze Game
 @cindex Analyze Game, Menu Item
-This option subjects the currently loaded game to aoutomatic
+This option subjects the currently loaded game to automatic
 analysis by the loaded engine.
 The @kbd{Ctrl-G} key is a keyboard equivalent.
 XBoard will start auto-playing the game from the currently displayed position,
@@ -922,6 +925,16 @@ thinking, use @samp{Move Now} first. In ICS mode, @samp{Retract Move}
 issues the command @samp{takeback 1} or @samp{takeback 2}
 depending on whether it is your opponent's move or yours.
 The @kbd{Ctrl-X} key is a keyboard equivalent.
+@item Recently Used Engines
+@cindex Recently Used Engines, In Menu
+At the bottom of the engine menu there can be a list of names
+of engines that you recently loaded through the Load Engine menu dialog
+in previous sessions.
+Clicking on such a name will load that engine as first engine,
+so you won't have to search for it in your list of installed engines,
+if that is very long.
+The maximum number of displayed engine names is set by the
+@code{recentEngines}command-line option.
 @end table
 
 @node Options Menu
@@ -1183,7 +1196,7 @@ The following options occur in a dialog summoned by the
 ICS Options menu item.
 @itemx Auto Kibitz
 @cindex Auto Kibitz, Menu Item
-Setting this option when playingwith or aginst a chess program on an ICS
+Setting this option when playing with or aginst a chess program on an ICS
 will cause the last line of thinking output of the engine before its move
 to be sent to the ICS in a kibitz command.
 In addition, any kibitz message received through the ICS from
@@ -1269,7 +1282,7 @@ while idle and logged on to an ICS.
 @cindex Auto-Refresh Seek Graph, Menu Item
 In combination with the @samp{Seek Graph} option this
 will cause automatic update of the seek graph while it is up.
-This only works on FICS and ICS,
+This only works on FICS and ICC,
 and requires a lot of bandwidth on a busy server.
 @itemx Premove
 @itemx Premove White
@@ -2657,18 +2670,24 @@ If this option is set, XBoard appends the final position reached
 in every game played to the specified file. The file name @file{-}
 specifies the standard output.
 @item -pgnExtendedInfo true/false
-@cindex pgnExtendedInfo, option`
+@cindex pgnExtendedInfo, option
 If this option is set, XBoard saves depth, score and time used for each 
 move that the engine found as a comment in the PGN file.
 Default: false.
 @item -pgnEventHeader string
-@cindex pgnEventHeader, option`
+@cindex pgnEventHeader, option
 Sets the name used in the PGN event tag to string. 
 Default: "Computer Chess Game".
+@item -pgnNumberTag true/false
+@cindex pgnNumberTag, option
+Include the (unique) sequence number of a tournament game into the saved
+PGN file as a 'number' tag.
+Default: false.
 @item -saveOutOfBookInfo true/false
-@cindex saveOutOfBookInfo, option`
+@cindex saveOutOfBookInfo, option
 Include the information on how the engine(s) game out of its opening book 
 in a special 'annotator' tag with the PGN file.
+Default: true.
 @item -oldsave/-xoldsave or -oldSaveStyle true/false
 @cindex oldsave, option
 @cindex oldSaveStyle, option
@@ -2732,6 +2751,19 @@ Suppresses all GUI functions of XBoard
 (to speed up automated ultra-fast engine-engine games, which you don't want to watch). 
 There will be no board or clock updates, no printing of moves, 
 and no update of the icon on the task bar in this mode.
+@item -recentEngines number
+@itemx -recentEngineList list
+@cindex recentEngines, option
+@cindex recentEngineList, option
+When the number is larger than zero, it determines how many recently
+used engines will be appended at the bottom of the @samp{Engines} menu.
+The engines will be saved in your settings file as the option
+@code{recentEngineList}, by their nicknames,
+and the most recently used one will always be sorted to the top.
+If the list after that is longer than the specified number,
+the last one is discarded.
+hanges in the list will only become visible the next session,
+provided you saved the settings.
 @item -oneClickMove true/false
 @cindex oneClickMove, option
 When set, this option allows you to enter moves by only clicking the to-
@@ -2911,8 +2943,8 @@ Sets the Blindfold menu option.  @xref{Options Menu}.  Default: false.
 @cindex periodic, option
 @cindex periodicUpdates, option
 Controls updating of current move andnode counts in analysis mode. Default: true.
-@item fSAN
-@itemx sSAN
+@item -fSAN
+@itemx -sSAN
 @cindex fSAN, option
 @cindex sSAN, option
 Causes the PV in thinking output of the mentioned engine to be converted 
@@ -3328,6 +3360,9 @@ Turns on debugging printout.
 @cindex nameOfDebugFile, option
 Sets the name of the file to which XBoard saves debug information 
 (including all communication to and from the engines).
+A @kbd{%d} in the given file name (e.g. game%d.debug) will be replaced
+by the unique sequence number of a tournament game,
+so that the debug output of each game will be written on a separate file.
 @item -engineDebugOutput number
 @cindex engineDebugOutput, option
 Specifies how XBoard should handle unsolicited output from the engine, 

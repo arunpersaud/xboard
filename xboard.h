@@ -153,6 +153,7 @@ FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *fail
 
 extern Widget shells[];
 extern Boolean shellUp[];
+extern int dialogError;
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell, historyShell;
 extern Display *xDisplay;
 extern Window xBoardWindow;
@@ -169,6 +170,7 @@ extern char *icsTextMenuString;
 extern char ICSInputTranslations[];
 extern char *selected_fen_position;
 extern GC coordGC;
+extern Dimension textHeight; // of message widget in board window
 
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */

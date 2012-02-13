@@ -540,6 +540,7 @@ int squareSize, smallLayout = 0, tinyLayout = 0,
   ICSInputBoxUp = False, askQuestionUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
   errorUp = False, errorExitStatus = -1, lineGap, defaultLineGap;
+Dimension textHeight;
 Pixel timerForegroundPixel, timerBackgroundPixel;
 Pixel buttonForegroundPixel, buttonBackgroundPixel;
 char *chessDir, *programName, *programVersion,
@@ -1815,6 +1816,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 	}
       }
     }
+    oldMono = -10; // kludge to force recreation of animation masks
   }
 #if HAVE_LIBXPM
   if(appData.monoMode != oldMono)
@@ -2174,10 +2176,13 @@ XBoard square size (hint): %d\n\
       /* For the coordFont, use the 0th font of the fontset. */
       XFontSet coordFontSet = CreateFontSet(appData.coordFont);
       XFontStruct **font_struct_list;
+      XFontSetExtents *fontSize;
       char **font_name_list;
       XFontsOfFontSet(coordFontSet, &font_struct_list, &font_name_list);
       coordFontID = XLoadFont(xDisplay, font_name_list[0]);
       coordFontStruct = XQueryFont(xDisplay, coordFontID);
+      fontSize = XExtentsOfFontSet(fontSet); // [HGM] figure out how much vertical space font takes
+      textHeight = fontSize->max_logical_extent.height + 5; // add borderWidth
     }
 #else
     appData.font = FindFont(appData.font, fontPxlSize);
@@ -2460,6 +2465,7 @@ XBoard square size (hint): %d\n\
 	      programName, gres, w, h, wr, hr);
     }
     /* !! end hack */
+    if(!textHeight) textHeight = hr; // [HGM] if !NLS textHeight is still undefined, and we grab it from here
     XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
     XtSetArg(args[1], XtNright, XtChainRight);
     XtSetValues(messageWidget, args, 2);
@@ -3886,6 +3892,39 @@ MenuBarSelect (Widget w, caddr_t addr, caddr_t index)
     (proc)(NULL, NULL, NULL, NULL);
 }
 
+static void
+MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
+{
+    RecentEngineEvent((int) addr);
+}
+
+void
+AppendEnginesToMenu (Widget menu, char *list)
+{
+    int i=0, j;
+    Widget entry;
+    MenuItem *mi;
+    Arg args[16];
+    char *p;
+
+    if(appData.recentEngines <= 0) return;
+    recentEngines = strdup(list);
+    j = 0;
+    XtSetArg(args[j], XtNleftMargin, 20);   j++;
+    XtSetArg(args[j], XtNrightMargin, 20);  j++;
+    while (*list) {
+	p = strchr(list, '\n'); if(p == NULL) break;
+	if(i == 0) XtCreateManagedWidget(_("----"), smeLineObjectClass, menu, args, j); // at least one valid item to add
+	*p = 0;
+	XtSetArg(args[j], XtNlabel, XtNewString(list));
+	entry = XtCreateManagedWidget("engine", smeBSBObjectClass, menu, args, j+1);
+	XtAddCallback(entry, XtNcallback,
+			  (XtCallbackProc) MenuEngineSelect,
+			  (caddr_t) i);
+	i++; *p = '\n'; list = p + 1;
+    }
+}
+
 void
 CreateMenuBarPopup (Widget parent, String name, Menu *mb)
 {
@@ -3914,6 +3953,7 @@ CreateMenuBarPopup (Widget parent, String name, Menu *mb)
 	}
 	mi++;
     }
+    if(!strcmp(mb->name, "Engine")) AppendEnginesToMenu(menu, appData.recentEngineList);
 }
 
 Widget
@@ -5182,7 +5222,7 @@ PromotionCallback (Widget w, XtPointer client_data, XtPointer call_data)
 void
 ErrorCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    errorUp = False;
+    dialogError = errorUp = False;
     XtPopdown(w = XtParent(XtParent(XtParent(w))));
     XtDestroyWidget(w);
     if (errorExitStatus != -1) ExitEvent(errorExitStatus);
@@ -5193,7 +5233,7 @@ void
 ErrorPopDown ()
 {
     if (!errorUp) return;
-    errorUp = False;
+    dialogError = errorUp = False;
     XtPopdown(errorShell);
     XtDestroyWidget(errorShell);
     if (errorExitStatus != -1) ExitEvent(errorExitStatus);
@@ -5216,7 +5256,7 @@ ErrorPopUp (char *title, char *label, int modal)
     XtSetArg(args[i], XtNtitle, title); i++;
     errorShell =
       XtCreatePopupShell("errorpopup", transientShellWidgetClass,
-			 shellWidget, args, i);
+			 shellUp[0] ? (dialogError = modal = TRUE, shells[0]) : shellWidget, args, i);
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, errorShell,
 			    layoutArgs, XtNumber(layoutArgs));
@@ -6543,7 +6583,7 @@ AboutProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     snprintf(buf, sizeof(buf), 
 _("%s%s\n\n"
 "Copyright 1991 Digital Equipment Corporation\n"
-"Enhancements Copyright 1992-2009 Free Software Foundation\n"
+"Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n\n"
 "%s is free software and carries NO WARRANTY;"
 "see the file COPYING for more information."),
@@ -8244,11 +8284,6 @@ AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
 #else
   hop = abs(fromX-toX) == 1 && abs(fromY-toY) == 2 || abs(fromX-toX) == 2 && abs(fromY-toY) == 1;
 #endif
-
-  if (appData.debugMode) {
-      fprintf(debugFP, hop ? _("AnimateMove: piece %d hops from %d,%d to %d,%d \n") :
-                             _("AnimateMove: piece %d slides from %d,%d to %d,%d \n"),
-             piece, fromX, fromY, toX, toY);  }
 
   ScreenSquare(fromX, fromY, &start, &startColor);
   ScreenSquare(toX, toY, &finish, &endColor);

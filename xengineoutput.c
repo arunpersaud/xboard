@@ -309,7 +309,6 @@ PositionControlSet (int which, Widget shell, Widget form, Dimension bw_width)
     XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
     XtSetArg(args[j], XtNleft,      XtChainLeft); j++;
     XtSetArg(args[j], XtNright,     XtChainLeft); j++;
-    XtSetArg(args[j], XtNheight,    (XtArgVal) 16); j++;
     XtSetArg(args[j], XtNwidth,     (XtArgVal) 17); j++;
     outputField[which][nColorIcon] = ColorWidget =
       XtCreateManagedWidget("Color", labelWidgetClass,
@@ -322,7 +321,6 @@ PositionControlSet (int which, Widget shell, Widget form, Dimension bw_width)
     XtSetArg(args[j], XtNtop,       XtChainTop); j++;
     XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
     XtSetArg(args[j], XtNleft,      XtChainLeft); j++;
-    XtSetArg(args[j], XtNheight,    (XtArgVal) 16); j++;
     XtSetArg(args[j], XtNwidth,     (XtArgVal) bw_width/2 - 57); j++;
     outputField[which][nLabel] = NameWidget =
       XtCreateManagedWidget("Engine", labelWidgetClass,
@@ -334,7 +332,6 @@ PositionControlSet (int which, Widget shell, Widget form, Dimension bw_width)
     XtSetArg(args[j], XtNfromHoriz, (XtArgVal) NameWidget); j++;
     XtSetArg(args[j], XtNtop,       XtChainTop); j++;
     XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
-    XtSetArg(args[j], XtNheight,    (XtArgVal) 16); j++;
     XtSetArg(args[j], XtNwidth,     (XtArgVal) 20); j++;
     outputField[which][nStateIcon] = ModeWidget =
       XtCreateManagedWidget("Mode", labelWidgetClass,
@@ -348,7 +345,6 @@ PositionControlSet (int which, Widget shell, Widget form, Dimension bw_width)
     XtSetArg(args[j], XtNtop,       XtChainTop); j++;
     XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
     XtSetArg(args[j], XtNright,     XtChainRight); j++;
-    XtSetArg(args[j], XtNheight,    (XtArgVal) 16); j++;
     XtSetArg(args[j], XtNwidth,     (XtArgVal) bw_width/2 - 102); j++;
     outputField[which][nStateData] = MoveWidget =
       XtCreateManagedWidget("Move", labelWidgetClass,
@@ -363,7 +359,6 @@ PositionControlSet (int which, Widget shell, Widget form, Dimension bw_width)
     XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
     XtSetArg(args[j], XtNleft,      XtChainRight); j++;
     XtSetArg(args[j], XtNright,     XtChainRight); j++;
-    XtSetArg(args[j], XtNheight,    (XtArgVal) 16); j++;
     XtSetArg(args[j], XtNwidth,     (XtArgVal) 100); j++;
     outputField[which][nLabelNPS] = NodesWidget =
       XtCreateManagedWidget("Nodes", labelWidgetClass,

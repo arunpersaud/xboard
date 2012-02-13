@@ -3,6 +3,220 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2012-02-12 07:52:54 -0800 Arun Persaud <arun@nubati.net>:
+translation: updated uk.po
+
+
+2012-02-12 11:38:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Leave height of row that only contains buttons free
+
+All elements of the GenericPopUp are still scaled to the text height,
+including buttons appended behind them (browse or color buttons).
+But we now make an exception for a row that only contains buttons,
+as there is no harm in it being a little higher (and the buttons look
+prettier that way).
+
+2012-02-12 00:01:24 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix OK button of error popup
+
+The error dialog popped up as a child of the board window, even when
+DisplayError was called from a dialog. Now it checks if a transient
+dialog is up, and if so, it pops up as a child of that, grabs focus,
+and suppresses the system popdown of the transient dialog through a flag
+dialogError until it is popped down itself.
+
+2012-02-11 20:07:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file
+
+
+2012-02-11 10:18:02 -0800 Arun Persaud <arun@nubati.net>:
+added some comments for translators
+
+
+2012-02-11 10:08:46 -0800 Arun Persaud <arun@nubati.net>:
+fixed comments for translators: comments starting with TRANSLATORS: are now copied to the po file
+
+
+2012-02-11 19:01:49 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Also configure sweep selection
+
+To make sure this feature is tested, we set -pieceMenu false in the
+master settings file.
+
+2012-02-11 18:26:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix date in copyright notice about-box
+
+
+2012-02-11 17:15:11 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix switching animation masks on variant switch
+
+The masks for variant-dependent piees (E,H in Seirawan, promoted Golds
+in Shogi, the Gothic Chancellor) were no longer updated in InitDrawingSizes
+because of the patch to reduce X-server calls.
+
+2012-02-11 16:46:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure wider game list
+
+The game list was by default too small, so that there was no room for the
+filter field. Now a width of 500 is specified, whcih works at -size 49
+as well as 72.
+
+2012-02-11 16:29:06 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix button chaining and combo/textbox label height
+
+Previous patches forgot to specify the height for the text labels on
+-combo and -text options, so they were still too high. Buttons that go
+on the same line as the previous element should be chained right, not rubber.
+
+2012-02-11 15:52:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make -pgnNumberTag option setable from menu
+
+The Save Options dialog now containes a checkbox for this.
+
+2012-02-11 15:48:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure some new features switched on
+
+The master settings file switches -showTargetSquares, -sweepPromotions
+and -seekGraph on, so that they will get more testing.
+
+2012-02-11 14:43:53 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix heigth of multi-line labels
+
+The previous height patch overlooked that some labels are multi-line,
+and need more height.
+
+2012-02-11 14:10:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix popdown seekgraph on forward-event XB
+
+Only the grid was drawn when the > or >> button were operated, because
+a full redraw was not forced by ForwardInner. The recent patch to take
+the seek graph down on such events did not account for that. (BackwardInner
+always seems to do full redraw, however?)
+
+2012-02-11 12:59:04 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put front-end support for -recentEngines in XBoard
+
+The engines are added to the menu. Problem is still that in XBoard
+startup engines are given by command, rather than selected by combobox,
+so the command rather than the nickname ends up in the menu. If this is
+then selected, it cannot be found in the list. To limit the damage,
+Fairy-Max is now pre-installed without nickname. -recentEngines is now
+configured to 4.
+
+2012-02-11 11:53:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Better solution to button-height problem
+
+In stead of adapting the height of text widgets to that of buttons,
+(as represented by the message widget), we now do the opposite, and
+adapt the button & label heights. This is made safe by obtaining textHeight
+from the fontSet's max_logical_extent, though an XExtendsFontSet() call.
+Turns out the default height of text widgets is not exactly that, but
+4 pixels larger for borders and margin.
+  The parameter XtNvertDistance is now used to align the checkboxes with
+the following text widget, and their size is derived from textHeight as
+well.
+  The XtNvertDistance is set to -1 for the lower spin button, so that it
+its border coincides with that of the upper spin button. Their height is
+set to textHeight/2. This makes their combined height just 1 pixel more
+than that of the preceeding text widget. (Uh? 2 x tw/2 -1 > tw?), so for
+other buttons we use that too (i.e. textHeight = font_extent + 5).
+
+2012-02-10 22:39:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warning
+
+Deleting debug printing had made a variable unused.
+
+2012-02-10 22:26:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix sleeping bug
+
+The text-edit-height patch introduced a bug that did not have any consquences
+(yet), as the extra arg erroneously included leftover from a previous
+SetValues call happened to be the same as one of the intended args.
+
+2012-02-10 20:51:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix unloading of first engine on tourney start
+
+Because NextTourneyGame was loading a new engine before ReserveGame was
+called to unload it with dummy game nr = -1), the first engine proc kept
+hanging.
+
+2012-02-10 18:39:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove some of the most verbose debug output
+
+
+2012-02-10 17:46:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Delete some unused WinBoard bitmaps
+
+There waere up-side-down knight icons that apparently hid by mistake
+in the bitmaps directory: they were not part of WinBoard
+
+2012-02-10 17:39:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Cosmetic: change 4.5 to 4.6 in xboard.conf comment
+
+
+2012-02-10 17:35:22 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on empty combobox menu XB
+
+XBoard crashed when a combobox without items was opened, as could easily
+happen in the Load Engine dialogs when -firstChessProgramNames contained
+no items, as it would without configuring. Now the creation of the popup
+menu is suppressed in that case.
+
+2012-02-10 17:13:36 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix position of checkbox XB
+
+With the large height the widget get in internationalization, the
+checkboxes are position way too high above the text. To shift them down
+a dummy borderless label widget is drawn above them (when needed).
+
+2012-02-10 15:07:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix heights in Engine Output window XB
+
+The icons did not fit in the space above the memos anymore, so the height
+of this area is now left free.
+
+2012-02-10 14:55:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Derive height of text-edits in dialogs from message widget
+
+With internationalization the default height of buttons has inexpliquably
+inreased compared to that of text-edits, messing up the layout of the
+GenericPopUp. The message widget is now used as a emasure of how high
+the widgets should be.
+
+2012-02-10 14:21:37 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure XBoard engines and textures
+
+The new -useBoardTexture option is needed in xboard.conf, as we want to
+distribute with the texture on, while the compiled-in default is off.
+A list of 4 engines has been configured (fairymax, fruit, crafty, gnuchess),
+as the Load Engine and Match Options checkboxes crash XBoard when the list
+is empty. The -recentEngines option is set to 0 to make sure the code
+associated with it is never executed: the code is still experimental,
+and the required front-end support is only present in WinBoard anyway.
+
+2012-02-10 13:30:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update Dutch WinBoard translation
+
+
+2012-02-10 13:18:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Create room in some WB dialogs for translations
+
+
+2012-02-10 13:17:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add 5 missing strings to WinBoard translation template
+
+
+2012-02-09 23:03:58 -0800 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2012-02-09 23:04:46 -0800 Arun Persaud <arun@nubati.net>:
+updated po-filies
+
+
+2012-02-09 22:59:05 -0800 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
 2012-02-09 22:44:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix non-bug in WinBoard
 

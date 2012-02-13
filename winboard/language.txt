@@ -499,6 +499,7 @@ FONTS
 "Tags" === ""
 "Comments" === ""
 "I C S Interaction" === ""
+"Piece font" === ""
 
 "&Color..." === ""
 "Move History, Engine Output" === ""
@@ -1030,6 +1031,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "Force current variant with this engine" === ""
 "Load mentioned engine as" === ""
 "Load Engine" === ""
+"You did not specify the engine executable" === ""
 
 # TOURNAMENT OPTIONS DIALOG
 
@@ -1059,3 +1061,6 @@ END-OF-GAME MESSAGES (should they be translated?)
 "Time Control..." === ""
 "Common Engine..." === ""
 "Clone Tourney" === ""
+"Make all use GUI book by default" === ""
+"You must supply a tournament file,\nfor storing the tourney progress" === ""
+"Not enough participants" === ""
