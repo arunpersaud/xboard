@@ -5329,9 +5329,6 @@ ParsePV (char *pv, Boolean storeComments, Boolean atEnd)
     if(nr == 0 && !storeComments && *pv == '(') pv++; // first (ponder) move can be in parentheses
     lastParseAttempt = pv;
     valid = ParseOneMove(pv, endPV, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
-if(appData.debugMode){
-fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, yy_textstr, pv);
-}
     if(!valid && nr == 0 &&
        ParseOneMove(pv, endPV-1, &moveType, &fromX, &fromY, &toX, &toY, &promoChar)){
         nr++; moveType = Comment; // First move has been played; kludge to make sure we continue
