@@ -174,7 +174,7 @@ xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 install-data-hook: install-mime-database
 uninstall-hook: uninstall-mime-database
 install-mime-database:
-	@-if test -z "$(DESTDIR)"; then \
+	-if test -z "$(DESTDIR)" -a -n "$(XDG_MIME)" -a -n "$(XDG_DESKTOP_MENU)" -a -n "$(XDG_ICON_RESOURCE)" ; then \
 		xdg-mime install --mode system --novendor xboard.xml ;\
 		xdg-desktop-menu install --mode system --novendor xboard-pgn-viewer.desktop;\
 		xdg-desktop-menu install --mode system --novendor xboard-fen-viewer.desktop;\
@@ -185,7 +185,7 @@ install-mime-database:
 		xdg-icon-resource install --context mimetypes --size 48 pixmaps/cross48.xpm application-x-xboard-trn;\
 	fi
 uninstall-mime-database:
-	@-if test -z "$(DESTDIR)"; then \
+	-if test -z "$(DESTDIR)" -a -n "$(XDG_MIME)" -a -n "$(XDG_DESKTOP_MENU)" -a -n "$(XDG_ICON_RESOURCE)" ; then \
 		xdg-mime uninstall --mode system --novendor xboard.xml;\
 		xdg-desktop-menu uninstall --mode system --novendor xboard-pgn-viewer.desktop;\
 		xdg-desktop-menu uninstall --mode system --novendor xboard-fen-viewer.desktop;\
