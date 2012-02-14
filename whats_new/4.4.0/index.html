@@ -1,0 +1,182 @@
+<!--#include virtual="/server/html5-header.html" -->
+<title>XBoard - GNU Project - Free Software Foundation - NEWS</title>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
+<h2>What is new in WinBoard / XBoard 4.4.0?</h2>
+
+ <table cellpadding="20"><tr valign="top"><td>
+  <h4>New Features</h4>
+  <ul>
+   <li><a href="#tag-A1">Improvements of the WinBoard front-end</a></li>
+   <li><a href="#tag-A2">Support for chess variants</a></li>
+   <li><a href="#tag-A3">Display of engine-output</a></li>
+   <li><a href="#tag-A4">Menu dialogs in XBoard</a></li>
+   <li><a href="#tag-A5">Setting engine options through the GUI</a></li>
+  </ul>
+ </td><td valign="top">
+  <img src="../4.5.0/winboardF.png">
+ </td><td valign="top">
+  <p>
+   <a href="../4.5.0/index.html">Follow-up release (4.5.0)</a>
+  </p>
+  <p>
+   <a href="../4.4.1/index.html">Minor bug-fixes (4.4.1)</a>
+  </p>
+  <p>
+   <a href="../4.4.0/index.html">Preceding release (4.2.7)</a>
+  </p>
+  <p>
+   <a href="../4.4.0/WinBoardF.html">WinBoard_F fork (4.3.x)</a>
+  </p>
+  <p>
+   <a href="../4.4.0/Winboard_x.html">Winboard_x fork</a>
+  </p>
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <h3><a name="tag-A1">Incorporating the Winboard_x fork</a></h3>
+  <p>
+   When official development of XBoard stalled after release of 4.2.7,
+   unofficial forks emerged further developing WinBoard without paying attention to XBoard.
+   Changes in the back-end even destroyed the possibility to build an XBoard from these modified sources.
+   XBoard 4.4.0 pulls some of these forks back into the main line of XBoard development,
+   by at least restoring the compatibility of the X11 front-end files with the common back-end,
+   even though most of the new front-end functions of WinBoard have not been ported yet.
+  </p><p>
+   In particular, XBoard 4.4.0 is based on the Winboard_x fork by Alessandro Scotti.
+   That means that a WinBoard built from these sources has all the enhancements associated with Winboard_x.
+   These include the auxiliary windows for engine output, move history and evaluation graph,
+   board textures and font-based rendering of pieces.
+  </p>
+  <p>
+   For further details, see the page on
+   <a href="../4.4.0/Winboard_x.html">Winboard_x</a>.
+  </p>
+ </td><td valign="top">
+  <img src="petite.gif">
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <img src="couriersmall.gif">
+ </td><td valign="top">
+  <h3><a name="tag-A2">Different board formats and unorthodox pieces</a></h3>
+  <p>
+   XBoard 4.4.0 also inorporates the enhancements of the WinBoard 4.3 fork (aka WinBoard F) by H.G.Muller.
+   This fork itself was built on Winboard_x.
+   At the later stages of this fork (from 4.3.14 on) the compatibility with XBoard was restored,
+   and they came with a working XBoard that could benefit from the enhancements in the common back-end.
+   These included:
+  <ul>
+   <li>Full awareness of castling and en-passant rights</li>
+   <li>Configurable board formats (e.g. 9x10 for Chinese chess)</li>
+   <li>Many unorthodox piece types supported (e.g. cannon and elephant)</li>
+   <li>Variant selectable from menu</li>
+   <li>Bughouse piece drops can be done from holdings displayed next to board</li>
+  </ul>
+  <p>
+   For further details of the back-end enhancements, see the page on
+   <a href="../4.4.0/WinBoardF.html">WinBoard 4.3</a>.
+  </p>
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <h3><a name="tag-A3">Improved analysis window</a></h3>
+  <p>
+   One of the first Winboad_x front-end features we ported to XBoard was the engine-output window,
+   which is an enhanced version of the old analysis window.
+   Rather than just displaying the latest line of engine output,
+   it displays the entire list of it for the current position.
+   Information like current move being searched, number of moves, and nodes searched
+   are displayed above the pane with engine output
+   (provided 'periocic updates' is switched on).
+  </p>
+  <p>
+   The window is also made more generally available:
+   apart from in analysis mode, it can also be brought up when playing against an engine,
+   so you can see the full engine output, rather than just the latest line in the message field above the board.
+   In Two Machines mode the window even splits into two identical panes,
+   so you can see the output of both engines.
+   An icon above each pane indicates whether the engine producing that output is thinking or pondering.
+  </p>
+ </td><td valign="top">
+  <img src="EngOutXB.png">
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <table cellpadding="5"><tr><td>
+   <img src="TCold.png">
+  </td></tr><tr><td>
+   <img src="CommonOld.png">
+  </td></tr></table>
+ </td><td valign="center">
+  <img src="AdjuOld.png">
+ </td><td valign="top">
+  <h3><a name="tag-A4">Some new menu dialogs</a></h3>
+  <p>
+   Previous versions of XBoard were sorely lacking in menu dialogs,
+   and had to be controlled almost entirely through command-line options.
+   Only options that had a simple on/off setting could be controlled through the Options menu.
+  </p>
+  <p>
+   The menu dialogs with the most important option settings have now been ported from WinBoard.
+   In particular, the dialogs to specify the time control,
+   general settings common to all engines,
+   and the adjudication options now have their own menu dialogs.
+   The latter options came with the WinBoard F back-end,
+   as reliable adjudication of games only became possible when XBoard was fully aware of castling and en-passant rights.
+   The general engine settings apply mainly to UCI engines supported through Polyglot.
+  </p>
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <h3><a name="tag-A5">Configuring an engine through the GUI</a></h3>
+  <p>
+   An entirely new feature is a dialog through which you can interactively set the private options of engines.
+   Especially UCI engines have many options, but this feature can work for native XBoard engines as well,
+   through extensions of the protocol.
+   Each engine can define its own set of options with name of its choosing,
+   and tell XBoard what type of values the option can take (numeric, on/off, text, multiple choice).
+   XBoard will then present these options to the user in an Engine Settings dialog,
+   which will thus look completely different for each engines.
+   When the user alters a value here, the new value is relayed to the engine.
+  </p>
+  <p>
+   Shown are the Engine Settings dialogs for Glaurung 2.2 and Fairy-Max 4.8o
+  </p>
+  <img src="EngineSet.png">
+ </td><td valign="top">
+  <img src="settings.png">
+ </td></tr></table>
+
+</div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
+<div id="footer">
+
+<p>Please send general FSF &amp; GNU inquiries to
+<a href="mailto:gnu@gnu.org">&lt;gnu@gnu.org&gt;</a>.
+There are also <a href="/contact/">other ways to contact</a>
+the FSF.<br />
+Please send broken links and other corrections or suggestions to
+<a href="mailto:bug-xboard@gnu.org">&lt;bug-xboard@gnu.org&gt;</a>.</p>
+
+<p>Please see the <a
+href="/server/standards/README.translations.html">Translations
+README</a> for information on coordinating and submitting translations
+of this article.</p>
+
+<p>Copyright &copy; 2009, 2010, 2011, 2012 Free Software Foundation, Inc.</p>
+
+<p>This page is licensed under a <a rel="license"
+href="http://creativecommons.org/licenses/by-nd/3.0/us/">Creative
+Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
+
+<p>Updated:
+<!-- timestamp start -->
+$Date: 2012/01/11 04:40:00 $
+<!-- timestamp end -->
+</p>
+</div>
+</div>
+</body>
+</html>
