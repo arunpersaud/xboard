@@ -1,0 +1,306 @@
+<!--#include virtual="/server/html5-header.html" -->
+<title>XBoard - Tournament manager</title>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
+
+<h2>XBoard tourney-manager function</h2>
+<p>
+XBoard now has a built-in tournament manager,
+that can be used to make it play engine tournaments with more than two participants.
+To run such a tourney, XBoard will have to create a 'tournament file'.
+This can be done through the Match Options dialog.
+The tournament file is a special type of settings file,
+which contains all option settings needed to specify the tournament:
+the list of partcipating engines, the tournament type
+(round-robin, (multi-)gauntlet or Swiss),
+the number of games per pairing, the number of cycles, etc.
+This information is put in a file, rather than kept in XBoard's memory, for two reasons:
+so that you can easily resume the tournament should it get somehow interrupted,
+and to share it between different XBoards playing games in parallel for the same tourney.
+</p><p>
+For the rest a tournament behaves just like XBoard -matchMode.
+In fact it is just a special kind of match,
+where not all games are between the same two engines that you started with,
+but where new players can be selected before each game,
+and the tournament file tells XBoard how to do that.
+</p><p>
+All the tourney parameters that are kept in the tourney file
+can in principle also be specified from the command line, through options, 
+but that still would not cause XBoard to run a tourney.
+It is realy essential that XBoard has a tournament file for that,
+because it uses the latter also for recording the progress of the tourney:
+which games have already been played (and how they ended),
+and which games are currently in progress.
+With the aid of this information, XBoard will be able to resume a tourney that has been interrupted (by quitting XBoard). 
+It only requires re-starting XBoard with the existing tournament file:
+<pre>
+xbooard -mm -tf MyTourney.trn
+</pre>
+This will make XBoard pick up where it left off.
+XBoard is installed in such a way that the above command is automatically issued
+whenever you double-click a tourney file.
+</p><p>
+This design makes it also possible to have multiple instances of XBoard work on playing the tourney games.
+E.g. when you have a quad-core computer, and you are playing single-CPU engines in ponder-off games,
+one core is enough to completely handle a single game, so that you can run four games simultaneously.
+By starting multiple instances of XBoard with the same tourney file,
+these instances will then cooperate on completing the tourney.
+Each one will 'grab' a game from the tourney file that has not yet been played and is not in progress,
+mark it as being in progress, and starts playing it.
+When that game then finishes, The XBoard instance that had been playing it
+will replace the "in-progress" mark in the tourney file by the game result,
+and grab the next game that has not had any attention yet.
+This continues until the entire tourney is done.
+(Note there are options to delay starting games from a new round or cycle 
+until the previous one has been completed.)
+</p>
+<p>
+An XBoard tournament is organized as a number of cycles,
+where each cycle is a complete repetition of the previous one.
+The cycle is sub-divided into rounds, where each player plays a single other one.
+A round consists of a number of pairings, where one player plays one other.
+A pairing, finally, consists of a number of consecutively played games between the same players.
+So you can, for instance, do a 5-cycle round-robin with 8 players and two games per pairing.
+Players will then play two consecutive games against each other (with reversed colors)
+before the next pairing, with two other players, will start.
+After 4 such pairings (8 games) every player will have played two games against one opponent, 
+and a round is completed.
+After 7 such rounds, everyone has played everyone, which completes one tourney cycle.
+This will then be repeated 5 times, so that in the end everyone will have played everyone else 10 times.
+</p>
+<h3>New command-line options</h3>
+<p>
+To specify the tourney, some new command-line options have been defined in XBoard.
+Normally the user will not be exposed to these at all,
+as they are purely designed for storing the corresponding settings in the tournament files.
+They would not even be stored in the normal settings file (i.e. they are volatile options).
+New options are -participants, (which holds a list of engines, one per line),
+-tourneyType, -tourneyCycles, and -results.
+The latter specifies which games have already been played, as a string of +-=* characters,
+where an asterisk signifies the game is currently in progress.
+The -tourneyType can be 0 for a round-robin, an integer N > 0 for (multi-)gauntlets,
+(where the first N participants of the list each play all others),
+or -1 for Swiss.
+(The Swiss needs an external pairing engine; more about that later.)
+</p>
+<table cellpadding="10"><tr><td>
+<p>
+The previously existing option -defaultMatchGames is used to indicate the number of games per pairing,
+so that the total number of games per pairing will be the product of the value of -defaultMatchGames and -tourneyCycles.
+The -loadGameFile and -loadPositionFile, and the corresponding index specification
+-loadGameIndex, -loadPositionIndex and -rewindIndex are used during the games of a pairing
+in the same way as they would be used in a simple match between two engines,
+and are also specified in the tourney file.
+</p>
+<h3>Setting up a tournament from the menu</h3>
+<p>
+To start a tourney you can start XBoard with or without engine,
+and summon the Match Options dialog from the Options menu.
+There the most important thing you should do is specify a tournament file.
+If the file you specify already existed, (e.g. by using the browse button for it), it is all you have to specify,
+as all other settings will then be taken from that file.
+(This is what you would do to resume an interrupted tourney, or add a playing agent to an existing one.)
+If the file did not exist yet, it will be created as soon as you OK the dialog,
+but you have to complete the other parameters in the dialog first.
+XBoard is by default configured to propose a non-existing file, by deriving a name from the date and time.
+Unless you want the name to be more easily recognizable for later reference, you can accept that one.
+</p><p>
+So usually you will start picking the participants, 
+and a combobox in the dialog allows you to pick any installed engine as often as you want.
+The engines you select this way will be added to the displayed partcipants list.
+Note this participants list is a normal text edit,
+so that you can delete engines to correct mistakes,
+shuffle the order, etc.
+(Do not type the name of non-installed engines there, or change the names, though:
+they will then not be recognized!)
+After 'OK' all the settings will be written on the specified tourney file,
+with -results last, (automatically set to an empty string,
+to indicate none of the games has been played yet),
+and XBoard will then switch to match mode to run the tourney.
+</p><p>
+Games played during the tourney will be saved as usual on the -saveGameFile,
+depending on your option settings for this.
+You don't have to save the PGN, if you don't want to.
+</p>
+</td><td>
+<img src="Tourney.png">
+</td></tr></table>
+
+<table cellpadding="50"><tr><td>
+<pre>
+-participants {glaurung
+Fruit 2.1
+Fairy-Max 4.8
+Crafty 20.14
+}
+-tourneyType 0
+-tourneyCycles 1
+-defaultMatchGames 2
+-syncAfterRound true
+-syncAfterCycle true
+-saveGameFile "tm.pgn"
+-loadGameFile ""
+-loadGameIndex 0
+-loadPositionFile ""
+-loadPositionIndex 1
+-rewindIndex 0
+-results "=-+*"
+</pre>
+</td><td valign="top">
+<p>
+To the left you see an example of a tournament file of a (small) tourney in progress.
+Three games have been played, the fourth is in progress,
+as you can see in the -results string.
+When another XBoard instance starts a match with this tournament file specified,
+it will start playing the fifth game,
+and the -results string in the tourney file would change to "=-+**".
+</p>
+<p>
+When you would then quit the XBoard instance that is (apparently) playing game #4,
+it would change the result string to <pre>-results "=+- *"</pre> before it exits,
+indicating that game #4 is no longer in progress, but not yet played either.
+The XBoard instance that is still running
+(or a new one you start on this tournament file)
+will then grab it the next time.
+</p>
+</td></tr></table>
+<p>
+Note that XBoard has no windows (yet?) to show you the standings or the cross table of the tournament.
+The idea is that there exist already plenty programs to generate those from the PGN file.
+When you let all XBoard instances save the games they play to the same file,
+(this XBoard version uses file locking to make sure this can't cause problems!),
+you can use your favorite PGN-to-cross-table utility on it any time you want.
+</p>
+
+<h3>Synchronization in concurrent play</h3>
+<p>
+When you use multiple instances of XBoard to concurrently work on playing a tourney,
+the option -syncAfterRound can be used to prevent XBoard from starting games from a new round,
+when there are still unfnished games of a previous round.
+XBoard will then wait until all these games are finished,
+and automatically resume after that with the game of the next round it already picked.
+This way you can guarantee that the rounds appear well-ordered in the PGN file.
+There is a similar option -syncAfterCycle.
+But as a cycle end coincides with the end of a round, this option is only meaningful when -syncAfterRound is false.
+There are checkboxes near the top of the Match Options dialog where you can select if you want such synchronization,
+but when you do not plan to use concurrency in playing the tourney, you can of course completely ignore them.
+</p>
+
+<h3>Substituting participants during a tourney</h3>
+<p>
+You can substitute one participant for another in a tourney that is already in progress.
+(What you cannot do, however, is change the number of participants,
+as this would mess up the entire tournament schedule.)
+The Match Options dialog provides two buttons for that: Upgrade and Replace.
+The way it works is this:
+when you open the dialog while the tournament is playing,
+(in an XBoard that is actually playing it),
+you will see the list of participants and other tourney parameters of the current tourney already in their respective fields of the dialog.
+All you have to do is to replace one (and not more!) of the participant names by another,
+by editing the participants field.
+After that, you press one of the two buttons, and that is it!
+Upgrade will cause XBoard to use the new participant in stead of the old one in all future games,
+while Replace would also erase all game results of the participant you replaced,
+so that these games will be replayed.
+This can be done while the tourney is running, there is no need to pause it in any way.
+The only restriction currently is that you cannot use Replace on an engine that is currently playing
+because XBoard would not know how to erase the result of the game in progress,
+as it is not in yet, and another XBoard instance might be playing it.
+</p><p>
+Replacing one participant name by that of a new engine could be a bit tricky,
+as you would have to use the exact nickname under which the engine is installed.
+(XBoard performs lots of checks to see if there is a mistake there,
+but it is better not to run into error popups all the time,
+and having to do it again.)
+The recommended way for doing this is just select the substitute from the combobox,
+so that it will be added to the bottom of the list.
+You can then simply use drag and drop editing to move that bottom line
+to below the name of the engine you want to replace
+(because the order of the engines in the list must be preserved!),
+and then delete the line with the nickname of the participant to be replaced.
+</p>
+
+<h3>Running the same tourney as before</h3>
+<p>
+Sometimes you want to run a tourney with the same or nearly the same participants over and over again.
+This occurs, for instance, when you are testing an engine under development, by playing it against a fixed set of opponents.
+It would be a pain to have to pick all these oponents from the list
+every time you want to repeat this gauntlet with a new version of the engine you want to test.
+(The participants list could be very long!)
+</p>
+<p>
+To solve this, a 'Clone Tourney' button is provided in the Match Options dialog.
+All you have to do is select an existing tournament file (usually through the browse button),
+which can be of a completed tourney.
+But in stead of pressing OK after you have done that (which would attempt to resume that tourney),
+you now press 'Clone Tourney'.
+This copies all the parameters of the indicated tourneyfile (except the -results),
+so they appear in their dialog fields.
+At the same time it switches the name in the tourney-file field back to the one that was
+originally proposed when you opened the dialog.
+So that when you would press OK now, you would start a new tourney,
+with exactly the same parameters as the cloned one.
+</p>
+<p>
+Usually you would want to change some of the paramters first, however.
+Like replacing the name of the gauntlet engine in the 'participants' field by that of the newer version.
+Basicaly you can change anything you like, without restriction,
+as you are really setting up a completely new and independent tourney.
+The cloning was just a convenient way to quickly get some default settings for all of the parameters loaded into the dialog.
+</p>
+
+<h3>Editing tourney files</h3>
+
+<p>
+Although this is not recommended for a novice user, (and should also not be needed in normal applications),
+an experienced user that understands very well how things work might see some benefits in editing the tourney file.
+Remember that the tourney file is read by every XBoard instance playing on that tourney, before every game.
+So the tourney file is an ideal place to 'broadcast' a setting to all XBoards playing for that tourney, and none other.
+If you thus want to have some special setting of XBoard just for that tournament,
+which is not stored in the tourney file by default,
+you could simply add it there.
+</p><p>
+You would then automatically force this setting on all XBoards playing for the tourney,
+even those you will start up only tomorrow,
+even if in the mean time you have changed the settings XBoard uses at startup by doing something else with it in the mean time.
+For instance, you could write a '-variant fischerandom' option in the tourney file, 
+if not all engines are installed to automatically play Chess960.
+Or specify that the engine-output window should be closed, or Shogi pixmaps should be used for the pieces, or whatever.
+The only thing you have to keep in mind is that the -results option should always remain the last one in the file.
+So NEVER, NEVER append anything to the end of a tourney file!
+It would also be good practice to always keep the -participants option the first one in the file.
+(As this is used by the OS to determine mime-type of the file.)
+</p>
+
+</div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
+<div id="footer">
+
+<p>Please send general FSF &amp; GNU inquiries to
+<a href="mailto:gnu@gnu.org">&lt;gnu@gnu.org&gt;</a>.
+There are also <a href="/contact/">other ways to contact</a>
+the FSF.<br />
+Please send broken links and other corrections or suggestions to
+<a href="mailto:bug-xboard@gnu.org">&lt;bug-xboard@gnu.org&gt;</a>.</p>
+
+<p>Please see the <a
+href="/server/standards/README.translations.html">Translations
+README</a> for information on coordinating and submitting translations
+of this article.</p>
+
+<p>Copyright &copy; 2009, 2010, 2011, 2012 Free Software Foundation, Inc.</p>
+
+<p>This page is licensed under a <a rel="license"
+href="http://creativecommons.org/licenses/by-nd/3.0/us/">Creative
+Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
+
+<p>Updated:
+<!-- timestamp start -->
+$Date: 2012/02/10 07:45:12 $
+<!-- timestamp end -->
+</p>
+</div>
+</div>
+</body>
+</html>
