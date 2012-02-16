@@ -1313,11 +1313,6 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
     closure->count = closure->captures = 0;
     closure->rf = closure->ff = closure->rt = closure->ft = 0;
     closure->kind = ImpossibleMove;
-    if (appData.debugMode) {
-        fprintf(debugFP, "Disambiguate in:  %d(%d,%d)-(%d,%d) = %d (%c)\n",
-                             closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
-                             closure->promoCharIn, closure->promoCharIn >= ' ' ? closure->promoCharIn : '-');
-    }
     rFilter = closure->rtIn; // [HGM] speed: only consider moves to given to-square
     fFilter = closure->ftIn;
     if(quickFlag) { // [HGM] speed: try without check test first, because if that is not ambiguous, we are happy
@@ -1413,11 +1408,6 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
 	   can look at closure->count to detect this.
 	*/
 	closure->kind = IllegalMove;
-    }
-    if (appData.debugMode) {
-        fprintf(debugFP, "Disambiguate out: %d(%d,%d)-(%d,%d) = %d (%c)\n",
-        closure->piece,closure->ff,closure->rf,closure->ft,closure->rt,closure->promoChar,
-	closure->promoChar >= ' ' ? closure->promoChar:'-');
     }
 }
 

@@ -7347,7 +7347,7 @@ StartChildProcess (char *cmdLine, char *dir, ProcRef *pr)
     char buf[MSG_SIZ];
 
     if (appData.debugMode) {
-	fprintf(stderr, "StartChildProcess (dir=\"%s\") %s\n",dir, cmdLine);
+	fprintf(debugFP, "StartChildProcess (dir=\"%s\") %s\n",dir, cmdLine);
     }
 
     /* We do NOT feed the cmdLine to the shell; we just
