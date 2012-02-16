@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard-4.6.0.20120209\n"
+"Project-Id-Version: GNU xboard-4.6.0.20120212\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2012-02-12 22:18-0800\n"
-"PO-Revision-Date: 2012-02-12 12:44+0200\n"
+"POT-Creation-Date: 2012-02-12 22:36-0800\n"
+"PO-Revision-Date: 2012-02-13 10:18+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -127,9 +127,7 @@ msgstr "Робота режиму гри комп’ютером білими р
 
 #: backend.c:1660
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
-"Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено "
-"шаховий рушій"
+msgstr "Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено шаховий рушій"
 
 #: backend.c:1665
 msgid "TwoMachines mode does not work with ICS mode"
@@ -217,8 +215,7 @@ msgstr ""
 
 #: backend.c:4188 backend.c:9406
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
+msgstr "Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
 
 #: backend.c:4282
 msgid "Error gathering move list: extra board"
@@ -240,8 +237,7 @@ msgstr "Ця дія неможлива у режимі гри або спост�
 
 #: backend.c:5908
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
-"Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
+msgstr "Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
 
 #: backend.c:6261
 msgid "You are playing Black"
@@ -306,8 +302,7 @@ msgstr "У %s не передбачено аналізу"
 #: backend.c:8332
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
-"Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
+msgstr "Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
 
 #: backend.c:8359
 #, c-format
@@ -554,8 +549,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Повідомлення cmail не завантажено.\n"
-"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш "
-"хід."
+"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш хід."
 
 #: backend.c:12764
 msgid "No unfinished games"
@@ -1399,9 +1393,7 @@ msgstr "Не вдалося відкрити файл «%s»\n"
 
 #: xboard.c:2045
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з "
-"більшими значеннями BOARD_RANKS або BOARD_FILES"
+msgstr "Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з більшими значеннями BOARD_RANKS або BOARD_FILES"
 
 #: xboard.c:2068
 #, c-format
@@ -1566,13 +1558,11 @@ msgstr "%s: %s… використовуємо вбудоване\n"
 #: xboard.c:3849
 #, c-format
 msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
-msgstr ""
-"%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… "
-"використовуємо вбудоване\n"
+msgstr "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… використовуємо вбудоване\n"
 
 #: xboard.c:3917
 msgid "----"
-msgstr ""
+msgstr "----"
 
 #: xboard.c:4089
 msgid "Drop"
@@ -1671,7 +1661,7 @@ msgid " (with Zippy code)"
 msgstr " (з кодом Zippy)"
 
 #: xboard.c:6584
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -1679,17 +1669,15 @@ msgid ""
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information."
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information."
 msgstr ""
 "%s%s\n"
 "\n"
 "© Digital Equipment Corporation, 1991\n"
-"© Free Software Foundation, 1992–2009\n"
+"© Free Software Foundation, 1992–2012\n"
 "© Alessandro Scotti, 2005\n"
 "\n"
-"%s є вільним програмним забезпеченням, його працездатність не гарантується. "
-"Докладніше про це у файлі COPYING."
+"%s є вільним програмним забезпеченням, його працездатність не гарантується. Докладніше про це у файлі COPYING."
 
 #: xboard.c:6751
 msgid "Fatal Error"
@@ -1926,8 +1914,7 @@ msgstr "Номер позиції (-1 або -2 = автоматичне збі�
 
 #: xoptions.c:399
 msgid "Rewind Index after this many Games (0 = never):"
-msgstr ""
-"Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
+msgstr "Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
 
 #: xoptions.c:400
 msgid "Disable own engine books by default"
@@ -2015,7 +2002,7 @@ msgstr "Швидкість анімації (висока = повільно):"
 
 #: xoptions.c:441
 msgid "Zoom factor in Evaluation Graph:"
-msgstr "Масштаб графа оцінки позиції:"
+msgstr "Масштаб графу оцінки позиції:"
 
 #: xoptions.c:458
 #, c-format
@@ -2479,7 +2466,7 @@ msgstr "Застарілий стиль збереження (на відмін�
 
 #: xoptions.c:645
 msgid "Include Number Tag in tourney PGN"
-msgstr ""
+msgstr "Включити мітку номера до PGN турніру"
 
 #: xoptions.c:646
 msgid "Save Score/Depth Info in PGN"
@@ -2799,8 +2786,7 @@ msgstr "Команда рушія:"
 
 #: xoptions.c:1745
 msgid "(Directory will be derived from engine path when empty)"
-msgstr ""
-"(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
+msgstr "(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
 
 #: xoptions.c:1746
 msgid "UCI"
