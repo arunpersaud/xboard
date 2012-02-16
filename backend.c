@@ -734,8 +734,12 @@ ClearOptions (ChessProgramState *cps)
 }
 
 char *engineNames[] = {
-"first",
-"second"
+  /* TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
+     such as "% engine" / "%s chess program" / "%s machine" - all mening the same thing */
+N_("first"),
+  /* TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
+     such as "% engine" / "%s chess program" / "%s machine" - all mening the same thing */
+N_("second")
 };
 
 void
@@ -744,7 +748,7 @@ InitEngine (ChessProgramState *cps, int n)
 
     ClearOptions(cps);
 
-    cps->which = engineNames[n];
+    cps->which = _(engineNames[n]);
     cps->maybeThinking = FALSE;
     cps->pr = NoProc;
     cps->isr = NULL;
