@@ -13909,6 +13909,8 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
             } else
 	    boards[0][y][x] = selection;
 	    DrawPosition(TRUE, boards[0]);
+	    ClearHighlights();
+	    fromX = fromY = -1;
 	}
 	break;
     }
