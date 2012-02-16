@@ -68,7 +68,11 @@ dist_svgicon_DATA = xboard.svg
 ### desktop files for KDE and gnome
 
 Applicationsdir = $(datadir)/applications
-Applications_DATA = xboard.desktop
+Applications_DATA = xboard.desktop xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop
+
+### mime file
+mimedir = $(datadir)/mime/packages
+mime_DATA = xboard.xml
 
 ### directory and files for bitmaps
 
@@ -171,27 +175,35 @@ distclean-local:
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 	$(srcdir)/texi2man $(srcdir)/xboard.texi > xboard.man || (rm -f xboard.man ; false)
 
+### install mime-type files and corresponding icons and menu entries if enabled during configure
+
 install-data-hook: install-mime-database
 uninstall-hook: uninstall-mime-database
+
 install-mime-database:
+if ENABLE_UPDATE_MIMEDB	
 	-if test -z "$(DESTDIR)" -a -n "$(XDG_MIME)" -a -n "$(XDG_DESKTOP_MENU)" -a -n "$(XDG_ICON_RESOURCE)" ; then \
-		xdg-mime install --mode system --novendor xboard.xml ;\
-		xdg-desktop-menu install --mode system --novendor xboard-pgn-viewer.desktop;\
-		xdg-desktop-menu install --mode system --novendor xboard-fen-viewer.desktop;\
-		xdg-desktop-menu install --mode system --novendor xboard-tourney.desktop;\
-		xdg-icon-resource install --context mimetypes --size 32 pixmaps/board32.xpm application-x-chess-pgn;\
-		xdg-icon-resource install --context mimetypes --size 32 pixmaps/cross32.xpm application-x-xboard-trn;\
-		xdg-icon-resource install --context mimetypes --size 48 pixmaps/board48.xpm application-x-chess-pgn;\
-		xdg-icon-resource install --context mimetypes --size 48 pixmaps/cross48.xpm application-x-xboard-trn;\
+		$(XDG_MIME) install --mode system --novendor xboard.xml ;\
+		$(XDG_DESKTOP_MENU) install --mode system --novendor xboard-pgn-viewer.desktop;\
+		$(XDG_DESKTOP_MENU) install --mode system --novendor xboard-fen-viewer.desktop;\
+		$(XDG_DESKTOP_MENU) install --mode system --novendor xboard-tourney.desktop;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 32 pixmaps/board32.xpm application-x-chess-pgn;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 32 pixmaps/cross32.xpm application-x-xboard-trn;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 48 pixmaps/board48.xpm application-x-chess-pgn;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 48 pixmaps/cross48.xpm application-x-xboard-trn;\
 	fi
+endif
+
 uninstall-mime-database:
+if ENABLE_UPDATE_MIMEDB	
 	-if test -z "$(DESTDIR)" -a -n "$(XDG_MIME)" -a -n "$(XDG_DESKTOP_MENU)" -a -n "$(XDG_ICON_RESOURCE)" ; then \
-		xdg-mime uninstall --mode system --novendor xboard.xml;\
-		xdg-desktop-menu uninstall --mode system --novendor xboard-pgn-viewer.desktop;\
-		xdg-desktop-menu uninstall --mode system --novendor xboard-fen-viewer.desktop;\
-		xdg-desktop-menu uninstall --mode system --novendor xboard-tourney.desktop;\
-		xdg-icon-resource uninstall --context mimetypes --size 32 board32.xpm application-x-chess-pgn;\
-		xdg-icon-resource uninstall --context mimetypes --size 32 cross32.xpm application-x-xboard-trn;\
-		xdg-icon-resource uninstall --context mimetypes --size 48 board48.xpm application-x-chess-pgn;\
-		xdg-icon-resource uninstall --context mimetypes --size 48 cross48.xpm application-x-xboard-trn;\
+		$(XDG-MIME) uninstall --mode system --novendor xboard.xml;\
+		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-pgn-viewer.desktop;\
+		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-fen-viewer.desktop;\
+		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-tourney.desktop;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 32 board32.xpm application-x-chess-pgn;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 32 cross32.xpm application-x-xboard-trn;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 board48.xpm application-x-chess-pgn;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 cross48.xpm application-x-xboard-trn;\
 	fi
+endif

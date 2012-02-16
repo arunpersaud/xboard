@@ -416,15 +416,24 @@ X_LIBS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS -lXmu -lX11 -lXt "
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_LIBS)
 
-dnl | can we install desktop icons and mime associations?
-AC_PATH_PROG([XDG_MIME],[xdg-mime])
-AC_SUBST(XDG_MIME)
-AC_PATH_PROG([XDG_DESKTOP_MENU],[xdg-desktop-menu])
-AC_SUBST(XDG_DESKTOP_MENU)
-AC_PATH_PROG([XDG_ICON_RESOURCE],[xdg-icon-resource])
-AC_SUBST(XDG_ICON_RESOURCE)
+dnl | should we install desktop icons and mime associations?
+AC_ARG_ENABLE(	[update-mimedb],
+		[AS_HELP_STRING([--disable-update-mimedb],[disable the update-mime-database after install [default=no]])],
+		[enable_mimedb="no"],
+		[enable_mimedb="yes"])
 
+AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x"$enable_mimedb" = "xyes")
 
+if test x"$enable_mimedb" = "xyes"; then
+   AC_PATH_PROG([XDG_MIME],[xdg-mime])
+   AC_SUBST(XDG_MIME)
+   AC_PATH_PROG([XDG_DESKTOP_MENU],[xdg-desktop-menu])
+   AC_SUBST(XDG_DESKTOP_MENU)
+   AC_PATH_PROG([XDG_ICON_RESOURCE],[xdg-icon-resource])
+   AC_SUBST(XDG_ICON_RESOURCE)
+fi
+
+dnl |  output Makefile
 AC_CONFIG_FILES([Makefile cmail po/Makefile.in])
 AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])
 AC_CONFIG_COMMANDS([chmod-cmail],[chmod 755 cmail])
@@ -442,6 +451,8 @@ echo "        datadir:         $datadir   (icons will go in \$datadir/icons/hico
 echo "                                    (bitmaps will go in \$datadir/games/xboard/...)"
 echo "        infodir:         $infodir   (info files will go here)"
 echo "        sysconfdir:      $sysconfdir   (xboard.conf will go here)"
+echo ""
+echo "        update mimedb:   $enable_mimedb"
 echo ""
 echo "        NLS support:     $USE_NLS"
 echo ""
