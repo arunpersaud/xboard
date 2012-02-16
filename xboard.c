@@ -4084,6 +4084,7 @@ CreatePieceMenus ()
     whitePieceMenu = CreatePieceMenu("menuW", 0);
     blackPieceMenu = CreatePieceMenu("menuB", 1);
 
+    if(appData.pieceMenu) // [HGM] sweep: no idea what this was good for, but it stopped reporting button events outside the window
     XtRegisterGrabAction(PieceMenuPopup, True,
 			 (unsigned)(ButtonPressMask|ButtonReleaseMask),
 			 GrabModeAsync, GrabModeAsync);
