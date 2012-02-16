@@ -107,7 +107,7 @@ MakeEngineOutputTitle ()
 	count = currentMove - count;
 	if(!rule) rule = 100;
 	if(count >= rule - 40 && (!appData.icsActive || gameMode == IcsObserving)) {
-		snprintf(buf, MSG_SIZ, _("%s (%d reversible plies)"), title, count);
+		snprintf(buf, MSG_SIZ, ngettext("%s (%d reversible ply)", "%s (%d reversible plies)", count), title, count);
 		safeStrCpy(title, buf, MSG_SIZ);
 	}
 	if(!strcmp(oldTitle, title)) return;
