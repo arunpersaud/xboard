@@ -10072,6 +10072,18 @@ NextMatchGame ()
 {   // performs game initialization that does not invoke engines, and then tries to start the game
     int res, firstWhite, swapColors = 0;
     if(!NextTourneyGame(nextGame, &swapColors)) return; // this sets matchGame, -fcp / -scp and other options for next game, if needed
+    if(matchMode && appData.debugMode) { // [HGM] debug split: game is part of a match; we might have to create a debug file just for this game
+	char buf[MSG_SIZ];
+	snprintf(buf, MSG_SIZ, appData.nameOfDebugFile, nextGame+1); // expand name of debug file with %d in it
+	if(strcmp(buf, currentDebugFile)) { // name has changed
+	    FILE *f = fopen(buf, "w");
+	    if(f) { // if opening the new file failed, just keep using the old one
+		ASSIGN(currentDebugFile, buf);
+		fclose(debugFP);
+		debugFP = f;
+	    }
+	}
+    }
     firstWhite = appData.firstPlaysBlack ^ (matchGame & 1 | appData.sameColorGames > 1); // non-incremental default
     firstWhite ^= swapColors; // reverses if NextTourneyGame says we are in an odd round
     first.twoMachinesColor =  firstWhite ? "white\n" : "black\n";   // perform actual color assignement
@@ -13385,17 +13397,6 @@ TwoMachinesEvent P((void))
 	break;
     }
 
-    if(matchMode && appData.debugMode) { // [HGM] debug split: game is part of a match; we might have to create a debug file just for this game
-	snprintf(buf, MSG_SIZ, appData.nameOfDebugFile, nextGame+1); // expand name of debug file with %d in it
-	if(strcmp(buf, currentDebugFile)) { // name has changed
-	    FILE *f = fopen(buf, "w");
-	    if(f) { // if opening the new file failed, just keep using the old one
-		ASSIGN(currentDebugFile, buf);
-		fclose(debugFP);
-		debugFP = f;
-	    }
-	}
-    }
 //    forwardMostMove = currentMove;
     TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
 
