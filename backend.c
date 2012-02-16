@@ -735,10 +735,10 @@ ClearOptions (ChessProgramState *cps)
 
 char *engineNames[] = {
   /* TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
-     such as "% engine" / "%s chess program" / "%s machine" - all meaning the same thing */
+     such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing */
 N_("first"),
   /* TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
-     such as "% engine" / "%s chess program" / "%s machine" - all meaning the same thing */
+     such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing */
 N_("second")
 };
 
