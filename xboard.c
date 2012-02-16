@@ -1125,7 +1125,9 @@ char boardTranslations[] =
    <Btn1Up>: HandleUserMove(0) \n \
    <Btn1Motion>: AnimateUserMove() \n \
    <Btn3Motion>: HandlePV() \n \
+   <Btn2Motion>: HandlePV() \n \
    <Btn3Up>: PieceMenuPopup(menuB) \n \
+   <Btn2Up>: PieceMenuPopup(menuB) \n \
    Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
                  PieceMenuPopup(menuB) \n \
    Any<Btn2Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD) \
