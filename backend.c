@@ -13354,7 +13354,7 @@ WaitForEngine (ChessProgramState *cps, DelayedEventCallback retry)
 	} else {
 	  /* kludge: allow timeout for initial "feature" command */
 	  FreezeUI();
-	  snprintf(buf, MSG_SIZ, _("Starting %s chess program"), cps->which);
+	  snprintf(buf, MSG_SIZ, _("Starting %s chess program"), _(cps->which));
 	  DisplayMessage("", buf);
 	  ScheduleDelayedEvent(retry, FEATURE_TIMEOUT);
 	}
