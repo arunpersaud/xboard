@@ -748,7 +748,7 @@ InitEngine (ChessProgramState *cps, int n)
 
     ClearOptions(cps);
 
-    cps->which = _(engineNames[n]);
+    cps->which = engineNames[n];
     cps->maybeThinking = FALSE;
     cps->pr = NoProc;
     cps->isr = NULL;
