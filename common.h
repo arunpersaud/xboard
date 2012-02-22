@@ -623,6 +623,7 @@ typedef struct {
     Boolean lowTimeWarning; /* [HGM] low time */
     char *lowTimeWarningColor;
 
+    char *serverFileName;
     char *serverMovesName;
     Boolean suppressLoadMoves;
     int serverPause;

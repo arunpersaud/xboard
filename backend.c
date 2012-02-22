@@ -392,7 +392,7 @@ PosFlags (index)
   return flags;
 }
 
-FILE *gameFileFP, *debugFP;
+FILE *gameFileFP, *debugFP, *serverFP;
 char *currentDebugFile; // [HGM] debug split: to remember name
 
 /*
@@ -10083,6 +10083,12 @@ NextMatchGame ()
 		fclose(debugFP);
 		debugFP = f;
 	    }
+	    if(appData.serverFileName) {
+		if(serverFP) fclose(serverFP);
+		serverFP = fopen(appData.serverFileName, "w");
+		if(serverFP && first.pr != NoProc) fprintf(serverFP, "StartChildProcess (dir=\".\") .\\%s\n", first.tidy);
+		if(serverFP && second.pr != NoProc) fprintf(serverFP, "StartChildProcess (dir=\".\") .\\%s\n", second.tidy);
+	    }
 	}
     }
     firstWhite = appData.firstPlaysBlack ^ (matchGame & 1 | appData.sameColorGames > 1); // non-incremental default
@@ -15023,6 +15029,10 @@ SendToProgram (char *message, ChessProgramState *cps)
 	fprintf(debugFP, "%ld >%-6s: %s",
 		SubtractTimeMarks(&now, &programStartTime),
 		cps->which, message);
+	if(serverFP)
+	    fprintf(serverFP, "%ld >%-6s: %s",
+		SubtractTimeMarks(&now, &programStartTime),
+		cps->which, message), fflush(serverFP);
     }
 
     count = strlen(message);
@@ -15124,6 +15134,11 @@ ReceiveFromProgram (InputSourceRef isr, VOIDSTAR closure, char *message, int cou
 			SubtractTimeMarks(&now, &programStartTime), cps->which,
 			quote,
 			message);
+		if(serverFP)
+		    fprintf(serverFP, "%ld <%-6s: %s%s\n",
+			SubtractTimeMarks(&now, &programStartTime), cps->which,
+			quote,
+			message), fflush(serverFP);
 	}
     }
 

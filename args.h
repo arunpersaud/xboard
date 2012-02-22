@@ -699,6 +699,7 @@ ArgDescriptor argDescriptors[] = {
   /* [HGM] options for broadcasting and time odds */
   { "chatBoxes", ArgString, (void *) &appData.chatBoxes, !XBOARD, (ArgIniType) NULL },
   { "serverMoves", ArgString, (void *) &appData.serverMovesName, FALSE, (ArgIniType) NULL },
+  { "serverFile", ArgString, (void *) &appData.serverFileName, FALSE, (ArgIniType) NULL },
   { "suppressLoadMoves", ArgBoolean, (void *) &appData.suppressLoadMoves, FALSE, (ArgIniType) FALSE },
   { "serverPause", ArgInt, (void *) &appData.serverPause, FALSE, (ArgIniType) 15 },
   { "firstTimeOdds", ArgInt, (void *) &appData.firstTimeOdds, FALSE, (ArgIniType) 1 },
