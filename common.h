@@ -664,6 +664,7 @@ typedef struct {
     int evalThreshold;  /* [HGM] evalGraph */
     Boolean dropMenu;   /* [HGM] pv        */
     Boolean markers;    /* [HGM] markers   */
+    Boolean autoCopyPV;
     Boolean pieceMenu;
     Boolean sweepSelect;
     Boolean whitePOV;

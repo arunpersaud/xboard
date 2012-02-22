@@ -5451,6 +5451,7 @@ UnLoadPV ()
 {
   int oldFMM = forwardMostMove; // N.B.: this was currentMove before PV was loaded!
   if(endPV < 0) return;
+  if(appData.autoCopyPV) CopyFENToClipboard();
   endPV = -1;
   if(gameMode == AnalyzeMode && currentMove > forwardMostMove) {
 	Boolean saveAnimate = appData.animate;

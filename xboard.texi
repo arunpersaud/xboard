@@ -3126,6 +3126,13 @@ loaded game.  Default: true.
 If this option is set to true, the Paste Position and Paste Game
 options paste from the currently selected text.  If false, they paste
 from the clipboard.  Default: false.
+@item -autoCopyPV true|false
+@cindex autoCopyPV, option
+When this option is set, the position displayed on the board when
+you terminate a PV walk 
+(initiated by a right-click on board or engine-output window)
+will be automatically put on the clipboard as FEN.
+Default: false.
 @item -dropMenu true|false
 @cindex dropMenu, option
 This option allows you to emulate old behavior, 

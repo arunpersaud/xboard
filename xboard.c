@@ -5617,6 +5617,12 @@ CopyPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 		   NULL/* transfer_done_proc */);
 }
 
+void
+CopyFENToClipboard ()
+{ // wrapper to make call from back-end possible
+  CopyPositionProc(NULL, NULL, NULL, NULL);
+}
+
 /* function called when the data to Paste is ready */
 static void
 PastePositionCB (Widget w, XtPointer client_data, Atom *selection,

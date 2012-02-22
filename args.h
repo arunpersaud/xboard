@@ -651,6 +651,7 @@ ArgDescriptor argDescriptors[] = {
   { "findMirrorImage", ArgBoolean, (void *) &appData.findMirror, FALSE, FALSE },
   { "viewer", ArgTrue, (void *) &appData.viewer, FALSE, FALSE },
   { "viewerOptions", ArgString, (void *) &appData.viewerOptions, TRUE, (ArgIniType) "-ncp -engineOutputUp false -saveSettingsOnExit false" },
+  { "autoCopyPV", ArgBoolean, (void *) &appData.autoCopyPV, TRUE, FALSE },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },
