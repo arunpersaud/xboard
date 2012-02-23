@@ -1,18 +1,28 @@
 # Danish translation for xboard.
 #
-# Copyright (C) 2011 Free Software Foundation, Inc.
+# Copyright (C) 2011, 2012 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
 #
 # Note: Jeg har foreløbig efterladt navne på varianter og uortodokse brikker mv.
 #   uoversatte fordi jeg ikke kender dansk sprogbrug for dette om nogen. Byrial.
 #
-# Byrial Ole Jensen <byrial@vip.cybercity.dk>, 2011.
+# Sprogbrug:
+# Chess engine, engine, chess program, chess machine: Disse bruges i flæng
+#    i originalen. Er oversat til skakprogram.
+# Pairing engine: Paringsprogram
+#
+# Korrektur og gode forslag:
+# Morten Bo Johansen, dec. 2011
+# Joe Dalton, feb. 2012
+#
+# Oversætter:
+# Byrial Ole Jensen <byrial@vip.cybercity.dk>, 2011, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.6.0.20120209\n"
+"Project-Id-Version: GNU xboard 4.6.0.20120212\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2012-02-12 22:36-0800\n"
-"PO-Revision-Date: 2011-12-03 00:55+0100\n"
+"PO-Revision-Date: 2012-02-16 19:11+0100\n"
 "Last-Translator: Byrial Ole Jensen <byrial@vip.cybercity.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -29,7 +39,7 @@ msgstr "protokolversion %d er ikke understøttet"
 
 #: backend.c:912
 msgid "You did not specify the engine executable"
-msgstr "Du angav ikke en kørbar motor"
+msgstr "Du angav ikke et kørbart skakprogram"
 
 #: backend.c:965
 #, c-format
@@ -90,7 +100,7 @@ msgstr "Kan ikke have en match uden skakprogrammer"
 #: backend.c:1509
 #, c-format
 msgid "Could not open comm port %s"
-msgstr "Kunne ikke åbne comm port %s"
+msgstr "Kunne ikke åbne seriel port %s"
 
 #: backend.c:1512
 #, c-format
@@ -108,7 +118,7 @@ msgstr "AnalyzeFile-tilstand kræver en partifil"
 
 #: backend.c:1621
 msgid "Analysis mode requires a chess engine"
-msgstr "Analysetilstand kræver en skakmotor"
+msgstr "Analysetilstand kræver et skakprogram"
 
 #: backend.c:1625
 msgid "Analysis mode does not work with ICS mode"
@@ -116,7 +126,7 @@ msgstr "Analysetilstand virker ikke sammen med ICS-tilstand"
 
 #: backend.c:1636
 msgid "MachineWhite mode requires a chess engine"
-msgstr "MachineWhite-tilstand kræver en skakmotor"
+msgstr "MachineWhite-tilstand kræver et skakprogram"
 
 #: backend.c:1641
 msgid "MachineWhite mode does not work with ICS mode"
@@ -124,7 +134,7 @@ msgstr "MachineWhite-tilstand virker ikke sammen med ICS-tilstand"
 
 #: backend.c:1648
 msgid "MachineBlack mode requires a chess engine"
-msgstr "MachineBlack-tilstand kræver en skakmotor"
+msgstr "MachineBlack-tilstand kræver et skakprogram"
 
 #: backend.c:1653
 msgid "MachineBlack mode does not work with ICS mode"
@@ -132,7 +142,7 @@ msgstr "MachineBlack-tilstand virker ikke sammen med ICS-tilstand"
 
 #: backend.c:1660
 msgid "TwoMachines mode requires a chess engine"
-msgstr "TwoMachines-tilstand kræver en skakmotor"
+msgstr "TwoMachines-tilstand kræver et skakprogram"
 
 #: backend.c:1665
 msgid "TwoMachines mode does not work with ICS mode"
@@ -190,7 +200,7 @@ msgstr "Fejl ved tolkning af trækliste: indlejret"
 #: backend.c:11574 backend.c:13169 backend.c:13246 backend.c:13292
 #: backend.c:13298 backend.c:13303 backend.c:13308
 msgid "vs."
-msgstr ""
+msgstr "–"
 
 #: backend.c:3765
 msgid "Illegal move (rejected by ICS)"
@@ -238,7 +248,7 @@ msgstr "say Intern fejl; forkert moveType%d (%d,%d-%d,%d)"
 
 #: backend.c:5032
 msgid "You cannot do this while you are playing or observing"
-msgstr ""
+msgstr "Du kan ikke gøre dette, mens du spiller eller observerer"
 
 #: backend.c:5908
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
@@ -268,7 +278,7 @@ msgstr "Den viste stilling er ikke den aktuelle"
 
 #: backend.c:6559
 msgid "Illegal move"
-msgstr "Ulovlig træk"
+msgstr "Ulovligt træk"
 
 #: backend.c:6619
 msgid "End of game"
@@ -288,16 +298,16 @@ msgstr "Svejtserturnering afsluttet"
 
 #: backend.c:7786
 msgid "Invalid pairing from pairing engine"
-msgstr "Ikke tilladt parring fra parringsmotor"
+msgstr "Ikke tilladt parring fra parringsprogram"
 
 #: backend.c:7903
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
-msgstr "Ulovligt træk \"%s\" fra %s maskine"
+msgstr "Ulovligt træk \"%s\" fra %s skakprogram"
 
 #: backend.c:8122
 msgid "Bad FEN received from engine"
-msgstr "Fejl i FEN modtaget fra motor"
+msgstr "Fejl i FEN modtaget fra skakprogram"
 
 #: backend.c:8266 xboard.c:5821 xboard.c:5862
 #, c-format
@@ -330,19 +340,19 @@ msgstr ""
 
 #: backend.c:8560
 msgid "Machine accepts your draw offer"
-msgstr "Maskinen accepterer dit remistilbud"
+msgstr "Skakprogrammet accepterer dit remistilbud"
 
 #: backend.c:8563
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
-"Maskinen tilbyder remis\n"
+"Skakprogrammet tilbyder remis\n"
 "Vælg Handlinger / Remis for at acceptere"
 
 #: backend.c:8642
 msgid "failed writing PV"
-msgstr ""
+msgstr "skrivning af analysevariant mislykkedes"
 
 #: backend.c:8940
 #, c-format
@@ -366,7 +376,7 @@ msgstr "Variant %s understøttes ikke af %s"
 #: backend.c:9654
 #, c-format
 msgid "Startup failure on '%s'"
-msgstr "Opstartsfejl på '%s'"
+msgstr "Opstartsfejl på \"%s\""
 
 #: backend.c:9682
 msgid "Waiting for first chess program"
@@ -385,24 +395,24 @@ msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
 msgstr ""
-"Du kan ikke udskifte en motor mens den er i brug!\n"
-"Afslut dens parti først."
+"Du kan ikke udskifte et skakprogram, mens det bruges!\n"
+"Afslut dets parti først."
 
 #: backend.c:9817
 msgid "No engine with the name you gave is installed"
-msgstr "Der er ingen motor installeret med det navn"
+msgstr "Der er ikke installeret et skakprogram med det angivne navn"
 
 #: backend.c:9819
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
-"Ændr først motoren ved at redigere deltagerlisten\n"
+"Ændr først skakprogram ved at redigere deltagerlisten\n"
 "i turneringsindstillingerne"
 
 #: backend.c:9820
 msgid "You can only change one engine at the time"
-msgstr "Du kan kun ændre en motor ad gangen"
+msgstr "Du kan kun ændre et skakprogram ad gangen"
 
 #: backend.c:9834
 msgid ""
@@ -426,7 +436,7 @@ msgstr "Venter på andet parti/andre partier"
 
 #: backend.c:10032
 msgid "No pairing engine specified"
-msgstr "Der er ingen parringsmotor specificeret"
+msgstr "Der er ikke noget parringsprogram specificeret"
 
 #: backend.c:10479
 #, c-format
@@ -513,9 +523,8 @@ msgid "Saving game"
 msgstr "Gemmer parti"
 
 #: backend.c:12192
-#, fuzzy
 msgid "Bad Seek"
-msgstr "Søgning:"
+msgstr "Søgning mislykkedes"
 
 #: backend.c:12555
 msgid "Saving position"
@@ -622,12 +631,12 @@ msgstr "Der er stadig nødvendigt at trække i partierne %s\n"
 
 #: backend.c:13053
 msgid "Edit comment"
-msgstr "Redigér kommentarer"
+msgstr "Redigér kommentar"
 
 #: backend.c:13055
 #, c-format
 msgid "Edit comment on %d.%s%s"
-msgstr "Redigér kommentarer til %d.%s%s"
+msgstr "Redigér kommentar til %d.%s%s"
 
 #: backend.c:13149
 msgid "It is not White's turn"
@@ -676,7 +685,7 @@ msgstr "Advarsel: Du undersøger stadig et parti"
 
 #: backend.c:13674
 msgid "Close ICS engine analyze..."
-msgstr "Lukker ICS-motoranalyse ..."
+msgstr "Lukker skakprogram til ICS-analyse ..."
 
 #: backend.c:13951
 msgid "That square is occupied"
@@ -737,7 +746,7 @@ msgstr "Fejl ved læsning fra %s skakprogram (%s)"
 #: backend.c:15466
 #, c-format
 msgid "%s engine has too many options\n"
-msgstr "%s motor har for mange tilvalg\n"
+msgstr "%s skakprogram har for mange tilvalg\n"
 
 #: backend.c:15622
 msgid "Displayed move is not current"
@@ -769,38 +778,37 @@ msgstr "Fejl i FEN-stilling i udklipsholder"
 
 #: book.c:518 book.c:700
 msgid "Polyglot book not valid"
-msgstr ""
+msgstr "Fejl i polyglyt-åbningsbog"
 
 #: book.c:579
 msgid "Book Fault"
-msgstr ""
+msgstr "Fejl i åbningsbog"
 
 #: book.c:703
 msgid "Hash keys are different"
-msgstr ""
+msgstr "Hashnøgler er forskellige"
 
 #: engineoutput.c:100
-#, fuzzy, c-format
+#, c-format
 msgid "Engine Output"
-msgstr "Output fra motor"
+msgstr "Output fra skakprogram"
 
 #: engineoutput.c:110
 #, c-format
 msgid "%s (%d reversible plies)"
-msgstr ""
+msgstr "%s (%d reversible træk)"
 
 #: filebrowser/selfile.c:301
-#, fuzzy
 msgid "Browse"
-msgstr "gennemse"
+msgstr "Gennemse"
 
 #: filebrowser/selfile.c:404
 msgid "Filter on extensions:"
-msgstr ""
+msgstr "Filter for filendelser:"
 
 #: filebrowser/selfile.c:785
 msgid "Pathname:"
-msgstr ""
+msgstr "Stinavn:"
 
 #: filebrowser/selfile.c:789 xgamelist.c:743 xgamelist.c:868 xoptions.c:1002
 #: xoptions.c:1337
@@ -808,18 +816,17 @@ msgid "OK"
 msgstr "o.k."
 
 #: filebrowser/selfile.c:793
-#, fuzzy
 msgid "Cancel"
-msgstr "annullér"
+msgstr "Annullér"
 
 #: filebrowser/selfile.c:837
 msgid "XsraSelFile: can't get current directory"
-msgstr ""
+msgstr "XsraSelFile: kan ikke hente det aktuelle katalog"
 
 #: gamelist.c:375
-#, fuzzy, c-format
+#, c-format
 msgid "Reading game file (%d)"
-msgstr "Fejl i partifil"
+msgstr "Læser partifil (%d)"
 
 #: xboard.c:620
 msgid "New Game        Ctrl+N"
@@ -904,7 +911,7 @@ msgstr "Redigér partidata"
 
 #: xboard.c:654
 msgid "Edit Comment"
-msgstr "Redigér kommentarer"
+msgstr "Redigér kommentar"
 
 #: xboard.c:655
 msgid "Edit Book"
@@ -944,7 +951,7 @@ msgstr "Vend brættet    F2"
 
 #: xboard.c:671
 msgid "Engine Output      Alt+Shift+O"
-msgstr "Motor-output    Alt+Shift+O"
+msgstr "Output fra skakprogram    Alt+Shift+O"
 
 #: xboard.c:672
 msgid "Move History       Alt+Shift+H"
@@ -984,15 +991,15 @@ msgstr "Partidata-overskrifter ..."
 
 #: xboard.c:687
 msgid "Machine White  Ctrl+W"
-msgstr "Maskine har hvid    Ctrl+W"
+msgstr "Skakprogram har hvid    Ctrl+W"
 
 #: xboard.c:688
 msgid "Machine Black  Ctrl+B"
-msgstr "Maskine har sort    Ctrl+B"
+msgstr "Skakprogram har sort    Ctrl+B"
 
 #: xboard.c:689
 msgid "Two Machines   Ctrl+T"
-msgstr "To maskiner    Ctrl+T"
+msgstr "To skakprogrammer    Ctrl+T"
 
 #: xboard.c:690
 msgid "Analysis Mode  Ctrl+A"
@@ -1020,7 +1027,7 @@ msgstr "ICS-klient"
 
 #: xboard.c:697
 msgid "Machine Match"
-msgstr "Maskinmatch"
+msgstr "Skakprogrammatch"
 
 #: xboard.c:698
 msgid "Pause               Pause"
@@ -1068,31 +1075,31 @@ msgstr "Stop undersøgelse    F11"
 
 #: xboard.c:715
 msgid "Upload to Examine"
-msgstr "Opsend til undersøgelse"
+msgstr "Overfør til undersøgelse"
 
 #: xboard.c:717
 msgid "Adjudicate to White"
-msgstr "Bedøm hvid gevinst"
+msgstr "Døm hvid gevinst"
 
 #: xboard.c:718
 msgid "Adjudicate to Black"
-msgstr "Bedøm sort gevinst"
+msgstr "Døm sort gevinst"
 
 #: xboard.c:719
 msgid "Adjudicate Draw"
-msgstr "Bedøm remis"
+msgstr "Døm remis"
 
 #: xboard.c:724
 msgid "Load New Engine ..."
-msgstr "Indlæs ny motor ..."
+msgstr "Indlæs nyt skakprogram ..."
 
 #: xboard.c:726
 msgid "Engine #1 Settings ..."
-msgstr "Indstillinger for motor nr. 1 ..."
+msgstr "Indstillinger for skakprogram nr. 1 ..."
 
 #: xboard.c:727
 msgid "Engine #2 Settings ..."
-msgstr "Indstillinger for motor nr. 2 ..."
+msgstr "Indstillinger for skakprogram nr. 2 ..."
 
 #: xboard.c:729
 msgid "Hint"
@@ -1120,11 +1127,11 @@ msgstr "Betænkningstid ...    Alt+Shift+T"
 
 #: xboard.c:743
 msgid "Common Engine ...  Alt+Shift+U"
-msgstr "Fælles motor ...    Alt+Shift+U"
+msgstr "Skakprogram ...    Alt+Shift+U"
 
 #: xboard.c:744
 msgid "Adjudications ...      Alt+Shift+J"
-msgstr "Bedømmelses ...    Alt+Shift+J"
+msgstr "Afgørelser ...    Alt+Shift+J"
 
 #: xboard.c:745
 msgid "ICS ..."
@@ -1268,7 +1275,7 @@ msgstr "Handlinger"
 
 #: xboard.c:798
 msgid "Engine"
-msgstr "Motor"
+msgstr "Skakprogram"
 
 #: xboard.c:799
 msgid "Options"
@@ -1402,9 +1409,7 @@ msgstr "Åbning af fil '%s' mislykkedes\n"
 
 #: xboard.c:2045
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Genoversæt med større BOARD_RANKS eller BOARD_FILES for at understøtte denne "
-"størrelse"
+msgstr "Genoversæt med større BOARD_RANKS eller BOARD_FILES for at understøtte denne størrelse"
 
 #: xboard.c:2068
 #, c-format
@@ -1453,12 +1458,12 @@ msgstr "%s: messageWidget-geometrifejl %d %d %d %d %d\n"
 #: xboard.c:3212
 #, c-format
 msgid "Unable to create font set for %s.\n"
-msgstr "Kan ikke lave skriftgruppe for %s.\n"
+msgstr "Kan ikke lave skrifttypegruppe for %s.\n"
 
 #: xboard.c:3235
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
-msgstr "%s: Ingen skrifter matcher mønstret %s\n"
+msgstr "%s: Ingen skrifttyper matcher mønstret %s\n"
 
 #: xboard.c:3277
 #, c-format
@@ -1580,9 +1585,8 @@ msgid "Drop"
 msgstr "Placér"
 
 #: xboard.c:5029
-#, fuzzy
 msgid "could not open: "
-msgstr "Kunne ikke fortolke træk"
+msgstr "kunne ikke åbne:"
 
 #: xboard.c:5055 xboard.c:5167 xboard.c:6856 xboard.c:6896 xgamelist.c:749
 #: xgamelist.c:857 xoptions.c:998 xoptions.c:1341
@@ -1661,16 +1665,16 @@ msgstr "Du observerer ikke et parti"
 #: xboard.c:5833
 #, c-format
 msgid "Found unexpected active ICS engine analyze \n"
-msgstr "Fandt uventet aktiv ICS-motoranalyse\n"
+msgstr "Fandt uventet aktivt skakprogram til ICS-analyse\n"
 
 #: xboard.c:5847
 #, c-format
 msgid "ICS engine analyze starting... \n"
-msgstr "Starter ICS-motoranalyse ...\n"
+msgstr "Starter skakprogram til ICS-analyse ...\n"
 
 #: xboard.c:6579
 msgid " (with Zippy code)"
-msgstr ""
+msgstr " (med Zippy-kode)"
 
 #: xboard.c:6584
 #, c-format
@@ -1681,9 +1685,15 @@ msgid ""
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information."
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information."
 msgstr ""
+"%s%s\n"
+"\n"
+"Copyright 1991 Digital Equipment Corporation\n"
+"Ændringer Copyright 1992-2012 Free Software Foundation\n"
+"Ændringer Copyright 2005 Alessandro Scotti\n"
+"\n"
+"%s er frit programmel og er uden nogen form for garanti; se filen COPYING for mere information."
 
 #: xboard.c:6751
 msgid "Fatal Error"
@@ -1740,7 +1750,7 @@ msgstr "SPS"
 
 #: xengineoutput.c:534
 msgid "Engine output"
-msgstr "Output fra motor"
+msgstr "Output fra skakprogram"
 
 #: xengineoutput.c:534
 msgid "This feature is experimental"
@@ -1796,9 +1806,9 @@ msgid "next page"
 msgstr "næste side"
 
 #: xgamelist.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%s - %d/%d games (%d-%d-%d)"
-msgstr "Match %s - %s: slutscore %d-%d-%d"
+msgstr "%s - %d/%d partier (%d-%d-%d)"
 
 #: xgamelist.c:422
 msgid "load"
@@ -1821,9 +1831,8 @@ msgid "There is no game list"
 msgstr "Der er ingen partiliste"
 
 #: xgamelist.c:659
-#, fuzzy
 msgid "Game list not loaded or empty"
-msgstr "Der er endnu ingen indlæste partier"
+msgstr "Partiliste ikke indlæst eller tom"
 
 #: xgamelist.c:757
 msgid "No tag selected"
@@ -1842,9 +1851,8 @@ msgid "factory"
 msgstr "standard"
 
 #: xgamelist.c:797
-#, fuzzy
 msgid "Game-list options"
-msgstr "Indstillinger for indlæsning af parti"
+msgstr "Indstillinger for partiliste"
 
 #: xhistory.c:153
 msgid "Move list"
@@ -1854,19 +1862,17 @@ msgstr "Trækliste"
 msgid "browse"
 msgstr "gennemse"
 
-# Lille begyndelsesbogstav med vilje
 #: xoptions.c:314
 msgid "First Engine"
-msgstr "første motor"
+msgstr "Første skakprogram"
 
-# Lille begyndelsesbogstav med vilje
 #: xoptions.c:314
 msgid "Second Engine"
-msgstr "anden motor"
+msgstr "Andet skakprogram"
 
 #: xoptions.c:380
 msgid "First you must specify an existing tourney file to clone"
-msgstr ""
+msgstr "Du skal angive en eksisterende turneringsfil til at kopiere"
 
 #: xoptions.c:384
 msgid "Tournament file:"
@@ -1881,17 +1887,16 @@ msgid "Sync after cycle      tourney with multiple XBoards)"
 msgstr "Synkronisér efter cyklus    turnering med flere XBoard'er)"
 
 #: xoptions.c:387
-#, fuzzy
 msgid "Tourney participants:"
-msgstr "Der er ikke nok deltagere"
+msgstr "Turneringsdeltagere:"
 
 #: xoptions.c:389
 msgid "Select Engine:"
-msgstr "Vælg motor:"
+msgstr "Vælg skakprogram:"
 
 #: xoptions.c:390
 msgid "Tourney type (0 = round-robin, 1 = gauntlet):"
-msgstr "Turneringstype (0 = alle mod alle, 1 = simultan):"
+msgstr "Turneringstype (0 = alle mod alle, 1 = en imod resten):"
 
 #: xoptions.c:391
 msgid "Number of tourney cycles (or Swiss rounds):"
@@ -1931,19 +1936,19 @@ msgstr "Genstart nummering efter dette antal partier (0 = aldrig):"
 
 #: xoptions.c:400
 msgid "Disable own engine books by default"
-msgstr "Deaktivér motors egen åbningsbog som standard"
+msgstr "Deaktivér skakprogrammets egen åbningsbog som standard"
 
 #: xoptions.c:401
 msgid "Replace Engine"
-msgstr "Udskift motor"
+msgstr "Udskift skakprogram"
 
 #: xoptions.c:402
 msgid "Upgrade Engine"
-msgstr "Opgradér motor"
+msgstr "Opgradér skakprogram"
 
 #: xoptions.c:403
 msgid "Clone Tourney"
-msgstr ""
+msgstr "Kopiér turnering"
 
 #: xoptions.c:417
 msgid "Absolute Analysis Scores"
@@ -2022,7 +2027,7 @@ msgstr "Zoomfaktor i evalueringsgraf:"
 #: xoptions.c:458
 #, c-format
 msgid "Warning: second engine (%s) does not support this!"
-msgstr "Advarsel: den anden motor (%s )understøtter ikke dette!"
+msgstr "Advarsel: det andet skakprogram (%s) understøtter ikke dette!"
 
 #: xoptions.c:479
 msgid "normal"
@@ -2180,7 +2185,7 @@ msgstr ""
 
 #: xoptions.c:541
 msgid "Maximum Number of CPUs per Engine:"
-msgstr "Maksimalt antal CPU'er pr. motor:"
+msgstr "Maksimalt antal CPU'er pr. skakprogram:"
 
 #: xoptions.c:542
 msgid "Polygot Directory:"
@@ -2216,11 +2221,11 @@ msgstr "Åbningsbogvariation (0) vs. styrke (100):"
 
 #: xoptions.c:550
 msgid "Engine #1 Has Own Book"
-msgstr "Motor nr. 1 har egen åbningsbog"
+msgstr "Skakprogram nr. 1 har egen åbningsbog"
 
 #: xoptions.c:551
 msgid "Engine #2 Has Own Book          "
-msgstr "Motor nr. 2 har egen åbningsbog"
+msgstr "Skakprogram nr. 2 har egen åbningsbog"
 
 #: xoptions.c:556
 msgid "Detect all Mates"
@@ -2228,7 +2233,7 @@ msgstr "Find alle matter"
 
 #: xoptions.c:557
 msgid "Verify Engine Result Claims"
-msgstr "Verificér motors påstand om resultat"
+msgstr "Efterprøv resultatangivelser fra skakprogrammer"
 
 #: xoptions.c:558
 msgid "Draw if Insufficient Mating Material"
@@ -2236,7 +2241,7 @@ msgstr "Remis ved utilstrækkeligt matsættende materiale"
 
 #: xoptions.c:559
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
-msgstr "Bedøm trivielle remiser (3-træks forsinkelse)"
+msgstr "Døm trivielle remiser (3-træks forsinkelse)"
 
 #: xoptions.c:560
 msgid "N-Move Rule:"
@@ -2256,15 +2261,15 @@ msgstr "Gevinst/tabs-tærskel:"
 
 #: xoptions.c:564
 msgid "Negate Score of Engine #1"
-msgstr "Negér motor nr. 1's score"
+msgstr "Negér skakprogram nr. 1's score"
 
 #: xoptions.c:565
 msgid "Negate Score of Engine #2"
-msgstr "Negér motor nr. 2's score"
+msgstr "Negér skakprogram nr. 2's score"
 
 #: xoptions.c:577
 msgid "Auto-Kibitz"
-msgstr "Send kommentarer fra motor"
+msgstr "Send kommentarer fra skakprogram"
 
 #: xoptions.c:578
 msgid "Auto-Comment"
@@ -2414,11 +2419,14 @@ msgstr ""
 msgid "Seconds per Move:"
 msgstr "Sekunder pr. træk:"
 
+# Ingen grund til ikke at bruge stort begyndelsesbogstav her.
 #: xoptions.c:626
 msgid ""
 "\n"
 "options to use in game-viewer mode:"
 msgstr ""
+"\n"
+"Indstillinger til brug ved gennemkigning af partier:"
 
 #: xoptions.c:628
 msgid ""
@@ -2478,7 +2486,7 @@ msgstr "Gammel gemmestil (i modsætning til PGN)"
 
 #: xoptions.c:645
 msgid "Include Number Tag in tourney PGN"
-msgstr ""
+msgstr "Brug partinumre i PGN-fil for turnering"
 
 #: xoptions.c:646
 msgid "Save Score/Depth Info in PGN"
@@ -2486,7 +2494,7 @@ msgstr "Gem score/dybde-information i PGN"
 
 #: xoptions.c:647
 msgid "Save Out-of-Book Info in PGN           "
-msgstr "Gem ud af åbningsbog-info in PGN      "
+msgstr "Gem ud af åbningsbog-info i PGN      "
 
 #: xoptions.c:652
 msgid "No Sound"
@@ -2632,25 +2640,25 @@ msgstr "Farve for hvide brikker:"
 #: xoptions.c:804 xoptions.c:813 xoptions.c:819 xoptions.c:825 xoptions.c:831
 #: xoptions.c:837
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #. TRANSLATORS: G = single letter for the color green
 #: xoptions.c:806 xoptions.c:814 xoptions.c:820 xoptions.c:826 xoptions.c:832
 #: xoptions.c:838
 msgid "G"
-msgstr ""
+msgstr "G"
 
 #. TRANSLATORS: B = single letter for the color blue
 #: xoptions.c:808 xoptions.c:815 xoptions.c:821 xoptions.c:827 xoptions.c:833
 #: xoptions.c:839
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #. TRANSLATORS: D = single letter to make a color darker
 #: xoptions.c:810 xoptions.c:816 xoptions.c:822 xoptions.c:828 xoptions.c:834
 #: xoptions.c:840
 msgid "D"
-msgstr ""
+msgstr "M"
 
 #: xoptions.c:811
 msgid "Black Piece Color:"
@@ -2706,7 +2714,7 @@ msgstr "Katalog med pixmap-brikker:"
 
 #: xoptions.c:1043
 msgid "Engine has no options"
-msgstr "Motor har ingen tilvalg"
+msgstr "Skakprogrammet har ingen tilvalg"
 
 #: xoptions.c:1375
 msgid "ICS Options"
@@ -2729,13 +2737,12 @@ msgid "Board Options"
 msgstr "Brætindstillinger"
 
 #: xoptions.c:1408
-#, fuzzy
 msgid "Adjudicate non-ICS Games"
-msgstr "Bedøm hvid gevinst"
+msgstr "Døm ikke-ICS partier"
 
 #: xoptions.c:1416
 msgid "Common Engine Settings"
-msgstr "Fælles motorindstillinger"
+msgstr "Indstillinger for skakprogrammer"
 
 #: xoptions.c:1422
 msgid "New Variant"
@@ -2751,11 +2758,11 @@ msgstr "Matchindstillinger"
 
 #: xoptions.c:1543
 msgid "clear"
-msgstr ""
+msgstr "ryd"
 
 #: xoptions.c:1544 xoptions.c:1601
 msgid "save changes"
-msgstr ""
+msgstr "gem ændringer"
 
 #: xoptions.c:1609
 msgid "Edit book"
@@ -2771,11 +2778,11 @@ msgstr "Tast et træk"
 
 #: xoptions.c:1714
 msgid "Engine Settings"
-msgstr "Motorindstillinger"
+msgstr "Indstillinger for skakprogram"
 
 #: xoptions.c:1739
 msgid "Select engine from list:"
-msgstr "Vælg motor fra liste:"
+msgstr "Vælg skakprogram fra liste:"
 
 #: xoptions.c:1740
 msgid "or specify one below:"
@@ -2787,19 +2794,19 @@ msgstr "Kaldenavn (ikke nødvendigt):"
 
 #: xoptions.c:1742
 msgid "Use nickname in PGN player tags of engine-engine games"
-msgstr "Brug kaldenavn i PGN som spillerbetegnelse i partier mellem motorer"
+msgstr "Brug kaldenavnet som spillerbetegnelse i PGN-filer"
 
 #: xoptions.c:1743
 msgid "Engine Directory:"
-msgstr "Motorkatalog:"
+msgstr "Skakprogramkatalog:"
 
 #: xoptions.c:1744
 msgid "Engine Command:"
-msgstr "Motorkommando:"
+msgstr "Skakprogramkommando:"
 
 #: xoptions.c:1745
 msgid "(Directory will be derived from engine path when empty)"
-msgstr "(Katalog vil blive udledt fra motorsti når ikke udfyldt)"
+msgstr "(Katalog vil blive udledt fra programstien hvis ikke udfyldt)"
 
 #: xoptions.c:1746
 msgid "UCI"
@@ -2807,7 +2814,7 @@ msgstr "UCI"
 
 #: xoptions.c:1747
 msgid "WB protocol v1 (do not wait for engine features)"
-msgstr "WB-protokol v1 (brug ikke særlige motorfunktioner)"
+msgstr "WB-protokol v1 (brug ikke særlige skakprogramfunktioner)"
 
 #: xoptions.c:1748
 msgid "Must not use GUI book"
@@ -2815,23 +2822,23 @@ msgstr "Må ikke bruge GUI's åbningsbog"
 
 #: xoptions.c:1749
 msgid "Add this engine to the list"
-msgstr "Tilføj denne motor til listen"
+msgstr "Tilføj dette skakprogram til listen"
 
 #: xoptions.c:1750
 msgid "Force current variant with this engine"
-msgstr "Brug aktuelle variant med denne motor"
+msgstr "Brug aktuel variant med dette skakprogram"
 
 #: xoptions.c:1751
 msgid "Load mentioned engine as"
-msgstr "Indlæs nævnte motor som"
+msgstr "Indlæs skakprogrammet som"
 
 #: xoptions.c:1765
 msgid "Load engine"
-msgstr "Indlæs motor"
+msgstr "Indlæs skakprogram"
 
 #: xoptions.c:1784
 msgid "shuffle"
-msgstr ""
+msgstr "bland brikker"
 
 #: xoptions.c:1785
 msgid "Start-position number:"
@@ -2839,11 +2846,11 @@ msgstr "Startstillingsnummer:"
 
 #: xoptions.c:1786
 msgid "randomize"
-msgstr ""
+msgstr "vælg tilfældigt"
 
 #: xoptions.c:1787
 msgid "pick fixed"
-msgstr ""
+msgstr "vælg bestemt"
 
 #: xoptions.c:1804
 msgid "New Shuffle Game"
@@ -2882,11 +2889,11 @@ msgstr "Tidsforkortelses-faktorer:"
 
 #: xoptions.c:1861
 msgid "Engine #1"
-msgstr "Motor nr. 1"
+msgstr "Skakprogram nr. 1"
 
 #: xoptions.c:1862
 msgid "Engine #2 / Human"
-msgstr "Motor nr. 2 / menneske"
+msgstr "Skakprogram nr. 2 / menneske"
 
 #: xoptions.c:1873 xoptions.c:1876 xoptions.c:1881 xoptions.c:1882
 msgid "Unused"

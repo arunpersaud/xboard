@@ -208,6 +208,7 @@ void HistorySet P((char movelist[][2*MOVE_LEN], int first, int last, int current
 void FreezeUI P((void));
 void ThawUI P((void));
 void ChangeDragPiece P((ChessSquare piece));
+void CopyFENToClipboard P((void));
 extern char *programName;
 extern int commentUp;
 extern char *firstChessProgramNames;

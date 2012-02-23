@@ -1424,6 +1424,13 @@ In this case the first (odd) games will randomly select from the book,
 but the second (even) games will select the same moves from the book as the previous game.
 (Note this leads to the same opening only if both engines use the GUI book!)
 Default: No game or position file will be used. The default index if such a file is used is 1.
+@itemx Disable own engine bools be default
+@cindex Disable own engine bools be default, Menu Item
+Setting this option reverses the default situation for use of the GUI opening book
+in tournaments from what it normally is, namely not using it.
+So unless the engine is installed with an option to explicitly specify it should
+not use the GUI book (i.e. @code{-firstHasOwnBookUCI true}),
+it will be made to use the GUI book.
 @itemx Replace Engine
 @itemx Upgrade Engine
 @cindex Replace Engine, Menu Item
@@ -1598,25 +1605,28 @@ Shows the current XBoard version number.
 @cindex Keys
 @cindex Shortcut keys
 @table @asis
-@item Show last move
+@item Show Last Move
+@cindex Show Last Move, Shortcut Key
 By hitting @kbd{Enter} the last move will be re-animated.
 @item Load Next Game
 @cindex Load Next Game, Menu Item
 Loads the next game from the last game record file you loaded.
-The @kbd{Alt+PgDn} key is a keyboard equivalent.
+The @kbd{Alt+PgDn} key triggers this action.
 @item Load Previous Game
 @cindex Load Previous Game, Menu Item
 Loads the previous game from the last game record file you
-loaded.  The @kbd{Alt+PgUp} key is a keyboard equivalent.
+loaded.  The @kbd{Alt+PgUp} key triggers this action.
 Not available if the last game was loaded from a pipe.
 @item Reload Same Game
 @cindex Reload Same Game, Menu Item
 Reloads the last game you loaded.
 Not available if the last game was loaded from a pipe.
+Currently no keystroke is assigned to this ReloadGameProc.
 @item Reload Same Position
 @cindex Reload Same Position, Menu Item
 Reloads the last position you loaded.
 Not available if the last position was loaded from a pipe.
+Currently no keystroke is assigned to this ReloadPositionProc.
 @end table
 
 You can add or remove shortcut keys using the X resources
@@ -2762,8 +2772,9 @@ The engines will be saved in your settings file as the option
 and the most recently used one will always be sorted to the top.
 If the list after that is longer than the specified number,
 the last one is discarded.
-hanges in the list will only become visible the next session,
+Changes in the list will only become visible the next session,
 provided you saved the settings.
+Default: 6.
 @item -oneClickMove true/false
 @cindex oneClickMove, option
 When set, this option allows you to enter moves by only clicking the to-
@@ -3115,6 +3126,13 @@ loaded game.  Default: true.
 If this option is set to true, the Paste Position and Paste Game
 options paste from the currently selected text.  If false, they paste
 from the clipboard.  Default: false.
+@item -autoCopyPV true|false
+@cindex autoCopyPV, option
+When this option is set, the position displayed on the board when
+you terminate a PV walk 
+(initiated by a right-click on board or engine-output window)
+will be automatically put on the clipboard as FEN.
+Default: false.
 @item -dropMenu true|false
 @cindex dropMenu, option
 This option allows you to emulate old behavior, 

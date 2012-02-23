@@ -392,7 +392,7 @@ PosFlags (index)
   return flags;
 }
 
-FILE *gameFileFP, *debugFP;
+FILE *gameFileFP, *debugFP, *serverFP;
 char *currentDebugFile; // [HGM] debug split: to remember name
 
 /*
@@ -734,8 +734,12 @@ ClearOptions (ChessProgramState *cps)
 }
 
 char *engineNames[] = {
-"first",
-"second"
+  /* TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
+     such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing */
+N_("first"),
+  /* TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
+     such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing */
+N_("second")
 };
 
 void
@@ -5329,9 +5333,6 @@ ParsePV (char *pv, Boolean storeComments, Boolean atEnd)
     if(nr == 0 && !storeComments && *pv == '(') pv++; // first (ponder) move can be in parentheses
     lastParseAttempt = pv;
     valid = ParseOneMove(pv, endPV, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
-if(appData.debugMode){
-fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, yy_textstr, pv);
-}
     if(!valid && nr == 0 &&
        ParseOneMove(pv, endPV-1, &moveType, &fromX, &fromY, &toX, &toY, &promoChar)){
         nr++; moveType = Comment; // First move has been played; kludge to make sure we continue
@@ -5450,6 +5451,7 @@ UnLoadPV ()
 {
   int oldFMM = forwardMostMove; // N.B.: this was currentMove before PV was loaded!
   if(endPV < 0) return;
+  if(appData.autoCopyPV) CopyFENToClipboard();
   endPV = -1;
   if(gameMode == AnalyzeMode && currentMove > forwardMostMove) {
 	Boolean saveAnimate = appData.animate;
@@ -10071,6 +10073,24 @@ NextMatchGame ()
 {   // performs game initialization that does not invoke engines, and then tries to start the game
     int res, firstWhite, swapColors = 0;
     if(!NextTourneyGame(nextGame, &swapColors)) return; // this sets matchGame, -fcp / -scp and other options for next game, if needed
+    if(matchMode && appData.debugMode) { // [HGM] debug split: game is part of a match; we might have to create a debug file just for this game
+	char buf[MSG_SIZ];
+	snprintf(buf, MSG_SIZ, appData.nameOfDebugFile, nextGame+1); // expand name of debug file with %d in it
+	if(strcmp(buf, currentDebugFile)) { // name has changed
+	    FILE *f = fopen(buf, "w");
+	    if(f) { // if opening the new file failed, just keep using the old one
+		ASSIGN(currentDebugFile, buf);
+		fclose(debugFP);
+		debugFP = f;
+	    }
+	    if(appData.serverFileName) {
+		if(serverFP) fclose(serverFP);
+		serverFP = fopen(appData.serverFileName, "w");
+		if(serverFP && first.pr != NoProc) fprintf(serverFP, "StartChildProcess (dir=\".\") .\\%s\n", first.tidy);
+		if(serverFP && second.pr != NoProc) fprintf(serverFP, "StartChildProcess (dir=\".\") .\\%s\n", second.tidy);
+	    }
+	}
+    }
     firstWhite = appData.firstPlaysBlack ^ (matchGame & 1 | appData.sameColorGames > 1); // non-incremental default
     firstWhite ^= swapColors; // reverses if NextTourneyGame says we are in an odd round
     first.twoMachinesColor =  firstWhite ? "white\n" : "black\n";   // perform actual color assignement
@@ -13334,7 +13354,7 @@ WaitForEngine (ChessProgramState *cps, DelayedEventCallback retry)
 	} else {
 	  /* kludge: allow timeout for initial "feature" command */
 	  FreezeUI();
-	  snprintf(buf, MSG_SIZ, _("Starting %s chess program"), cps->which);
+	  snprintf(buf, MSG_SIZ, _("Starting %s chess program"), _(cps->which));
 	  DisplayMessage("", buf);
 	  ScheduleDelayedEvent(retry, FEATURE_TIMEOUT);
 	}
@@ -13384,17 +13404,6 @@ TwoMachinesEvent P((void))
 	break;
     }
 
-    if(matchMode && appData.debugMode) { // [HGM] debug split: game is part of a match; we might have to create a debug file just for this game
-	snprintf(buf, MSG_SIZ, appData.nameOfDebugFile, nextGame+1); // expand name of debug file with %d in it
-	if(strcmp(buf, currentDebugFile)) { // name has changed
-	    FILE *f = fopen(buf, "w");
-	    if(f) { // if opening the new file failed, just keep using the old one
-		ASSIGN(currentDebugFile, buf);
-		fclose(debugFP);
-		debugFP = f;
-	    }
-	}
-    }
 //    forwardMostMove = currentMove;
     TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
 
@@ -13908,6 +13917,8 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
             } else
 	    boards[0][y][x] = selection;
 	    DrawPosition(TRUE, boards[0]);
+	    ClearHighlights();
+	    fromX = fromY = -1;
 	}
 	break;
     }
@@ -15018,6 +15029,10 @@ SendToProgram (char *message, ChessProgramState *cps)
 	fprintf(debugFP, "%ld >%-6s: %s",
 		SubtractTimeMarks(&now, &programStartTime),
 		cps->which, message);
+	if(serverFP)
+	    fprintf(serverFP, "%ld >%-6s: %s",
+		SubtractTimeMarks(&now, &programStartTime),
+		cps->which, message), fflush(serverFP);
     }
 
     count = strlen(message);
@@ -15119,6 +15134,11 @@ ReceiveFromProgram (InputSourceRef isr, VOIDSTAR closure, char *message, int cou
 			SubtractTimeMarks(&now, &programStartTime), cps->which,
 			quote,
 			message);
+		if(serverFP)
+		    fprintf(serverFP, "%ld <%-6s: %s%s\n",
+			SubtractTimeMarks(&now, &programStartTime), cps->which,
+			quote,
+			message), fflush(serverFP);
 	}
     }
 

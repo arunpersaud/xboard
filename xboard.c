@@ -1125,7 +1125,9 @@ char boardTranslations[] =
    <Btn1Up>: HandleUserMove(0) \n \
    <Btn1Motion>: AnimateUserMove() \n \
    <Btn3Motion>: HandlePV() \n \
+   <Btn2Motion>: HandlePV() \n \
    <Btn3Up>: PieceMenuPopup(menuB) \n \
+   <Btn2Up>: PieceMenuPopup(menuB) \n \
    Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
                  PieceMenuPopup(menuB) \n \
    Any<Btn2Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD) \
@@ -4082,6 +4084,7 @@ CreatePieceMenus ()
     whitePieceMenu = CreatePieceMenu("menuW", 0);
     blackPieceMenu = CreatePieceMenu("menuB", 1);
 
+    if(appData.pieceMenu) // [HGM] sweep: no idea what this was good for, but it stopped reporting button events outside the window
     XtRegisterGrabAction(PieceMenuPopup, True,
 			 (unsigned)(ButtonPressMask|ButtonReleaseMask),
 			 GrabModeAsync, GrabModeAsync);
@@ -5612,6 +5615,12 @@ CopyPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 		   SendPositionSelection,
 		   NULL/* lose_ownership_proc */ ,
 		   NULL/* transfer_done_proc */);
+}
+
+void
+CopyFENToClipboard ()
+{ // wrapper to make call from back-end possible
+  CopyPositionProc(NULL, NULL, NULL, NULL);
 }
 
 /* function called when the data to Paste is ready */
@@ -7344,7 +7353,7 @@ StartChildProcess (char *cmdLine, char *dir, ProcRef *pr)
     char buf[MSG_SIZ];
 
     if (appData.debugMode) {
-	fprintf(stderr, "StartChildProcess (dir=\"%s\") %s\n",dir, cmdLine);
+	fprintf(debugFP, "StartChildProcess (dir=\"%s\") %s\n",dir, cmdLine);
     }
 
     /* We do NOT feed the cmdLine to the shell; we just

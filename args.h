@@ -651,6 +651,7 @@ ArgDescriptor argDescriptors[] = {
   { "findMirrorImage", ArgBoolean, (void *) &appData.findMirror, FALSE, FALSE },
   { "viewer", ArgTrue, (void *) &appData.viewer, FALSE, FALSE },
   { "viewerOptions", ArgString, (void *) &appData.viewerOptions, TRUE, (ArgIniType) "-ncp -engineOutputUp false -saveSettingsOnExit false" },
+  { "autoCopyPV", ArgBoolean, (void *) &appData.autoCopyPV, TRUE, FALSE },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },
@@ -698,6 +699,7 @@ ArgDescriptor argDescriptors[] = {
   /* [HGM] options for broadcasting and time odds */
   { "chatBoxes", ArgString, (void *) &appData.chatBoxes, !XBOARD, (ArgIniType) NULL },
   { "serverMoves", ArgString, (void *) &appData.serverMovesName, FALSE, (ArgIniType) NULL },
+  { "serverFile", ArgString, (void *) &appData.serverFileName, FALSE, (ArgIniType) NULL },
   { "suppressLoadMoves", ArgBoolean, (void *) &appData.suppressLoadMoves, FALSE, (ArgIniType) FALSE },
   { "serverPause", ArgInt, (void *) &appData.serverPause, FALSE, (ArgIniType) 15 },
   { "firstTimeOdds", ArgInt, (void *) &appData.firstTimeOdds, FALSE, (ArgIniType) 1 },
@@ -773,7 +775,7 @@ ExitArgError(char *msg, char *badArg, Boolean quit)
   char buf[MSG_SIZ];
   int len;
 
-  len = snprintf(buf,MSG_SIZ, "%s %s", msg, badArg);
+  len = snprintf(buf, MSG_SIZ, msg, badArg);
   if( (len >= MSG_SIZ) && appData.debugMode )
     fprintf(debugFP, "ExitArgError: buffer truncated. Input: msg=%s badArg=%s\n", msg, badArg);
 
@@ -787,7 +789,7 @@ ValidateInt(char *s)
 {
   char *p = s;
   if(*p == '-' || *p == '+') p++;
-  while(*p) if(!isdigit(*p++)) ExitArgError(_("Bad integer value"), s, TRUE);
+  while(*p) if(!isdigit(*p++)) ExitArgError(_("Bad integer value %s"), s, TRUE);
   return atoi(s);
 }
 
@@ -878,7 +880,7 @@ ParseArgs(GetFunc get, void *cl)
       for (ad = argDescriptors; ad->argName != NULL; ad++)
 	if (strcmp(ad->argName, argName + 1) == 0) break;
       if (ad->argName == NULL) {
-	ExitArgError(_("Unrecognized argument"), argName, get != &FileGet); // [HGM] make unknown argument non-fatal
+	ExitArgError(_("Unrecognized argument %s"), argName, get != &FileGet); // [HGM] make unknown argument non-fatal
 	while (ch != '\n' && ch != NULLCHAR) ch = get(cl); // but skip rest of line it is on
 	continue; // so that when it is in a settings file, it is the only setting that will be purged from it
       }
@@ -907,7 +909,7 @@ ParseArgs(GetFunc get, void *cl)
 
     while (ch == ' ' || ch == '=' || ch == ':' || ch == '\t') ch = get(cl);
     if (ch == NULLCHAR || ch == '\n') {
-      ExitArgError(_("No value provided for argument"), argName, TRUE);
+      ExitArgError(_("No value provided for argument %s"), argName, TRUE);
     }
     q = argValue;
     if (ch == '{') {
@@ -967,7 +969,7 @@ ParseArgs(GetFunc get, void *cl)
 	  ch = get(cl);
 	  switch (ch) {
 	  case NULLCHAR:
-	    ExitArgError(_("Incomplete \\ escape in value for"), argName, TRUE);
+	    ExitArgError(_("Incomplete \\ escape in value for %s"), argName, TRUE);
 	    break;
 	  case 'n':
 	    *q++ = '\n';
@@ -1051,7 +1053,7 @@ ParseArgs(GetFunc get, void *cl)
 	} else {
 	  if (ad->argLoc != NULL) {
 	  } else {
-	    ExitArgError(_("Failed to open indirection file"), argValue, TRUE);
+	    ExitArgError(_("Failed to open indirection file %s"), argValue, TRUE);
 	  }
 	}
       }
@@ -1068,7 +1070,7 @@ ParseArgs(GetFunc get, void *cl)
 	*(Boolean *) ad->argLoc = FALSE;
 	break;
       default:
-	ExitArgError(_("Unrecognized boolean argument value"), argValue, TRUE);
+	ExitArgError(_("Unrecognized boolean argument value %s"), argValue, TRUE);
 	break;
       }
       break;
@@ -1096,7 +1098,7 @@ ParseArgs(GetFunc get, void *cl)
       break;
 
     case ArgNone:
-      ExitArgError(_("Unrecognized argument"), argValue, TRUE);
+      ExitArgError(_("Unrecognized argument %s"), argValue, TRUE);
       break;
     case ArgTwo:
     case ArgTrue:

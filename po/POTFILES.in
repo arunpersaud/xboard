@@ -10,3 +10,4 @@ xevalgraph.c
 xgamelist.c
 xhistory.c
 xoptions.c
+args.h
