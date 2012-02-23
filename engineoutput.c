@@ -53,7 +53,13 @@
 # define  _(s) gettext (s)
 # define N_(s) gettext_noop (s)
 #else
-# define  _(s) (s)
+# ifdef WIN32
+#  define  _(s) T_(s)
+#  undef  ngettext
+#  define  ngettext(s,p,n) T_(p)
+# else
+#  define  _(s) (s)
+# endif
 # define N_(s)  s
 #endif
 
