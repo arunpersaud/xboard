@@ -104,6 +104,7 @@ IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
 int junk;
 Boolean singleList;
 char *homeDir;
+int frameX, frameY; // width of window frame and title bar
 
 void EnsureOnScreen(int *x, int *y, int minX, int minY);
 char StringGet(void *getClosure);
@@ -715,8 +716,10 @@ ArgDescriptor argDescriptors[] = {
   { "useInternalWrap", ArgTrue, (void *) &appData.useInternalWrap, FALSE, INVALID }, /* noJoin usurps this if set */
 
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
-  { "minX", ArgZ, (void *) &minX, FALSE, INVALID }, // [HGM] placement: to make suer auxialary windows can be placed
+  { "minX", ArgZ, (void *) &minX, FALSE, INVALID }, // [HGM] placement: to make sure auxiliary windows can be placed
   { "minY", ArgZ, (void *) &minY, FALSE, INVALID },
+  { "frameX", ArgInt, (void *) &frameX, XBOARD, (ArgIniType) 2 }, // [HGM] placement: correction for lying X11
+  { "frameY", ArgInt, (void *) &frameY, XBOARD, (ArgIniType) 22 },
   { "winWidth",  ArgInt, (void *) &wpMain.width,  TRUE, INVALID }, // [HGM] placement: dummies to remember right & bottom
   { "winHeight", ArgInt, (void *) &wpMain.height, TRUE, INVALID }, //       for attaching auxiliary windows to them
   { "x", ArgInt, (void *) &wpMain.x, TRUE, (ArgIniType) CW_USEDEFAULT },

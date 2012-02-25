@@ -1572,8 +1572,8 @@ GetActualPlacement (Widget wg, WindowPlacement *wp)
     XtSetArg(args[i], XtNwidth, &w); i++;
     XtSetArg(args[i], XtNheight, &h); i++;
     XtGetValues(wg, args, i);
-    wp->x = x - 4;
-    wp->y = y - 23;
+    wp->x = x - frameX;
+    wp->y = y - frameY;
     wp->height = h;
     wp->width = w;
 }
