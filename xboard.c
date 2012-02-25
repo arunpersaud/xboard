@@ -1555,6 +1555,7 @@ ParseCommPortSettings (char *s)
 }
 
 extern Widget engineOutputShell;
+int frameX, frameY;
 
 void
 GetActualPlacement (Widget wg, WindowPlacement *wp)
@@ -1575,6 +1576,7 @@ GetActualPlacement (Widget wg, WindowPlacement *wp)
     wp->y = ry - winAt.y;
     wp->height = winAt.height;
     wp->width = winAt.width;
+    frameX = winAt.x; frameY = winAt.y; // remember to decide if windows touch
 }
 
 void
@@ -2661,6 +2663,8 @@ XBoard square size (hint): %d\n\
     /* end why */
     XtAddEventHandler(formWidget, KeyPressMask, False,
 		      (XtEventHandler) MoveTypeInProc, NULL);
+    XtAddEventHandler(shellWidget, StructureNotifyMask, False,
+		      (XtEventHandler) EventProc, NULL);
 
     /* [AS] Restore layout */
     if( wpMoveHistory.visible ) {
@@ -4645,6 +4649,48 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
     }
 }
 
+static WindowPlacement wpNew;
+
+void
+CoDrag (Widget sh, WindowPlacement *wp)
+{
+    Arg args[16];
+    int j=0, touch=0, fudge = 2;
+    GetActualPlacement(sh, wp);
+    if(abs(wpMain.x + wpMain.width + 2*frameX - wp->x)         < fudge) touch = 1; else // right touch
+    if(abs(wp->x + wp->width + 2*frameX - wpMain.x)            < fudge) touch = 2; else // left touch
+    if(abs(wpMain.y + wpMain.height + frameX + frameY - wp->y) < fudge) touch = 3; else // bottom touch
+    if(abs(wp->y + wp->height + frameX + frameY - wpMain.y)    < fudge) touch = 4;      // top touch
+    if(!touch ) return; // only windows that touch co-move
+    wp->x += wpNew.x - wpMain.x;
+    wp->y += wpNew.y - wpMain.y;
+    XtSetArg(args[j], XtNx, wp->x); j++;
+    XtSetArg(args[j], XtNy, wp->y); j++;
+    XtSetValues(sh, args, j);
+}
+
+void
+DragProc ()
+{
+	GetActualPlacement(shellWidget, &wpNew);
+	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y) return; // not moved, false alarm
+	if(EngineOutputIsUp()) CoDrag(engineOutputShell, &wpEngineOutput);
+	if(MoveHistoryIsUp()) CoDrag(shells[7], &wpMoveHistory);
+	if(EvalGraphIsUp()) CoDrag(evalGraphShell, &wpEvalGraph);
+	if(GameListIsUp()) CoDrag(gameListShell, &wpGameList);
+	wpMain.x = wpNew.x; wpMain.y = wpNew.y;
+	XDrawPosition(boardWidget, True, NULL);
+}
+
+
+void
+DelayedDrag ()
+{
+    static XtIntervalId delayedDragID = 0;
+    if(delayedDragID) XtRemoveTimeOut(delayedDragID); // cancel pending
+    delayedDragID =
+      XtAppAddTimeOut(appContext, 50, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
+}
 
 /* Why is this needed on some versions of X? */
 void
@@ -4652,8 +4698,11 @@ EventProc (Widget widget, caddr_t unused, XEvent *event)
 {
     if (!XtIsRealized(widget))
       return;
-
     switch (event->type) {
+      case ConfigureNotify: // main window is being dragged: drag attached windows with it
+	if(appData.useStickyWindows)
+	    DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
+	break;
       case Expose:
 	if (event->xexpose.count > 0) return;  /* no clipping is done */
 	XDrawPosition(widget, True, NULL);
