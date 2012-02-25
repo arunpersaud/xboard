@@ -1562,20 +1562,19 @@ GetActualPlacement (Widget wg, WindowPlacement *wp)
   Arg args[16];
   Dimension w, h;
   Position x, y;
-  int i;
+  XWindowAttributes winAt;
+  Window win, dummy;
+  int i, rx, ry;
 
   if(!wg) return;
 
-    i = 0;
-    XtSetArg(args[i], XtNx, &x); i++;
-    XtSetArg(args[i], XtNy, &y); i++;
-    XtSetArg(args[i], XtNwidth, &w); i++;
-    XtSetArg(args[i], XtNheight, &h); i++;
-    XtGetValues(wg, args, i);
-    wp->x = x - frameX;
-    wp->y = y - frameY;
-    wp->height = h;
-    wp->width = w;
+    win = XtWindow(wg);
+    XGetWindowAttributes(xDisplay, win, &winAt); // this works, where XtGetValues on XtNx, XtNy does not!
+    XTranslateCoordinates (xDisplay, win, winAt.root, -winAt.border_width, -winAt.border_width, &rx, &ry, &dummy);
+    wp->x = rx - winAt.x;
+    wp->y = ry - winAt.y;
+    wp->height = winAt.height;
+    wp->width = winAt.width;
 }
 
 void
