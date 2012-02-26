@@ -273,6 +273,7 @@ void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
+void DelayedDrag P((void));
 void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
@@ -1746,6 +1747,9 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
     XtSetValues(shellWidget, &shellArgs[0], 6);
+
+    XSync(xDisplay, False);
+    DelayedDrag();
   }
 
     // [HGM] pieces: tailor piece bitmaps to needs of specific variant
@@ -4649,6 +4653,14 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
     }
 }
 
+double
+Fraction (int x, int start, int stop)
+{
+   double f = ((double) x - start)/(stop - start);
+   if(f > 1.) f = 1.; else if(f < 0.) f = 0.;
+   return f;
+}
+
 static WindowPlacement wpNew;
 
 void
@@ -4662,8 +4674,25 @@ CoDrag (Widget sh, WindowPlacement *wp)
     if(abs(wpMain.y + wpMain.height + frameX + frameY - wp->y) < fudge) touch = 3; else // bottom touch
     if(abs(wp->y + wp->height + frameX + frameY - wpMain.y)    < fudge) touch = 4;      // top touch
     if(!touch ) return; // only windows that touch co-move
+    if(touch < 3 && wpNew.height != wpMain.height) { // left or right and height changed
+	int heightInc = wpNew.height - wpMain.height;
+	double fracTop = Fraction(wp->y, wpMain.y, wpMain.y + wpMain.height + frameX + frameY);
+	double fracBot = Fraction(wp->y + wp->height + frameX + frameY + 1, wpMain.y, wpMain.y + wpMain.height + frameX + frameY);
+	wp->y += fracTop * heightInc;
+	heightInc = (int) (fracBot * heightInc) - (int) (fracTop * heightInc);
+	if(heightInc) XtSetArg(args[j], XtNheight, wp->height + heightInc), j++;
+    } else if(touch > 2 && wpNew.width != wpMain.width) { // top or bottom and width changed
+	int widthInc = wpNew.width - wpMain.width;
+	double fracLeft = Fraction(wp->x, wpMain.x, wpMain.x + wpMain.width + 2*frameX);
+	double fracRght = Fraction(wp->x + wp->width + 2*frameX + 1, wpMain.x, wpMain.x + wpMain.width + 2*frameX);
+	wp->y += fracLeft * widthInc;
+	widthInc = (int) (fracRght * widthInc) - (int) (fracLeft * widthInc);
+	if(widthInc) XtSetArg(args[j], XtNwidth, wp->width + widthInc), j++;
+    }
     wp->x += wpNew.x - wpMain.x;
     wp->y += wpNew.y - wpMain.y;
+    if(touch == 1) wp->x += wpNew.width - wpMain.width; else
+    if(touch == 3) wp->y += wpNew.height - wpMain.height;
     XtSetArg(args[j], XtNx, wp->x); j++;
     XtSetArg(args[j], XtNy, wp->y); j++;
     XtSetValues(sh, args, j);
@@ -4673,12 +4702,14 @@ void
 DragProc ()
 {
 	GetActualPlacement(shellWidget, &wpNew);
-	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y) return; // not moved, false alarm
+	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
+	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) // not sized
+	    return; // false alarm
 	if(EngineOutputIsUp()) CoDrag(engineOutputShell, &wpEngineOutput);
 	if(MoveHistoryIsUp()) CoDrag(shells[7], &wpMoveHistory);
 	if(EvalGraphIsUp()) CoDrag(evalGraphShell, &wpEvalGraph);
 	if(GameListIsUp()) CoDrag(gameListShell, &wpGameList);
-	wpMain.x = wpNew.x; wpMain.y = wpNew.y;
+	wpMain = wpNew;
 	XDrawPosition(boardWidget, True, NULL);
 }
 
