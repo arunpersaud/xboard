@@ -1824,6 +1824,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
       }
     }
     oldMono = -10; // kludge to force recreation of animation masks
+    oldVariant = gameInfo.variant;
   }
 #if HAVE_LIBXPM
   if(appData.monoMode != oldMono)
