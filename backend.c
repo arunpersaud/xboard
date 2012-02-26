@@ -4509,7 +4509,10 @@ ParseBoard12 (char *string)
         r = boards[moveNum][CASTLING][5] = initialRights[5];
     }
     /* [HGM] e.p. rights. Assume that ICS sends file number here? */
-    boards[moveNum][EP_STATUS] = double_push == -1 ? EP_NONE : double_push + BOARD_LEFT;
+    boards[moveNum][EP_STATUS] = EP_NONE;
+    if(str[0] == 'P') boards[moveNum][EP_STATUS] = EP_PAWN_MOVE;
+    if(strchr(move_str, 'x')) boards[moveNum][EP_STATUS] = EP_CAPTURE;
+    if(double_push !=  -1) boards[moveNum][EP_STATUS] = double_push + BOARD_LEFT;
 
 
     if (ics_getting_history == H_GOT_REQ_HEADER ||
