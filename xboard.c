@@ -3917,7 +3917,7 @@ AppendEnginesToMenu (Widget menu, char *list)
     Arg args[16];
     char *p;
 
-    if(appData.recentEngines <= 0) return;
+    if(appData.icsActive || appData.recentEngines <= 0) return;
     recentEngines = strdup(list);
     j = 0;
     XtSetArg(args[j], XtNleftMargin, 20);   j++;

@@ -497,6 +497,7 @@ TranslateMenus(int addLanguage)
 void
 RecentEngineMenu (char *s)
 {
+    if(appData.icsActive) return;
     if(appData.recentEngines > 0 && *s) { // feature is on, and list non-empty
 	HMENU mainMenu = GetMenu(hwndMain);
 	HMENU subMenu = GetSubMenu(mainMenu, 5); // Engine menu
