@@ -3905,7 +3905,7 @@ MenuBarSelect (Widget w, caddr_t addr, caddr_t index)
 static void
 MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
 {
-    RecentEngineEvent((int) addr);
+    RecentEngineEvent((int) (intptr_t) addr);
 }
 
 void
@@ -3930,7 +3930,7 @@ AppendEnginesToMenu (Widget menu, char *list)
 	entry = XtCreateManagedWidget("engine", smeBSBObjectClass, menu, args, j+1);
 	XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) MenuEngineSelect,
-			  (caddr_t) i);
+			  (caddr_t) (intptr_t) i);
 	i++; *p = '\n'; list = p + 1;
     }
 }
