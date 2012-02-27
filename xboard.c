@@ -6663,7 +6663,7 @@ BookProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 AboutProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    char buf[MSG_SIZ];
+    char buf[2 * MSG_SIZ];
 #if ZIPPY
     char *zippy = _(" (with Zippy code)");
 #else
