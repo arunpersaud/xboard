@@ -612,7 +612,8 @@ EVALUATION GRAPH
 
 ENGINE OUTPUT WINDOW
 
-"Engine output" === ""
+"Engine Output" === ""
+"%s (%d reversible plies)" === ""
 "Engine #1" === ""
 "NPS" === ""
 "Engine #2" === ""

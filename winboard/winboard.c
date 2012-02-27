@@ -497,6 +497,7 @@ TranslateMenus(int addLanguage)
 void
 RecentEngineMenu (char *s)
 {
+    if(appData.icsActive) return;
     if(appData.recentEngines > 0 && *s) { // feature is on, and list non-empty
 	HMENU mainMenu = GetMenu(hwndMain);
 	HMENU subMenu = GetSubMenu(mainMenu, 5); // Engine menu
@@ -6181,6 +6182,7 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         safeStrCpy(buf, "/fcp=", sizeof(buf)/sizeof(buf[0]) );
 	GetDlgItemText(hDlg, OPT_ChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
         p = buf;
+	comboLine = strdup(p+5); // [HGM] recent: remember complete line of first combobox
 	ParseArgs(StringGet, &p);
 	safeStrCpy(buf, singleList ? "/fcp=" : "/scp=", sizeof(buf)/sizeof(buf[0]) );
 	GetDlgItemText(hDlg, OPT_SecondChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));

@@ -715,7 +715,7 @@ ArgDescriptor argDescriptors[] = {
   { "useInternalWrap", ArgTrue, (void *) &appData.useInternalWrap, FALSE, INVALID }, /* noJoin usurps this if set */
 
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
-  { "minX", ArgZ, (void *) &minX, FALSE, INVALID }, // [HGM] placement: to make suer auxialary windows can be placed
+  { "minX", ArgZ, (void *) &minX, FALSE, INVALID }, // [HGM] placement: to make sure auxiliary windows can be placed
   { "minY", ArgZ, (void *) &minY, FALSE, INVALID },
   { "winWidth",  ArgInt, (void *) &wpMain.width,  TRUE, INVALID }, // [HGM] placement: dummies to remember right & bottom
   { "winHeight", ArgInt, (void *) &wpMain.height, TRUE, INVALID }, //       for attaching auxiliary windows to them

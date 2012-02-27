@@ -273,6 +273,7 @@ void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
+void DelayedDrag P((void));
 void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
@@ -1555,6 +1556,7 @@ ParseCommPortSettings (char *s)
 }
 
 extern Widget engineOutputShell;
+int frameX, frameY;
 
 void
 GetActualPlacement (Widget wg, WindowPlacement *wp)
@@ -1562,20 +1564,20 @@ GetActualPlacement (Widget wg, WindowPlacement *wp)
   Arg args[16];
   Dimension w, h;
   Position x, y;
-  int i;
+  XWindowAttributes winAt;
+  Window win, dummy;
+  int i, rx, ry;
 
   if(!wg) return;
 
-    i = 0;
-    XtSetArg(args[i], XtNx, &x); i++;
-    XtSetArg(args[i], XtNy, &y); i++;
-    XtSetArg(args[i], XtNwidth, &w); i++;
-    XtSetArg(args[i], XtNheight, &h); i++;
-    XtGetValues(wg, args, i);
-    wp->x = x - 4;
-    wp->y = y - 23;
-    wp->height = h;
-    wp->width = w;
+    win = XtWindow(wg);
+    XGetWindowAttributes(xDisplay, win, &winAt); // this works, where XtGetValues on XtNx, XtNy does not!
+    XTranslateCoordinates (xDisplay, win, winAt.root, -winAt.border_width, -winAt.border_width, &rx, &ry, &dummy);
+    wp->x = rx - winAt.x;
+    wp->y = ry - winAt.y;
+    wp->height = winAt.height;
+    wp->width = winAt.width;
+    frameX = winAt.x; frameY = winAt.y; // remember to decide if windows touch
 }
 
 void
@@ -1745,6 +1747,9 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
     XtSetValues(shellWidget, &shellArgs[0], 6);
+
+    XSync(xDisplay, False);
+    DelayedDrag();
   }
 
     // [HGM] pieces: tailor piece bitmaps to needs of specific variant
@@ -1819,6 +1824,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
       }
     }
     oldMono = -10; // kludge to force recreation of animation masks
+    oldVariant = gameInfo.variant;
   }
 #if HAVE_LIBXPM
   if(appData.monoMode != oldMono)
@@ -2662,6 +2668,8 @@ XBoard square size (hint): %d\n\
     /* end why */
     XtAddEventHandler(formWidget, KeyPressMask, False,
 		      (XtEventHandler) MoveTypeInProc, NULL);
+    XtAddEventHandler(shellWidget, StructureNotifyMask, False,
+		      (XtEventHandler) EventProc, NULL);
 
     /* [AS] Restore layout */
     if( wpMoveHistory.visible ) {
@@ -3897,7 +3905,7 @@ MenuBarSelect (Widget w, caddr_t addr, caddr_t index)
 static void
 MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
 {
-    RecentEngineEvent((int) addr);
+    RecentEngineEvent((int) (intptr_t) addr);
 }
 
 void
@@ -3909,7 +3917,7 @@ AppendEnginesToMenu (Widget menu, char *list)
     Arg args[16];
     char *p;
 
-    if(appData.recentEngines <= 0) return;
+    if(appData.icsActive || appData.recentEngines <= 0) return;
     recentEngines = strdup(list);
     j = 0;
     XtSetArg(args[j], XtNleftMargin, 20);   j++;
@@ -3922,7 +3930,7 @@ AppendEnginesToMenu (Widget menu, char *list)
 	entry = XtCreateManagedWidget("engine", smeBSBObjectClass, menu, args, j+1);
 	XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) MenuEngineSelect,
-			  (caddr_t) i);
+			  (caddr_t) (intptr_t) i);
 	i++; *p = '\n'; list = p + 1;
     }
 }
@@ -4646,6 +4654,75 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
     }
 }
 
+double
+Fraction (int x, int start, int stop)
+{
+   double f = ((double) x - start)/(stop - start);
+   if(f > 1.) f = 1.; else if(f < 0.) f = 0.;
+   return f;
+}
+
+static WindowPlacement wpNew;
+
+void
+CoDrag (Widget sh, WindowPlacement *wp)
+{
+    Arg args[16];
+    int j=0, touch=0, fudge = 2;
+    GetActualPlacement(sh, wp);
+    if(abs(wpMain.x + wpMain.width + 2*frameX - wp->x)         < fudge) touch = 1; else // right touch
+    if(abs(wp->x + wp->width + 2*frameX - wpMain.x)            < fudge) touch = 2; else // left touch
+    if(abs(wpMain.y + wpMain.height + frameX + frameY - wp->y) < fudge) touch = 3; else // bottom touch
+    if(abs(wp->y + wp->height + frameX + frameY - wpMain.y)    < fudge) touch = 4;      // top touch
+    if(!touch ) return; // only windows that touch co-move
+    if(touch < 3 && wpNew.height != wpMain.height) { // left or right and height changed
+	int heightInc = wpNew.height - wpMain.height;
+	double fracTop = Fraction(wp->y, wpMain.y, wpMain.y + wpMain.height + frameX + frameY);
+	double fracBot = Fraction(wp->y + wp->height + frameX + frameY + 1, wpMain.y, wpMain.y + wpMain.height + frameX + frameY);
+	wp->y += fracTop * heightInc;
+	heightInc = (int) (fracBot * heightInc) - (int) (fracTop * heightInc);
+	if(heightInc) XtSetArg(args[j], XtNheight, wp->height + heightInc), j++;
+    } else if(touch > 2 && wpNew.width != wpMain.width) { // top or bottom and width changed
+	int widthInc = wpNew.width - wpMain.width;
+	double fracLeft = Fraction(wp->x, wpMain.x, wpMain.x + wpMain.width + 2*frameX);
+	double fracRght = Fraction(wp->x + wp->width + 2*frameX + 1, wpMain.x, wpMain.x + wpMain.width + 2*frameX);
+	wp->y += fracLeft * widthInc;
+	widthInc = (int) (fracRght * widthInc) - (int) (fracLeft * widthInc);
+	if(widthInc) XtSetArg(args[j], XtNwidth, wp->width + widthInc), j++;
+    }
+    wp->x += wpNew.x - wpMain.x;
+    wp->y += wpNew.y - wpMain.y;
+    if(touch == 1) wp->x += wpNew.width - wpMain.width; else
+    if(touch == 3) wp->y += wpNew.height - wpMain.height;
+    XtSetArg(args[j], XtNx, wp->x); j++;
+    XtSetArg(args[j], XtNy, wp->y); j++;
+    XtSetValues(sh, args, j);
+}
+
+void
+DragProc ()
+{
+	GetActualPlacement(shellWidget, &wpNew);
+	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
+	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) // not sized
+	    return; // false alarm
+	if(EngineOutputIsUp()) CoDrag(engineOutputShell, &wpEngineOutput);
+	if(MoveHistoryIsUp()) CoDrag(shells[7], &wpMoveHistory);
+	if(EvalGraphIsUp()) CoDrag(evalGraphShell, &wpEvalGraph);
+	if(GameListIsUp()) CoDrag(gameListShell, &wpGameList);
+	wpMain = wpNew;
+	XDrawPosition(boardWidget, True, NULL);
+}
+
+
+void
+DelayedDrag ()
+{
+    static XtIntervalId delayedDragID = 0;
+    if(delayedDragID) XtRemoveTimeOut(delayedDragID); // cancel pending
+    delayedDragID =
+      XtAppAddTimeOut(appContext, 50, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
+}
 
 /* Why is this needed on some versions of X? */
 void
@@ -4653,8 +4730,11 @@ EventProc (Widget widget, caddr_t unused, XEvent *event)
 {
     if (!XtIsRealized(widget))
       return;
-
     switch (event->type) {
+      case ConfigureNotify: // main window is being dragged: drag attached windows with it
+	if(appData.useStickyWindows)
+	    DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
+	break;
       case Expose:
 	if (event->xexpose.count > 0) return;  /* no clipping is done */
 	XDrawPosition(widget, True, NULL);
@@ -6595,7 +6675,11 @@ _("%s%s\n\n"
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n\n"
 "%s is free software and carries NO WARRANTY;"
-"see the file COPYING for more information."),
+"see the file COPYING for more information.\n\n"
+"Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n\n"
+"Report bugs via email at: <bug-xboard@gnu.org>\n\n"
+  ),
 	    programVersion, zippy, PACKAGE);
     ErrorPopUp(_("About XBoard"), buf, FALSE);
 }

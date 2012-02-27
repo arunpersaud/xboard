@@ -586,7 +586,8 @@ EVALUATION GRAPH
 
 ENGINE OUTPUT WINDOW
 
-"Engine output" === "Overwogen zetten"
+"Engine Output" === "Overwogen zetten"
+"%s (%d reversible plies)" === "%s (%d omkeerbare zetten)"
 "Engine #1" === "Programma #1"
 "NPS" === ""
 "Engine #2" === "Programma #1"
