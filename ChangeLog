@@ -3,6 +3,201 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2012-02-26 18:55:10 -0800 Arun Persaud <arun@nubati.net>:
+add information about our webpage and were to report bugs into the help menu
+
+
+2012-02-26 18:40:27 -0800 Arun Persaud <arun@nubati.net>:
+fixed "make install-pdf": missing target for recursive make in po directory
+
+
+2012-02-26 23:06:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress recent-engines menu items in ICS mode
+
+
+2012-02-26 22:45:12 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix 50-move counter in ICS mode
+
+Marking irreversible moves in the EP_STATUS did not work in ICS mode,
+as ApplyMove,which did that is never executed there. Only the boards
+sent by ICS are displayed,especially in observing mode. Now the status is
+derived from the ICS mov strings (x in the SAN move, or P in the long move.
+
+2012-02-26 17:18:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix two 64-bit warnings
+
+Passing the engine number in a pointer variable to the callback needed
+a two-step cast.
+
+2012-02-26 16:53:24 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix piece symbols on switch back to variant normal
+
+Variant switches were not properly detected, meaning the variable pieces
+could keep a form belonging to a previous variant. (E.g. Queen remained
+a Lance image after switching from shogi to normal.)
+
+2012-02-26 14:07:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Keep XBoard windows attached on resize
+
+Windows attached to bottom or right are displaced with the size increase.
+Their perpendicular dimension is also scaled, to keep their edges at the same
+fraction of the main window, unless they stick out. In the latter case the
+fraction is clipped to 1, so that edge moves with the full size increase.
+
+2012-02-25 22:40:56 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement -stickyWindows in XBoard
+
+This makes the auxiliary windows  move with the main window when they were
+touching, as in WinBoard. A control is added in the General Options dialog.
+
+2012-02-25 21:14:03 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use more reliable X-call for getting window position
+
+XtGetValues on XtNx, XtNy is unreliable. XGetWindowAttributes seems
+to give more reliable results, and automatically accounts for the width
+of window dressing. The -frameX/Y options are no longer needed bcause
+of this, and were removed.
+
+2012-02-25 11:55:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make frame width configurable in XB
+
+New persistent options -frameX, -frameY now can be used to specify
+the amount by which Xt lies about the window coordinates.
+
+2012-02-23 20:01:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use combobox line for recent engines when available
+
+The entry made in the -recentEngineList for the startup engine was
+derived from the -fcp value, but this would ignore a possible nickname.
+In WinBoard we now use the full combobox line to derive the entry.
+
+2012-02-23 09:29:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix translation of EngineOutputTitle WB
+
+
+2012-02-23 01:34:12 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Updated Danish translation
+
+
+2012-02-23 00:59:36 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+One missed translation of cps->which
+
+
+2012-02-22 19:58:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Undo translation of cps->which = first/second
+
+The string in cps->which should not be translated, because it goes into
+the debug file to label engine I/O, and many tools for processing
+debug files (broadcasters, PGN extractors) rely on this being "first" or
+"second". In all contexts where "first" and "second" need to be translated,
+cps->which itself is already enclosed in _().
+
+2012-02-22 18:27:40 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement -serverFile option
+
+This writs an extra debug file with only engine communiation on it,
+for the benifit of programs like TLCS.
+
+2012-02-22 17:46:16 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement -autoCopyPV
+
+This option causes automatic copying of the last position of a PV walk
+to the clipboard.
+
+2012-02-16 14:58:45 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Delete some load-game debug printing
+
+The debug printing in Disambiguate was no longer needed. The printing
+of the started process in XBoard that went to stderr is now diverted
+to debugFP, so it ends up in the debug file.
+
+2012-02-16 14:41:43 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Move change of debug file to before game load
+
+Loading a game from -lgf is done before TwoMachinesEvent is called,
+but logically belongs to the game. So the code to switch to the new
+debug file for the game is moved to NextMatchGame now.
+
+2012-02-16 14:09:54 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix button grab for sweep selection
+
+The piece-menu initialization limited the grab of button events to those
+occurring inside the board window (presumably intended to limit them to
+the piece menu, but that does not pop up in sweep-selection mode).
+This is now suppressed when -pieceMenu is off, so that selection continues
+outside the the board. (Which is very convenient for pieces pu close to the
+edge.)
+
+2012-02-16 13:16:13 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Don't leave piece selected after piece menu
+
+PieceMenuEvent left the just introduced piece selected, which is almost
+never what one wants, as it makes it jump to the next square when selects.
+Which is especially annoying if it captures the piece you wanted to grab...
+
+2012-02-16 12:57:47 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix use of middle button for position setup
+
+With sweep selection the actual drop is made on releasing the button,
+and this event was not caught for button 2. Button-2 motion events were
+also not caught by the sweep-selection handler.
+
+2012-02-16 23:53:08 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix one more typo in the translator comments explaning "first" and "second"
+
+
+2012-02-16 23:39:32 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix typo in translator comments explaning "first" and "second"
+
+
+2012-02-16 23:23:20 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Add args.h to POTFILES.in and change the interface to ExitArgError() so msg is c format string
+
+Having msg as a format string will ease translations because then
+badArg doesn't have to come last.
+
+2012-02-16 22:51:44 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Mark the strings "first" and "sencond" for translation.
+
+... and assign the translated strings to cps->which in function InitEngine()
+
+2012-02-16 18:42:10 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Use ngettext() instead of gettext() for a string to allow better translation.
+
+
+2012-02-16 00:19:59 -0800 Arun Persaud <arun@nubati.net>:
+translation: updated uk.po
+
+
+2012-02-15 20:59:09 -0800 Arun Persaud <arun@nubati.net>:
+modified configure and makefile for handling mimedb update
+
+the default configure will install them using the xdg commands (if they exist on the system)
+
+2012-02-13 22:29:48 -0800 Arun Persaud <arun@nubati.net>:
+add configure test for xdg-programs to install mime types; can be disabled for building of e.g. rpms
+
+in case the target system doesn't have the xdg-programs available, we test for them.
+Distributions often have their own macros to install these, so we add an enable option to configure
+
+2012-02-13 22:05:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove a debug printf
+
+The parsePV debug printf becomes extremely verbose with -fSAN, -sSAN,
+so it was deleted.
+
+2012-02-12 22:18:24 -0800 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2012-02-12 22:19:37 -0800 Arun Persaud <arun@nubati.net>:
+updated po/pot files
+
+
+2012-02-12 22:17:03 -0800 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
+
 2012-02-12 07:52:54 -0800 Arun Persaud <arun@nubati.net>:
 translation: updated uk.po
 

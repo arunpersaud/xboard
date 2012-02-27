@@ -2,7 +2,7 @@
 
 (git log --pretty=short --cherry-pick --left-only v4.6.x...v4.5.x^   |git shortlog --no-merges)
 
-Arun Persaud (65):
+Arun Persaud (79):
       removed parser.l from build process, also removed flex dependency from configure
       updated Changelog, NEWS, etc.
       new developer release
@@ -68,8 +68,22 @@ Arun Persaud (65):
       updated po-filies
       new developer release
       Merge branch 'master' into v4.6.x; updated to correct version number for v4.6.0 branch
+      fixed comments for translators: comments starting with TRANSLATORS: are now copied to the po file
+      added some comments for translators
+      translation: updated uk.po
+      updated Changelog, NEWS, etc.
+      updated po/pot files
+      new developer release
+      Merge branch 'master' into v4.6.x; updated to correct version number for v4.6.0 branch
+      add configure test for xdg-programs to install mime types; can be disabled for building of e.g. rpms
+      modified configure and makefile for handling mimedb update
+      translation: updated uk.po
+      Merge branch 'master' into v4.6.x
+      fixed "make install-pdf": missing target for recursive make in po directory
+      add information about our webpage and were to report bugs into the help menu
+      Merge branch 'master' into v4.6.x
 
-Byrial Jensen (19):
+Byrial Jensen (26):
       fix for repeating key issue, with this allissues this bug should be closed; fixes #35000
       Add NO_GETTEXT flag for combobox. Fix bug #34991
       Make GenericPopUp() more readable by using more named flags instead of numerals
@@ -89,8 +103,15 @@ Byrial Jensen (19):
       Fix checking of return value from snprintf()
       One more string marked for translation
       Fix buffer possible overflow when writings tags
+      Use ngettext() instead of gettext() for a string to allow better translation.
+      Mark the strings "first" and "sencond" for translation.
+      Add args.h to POTFILES.in and change the interface to ExitArgError() so msg is c format string
+      Fix typo in translator comments explaning "first" and "second"
+      Fix one more typo in the translator comments explaning "first" and "second"
+      One missed translation of cps->which
+      Updated Danish translation
 
-H.G. Muller (326):
+H.G. Muller (375):
       New parser, written in C
       Implement yynewstr entry point in new parser
       Fix o-o castling in new parser
@@ -417,6 +438,55 @@ H.G. Muller (326):
       Implement kludge to set options through Move Type-in
       Fix MAXENGINES in WinBoard
       Fix non-bug in WinBoard
+      Add 5 missing strings to WinBoard translation template
+      Create room in some WB dialogs for translations
+      Update Dutch WinBoard translation
+      Configure XBoard engines and textures
+      Derive height of text-edits in dialogs from message widget
+      Fix heights in Engine Output window XB
+      Fix position of checkbox XB
+      Fix crash on empty combobox menu XB
+      Cosmetic: change 4.5 to 4.6 in xboard.conf comment
+      Delete some unused WinBoard bitmaps
+      Remove some of the most verbose debug output
+      Fix unloading of first engine on tourney start
+      Fix sleeping bug
+      Fix warning
+      Better solution to button-height problem
+      Put front-end support for -recentEngines in XBoard
+      Fix popdown seekgraph on forward-event XB
+      Fix heigth of multi-line labels
+      Configure some new features switched on
+      Make -pgnNumberTag option setable from menu
+      Fix button chaining and combo/textbox label height
+      Configure wider game list
+      Fix switching animation masks on variant switch
+      Fix date in copyright notice about-box
+      Also configure sweep selection
+      Update texi file
+      Fix OK button of error popup
+      Leave height of row that only contains buttons free
+      More updating of texi file
+      Merge branch 'master' of git.sv.gnu.org:/srv/git/xboard
+      Remove a debug printf
+      Fix use of middle button for position setup
+      Don't leave piece selected after piece menu
+      Fix button grab for sweep selection
+      Move change of debug file to before game load
+      Delete some load-game debug printing
+      Implement -autoCopyPV
+      Implement -serverFile option
+      Undo translation of cps->which = first/second
+      Fix translation of EngineOutputTitle WB
+      Use combobox line for recent engines when available
+      Make frame width configurable in XB
+      Use more reliable X-call for getting window position
+      Implement -stickyWindows in XBoard
+      Keep XBoard windows attached on resize
+      Fix piece symbols on switch back to variant normal
+      Fix two 64-bit warnings
+      Fix 50-move counter in ICS mode
+      Suppress recent-engines menu items in ICS mode
 
 Thomas Adam (1):
       (tiny change) Clarify "-name" option is Xt-only
