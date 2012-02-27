@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard 4.6.0.20120212\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2012-02-12 22:36-0800\n"
+"POT-Creation-Date: 2012-02-26 19:14-0800\n"
 "PO-Revision-Date: 2012-02-16 19:11+0100\n"
 "Last-Translator: Byrial Ole Jensen <byrial@vip.cybercity.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -32,53 +32,65 @@ msgstr ""
 "X-Generator: Lokalize 1.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: backend.c:816
+#. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
+#. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
+#: backend.c:739
+msgid "first"
+msgstr ""
+
+#. TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
+#. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
+#: backend.c:742
+msgid "second"
+msgstr ""
+
+#: backend.c:820
 #, c-format
 msgid "protocol version %d not supported"
 msgstr "protokolversion %d er ikke understøttet"
 
-#: backend.c:912
+#: backend.c:916
 msgid "You did not specify the engine executable"
 msgstr "Du angav ikke et kørbart skakprogram"
 
-#: backend.c:965
+#: backend.c:969
 #, c-format
 msgid "bad timeControl option %s"
 msgstr "forkert timeControl-tilvalg %s"
 
-#: backend.c:980
+#: backend.c:984
 #, c-format
 msgid "bad searchTime option %s"
 msgstr "forkert searchTime-tilvalg %s"
 
-#: backend.c:1086
+#: backend.c:1090
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr "Varianten %s er kun understøttet i ICS-tilstand"
 
-#: backend.c:1104
+#: backend.c:1108
 #, c-format
 msgid "Unknown variant name %s"
 msgstr "Ukendt variantnavn %s"
 
-#: backend.c:1347
+#: backend.c:1351
 msgid "Starting chess program"
 msgstr "Starter skakprogram"
 
-#: backend.c:1370
+#: backend.c:1374
 msgid "Bad game file"
 msgstr "Fejl i partifil"
 
-#: backend.c:1377
+#: backend.c:1381
 msgid "Bad position file"
 msgstr "Fejl i stillingsfil"
 
-#: backend.c:1391
+#: backend.c:1395
 msgid "Pick new game"
 msgstr "Vælg nyt spil"
 
 # cycle = runde?
-#: backend.c:1460
+#: backend.c:1464
 msgid ""
 "You restarted an already completed tourney\n"
 "One more cycle will now be added to it\n"
@@ -88,138 +100,138 @@ msgstr ""
 "En mere cyklus vil nu blive tilføjet\n"
 "Partierne starter om 10 sekunder"
 
-#: backend.c:1467
+#: backend.c:1471
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
 msgstr "Alle partier i turnering '%s' er allerede færdige eller i gang"
 
-#: backend.c:1474
+#: backend.c:1478
 msgid "Can't have a match with no chess programs"
 msgstr "Kan ikke have en match uden skakprogrammer"
 
-#: backend.c:1509
+#: backend.c:1515
 #, c-format
 msgid "Could not open comm port %s"
 msgstr "Kunne ikke åbne seriel port %s"
 
-#: backend.c:1512
+#: backend.c:1518
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr "Kunne ikke forbinde til vært %s, port %s"
 
-#: backend.c:1568
+#: backend.c:1574
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr "Ukendt initialMode %s"
 
-#: backend.c:1594
+#: backend.c:1600
 msgid "AnalyzeFile mode requires a game file"
 msgstr "AnalyzeFile-tilstand kræver en partifil"
 
-#: backend.c:1621
+#: backend.c:1627
 msgid "Analysis mode requires a chess engine"
 msgstr "Analysetilstand kræver et skakprogram"
 
-#: backend.c:1625
+#: backend.c:1631
 msgid "Analysis mode does not work with ICS mode"
 msgstr "Analysetilstand virker ikke sammen med ICS-tilstand"
 
-#: backend.c:1636
+#: backend.c:1642
 msgid "MachineWhite mode requires a chess engine"
 msgstr "MachineWhite-tilstand kræver et skakprogram"
 
-#: backend.c:1641
+#: backend.c:1647
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr "MachineWhite-tilstand virker ikke sammen med ICS-tilstand"
 
-#: backend.c:1648
+#: backend.c:1654
 msgid "MachineBlack mode requires a chess engine"
 msgstr "MachineBlack-tilstand kræver et skakprogram"
 
-#: backend.c:1653
+#: backend.c:1659
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr "MachineBlack-tilstand virker ikke sammen med ICS-tilstand"
 
-#: backend.c:1660
+#: backend.c:1666
 msgid "TwoMachines mode requires a chess engine"
 msgstr "TwoMachines-tilstand kræver et skakprogram"
 
-#: backend.c:1665
+#: backend.c:1671
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr "TwoMachines-tilstand virker ikke sammen med ICS-tilstand"
 
-#: backend.c:1676
+#: backend.c:1682
 msgid "Training mode requires a game file"
 msgstr "Træningstilstand kræver en partifil"
 
-#: backend.c:1838 backend.c:1882 backend.c:1905 backend.c:2304
+#: backend.c:1844 backend.c:1888 backend.c:1911 backend.c:2310
 msgid "Error writing to ICS"
 msgstr "Fejl ved skrivning til ICS"
 
-#: backend.c:1842
+#: backend.c:1848
 msgid "Error reading from keyboard"
 msgstr "Fejl ved læsning fra tastatur"
 
-#: backend.c:1845
+#: backend.c:1851
 msgid "Got end of file from keyboard"
 msgstr "Fik filafslutning fra tastatur"
 
-#: backend.c:2150
+#: backend.c:2156
 #, c-format
 msgid "Unknown wild type %d"
 msgstr "Ukendt vild type %d"
 
-#: backend.c:2161
+#: backend.c:2167
 #, c-format
 msgid "recognized '%s' (%d) as variant %s\n"
 msgstr "genkendte '%s' (%d) som variant %s\n"
 
-#: backend.c:2221 xboard.c:7021
+#: backend.c:2227 xboard.c:7114
 msgid "Error writing to display"
 msgstr "Fejl ved skrivning til skærm"
 
-#: backend.c:2963
+#: backend.c:2969
 #, c-format
 msgid "your opponent kibitzes: %s"
 msgstr "din modstander kommenterer: %s"
 
-#: backend.c:3486
+#: backend.c:3492
 msgid "Error gathering move list: two headers"
 msgstr "Fejl ved tolkning af trækliste: to teksthoveder"
 
-#: backend.c:3500
+#: backend.c:3506
 #, c-format
 msgid "Ratings from header: W %d, B %d\n"
 msgstr "Ratinger fra teksthovede: H %d, S %d\n"
 
-#: backend.c:3533
+#: backend.c:3539
 msgid "Error gathering move list: nested"
 msgstr "Fejl ved tolkning af trækliste: indlejret"
 
-#: backend.c:3637 backend.c:4055 backend.c:4786 backend.c:4790 backend.c:6660
-#: backend.c:11574 backend.c:13169 backend.c:13246 backend.c:13292
-#: backend.c:13298 backend.c:13303 backend.c:13308
+#: backend.c:3643 backend.c:4061 backend.c:4795 backend.c:4799 backend.c:6667
+#: backend.c:11599 backend.c:13194 backend.c:13271 backend.c:13317
+#: backend.c:13323 backend.c:13328 backend.c:13333
 msgid "vs."
 msgstr "–"
 
-#: backend.c:3765
+#: backend.c:3771
 msgid "Illegal move (rejected by ICS)"
 msgstr "Ulovligt træk (afvist af ICS)"
 
-#: backend.c:4103
+#: backend.c:4109
 msgid "Connection closed by ICS"
 msgstr "Forbindelse lukket af ICS"
 
-#: backend.c:4105
+#: backend.c:4111
 msgid "Error reading from ICS"
 msgstr "Fejl ved læsning fra ICS"
 
-#: backend.c:4155
+#: backend.c:4161
 #, c-format
 msgid "Parsing board: %s\n"
 msgstr "Fortolker bræt: %s\n"
 
-#: backend.c:4179
+#: backend.c:4185
 #, c-format
 msgid ""
 "Failed to parse board string:\n"
@@ -228,108 +240,108 @@ msgstr ""
 "Fortolkning af brætstreng mislykkedes:\n"
 "\"%s\""
 
-#: backend.c:4188 backend.c:9406
+#: backend.c:4194 backend.c:9413
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr "Parti for langt; forøg MAX_MOVES og genoversæt"
 
-#: backend.c:4282
+#: backend.c:4288
 msgid "Error gathering move list: extra board"
 msgstr "Fejl ved tolkning af trækliste: ekstra bræt"
 
-#: backend.c:4710 backend.c:4732
+#: backend.c:4719 backend.c:4741
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
 msgstr "Kunne ikke fortolke \"%s\" fra ICS"
 
-#: backend.c:4962
+#: backend.c:4971
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
 msgstr "say Intern fejl; forkert moveType%d (%d,%d-%d,%d)"
 
-#: backend.c:5032
+#: backend.c:5041
 msgid "You cannot do this while you are playing or observing"
 msgstr "Du kan ikke gøre dette, mens du spiller eller observerer"
 
-#: backend.c:5908
+#: backend.c:5915
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
 msgstr "Genoversæt for at understøtte denne BOARD_RANKS eller BOARD_FILES!"
 
-#: backend.c:6261
+#: backend.c:6268
 msgid "You are playing Black"
 msgstr "Du spiller sort"
 
-#: backend.c:6270 backend.c:6297
+#: backend.c:6277 backend.c:6304
 msgid "You are playing White"
 msgstr "Du spiller hvid"
 
-#: backend.c:6279 backend.c:6305 backend.c:6423 backend.c:6448 backend.c:6464
-#: backend.c:13934
+#: backend.c:6286 backend.c:6312 backend.c:6430 backend.c:6455 backend.c:6471
+#: backend.c:13950
 msgid "It is White's turn"
 msgstr "Det er hvids tur"
 
-#: backend.c:6283 backend.c:6309 backend.c:6431 backend.c:6454 backend.c:6485
-#: backend.c:13926
+#: backend.c:6290 backend.c:6316 backend.c:6438 backend.c:6461 backend.c:6492
+#: backend.c:13942
 msgid "It is Black's turn"
 msgstr "Det er sorts tur"
 
-#: backend.c:6322
+#: backend.c:6329
 msgid "Displayed position is not current"
 msgstr "Den viste stilling er ikke den aktuelle"
 
-#: backend.c:6559
+#: backend.c:6566
 msgid "Illegal move"
 msgstr "Ulovligt træk"
 
-#: backend.c:6619
+#: backend.c:6626
 msgid "End of game"
 msgstr "Slutningen af partiet"
 
-#: backend.c:6622
+#: backend.c:6629
 msgid "Incorrect move"
 msgstr "Ukorrekt træk"
 
-#: backend.c:6912 backend.c:7028
+#: backend.c:6919 backend.c:7035
 msgid "Pull pawn backwards to under-promote"
 msgstr "Træk bonde baglæns for at underforvandle"
 
-#: backend.c:7252
+#: backend.c:7259
 msgid "Swiss tourney finished"
 msgstr "Svejtserturnering afsluttet"
 
-#: backend.c:7786
+#: backend.c:7793
 msgid "Invalid pairing from pairing engine"
 msgstr "Ikke tilladt parring fra parringsprogram"
 
-#: backend.c:7903
+#: backend.c:7910
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr "Ulovligt træk \"%s\" fra %s skakprogram"
 
-#: backend.c:8122
+#: backend.c:8129
 msgid "Bad FEN received from engine"
 msgstr "Fejl i FEN modtaget fra skakprogram"
 
-#: backend.c:8266 xboard.c:5821 xboard.c:5862
+#: backend.c:8273 xboard.c:5910 xboard.c:5951
 #, c-format
 msgid "%s does not support analysis"
 msgstr "%s understøtter ikke analyse"
 
-#: backend.c:8332
+#: backend.c:8339
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr "Ulovligt træk \"%s\" (afvist af %s skakprogram)"
 
-#: backend.c:8359
+#: backend.c:8366
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr "Fejl ved start af %s skakprogram %s på %s: %s\n"
 
-#: backend.c:8380
+#: backend.c:8387
 #, c-format
 msgid "Hint: %s"
 msgstr "Tip: %s"
 
-#: backend.c:8385
+#: backend.c:8392
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
@@ -338,11 +350,11 @@ msgstr ""
 "Ulovligt tip om træk \"%s\"\n"
 "fra %s skakprogram"
 
-#: backend.c:8560
+#: backend.c:8567
 msgid "Machine accepts your draw offer"
 msgstr "Skakprogrammet accepterer dit remistilbud"
 
-#: backend.c:8563
+#: backend.c:8570
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
@@ -350,47 +362,47 @@ msgstr ""
 "Skakprogrammet tilbyder remis\n"
 "Vælg Handlinger / Remis for at acceptere"
 
-#: backend.c:8642
+#: backend.c:8649
 msgid "failed writing PV"
 msgstr "skrivning af analysevariant mislykkedes"
 
-#: backend.c:8940
+#: backend.c:8947
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr "Flertydigt træk i ICS-output: \"%s\""
 
-#: backend.c:8950
+#: backend.c:8957
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr "Ulovligt træk i ICS-output: \"%s\""
 
-#: backend.c:8961
+#: backend.c:8968
 msgid "Gap in move list"
 msgstr "Hul i trækliste"
 
-#: backend.c:9538 xoptions.c:453
+#: backend.c:9545 xoptions.c:454
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "Variant %s understøttes ikke af %s"
 
-#: backend.c:9654
+#: backend.c:9661
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr "Opstartsfejl på \"%s\""
 
-#: backend.c:9682
+#: backend.c:9689
 msgid "Waiting for first chess program"
 msgstr "Venter på første skakprogram"
 
-#: backend.c:9687 backend.c:13317
+#: backend.c:9694 backend.c:13342
 msgid "Waiting for second chess program"
 msgstr "Venter på andet skakprogram"
 
-#: backend.c:9737
+#: backend.c:9744
 msgid "Could not write on tourney file"
 msgstr "Kunne ikke skrive turneringsfil"
 
-#: backend.c:9803
+#: backend.c:9810
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
@@ -398,11 +410,11 @@ msgstr ""
 "Du kan ikke udskifte et skakprogram, mens det bruges!\n"
 "Afslut dets parti først."
 
-#: backend.c:9817
+#: backend.c:9824
 msgid "No engine with the name you gave is installed"
 msgstr "Der er ikke installeret et skakprogram med det angivne navn"
 
-#: backend.c:9819
+#: backend.c:9826
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
@@ -410,11 +422,11 @@ msgstr ""
 "Ændr først skakprogram ved at redigere deltagerlisten\n"
 "i turneringsindstillingerne"
 
-#: backend.c:9820
+#: backend.c:9827
 msgid "You can only change one engine at the time"
 msgstr "Du kan kun ændre et skakprogram ad gangen"
 
-#: backend.c:9834
+#: backend.c:9841
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
@@ -422,115 +434,115 @@ msgstr ""
 "Du skal angive en turneringsfil\n"
 "til at gemme turneringens afvikling"
 
-#: backend.c:9844
+#: backend.c:9851
 msgid "Not enough participants"
 msgstr "Der er ikke nok deltagere"
 
-#: backend.c:10007
+#: backend.c:10014
 msgid "Bad tournament file"
 msgstr "Fejl i turneringsfil"
 
-#: backend.c:10019
+#: backend.c:10026
 msgid "Waiting for other game(s)"
 msgstr "Venter på andet parti/andre partier"
 
-#: backend.c:10032
+#: backend.c:10039
 msgid "No pairing engine specified"
 msgstr "Der er ikke noget parringsprogram specificeret"
 
-#: backend.c:10479
+#: backend.c:10504
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr "Match %s - %s: slutscore %d-%d-%d"
 
-#: backend.c:10922 backend.c:10953
+#: backend.c:10947 backend.c:10978
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr "Ulovligt træk: %d.%s%s"
 
-#: backend.c:10942
+#: backend.c:10967
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr "Flertydigt træk: %d.%s%s"
 
-#: backend.c:10995 backend.c:11991 backend.c:12184 backend.c:12548
+#: backend.c:11020 backend.c:12016 backend.c:12209 backend.c:12573
 #, c-format
 msgid "Can't open \"%s\""
 msgstr "Kan ikke åbne \"%s\""
 
-#: backend.c:11007 xboard.c:5445
+#: backend.c:11032 xboard.c:5528
 msgid "Cannot build game list"
 msgstr "Kan ikke konstruere partiliste"
 
-#: backend.c:11092
+#: backend.c:11117
 msgid "No more games in this message"
 msgstr "Der er ikke flere partier i denne besked"
 
-#: backend.c:11132
+#: backend.c:11157
 msgid "No game has been loaded yet"
 msgstr "Der er endnu ingen indlæste partier"
 
-#: backend.c:11136 backend.c:11972 xgamelist.c:438
+#: backend.c:11161 backend.c:11997 xgamelist.c:438
 msgid "Can't back up any further"
 msgstr "Kan ikke gå længere tilbage"
 
-#: backend.c:11550
+#: backend.c:11575
 msgid "Game number out of range"
 msgstr "Partinummer findes ikke"
 
-#: backend.c:11561
+#: backend.c:11586
 msgid "Can't seek on game file"
 msgstr "Kan ikke spole i partifil"
 
-#: backend.c:11619
+#: backend.c:11644
 msgid "Game not found in file"
 msgstr "Parti ikke fundet i fil"
 
-#: backend.c:11747 backend.c:12068
+#: backend.c:11772 backend.c:12093
 msgid "Bad FEN position in file"
 msgstr "Fejl i FEN-stilling i fil"
 
-#: backend.c:11897
+#: backend.c:11922
 msgid "No moves in game"
 msgstr "Ingen træk i partiet"
 
-#: backend.c:11968
+#: backend.c:11993
 msgid "No position has been loaded yet"
 msgstr "Ingen stilling er endnu indlæst"
 
-#: backend.c:12029 backend.c:12040
+#: backend.c:12054 backend.c:12065
 msgid "Can't seek on position file"
 msgstr "Kan ikke spole i stillingsfil"
 
-#: backend.c:12047 backend.c:12059
+#: backend.c:12072 backend.c:12084
 msgid "Position not found in file"
 msgstr "Stilling er ikke fundet i fil"
 
-#: backend.c:12099
+#: backend.c:12124
 msgid "Black to play"
 msgstr "Sort i trækket"
 
-#: backend.c:12102
+#: backend.c:12127
 msgid "White to play"
 msgstr "Hvid i trækket"
 
-#: backend.c:12189 backend.c:12553
+#: backend.c:12214 backend.c:12578
 msgid "Waiting for access to save file"
 msgstr "Venter på adgang til gemmefil"
 
-#: backend.c:12191
+#: backend.c:12216
 msgid "Saving game"
 msgstr "Gemmer parti"
 
-#: backend.c:12192
+#: backend.c:12217
 msgid "Bad Seek"
 msgstr "Søgning mislykkedes"
 
-#: backend.c:12555
+#: backend.c:12580
 msgid "Saving position"
 msgstr "Gemmer stilling"
 
-#: backend.c:12681
+#: backend.c:12706
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
@@ -538,7 +550,7 @@ msgstr ""
 "Du har redigeret i parti-historikken.\n"
 "Genindlæs partiet og udfør trækket igen."
 
-#: backend.c:12686
+#: backend.c:12711
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
@@ -546,7 +558,7 @@ msgstr ""
 "Du har indtastet for mange træk.\n"
 "Gå tilbage til den aktuelle stilling og prøv igen."
 
-#: backend.c:12691
+#: backend.c:12716
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
@@ -554,11 +566,11 @@ msgstr ""
 "Den viste stilling er ikke den aktuelle.\n"
 "Gå fremad til den korrekte stilling og prøv igen."
 
-#: backend.c:12738
+#: backend.c:12763
 msgid "You have not made a move yet"
 msgstr "Du har ikke trukket endnu"
 
-#: backend.c:12759
+#: backend.c:12784
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
@@ -566,11 +578,11 @@ msgstr ""
 "Cmail-beskeden er ikke indlæst.\n"
 "Brug Genindlæs CMail-besked og lav dit træk igen."
 
-#: backend.c:12764
+#: backend.c:12789
 msgid "No unfinished games"
 msgstr "Der er ingen uafsluttede partier"
 
-#: backend.c:12770
+#: backend.c:12795
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -585,73 +597,73 @@ msgstr ""
 "\"cmail -remail -game %s\"\n"
 "på kommandolinjen."
 
-#: backend.c:12785
+#: backend.c:12810
 msgid "Failed to invoke cmail"
 msgstr "Start af cmail mislykkedes"
 
-#: backend.c:12847
+#: backend.c:12872
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr "Venter på svar fra modstander\n"
 
-#: backend.c:12869
+#: backend.c:12894
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr "Der er stadig nødvendigt at trække i partiet\n"
 
-#: backend.c:12873
+#: backend.c:12898
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr "Der er stadig nødvendigt at trække i begge partier\n"
 
-#: backend.c:12877
+#: backend.c:12902
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr "Der er stadig nødvendigt at trække i alle %d partier\n"
 
-#: backend.c:12884
+#: backend.c:12909
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr "Der er stadig nødvendigt at trække i partiet %s\n"
 
-#: backend.c:12890
+#: backend.c:12915
 #, c-format
 msgid "No unfinished games\n"
 msgstr "Der er ingen uafsluttede partier\n"
 
-#: backend.c:12892
+#: backend.c:12917
 #, c-format
 msgid "Ready to send mail\n"
 msgstr "Klar til at sende e-mail\n"
 
-#: backend.c:12897
+#: backend.c:12922
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr "Der er stadig nødvendigt at trække i partierne %s\n"
 
-#: backend.c:13053
+#: backend.c:13078
 msgid "Edit comment"
 msgstr "Redigér kommentar"
 
-#: backend.c:13055
+#: backend.c:13080
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr "Redigér kommentar til %d.%s%s"
 
-#: backend.c:13149
+#: backend.c:13174
 msgid "It is not White's turn"
 msgstr "Hvid er ikke i trækket"
 
-#: backend.c:13230
+#: backend.c:13255
 msgid "It is not Black's turn"
 msgstr "Sort er ikke i trækket"
 
-#: backend.c:13337
+#: backend.c:13362
 #, c-format
 msgid "Starting %s chess program"
 msgstr "Starter %s skakprogram"
 
-#: backend.c:13365 backend.c:14462
+#: backend.c:13390 backend.c:14478
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
@@ -659,120 +671,120 @@ msgstr ""
 "Vent på din tur,\n"
 "eller vælg Træk nu"
 
-#: backend.c:13501
+#: backend.c:13515
 msgid "Training mode off"
 msgstr "Træningstilstand fra"
 
-#: backend.c:13509
+#: backend.c:13523
 msgid "Training mode on"
 msgstr "Træningstilstand til"
 
-#: backend.c:13512
+#: backend.c:13526
 msgid "Already at end of game"
 msgstr "Allerede ved slutningen af partiet"
 
-#: backend.c:13592
+#: backend.c:13606
 msgid "Warning: You are still playing a game"
 msgstr "Advarsel: Du spiller stadig et parti"
 
-#: backend.c:13595
+#: backend.c:13609
 msgid "Warning: You are still observing a game"
 msgstr "Advarsel: Du observerer stadig et parti"
 
-#: backend.c:13598
+#: backend.c:13612
 msgid "Warning: You are still examining a game"
 msgstr "Advarsel: Du undersøger stadig et parti"
 
-#: backend.c:13674
+#: backend.c:13688
 msgid "Close ICS engine analyze..."
 msgstr "Lukker skakprogram til ICS-analyse ..."
 
-#: backend.c:13951
+#: backend.c:13967
 msgid "That square is occupied"
 msgstr "Det felt er besat"
 
-#: backend.c:13975 backend.c:14001
+#: backend.c:13991 backend.c:14017
 msgid "There is no pending offer on this move"
 msgstr "Der er ingen aktuelle tilbud ved dette træk"
 
-#: backend.c:14037 backend.c:14048
+#: backend.c:14053 backend.c:14064
 msgid "Your opponent is not out of time"
 msgstr "Din modstander har ikke overskredet tiden"
 
-#: backend.c:14114
+#: backend.c:14130
 msgid "You must make your move before offering a draw"
 msgstr "Du skal trække før du tilbyder remis"
 
-#: backend.c:14444
+#: backend.c:14460
 msgid "You are not examining a game"
 msgstr "Du undersøger ikke et parti"
 
-#: backend.c:14448
+#: backend.c:14464
 msgid "You can't revert while pausing"
 msgstr "Du kan ikke annullere variantlinje under pause"
 
-#: backend.c:14502 backend.c:14509
+#: backend.c:14518 backend.c:14525
 msgid "It is your turn"
 msgstr "Det er dig som er i trækket"
 
-#: backend.c:14560 backend.c:14567 backend.c:14586 backend.c:14593
+#: backend.c:14576 backend.c:14583 backend.c:14602 backend.c:14609
 msgid "Wait until your turn"
 msgstr "Vent til du kommer i trækket"
 
-#: backend.c:14572
+#: backend.c:14588
 msgid "No hint available"
 msgstr "Tip er ikke tilgængeligt"
 
-#: backend.c:15028
+#: backend.c:15048
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr "Fejl ved skrivning til %s skakprogram"
 
-#: backend.c:15031 backend.c:15062
+#: backend.c:15051 backend.c:15082
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr "%s program afslutter i remisstilling (%s)"
 
-#: backend.c:15058
+#: backend.c:15078
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr "Fejl: %s skakprogram (%s) afsluttede uventet"
 
-#: backend.c:15075
+#: backend.c:15095
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr "Fejl ved læsning fra %s skakprogram (%s)"
 
-#: backend.c:15466
+#: backend.c:15491
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr "%s skakprogram har for mange tilvalg\n"
 
-#: backend.c:15622
+#: backend.c:15647
 msgid "Displayed move is not current"
 msgstr "Det viste træk er ikke det aktuelle"
 
-#: backend.c:15631
+#: backend.c:15656
 msgid "Could not parse move"
 msgstr "Kunne ikke fortolke træk"
 
-#: backend.c:15756 backend.c:15778
+#: backend.c:15781 backend.c:15803
 msgid "Both flags fell"
 msgstr "Begge flag er faldet"
 
-#: backend.c:15758
+#: backend.c:15783
 msgid "White's flag fell"
 msgstr "Hvids flag er faldet"
 
-#: backend.c:15780
+#: backend.c:15805
 msgid "Black's flag fell"
 msgstr "Sorts flag er faldet"
 
-#: backend.c:15911
+#: backend.c:15936
 msgid "Clock adjustment not allowed in auto-flag mode"
 msgstr "Det er ikke tilladt er stille på uret i auto-flag-tilstand"
 
-#: backend.c:16708
+#: backend.c:16733
 msgid "Bad FEN position in clipboard"
 msgstr "Fejl i FEN-stilling i udklipsholder"
 
@@ -788,15 +800,17 @@ msgstr "Fejl i åbningsbog"
 msgid "Hash keys are different"
 msgstr "Hashnøgler er forskellige"
 
-#: engineoutput.c:100
+#: engineoutput.c:106
 #, c-format
 msgid "Engine Output"
 msgstr "Output fra skakprogram"
 
-#: engineoutput.c:110
-#, c-format
-msgid "%s (%d reversible plies)"
-msgstr "%s (%d reversible træk)"
+#: engineoutput.c:116
+#, fuzzy, c-format
+msgid "%s (%d reversible ply)"
+msgid_plural "%s (%d reversible plies)"
+msgstr[0] "%s (%d reversible træk)"
+msgstr[1] "%s (%d reversible træk)"
 
 #: filebrowser/selfile.c:301
 msgid "Browse"
@@ -810,8 +824,8 @@ msgstr "Filter for filendelser:"
 msgid "Pathname:"
 msgstr "Stinavn:"
 
-#: filebrowser/selfile.c:789 xgamelist.c:743 xgamelist.c:868 xoptions.c:1002
-#: xoptions.c:1337
+#: filebrowser/selfile.c:789 xgamelist.c:743 xgamelist.c:868 xoptions.c:1003
+#: xoptions.c:1338
 msgid "OK"
 msgstr "o.k."
 
@@ -828,543 +842,543 @@ msgstr "XsraSelFile: kan ikke hente det aktuelle katalog"
 msgid "Reading game file (%d)"
 msgstr "Læser partifil (%d)"
 
-#: xboard.c:620
+#: xboard.c:621
 msgid "New Game        Ctrl+N"
 msgstr "Nyt parti    Ctrl+N"
 
-#: xboard.c:621
+#: xboard.c:622
 msgid "New Shuffle Game ..."
 msgstr "Nyt blandet parti ..."
 
-#: xboard.c:622
+#: xboard.c:623
 msgid "New Variant ...   Alt+Shift+V"
 msgstr "Ny variant ...    Alt-shift+V"
 
-#: xboard.c:624
+#: xboard.c:625
 msgid "Load Game       Ctrl+O"
 msgstr "Indlæs parti    Ctrl+O"
 
-#: xboard.c:625
+#: xboard.c:626
 msgid "Load Position    Ctrl+Shift+O"
 msgstr "Indlæs stilling    Ctrl+Shift+O"
 
-#: xboard.c:629
+#: xboard.c:630
 msgid "Next Position     Shift+PgDn"
 msgstr "Næste stilling    Shift+PgDn"
 
-#: xboard.c:630
+#: xboard.c:631
 msgid "Prev Position     Shift+PgUp"
 msgstr "Forrige stilling    Shift+PgUp"
 
-#: xboard.c:633
+#: xboard.c:634
 msgid "Save Game       Ctrl+S"
 msgstr "Gem parti    Ctrl+S"
 
-#: xboard.c:634
+#: xboard.c:635
 msgid "Save Position    Ctrl+Shift+S"
 msgstr "Gem stilling    Ctrl+Shift+S"
 
-#: xboard.c:636
+#: xboard.c:637
 msgid "Mail Move"
 msgstr "Send træk med e-post"
 
-#: xboard.c:637
+#: xboard.c:638
 msgid "Reload CMail Message"
 msgstr "Genindlæs CMail-besked"
 
-#: xboard.c:639
+#: xboard.c:640
 msgid "Quit                 Ctr+Q"
 msgstr "Afslut    Ctrl+Q"
 
-#: xboard.c:644
+#: xboard.c:645
 msgid "Copy Game    Ctrl+C"
 msgstr "Kopiér parti    Ctrl+C"
 
-#: xboard.c:645
+#: xboard.c:646
 msgid "Copy Position Ctrl+Shift+C"
 msgstr "Kopiér stilling    Ctrl+Shift+C"
 
-#: xboard.c:646
+#: xboard.c:647
 msgid "Copy Game List"
 msgstr "Kopiér partiliste"
 
-#: xboard.c:648
+#: xboard.c:649
 msgid "Paste Game    Ctrl+V"
 msgstr "Indsæt parti    Ctrl+V"
 
-#: xboard.c:649
+#: xboard.c:650
 msgid "Paste Position Ctrl+Shift+V"
 msgstr "Indsæt stilling    Ctrl+Shift+V"
 
-#: xboard.c:651
+#: xboard.c:652
 msgid "Edit Game      Ctrl+E"
 msgstr "Redigér parti    Ctrl+E"
 
-#: xboard.c:652
+#: xboard.c:653
 msgid "Edit Position   Ctrl+Shift+E"
 msgstr "Redigér stilling    Ctrl+Shift+E"
 
 # Partibeskrivelse i PGN-fil
-#: xboard.c:653
+#: xboard.c:654
 msgid "Edit Tags"
 msgstr "Redigér partidata"
 
-#: xboard.c:654
+#: xboard.c:655
 msgid "Edit Comment"
 msgstr "Redigér kommentar"
 
-#: xboard.c:655
+#: xboard.c:656
 msgid "Edit Book"
 msgstr "Redigér åbningsbog"
 
-#: xboard.c:657
+#: xboard.c:658
 msgid "Revert              Home"
 msgstr "Annullér variantlinje    Home"
 
-#: xboard.c:658
+#: xboard.c:659
 msgid "Annotate"
 msgstr "Kommentér"
 
-#: xboard.c:659
+#: xboard.c:660
 msgid "Truncate Game  End"
 msgstr "Afkort partiet    End"
 
-#: xboard.c:661
+#: xboard.c:662
 msgid "Backward         Alt+Left"
 msgstr "Tilbage    Alt+Venstre"
 
-#: xboard.c:662
+#: xboard.c:663
 msgid "Forward           Alt+Right"
 msgstr "Fremad    Alt+Højre"
 
-#: xboard.c:663
+#: xboard.c:664
 msgid "Back to Start     Alt+Home"
 msgstr "Tilbage til start    Alt+Home"
 
-#: xboard.c:664
+#: xboard.c:665
 msgid "Forward to End Alt+End"
 msgstr "Frem til enden    Alt+End"
 
-#: xboard.c:669
+#: xboard.c:670
 msgid "Flip View             F2"
 msgstr "Vend brættet    F2"
 
-#: xboard.c:671
+#: xboard.c:672
 msgid "Engine Output      Alt+Shift+O"
 msgstr "Output fra skakprogram    Alt+Shift+O"
 
-#: xboard.c:672
+#: xboard.c:673
 msgid "Move History       Alt+Shift+H"
 msgstr "Trækliste    Alt+Shift+H"
 
-#: xboard.c:673
+#: xboard.c:674
 msgid "Evaluation Graph  Alt+Shift+E"
 msgstr "Evalueringsgraf    Alt+Shift+E"
 
-#: xboard.c:674
+#: xboard.c:675
 msgid "Game List            Alt+Shift+G"
 msgstr "Partiliste    Alt+Shift+G"
 
-#: xboard.c:675 xoptions.c:1519
+#: xboard.c:676 xoptions.c:1520
 msgid "ICS text menu"
 msgstr "ICS-tekstmenu"
 
-#: xboard.c:677 xoptions.c:1609
+#: xboard.c:678 xoptions.c:1610
 msgid "Tags"
 msgstr "Partidata"
 
-#: xboard.c:678
+#: xboard.c:679
 msgid "Comments"
 msgstr "Kommentarer"
 
-#: xboard.c:679
+#: xboard.c:680
 msgid "ICS Input Box"
 msgstr "ICS-inputboks"
 
-#: xboard.c:681
+#: xboard.c:682
 msgid "Board..."
 msgstr "Bræt..."
 
-#: xboard.c:682
+#: xboard.c:683
 msgid "Game List Tags..."
 msgstr "Partidata-overskrifter ..."
 
-#: xboard.c:687
+#: xboard.c:688
 msgid "Machine White  Ctrl+W"
 msgstr "Skakprogram har hvid    Ctrl+W"
 
-#: xboard.c:688
+#: xboard.c:689
 msgid "Machine Black  Ctrl+B"
 msgstr "Skakprogram har sort    Ctrl+B"
 
-#: xboard.c:689
+#: xboard.c:690
 msgid "Two Machines   Ctrl+T"
 msgstr "To skakprogrammer    Ctrl+T"
 
-#: xboard.c:690
+#: xboard.c:691
 msgid "Analysis Mode  Ctrl+A"
 msgstr "Analysetilstand    Ctrl+A"
 
-#: xboard.c:691
+#: xboard.c:692
 msgid "Analyze Game   Ctrl+G"
 msgstr "Analysér parti    Ctrl+G"
 
-#: xboard.c:692
+#: xboard.c:693
 msgid "Edit Game         Ctrl+E"
 msgstr "Redigér parti    Ctrl+E"
 
-#: xboard.c:693
+#: xboard.c:694
 msgid "Edit Position      Ctrl+Shift+E"
 msgstr "Redigér stilling    Ctrl+Shift+E"
 
-#: xboard.c:694
+#: xboard.c:695
 msgid "Training"
 msgstr "Træning"
 
-#: xboard.c:695
+#: xboard.c:696
 msgid "ICS Client"
 msgstr "ICS-klient"
 
-#: xboard.c:697
+#: xboard.c:698
 msgid "Machine Match"
 msgstr "Skakprogrammatch"
 
-#: xboard.c:698
+#: xboard.c:699
 msgid "Pause               Pause"
 msgstr "Pause    Pause"
 
-#: xboard.c:703
+#: xboard.c:704
 msgid "Accept             F3"
 msgstr "Godkend    F3"
 
-#: xboard.c:704
+#: xboard.c:705
 msgid "Decline            F4"
 msgstr "Afvis    F4"
 
-#: xboard.c:705
+#: xboard.c:706
 msgid "Rematch           F12"
 msgstr "Ny match    F12"
 
-#: xboard.c:707
+#: xboard.c:708
 msgid "Call Flag          F5"
 msgstr "Annoncér tidsoverskridelse    F5"
 
-#: xboard.c:708
+#: xboard.c:709
 msgid "Draw                F6"
 msgstr "Remis    F6"
 
-#: xboard.c:709
+#: xboard.c:710
 msgid "Adjourn            F7"
 msgstr "Udsæt partiet    F7"
 
-#: xboard.c:710
+#: xboard.c:711
 msgid "Abort                F8"
 msgstr "Annullér partiet   F8"
 
-#: xboard.c:711
+#: xboard.c:712
 msgid "Resign              F9"
 msgstr "Opgiv    F9"
 
-#: xboard.c:713
+#: xboard.c:714
 msgid "Stop Observing  F10"
 msgstr "Stop observation    F10"
 
-#: xboard.c:714
+#: xboard.c:715
 msgid "Stop Examining  F11"
 msgstr "Stop undersøgelse    F11"
 
-#: xboard.c:715
+#: xboard.c:716
 msgid "Upload to Examine"
 msgstr "Overfør til undersøgelse"
 
-#: xboard.c:717
+#: xboard.c:718
 msgid "Adjudicate to White"
 msgstr "Døm hvid gevinst"
 
-#: xboard.c:718
+#: xboard.c:719
 msgid "Adjudicate to Black"
 msgstr "Døm sort gevinst"
 
-#: xboard.c:719
+#: xboard.c:720
 msgid "Adjudicate Draw"
 msgstr "Døm remis"
 
-#: xboard.c:724
+#: xboard.c:725
 msgid "Load New Engine ..."
 msgstr "Indlæs nyt skakprogram ..."
 
-#: xboard.c:726
+#: xboard.c:727
 msgid "Engine #1 Settings ..."
 msgstr "Indstillinger for skakprogram nr. 1 ..."
 
-#: xboard.c:727
+#: xboard.c:728
 msgid "Engine #2 Settings ..."
 msgstr "Indstillinger for skakprogram nr. 2 ..."
 
-#: xboard.c:729
+#: xboard.c:730
 msgid "Hint"
 msgstr "Tip"
 
-#: xboard.c:730
+#: xboard.c:731
 msgid "Book"
 msgstr "Åbningsbog"
 
-#: xboard.c:732
+#: xboard.c:733
 msgid "Move Now     Ctrl+M"
 msgstr "Træk nu    Ctrl+M"
 
-#: xboard.c:733
+#: xboard.c:734
 msgid "Retract Move  Ctrl+X"
 msgstr "Annullér træk    Ctrl+X"
 
-#: xboard.c:740
+#: xboard.c:741
 msgid "General ..."
 msgstr "Generelle ..."
 
-#: xboard.c:742
+#: xboard.c:743
 msgid "Time Control ...       Alt+Shift+T"
 msgstr "Betænkningstid ...    Alt+Shift+T"
 
-#: xboard.c:743
+#: xboard.c:744
 msgid "Common Engine ...  Alt+Shift+U"
 msgstr "Skakprogram ...    Alt+Shift+U"
 
-#: xboard.c:744
+#: xboard.c:745
 msgid "Adjudications ...      Alt+Shift+J"
 msgstr "Afgørelser ...    Alt+Shift+J"
 
-#: xboard.c:745
+#: xboard.c:746
 msgid "ICS ..."
 msgstr "ICS ..."
 
-#: xboard.c:746
+#: xboard.c:747
 msgid "Match ..."
 msgstr "Match ..."
 
-#: xboard.c:747
+#: xboard.c:748
 msgid "Load Game ..."
 msgstr "Indlæs parti ..."
 
-#: xboard.c:748
+#: xboard.c:749
 msgid "Save Game ..."
 msgstr "Gem parti ..."
 
-#: xboard.c:750
+#: xboard.c:751
 msgid "Game List ..."
 msgstr "Partiliste ..."
 
-#: xboard.c:751
+#: xboard.c:752
 msgid "Sounds ..."
 msgstr "Lyde ..."
 
-#: xboard.c:754
+#: xboard.c:755
 msgid "Always Queen        Ctrl+Shift+Q"
 msgstr "Altid dronning    Ctrl+Shift+Q"
 
-#: xboard.c:755 xoptions.c:419
+#: xboard.c:756 xoptions.c:419
 msgid "Animate Dragging"
 msgstr "Animeret trækudførelse"
 
-#: xboard.c:756
+#: xboard.c:757
 msgid "Animate Moving      Ctrl+Shift+A"
 msgstr "Animeret flytning    Ctrl+Shift+A"
 
-#: xboard.c:757
+#: xboard.c:758
 msgid "Auto Flag               Ctrl+Shift+F"
 msgstr "Automatisk tidsoverskridelse    Ctrl+Shift+F"
 
-#: xboard.c:758 xoptions.c:422
+#: xboard.c:759 xoptions.c:422
 msgid "Auto Flip View"
 msgstr "Automatisk vending af brættet"
 
-#: xboard.c:759 xoptions.c:423
+#: xboard.c:760 xoptions.c:423
 msgid "Blindfold"
 msgstr "Blindskak"
 
-#: xboard.c:760
+#: xboard.c:761
 msgid "Flash Moves"
 msgstr "Blink ved træk"
 
-#: xboard.c:762
+#: xboard.c:763
 msgid "Highlight Dragging"
 msgstr "Fremhæv flytning"
 
-#: xboard.c:764 xoptions.c:426
+#: xboard.c:765 xoptions.c:426
 msgid "Highlight Last Move"
 msgstr "Fremhæv sidste træk"
 
-#: xboard.c:765
+#: xboard.c:766
 msgid "Highlight With Arrow"
 msgstr "Fremhæv med pil"
 
-#: xboard.c:766 xoptions.c:428
+#: xboard.c:767 xoptions.c:428
 msgid "Move Sound"
 msgstr "Lyd ved træk"
 
-#: xboard.c:768 xoptions.c:429
+#: xboard.c:769 xoptions.c:429
 msgid "One-Click Moving"
 msgstr "Ét-klikstræk"
 
-#: xboard.c:769
+#: xboard.c:770
 msgid "Periodic Updates"
 msgstr "Periodisk opdatering"
 
-#: xboard.c:770
+#: xboard.c:771
 msgid "Ponder Next Move  Ctrl+Shift+P"
 msgstr "Spekulér på næste træk    Ctrl+Shift+P"
 
-#: xboard.c:771
+#: xboard.c:772
 msgid "Popup Exit Message"
 msgstr "Pop op med afslutningsbeskeder"
 
-#: xboard.c:772 xoptions.c:433
+#: xboard.c:773 xoptions.c:433
 msgid "Popup Move Errors"
 msgstr "Pop op ved trækfejl"
 
-#: xboard.c:774
+#: xboard.c:775
 msgid "Show Coords"
 msgstr "Vis koordinater"
 
-#: xboard.c:775
+#: xboard.c:776
 msgid "Hide Thinking        Ctrl+Shift+H"
 msgstr "Skjul tænkning    Ctrl+Shift+H"
 
-#: xboard.c:776
+#: xboard.c:777
 msgid "Test Legality          Ctrl+Shift+L"
 msgstr "Test lovlighed    Ctrl+Shift+L"
 
-#: xboard.c:779
+#: xboard.c:780
 msgid "Save Settings Now"
 msgstr "Gem indstillinger nu"
 
-#: xboard.c:780
+#: xboard.c:781
 msgid "Save Settings on Exit"
 msgstr "Gem indstillinger ved afslutning"
 
-#: xboard.c:785
+#: xboard.c:786
 msgid "Info XBoard"
 msgstr "Info XBoard"
 
-#: xboard.c:786
+#: xboard.c:787
 msgid "Man XBoard   F1"
 msgstr "Man XBoard    F1"
 
-#: xboard.c:788 xboard.c:6591
+#: xboard.c:789 xboard.c:6684
 msgid "About XBoard"
 msgstr "Om Xboard"
 
-#: xboard.c:793
+#: xboard.c:794
 msgid "File"
 msgstr "Fil"
 
-#: xboard.c:794
+#: xboard.c:795
 msgid "Edit"
 msgstr "Redigér"
 
-#: xboard.c:795
+#: xboard.c:796
 msgid "View"
 msgstr "Vis"
 
-#: xboard.c:796
+#: xboard.c:797
 msgid "Mode"
 msgstr "Tilstand"
 
-#: xboard.c:797
+#: xboard.c:798
 msgid "Action"
 msgstr "Handlinger"
 
-#: xboard.c:798
+#: xboard.c:799
 msgid "Engine"
 msgstr "Skakprogram"
 
-#: xboard.c:799
+#: xboard.c:800
 msgid "Options"
 msgstr "Indstillinger"
 
-#: xboard.c:800
+#: xboard.c:801
 msgid "Help"
 msgstr "Hjælp"
 
-#: xboard.c:816 xboard.c:7301
+#: xboard.c:817 xboard.c:7394
 msgid "White"
 msgstr "Hvid"
 
-#: xboard.c:816 xboard.c:820 xboard.c:839
+#: xboard.c:817 xboard.c:821 xboard.c:840
 msgid "Pawn"
 msgstr "Bonde"
 
-#: xboard.c:816 xboard.c:820 xboard.c:839 xboard.c:5149
+#: xboard.c:817 xboard.c:821 xboard.c:840 xboard.c:5232
 msgid "Knight"
 msgstr "Springer"
 
-#: xboard.c:816 xboard.c:820 xboard.c:839 xboard.c:5148
+#: xboard.c:817 xboard.c:821 xboard.c:840 xboard.c:5231
 msgid "Bishop"
 msgstr "Løber"
 
-#: xboard.c:816 xboard.c:820 xboard.c:839 xboard.c:5147
+#: xboard.c:817 xboard.c:821 xboard.c:840 xboard.c:5230
 msgid "Rook"
 msgstr "Tårn"
 
-#: xboard.c:817 xboard.c:821 xboard.c:839 xboard.c:5146
+#: xboard.c:818 xboard.c:822 xboard.c:840 xboard.c:5229
 msgid "Queen"
 msgstr "Dronning"
 
-#: xboard.c:817 xboard.c:821 xboard.c:5154
+#: xboard.c:818 xboard.c:822 xboard.c:5237
 msgid "King"
 msgstr "Konge"
 
-#: xboard.c:817 xboard.c:821
+#: xboard.c:818 xboard.c:822
 msgid "Elephant"
 msgstr ""
 
-#: xboard.c:817 xboard.c:821
+#: xboard.c:818 xboard.c:822
 msgid "Cannon"
 msgstr ""
 
-#: xboard.c:818 xboard.c:822 xboard.c:5159
+#: xboard.c:819 xboard.c:823 xboard.c:5242
 msgid "Archbishop"
 msgstr ""
 
-#: xboard.c:818 xboard.c:822 xboard.c:5160
+#: xboard.c:819 xboard.c:823 xboard.c:5243
 msgid "Chancellor"
 msgstr ""
 
-#: xboard.c:818 xboard.c:822 xboard.c:5164
+#: xboard.c:819 xboard.c:823 xboard.c:5247
 msgid "Promote"
 msgstr "Bondeforvandling"
 
-#: xboard.c:818 xboard.c:822
+#: xboard.c:819 xboard.c:823
 msgid "Demote"
 msgstr ""
 
-#: xboard.c:819 xboard.c:823
+#: xboard.c:820 xboard.c:824
 msgid "Empty square"
 msgstr "Tomt felt"
 
-#: xboard.c:819 xboard.c:823
+#: xboard.c:820 xboard.c:824
 msgid "Clear board"
 msgstr "Ryd bræt"
 
-#: xboard.c:820 xboard.c:7315
+#: xboard.c:821 xboard.c:7408
 msgid "Black"
 msgstr "Sort"
 
-#: xboard.c:1210
+#: xboard.c:1213
 #, c-format
 msgid "%s: Can't access XPM directory %s\n"
 msgstr "%s: Har ikke adgang til XPM-katalog %s\n"
 
-#: xboard.c:1231
+#: xboard.c:1234
 #, c-format
 msgid "Available `%s' sizes:\n"
 msgstr "Tilgængelige '%s'-størrelser:\n"
 
-#: xboard.c:1264
+#: xboard.c:1267
 #, c-format
 msgid "Error: No `%s' files!\n"
 msgstr "Fejl: Ingen '%s'-filer!\n"
 
-#: xboard.c:1277
+#: xboard.c:1280
 #, c-format
 msgid ""
 "Warning: No DIR structure found on this system --\n"
@@ -1377,56 +1391,58 @@ msgstr ""
 "  Rappotér venligst denne fejl til %s.\n"
 "  Inkludér systemtype og styresystem i beskeden.\n"
 
-#: xboard.c:1336
+#: xboard.c:1339
 #, c-format
 msgid "%s: unrecognized color %s\n"
 msgstr "%s: ikke genkendt farve %s\n"
 
-#: xboard.c:1344
+#: xboard.c:1347
 #, c-format
 msgid "%s: can't parse foreground color in `%s'\n"
 msgstr "%s: kan ikke fortolke forgrundsfarve i '%s'\n"
 
-#: xboard.c:1731 xboard.c:2489
+#: xboard.c:1735 xboard.c:2497
 #, c-format
 msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
 msgstr "%s: titleWidget-geometrifejl %d %d %d %d %d\n"
 
-#: xboard.c:1845
+#: xboard.c:1853
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
 msgstr "%s: kan ikke fortolke farvenavne; deaktiverer farvning\n"
 
-#: xboard.c:2021
+#: xboard.c:2029
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr "%s: kan ikke cd til CHESSDIR: "
 
-#: xboard.c:2030
+#: xboard.c:2038
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr "Åbning af fil '%s' mislykkedes\n"
 
-#: xboard.c:2045
+#: xboard.c:2053
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr "Genoversæt med større BOARD_RANKS eller BOARD_FILES for at understøtte denne størrelse"
+msgstr ""
+"Genoversæt med større BOARD_RANKS eller BOARD_FILES for at understøtte denne "
+"størrelse"
 
-#: xboard.c:2068
+#: xboard.c:2076
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr "%s: forkert boardSize-syntaks %s\n"
 
-#: xboard.c:2105
+#: xboard.c:2113
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr "%s: ikke genkendt boardSize-navn %s\n"
 
-#: xboard.c:2130
+#: xboard.c:2138
 #, c-format
 msgid "Error expanding path name \"%s\"\n"
 msgstr "Fejl ved udfoldning af stinavn \"%s\"\n"
 
-#: xboard.c:2135
+#: xboard.c:2143
 #, c-format
 msgid ""
 "XBoard square size (hint): %d\n"
@@ -1435,37 +1451,37 @@ msgstr ""
 "XBoard feltstørrelse (tip): %d\n"
 "%s-fuldt katalog: %s:\n"
 
-#: xboard.c:2141
+#: xboard.c:2149
 #, c-format
 msgid "Closest %s size: %d\n"
 msgstr "Nærmeste %s størrelse: %d\n"
 
-#: xboard.c:2219
+#: xboard.c:2227
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr "%s: for få farver tilgængelige; prøver monokrom tilstand\n"
 
-#: xboard.c:2235
+#: xboard.c:2243
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
 msgstr "hvid pixel = 0x%lx, sort pixel = 0x%lx\n"
 
-#: xboard.c:2454 xboard.c:2464
+#: xboard.c:2462 xboard.c:2472
 #, c-format
 msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
 msgstr "%s: messageWidget-geometrifejl %d %d %d %d %d\n"
 
-#: xboard.c:3212
+#: xboard.c:3222
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr "Kan ikke lave skrifttypegruppe for %s.\n"
 
-#: xboard.c:3235
+#: xboard.c:3245
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr "%s: Ingen skrifttyper matcher mønstret %s\n"
 
-#: xboard.c:3277
+#: xboard.c:3287
 #, c-format
 msgid ""
 "resolved %s at pixel size %d\n"
@@ -1474,16 +1490,16 @@ msgstr ""
 "løste %s ved pixelstørrelse %d\n"
 " til %s\n"
 
-#: xboard.c:3428
+#: xboard.c:3438
 #, c-format
 msgid "%s: error loading XIM!\n"
 msgstr "%s: fejl ved indlæsning af XIM!\n"
 
-#: xboard.c:3526
+#: xboard.c:3536
 msgid "XIM pieces cannot be used in monochrome mode"
 msgstr "XIM-brikker kan ikke bruges i monokrom-tilstand"
 
-#: xboard.c:3530
+#: xboard.c:3540
 #, c-format
 msgid ""
 "\n"
@@ -1492,42 +1508,42 @@ msgstr ""
 "\n"
 "Indlæser XIM'er ...\n"
 
-#: xboard.c:3545 xboard.c:3568 xboard.c:3575 xboard.c:3691 xboard.c:3728
-#: xboard.c:3739
+#: xboard.c:3555 xboard.c:3578 xboard.c:3585 xboard.c:3701 xboard.c:3738
+#: xboard.c:3749
 #, c-format
 msgid "(File:%s:) "
 msgstr "(Fil:%s:) "
 
-#: xboard.c:3563 xboard.c:3721
+#: xboard.c:3573 xboard.c:3731
 #, c-format
 msgid "light square "
 msgstr "lyst felt "
 
-#: xboard.c:3571 xboard.c:3735
+#: xboard.c:3581 xboard.c:3745
 #, c-format
 msgid "dark square "
 msgstr "mørkt felt "
 
-#: xboard.c:3582 xboard.c:3748
+#: xboard.c:3592 xboard.c:3758
 #, c-format
 msgid "Done.\n"
 msgstr "Udført.\n"
 
-#: xboard.c:3646
+#: xboard.c:3656
 msgid "XPM pieces cannot be used in monochrome mode"
 msgstr "XPM-brikker kan ikke bruges i monokrom-tilstand"
 
-#: xboard.c:3656
+#: xboard.c:3666
 #, c-format
 msgid "No builtin XPM pieces of size %d\n"
 msgstr "Der er ingen indbyggede XPM-brikker af størrelse %d\n"
 
-#: xboard.c:3666
+#: xboard.c:3676
 #, c-format
 msgid "Error %d loading XPM image \"%s\"\n"
 msgstr "Error %d ved indlæsning af XPM-billede \"%s\"\n"
 
-#: xboard.c:3679
+#: xboard.c:3689
 #, c-format
 msgid ""
 "\n"
@@ -1536,148 +1552,148 @@ msgstr ""
 "\n"
 "Indlæser XPM'er ...\n"
 
-#: xboard.c:3702
+#: xboard.c:3712
 #, c-format
 msgid "(Replace by File:%s:) "
 msgstr "(Erstatter med fil: %s) "
 
-#: xboard.c:3709 xboard.c:3732 xboard.c:3743
+#: xboard.c:3719 xboard.c:3742 xboard.c:3753
 #, c-format
 msgid "Error %d loading XPM file \"%s\"\n"
 msgstr "Error %d ved indlæsning af XPM-fil \"%s\"\n"
 
-#: xboard.c:3831
+#: xboard.c:3841
 #, c-format
 msgid "Can't open bitmap file %s"
 msgstr "Kan ikke åbne bitmapfil %s"
 
-#: xboard.c:3834
+#: xboard.c:3844
 #, c-format
 msgid "Invalid bitmap in file %s"
 msgstr "Ukorrekt bitmap i fil %s"
 
-#: xboard.c:3837
+#: xboard.c:3847
 #, c-format
 msgid "Ran out of memory reading bitmap file %s"
 msgstr "Ikke nok hukommelse til at læse bitmapfil %s"
 
-#: xboard.c:3841
+#: xboard.c:3851
 #, c-format
 msgid "Unknown XReadBitmapFile error %d on file %s"
 msgstr "Ukendt XReadBitmapFile-fejl %d på fil %s"
 
-#: xboard.c:3845
+#: xboard.c:3855
 #, c-format
 msgid "%s: %s...using built-in\n"
 msgstr "%s: %s ... bruger indbygget\n"
 
-#: xboard.c:3849
+#: xboard.c:3859
 #, c-format
 msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
 msgstr "%s: Bitmap %s er %dx%d, ikke %dx%d ... bruger indbygget\n"
 
-#: xboard.c:3917
+#: xboard.c:3927
 msgid "----"
 msgstr ""
 
-#: xboard.c:4089
+#: xboard.c:4100
 msgid "Drop"
 msgstr "Placér"
 
-#: xboard.c:5029
+#: xboard.c:5112
 msgid "could not open: "
 msgstr "kunne ikke åbne:"
 
-#: xboard.c:5055 xboard.c:5167 xboard.c:6856 xboard.c:6896 xgamelist.c:749
-#: xgamelist.c:857 xoptions.c:998 xoptions.c:1341
+#: xboard.c:5138 xboard.c:5250 xboard.c:6949 xboard.c:6989 xgamelist.c:749
+#: xgamelist.c:857 xoptions.c:999 xoptions.c:1342
 msgid "cancel"
 msgstr "annullér"
 
-#: xboard.c:5089 xboard.c:6715 xboard.c:6729
+#: xboard.c:5172 xboard.c:6808 xboard.c:6822
 msgid "Error"
 msgstr "Fejl"
 
-#: xboard.c:5089
+#: xboard.c:5172
 msgid "Can't open file"
 msgstr "Kan ikke åbne fil"
 
-#: xboard.c:5094
+#: xboard.c:5177
 msgid "Failed to open file"
 msgstr "Åbning af fil mislykkedes"
 
-#: xboard.c:5125
+#: xboard.c:5208
 msgid "Promotion"
 msgstr "Bondeforvandling"
 
-#: xboard.c:5134
+#: xboard.c:5217
 msgid "Promote to what?"
 msgstr "Hvad skal bonden forvandles til?"
 
-#: xboard.c:5141
+#: xboard.c:5224
 msgid "Warlord"
 msgstr ""
 
-#: xboard.c:5142
+#: xboard.c:5225
 msgid "General"
 msgstr ""
 
-#: xboard.c:5143
+#: xboard.c:5226
 msgid "Lieutenant"
 msgstr ""
 
-#: xboard.c:5144
+#: xboard.c:5227
 msgid "Captain"
 msgstr ""
 
-#: xboard.c:5165
+#: xboard.c:5248
 msgid "Defer"
 msgstr ""
 
-#: xboard.c:5270
+#: xboard.c:5353
 msgid "ok"
 msgstr "o.k."
 
-#: xboard.c:5463
+#: xboard.c:5546
 msgid "Load game file name?"
 msgstr "Filnavn for indlæsning af parti?"
 
-#: xboard.c:5508
+#: xboard.c:5591
 msgid "Load position file name?"
 msgstr "Filnavn for indlæsning af stilling?"
 
-#: xboard.c:5514
+#: xboard.c:5597
 msgid "Save game file name?"
 msgstr "Filnavn for gemning af parti?"
 
-#: xboard.c:5523
+#: xboard.c:5606
 msgid "Save position file name?"
 msgstr "Filnavn for gemning af stilling?"
 
-#: xboard.c:5756
+#: xboard.c:5845
 msgid "Can't open temp file"
 msgstr "Kan ikke åbne midlertidig fil"
 
-#: xboard.c:5828
+#: xboard.c:5917
 #, c-format
 msgid "You are not observing a game"
 msgstr "Du observerer ikke et parti"
 
-#: xboard.c:5833
+#: xboard.c:5922
 #, c-format
 msgid "Found unexpected active ICS engine analyze \n"
 msgstr "Fandt uventet aktivt skakprogram til ICS-analyse\n"
 
-#: xboard.c:5847
+#: xboard.c:5936
 #, c-format
 msgid "ICS engine analyze starting... \n"
 msgstr "Starter skakprogram til ICS-analyse ...\n"
 
-#: xboard.c:6579
+#: xboard.c:6668
 msgid " (with Zippy code)"
 msgstr " (med Zippy-kode)"
 
-#: xboard.c:6584
-#, c-format
+#: xboard.c:6673
+#, fuzzy, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -1685,7 +1701,15 @@ msgid ""
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more information."
+"%s is free software and carries NO WARRANTY;see the file COPYING for more "
+"information.\n"
+"\n"
+"Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/"
+"whats_new.html\n"
+"\n"
+"Report bugs via email at: <bug-xboard@gnu.org>\n"
+"\n"
 msgstr ""
 "%s%s\n"
 "\n"
@@ -1693,47 +1717,48 @@ msgstr ""
 "Ændringer Copyright 1992-2012 Free Software Foundation\n"
 "Ændringer Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s er frit programmel og er uden nogen form for garanti; se filen COPYING for mere information."
+"%s er frit programmel og er uden nogen form for garanti; se filen COPYING "
+"for mere information."
 
-#: xboard.c:6751
+#: xboard.c:6844
 msgid "Fatal Error"
 msgstr "Fatal fejl"
 
-#: xboard.c:6751
+#: xboard.c:6844
 msgid "Exiting"
 msgstr "Afslutter"
 
-#: xboard.c:6761
+#: xboard.c:6854
 msgid "Information"
 msgstr "Meddelelse"
 
-#: xboard.c:6768
+#: xboard.c:6861
 msgid "Note"
 msgstr "Notits"
 
-#: xboard.c:6813
+#: xboard.c:6906
 #, c-format
 msgid "AskQuestionProc needed 4 parameters, got %d\n"
 msgstr "AskQuestionProc skal have 4 parametre, men fik %d\n"
 
-#: xboard.c:6844
+#: xboard.c:6937
 msgid "Error writing to chess program"
 msgstr "Fejl ved skrivning til skakprogram"
 
-#: xboard.c:6894
+#: xboard.c:6987
 msgid "enter"
 msgstr "udfør"
 
-#: xboard.c:7095
+#: xboard.c:7188
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
 msgstr "FEJL: Ukendt bruger %s (i stien %s)\n"
 
-#: xboard.c:7469
+#: xboard.c:7562
 msgid "Socket support is not configured in"
 msgstr "Er ikke konfigureret med sokkelunderstøttelse"
 
-#: xboard.c:7558
+#: xboard.c:7651
 msgid "internal rcmd not implemented for Unix"
 msgstr "intern rcmd er ikke implementeret til Unix"
 
@@ -1858,7 +1883,7 @@ msgstr "Indstillinger for partiliste"
 msgid "Move list"
 msgstr "Trækliste"
 
-#: xoptions.c:172 xoptions.c:1137
+#: xoptions.c:172 xoptions.c:1138
 msgid "browse"
 msgstr "gennemse"
 
@@ -1984,7 +2009,7 @@ msgid "Periodic Updates (in Analysis Mode)"
 msgstr "Periodisk opdatering (i analysetilstand)"
 
 # ... mens modstanderen er i trækket
-#: xoptions.c:431 xoptions.c:540
+#: xoptions.c:431 xoptions.c:541
 msgid "Ponder Next Move"
 msgstr "Spekulér på næste træk"
 
@@ -2005,171 +2030,175 @@ msgid "Show Target Squares"
 msgstr "Vis målfelter"
 
 #: xoptions.c:437
+msgid "Sticky Windows"
+msgstr ""
+
+#: xoptions.c:438
 msgid "Test Legality"
 msgstr "Test lovlighed"
 
-#: xoptions.c:438
+#: xoptions.c:439
 msgid "Flash Moves (0 = no flashing):"
 msgstr "Blink ved træk (0 = ingen blink):"
 
-#: xoptions.c:439
+#: xoptions.c:440
 msgid "Flash Rate (high = fast):"
 msgstr "Blinkhastighed (høj = hurtig):"
 
-#: xoptions.c:440
+#: xoptions.c:441
 msgid "Animation Speed (high = slow):"
 msgstr "Animeringshastighed (høj = langsom):"
 
-#: xoptions.c:441
+#: xoptions.c:442
 msgid "Zoom factor in Evaluation Graph:"
 msgstr "Zoomfaktor i evalueringsgraf:"
 
-#: xoptions.c:458
+#: xoptions.c:459
 #, c-format
 msgid "Warning: second engine (%s) does not support this!"
 msgstr "Advarsel: det andet skakprogram (%s) understøtter ikke dette!"
 
-#: xoptions.c:479
+#: xoptions.c:480
 msgid "normal"
 msgstr "normal"
 
-#: xoptions.c:480
+#: xoptions.c:481
 msgid "fairy"
 msgstr ""
 
-#: xoptions.c:481
+#: xoptions.c:482
 msgid "FRC"
 msgstr "skak960"
 
-#: xoptions.c:482
+#: xoptions.c:483
 msgid "Seirawan"
 msgstr ""
 
-#: xoptions.c:483
+#: xoptions.c:484
 msgid "wild castle"
 msgstr ""
 
-#: xoptions.c:484
+#: xoptions.c:485
 msgid "Superchess"
 msgstr ""
 
-#: xoptions.c:485
+#: xoptions.c:486
 msgid "no castle"
 msgstr ""
 
-#: xoptions.c:486
+#: xoptions.c:487
 msgid "crazyhouse"
 msgstr ""
 
-#: xoptions.c:487
+#: xoptions.c:488
 msgid "knightmate"
 msgstr ""
 
-#: xoptions.c:488
+#: xoptions.c:489
 msgid "bughouse"
 msgstr ""
 
-#: xoptions.c:489
+#: xoptions.c:490
 msgid "berolina"
 msgstr ""
 
-#: xoptions.c:490
+#: xoptions.c:491
 msgid "shogi (9x9)"
 msgstr ""
 
-#: xoptions.c:491
+#: xoptions.c:492
 msgid "cylinder"
 msgstr ""
 
-#: xoptions.c:492
+#: xoptions.c:493
 msgid "xiangqi (9x10)"
 msgstr ""
 
-#: xoptions.c:493
+#: xoptions.c:494
 msgid "shatranj"
 msgstr ""
 
-#: xoptions.c:494
+#: xoptions.c:495
 msgid "courier (12x8)"
 msgstr ""
 
-#: xoptions.c:495
+#: xoptions.c:496
 msgid "makruk"
 msgstr ""
 
-#: xoptions.c:496
+#: xoptions.c:497
 msgid "Great Shatranj (10x8)"
 msgstr ""
 
-#: xoptions.c:497
+#: xoptions.c:498
 msgid "atomic"
 msgstr ""
 
-#: xoptions.c:498
+#: xoptions.c:499
 msgid "falcon (10x8)"
 msgstr ""
 
-#: xoptions.c:499
+#: xoptions.c:500
 msgid "two kings"
 msgstr ""
 
-#: xoptions.c:500
+#: xoptions.c:501
 msgid "Capablanca (10x8)"
 msgstr ""
 
-#: xoptions.c:501
+#: xoptions.c:502
 msgid "3-checks"
 msgstr ""
 
-#: xoptions.c:502
+#: xoptions.c:503
 msgid "Gothic (10x8)"
 msgstr ""
 
-#: xoptions.c:503
+#: xoptions.c:504
 msgid "suicide"
 msgstr ""
 
-#: xoptions.c:504
+#: xoptions.c:505
 msgid "janus (10x8)"
 msgstr ""
 
-#: xoptions.c:505
+#: xoptions.c:506
 msgid "give-away"
 msgstr ""
 
-#: xoptions.c:506
+#: xoptions.c:507
 msgid "CRC (10x8)"
 msgstr ""
 
-#: xoptions.c:507
+#: xoptions.c:508
 msgid "losers"
 msgstr ""
 
-#: xoptions.c:508
+#: xoptions.c:509
 msgid "grand (10x10)"
 msgstr ""
 
-#: xoptions.c:509
+#: xoptions.c:510
 msgid "Spartan"
 msgstr ""
 
-#: xoptions.c:510
+#: xoptions.c:511
 msgid "Board size ( -1 = default for selected variant):"
 msgstr "Brætstørrelse (-1 = standard for valgt variant):"
 
-#: xoptions.c:511
+#: xoptions.c:512
 msgid "Number of Board Ranks:"
 msgstr "Antal brætrækker:"
 
-#: xoptions.c:512
+#: xoptions.c:513
 msgid "Number of Board Files:"
 msgstr "Antal brætlinjer:"
 
-#: xoptions.c:513
+#: xoptions.c:514
 msgid "Holdings Size:"
 msgstr "Depotstørrelse:"
 
-#: xoptions.c:515
+#: xoptions.c:516
 msgid ""
 "WARNING: variants with un-orthodox\n"
 "pieces only have built-in bitmaps\n"
@@ -2183,231 +2212,231 @@ msgstr ""
 "petite, og bruger konge eller amazone\n"
 "for manglende bitmaps. (Se manualen.)"
 
-#: xoptions.c:541
+#: xoptions.c:542
 msgid "Maximum Number of CPUs per Engine:"
 msgstr "Maksimalt antal CPU'er pr. skakprogram:"
 
-#: xoptions.c:542
+#: xoptions.c:543
 msgid "Polygot Directory:"
 msgstr "Polyglot-katalog:"
 
-#: xoptions.c:543
+#: xoptions.c:544
 msgid "Hash-Table Size (MB):"
 msgstr "Hashtabel-størrelse (MB):"
 
-#: xoptions.c:544
+#: xoptions.c:545
 msgid "Nalimov EGTB Path:"
 msgstr "Sti til Nalimov-EGTB:"
 
-#: xoptions.c:545
+#: xoptions.c:546
 msgid "EGTB Cache Size (MB):"
 msgstr "EGTB-cachestørrelse (MB):"
 
-#: xoptions.c:546
+#: xoptions.c:547
 msgid "Use GUI Book"
 msgstr "Brug GUI's åbningsbog"
 
-#: xoptions.c:547
+#: xoptions.c:548
 msgid "Opening-Book Filename:"
 msgstr "Åbningsbogsfilnavn:"
 
-#: xoptions.c:548
+#: xoptions.c:549
 msgid "Book Depth (moves):"
 msgstr "Åbningsbogsdybde (træk):"
 
-#: xoptions.c:549
+#: xoptions.c:550
 msgid "Book Variety (0) vs. Strength (100):"
 msgstr "Åbningsbogvariation (0) vs. styrke (100):"
 
-#: xoptions.c:550
+#: xoptions.c:551
 msgid "Engine #1 Has Own Book"
 msgstr "Skakprogram nr. 1 har egen åbningsbog"
 
-#: xoptions.c:551
+#: xoptions.c:552
 msgid "Engine #2 Has Own Book          "
 msgstr "Skakprogram nr. 2 har egen åbningsbog"
 
-#: xoptions.c:556
+#: xoptions.c:557
 msgid "Detect all Mates"
 msgstr "Find alle matter"
 
-#: xoptions.c:557
+#: xoptions.c:558
 msgid "Verify Engine Result Claims"
 msgstr "Efterprøv resultatangivelser fra skakprogrammer"
 
-#: xoptions.c:558
+#: xoptions.c:559
 msgid "Draw if Insufficient Mating Material"
 msgstr "Remis ved utilstrækkeligt matsættende materiale"
 
-#: xoptions.c:559
+#: xoptions.c:560
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
 msgstr "Døm trivielle remiser (3-træks forsinkelse)"
 
-#: xoptions.c:560
+#: xoptions.c:561
 msgid "N-Move Rule:"
 msgstr "N-træksregel:"
 
-#: xoptions.c:561
+#: xoptions.c:562
 msgid "N-fold Repeats:"
 msgstr "N-gange gentagelser:"
 
-#: xoptions.c:562
+#: xoptions.c:563
 msgid "Draw after N Moves Total:"
 msgstr "Remis efter i alt N træk:"
 
-#: xoptions.c:563
+#: xoptions.c:564
 msgid "Win / Loss Threshold:"
 msgstr "Gevinst/tabs-tærskel:"
 
-#: xoptions.c:564
+#: xoptions.c:565
 msgid "Negate Score of Engine #1"
 msgstr "Negér skakprogram nr. 1's score"
 
-#: xoptions.c:565
+#: xoptions.c:566
 msgid "Negate Score of Engine #2"
 msgstr "Negér skakprogram nr. 2's score"
 
-#: xoptions.c:577
+#: xoptions.c:578
 msgid "Auto-Kibitz"
 msgstr "Send kommentarer fra skakprogram"
 
-#: xoptions.c:578
+#: xoptions.c:579
 msgid "Auto-Comment"
 msgstr "Gem kommentarer til træk"
 
-#: xoptions.c:579
+#: xoptions.c:580
 msgid "Auto-Observe"
 msgstr "Observér automatisk"
 
-#: xoptions.c:580
+#: xoptions.c:581
 msgid "Auto-Raise Board"
 msgstr "Bræt øverst ved partistart"
 
-#: xoptions.c:581
+#: xoptions.c:582
 msgid "Background Observe while Playing"
 msgstr "Obsevér i baggrunden når der spilles"
 
-#: xoptions.c:582
+#: xoptions.c:583
 msgid "Dual Board for Background-Observed Game"
 msgstr "Andet bræt til baggrundsobservede partier"
 
-#: xoptions.c:583
+#: xoptions.c:584
 msgid "Get Move List"
 msgstr "Hent trækliste"
 
-#: xoptions.c:584
+#: xoptions.c:585
 msgid "Quiet Play"
 msgstr "Stille spil"
 
-#: xoptions.c:585
+#: xoptions.c:586
 msgid "Seek Graph"
 msgstr "Søgegraf"
 
-#: xoptions.c:586
+#: xoptions.c:587
 msgid "Auto-Refresh Seek Graph"
 msgstr "Automatisk opdatering af søgegraf"
 
-#: xoptions.c:587
+#: xoptions.c:588
 msgid "Premove"
 msgstr "Forhåndstræk"
 
-#: xoptions.c:588
+#: xoptions.c:589
 msgid "Premove for White"
 msgstr "Forhåndstræk for hvid"
 
-#: xoptions.c:589
+#: xoptions.c:590
 msgid "First White Move:"
 msgstr "Hvids første træk:"
 
-#: xoptions.c:590
+#: xoptions.c:591
 msgid "Premove for Black"
 msgstr "Forhåndstræk for sort"
 
-#: xoptions.c:591
+#: xoptions.c:592
 msgid "First Black Move:"
 msgstr "Sorts første træk:"
 
-#: xoptions.c:593
+#: xoptions.c:594
 msgid "Alarm"
 msgstr "Alarm"
 
-#: xoptions.c:594
+#: xoptions.c:595
 msgid "Alarm Time (msec):"
 msgstr "Alarmtid (millisekunder):"
 
-#: xoptions.c:596
+#: xoptions.c:597
 msgid "Colorize Messages"
 msgstr "Farv meddelelser"
 
-#: xoptions.c:597
+#: xoptions.c:598
 msgid "Shout Text Colors:"
 msgstr "Tekstfarver for råb:"
 
-#: xoptions.c:598
+#: xoptions.c:599
 msgid "S-Shout Text Colors:"
 msgstr "Tekstfarver for s-råb:"
 
-#: xoptions.c:599
+#: xoptions.c:600
 msgid "Channel #1 Text Colors:"
 msgstr "Tekstfarver for kanal nr. 1:"
 
-#: xoptions.c:600
+#: xoptions.c:601
 msgid "Other Channel Text Colors:"
 msgstr "Tekstfarver for andre kanaler:"
 
-#: xoptions.c:601
+#: xoptions.c:602
 msgid "Kibitz Text Colors:"
 msgstr "Tekstfarver for kommentar:"
 
-#: xoptions.c:602
+#: xoptions.c:603
 msgid "Tell Text Colors:"
 msgstr "Tekstfarver for tale:"
 
-#: xoptions.c:603
+#: xoptions.c:604
 msgid "Challenge Text Colors:"
 msgstr "Tekstfarver for udfordring:"
 
-#: xoptions.c:604
+#: xoptions.c:605
 msgid "Request Text Colors:"
 msgstr "Tekstfarver for forespørgsel:"
 
-#: xoptions.c:605
+#: xoptions.c:606
 msgid "Seek Text Colors:"
 msgstr "Tekstfarver for søgning:"
 
-#: xoptions.c:609
+#: xoptions.c:610
 msgid "Exact position match"
 msgstr "Eksakt stilling"
 
-#: xoptions.c:609
+#: xoptions.c:610
 msgid "Shown position is subset"
 msgstr "Viste stilling er en delmængde"
 
-#: xoptions.c:609
+#: xoptions.c:610
 msgid "Same material with exactly same Pawn chain"
 msgstr "Samme materiale med samme bondestruktur"
 
-#: xoptions.c:610
+#: xoptions.c:611
 msgid "Same material"
 msgstr "Samme materiale"
 
-#: xoptions.c:610
+#: xoptions.c:611
 msgid "Material range (top board half optional)"
 msgstr "Materiale-interval (øverste halvdel af brættet valgfrit)"
 
-#: xoptions.c:610
+#: xoptions.c:611
 msgid "Material difference (optional stuff balanced)"
 msgstr "Materiale-forskel (balanceret valgfrit materiale)"
 
-#: xoptions.c:622
+#: xoptions.c:623
 msgid "Auto-Display Tags"
 msgstr "Automatisk visning af partidata"
 
-#: xoptions.c:623
+#: xoptions.c:624
 msgid "Auto-Display Comment"
 msgstr "Automatisk visning af kommentarer"
 
-#: xoptions.c:624
+#: xoptions.c:625
 msgid ""
 "Auto-Play speed of loaded games\n"
 "(0 = instant, -1 = off):"
@@ -2415,12 +2444,12 @@ msgstr ""
 "Hastighed af gennemspilning af indlæste partier\n"
 "(0 = øjeblikkeligt, -1 fra):"
 
-#: xoptions.c:625
+#: xoptions.c:626
 msgid "Seconds per Move:"
 msgstr "Sekunder pr. træk:"
 
 # Ingen grund til ikke at bruge stort begyndelsesbogstav her.
-#: xoptions.c:626
+#: xoptions.c:627
 msgid ""
 "\n"
 "options to use in game-viewer mode:"
@@ -2428,7 +2457,7 @@ msgstr ""
 "\n"
 "Indstillinger til brug ved gennemkigning af partier:"
 
-#: xoptions.c:628
+#: xoptions.c:629
 msgid ""
 "\n"
 "Thresholds for position filtering in game list:"
@@ -2436,472 +2465,507 @@ msgstr ""
 "\n"
 "Grænseværdier for stillingsfiltrering i partiliste:"
 
-#: xoptions.c:629
+#: xoptions.c:630
 msgid "Elo of strongest player at least:"
 msgstr "Stærkeste spillers rating er mindst:"
 
-#: xoptions.c:630
+#: xoptions.c:631
 msgid "Elo of weakest player at least:"
 msgstr "Svageste spillers rating er mindst:"
 
-#: xoptions.c:631
+#: xoptions.c:632
 msgid "No games before year:"
 msgstr "Ingen partier før år:"
 
-#: xoptions.c:632
+#: xoptions.c:633
 msgid "Minimum nr consecutive positions:"
 msgstr "Mindste antal stillinger i følge ad gangen:"
 
-#: xoptions.c:633
+#: xoptions.c:634
 msgid "Seach mode:"
 msgstr "Søgemetode:"
 
-#: xoptions.c:634
+#: xoptions.c:635
 msgid "Also match reversed colors"
 msgstr "Match også omvendte farver"
 
-#: xoptions.c:635
+#: xoptions.c:636
 msgid "Also match left-right flipped position"
 msgstr "Match også spejlvendt stilling"
 
-#: xoptions.c:640
+#: xoptions.c:641
 msgid "Auto-Save Games"
 msgstr "Gem partier automatisk"
 
-#: xoptions.c:641
+#: xoptions.c:642
 msgid "Save Games on File:"
 msgstr "Gem partier i filen:"
 
-#: xoptions.c:642
+#: xoptions.c:643
 msgid "Save Final Positions on File:"
 msgstr "Gem slutstillinger i filen:"
 
-#: xoptions.c:643
+#: xoptions.c:644
 msgid "PGN Event Header:"
 msgstr "Event-tekst i PGN-fil:"
 
-#: xoptions.c:644
+#: xoptions.c:645
 msgid "Old Save Style (as opposed to PGN)"
 msgstr "Gammel gemmestil (i modsætning til PGN)"
 
-#: xoptions.c:645
+#: xoptions.c:646
 msgid "Include Number Tag in tourney PGN"
 msgstr "Brug partinumre i PGN-fil for turnering"
 
-#: xoptions.c:646
+#: xoptions.c:647
 msgid "Save Score/Depth Info in PGN"
 msgstr "Gem score/dybde-information i PGN"
 
-#: xoptions.c:647
+#: xoptions.c:648
 msgid "Save Out-of-Book Info in PGN           "
 msgstr "Gem ud af åbningsbog-info i PGN      "
 
-#: xoptions.c:652
+#: xoptions.c:653
 msgid "No Sound"
 msgstr "Ingen lyd"
 
-#: xoptions.c:653
+#: xoptions.c:654
 msgid "Default Beep"
 msgstr "Standard bip"
 
-#: xoptions.c:654
+#: xoptions.c:655
 msgid "Above WAV File"
 msgstr "WAV-filen ovenfor"
 
-#: xoptions.c:655
+#: xoptions.c:656
 msgid "Car Horn"
 msgstr "Bilhorn"
 
-#: xoptions.c:656
+#: xoptions.c:657
 msgid "Cymbal"
 msgstr "Bækken"
 
-#: xoptions.c:657
+#: xoptions.c:658
 msgid "Ding"
 msgstr "Ding"
 
-#: xoptions.c:658
+#: xoptions.c:659
 msgid "Gong"
 msgstr "Gongon"
 
-#: xoptions.c:659
+#: xoptions.c:660
 msgid "Laser"
 msgstr "Laser"
 
-#: xoptions.c:660
+#: xoptions.c:661
 msgid "Penalty"
 msgstr "Straffe"
 
-#: xoptions.c:661
+#: xoptions.c:662
 msgid "Phone"
 msgstr "Telefon"
 
-#: xoptions.c:662
+#: xoptions.c:663
 msgid "Pop"
 msgstr "Plop"
 
-#: xoptions.c:663
+#: xoptions.c:664
 msgid "Slap"
 msgstr "Slag"
 
-#: xoptions.c:664
+#: xoptions.c:665
 msgid "Wood Thunk"
 msgstr "Dunk"
 
-#: xoptions.c:666
+#: xoptions.c:667
 msgid "User File"
 msgstr "Brugerfil"
 
-#: xoptions.c:695
+#: xoptions.c:696
 msgid "Sound Program:"
 msgstr "Lydprogram:"
 
-#: xoptions.c:696
+#: xoptions.c:697
 msgid "Sounds Directory:"
 msgstr "Lydkatalog:"
 
-#: xoptions.c:697
+#: xoptions.c:698
 msgid "User WAV File:"
 msgstr "Bruger WAV-fil:"
 
-#: xoptions.c:698
+#: xoptions.c:699
 msgid "Try-Out Sound:"
 msgstr "Afprøv lyd:"
 
-#: xoptions.c:699
+#: xoptions.c:700
 msgid "Play"
 msgstr "Afspil"
 
-#: xoptions.c:700
+#: xoptions.c:701
 msgid "Move:"
 msgstr "Træk:"
 
-#: xoptions.c:701
+#: xoptions.c:702
 msgid "Win:"
 msgstr "Gevinst:"
 
-#: xoptions.c:702
+#: xoptions.c:703
 msgid "Lose:"
 msgstr "Tab:"
 
-#: xoptions.c:703
+#: xoptions.c:704
 msgid "Draw:"
 msgstr "Remis:"
 
-#: xoptions.c:704
+#: xoptions.c:705
 msgid "Unfinished:"
 msgstr "Uafsluttet:"
 
-#: xoptions.c:705
+#: xoptions.c:706
 msgid "Alarm:"
 msgstr "Alarm:"
 
-#: xoptions.c:706
+#: xoptions.c:707
 msgid "Shout:"
 msgstr "Råb:"
 
-#: xoptions.c:707
+#: xoptions.c:708
 msgid "S-Shout:"
 msgstr "S-råb:"
 
-#: xoptions.c:708
+#: xoptions.c:709
 msgid "Channel:"
 msgstr "Kanal:"
 
-#: xoptions.c:709
+#: xoptions.c:710
 msgid "Channel 1:"
 msgstr "Kanal 1:"
 
-#: xoptions.c:710
+#: xoptions.c:711
 msgid "Tell:"
 msgstr "Tale:"
 
-#: xoptions.c:711
+#: xoptions.c:712
 msgid "Kibitz:"
 msgstr "Kommentar:"
 
-#: xoptions.c:712
+#: xoptions.c:713
 msgid "Challenge:"
 msgstr "Udfodring:"
 
-#: xoptions.c:713
+#: xoptions.c:714
 msgid "Request:"
 msgstr "Forespøgsel:"
 
-#: xoptions.c:714
+#: xoptions.c:715
 msgid "Seek:"
 msgstr "Søgning:"
 
-#: xoptions.c:801
+#: xoptions.c:802
 msgid "White Piece Color:"
 msgstr "Farve for hvide brikker:"
 
 #. TRANSLATORS: R = single letter for the color red
-#: xoptions.c:804 xoptions.c:813 xoptions.c:819 xoptions.c:825 xoptions.c:831
-#: xoptions.c:837
+#: xoptions.c:805 xoptions.c:814 xoptions.c:820 xoptions.c:826 xoptions.c:832
+#: xoptions.c:838
 msgid "R"
 msgstr "R"
 
 #. TRANSLATORS: G = single letter for the color green
-#: xoptions.c:806 xoptions.c:814 xoptions.c:820 xoptions.c:826 xoptions.c:832
-#: xoptions.c:838
+#: xoptions.c:807 xoptions.c:815 xoptions.c:821 xoptions.c:827 xoptions.c:833
+#: xoptions.c:839
 msgid "G"
 msgstr "G"
 
 #. TRANSLATORS: B = single letter for the color blue
-#: xoptions.c:808 xoptions.c:815 xoptions.c:821 xoptions.c:827 xoptions.c:833
-#: xoptions.c:839
+#: xoptions.c:809 xoptions.c:816 xoptions.c:822 xoptions.c:828 xoptions.c:834
+#: xoptions.c:840
 msgid "B"
 msgstr "B"
 
 #. TRANSLATORS: D = single letter to make a color darker
-#: xoptions.c:810 xoptions.c:816 xoptions.c:822 xoptions.c:828 xoptions.c:834
-#: xoptions.c:840
+#: xoptions.c:811 xoptions.c:817 xoptions.c:823 xoptions.c:829 xoptions.c:835
+#: xoptions.c:841
 msgid "D"
 msgstr "M"
 
-#: xoptions.c:811
+#: xoptions.c:812
 msgid "Black Piece Color:"
 msgstr "Farve for sorte brikker:"
 
-#: xoptions.c:817
+#: xoptions.c:818
 msgid "Light Square Color:"
 msgstr "Farve for lyse felter:"
 
-#: xoptions.c:823
+#: xoptions.c:824
 msgid "Dark Square Color:"
 msgstr "Farve for mørke felter:"
 
-#: xoptions.c:829
+#: xoptions.c:830
 msgid "Highlight Color:"
 msgstr "Farve til fremhævelse:"
 
-#: xoptions.c:835
+#: xoptions.c:836
 msgid "Premove Highlight Color:"
 msgstr "Farve til forhåndstræk:"
 
-#: xoptions.c:841
+#: xoptions.c:842
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
 msgstr "Ombyt brikker som i shogi    (Farvede knapper gendanner standard)"
 
-#: xoptions.c:843
+#: xoptions.c:844
 msgid "Mono Mode"
 msgstr "Monokrom-tilstand"
 
-#: xoptions.c:844
+#: xoptions.c:845
 msgid "Line Gap ( -1 = default for board size):"
 msgstr "Mellemrum mellem felter (-1 = standard for brætstørrelsen):"
 
-#: xoptions.c:845
+#: xoptions.c:846
 msgid "Use Board Textures"
 msgstr "Brug brætteksturer"
 
-#: xoptions.c:846
+#: xoptions.c:847
 msgid "Light-Squares Texture File:"
 msgstr "Teksturfil for lyse felter:"
 
-#: xoptions.c:847
+#: xoptions.c:848
 msgid "Dark-Squares Texture File:"
 msgstr "Teksturfil for mørke felter:"
 
-#: xoptions.c:848
+#: xoptions.c:849
 msgid "Directory with Bitmap Pieces:"
 msgstr "Katalog med bitmap-brikker:"
 
-#: xoptions.c:849
+#: xoptions.c:850
 msgid "Directory with Pixmap Pieces:"
 msgstr "Katalog med pixmap-brikker:"
 
-#: xoptions.c:1043
+#: xoptions.c:1044
 msgid "Engine has no options"
 msgstr "Skakprogrammet har ingen tilvalg"
 
-#: xoptions.c:1375
+#: xoptions.c:1376
 msgid "ICS Options"
 msgstr "ICS-indstillinger"
 
-#: xoptions.c:1382
+#: xoptions.c:1383
 msgid "Load Game Options"
 msgstr "Indstillinger for indlæsning af parti"
 
-#: xoptions.c:1388
+#: xoptions.c:1389
 msgid "Save Game Options"
 msgstr "Indstillinger for gemning af parti"
 
-#: xoptions.c:1396
+#: xoptions.c:1397
 msgid "Sound Options"
 msgstr "Lydindstillinger"
 
-#: xoptions.c:1402
+#: xoptions.c:1403
 msgid "Board Options"
 msgstr "Brætindstillinger"
 
-#: xoptions.c:1408
+#: xoptions.c:1409
 msgid "Adjudicate non-ICS Games"
 msgstr "Døm ikke-ICS partier"
 
-#: xoptions.c:1416
+#: xoptions.c:1417
 msgid "Common Engine Settings"
 msgstr "Indstillinger for skakprogrammer"
 
-#: xoptions.c:1422
+#: xoptions.c:1423
 msgid "New Variant"
 msgstr "Ny variant"
 
-#: xoptions.c:1429
+#: xoptions.c:1430
 msgid "General Options"
 msgstr "Generelle indstillinger"
 
-#: xoptions.c:1440
+#: xoptions.c:1441
 msgid "Match Options"
 msgstr "Matchindstillinger"
 
-#: xoptions.c:1543
+#: xoptions.c:1544
 msgid "clear"
 msgstr "ryd"
 
-#: xoptions.c:1544 xoptions.c:1601
+#: xoptions.c:1545 xoptions.c:1602
 msgid "save changes"
 msgstr "gem ændringer"
 
-#: xoptions.c:1609
+#: xoptions.c:1610
 msgid "Edit book"
 msgstr "Redigér åbningsbog"
 
-#: xoptions.c:1651
+#: xoptions.c:1652
 msgid "ICS input box"
 msgstr "ICS-inputboks"
 
-#: xoptions.c:1676
+#: xoptions.c:1677
 msgid "Type a move"
 msgstr "Tast et træk"
 
-#: xoptions.c:1714
+#: xoptions.c:1715
 msgid "Engine Settings"
 msgstr "Indstillinger for skakprogram"
 
-#: xoptions.c:1739
+#: xoptions.c:1740
 msgid "Select engine from list:"
 msgstr "Vælg skakprogram fra liste:"
 
-#: xoptions.c:1740
+#: xoptions.c:1741
 msgid "or specify one below:"
 msgstr "eller specificér en herunder:"
 
-#: xoptions.c:1741
+#: xoptions.c:1742
 msgid "Nickname (optional):"
 msgstr "Kaldenavn (ikke nødvendigt):"
 
-#: xoptions.c:1742
+#: xoptions.c:1743
 msgid "Use nickname in PGN player tags of engine-engine games"
 msgstr "Brug kaldenavnet som spillerbetegnelse i PGN-filer"
 
-#: xoptions.c:1743
+#: xoptions.c:1744
 msgid "Engine Directory:"
 msgstr "Skakprogramkatalog:"
 
-#: xoptions.c:1744
+#: xoptions.c:1745
 msgid "Engine Command:"
 msgstr "Skakprogramkommando:"
 
-#: xoptions.c:1745
+#: xoptions.c:1746
 msgid "(Directory will be derived from engine path when empty)"
 msgstr "(Katalog vil blive udledt fra programstien hvis ikke udfyldt)"
 
-#: xoptions.c:1746
+#: xoptions.c:1747
 msgid "UCI"
 msgstr "UCI"
 
-#: xoptions.c:1747
+#: xoptions.c:1748
 msgid "WB protocol v1 (do not wait for engine features)"
 msgstr "WB-protokol v1 (brug ikke særlige skakprogramfunktioner)"
 
-#: xoptions.c:1748
+#: xoptions.c:1749
 msgid "Must not use GUI book"
 msgstr "Må ikke bruge GUI's åbningsbog"
 
-#: xoptions.c:1749
+#: xoptions.c:1750
 msgid "Add this engine to the list"
 msgstr "Tilføj dette skakprogram til listen"
 
-#: xoptions.c:1750
+#: xoptions.c:1751
 msgid "Force current variant with this engine"
 msgstr "Brug aktuel variant med dette skakprogram"
 
-#: xoptions.c:1751
+#: xoptions.c:1752
 msgid "Load mentioned engine as"
 msgstr "Indlæs skakprogrammet som"
 
-#: xoptions.c:1765
+#: xoptions.c:1766
 msgid "Load engine"
 msgstr "Indlæs skakprogram"
 
-#: xoptions.c:1784
+#: xoptions.c:1785
 msgid "shuffle"
 msgstr "bland brikker"
 
-#: xoptions.c:1785
+#: xoptions.c:1786
 msgid "Start-position number:"
 msgstr "Startstillingsnummer:"
 
-#: xoptions.c:1786
+#: xoptions.c:1787
 msgid "randomize"
 msgstr "vælg tilfældigt"
 
-#: xoptions.c:1787
+#: xoptions.c:1788
 msgid "pick fixed"
 msgstr "vælg bestemt"
 
-#: xoptions.c:1804
+#: xoptions.c:1805
 msgid "New Shuffle Game"
 msgstr "Nyt blandet parti"
 
 # Stort begyndelsesbogstav med vilje
-#: xoptions.c:1854
+#: xoptions.c:1855
 msgid "classical"
 msgstr "Klassisk"
 
 # Stort begyndelsesbogstav med vilje
-#: xoptions.c:1855
+#: xoptions.c:1856
 msgid "incremental"
 msgstr "Tillægstid"
 
 # Stort begyndelsesbogstav med vilje
-#: xoptions.c:1856
+#: xoptions.c:1857
 msgid "fixed max"
 msgstr "Maks. pr. træk"
 
-#: xoptions.c:1857
+#: xoptions.c:1858
 msgid "Moves per session:"
 msgstr "Træk pr.  tidsperiode:"
 
-#: xoptions.c:1858
+#: xoptions.c:1859
 msgid "Initial time (min):"
 msgstr "Tid fra start (minutter):"
 
-#: xoptions.c:1859
+#: xoptions.c:1860
 msgid "Increment or max (sec/move):"
 msgstr "Tillægstid eller maks. pr. træk (sekunder):"
 
-#: xoptions.c:1860
+#: xoptions.c:1861
 msgid "Time-Odds factors:"
 msgstr "Tidsforkortelses-faktorer:"
 
-#: xoptions.c:1861
+#: xoptions.c:1862
 msgid "Engine #1"
 msgstr "Skakprogram nr. 1"
 
-#: xoptions.c:1862
+#: xoptions.c:1863
 msgid "Engine #2 / Human"
 msgstr "Skakprogram nr. 2 / menneske"
 
-#: xoptions.c:1873 xoptions.c:1876 xoptions.c:1881 xoptions.c:1882
+#: xoptions.c:1874 xoptions.c:1877 xoptions.c:1882 xoptions.c:1883
 msgid "Unused"
 msgstr "Ubrugt"
 
-#: xoptions.c:1894
+#: xoptions.c:1895
 msgid "Time Control"
 msgstr "Betænkningstid"
+
+#: args.h:782
+#, c-format
+msgid "%s in settings file\n"
+msgstr ""
+
+#: args.h:792
+#, c-format
+msgid "Bad integer value %s"
+msgstr ""
+
+#: args.h:883 args.h:1101
+#, fuzzy, c-format
+msgid "Unrecognized argument %s"
+msgstr "%s: ikke genkendt boardSize-navn %s\n"
+
+#: args.h:912
+#, c-format
+msgid "No value provided for argument %s"
+msgstr ""
+
+#: args.h:972
+#, c-format
+msgid "Incomplete \\ escape in value for %s"
+msgstr ""
+
+#: args.h:1056
+#, fuzzy, c-format
+msgid "Failed to open indirection file %s"
+msgstr "Åbning af fil '%s' mislykkedes\n"
+
+#: args.h:1073
+#, fuzzy, c-format
+msgid "Unrecognized boolean argument value %s"
+msgstr "%s: ikke genkendt boardSize-navn %s\n"
 
 #~ msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 #~ msgstr "AnimateMove: brik %d hopper fra %d,%d til %d,%d\n"
