@@ -444,6 +444,10 @@ void SaveSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void SaveOnExitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void InfoProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ManProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void GuideProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void HomePageProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void NewsPageProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void BugReportProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void HintProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -785,6 +789,11 @@ MenuItem optionsMenu[] = {
 MenuItem helpMenu[] = {
     {N_("Info XBoard"),     "Info XBoard", InfoProc},
     {N_("Man XBoard   F1"), "Man XBoard", ManProc},
+    {"----", NULL, NothingProc},
+    {N_("XBoard Home Page"), "Home Page", HomePageProc},
+    {N_("On-line User Guide"), "User Guide", GuideProc},
+    {N_("Development News"), "News Page", NewsPageProc},
+    {N_("e-Mail Report Bug"), "Bug Report", BugReportProc},
     {"----", NULL, NothingProc},
     {N_("About XBoard"), "About XBoard", AboutProc},
     {NULL, NULL, NULL}
@@ -6658,6 +6667,30 @@ void
 BookProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     BookEvent();
+}
+
+void
+BugReportProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{
+    system("xdg-open mailto:bug-xboard@gnu.org");
+}
+
+void
+GuideProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{
+    system("xdg-open http://www.gnu.org/software/xboard/user_guide/UserGuide.html");
+}
+
+void
+HomePageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{
+    system("xdg-open http://www.gnu.org/software/xboard/");
+}
+
+void
+NewsPageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{
+    system("xdg-open http://www.gnu.org/software/xboard/whats_new/portal.html");
 }
 
 void
