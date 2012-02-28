@@ -32,6 +32,7 @@
 -recentEngines 4
 -gameListW 500
 -gameListH 300
+-stickyWindows false
 ;
 ; Behavior
 ;
