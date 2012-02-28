@@ -146,7 +146,7 @@ dist_bitmaps_DATA = \
 ### directory and files for pixmaps
 
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
-dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
+dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm pixmaps/board48.xpm
 
 ### directory and files for sound files
 
