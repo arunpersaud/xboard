@@ -740,8 +740,14 @@ With this option, auxiliary windows (Game List, Engine Output, Move List and Eva
 will move together with it when the latter is dragged over the screen.
 Such 'docked' windows will also be repositioned and resized as needed
 to preserve their tiling relationship with each other and the main window,
-whenever the latter changes size because of a variant change
-.
+whenever the latter changes size because of a variant change.
+</p>
+<p>
+Whether this feature works can depend on your system's window manager.
+XBoard will order the repositioning of the windows as needed,
+but this obviously can only have the desired effect if the window manager actually obeys such orders.
+Some window managers don't, so it might be that this feature does not work at all, or causes erratic behavior.
+The best solution in that case is to leave it switched off.
 </p>
 
 </div><!-- for id="content", starts in the include above -->
