@@ -197,7 +197,7 @@ endif
 uninstall-mime-database:
 if ENABLE_UPDATE_MIMEDB	
 	-if test -z "$(DESTDIR)" -a -n "$(XDG_MIME)" -a -n "$(XDG_DESKTOP_MENU)" -a -n "$(XDG_ICON_RESOURCE)" ; then \
-		$(XDG-MIME) uninstall --mode system --novendor xboard.xml;\
+		$(XDG_MIME) uninstall --mode system --novendor xboard.xml;\
 		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-pgn-viewer.desktop;\
 		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-fen-viewer.desktop;\
 		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-tourney.desktop;\
