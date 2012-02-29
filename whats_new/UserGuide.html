@@ -1,0 +1,308 @@
+<h2>XBoard user guide</h2>
+<p>
+Xboard consists of a main window, displaying a chess board and clocks,
+as well as a number of auxiliary windows dedicated to holding additional,
+not strictly necessary information.
+Depending on what you are using it for 
+(game viewer, playing on internet server, playing with engine(s)),
+that information could be useful or irrelevant,
+and you can open or close these windows accordingly.
+The auxiliary windows are:
+</p>
+<ul>
+<li><a href="#tag-A1">Game list</a>, giving the table of contents of the loaded PGN file</li>
+<li><a href="#tag-A2">Comment window</a>, where you can view or edit comments (and variations) to the move</li>
+<li><a href="#tag-A3">Tags window</a>, where you can see and edit the tags of the currently loaded game</li>
+<li><a href="#tag-A4">Move list</a>, where the moves of the current game are shown as text</li>
+<li><a href="#tag-A5">Engine output</a>, where you can see the variations an engine is dreaming up</li>
+<li><a href="#tag-A6">Evaluation graph</a>, which shows you how the engine score evolves over the current game</li>
+<li><a href="#tag-A7">ICS interaction console</a>, a terminal window where you communicate with an internet server</li>
+</ul>
+<p>
+These auxiliary windows can be kept open all the time, and tiled so they are always in view,
+without disturbing the operation of the main (chess-boadrd) window.
+In addition, there are a large number of dialog windows that grab the full attention of the user interface,
+so that the block operation of anything else.
+These are used for altering the settings of XBoard during the session.
+</p>
+<p>
+Below we will first describe the operation of the main and auxiliary windows in detail.
+After that the function of the various menu dialogs will be discussed.
+</p>
+
+<table cellpadding="20"><tr><td valign="top">
+<h3>The main XBoard window</h3>
+<p>
+The main window contains several elements:
+</p>
+<ul>
+<li>A title bar, actively used to display information</li>
+<li>A menu bar, through which you can control XBoard</li>
+<li>Two chess clocks, for white and black</li>
+<li>An optional button bar, with which you an navigate through the current game</li>
+<li>A single-line message field, where moves, variation, and sometimes texts are displayed</li>
+<li>An area where the chess board (and sometimes other stuff) is drawn</li>
+</ul>
+<p>
+The elements are mostly operated using the mouse, sometimes in combination with the keyboard.
+Many keystrokes have been assigned a shortcut function, however, as an alternative to operating the menu bar with the mouse.
+It is mainly non-printable keystrokes involving Alt and Ctrl key that act as shortcuts;
+typing printable characters make an input box pop up where you can finish the typing while you see it,
+to type stuff to XBoard (e.g. chess moves).
+The menu bar is otherwise a quite normal menu bar, that you can operate both with left and right mouse button.
+</p>
+<p>
+The message field above the board has no input function, 
+and is only used to display simple error messages (such as "It is not your turn"),
+or alerts ("draw pawn backwards to under-promote"),
+the last move played,
+or the latest 'principal variation' computed by an engine.
+</p>
+<p>
+The button bar to the right of the message field
+is used to step through the currently loaded game, move by move, or directly to beginning or end.
+This can also be done through the menu (very clumsy!) or with the arrow keys on the keyboard (probably preferable).
+</p>
+</td><td valign ="top">
+<img src="4.5.0/Spartan.png">
+</td></tr></table>
+<p>
+The principal element of the main window is the chess board.
+Its main function is of course to enter chess moves, but it has several other functions as well.
+To move pieces, you use the left mouse button (button 1).
+You can do this either by first clicking the piece you want to move,
+and then the square you want to move it to ('click-click move'),
+or by 'grabbing' the piece by pressing the mouse button,
+drag it to its destination square, and release the mouse button there ('drag-drop moving').
+Normally XBoard would show you the piece being dragged around 
+(although this 'animate dragging' can be switched off).
+The move you just made can be highlighted by drawing colored borders around the from- and to-square,
+or by drawing an arrow between them.
+</p>
+<p>
+With click-click moving the first click selects the piece, and such a selected piece will already be highlighted.
+You also would get this effect after dragging around a piece, but releasing it on its original square;
+this simply counts as a static click on the piece.
+You still have the possibility to select another piece, by clicking it:
+only a clicked empty square or opponent piece will be interpreted as a to-square.
+You can also deselect the selected piece by clicking it, in which case the highlight on it will go off.
+</p>
+<p>
+Keeping the Shift key down while entering a move gives it a special meaning:
+the move is in that case not added to the mainline of the game (possibly truncating it first),
+but as a variation, so that you can Revert to the original game later.
+</p>
+<p>
+<b>Variation board -</b> A right-click (anywhere) on the chess board will normally be taken as a request to 'walk' the latest principal variation indicated by an engine.
+This would normally be the one displayed in the message field.
+By keeping the right mouse button (button 3) down, and moving the mouse vertically,
+XBoard will start to step through the moves indicated by the engine,
+so you see them played out on the chess board.
+(This is sometimes called a 'variation board'.)
+You can continue to step forward and backward through the engine line as long as you keep the button down.
+</p>
+<p>
+When setting up a position ('Edit Position mode'), things work a bit differently, 
+because you are not bound by any chess rules in that case.
+In a click-click move any second click would be a to-square,
+even if it captures a piece of your own.
+You will also be able to move empty squares and even 'capture' pieces with them,
+or drag pieces off the board to get rid of them.
+But the most important difference is the function of the right-click,
+which now is used to put a new piece on the square you clicked.
+Depending on the settings, this can either go through popping up a menu from which you select,
+or by making a vertical sweep with the mouse, keeping button 3 down,
+which will make the identity of the newly introduced piece cycle through all possible choices,
+so that you can release the button when you see the one you want ('sweep selection').
+This will always start by dropping a Pawn in the clicked square (as you typically need those most);
+this will be a black Pawn unless you kept the Shift key pressed, (or use button 2),
+in which case it starts with a white Pawn.
+</p>
+<table cellpadding="20"><tr><td valign="top">
+<img src="4.5.0/seekgraph.png">
+</td><td valign ="top">
+<p>
+The clocks are mainly meant as output fields, but in some situations they also accept mouse clicks.
+What the clicks do varies.
+They can be taken as a signal you want to claim the game because the opponent has flagged
+(when his clock displays a negative number).
+When you keep the Shift key pressed during the click, you can adjust the clocks by adding (right-click) or subtracting (left-click) a minute.
+In situations where this could be meaningful, clicking the clock of the side that does not have the move will transfer the turn to him.
+(Such turn passing is obviously illegal in chess, so you cannot do that while playing a game,
+but in analysis or for setting up a position, it ican be useful and is allowed.)
+When setting up a position, clicking the clock of the side that already has the move
+will clear the board.
+</p>
+<p>
+<b>Seek graph -</b> When logged in to an Internet Chess Server, the area where the board is normally drawn doubles as 'seek graph',
+where you can see who is looking for what type of game.
+This only applies when the board is not in use, i.e. when you are not playing, examining or observing a game.
+In this 'idle' mode, left-clicking the board anywhere will request information from the ICS and draw the seek graph accordingly.
+Left-clicking on a dot in the seek graph makes you challenge the corresponding player,
+while left-clicking off-dots would erase the seek graph, and replace it by the normal board display.
+Right-clicking the seek graph off-dots would refresh it (only needed on ICS that cannot do that automatically).
+On a busy server dots can sometimes cluster so densely you no longer can reach those that hide behind others;
+in this case right-clicking on a dot would 'push it to the back', so that dots behind it now get to the foreground.
+When you hover over a dot the message window will show you the details of the corresponding seek ad,
+and an exclamation point there will warn you there were dots hiding behind it.
+</p>
+</td></tr></table>
+<ul>
+<li>Detour Under-promotion (General Options) determines if a promotion menu will pop up on promotion moves</li>
+<li>-pieceMenu (command-line option) determines if a right-click invokes a menu in Edit Position mode</li>
+<li>Drop Menu (General Options) determines if a right-click in bughouse invokes a drop menu</li>
+<li>Animate Dragging (General Options) determines if you will see the piece being dragged</li>
+<li>Seek Graph (ICS Options) determines if left-clicks can call up the seek graph</li>
+<li>Highlight Last Move (General Options) controls if clicking squares highlights them</li>
+<li>Highlight with Arrow (General Options) controls if an arrow is drawn between from- and to-square</li>
+<li>One-click moving (General Options) can make a piece move by clicking only from- or to-square</li>
+<li>Show Target Squares (General Options) marks square where the selected / dragged piece can move to</li>
+<li>Hide Thinking from Human (General Options) determines if engine thinking is displayed in the message field</li>
+<li>-variations (command-line option) determines whether you can enter variations</li>
+<li>-showButtonBar (command-line option) determines whether the navigation buttons are present</li>
+</ul>
+
+<h3><a name="tag-A2">Comment window</h3>
+<table cellpadding="20"><tr><td valign="top">
+<p>
+The Comment window displays comments and variations from the PGN file belonging to the current move,
+and will automatically update when you step through the game.
+Left clicks in the Comment window are reserved for the normal editing functions (selecting, drag-drop edition).
+The right button can be used to click on a PGN variation
+(a sequence of alternative moves enclosed in parentheses) on the current move.
+In this case XBoard will 'upgrade' this variation to become the main line of the curent game
+(the original main line being shelved in its memory, so you can 'Revert' to it later).
+You can then step through the variation to make it visible on the board.
+</p>
+<ul>
+<li>Auto-dispay comment (Load Options) causes automatic pop up whenever you encounter a commented move.</li>
+</ul>
+</td><td valign ="top">
+<img src="Comment.png">
+</td></tr></table>
+
+<h3><a name="tag-A5">Engine output</h3>
+<p>
+As its name suggests, the engine-output window is only useful when an engine is involved.
+(This an be can engine you connect to through an Internet Chess Server, however.)
+Engines print how they think the game would continue if poth sides play the moves the engine considers best,
+the so called 'Principal Variation',
+at ever increasing search depth.
+These PV lines are diplayed in the engine-output window, preceded by the search depth at which they were found,
+and the score assigned to them, (plus the less interesting time and number of positions searched).
+</p>
+<table cellpadding="20"><tr><td valign="top">
+<img src="4.4.0/EngOutXB.png">
+</td><td valign ="top">
+<p>
+Left clicks in the Engine Output window are reserved for the normal editing functions,
+although in this case only selecting for the purpose of copying would be a useful action.
+The right button can be used to click on a PV indicated by the engine.
+In this case that PV will be played out on the chess board when you move the mouse vertically with the button still down
+(i.e. use the main board as 'variation board').
+The behavior in analysis mode is a bit different from that in other modes:
+when you release the button, the position on the variation board becomes the new position to analyse,
+and all moves leading up to it will be added to the game.
+Because the variation walk will start in the position after the first PV move there,
+a static click on a PV would just make you play the suggested engine move.
+In other modes, walking a PV will start at the end of the PV, and never change the game.
+When you release the button, you will simply jump back to the original game.
+When an engine produces a move, XBoard would force you back to the real game anyway, even without releasing the button.
+</p>
+<p>
+Some engines support a multi-PV mode, where they don't only give continuations for the best move,
+but also for second-best, or more.
+In this case XBoard will print a header line above the PV's containing the words 'fewer' and 'more',
+and when you right-click on those, the number of moves the engine calculates will be decreased or increased.
+</p>
+</td></tr></table>
+
+<h3><a name="tag-A4">Move list</h3>
+<table cellpadding="20"><tr><td valign="top">
+<p>
+The Move List contains the game in SAN notation, with or without score/depth information included as comments to the moves.
+Left clicks in the Move List are reserved for the normal editing functions,
+although in this case only selecting for the purpose of copying would be a useful action.
+Right-clicking on a move (in WinBoard: left-double-clicking) will navigate you to the position after that move
+(i.e. display that position on the board, and allow you to step through the game from there).
+</p>
+<ul>
+<li>Scores in Move List (General Options) enables inclusion of engine score/depth</li>
+</ul>
+</td><td valign ="top">
+<img src="4.6.0/History.png">
+</td></tr></table>
+
+<h3><a name="tag-A6">Evaluation graph</h3>
+<table cellpadding="20"><tr><td valign="top">
+<img src="4.6.0/Zoom.png">
+</td><td valign ="top">
+<p>
+The evaluation graph displays how the engine score evolved over the game,
+either as a histogram, or (when space gets too tight), as a drawn line.
+If two engines are playing, each side has its own histogram / line,
+distinguishable by their color.
+Clicking in the graph navigates you to the position corrsponding to the point where you clicked.
+</p>
+<ul>
+<li>Zoom factor (General Options) set magnifiation of the {-1, 1} score range</li>
+<li>-evalThreshold (command-line option) minimum score to be considered different from 0</li>
+</ul>
+</td></tr></table>
+
+<h3><a name="tag-A1">Game List</h3>
+<p>
+The Game List displays a table of contents of the urrently loaded PGN file as a listbox.
+The lines in the listbox are composed of the PGN tags of the game,
+in a user-configurable way.
+Clicking on such a line would load the corresponding game, so you can navigate through it.
+The currently loaded game will be highlighted in the list.
+Using Up or Down arrow keys while the Game List window has focus will move the highlight to the previous / next game,
+while typing &lt;Enter> will load the game.
+</p>
+<table cellpadding="20"><tr><td valign="top">
+<p>
+The Game List window includes a number of controls at the bottom,
+to select a subset of the games for display in the window.
+A 'Filter' field allows you to enter a text, where then only header lines containing that text will b displayed.
+You can furthermore select on positions occurring in the game,
+through the 'Find Position' button.
+When you do that, only those games containing the position currently on the board
+(or enough like it, according to the matching criterea you specified in the Load Game Options dialog,
+reachable through the 'Thresholds' button)
+will remain in the list, in that case.
+</p>
+<ul>
+<li>(Game List Options) selects the PGN tags included in the header</li>
+<li>(Load Options) can set all kind of filter and position-search criteria</li>
+</ul>
+</td><td valign ="top">
+<img src="NewGameList.png">
+</td></tr></table>
+
+<h3><a name="tag-A3">Tags window</h3>
+<p>
+The Tags window is a text window that supports normal editing functions,
+but otherise has no special functions.
+It can be used to view or edit the PGN tags of the stored game.
+To save any changes brought about by editing, you have to press a button at the bottom of the window.
+</p>
+<ul>
+<li>Auto-display Tags (Load Options) cause automatic popup on loading a game</li>
+</ul>
+
+<h3><a name="tag-A1">Edit book</h3>
+<p>
+The Tags window is a text window that supports normal editing functions,
+but otherise has no special functions.
+It displays moves available for the current position (displayed on the board) in the currently installed opening book.
+To save any changes brought about by editing, you have to press a button at the bottom of the window.
+</p>
+<ul>
+<li>Polyglot Book (Common Engine Options) determines which book file we edit</li>
+</ul>
+
+<h3></h3>
+<p>
+</p>
+
