@@ -1,0 +1,580 @@
+<!--#include virtual="/server/html5-header.html" -->
+<title>XBoard - GNU Project - Free Software Foundation - NEWS</title>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
+<h2>What is new in Winboard_x?</h2>
+
+ <table cellpadding="20"><tr valign="top"><td>
+  <h4>New Features</h4>
+  <ul>
+   <li><a href="#tag-B1">Adjudicating engine-engine games</a></li>
+   <li><a href="#tag-A1">Using bitmaps for board textures</a></li>
+   <li><a href="#tag-A3">enhanced move highlighting (with arrows)</a></li>
+   <li><a href="#tag-A2">Using piece symbols from a chess font</a></li>
+   <li><a href="#tag-D1">Score and search depth in the PGN file</a></li>
+   <li><a href="#tag-D2">Did the engine get "out of book" well?</a></li>
+   <li><a href="#tag-C1">Move history window</a></li>
+   <li><a href="#tag-C2">Evaluation histogram window</a></li>
+   <li><a href="#tag-C3">Engine output window</a></li>
+   <li><a href="#tag-C4">Making four windows behave as one</a></li>
+   <li><a href="#tag-C5">A customizable game list</a></li>
+   <li><a href="#tag-B2">FRC (Fisher Random Chess, aka Chess960)</a></li>
+   <li><a href="#tag-A4">Paste anything with Ctrl-V</a></li>
+   <li><a href="#tag-E1">Overview of new options</a></li>
+
+
+  </ul>
+ </td><td valign="top">
+  <img src="../4.5.0/winboardF.png">
+ </td><td valign="top">
+  <p>
+   <a href="WinBoardF.html">Follow-up fork (4.3)</a>
+  </p>
+
+  <p>
+   <a href="http://www.ascotti.org/programming/chess/winboard_x.htm">Original Winboard_x website</a>
+  </p>
+  <p>
+   <a href="Winboard_x.html">Preceding release (4.2.7)</a>
+  </p>
+ </td></tr></table>
+
+  <h3><a name="tag-B1">Engine-game adjudication</a></h3>
+  <p>
+   To prevent games dragging on forever when neither of the engines want to settle for a draw,
+   games can be aborted (adjudicated draw) after a ertain number of moves.
+   Games can also be adjudiated win or loss when both engines agree that the score is above a certain value
+   for one of them, for 3 moves in a row.
+   To make this work, both engines should use the standard soreing convention (own point of view);
+   engines that don't can be corrected through the use of the boolean options -first/secondScoreIsAbsolute.
+  </p>
+  <p>
+   It is also possible to adjudicate engine-engine games manually, through the Action menu, as draw or win for white or black.
+  </p>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <h3><a name="tag-A1">Using arbitrary bitmaps for board squares</a></h3>
+  <p>
+    Winboard_x allows you to make the board look anyway you want by using arbitrary bitmaps
+    to cut the squares from. 
+    White and black squares are cut from independent files.
+    The -light/darkBackTextureFile options can specify these bitmaps files,
+    while -light/darkBackTextureMode options control how the orientation of the cut-out squares
+    is randomized to suggest larger variety.
+    On the right you see a board with a wood texture made this way.
+  </p>
+  <h3><a name="tag-A3">Line gap and arrow highlighting</a></h3>
+  <p>
+    The rather heavy black lines used by WinBoard for highlighting moves can interfere badly
+    with the aesthetic effect of the textures;
+    An option -overrideLineGap is therefore provided to overrule the default line width,
+    and set it to very narrow or completely absent.
+    This again makes it very difficult or impossible to see the square highlights,
+    so an option -highLigtMovesWithArrow is supplied as an alternative highlight method.
+  </p>
+  <h3><a name="tag-A2">Using true-type fonts to define the pieces</a></h3>
+  <p>
+   If you are tired of the built-in bitmaps, you can use a chess font to define alternativ piece symbols.
+   As true-type fonts are scalable, this in principle works for all board sizes with a single font.
+   (Except that for very small size the result is not pretty, so Winboard_x does not allow it below size petite.)
+   On the right you see pieces made by using the ChessMark font (obtained from enpassant.dk).
+  </p>
+ </td><td valign="top">
+  <img src="chessmark.gif">
+ </td></tr></table>
+
+ <h3><a name="tag-D1">Engine scores saved in the PGN file</a></h3>
+ <p>
+  Winboard_x captures the scores and depth reported in engine thinking output,
+  for inclusion in the PGN file under control by the option -pgnExtendedInfo). 
+  Obviously this requires the engine to send thinking output,
+  even when a human playing it would prefer not to see it above the board.
+  So the option -showThinking can no longer be used to suppress the output.
+  For that reason a new option -hideThinkingFromHuman is provided,
+  which allows you to suppress the displaying of the info, but not the sending.
+ </p>
+
+ <h3><a name="tag-D2">Out-of-book info in engine games</a></h3>
+ <p>
+  With an option -outOfBookInfoInPGN you can control the inclusion of an 'Annotator' tag in the PGN,
+  which will report the score at the first move where the engine was reporting a search depth.
+  (Presumably this was where it got out of book.)
+  This allows you to easily see whether the engine was unfairly treated by giving it a bad opening line.
+ </p>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <h3>Three Auxiliary Windows</h3>
+  <img src="petite.gif">
+ </td><td valign="top">
+  <h3><a name="tag-C3">The engine-output window</a></h3>
+  <p>
+   The engine-output window is the most complex auxiliary window at all.
+   It can consist of two panes (one for each engine), where it displays the thinking output of the engine.
+   Above those the name of the engine is printed, and icons to indicate the color they play, and what they are doing:
+   thinking, pondering or analyzing.
+   It also prints the engine search speed, in nodes per second.
+   When 'periodic updates' is enabled, it also displays the current move, end move count.
+  </p>
+  <h3><a name="tag-C2">The evaluation graph</a></h3>
+  <p>
+   A second auxiliary window is the Evaluation Graph. 
+   This displays the engine scores as a histogram when space permits, and as a line graph otherwise.
+   Two lines of user-configurable color do depict the score evolution of the two players.
+   Clicking on a point in the graph fast-forwards the game to the corresponding position.
+  </p>
+  <h3><a name="tag-C1">The move-history window</a></h3>
+  <p>
+   An auxiliary window is supplied to show the move history as free-format SAN.
+   Double-clicking on a move would fast-forward the game to the position where it was played.
+   An option -extraInfoInMoveHistory controls if score/depth info is displayed as comment behind the moves.
+  </p>
+ </td></tr></table>
+
+ <h3><a name="tag-C4">Glueing the windows together</a></h3>
+ <p>
+  The three auxiliary windows can be independently sized and positioned.
+  But if they touch each other, or the main window, thew will 'snap' together.
+  If you then move the main window, the other windows will follow it,
+  like the whole conglomerate forms a single window.
+  This behavior is controlled by the option -stickyWindows.
+ </p>
+
+<h3><a name="tag-C5">Configuring and selecting game-list headers</a></h3>
+<table cellpadding="20"><tr><td valign="top">
+ <p>
+  The header line that appears in the game list for each game can now be composed by the user from the PGN tags.
+  A new menu dialog allows him to pick the tags he likes, and sort them in any desired order.
+  This order will be stored in the settings file as the option -gameListTags,
+  where each tag is encoded by a single letter.
+ </p>
+ <table cellpadding="20"><tr><td valign="top">
+  <img src="FilterWB.png">
+ </td><td valign="top">
+ <p>
+  Another novelty is that there now is a 'Filter' field at the bottom of the Game List window.
+  If you type a text there, only game headers containing that text as a sub-string will be displayed in the game list.
+  This allows you, for instance, to select the games of a single player from a PGN with tourney results,
+  or all games that ended in a draw.
+ </p>
+ </td></tr></table>
+</td><td valign="top">
+ <img src="GLTagsWB.png">
+</td></tr></table>
+
+ <h3><a name="tag-A4">Pasting games and positions with Ctrl-V</a></h3>
+ <p>
+  In Winboard_x the standard 'paste' command Ctrl-V can be used to paste both games and positions into the board,
+  as it will be obvious whih of the two is currently on the clipboard.
+ </p>
+
+<table cellpadding="20"><tr><td valign="top">
+ <img src="Shuffle.png">
+</td><td valign="top">
+ <h3><a name="tag-B2">Shuffling the starting position of Chess960</a></h3>
+ <p>
+  In local mode WinBoard cannot count on an ICS to generate a starting position for him.
+  An item 'New FRC Game' in the file menu now pops up a dialog,
+  where the user can specify how he wants WinBoard to generate the opening position
+  (a new randomly picked position or every game,
+   or the same position for each game, picked randomly once or specified by the user by number.)
+ </p>
+</td></tr></table>
+
+<h3><a name="tag-E1">Overview of new command-line options</a></h3>
+<p>
+Below follows a table that lists the new features, 
+the command-line option needed to control them,
+and if there is a menu provided that can switch the option while WinBoard is running
+(command-line options exert their effect only at startup).
+</p>
+<table cellpadding="3" border="1"><tr><td width="220">
+      <h3>command-line option</h3>
+    </td><td>
+      <h3>description</h3>
+    </td><td width="250">
+      <h3>menu</h3>
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>ENGINE-ENGINE ADJUDICATION OPTIONS<strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -adjudicateLossThreshold 0 (*)
+    </td><td>
+      adjudicates engine-engine game based on score
+    </td><td>
+      Options -> Engine...
+  </td></tr><tr><td>
+      -adjudicateDrawMoves 0 (*)
+    </td><td>
+      adjudicate draw when game lasts too long
+    </td><td>
+      Options -> Engine..
+  </td></tr><tr><td>
+      -firstScoreAbs false
+      <br>
+      -secondScoreAbs false
+    </td><td>
+      Engine indicates score for white, even when playing black
+    </td><td>
+      
+  </td></tr><tr><td>
+      -
+    </td><td>
+      Adjudicate the game in progress as win to white, win to black, or draw
+    </td><td>
+      Action -> Adjudicate to White
+      <br>
+      Action -> Adjudicate to Black
+      <br>
+      Action -> Adjudicate Draw
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>TIME-CONTROL AND TIMING OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -delayBeforeQuit 0 (*)
+      <br>
+      -delayAfterQuit 0 (*)
+    </td><td>
+      timing parameter specifying how to terminate the engine processes
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>DISPLAY-LOOK OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -liteBackTextureFile "" (*)
+      <br>
+      -darkBackTextureFile "" (*)
+      <br>
+      -liteBackTextureMode 1 (*)
+      <br>
+      -darkBackTextureMode 1 (*)
+    </td><td>
+      Allows you to use any bitmap picture for displaying the board square
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -renderPiecesWithFont "" (*)
+    </td><td>
+      specifies a true-type Chess font to be used for piece symbols
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceToCharTable "" (*)
+    </td><td>
+      specifies which font character to use for the various piece types
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -overrideLineGap 1 (*)
+    </td><td>
+      controls the width of the black grid lines between squares
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceBackColorWhite #0 (*)
+      <br>
+      -fontPieceForeColorWhite #0 (*)
+      <br>
+      -fontPieceBackColorBlack #0 (*)
+      <br>
+      -fontPieceForeColorBlack #0 (*)
+    </td><td>
+      control piece colors in font-based rendering
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceSize 80 (*)
+    </td><td>
+      tunes the size of pieces in font-based rendering (% of square size)
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -highlightMoveWithArrow false (*)
+    </td><td>
+      draws a big arrow to indicate the move last played
+    </td><td>
+      Options -> General...
+  </td></tr><tr><td>
+      -highlightArrowColor #FFFF80 (*)
+    </td><td>
+      controls the color of the highlight arrow
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>(UCI) ENGINE OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -polyglotDir "" (*)
+    </td><td>
+      tells WinBoard where you installed Polyglot, for automatic invocation with UCI engines
+    </td><td>
+      Options -> Global Settings...
+  </td></tr><tr><td>
+      -polyglotBook "" (*)
+    </td><td>
+      tells WinBoard which opening book it should use, or should make Polyglot use.
+    </td><td>
+      Options -> Global Settings...
+  </td></tr><tr><td>
+      -usePolyglotBook false (*)
+    </td><td>
+      turns the use of the Polygot book on or off
+    </td><td>
+      Options -> Global Settings...
+  </td></tr><tr><td>
+      -defaultPathEGTB "c:\egtb" (*)
+    </td><td>
+      folder where to find end-game tables
+    </td><td>
+      Options -> Global Settings...
+  </td></tr><tr><td>
+      -defaultCacheSizeEGTB 4 (*)
+    </td><td>
+      specifies the cache size for UCI engines
+    </td><td>
+      Options -> Global Settings...
+  </td></tr><tr><td>
+      -defaultHashSize 64 (*)
+    </td><td>
+      specifies the size of the main hash table for UCI engines and WinBoard engines implementing the memory command
+    </td><td>
+      Options -> Global Settings...
+  </td></tr><tr><td>
+      -firstIsUCI false
+      <br>
+      -secondIsUCI false
+      <br>
+      -fUCI
+      <br>
+      -sUCI
+    </td><td>
+      tells WinBoard the corresponding engine should be run through Polyglot
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -firstHasOwnBookUCI true
+      <br>
+      -secondHasOwnBookUCI true
+      <br>
+      -fNoOwnBookUCI true
+      <br>
+      -sNoOwnBookUCI true
+    </td><td>
+      tells WinBoard (or Polyglot) if the engine should use its own opening book
+    </td><td>
+      Options -> Global Settings...
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>CHESS-VARIANT OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -defaultFrcOpening -1
+    </td><td>
+      allows you to play from a specific opening shuffle, or make a new shuffle each game
+    </td><td>
+      File -> New Shuffle Game...
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>PGN FILE OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -pgnExtendedInfo false (*)
+    </td><td>
+      save engine output (depth, score time) in PGN
+    </td><td>
+      Options->General...
+  </td></tr><tr><td>
+      -pgnEventHeader </br>"Computer Chess Game" (*)
+    </td><td>
+      specify the event for the PGN event tag
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -saveOutOfBookInfo true (*)
+    </td><td>
+      include an 'annotator' tag in the PGN file
+    </td><td>
+      
+  </td></tr><tr><td>
+      -hideThinkingFromHuman false (*)
+    </td><td>
+      suppresses the engine thinking output in the display, without the need to switch it off
+      (so it can still appear in the PGN file)
+    </td><td>
+      Options -> General...
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>USER-INTERFACE OPTIONS AND WINDOW CONTROL</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -moveHistoryUp true (*)
+      <br>
+      -moveHistoryX 0 (*)
+      <br>
+      -moveHistoryY 0 (*)
+      <br>
+      -moveHistoryW 0 (*)
+      <br>
+      -moveHistoryH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing the moves of the current game
+      (new in 4.4 is that all X and Y coordinates of auxiliary windows are stored relative to the main window)
+    </td><td>
+      Mode -> Show Move History (x)
+  </td></tr><tr><td>
+      -evalGraphUp true (*)
+      <br>
+      -evalGraphX 0 (*)
+      <br>
+      -evalGraphY 0 (*)
+      <br>
+      -evalGraphW 0 (*)
+      <br>
+      -evalGraphH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing a graph of the
+      evaluation score of the engine(s) as a function of move number of the current game
+    </td><td>
+      Mode -> Show Evaluation Graph
+  </td></tr><tr><td>
+      -engineOutputUp true (*)
+      <br>
+      -engineOutputX 0 (*)
+      <br>
+      -engineOutputY 0 (*)
+      <br>
+      -engineOutputW 0 (*)
+      <br>
+      -engineOutputH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing the thinking output of the engine(s)
+    </td><td>
+      Mode -> Show Engine Output (x)
+  </td></tr><tr><td>
+      -stickyWindows true (*)
+    </td><td>
+      make the various windows snap onto each other, and stick together
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -showEvalInMoveHistory true (*)
+    </td><td>
+      depth/score info of the engine is included as comments in the move history window
+    </td><td>
+      Options -> General...
+  </td></tr><tr><td>
+      -evalHistColorWhite #FFFFB0 (*)
+      <br>
+      -evalHistColorBlack #AD5D3D (*)
+    </td><td>
+      determines the color of the eval-score comments in the move-history window
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -autoDisplayComment true (*)
+    </td><td>
+      causes a window for displaying PGN comments to pop up automatically when such a comment is encountered
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -autoDisplayTags true (*)
+    </td><td>
+      causes a window with PGN tags to be displayed as soon as a PGN file is loaded
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -gameListTags "eprd" (*)
+    </td><td>
+      specifies the PGN tags that should be displayed in the game list
+    </td><td>
+      Options -> Game List...
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>ICS OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>MISCELLANEOUS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -debugFile "winboard.debug"
+      <br>
+      -nameOfDebugFile "winboard.debug"
+    </td><td>
+      allows you to specify an alternative name for saving the debug information
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -defaultFrcPosition -1 (*)
+    </td><td>
+      specify the number of the starting position in shuffle Chess variants
+    </td><td>
+      File -> New Shuffle Game...
+  </td></tr><tr><td>
+      -
+    </td><td>
+      display only those lines in the game list that contain a given string
+    </td><td>
+      in Game-List window
+</td></tr></table>
+<p>
+The value with which the option is listed is the default value.
+If it is false or true, it is a Boolean option, a number implies an integer option.
+A value starting with # indicates an RGB color indication in hexadecimal notation.
+Options the settings of which are saved into the winboard.ini file are marked with (*).
+</p>
+
+</div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
+<div id="footer">
+
+<p>Please send general FSF &amp; GNU inquiries to
+<a href="mailto:gnu@gnu.org">&lt;gnu@gnu.org&gt;</a>.
+There are also <a href="/contact/">other ways to contact</a>
+the FSF.<br />
+Please send broken links and other corrections or suggestions to
+<a href="mailto:bug-xboard@gnu.org">&lt;bug-xboard@gnu.org&gt;</a>.</p>
+
+<p>Please see the <a
+href="/server/standards/README.translations.html">Translations
+README</a> for information on coordinating and submitting translations
+of this article.</p>
+
+<p>Copyright &copy; 2009, 2010, 2011, 2012 Free Software Foundation, Inc.</p>
+
+<p>This page is licensed under a <a rel="license"
+href="http://creativecommons.org/licenses/by-nd/3.0/us/">Creative
+Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
+
+<p>Updated:
+<!-- timestamp start -->
+$Date: 2012/02/29 05:46:46 $
+<!-- timestamp end -->
+</p>
+</div>
+</div>
+</body>
+</html>
