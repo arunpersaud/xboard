@@ -47,7 +47,7 @@
    Games can also be adjudiated win or loss when both engines agree that the score is above a certain value
    for one of them, for 3 moves in a row.
    To make this work, both engines should use the standard soreing convention (own point of view);
-   engines that don't can be corrected through the use of the boolean options -first/secondScoreIsAbsolute.
+   engines that don't can be corrected through the use of the boolean options -first/secondScoreAbsolute.
   </p>
   <p>
    It is also possible to adjudicate engine-engine games manually, through the Action menu, as draw or win for white or black.
@@ -59,8 +59,8 @@
     Winboard_x allows you to make the board look anyway you want by using arbitrary bitmaps
     to cut the squares from. 
     White and black squares are cut from independent files.
-    The -light/darkBackTextureFile options can specify these bitmaps files,
-    while -light/darkBackTextureMode options control how the orientation of the cut-out squares
+    The -lite/darkBackTextureFile options can specify these bitmaps files,
+    while -lite/darkBackTextureMode options control how the orientation of the cut-out squares
     is randomized to suggest larger variety.
     On the right you see a board with a wood texture made this way.
   </p>
@@ -188,7 +188,7 @@ the command-line option needed to control them,
 and if there is a menu provided that can switch the option while WinBoard is running
 (command-line options exert their effect only at startup).
 </p>
-<table cellpadding="3" border="1"><tr><td width="220">
+<table cellpadding="3" border="1"><tr><td width="310">
       <h3>command-line option</h3>
     </td><td>
       <h3>description</h3>
@@ -321,37 +321,37 @@ and if there is a menu provided that can switch the option while WinBoard is run
     </td><td>
       tells WinBoard where you installed Polyglot, for automatic invocation with UCI engines
     </td><td>
-      Options -> Global Settings...
+      Options -> UCI...
   </td></tr><tr><td>
       -polyglotBook "" (*)
     </td><td>
       tells WinBoard which opening book it should use, or should make Polyglot use.
     </td><td>
-      Options -> Global Settings...
+      Options -> UCI...
   </td></tr><tr><td>
       -usePolyglotBook false (*)
     </td><td>
       turns the use of the Polygot book on or off
     </td><td>
-      Options -> Global Settings...
+      Options -> UCI...
   </td></tr><tr><td>
       -defaultPathEGTB "c:\egtb" (*)
     </td><td>
       folder where to find end-game tables
     </td><td>
-      Options -> Global Settings...
+      Options -> UCI...
   </td></tr><tr><td>
       -defaultCacheSizeEGTB 4 (*)
     </td><td>
       specifies the cache size for UCI engines
     </td><td>
-      Options -> Global Settings...
+      Options -> UCI...
   </td></tr><tr><td>
       -defaultHashSize 64 (*)
     </td><td>
       specifies the size of the main hash table for UCI engines and WinBoard engines implementing the memory command
     </td><td>
-      Options -> Global Settings...
+      Options -> UCI...
   </td></tr><tr><td>
       -firstIsUCI false
       <br>
@@ -375,7 +375,7 @@ and if there is a menu provided that can switch the option while WinBoard is run
     </td><td>
       tells WinBoard (or Polyglot) if the engine should use its own opening book
     </td><td>
-      Options -> Global Settings...
+      Options -> UCI...
   </td></tr><tr><td>
       
     </td><td bgcolor="lightblue">
@@ -387,7 +387,7 @@ and if there is a menu provided that can switch the option while WinBoard is run
     </td><td>
       allows you to play from a specific opening shuffle, or make a new shuffle each game
     </td><td>
-      File -> New Shuffle Game...
+      File -> New FRC Game...
   </td></tr><tr><td>
       
     </td><td bgcolor="lightblue">
@@ -510,12 +510,6 @@ and if there is a menu provided that can switch the option while WinBoard is run
   </td></tr><tr><td>
       
     </td><td bgcolor="lightblue">
-      <strong>ICS OPTIONS</strong>
-    </td><td>
-      
-  </td></tr><tr><td>
-      
-    </td><td bgcolor="lightblue">
       <strong>MISCELLANEOUS</strong>
     </td><td>
       
@@ -571,7 +565,7 @@ Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
 
 <p>Updated:
 <!-- timestamp start -->
-$Date: 2012/02/29 05:46:46 $
+$Date: 2012/02/29 05:46:58 $
 <!-- timestamp end -->
 </p>
 </div>
