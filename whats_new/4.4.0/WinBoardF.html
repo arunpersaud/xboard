@@ -1,0 +1,826 @@
+<!--#include virtual="/server/html5-header.html" -->
+<title>XBoard - GNU Project - Free Software Foundation - NEWS</title>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
+<h2>What is new in WinBoard 4.3?</h2>
+
+ <table cellpadding="20"><tr valign="top"><td>
+  <h4>New Features</h4>
+  <ul>
+   <li><a href="#tag-B1">Castling awareness</a></li>
+   <li><a href="#tag-B2">Extensions of WB protocol</a></li>
+   <li><a href="#tag-A1">Support for unorthodox pieces</a></li>
+   <li><a href="#tag-A2">Configuring the board format</a></li>
+   <li><a href="#tag-A3">SAN and FEN with fairy pieces</a></li>
+   <li><a href="#tag-A4">Support of complete chess variants</a></li>
+   <li><a href="#tag-A5">Bughouse piece drops and holdings display</a></li>
+   <li><a href="#tag-A6">Distinguishing promoted pieces in Bughouse</a></li>
+   <li><a href="#tag-A7">Displaying player logos</a></li>
+   <li><a href="#tag-A8">Japanese Shogi bitmaps</a></li>
+   <li><a href="#tag-C1">Added command-line options</a></li>
+
+  </ul>
+ </td><td valign="top">
+  <img src="../4.5.0/winboardF.png">
+ </td><td valign="top">
+  <p>
+   <a href="index.html">Follow-up release (4.4.0)</a>
+  </p>
+  <p>
+   <a href="Winboard_x.html">Preceding fork (Winboard_x)</a>
+  </p>
+ </td></tr></table>
+
+  <h3><a name="tag-B1">Treating castling and e.p. rights seriously</a></h3>
+  <p>
+   One of the most important changes betwen WinBoard 3.4 and predecessors is that it is fully aware of the game state.
+   That is, it keeps track of castling rights and e.p. status,
+   and takes that knowledge into account in legality checking of the moves and mate testing.
+   As a result it can do 100% reliable adjudications:
+   forfeit engines that do illegal moves, or make false result claims,
+   and terminate the game on 3-fold repetition of due to the 50-move rule.
+  </p>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <h3><a name="tag-A1">Supporting fairy pieces</a></h3>
+  <p>
+   WinBoard F does not only support the six piece types of orthdox chess,
+   but expanded the number to 22.
+   Most of these have well-specified moves known to WinBoard,
+   such as the Archbishop (a B+N compound) and the Chancellor (R+N) of Capablanca Chess.
+   Others are wild cards just supplied as graphics, and can only be used with legality testing off.
+  </p><p>
+   In board sizes middling (49) and bulky (72) a bitmap for each of these 22 pieces is supplied,
+   while size petite (33) supports most.
+   In the intermediate sizes, only Archbishop and Chancellor are available,
+   while for sizes below 33 and above 72, none are.
+   Some of the more common piece types, such as those for Chinese or Capablanca Chess,
+   were added to the piece menu in Edit Position mode,
+   while others can be made by 'promoting' or 'demoting' the more common ones.
+  </p>
+ </td><td valign="top">
+  <img src="fairies.png">
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <img src="couriersmall.gif">
+ </td><td valign="top">
+  <h3><a name="tag-A2">Configurable and non-square board formats</a></h3>
+  <p>
+   WinBoard F allows the use of other boards than 8x8.
+   In particular, the number of ranks does not have to be equal to the number of files.
+   Options -boardWidth and -boardHeight can be used to specify exactly the board you want,
+   but a value -1 for these options means WinBoard will use the default size for the
+   variant you are playing (so 8x8 for normal chess or suicide).
+  </p>
+  <h3><a name="tag-A3">Piece-ID letters in SAN and FEN</a></h3>
+  <p>
+   Unfortunately the names of fairy pieces are not as standardized as they are in orthodoc chess:
+   a piece that moves in the same way can be called Marshall in one variant, Chancellor in another,
+   and Champion in a third.
+   This affects the single-letter abbreviation one would use for writing SAN moves in notations for these variants.
+   WinBoard accounts for this through the -pieceToCharTable option, 
+   where you can define for each of the 44 colored piece types what letter should be used for them.
+   This can also used to disable pieces, by setting their character to a period.
+   For each of the predefined variants, WinBoard has a default table, and uses that as soon as you select the variant.
+  </p>
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <h3><a name="tag-A4">Predefined variants</a></h3>
+  <p>
+   With the unorthodox piece types and board formats WinBoard F can support a large number of chess variants.
+   Some of these variants are pre-defined:
+   they can be selected through a New Variant item in the File menu,
+   which brings you to a dialog where you can pick one,
+   and optionally change its board size from the default.
+  </p>
+  <p>
+   For these predefined variants, WinBoard usually knows the rules exactly,
+   meaning that it can do legality checking, reliably detect checkmate, etc.
+   Some variants are only partially supported, however, and need to be played with legality testing off.
+   The predefined new variants are:
+  </p>
+  <ul>
+   <li>Xiangqi (Chinese chess)</li>
+   <li>Shogi (Japanese chess)</li>
+   <li>Capablanca, Gothic and Capa-random Chess (on 10x8 board)</li>
+   <li>Courier chess (a medieval precursor of modern chess)</li>
+   <li>Shatranj (ancient Arabic chess)</li>
+   <li>Knightmate (King moves as Knight, and vice versa)</li>
+   <li>Cylinder chess (the board wraps around at the edge files)</li>
+   <li>Berolina chess (Pawns capture straight and move diagonally)</li>
+  </ul>
+  <p>
+   The latter two can only be played with legality testing off.
+   The ICS variants that were already supported in 4.2.7
+   (Fischerandom, Suicide, Losers, Giveaway, Atomic, Twokings, Threechecks)
+   are all fully supported in local mode,
+   and WinBoard is aware of their rules for victory, so it can adjudicate.
+  </p>
+  <p>
+   Normally all these variants would be played with the piece symbols shown above.
+   But the almost infinite configurability of the WinBoard look
+   through board textures and font-based rendering
+   does allow you to perfectly mimic traditional representation of Asian variants, for example.
+   On the right you see how suppressing the grid that normally separates the squares,
+   and using a drawing of a Xiangqi board and the XIANGQI font for piece rendering
+   can give a very good looking Xiangqi interface.
+  </p>
+ </td><td valign="top">
+  <img src="WinBoardXQ2.png">
+ </td></tr></table>
+
+ <h3><a name="tag-A5">Dragging and dropping from displayed holdings in Bughouse</a></h3>
+ <table cellpadding="20"><tr><td valign="top">
+  <img src="crazy.gif">
+ </td><td valign="top">
+  <p>
+   Drop variants like Bughouse and Crazyhouse used to keep track of the holdings as text in the title bar,
+   and required a drop menu to select dropped pieces from.
+   This only worked in ICS mode, as the holdings were not updated in local play.
+   In WinBoard F, the holdings are displayed beside the board,
+   and you can grab and drag the piece to drop from there.
+   They are also fully updated in local Crazyhouse play.
+   (Bughouse still can only be played on an ICS, being a 4-player game where WinBoard is only a 2-player GUI.)
+  </p>
+  <p>
+   Shogi is also a drop game, and uses the same mechanism.
+   In fact WinBoard F allows you to play any variant as a Crazyhouse-style drop game,
+   by configuring holdings for it through the options -holdingsSize,
+   where you can specify the number of piece types for which space should be reserved in the holdings.
+   (Beware: for practical reasons this cannot be larger than the number of board ranks!)
+   Piece types for which no space is reserved will revert to Pawn oon capture.
+  </p>
+  <h3><a name="tag-A6">Promoted Pawn or primordial piece?</a></h3>
+  <p>
+   In Bughouse promoted Pawns revert to Pawn on capture, and are thus in principle different pieces
+   than the primordial pieces of the same type.
+   WinBoard F shows this difference by using alternate representations for pieces obtained through promotions.
+   In sizes where these are available, fairy pieces are used;
+   in other sizes a slightly smaller representation of the normal chess piece.
+  </p>
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <h3><a name="tag-A7">Displaying engine logos</a></h3>
+  <p>
+   WinBoard F offers the possibility to display logos of the playing engines next to the clock.
+   The options -firstLogo, -secondLogo allow you to explicitly specify bitmap files for those.
+   The logos will be scaled to 2x1 aspect ratio, so results are better if they already have this to begin with.
+  </p>
+  <p>
+   There also is a persistent boolean option -autoLogo,
+   which makes WinBoard look automatically in the engine directory for a file called logo.bmp,
+   and display that if it finds it (and this is not overruled by an explicitly given file).
+   In ICS mode this option makes WinBoard look for a logo of the ICS in the logos folder,
+   e.g. freechess.org.bmp for FICS.
+  </p>
+  <h3><a name="tag-B2">Modernizing WinBoard protocol</a></h3>
+  <p>
+   WinBoard protocol lacked commands to control the engine's hash-table size and number of CPUs it could use.
+   This was of course because such things did not exist at the time when it was devised.
+   This situation was corrected in WinBoard 4.3, by adding the 'memory' and 'cores' commands.
+   These commands allow the GUI to specify the hash size and CPU number through the protocol interface,
+   with as a result they can now be set through the GUI, rather than requiring editing of obscure ini files.
+  </p>
+  <p>
+   Of course this only works on engines that actually support these features.
+   But (through Polyglot) all UCI engines do, so the dialogs to set these options were useful from the beginning.
+  </p>
+ </td><td valign="top">
+  <img src="marble.png">
+ </td></tr></table>
+
+ <table cellpadding="20"><tr><td valign="top">
+  <img src="Shogi.png">
+ </td><td valign="top">
+  <h3><a name="tag-A8">Bitmaps for traditional Japanese Shogi pieces</a></h3>
+  <p>
+   As an extra service to Japanese users, board size 'moderate' (58) uses a complete set of traditional Shogi pieces in variant shogi.
+   To properly use them, the options -allWhite and -flipBlack were added, and have to be set to true.
+   Other board sizes (i.e. middling and bulky) use the normal chess-style bitmaps,
+   except that special forms of the Gold are used to indicate some promoted pieces.
+  </p>
+ </td></tr></table>
+
+<h3><a name="tag-C1">Overview of new command-line options</a></h3>
+<p>
+Below follows a table that lists the new features, 
+the command-line option needed to control them,
+and if there is a menu provided that can switch the option while WinBoard is running
+(command-line options exert their effect only at startup).
+Note that, unlike WinBoard 4.2.7, the WinBoard 4.3 series is fully castling and e.p. aware,
+and handles the castling, e.p. and 50-move field in FENs on input and output as should be expected.
+</p>
+<table cellpadding="3" border="1"><tr><td width="220">
+      <h3>command-line option</h3>
+    </td><td>
+      <h3>description</h3>
+    </td><td width="250">
+      <h3>menu</h3>
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>ENGINE-ENGINE ADJUDICATION OPTIONS<strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -adjudicateLossThreshold 0 (*x)
+    </td><td>
+      adjudicates engine-engine game based on score
+    </td><td>
+      Options -> Engine... (x)
+  </td></tr><tr><td>
+      -checkMates false (*x)
+    </td><td>
+      detect and end game on checkmates and stalemates
+    </td><td>
+      Options -> Engine... (x)
+  </td></tr><tr><td>
+      -testClaims false (*x)
+    </td><td>
+      WinBoard corrects false RESULT claims
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -materialDraws false (*x)
+    </td><td>
+      adjudicate draw when no mating material present
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -trivialDraws false (*x)
+    </td><td>
+      adjudicate draw in endgames like KRKR and KNNK
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -adjudicateDrawMoves 0 (*x)
+    </td><td>
+      adjudicate draw when game lasts too long
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -ruleMoves 51 (*x)
+    </td><td>
+      number of reversible moves after which to adjudicate draw
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -repeatsToDraw 6 (*x)
+    </td><td>
+      adjudicate draw when a position occurs this many times
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -firstScoreAbs false (x)
+      <br>
+      -secondScoreAbs false (x)
+    </td><td>
+      Engine indicates score for white, even when playing black
+    </td><td>
+      Options -> Adjudications.. (xboard-only)
+  </td></tr><tr><td>
+      -
+    </td><td>
+      Adjudicate the game in progress as win to white, win to black, or draw
+    </td><td>
+      Action -> Adjudicate to White
+      <br>
+      Action -> Adjudicate to Black
+      <br>
+      Action -> Adjudicate Draw
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>TIME-CONTROL AND TIMING OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -firstTimeOdds 1 (x)
+      <br>
+      -secondTimeOdds 1 (x)
+    </td><td>
+      reduce the thinking time of the mentioned engine by the given factor
+    </td><td>
+      Options -> Engine Settings.. (xboard only)
+  </td></tr><tr><td>
+      -timeOddsMode 1 (*x)
+    </td><td>
+      determines what happens when both engine have time odds
+    </td><td>
+      Options -> Engine Settings.. (xboard only)
+  </td></tr><tr><td>
+      -firstNPS -1 (x)
+      <br>
+      -secondNPS -1 (x)
+    </td><td>
+      engine must use node count for its time control, as if running at specified rate
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -matchPause 10000 (*x)
+    </td><td>
+      number of msec to wait between games in match mode
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -delayBeforeQuit 0 (*x)
+      <br>
+      -delayAfterQuit 0 (*x)
+    </td><td>
+      timing parameter specifying how to terminate the engine processes
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -
+    </td><td>
+      adjust the clocks by 1 minute (up or down)
+    </td><td>
+      left- or right-cick on clock in edit-game mode
+  </td></tr><tr><td>
+      -niceEngines 0 (*x)
+    </td><td>
+      lower the CPU priority of the engines
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>DISPLAY-LOOK OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -liteBackTextureFile "" (*)
+      <br>
+      -darkBackTextureFile "" (*)
+      <br>
+      -liteBackTextureMode 1 (*)
+      <br>
+      -darkBackTextureMode 1 (*)
+    </td><td>
+      Allows you to use any bitmap picture for displaying the board square
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -renderPiecesWithFont "" (*)
+    </td><td>
+      specifies a true-type Chess font to be used for piece symbols
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceToCharTable "" (*)
+    </td><td>
+      specifies which font character to use for the various piece types
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -overrideLineGap 1 (*)
+    </td><td>
+      controls the width of the black grid lines between squares
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceBackColorWhite #0 (*)
+      <br>
+      -fontPieceForeColorWhite #0 (*)
+      <br>
+      -fontPieceBackColorBlack #0 (*)
+      <br>
+      -fontPieceForeColorBlack #0 (*)
+    </td><td>
+      control piece colors in font-based rendering
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceSize 80 (*)
+    </td><td>
+      tunes the size of pieces in font-based rendering (% of square size)
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -highlightMoveWithArrow false (*)
+    </td><td>
+      draws a big arrow to indicate the move last played
+    </td><td>
+      Options -> General...
+  </td></tr><tr><td>
+      -highlightArrowColor #FFFF80 (*)
+    </td><td>
+      controls the color of the highlight arrow
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -autoLogo false (*)
+      <br>
+      -firstLogo ""
+      <br>
+      -secondLogo ""
+    </td><td>
+      causes WinBoard to display player logos above the board, next to the clocks.
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -
+    </td><td>
+      Swap white and black clock
+    </td><td>
+      Options -> Swap Clocks
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>(UCI) ENGINE OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -polyglotDir "" (*x)
+    </td><td>
+      tells WinBoard where you installed Polyglot, for automatic invocation with UCI engines
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -polyglotBook "" (*x)
+    </td><td>
+      tells WinBoard which opening book it should use, or should make Polyglot use.
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -usePolyglotBook false (*x)
+    </td><td>
+      turns the use of the Polygot book on or off
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -defaultPathEGTB "c:\egtb" (*x)
+    </td><td>
+      folder where to find end-game tables
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -defaultCacheSizeEGTB 4 (*x)
+    </td><td>
+      specifies the cache size for UCI engines
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -defaultHashSize 64 (*x)
+    </td><td>
+      specifies the size of the main hash table for UCI engines and WinBoard engines implementing the memory command
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -firstIsUCI false (x)
+      <br>
+      -secondIsUCI false (x)
+      <br>
+      -fUCI (x)
+      <br>
+      -sUCI (x)
+    </td><td>
+      tells WinBoard the corresponding engine should be run through Polyglot
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -firstHasOwnBookUCI true (x)
+      <br>
+      -secondHasOwnBookUCI true (x)
+      <br>
+      -fNoOwnBookUCI true (x)
+      <br>
+      -sNoOwnBookUCI true (x)
+      <br>
+      -firstXBook (x)
+      <br>
+      -secondXBook (x)
+    </td><td>
+      tells WinBoard (or Polyglot) if the engine should use its own opening book
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -smpCores 1 (*x)
+    </td><td>
+      sets the maximum number of CPUs an SMP engine can use.
+      (only affects engines that support the <strong>cores</strong> command of WB protocol)
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -egtFormats "" (*x)
+    </td><td>
+      specifies which end-game tables are installed on the computer,
+      and where they can be found
+      (e.g. "nalimov:\chess\egtb,scorpio:\chess\bitbases")
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -firstOptions "" (x)
+      <br>
+      -secondOptions "" (x)
+    </td><td>
+      sets engine-defined options of UCI engines and WinBoard engines that support the option feature.
+    </td><td>
+      Options -> Engine #1 Settings... (x)
+      <br>
+      Options -> Engine #2 Settings... (x)
+  </td></tr><tr><td>
+      -firstNeedsNoncompliantFEN "" (x)
+      <br>
+      -secondNeedsNoncompliantFEN "" (x)
+    </td><td>
+      directly specifies castling and e.p. field to be used in all FENs sent to mentioned engine
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>CHESS-VARIANT OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -boardHeight -1 (*x)
+      <br>
+      -boardWidth -1 (*x)
+      <br>
+      -holdingsSize -1 (*x)
+    </td><td>
+      specifies the board format and nr of piece types that can be dropped,
+      when you want it to be different from what is usual in the chosen varint
+    </td><td>
+      File -> New Variant...
+  </td></tr><tr><td>
+      -variant normal (x)
+    </td><td>
+      supports many new variants: xiangqi, shogi, fischerandom, capabanca, gothic, caparandom, janus,
+      shatranj, courier, knightmate, berolina, falcon, cylinder, fairy, super, great
+    </td><td>
+      File -> New Variant... (x)
+  </td></tr><tr><td>
+      -defaultFrcOpening -1 (x)
+    </td><td>
+      allows you to play from a specific opening shuffle, or make a new shuffle each game
+    </td><td>
+      File -> New Shuffle Game... (x)
+  </td></tr><tr><td>
+      -pieceToCharTable "" (x)
+    </td><td>
+      allows you to specify by which letters pieces are referred to in FEN and SAN,
+      if you want to deviate from what is usual for the current variant
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -flipBlack fase (*x)
+    </td><td>
+      displays opponent pieces uppside down (for Shogi)
+    </td><td>
+      Options -> Board...
+  </td></tr><tr><td>
+      -allWhite false (*x)
+    </td><td>
+      use white bitmaps (with black outline) also for display of black pieces (for Shogi)
+    </td><td>
+      Options -> Board...
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>PGN FILE OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -pgnExtendedInfo false (*x)
+    </td><td>
+      save engine output (depth, score time) in PGN
+    </td><td>
+      Options->General...
+  </td></tr><tr><td>
+      -pgnEventHeader </br>"Computer Chess Game" (*x)
+    </td><td>
+      specify the event for the PGN event tag
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -saveOutOfBookInfo true (*)
+    </td><td>
+      include an 'annotator' tag in the PGN file
+    </td><td>
+      
+  </td></tr><tr><td>
+      -hideThinkingFromHuman false (*x)
+    </td><td>
+      suppresses the engine thinking output in the display, without the need to switch it off
+      (so it can still appear in the PGN file)
+    </td><td>
+      Options -> General... (x)
+  </td></tr><tr><td>
+      -userName "" (x)
+    </td><td>
+      sets the name of the human player
+    </td><td>
+      Mode -> Enter Username... (x)
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>USER-INTERFACE OPTIONS AND WINDOW CONTROL</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -moveHistoryUp true (*)
+      <br>
+      -moveHistoryX 0 (*)
+      <br>
+      -moveHistoryY 0 (*)
+      <br>
+      -moveHistoryW 0 (*)
+      <br>
+      -moveHistoryH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing the moves of the current game
+      (new in 4.4 is that all X and Y coordinates of auxiliary windows are stored relative to the main window)
+    </td><td>
+      Mode -> Show Move History (x)
+  </td></tr><tr><td>
+      -evalGraphUp true (*)
+      <br>
+      -evalGraphX 0 (*)
+      <br>
+      -evalGraphY 0 (*)
+      <br>
+      -evalGraphW 0 (*)
+      <br>
+      -evalGraphH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing a graph of the
+      evaluation score of the engine(s) as a function of move number of the current game
+    </td><td>
+      Mode -> Show Evaluation Graph
+  </td></tr><tr><td>
+      -engineOutputUp true (*)
+      <br>
+      -engineOutputX 0 (*)
+      <br>
+      -engineOutputY 0 (*)
+      <br>
+      -engineOutputW 0 (*)
+      <br>
+      -engineOutputH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing the thinking output of the engine(s)
+    </td><td>
+      Mode -> Show Engine Output (x)
+  </td></tr><tr><td>
+      -stickyWindows true (*)
+    </td><td>
+      make the various windows snap onto each other, and stick together
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -showEvalInMoveHistory true (*)
+    </td><td>
+      depth/score info of the engine is included as comments in the move history window
+    </td><td>
+      Options -> General...
+  </td></tr><tr><td>
+      -evalHistColorWhite #FFFFB0 (*)
+      <br>
+      -evalHistColorBlack #AD5D3D (*)
+    </td><td>
+      determines the color of the eval-score comments in the move-history window
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -autoDisplayComment true (*)
+    </td><td>
+      causes a window for displaying PGN comments to pop up automatically when such a comment is encountered
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -autoDisplayTags true (*)
+    </td><td>
+      causes a window with PGN tags to be displayed as soon as a PGN file is loaded
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -gameListTags "eprd" (*)
+    </td><td>
+      specifies the PGN tags that should be displayed in the game list
+    </td><td>
+      Options -> Game List...
+  </td></tr><tr><td>
+      -noGUI (x)
+    </td><td>
+      suppress update of display on all machine and ICS moves (moves, clocks, icon)
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>ICS OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -autoKibitz (x)
+    </td><td>
+      kibitz engine Thinking Output to ICS, and capture opponent kibitz for in PGN
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -zippyShortGame 0 (x)
+    </td><td>
+      ban opponents on ICS that abort without playing
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>MISCELLANEOUS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -debugFile "winboard.debug" (x)
+      <br>
+      -nameOfDebugFile "winboard.debug" (x)
+    </td><td>
+      allows you to specify an alternative name for saving the debug information
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -engineDebugOutput 0 (x)
+    </td><td>
+      tells WinBoard if and how to put protocol-violating output in the debug file
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -
+    </td><td>
+      save chess-board display as diagram in bitmap file
+      (only works for the smaller board formats!)
+    </td><td>
+      File -> Save Diagram...
+  </td></tr><tr><td>
+      -defaultFrcPosition -1 (*x)
+    </td><td>
+      specify the number of the starting position in shuffle Chess variants
+    </td><td>
+      File -> New Shuffle Game... (x)
+  </td></tr><tr><td>
+      -
+    </td><td>
+      display only those lines in the game list that contain a given string
+    </td><td>
+      in Game-List window
+  </td></tr><tr><td>
+      -rewindFile 0 (x)
+    </td><td>
+      A nonzero value for this option causes the loadGameIndex or loadPositionIndex
+      to rewind to the beginning of the Games or Position file when it reaches
+      the given value in auto-increment match mode. 
+      This mode is specified by a negative value as argument of the /lgi or /lpi options,
+      where -1 increments the index after every game of the match,
+      and -2 after every two games (so that each position is played with black and white).
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -sameColorGames 0 (x)
+    </td><td>
+      play a match, but without alternating the colors (overrules -matchGames)
+    </td><td>
+      -
+</td></tr></table>
+<p>
+The value with which the option is listed is the default value.
+If it is false or true, it is a Boolean option, a number implies an integer option.
+A value starting with # indicates an RGB color indication in hexadecimal notation.
+Options the settings of which are saved into the winboard.ini file are marked with (*).
+</p>
+
+</div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
+<div id="footer">
+
+<p>Please send general FSF &amp; GNU inquiries to
+<a href="mailto:gnu@gnu.org">&lt;gnu@gnu.org&gt;</a>.
+There are also <a href="/contact/">other ways to contact</a>
+the FSF.<br />
+Please send broken links and other corrections or suggestions to
+<a href="mailto:bug-xboard@gnu.org">&lt;bug-xboard@gnu.org&gt;</a>.</p>
+
+<p>Please see the <a
+href="/server/standards/README.translations.html">Translations
+README</a> for information on coordinating and submitting translations
+of this article.</p>
+
+<p>Copyright &copy; 2009, 2010, 2011, 2012 Free Software Foundation, Inc.</p>
+
+<p>This page is licensed under a <a rel="license"
+href="http://creativecommons.org/licenses/by-nd/3.0/us/">Creative
+Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
+
+<p>Updated:
+<!-- timestamp start -->
+$Date: 2012/02/29 05:46:15 $
+<!-- timestamp end -->
+</p>
+</div>
+</div>
+</body>
+</html>
