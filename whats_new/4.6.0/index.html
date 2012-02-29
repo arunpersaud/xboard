@@ -71,6 +71,10 @@
 <a href="#tag-C6">A move type-in box (XB)</a>
 </li><li>
 <a href="#tag-D15">New-style Move History window (XB)</a>
+</li><li>
+<a href="#tag-D22">Associating XBoard with file types</a>
+</li><li>
+<a href="#tag-D23">Many Windows behave as one (XB)</a>
 </li></ul>
 </td><td>
 
@@ -688,7 +692,7 @@ I.e., you can make groups within groups.
 <table cellpadding="10"><tbody><tr><td valign="top">
 <h2><a name="tag-D21">The PGN Number tag</a></h2>
 <p>
-A (persistent) Boolean option -pgnNumberTag has been added to enablee writing a Number tag in PGN files saved during a tourney,
+A (persistent) Boolean option -pgnNumberTag has been added to enable writing a Number tag in PGN files saved during a tourney,
 containing the (unique) sequence number of the game within that tourney.
 This number corresponds to the one used in the debug file name,
 so the correct debug file for the game can be easily found.
@@ -720,15 +724,25 @@ when viewing games.
 E.g. whether a Chess engine should be involved for analysis, and if so, which one.
 Similarly, clicking a FEN file with Chess positions will start XBoard as position viewer.
 </p><p>
-A third type for which XBoard will make associations are TRN tournament files.
+A third file type which will be associated with XBoard are TRN tournament files.
 These files are created when you start an engine tournament throught the Match Options dialog.
 When you click on them, XBoard will be launched to play on that tournament.
-This makes it easy to let multiple instances of XBoard work for the same tourney,
+This makes it really easy to let multiple instances of XBoard work for the same tourney,
 playing the games in parallel.
 </p>
 </td></tr></tbody></table>
 
-</td></tr></tbody></table>
+<h2><a name="tag-D23">Dragging all windows as a unit</a></h2>
+<p>
+The option -stickyWindows, known from WinBoard, now also works in XBoard.
+An checkbox in the General Options menu dialog was added to switch it on or off.
+With this option, auxiliary windows (Game List, Engine Output, Move List and Eval Graph) which touch the main window
+will move together with it when the latter is dragged over the screen.
+Such 'docked' windows will also be repositioned and resized as needed
+to preserve their tiling relationship with each other and the main window,
+whenever the latter changes size because of a variant change
+.
+</p>
 
 </div><!-- for id="content", starts in the include above -->
 <!--#include virtual="/server/footer.html" -->
@@ -754,7 +768,7 @@ Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
 
 <p>Updated:
 <!-- timestamp start -->
-$Date: 2012/02/29 05:47:13 $
+$Date: 2012/02/29 05:48:00 $
 <!-- timestamp end -->
 </p>
 </div>
