@@ -654,6 +654,7 @@ typedef struct {
     char *fenOverride[ENGINES];
     char *features[ENGINES];
     char *featureDefaults;
+    char *sysOpen;
     Boolean keepAlive;  /* [HGM] alive     */
     Boolean forceIllegal;/*[HGM] illegal   */
     Boolean noJoin;     /* [HGM] join      */
