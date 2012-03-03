@@ -1331,13 +1331,13 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
         GenLegal(board, flags|F_IGNORE_CHECK, DisambiguateCallback, (VOIDSTAR) closure, closure->pieceIn);
 	if (closure->count == 0) {
 	    /* No, it's not even that */
-    if (appData.debugMode) { int i, j;
-	for(i=BOARD_HEIGHT-1; i>=0; i--) {
-		for(j=0; j<BOARD_WIDTH; j++)
+	    if (appData.debugMode) { int i, j;
+		for(i=BOARD_HEIGHT-1; i>=0; i--) {
+		    for(j=0; j<BOARD_WIDTH; j++)
 		        fprintf(debugFP, "%3d", (int) board[i][j]);
-	        fprintf(debugFP, "\n");
-	}
-    }
+		    fprintf(debugFP, "\n");
+		}
+	    }
 	    return;
 	}
     }
