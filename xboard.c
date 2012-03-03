@@ -793,7 +793,7 @@ MenuItem helpMenu[] = {
     {N_("XBoard Home Page"), "Home Page", HomePageProc},
     {N_("On-line User Guide"), "User Guide", GuideProc},
     {N_("Development News"), "News Page", NewsPageProc},
-    {N_("e-Mail Report Bug"), "Bug Report", BugReportProc},
+    {N_("e-Mail Bug Report"), "Bug Report", BugReportProc},
     {"----", NULL, NothingProc},
     {N_("About XBoard"), "About XBoard", AboutProc},
     {NULL, NULL, NULL}
