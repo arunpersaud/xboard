@@ -1,0 +1,186 @@
+#!/bin/bash
+
+# the script will check out the correct branch, run "make distcheck",
+# tag git, and upload the files to the GNU server.
+
+# you need to have your GPG key registered with the GNU people for the upload to work!
+
+# the script includes some minimal error checking and tries to automate the following:
+#  * check if the commit is already tagged
+#  * if version number includes a date like 20120304 (to be exact *20??????), 
+#    it will create a developer release otherwise a normal release
+#  * if you have local tags that you don't want to upload, you need to add them further down to git tag -d ...
+
+# you need to set the following to reasonable value for the script to work
+
+# the script at the moment also only works for master and branches called v4*, easy to change in the script though
+GITDIR=/home/arun/src/Prog/xboard
+UPLOADDIR=/home/arun/tmp/xboard-upload
+GPGKEYID="F51BC536"
+
+# default: make a release from master
+BRANCH="master"
+
+function usage () {
+    echo >&2 "usage: $0 [-b branch]"
+    }
+
+# check if we want to make a release from another branch
+while getopts b: opt
+do
+    case "$opt" in
+      b)  BRANCH="$OPTARG";;
+      \?) # unknown flag
+	  usage 
+	  exit 1;;
+    esac
+done
+shift `expr $OPTIND - 1`
+
+if [ $# -gt 0 ] ; then
+    usage
+    exit 1
+fi
+
+# output information to the user and ask for confirmation
+echo " Tagging and uploading new xboard release to GNU"
+echo "   branch: $BRANCH"
+echo ""
+
+# go into a tmp directory, clone xboard, check out branch
+
+cd $GITDIR
+
+TEX=tex
+
+git checkout $BRANCH
+
+read -n 1 -p "Should be on correct branch now. Continue?" REPLY
+
+# get version information
+
+VERSION=`grep AC_INIT configure.ac | sed -e 's/^.*\[.*\],\[\(.*\)\],.*$/\1/' `
+
+#make sure we don't do things too often
+RESULT=`git tag | grep "^$VERSION\$"`
+if [ "$RESULT" != "" ] ; then
+    echo "this version is already tagged... exiting."
+    exit 1
+fi
+
+#################
+
+# output some summary information and have user confirm it
+
+if [[ $BRANCH == v4* ]] ; then
+    TAGNAME=v$VERSION
+else
+    TAGNAME=$VERSION
+fi
+
+FTPSERVER="ftp-upload.gnu.org"
+if [[ $VERSION == *20?????? ]] ; then
+    TAGMESSAGE="new developer release"
+    FTPDIR="incoming/alpha"
+else
+    TAGMESSAGE="new release of version $VERSION"
+    FTPDIR="incoming/ftp"
+fi
+
+# ask for confirmation from user
+echo " make sure that you are on the right commit (should be the one that changes the version number)!"
+echo "  version will be tagged as:  $TAGNAME"
+echo "  tar ball will be named:   xboard-${VERSION}.tar.gz "
+echo "  tag message: $TAGMESSAGE"
+echo ""
+read -n 1 -p "Continue (y/N)?" REPLY
+echo ""
+
+if [ "x$REPLY" != "xy" ];  then 
+    echo " exiting now!"
+    exit 2
+fi
+
+echo "cleaning up tags"
+# git tag -d <add tag name here, for more than one, add more lines like this one>
+
+
+echo "tagging commit"
+git tag -u $GPGKEYID -m "$TAGMESSAGE" $TAGNAME
+
+echo "create tar ball"
+./autogen.sh
+./configure
+TEX=tex make distcheck
+
+if [ -s xboard-${VERSION}.tar.gz ] ; then
+    echo ""
+    echo " make distcheck seems to be ok"
+    echo ""
+else
+    echo ""
+    echo " problem with make distcheck"
+    echo ""
+    exit 3
+fi
+
+echo "move tar ball to upload directory"
+mv xboard-${VERSION}.tar.gz $UPLOADDIR
+
+echo "cd into upload directory"
+cd $UPLOADDIR 
+
+# create files necessary for upload to GNU
+echo "creating directive"
+echo "version: 1.1
+directory: xboard
+filename: xboard-${VERSION}.tar.gz
+comment: $TAGMESSAGE " > xboard-${VERSION}.tar.gz.directive
+
+echo "signing packages"
+gpg -b xboard-${VERSION}.tar.gz
+gpg --clearsign xboard-${VERSION}.tar.gz.directive
+
+echo "uploading..."
+
+echo "
+The files can be found in $UPLOADDIR. Go and test them :)
+
+Will do the following in a second followed by a git push
+
+ftp -n -v $FTPSERVER <<EOT
+user anonymous
+cd $FTPDIR
+put xboard-${VERSION}.tar.gz
+put xboard-${VERSION}.tar.gz.sig
+put xboard-${VERSION}.tar.gz.directive.asc
+EOT
+"
+
+read -n 1 -p "Will upload and push tags now. Continue? (y/N)" REPLY
+
+if [ "x$REPLY" != "xy" ];  then 
+    echo " exiting now!"
+    exit 3
+fi
+
+# upload to GNU
+ftp -n -v $FTPSERVER <<EOT
+user anonymous
+cd $FTPDIR
+put xboard-${VERSION}.tar.gz
+put xboard-${VERSION}.tar.gz.sig
+put xboard-${VERSION}.tar.gz.directive.asc
+EOT
+
+# push tags
+cd $GITDIR
+echo "pushing tags and commits"
+git push
+git push --tags 
+
+#possible to add other git repos here too
+#git push github
+#git push --tags github
+
+echo "done...have a nice day!"

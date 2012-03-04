@@ -1,0 +1,71 @@
+* Release documentation
+** Pre-release checklist
+ - update AUTHORS, NEWS, check other files
+ - update version in configure.ac and other places
+ - run "make distcheck" and then create tar-ball via "make dist"
+ - unpack tar-ball, check that it builds OK
+ - tag with signature
+ - check openSUSE build
+ - update git@savannah, github
+ - update po/pot files via "cd po; make update-po". This should happen
+   after the version number has been updated, so that the po-files
+   automatically get the correct version number.
+ - send pot-file to translationproject
+
+** Release
+
+See script make-xboard-release that can handle GNU-upload and tagging in git.
+
+- update webpage, manuals
+- upload on gnu
+- update enginge-intf.html
+- create savannah news item
+- email lists; add short discription of xboard to news item
+  1) email gnu (check admin page for gnu) http://www.gnu.org/prep/maintain/html_node/Announcements.html#Announcements
+  2) email chess servers (ICS, FICS) and other web directories
+  3) email linux distributions/update opensuse (Arun can handle OpenSUSE)
+  4) email info-gnu-chess 
+- update freshmeat.net (Tim can do this, email him)
+- newsgroups add short discription of xboard to news item
+  1)  gnu.chess, info-gnu-chess
+  2)  rec.games.chess.computer
+  3)  comp.os.linux.announce
+  4)  WinBoard forum web page (HGM does this one) 
+- update git to the next pre-release 
+
+** Template for emails
+
+fill in the <...>
+
+Subject: release of XBoard version <...>
+
+Hello, 
+
+A new version of XBoard is available. Here are some details:
+
+Short description:
+
+XBoard is a graphical user interface for chess in all its major forms, 
+including international chess, xiangqi (Chinese chess), shogi Japanese chess) 
+and Makruk. Many variations of chess are also supported.
+
+Web page:
+
+http://www.gnu.org/software/xboard/
+
+Download at:
+
+http://ftp.gnu.org/gnu/xboard/
+
+Windows binaries will be available at:
+
+http://www.open-aurec.com/wbforum/viewforum.php?f=19 
+
+Development at:
+
+https://savannah.gnu.org/projects/xboard/
+
+News: 
+
+<list of most important new features>
+See the NEWS file in the distribution or git for more details.

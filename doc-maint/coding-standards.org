@@ -1,0 +1,6 @@
+We try to follow
+
+http://www.gnu.org/prep/standards/standards.html#Formatting
+
+lots of code cleanup is needed though (2012-03-04)
+

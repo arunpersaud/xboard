@@ -1,0 +1,40 @@
+The home page for XBoard are kept in CVS. This is a unfortunate, since
+we keep the code in git and hopefully will change in the
+future. Luckily there is a cvsexport/import command for git that can help.
+
+Possible setup:
+
+cvs web page in /home/user/xboard-cvs
+git in          /home/user/xboard-git
+
+Add the following entries in /home/user/xboard-git/.git/config:
+
+[cvsimport]
+        module = xboard
+        d = :ext:<savannah user name>@cvs.sv.gnu.org:/webcvs/xboard
+[cvsexportcommit]
+        cvsdir = /home/user/xboard-cvs
+
+It's probably best to have a tracking branch for the cvs tree, one
+that branch you should be able to use:
+
+git cvsimport -a
+
+to import all cvs-commits into the git tree. You can merge that branch
+with the www-branch in git.
+
+To push a git-commit (from branch www) into cvs, you can use:
+
+git cvsexportcommit -v -c <sha1>
+
+This can only be done one commit at a time AFAIK. In case of conflicts
+cvsexportcommit will leave a .msg and patchfile (something like
+.cvscommitpatch) in the CVS directory that you can apply by hand and
+then fix the merge conflicts and apply the commit by hand via "cvs
+commit" (use "cvs add <file>" if you need to add new files).
+
+GNU also provides a script to update the online manual from the texi
+file. It's called gendocs.sh (see same directory as this file). There
+might be newer version around, so it could be worth checking for them
+every now and then.
+
