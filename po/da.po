@@ -2499,7 +2499,7 @@ msgid "Minimum nr consecutive positions:"
 msgstr "Mindste antal stillinger i følge ad gangen:"
 
 #: xoptions.c:634
-msgid "Seach mode:"
+msgid "Search mode:"
 msgstr "Søgemetode:"
 
 #: xoptions.c:635

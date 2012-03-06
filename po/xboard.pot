@@ -2414,7 +2414,7 @@ msgid "Minimum nr consecutive positions:"
 msgstr ""
 
 #: xoptions.c:634
-msgid "Seach mode:"
+msgid "Search mode:"
 msgstr ""
 
 #: xoptions.c:635
