@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard-4.6.0.20120212\n"
+"Project-Id-Version: GNU xboard-4.6.0.20120304\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2012-03-04 14:07-0800\n"
-"PO-Revision-Date: 2012-02-13 10:18+0200\n"
+"POT-Creation-Date: 2012-03-04 14:09-0800\n"
+"PO-Revision-Date: 2012-03-05 21:55+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -16,19 +16,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 1.2\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
 #: backend.c:739
 msgid "first"
-msgstr ""
+msgstr "перший"
 
 #. TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
 #: backend.c:742
 msgid "second"
-msgstr ""
+msgstr "другий"
 
 #: backend.c:820
 #, c-format
@@ -139,9 +139,7 @@ msgstr "Робота режиму гри комп’ютером білими р
 
 #: backend.c:1666
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
-"Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено "
-"шаховий рушій"
+msgstr "Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено шаховий рушій"
 
 #: backend.c:1671
 msgid "TwoMachines mode does not work with ICS mode"
@@ -229,8 +227,7 @@ msgstr ""
 
 #: backend.c:4194 backend.c:9413
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
+msgstr "Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
 
 #: backend.c:4288
 msgid "Error gathering move list: extra board"
@@ -252,8 +249,7 @@ msgstr "Ця дія неможлива у режимі гри або спост�
 
 #: backend.c:5915
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
-"Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
+msgstr "Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
 
 #: backend.c:6268
 msgid "You are playing Black"
@@ -318,8 +314,7 @@ msgstr "У %s не передбачено аналізу"
 #: backend.c:8339
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
-"Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
+msgstr "Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
 
 #: backend.c:8366
 #, c-format
@@ -566,8 +561,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Повідомлення cmail не завантажено.\n"
-"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш "
-"хід."
+"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш хід."
 
 #: backend.c:12789
 msgid "No unfinished games"
@@ -797,10 +791,13 @@ msgid "Engine Output"
 msgstr "Вивід рушія"
 
 #: engineoutput.c:116
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%d reversible ply)"
 msgid_plural "%s (%d reversible plies)"
-msgstr[0] "%s (з можливістю скасування %d ходів)"
+msgstr[0] "%s (з можливістю скасування %d ходу)"
+msgstr[1] "%s (з можливістю скасування %d ходів)"
+msgstr[2] "%s (з можливістю скасування %d ходів)"
+msgstr[3] "%s (з можливістю скасування %d ходу)"
 
 #: filebrowser/selfile.c:301
 msgid "Browse"
@@ -1254,19 +1251,19 @@ msgstr "Підручник з XBoard F1"
 
 #: xboard.c:793
 msgid "XBoard Home Page"
-msgstr ""
+msgstr "Домашня сторінка XBoard"
 
 #: xboard.c:794
 msgid "On-line User Guide"
-msgstr ""
+msgstr "Підручник користувача у інтернеті"
 
 #: xboard.c:795
 msgid "Development News"
-msgstr ""
+msgstr "Новини щодо розробки"
 
 #: xboard.c:796
 msgid "e-Mail Bug Report"
-msgstr ""
+msgstr "Надіслати звіт про ваду електронною поштою"
 
 #: xboard.c:798 xboard.c:6725
 msgid "About XBoard"
@@ -1428,9 +1425,7 @@ msgstr "Не вдалося відкрити файл «%s»\n"
 
 #: xboard.c:2062
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з "
-"більшими значеннями BOARD_RANKS або BOARD_FILES"
+msgstr "Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з більшими значеннями BOARD_RANKS або BOARD_FILES"
 
 #: xboard.c:2085
 #, c-format
@@ -1595,9 +1590,7 @@ msgstr "%s: %s… використовуємо вбудоване\n"
 #: xboard.c:3868
 #, c-format
 msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
-msgstr ""
-"%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… "
-"використовуємо вбудоване\n"
+msgstr "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… використовуємо вбудоване\n"
 
 #: xboard.c:3936
 msgid "----"
@@ -1700,7 +1693,7 @@ msgid " (with Zippy code)"
 msgstr " (з кодом Zippy)"
 
 #: xboard.c:6714
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -1708,12 +1701,10 @@ msgid ""
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -1724,8 +1715,13 @@ msgstr ""
 "© Free Software Foundation, 1992–2012\n"
 "© Alessandro Scotti, 2005\n"
 "\n"
-"%s є вільним програмним забезпеченням, його працездатність не гарантується. "
-"Докладніше про це у файлі COPYING."
+"%s є вільним програмним забезпеченням, його працездатність не гарантується. Докладніше про це у файлі COPYING.\n"
+"\n"
+"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/xboard/\n"
+"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/software/xboard/whats_new.html\n"
+"\n"
+"Надішліть повідомлення про ваду на адресу: <bug-xboard@gnu.org>\n"
+"\n"
 
 #: xboard.c:6885
 msgid "Fatal Error"
@@ -1962,8 +1958,7 @@ msgstr "Номер позиції (-1 або -2 = автоматичне збі�
 
 #: xoptions.c:399
 msgid "Rewind Index after this many Games (0 = never):"
-msgstr ""
-"Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
+msgstr "Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
 
 #: xoptions.c:400
 msgid "Disable own engine books by default"
@@ -2035,7 +2030,7 @@ msgstr "Показувати клітинки призначення"
 
 #: xoptions.c:437
 msgid "Sticky Windows"
-msgstr ""
+msgstr "Липкі вікна"
 
 #: xoptions.c:438
 msgid "Test Legality"
@@ -2839,8 +2834,7 @@ msgstr "Команда рушія:"
 
 #: xoptions.c:1746
 msgid "(Directory will be derived from engine path when empty)"
-msgstr ""
-"(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
+msgstr "(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
 
 #: xoptions.c:1747
 msgid "UCI"
@@ -2937,37 +2931,37 @@ msgstr "Керування часом"
 #: args.h:783
 #, c-format
 msgid "%s in settings file\n"
-msgstr ""
+msgstr "%s у файлі параметрів\n"
 
 #: args.h:793
 #, c-format
 msgid "Bad integer value %s"
-msgstr ""
+msgstr "Помилкове ціле значення %s"
 
 #: args.h:884 args.h:1102
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized argument %s"
-msgstr "%s: невідома назва boardSize %s\n"
+msgstr "Невідомий аргумент %s"
 
 #: args.h:913
 #, c-format
 msgid "No value provided for argument %s"
-msgstr ""
+msgstr "Не вказано значення для аргументу %s"
 
 #: args.h:973
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
-msgstr ""
+msgstr "Неповне екранування \\ у значенні для %s"
 
 #: args.h:1057
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open indirection file %s"
-msgstr "Не вдалося відкрити файл «%s»\n"
+msgstr "Не вдалося відкрити файл переспрямування %s"
 
 #: args.h:1074
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized boolean argument value %s"
-msgstr "%s: невідома назва boardSize %s\n"
+msgstr "Невідоме значення булевого аргументу %s"
 
 #~ msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 #~ msgstr "Анімація ходів: фігура %d перестрибує з %d,%d до %d,%d \n"

@@ -19,10 +19,10 @@
 # Byrial Ole Jensen <byrial@vip.cybercity.dk>, 2011, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.6.0.20120212\n"
+"Project-Id-Version: GNU xboard 4.6.0.20120304\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2012-03-04 14:07-0800\n"
-"PO-Revision-Date: 2012-02-16 19:11+0100\n"
+"POT-Creation-Date: 2012-03-04 14:09-0800\n"
+"PO-Revision-Date: 2012-03-06 12:27+0100\n"
 "Last-Translator: Byrial Ole Jensen <byrial@vip.cybercity.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -36,13 +36,13 @@ msgstr ""
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
 #: backend.c:739
 msgid "first"
-msgstr ""
+msgstr "første"
 
 #. TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
 #: backend.c:742
 msgid "second"
-msgstr ""
+msgstr "det andet"
 
 #: backend.c:820
 #, c-format
@@ -103,7 +103,7 @@ msgstr ""
 #: backend.c:1471
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
-msgstr "Alle partier i turnering '%s' er allerede færdige eller i gang"
+msgstr "Alle partier i turneringen \"%s\" er allerede færdige eller i gang"
 
 #: backend.c:1478
 msgid "Can't have a match with no chess programs"
@@ -184,7 +184,7 @@ msgstr "Ukendt vild type %d"
 #: backend.c:2167
 #, c-format
 msgid "recognized '%s' (%d) as variant %s\n"
-msgstr "genkendte '%s' (%d) som variant %s\n"
+msgstr "genkendte \"%s\" (%d) som variant %s\n"
 
 #: backend.c:2227 xboard.c:7155
 msgid "Error writing to display"
@@ -806,10 +806,10 @@ msgid "Engine Output"
 msgstr "Output fra skakprogram"
 
 #: engineoutput.c:116
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%d reversible ply)"
 msgid_plural "%s (%d reversible plies)"
-msgstr[0] "%s (%d reversible træk)"
+msgstr[0] "%s (%d reversibelt træk)"
 msgstr[1] "%s (%d reversible træk)"
 
 #: filebrowser/selfile.c:301
@@ -835,7 +835,7 @@ msgstr "Annullér"
 
 #: filebrowser/selfile.c:837
 msgid "XsraSelFile: can't get current directory"
-msgstr "XsraSelFile: kan ikke hente det aktuelle katalog"
+msgstr "XsraSelFile: Kan ikke hente det aktuelle katalog"
 
 #: gamelist.c:375
 #, c-format
@@ -1265,19 +1265,19 @@ msgstr "Man XBoard    F1"
 
 #: xboard.c:793
 msgid "XBoard Home Page"
-msgstr ""
+msgstr "XBoards hjemmeside (engelsk)"
 
 #: xboard.c:794
 msgid "On-line User Guide"
-msgstr ""
+msgstr "Online brugervejledning (engelsk)"
 
 #: xboard.c:795
 msgid "Development News"
-msgstr ""
+msgstr "Nyheder i denne version (engelsk)"
 
 #: xboard.c:796
 msgid "e-Mail Bug Report"
-msgstr ""
+msgstr "E-mail fejlrapport"
 
 #: xboard.c:798 xboard.c:6725
 msgid "About XBoard"
@@ -1387,12 +1387,12 @@ msgstr "%s: Har ikke adgang til XPM-katalog %s\n"
 #: xboard.c:1243
 #, c-format
 msgid "Available `%s' sizes:\n"
-msgstr "Tilgængelige '%s'-størrelser:\n"
+msgstr "Tilgængelige \"%s\"-størrelser:\n"
 
 #: xboard.c:1276
 #, c-format
 msgid "Error: No `%s' files!\n"
-msgstr "Fejl: Ingen '%s'-filer!\n"
+msgstr "Fejl: Ingen \"%s\"-filer!\n"
 
 #: xboard.c:1289
 #, c-format
@@ -1415,7 +1415,7 @@ msgstr "%s: ikke genkendt farve %s\n"
 #: xboard.c:1356
 #, c-format
 msgid "%s: can't parse foreground color in `%s'\n"
-msgstr "%s: kan ikke fortolke forgrundsfarve i '%s'\n"
+msgstr "%s: kan ikke fortolke forgrundsfarve i \"%s\"\n"
 
 #: xboard.c:1744 xboard.c:2506
 #, c-format
@@ -1435,13 +1435,11 @@ msgstr "%s: kan ikke cd til CHESSDIR: "
 #: xboard.c:2047
 #, c-format
 msgid "Failed to open file '%s'\n"
-msgstr "Åbning af fil '%s' mislykkedes\n"
+msgstr "Åbning af filen \"%s\" mislykkedes\n"
 
 #: xboard.c:2062
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Genoversæt med større BOARD_RANKS eller BOARD_FILES for at understøtte denne "
-"størrelse"
+msgstr "Genoversæt med større BOARD_RANKS eller BOARD_FILES for at understøtte denne størrelse"
 
 #: xboard.c:2085
 #, c-format
@@ -1618,7 +1616,7 @@ msgstr "Placér"
 
 #: xboard.c:5121
 msgid "could not open: "
-msgstr "kunne ikke åbne:"
+msgstr "kunne ikke åbne: "
 
 #: xboard.c:5147 xboard.c:5259 xboard.c:6990 xboard.c:7030 xgamelist.c:749
 #: xgamelist.c:857 xoptions.c:999 xoptions.c:1342
@@ -1709,7 +1707,7 @@ msgid " (with Zippy code)"
 msgstr " (med Zippy-kode)"
 
 #: xboard.c:6714
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -1717,12 +1715,10 @@ msgid ""
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -1733,8 +1729,13 @@ msgstr ""
 "Ændringer Copyright 1992-2012 Free Software Foundation\n"
 "Ændringer Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s er frit programmel og er uden nogen form for garanti; se filen COPYING "
-"for mere information."
+"%s er frit programmel og er uden nogen form for garanti; se filen COPYING for mere information. \n"
+"Besøg XBoard på nettet på http://www.gnu.org/software/xboard/\n"
+"Se de nyeste funktioner på http://www.gnu.org/software/xboard/whats_new.html\n"
+"\n"
+"Rapportér fejl via e-mail til <bug-xboard@gnu.org>\n"
+"Rapportér fejl i den danske oversættelse til <dansk@dansk-gruppen.dk>\n"
+"\n"
 
 #: xboard.c:6885
 msgid "Fatal Error"
@@ -2047,7 +2048,7 @@ msgstr "Vis målfelter"
 
 #: xoptions.c:437
 msgid "Sticky Windows"
-msgstr ""
+msgstr "Klæbrige vinduer"
 
 #: xoptions.c:438
 msgid "Test Legality"
@@ -2951,37 +2952,37 @@ msgstr "Betænkningstid"
 #: args.h:783
 #, c-format
 msgid "%s in settings file\n"
-msgstr ""
+msgstr "%s i indstillingsfil\n"
 
 #: args.h:793
 #, c-format
 msgid "Bad integer value %s"
-msgstr ""
+msgstr "Forkert heltalsværdi %s"
 
 #: args.h:884 args.h:1102
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized argument %s"
-msgstr "%s: ikke genkendt boardSize-navn %s\n"
+msgstr "Ikke genkendt argument %s"
 
 #: args.h:913
 #, c-format
 msgid "No value provided for argument %s"
-msgstr ""
+msgstr "Ingen værdi givet for argumentet %s"
 
 #: args.h:973
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
-msgstr ""
+msgstr "Ukomplet \\-undvigesekvens i værdi for %s"
 
 #: args.h:1057
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open indirection file %s"
-msgstr "Åbning af fil '%s' mislykkedes\n"
+msgstr "Åbning af inkluderet fil \"%s\" mislykkedes"
 
 #: args.h:1074
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized boolean argument value %s"
-msgstr "%s: ikke genkendt boardSize-navn %s\n"
+msgstr "Ikke genkendt boolesk argumentværdi %s"
 
 #~ msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 #~ msgstr "AnimateMove: brik %d hopper fra %d,%d til %d,%d\n"
