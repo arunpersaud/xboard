@@ -2616,6 +2616,13 @@ SeekGraphClick (ClickType click, int x, int y, int moving)
 {
     static int lastDown = 0, displayed = 0, lastSecond;
     if(y < 0) return FALSE;
+    if(!(appData.seekGraph && appData.icsActive && loggedOn &&
+	(gameMode == BeginningOfGame || gameMode == IcsIdle))) {
+	if(!seekGraphUp) return FALSE;
+	seekGraphUp = FALSE; // seek graph is up when it shouldn't be: take it down
+	DrawPosition(TRUE, NULL);
+	return TRUE;
+    }
     if(!seekGraphUp) { // initiate cration of seek graph by requesting seek-ad list
 	if(click == Release || moving) return FALSE;
 	nrOfSeekAds = 0;
@@ -3562,7 +3569,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 	    if (looking_at(buf, &i, "% ") ||
 		((started == STARTED_MOVES || started == STARTED_MOVES_NOHIDE)
 		 && looking_at(buf, &i, "}*"))) { char *bookHit = NULL; // [HGM] book
-		if(soughtPending) { // [HGM] seekgraph: on ICC sought-list has no termination line
+		if(soughtPending && nrOfSeekAds) { // [HGM] seekgraph: on ICC sought-list has no termination line
 		    soughtPending = FALSE;
 		    seekGraphUp = TRUE;
 		    DrawSeekGraph();
@@ -4210,6 +4217,7 @@ ParseBoard12 (char *string)
 	newGameMode =
 	  ((relation == RELATION_PLAYING_MYMOVE) == (to_play == 'W')) ?
 	    IcsPlayingWhite : IcsPlayingBlack;
+	soughtPending =FALSE; // [HGM] seekgraph: solve race condition
 	break;
       case RELATION_EXAMINING:
 	newGameMode = IcsExamining;
@@ -6829,11 +6837,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     char promoChoice = NULLCHAR;
     ChessSquare piece;
 
-    if(appData.seekGraph && appData.icsActive && loggedOn &&
-	(gameMode == BeginningOfGame || gameMode == IcsIdle)) {
-	SeekGraphClick(clickType, xPix, yPix, 0);
-	return;
-    }
+    if(SeekGraphClick(clickType, xPix, yPix, 0)) return;
 
     if (clickType == Press) ErrorPopDown();
 
