@@ -6886,6 +6886,11 @@ LeftClick (ClickType clickType, int xPix, int yPix)
               || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
 	return;
 
+    if(gotPremove && clickType == Press) { // user starts something after premove has been entered: abort premove as side effect
+	gotPremove = 0;
+	ClearPremoveHighlights();
+    }
+
     if(clickType == Press && fromX == x && fromY == y && promoDefaultAltered)
 	fromX = fromY = -1; // second click on piece after altering default promo piece treated as first click
 
