@@ -6886,7 +6886,8 @@ LeftClick (ClickType clickType, int xPix, int yPix)
               || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
 	return;
 
-    if(gotPremove && clickType == Press) { // user starts something after premove has been entered: abort premove as side effect
+    if(gotPremove && x == premoveFromX && y == premoveFromY && clickType == Release) {
+	// could be static click on premove from-square: abort premove
 	gotPremove = 0;
 	ClearPremoveHighlights();
     }
