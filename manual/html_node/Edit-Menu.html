@@ -50,11 +50,16 @@ to another application (such as a text editor or another copy of
 XBoard) using that application's paste command.  In many X
 applications, such as xterm and emacs, the middle mouse button can be
 used for pasting; in XBoard, you must use the Paste Position command. 
-<br><dt>Paste Game<dd><a name="index-Paste-Game_002c-Menu-Item-23"></a>Interprets the current X selection as a game record and loads it, as
+<br><dt>Copy Game List<dd><a name="index-Copy-Game-List_002c-Menu-Item-23"></a>Copies the current game list to the clipboard,
+and sets the X selection to this text. 
+A format of comma-separated double-quoted strings is used,
+including all tags,
+so it can be easily imported into spread-sheet programs. 
+<br><dt>Paste Game<dd><a name="index-Paste-Game_002c-Menu-Item-24"></a>Interprets the current X selection as a game record and loads it, as
 with Load Game. The <kbd>Ctrl-V</kbd> key is a keyboard equivalent. 
-<br><dt>Paste Position<dd><a name="index-Paste-Position_002c-Menu-Item-24"></a>Interprets the current X selection as a FEN position and loads it, as
+<br><dt>Paste Position<dd><a name="index-Paste-Position_002c-Menu-Item-25"></a>Interprets the current X selection as a FEN position and loads it, as
 with Load Position. The shifted <kbd>Ctrl-V</kbd> key is a keyboard equivalent. 
-<br><dt>Edit Game<dd><a name="index-Edit-Game_002c-Menu-Item-25"></a>Allows you to make moves for both Black and White, and to change
+<br><dt>Edit Game<dd><a name="index-Edit-Game_002c-Menu-Item-26"></a>Allows you to make moves for both Black and White, and to change
 moves after backing up with the &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo; command. The clocks do
 not run. The <kbd>Ctrl-E</kbd> key is a keyboard equivalent.
 
@@ -68,15 +73,26 @@ XBoard out of ICS Client mode and lets you edit games locally.
 If you want to edit games on ICS in a way that other ICS users
 can see, use the ICS <kbd>examine</kbd> command or start an ICS match
 against yourself. 
-<br><dt>Edit Position<dd><a name="index-Edit-Position_002c-Menu-Item-26"></a>Lets you set up an arbitrary board position. 
+<br><dt>Edit Position<dd><a name="index-Edit-Position_002c-Menu-Item-27"></a>Lets you set up an arbitrary board position. 
 The shifted <kbd>Ctrl-E</kbd> key is a keyboard equivalent. 
 Use mouse button 1 to drag pieces to new squares, or to delete a piece
 by dragging it off the board or dragging an empty square on top of it. 
 To drop a new piece on a square, press mouse button 2 or 3 over the
-square. This brings up a menu of white pieces (button 2) or
-black pieces (button 3). Additional menu choices let you empty the
-square or clear the board. You can set the side to play next by
-clicking on the word White or Black at the top of the screen. 
+square. 
+This puts a white or black pawn in the square, respectively,
+but you can change that to any other piece type by dragging the
+mouse down before you release the button. 
+You will then see the piece on the originally clicked square
+cycle through the available pieces
+(including those of opposite color),
+and can release the button when you see the piece you want. 
+To alter the side to move, you can click the clock
+(the words White and Black above the board)
+of the side you want to give the move to. 
+To clear the board you can click the clock of the side that
+alread has the move (which is highlighted in black). 
+The old behavior with a piece menu can still be configured
+with the aid of the <code>pieceMenu</code> option. 
 Selecting &lsquo;<samp><span class="samp">Edit Position</span></samp>&rsquo; causes XBoard to discard
 all remembered moves in the current game.
 
@@ -86,7 +102,7 @@ not sent to the ICS: &lsquo;<samp><span class="samp">Edit Position</span></samp>
 edit positions on ICS in a way that other ICS users can see, use
 the ICS <kbd>examine</kbd> command, or start an ICS match against yourself. 
 (See also the ICS Client topic above.) 
-<br><dt>Edit Tags<dd><a name="index-Edit-Tags_002c-Menu-Item-27"></a>Lets you edit the PGN (portable game notation)
+<br><dt>Edit Tags<dd><a name="index-Edit-Tags_002c-Menu-Item-28"></a>Lets you edit the PGN (portable game notation)
 tags for the current game. After editing, the tags must still conform to
 the PGN tag syntax:
 
@@ -110,10 +126,18 @@ the PGN tag syntax:
 the PGN standard requires all games to have at least the seven tags shown
 above. Any that you omit will be filled in by XBoard
 with &lsquo;<samp><span class="samp">?</span></samp>&rsquo; (unknown value), or &lsquo;<samp><span class="samp">-</span></samp>&rsquo; (inapplicable value). 
-<br><dt>Edit Comment<dd><a name="index-Edit-Comment_002c-Menu-Item-28"></a>Adds or modifies a comment on the current position. Comments are
+<br><dt>Edit Comment<dd><a name="index-Edit-Comment_002c-Menu-Item-29"></a>Adds or modifies a comment on the current position. Comments are
 saved by &lsquo;<samp><span class="samp">Save Game</span></samp>&rsquo; and are displayed by &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo;,
 &lsquo;<samp><span class="samp">Forward</span></samp>&rsquo;, and &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo;. 
-<br><dt>Revert<dt>Annotate<dd><a name="index-Revert_002c-Menu-Item-29"></a><a name="index-Annotate_002c-Menu-Item-30"></a>If you are examining an ICS game and Pause mode is off,
+<br><dt>Edit Book<dd><a name="index-Edit-Book_002c-Menu-Item-30"></a>Pops up a window listing the moves available in the GUI book
+(specified in the &lsquo;<samp><span class="samp">Common Engine Settings</span></samp>&rsquo; dialog)
+from the currently displayed position,
+together with their weights and (optionally in braces) learn info. 
+You can then edit this list, and the new list will be stored
+back into the book when you press OK. 
+Note that the listed percentages are neither used, nor updated when
+you change the weights; they are just there as an optical aid. 
+<br><dt>Revert<dt>Annotate<dd><a name="index-Revert_002c-Menu-Item-31"></a><a name="index-Annotate_002c-Menu-Item-32"></a>If you are examining an ICS game and Pause mode is off,
 Revert issues the ICS command &lsquo;<samp><span class="samp">revert</span></samp>&rsquo;. 
 In local mode, when you were editing or analyzing a game,
 and the <code>-variations</code> command-line option is switched on,
@@ -133,11 +157,11 @@ the variation you are now abandoning will be added as a comment
 (in PGN variation syntax, i.e. between parentheses)
 to the original move where you deviated, for later recalling. 
 The <kbd>Home</kbd> key is a keyboard equivalent to &lsquo;<samp><span class="samp">Revert</span></samp>&rsquo;. 
-<br><dt>Truncate Game<dd><a name="index-Truncate-Game_002c-Menu-Item-31"></a>Discards all remembered moves of the game beyond the current
+<br><dt>Truncate Game<dd><a name="index-Truncate-Game_002c-Menu-Item-33"></a>Discards all remembered moves of the game beyond the current
 position. Puts XBoard into &lsquo;<samp><span class="samp">Edit Game</span></samp>&rsquo; mode if it was not there
 already. 
 The <kbd>End</kbd> key is a keyboard equivalent. 
-<br><dt>Backward<dd><a name="index-Backward_002c-Menu-Item-32"></a><a name="index-g_t_003c_002c-Button-33"></a>Steps backward through a series of remembered moves. 
+<br><dt>Backward<dd><a name="index-Backward_002c-Menu-Item-34"></a><a name="index-g_t_003c_002c-Button-35"></a>Steps backward through a series of remembered moves. 
 The &lsquo;<samp><span class="samp">[&lt;]</span></samp>&rsquo; button and the <kbd>Alt+LeftArrow</kbd> key are equivalents,
 as is turning the mouse wheel towards you. 
 In addition, pressing the Control key steps back one move, and releasing
@@ -156,7 +180,7 @@ off, &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo; issues the IC
 everyone's view of the game and allows you to make a different
 move. If Pause mode is on, &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo; only backs up your local
 view. 
-<br><dt>Forward<dd><a name="index-Forward_002c-Menu-Item-34"></a><a name="index-g_t_003e_002c-Button-35"></a>Steps forward through a series of remembered moves (undoing the
+<br><dt>Forward<dd><a name="index-Forward_002c-Menu-Item-36"></a><a name="index-g_t_003e_002c-Button-37"></a>Steps forward through a series of remembered moves (undoing the
 effect of &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo;) or forward through a game file. The
 &lsquo;<samp><span class="samp">[&gt;]</span></samp>&rsquo; button and the <kbd>Alt+RightArrow</kbd> key are equivalents,
 as is turning the mouse wheel away from you.
@@ -168,7 +192,7 @@ everyone's view of the game forward along the current line. If
 Pause mode is on, &lsquo;<samp><span class="samp">Forward</span></samp>&rsquo; only moves your local view forward,
 and it will not go past the position that the game was in when
 you paused. 
-<br><dt>Back to Start<dd><a name="index-Back-to-Start_002c-Menu-Item-36"></a><a name="index-g_t_003c_003c_002c-Button-37"></a>Jumps backward to the first remembered position in the game. 
+<br><dt>Back to Start<dd><a name="index-Back-to-Start_002c-Menu-Item-38"></a><a name="index-g_t_003c_003c_002c-Button-39"></a>Jumps backward to the first remembered position in the game. 
 The &lsquo;<samp><span class="samp">[&lt;&lt;]</span></samp>&rsquo; button and the <kbd>Alt+Home</kbd> key are equivalents.
 
      <p>In most modes, Back to Start only lets you look back at old
@@ -185,7 +209,7 @@ is off, &lsquo;<samp><span class="samp">Back to Start</span></samp>&rsquo; issue
 command, which backs up everyone's view of the game to the start and
 allows you to make different moves. If Pause mode is on, &lsquo;<samp><span class="samp">Back
 to Start</span></samp>&rsquo; only backs up your local view. 
-<br><dt>Forward to End<dd><a name="index-Forward-to-End_002c-Menu-Item-38"></a><a name="index-g_t_003e_003e_002c-Button-39"></a>Jumps forward to the last remembered position in the game. The
+<br><dt>Forward to End<dd><a name="index-Forward-to-End_002c-Menu-Item-40"></a><a name="index-g_t_003e_003e_002c-Button-41"></a>Jumps forward to the last remembered position in the game. The
 &lsquo;<samp><span class="samp">[&gt;&gt;]</span></samp>&rsquo; button and the <kbd>Alt+End</kbd> key are equivalents.
 
      <p>If you are examining an ICS game, the behavior of &lsquo;<samp><span class="samp">Forward to
