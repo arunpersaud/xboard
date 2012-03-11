@@ -1,6 +1,6 @@
 ** Version 4.6.0 **
 
-   (see http://www.gnu.org/software/xboard/whats_new/4.6.0/ )
+   (for a more detailed list with screenshots see http://www.gnu.org/software/xboard/whats_new/4.6.0/ )
 
    * Engine vs. Engine
     * Loading and installing engines through the menu
@@ -8,7 +8,7 @@
     * Stopping a match between two engines
     * Replacing a tourney participant
     * Playing openings in color-reversed pairs
-    * Perpetual chasing in Xiangqi 
+    * Perpetual chasing in Xiangqi
 
    * Interface Improvements
     * Auto-Queen, and still under-promote?
@@ -16,22 +16,28 @@
     * Displaying PVs as SAN
     * Small scores in the Eval Graph
     * How close is the 50-move draw?
-    * Sign of the engine scores 
+    * Sign of the engine scores
+    * Loading frequently used engines
+    * Collapsing groups of engines
 
    * Interactive Analysis
     * Playing moves from the PV
     * Rapidly changing the number of PVs
     * Setting the other side to move in analysis
-    * Annotating a game with an engine 
+    * Annotating a game with an engine
 
    * Other New Functionality
     * Searching a position in a PGN file
-    * Editing the opening book 
+    * Editing the opening book
+    * Recording game sequence number in PGN
+    * Each tourney game its own debug file
 
    * XBoard -> WinBoard Convergence
     * Exporting the game list (XB)
     * A move type-in box (XB)
-    * New-style Move History window (XB) 
+    * New-style Move History window (XB)
+    * Associating XBoard with file types
+    * Many Windows behave as one (XB)
 
 ** Version 4.5.3a **
 

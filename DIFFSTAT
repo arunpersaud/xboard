@@ -5,21 +5,21 @@
  .gitignore                          |    3 +
  ABOUT-NLS                           | 1282 ++++++++++
  COPYRIGHT                           |    2 +-
- ChangeLog                           | 3106 ++++++++++++++++++++++--
- DIFFSTAT                            |  210 ++
- Makefile.am                         |   56 +-
+ ChangeLog                           | 3301 +++++++++++++++++++++++--
+ DIFFSTAT                            |  211 ++
+ Makefile.am                         |   58 +-
  NEWS                                |   35 +
- SHORTLOG                            |  435 ++++
- args.h                              |  139 +-
+ SHORTLOG                            |  505 ++++
+ args.h                              |  140 +-
  autogen.sh                          |    2 +-
- backend.c                           | 3426 ++++++++++++++++++--------
+ backend.c                           | 3450 ++++++++++++++++++--------
  backend.h                           |   55 +-
  backendz.h                          |    2 +-
  bitmaps/bitmaps.h                   |    2 +-
- book.c                              |  261 ++-
+ book.c                              |  261 +-
  childio.c                           |   26 +-
  childio.h                           |    2 +-
- common.h                            |  142 +-
+ common.h                            |  143 +-
  config.rpath                        |  280 ++-
  configure.ac                        |   37 +-
  copyright.texi                      |    2 +-
@@ -34,7 +34,7 @@
  filebrowser/selfile.h               |    2 -
  frontend.h                          |   16 +-
  gamelist.c                          |  137 +-
- gettext.h                           |  262 ++-
+ gettext.h                           |  262 +-
  history.c                           |   33 +-
  lists.c                             |   41 +-
  lists.h                             |    2 +-
@@ -46,7 +46,7 @@
  m4/nls.m4                           |   32 +
  m4/po.m4                            |  449 ++++
  m4/progtest.m4                      |   92 +
- moves.c                             |  341 ++--
+ moves.c                             |  350 ++-
  moves.h                             |    8 +-
  parser.c                            | 4644 ++++-------------------------------
  parser.h                            |    2 +-
@@ -63,26 +63,26 @@
  po/POTFILES.in                      |   10 +-
  po/Rules-quot                       |   47 +
  po/boldquot.sed                     |   10 +
- po/da.po                            | 2977 ++++++++++++++++++++++
- po/de.po                            | 3464 +++++++++++++++++++-------
+ po/da.po                            | 3000 ++++++++++++++++++++++
+ po/de.po                            | 3478 +++++++++++++++++++-------
  po/en@boldquot.header               |   25 +
  po/en@quot.header                   |   22 +
- po/es.po                            | 2925 ++++++++++++++++++++++
+ po/es.po                            | 2941 ++++++++++++++++++++++
  po/insert-header.sin                |   23 +
- po/it.po                            | 2933 ++++++++++++++++++++++
+ po/it.po                            | 2949 ++++++++++++++++++++++
  po/lng2po.sh                        |   96 +
  po/metascript                       |  125 +
  po/normalize.pl                     |   10 +
  po/quot.sed                         |    6 +
- po/ru.po                            | 2919 ++++++++++++++++++++++
+ po/ru.po                            | 2935 ++++++++++++++++++++++
  po/strip-bad-utf8.pl                |   14 +
- po/tr.po                            | 3306 +++++++++++++++++++------
- po/uk.po                            | 3002 ++++++++++++++++++++++
- po/vi.po                            | 2904 ++++++++++++++++++++++
- po/xboard.pot                       | 2958 +++++++++++++++++------
- po/zh_CN.po                         | 2917 ++++++++++++++++++++++
- po/zh_HK.po                         | 2922 ++++++++++++++++++++++
- po/zh_TW.po                         | 2915 ++++++++++++++++++++++
+ po/tr.po                            | 3330 ++++++++++++++++++-------
+ po/uk.po                            | 3030 +++++++++++++++++++++++
+ po/vi.po                            | 2920 ++++++++++++++++++++++
+ po/xboard.pot                       | 2972 ++++++++++++++++------
+ po/zh_CN.po                         | 2933 ++++++++++++++++++++++
+ po/zh_HK.po                         | 2938 ++++++++++++++++++++++
+ po/zh_TW.po                         | 2931 ++++++++++++++++++++++
  uci.c                               |    7 +-
  winboard/bitmaps/cross.ico          |  Bin 0 -> 766 bytes
  winboard/bitmaps/ni49o.bmp          |  Bin 454 -> 0 bytes
@@ -116,11 +116,11 @@
  winboard/wengineoutput.c            |   10 +-
  winboard/wevalgraph.c               |    3 +-
  winboard/wgamelist.c                |   39 +-
- winboard/winboard.c                 |  483 +++--
+ winboard/winboard.c                 |  483 ++--
  winboard/winboard.h                 |   11 +-
  winboard/winboard.rc                |  158 +-
  winboard/winboard.rtf               | 1644 +++++++------
- winboard/woptions.c                 |  163 ++-
+ winboard/woptions.c                 |  163 +-
  winboard/woptions.h                 |    2 +-
  winboard/wsettings.c                |  437 +++-
  winboard/wsockerr.c                 |    2 +-
@@ -128,13 +128,13 @@
  xboard-fen-viewer.desktop           |   52 +
  xboard-pgn-viewer.desktop           |   52 +
  xboard-tourney.desktop              |   52 +
- xboard.c                            | 2653 +++++++++-----------
- xboard.conf.in                      |   16 +-
+ xboard.c                            | 2688 +++++++++-----------
+ xboard.conf.in                      |   17 +-
  xboard.h                            |   26 +-
  xboard.png                          |  Bin 15116 -> 1726 bytes
- xboard.texi                         | 1092 +++++++--
+ xboard.texi                         | 1092 ++++++--
  xboard.xml                          |   61 +
- xedittags.c                         |  316 +---
+ xedittags.c                         |  316 +--
  xedittags.h                         |    2 +-
  xengineoutput.c                     |   96 +-
  xevalgraph.c                        |   69 +-
@@ -143,12 +143,12 @@
  xgamelist.h                         |    3 +-
  xhistory.c                          |  461 +---
  xhistory.h                          |    4 +-
- xoptions.c                          | 1482 ++++++------
+ xoptions.c                          | 1482 +++++------
  zic2xpm.c                           |   67 +-
  zic2xpm.man                         |    2 +-
  zippy.c                             |   54 +-
  zippy.h                             |    2 +-
- 146 files changed, 60376 insertions(+), 14197 deletions(-)
+ 146 files changed, 60923 insertions(+), 14204 deletions(-)
  create mode 100644 ABOUT-NLS
  create mode 100644 m4/gettext.m4
  create mode 100644 m4/iconv.m4
@@ -206,7 +206,6 @@
  create mode 100644 xboard-pgn-viewer.desktop
  create mode 100644 xboard-tourney.desktop
  create mode 100644 xboard.xml
-
 
 ** Version 4.5.3a **
 

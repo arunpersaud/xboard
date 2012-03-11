@@ -2,7 +2,7 @@
 
 (git log --pretty=short --cherry-pick --left-only v4.6.x...v4.5.x^   |git shortlog --no-merges)
 
-Arun Persaud (79):
+Arun Persaud (89):
       removed parser.l from build process, also removed flex dependency from configure
       updated Changelog, NEWS, etc.
       new developer release
@@ -82,8 +82,18 @@ Arun Persaud (79):
       fixed "make install-pdf": missing target for recursive make in po directory
       add information about our webpage and were to report bugs into the help menu
       Merge branch 'master' into v4.6.x
+      updated Changelog, NEWS, etc.
+      updated po/pot files
+      new developer release
+      Merge branch 'master' into v4.6.x
+      added icons for mime-types to pixmap directory, so that rpm packages can use them
+      Merge branch 'master' into v4.6.x
+      updated po/pot files
+      new developer release
+      new version number for developer release
+      updated po/pot files
 
-Byrial Jensen (26):
+Byrial Jensen (29):
       fix for repeating key issue, with this allissues this bug should be closed; fixes #35000
       Add NO_GETTEXT flag for combobox. Fix bug #34991
       Make GenericPopUp() more readable by using more named flags instead of numerals
@@ -110,8 +120,11 @@ Byrial Jensen (26):
       Fix one more typo in the translator comments explaning "first" and "second"
       One missed translation of cps->which
       Updated Danish translation
+      Increase buffer size in AboutProc() to accommodate for larger text.
+      Updated Danish and Ukrainian translations
+      Fix typo (seach) found by Yuri Chornoivan in source, pot and po files
 
-H.G. Muller (375):
+H.G. Muller (385):
       New parser, written in C
       Implement yynewstr entry point in new parser
       Fix o-o castling in new parser
@@ -487,6 +500,16 @@ H.G. Muller (375):
       Fix two 64-bit warnings
       Fix 50-move counter in ICS mode
       Suppress recent-engines menu items in ICS mode
+      Make web section in Help menu
+      Configure -stickyWindows off
+      Fix suspected bug in Makefile
+      Fix name of bug-report menu item
+      Make system open command configurable
+      Fix layout in Disambiguate
+      Add disambiguation of move with unique piece
+      Fix seek-graph race condition
+      Fix clearing of premove
+      Limit premove cancelling to click on from square
 
 Thomas Adam (1):
       (tiny change) Clarify "-name" option is Xt-only
@@ -501,7 +524,6 @@ Tim Mann (9):
       The empty string can't be translated and it causes the gettext
       Fixed small bugs in several .po files, enabling these translations to
       Internationalize the file browser.
-
 
 ** Version 4.5.3a **
 
