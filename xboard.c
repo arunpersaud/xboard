@@ -793,7 +793,7 @@ MenuItem helpMenu[] = {
     {N_("XBoard Home Page"), "Home Page", HomePageProc},
     {N_("On-line User Guide"), "User Guide", GuideProc},
     {N_("Development News"), "News Page", NewsPageProc},
-    {N_("e-Mail Report Bug"), "Bug Report", BugReportProc},
+    {N_("e-Mail Bug Report"), "Bug Report", BugReportProc},
     {"----", NULL, NothingProc},
     {N_("About XBoard"), "About XBoard", AboutProc},
     {NULL, NULL, NULL}
@@ -6672,25 +6672,33 @@ BookProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 BugReportProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    system("xdg-open mailto:bug-xboard@gnu.org");
+    char buf[MSG_SIZ];
+    snprintf(buf, MSG_SIZ, "%s mailto:bug-xboard@gnu.org", appData.sysOpen);
+    system(buf);
 }
 
 void
 GuideProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    system("xdg-open http://www.gnu.org/software/xboard/user_guide/UserGuide.html");
+    char buf[MSG_SIZ];
+    snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/user_guide/UserGuide.html", appData.sysOpen);
+    system(buf);
 }
 
 void
 HomePageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    system("xdg-open http://www.gnu.org/software/xboard/");
+    char buf[MSG_SIZ];
+    snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/", appData.sysOpen);
+    system(buf);
 }
 
 void
 NewsPageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    system("xdg-open http://www.gnu.org/software/xboard/whats_new/portal.html");
+    char buf[MSG_SIZ];
+    snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/whats_new/portal.html", appData.sysOpen);
+    system(buf);
 }
 
 void

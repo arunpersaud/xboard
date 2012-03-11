@@ -713,6 +713,7 @@ ArgDescriptor argDescriptors[] = {
   { "keepLineBreaksICS", ArgBoolean, (void *) &appData.noJoin, TRUE, INVALID },
   { "wrapContinuationSequence", ArgString, (void *) &appData.wrapContSeq, FALSE, INVALID },
   { "useInternalWrap", ArgTrue, (void *) &appData.useInternalWrap, FALSE, INVALID }, /* noJoin usurps this if set */
+  { "openCommand", ArgString, (void *) &appData.sysOpen, FALSE, "xdg-open" },
 
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
   { "minX", ArgZ, (void *) &minX, FALSE, INVALID }, // [HGM] placement: to make sure auxiliary windows can be placed

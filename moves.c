@@ -1331,14 +1331,23 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
         GenLegal(board, flags|F_IGNORE_CHECK, DisambiguateCallback, (VOIDSTAR) closure, closure->pieceIn);
 	if (closure->count == 0) {
 	    /* No, it's not even that */
-    if (appData.debugMode) { int i, j;
-	for(i=BOARD_HEIGHT-1; i>=0; i--) {
-		for(j=0; j<BOARD_WIDTH; j++)
-		        fprintf(debugFP, "%3d", (int) board[i][j]);
-	        fprintf(debugFP, "\n");
-	}
-    }
+	  if(!appData.testLegality && closure->pieceIn != EmptySquare) {
+	    int f, r; // if there is only a single piece of the requested type on the board, use that
+	    closure->rt = closure->rtIn, closure->ft = closure->ftIn;
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
+		if(board[r][f] == closure->pieceIn) closure->count++, closure->rf = r, closure->ff = f;
+	    if(closure->count > 1) illegal = 0; // ambiguous
+	  }
+	  if(closure->count == 0) {
+	    if (appData.debugMode) { int i, j;
+		for(i=BOARD_HEIGHT-1; i>=0; i--) {
+		    for(j=0; j<BOARD_WIDTH; j++)
+			fprintf(debugFP, "%3d", (int) board[i][j]);
+		    fprintf(debugFP, "\n");
+		}
+	    }
 	    return;
+	  }
 	}
     }
 
