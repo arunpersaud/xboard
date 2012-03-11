@@ -7,7 +7,7 @@
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Options.html#Options" title="Options">
 <link rel="prev" href="Chess-engine-options.html#Chess-engine-options" title="Chess engine options">
-<link rel="next" href="ICS-options.html#ICS-options" title="ICS options">
+<link rel="next" href="Tournament-options.html#Tournament-options" title="Tournament options">
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <style type="text/css"><!--
@@ -27,7 +27,7 @@
 <a name="UCI-+-WB-Engine-Settings"></a>
 <a name="UCI-_002b-WB-Engine-Settings"></a>
 <p>
-Next:&nbsp;<a rel="next" accesskey="n" href="ICS-options.html#ICS-options">ICS options</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="Tournament-options.html#Tournament-options">Tournament options</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Chess-engine-options.html#Chess-engine-options">Chess engine options</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 <hr>
@@ -35,33 +35,65 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <h3 class="section">4.2 UCI + WB Engine Settings</h3>
 
-<p><a name="index-Engine-Settings-215"></a><a name="index-Settings_002c-Engine-216"></a>
+<p><a name="index-Engine-Settings-251"></a><a name="index-Settings_002c-Engine-252"></a>
      <dl>
-<dt>-fUCI or -firstIsUCI true/false<dt>-sUCI or -secondIsUCI true/false<dd><a name="index-fUCI_002c-option-217"></a><a name="index-sUCI_002c-option-218"></a><a name="index-firstIsUCI_002c-option-219"></a><a name="index-secondIsUCI_002c-option-220"></a>Indicates if the mentioned engine executable file is an UCI engine,
+<dt>-fUCI or -firstIsUCI true/false<dt>-sUCI or -secondIsUCI true/false<dd><a name="index-fUCI_002c-option-253"></a><a name="index-sUCI_002c-option-254"></a><a name="index-firstIsUCI_002c-option-255"></a><a name="index-secondIsUCI_002c-option-256"></a>Indicates if the mentioned engine executable file is an UCI engine,
 and should be run with the aid of the Polyglot adapter rather than directly. 
 Xboard will then pass the other UCI options and engine name to Polyglot
-through a .ini temporary file created for the purpose. 
-<br><dt>-polyglotDir filename<dd><a name="index-polyglotDir_002c-option-221"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines resides. 
+on its command line, according to the option <code>adapterCommand</code>. 
+<br><dt>-fUCCI<dt>-sUCCI<dt>-fUSI<dt>-sUSI<dd><a name="index-fUCCI_002c-option-257"></a><a name="index-sUCCI_002c-option-258"></a><a name="index-fUSI_002c-option-259"></a><a name="index-sUSI_002c-option-260"></a>Options similar to <code>fUCI</code> and <code>sUCI</code>, except that they
+use the indicated engine with the protocol adapter specified in
+the &lsquo;<samp><span class="samp">uxiAdapter</span></samp>&rsquo; option. 
+This can then be configured for running an UCCI or USI adapter,
+as the need arises. 
+<br><dt>-adapterCommand string<dd><a name="index-adapterCommand_002c-option-261"></a>The string conatins the command that should be issued by XBoard
+to start an engine that is accompanied by the <code>fUCI</code> option. 
+Any identifier following a percent sign in the command (e.g. %fcp)
+will be considered the name of an XBoard option, and be replaced
+by the value of that option at the time the engine is started. 
+For starting the second engine, any leading "f" or "first" in
+the option name will first be replaced by "s" or "second",
+before finding its value. 
+Default: 'polyglot -noini -ec "%fcp" -ed "%fd"'
+<br><dt>-uxiAdapter string<dd><a name="index-uxiAdapter_002c-option-262"></a>Similar to <code>adapterCommand</code>, but used for engines accompanied
+by the <code>fUCCI</code> or <code>fUSI</code> option, so you can configure
+XBoard to be ready to handle more than one flavor of non-native protocols. 
+Default: ""
+<br><dt>-polyglotDir filename<dd><a name="index-polyglotDir_002c-option-263"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines resides. 
 Default: "". 
-<br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-222"></a>Specifies if the Polyglot book should be used. 
-<br><dt>-polyglotBook filename<dd><a name="index-polyglotBook_002c-option-223"></a>Gives the filename of the opening book that Polyglot should use. 
-From XBoard 4.3.15 on, native XBoard/WinBoard engines will also use the opening book specified here,
-provided the <code>usePolyglotBook</code> option is set to true,
-and the option <code>firstHasOwnBookUCI</code> or <code>secondHasOwnBookUCI</code> applying to the engine
-is set to false. 
+<br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-264"></a>Specifies if the Polyglot book should be used as GUI book. 
+<br><dt>-polyglotBook filename<dd><a name="index-polyglotBook_002c-option-265"></a>Gives the filename of the opening book. 
+The book is only used when the <code>usePolyglotBook</code> option is set to true,
+and the option <code>firstHasOwnBookUCI</code> or <code>secondHasOwnBookUCI</code>
+applying to the engine is set to false. 
 The engine will be kept in force mode as long as the current position is in book,
 and XBoard will select the book moves for it. Default: "". 
-<br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-224"></a><a name="index-sNoOwnBookUCI_002c-option-225"></a><a name="index-firstHasOwnBookUCI_002c-option-226"></a><a name="index-secondHasOwnBookUCI_002c-option-227"></a><a name="index-firstXBook_002c-option-228"></a><a name="index-secondXBook_002c-option-229"></a>Indicates if the mentioned engine has its own opening book it should play from,
-rather than using the external book through XBoard. Default: false. 
-<br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-230"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
+<br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-266"></a><a name="index-sNoOwnBookUCI_002c-option-267"></a><a name="index-firstHasOwnBookUCI_002c-option-268"></a><a name="index-secondHasOwnBookUCI_002c-option-269"></a><a name="index-firstXBook_002c-option-270"></a><a name="index-secondXBook_002c-option-271"></a>Indicates if the mentioned engine has its own opening book it should play from,
+rather than using the external book through XBoard. 
+Default: depends on setting of the option <code>discourageOwnBooks</code>. 
+<br><dt>-discourageOwnBooks true/false<dd><a name="index-discourageOwnBooks_002c-option-272"></a>When set, newly loaded engines will be assumed to use the GUI book,
+unless they explicitly specify differently. 
+Otherwise they will be assumed to not use the GUI book,
+unless the specify differently (e.g. with <code>firstXBook</code>). 
+Default: false. 
+<br><dt>-bookDepth n<dd><a name="index-bookDepth_002c-option-273"></a>Limits the use of the GUI book to the first n moves of each side. 
+Default: 12. 
+<br><dt>-bookVariation n<dd><a name="index-bookVariation_002c-option-274"></a>A value n from 0 to 100 tunes the choice of moves from the GUI books
+from totally random to best-only. Default: 50
+<br><dt>-fn string or -firstPgnName string<dt>-sn string or -secondPgnName string<dd><a name="index-firstPgnName_002c-option-275"></a><a name="index-secondPgnName_002c-option-276"></a><a name="index-fn_002c-option-277"></a><a name="index-sn_002c-option-278"></a>Indicates the name that should be used for the engine in PGN tags of
+engine-engine games. 
+Intended to allow you to install verions of the same engine with different settings,
+and still distinguish them. 
+Default: "". 
+<br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-279"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
 this number is also used to calculate the memory setting of XBoard/WinBoard engines,
 for those that support the memory feature of the XBoard/WinBoard protocol. Default: 64. 
-<br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-231"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
+<br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-280"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
 this number is also used to calculate the memory setting of XBoard/WinBoard engines,
 for those that support the memory feature of the XBoard/WinBoard protocol. Default: 4. 
-<br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-232"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
+<br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-281"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
 Default: "/usr/local/share/egtb". 
-<br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-233"></a>Specifies which end-game tables are installed on the computer, and where. 
+<br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-282"></a>Specifies which end-game tables are installed on the computer, and where. 
 The argument is a comma-separated list of format specifications,
 each specification consisting of a format name, a colon, and a directory path name,
 e.g. "nalimov:/usr/local/share/egtb". 
@@ -70,6 +102,18 @@ xboard will relay the path name for this format to the engine through an egtpath
 One egtpath command for each matching format will be sent. 
 Popular formats are "nalimov" DTM tablebases and "scorpio" bitbases. 
 Default: "". 
+<br><dt>-firstChessProgramNames={names}<dd>This option lets you customize the drop-down list of chess engine names
+that appears in the &lsquo;<samp><span class="samp">Load Engine</span></samp>&rsquo; and &lsquo;<samp><span class="samp">Match Options</span></samp>&rsquo; dialog. 
+It consists of a list of strings, one per line. 
+When an engine is loaded, the corresponding line is prefixed with "-fcp ",
+and processed like it appeared on the command line. 
+That means that apart from the engine command,
+it can contain any list of XBoard options you want to use with this engine. 
+(Commonly used options here are -fd, -firstXBook, -fUCI, -variant.)
+
+     <p>The value of this option is gradually built as you load new engines
+through the &lsquo;<samp><span class="samp">Load Engine</span></samp>&rsquo; menu dialog, with &lsquo;<samp><span class="samp">Add to list</span></samp>&rsquo; ticked. 
+To change it, edit your settings file with a plain text editor. 
 </dl>
 
    </body></html>
