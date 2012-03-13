@@ -8363,7 +8363,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
     /*
      * If chess program startup fails, exit with an error message.
-     * Attempts to recover here are futile.
+     * Attempts to recover here are futile. [HGM] Well, we try anyway
      */
     if ((StrStr(message, "unknown host") != NULL)
 	|| (StrStr(message, "No remote directory") != NULL)
@@ -8377,7 +8377,17 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		_(cps->which), cps->program, cps->host, message);
 	RemoveInputSource(cps->isr);
 	if(appData.icsActive) DisplayFatalError(buf1, 0, 1); else {
-	    if(cps == &first) appData.noChessProgram = TRUE;
+	    cps->isr = NULL;
+	    DestroyChildProcess(cps->pr, 9 ); // just to be sure
+	    cps->pr = NoProc; 
+	    if(cps == &first) {
+		appData.noChessProgram = TRUE;
+		gameMode = MachinePlaysBlack; ModeHighlight(); // kludge to unmark Machine Black menu
+		gameMode = BeginningOfGame; ModeHighlight();
+		SetNCPMode();
+	    }
+	    if(GetDelayedEvent()) CancelDelayedEvent(), ThawUI(); // [HGM] cancel remaining loading effort scheduled after feature timeout
+	    DisplayMessage("", ""); // erase waiting message
 	    DisplayError(buf1, 0);
 	}
 	return;
