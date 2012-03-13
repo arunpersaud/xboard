@@ -8378,6 +8378,9 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		_(cps->which), cps->program, cps->host, message);
 	RemoveInputSource(cps->isr);
 	if(appData.icsActive) DisplayFatalError(buf1, 0, 1); else {
+	    cps->isr = NULL;
+	    DestroyChildProcess(cps->pr, 9 ); // just to be sure
+	    cps->pr = NoProc; 
 	    if(cps == &first) {
 		appData.noChessProgram = TRUE;
 		gameMode = MachinePlaysBlack; ModeHighlight(); // kludge to unmark Machine Black menu
