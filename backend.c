@@ -13693,6 +13693,7 @@ EditPositionEvent ()
     currentMove = forwardMostMove = backwardMostMove = 0;
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
     DisplayMove(-1);
+    if(!appData.pieceMenu) DisplayMessage("Click clock to clear board", "");
 }
 
 void
