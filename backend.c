@@ -920,6 +920,7 @@ Load (ChessProgramState *cps, int i)
 	p[-1] = 0;
 	appData.directory[i] = strdup(engineName);
 	p[-1] = SLASH;
+	if(SLASH == '/' && p - engineName > 1) *(p -= 2) = '.'; // for XBoard use ./exeName as command after split!
     } else appData.directory[i] = ".";
     if(params[0]) {
 	if(strchr(p, ' ') && !strchr(p, '"')) snprintf(buf2, MSG_SIZ, "\"%s\"", p), p = buf2; // quote if it contains spaces
