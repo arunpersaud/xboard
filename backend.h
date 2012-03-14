@@ -371,6 +371,7 @@ typedef struct _CPS {
     int sendName;    /* 0=don't use "name" command; 1=do */
     int sdKludge;    /* 0=use "sd DEPTH" command; 1=use "depth\nDEPTH" */
     int stKludge;    /* 0=use "st TIME" command; 1=use "level 1 TIME" */
+    int excludeMoves;/* 0=don't use "exclude" command; 1=do */
     char tidy[MSG_SIZ];
     int matchWins;
     char variants[MSG_SIZ];

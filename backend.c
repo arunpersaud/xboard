@@ -6405,12 +6405,16 @@ int lastLoadGameNumber = 0, lastLoadPositionNumber = 0;
 int lastLoadGameUseList = FALSE;
 char lastLoadGameTitle[MSG_SIZ], lastLoadPositionTitle[MSG_SIZ];
 ChessMove lastLoadGameStart = EndOfFile;
+int doubleClick, mappedMove = -1;
 
 void
 UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 {
     ChessMove moveType;
     ChessSquare pdown, pup;
+    static char excludeMap[(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8]; // [HGM] exclude: bitmap for excluced moves
+    int ff=fromX, rf=fromY, ft=toX, rt=toY;
+
 
     /* Check if the user is playing in turn.  This is complicated because we
        let the user "pick up" a piece before it is his turn.  So the piece he
@@ -6546,6 +6550,18 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
         return;
     }
 
+    if(doubleClick && (toX == -2 || toY == -2)) { // [HGM] exclude: off-board move means exclude all
+	int i; // note that drop moves still have holdings coords as from-square at this point
+	ChessMove moveType; char pc;
+	for(i=0; i<(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8; i++) excludeMap[i] = -(toY == -2);
+	mappedMove = currentMove;
+	if(toY != -2) { SendToProgram("include all\n", &first); return; }
+	SendToProgram("exclude all\n", &first);
+	i = ParseOneMove(lastPV[0], currentMove, &moveType, &fromX, &fromY, &toX, &toY, &pc);
+	ff=fromX, rf=fromY, ft=toX, rt=toY, promoChar = pc; // make copy that will survive drop encoding
+	if(!i) return; // kludge: continue with move changed to engine's last-reported best, so it gets included again.
+    }
+
     if(toX < 0 || toY < 0) return;
     pdown = boards[currentMove][fromY][fromX];
     pup = boards[currentMove][toY][toX];
@@ -6575,6 +6591,21 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 	    DisplayMoveError(_("Illegal move"));
             return;
 	}
+    }
+
+    if(doubleClick) { // [HGM] exclude: move entered with double-click on from square is for exclusion, not playing
+	int i=(BOARD_FILES*rf+ff)*BOARD_RANKS*BOARD_FILES + (BOARD_FILES*rt+ft), j;
+	char buf[MSG_SIZ];
+	if(mappedMove != currentMove)
+	    for(j=0; j<(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8; j++) excludeMap[j] = 0;
+	j = i%8; i >>= 3;
+	snprintf(buf, MSG_SIZ, "%sclude ", excludeMap[i] & 1<<j ? "in" : "ex");
+	if(excludeMap[i] & 1<<j) ClearPremoveHighlights();
+	else ClearHighlights(), SetPremoveHighlights(ff, rf, ft, rt);
+	if(!promoChar) excludeMap[i] ^= 1<<j; mappedMove = currentMove;
+	CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar, buf+8);
+	SendToProgram(buf, &first);
+	return;
     }
 
     FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
@@ -6837,8 +6868,11 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     static int second = 0, promotionChoice = 0, clearFlag = 0;
     char promoChoice = NULLCHAR;
     ChessSquare piece;
+    static TimeMark lastClickTime, prevClickTime;
 
     if(SeekGraphClick(clickType, xPix, yPix, 0)) return;
+
+    prevClickTime = lastClickTime; GetTimeMark(&lastClickTime);
 
     if (clickType == Press) ErrorPopDown();
 
@@ -6893,7 +6927,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	ClearPremoveHighlights();
     }
 
-    if(clickType == Press && fromX == x && fromY == y && promoDefaultAltered)
+    if(clickType == Press && fromX == x && fromY == y && promoDefaultAltered && SubtractTimeMarks(&lastClickTime, &prevClickTime) >= 200)
 	fromX = fromY = -1; // second click on piece after altering default promo piece treated as first click
 
     if(!promoDefaultAltered) { // determine default promotion piece, based on the side the user is moving for
@@ -6914,6 +6948,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	}
 	return;
       }
+      doubleClick = FALSE;
       fromX = x; fromY = y; toX = toY = -1;
       if(!appData.oneClick || !OnlyMove(&x, &y, FALSE) ||
 	 // even if only move, we treat as normal when this would trigger a promotion popup, to allow sweep selection
@@ -6960,6 +6995,10 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	     !(fromP == BlackKing && toP == BlackRook && frc))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
+	    if(second && gameMode == AnalyzeMode && SubtractTimeMarks(&lastClickTime, &prevClickTime) < 200) {
+		second = FALSE; // first double-click rather than scond click
+		doubleClick = first.excludeMoves; // used by UserMoveEvent to recognize exclude moves
+	    }
 	    promoDefaultAltered = FALSE;
 	    MarkTargetSquares(1);
 	   if(!second || appData.oneClick && !OnlyMove(&x, &y, TRUE)) {
@@ -6973,7 +7012,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 		  (fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) &&
                y == (toP < BlackPawn ? 0 : BOARD_HEIGHT-1))
                  gatingPiece = boards[currentMove][fromY][fromX];
-		else gatingPiece = EmptySquare;
+		else gatingPiece = doubleClick ? fromP : EmptySquare;
 		fromX = x;
 		fromY = y; dragging = 1;
 		MarkTargetSquares(0);
@@ -7095,7 +7134,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     // off-board moves should not be highlighted
     if(x < 0 || y < 0) ClearHighlights();
 
-    if(gatingPiece != EmptySquare) promoChoice = ToLower(PieceToChar(gatingPiece));
+    if(gatingPiece != EmptySquare && gameInfo.variant == VariantSChess) promoChoice = ToLower(PieceToChar(gatingPiece));
 
     if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, appData.sweepSelect)) {
 	SetHighlights(fromX, fromY, toX, toY);
@@ -10714,6 +10753,7 @@ Reset (int redraw, int init)
     DisplayMessage("", "");
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
     lastSavedGame = 0; // [HGM] save: make sure next game counts as unsaved
+    mappedMove = -1;   // [HGM] exclude: invalidate map
 }
 
 void
@@ -14304,6 +14344,7 @@ ForwardInner (int target)
     if ( !matchMode && gameMode != Training) { // [HGM] PV info: routine tests if empty
 	DisplayComment(currentMove - 1, commentList[currentMove]);
     }
+    mappedMove = -1; // [HGM] exclude: invalidate map
 }
 
 
@@ -14417,6 +14458,7 @@ BackwardInner (int target)
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
     // [HGM] PV info: routine tests if comment empty
     DisplayComment(currentMove - 1, commentList[currentMove]);
+    mappedMove = -1; // [HGM] exclude: invalidate map
 }
 
 void
@@ -15483,6 +15525,7 @@ ParseFeatures (char *args, ChessProgramState *cps)
     if (BoolFeature(&p, "playother", &cps->usePlayother, cps)) continue;
     if (BoolFeature(&p, "colors", &cps->useColors, cps)) continue;
     if (BoolFeature(&p, "usermove", &cps->useUsermove, cps)) continue;
+    if (BoolFeature(&p, "exclude", &cps->excludeMoves, cps)) continue;
     if (BoolFeature(&p, "ics", &cps->sendICS, cps)) continue;
     if (BoolFeature(&p, "name", &cps->sendName, cps)) continue;
     if (BoolFeature(&p, "pause", &val, cps)) continue; /* unused at present */
