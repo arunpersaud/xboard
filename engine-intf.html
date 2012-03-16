@@ -12,6 +12,7 @@
   .version1 { color: red;}
   .version43 { color: green;}
   .version44 { color: blue; }
+  .version47 { color: purple; }
 
   table tr { text-align: left}
   tr > td:first-child { font-weight:bold;}
@@ -1087,6 +1088,38 @@ i.e. with 'spin' and 'check' options VALUE will be a decimal integer (in the lat
 with 'combo' and 'string' options VALUE will be a text string,
 and with 'button' and 'save' options no VALUE will be sent at all.
 </dd>
+
+<dt class="version47">exclude MOVE</dt>
+<dt class="version47">include MOVE</dt>
+<dt class="version47">exclude all</dt>
+<dt class="version47">include all</dt>
+<dd class="version47">
+These commands change the set of moves that the engine should consider in the root node of its search,
+by removing or adding the mentioned MOVE from this set.
+After reaching a new position, (e.g. through a usermove, undo, new or setboard command),
+or after receiving "include all",
+this set should always be reset to all legal moves from that position.
+If the set of moves changes during a search, 
+the engine could start a new search from scratch, or it can try to be smart, 
+and continue the current search with the new set of moves
+(e.g. after exclusion of a move that has not been searched yet in the current iteration).
+After "exclude all", the engine would have no legal moves in the root,
+which logically should make it behave as if it is (stale)mated,
+but it is allowed to defer any effects of this command on a search in progress
+to when the set gets non-empty again through addition of a move.
+These commands will only be sent to engines that have requested such through the exclude feature.
+</dd>
+
+<dt class="version47">setscore SCORE DEPTH</dt>
+<dd class="version47">
+This command instructs the engine to treat future search requests on the current position
+(also when it is encountered inside a larger search tree)
+upto the given DEPTH as if these result is SCORE centi-Pawn in favor of the side that has the move in this position.
+It is entirely up to the engine to decide when the effect of this option should expire.
+(E.g. it could last upto the next "new" or "quit" command,
+or even into future sessions until the user explicitly clears it through an engine-defined option.)
+This command will only be sent to engines that have requested it through the setscore feature.
+</dd>
 </dl>
 
 <h3>Bughouse commands:</h3>
@@ -1450,6 +1483,18 @@ terminated by feature done=1.
 (The effect of sending an option feature for an option with the same name as was defined before, 
 without first receiving a -reset option command, is undefined.)
 </span>
+
+<dt class="version47">exclude (boolean, default 0)</dt>
+<dd class="version47">
+If exclude=1 the GUI can send "exclude" and "include" commands to control which moves
+from the root position should be searched.
+</dd>
+</dd>
+
+<dt class="version47">setscore (boolean, default 0)</dt>
+<dd class="version47">
+If setscore=1 the GUI can send "setscore" commands to define the score of the current position.
+</dd>
 </dd>
 
 <dt class="version1">done (integer, no default)</dt>
