@@ -4708,6 +4708,8 @@ CoDrag (Widget sh, WindowPlacement *wp)
     XtSetValues(sh, args, j);
 }
 
+static XtIntervalId delayedDragID = 0;
+
 void
 DragProc ()
 {
@@ -4721,13 +4723,13 @@ DragProc ()
 	if(GameListIsUp()) CoDrag(gameListShell, &wpGameList);
 	wpMain = wpNew;
 	XDrawPosition(boardWidget, True, NULL);
+	delayedDragID = 0; // now drag executed, make sure next DelayedDrag will not cancel timer event (which could now be used by other)
 }
 
 
 void
 DelayedDrag ()
 {
-    static XtIntervalId delayedDragID = 0;
     if(delayedDragID) XtRemoveTimeOut(delayedDragID); // cancel pending
     delayedDragID =
       XtAppAddTimeOut(appContext, 50, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
