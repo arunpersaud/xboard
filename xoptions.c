@@ -250,7 +250,7 @@ CreateComboPopup (Widget parent, Option *option, int n)
 
 extern WindowPlacement wpComment, wpTags, wpMoveHistory;
 char *trialSound;
-static int oldCores, oldPonder;
+static int oldCores, oldPonder, oldShow, oldBlind;
 int MakeColors P((void));
 void CreateGCs P((int redo));
 void CreateAnyPieces P((void));
@@ -410,6 +410,8 @@ GeneralOptionsOK (int n)
 	int newPonder = appData.ponderNextMove;
 	appData.ponderNextMove = oldPonder;
 	PonderNextMoveEvent(newPonder);
+	if(!appData.highlightLastMove) ClearHighlights(), ClearPremoveHighlights();
+	if(oldShow != appData.showCoords || oldBlind != appData.blindfold) DrawPosition(TRUE, NULL);
 	return 1;
 }
 
@@ -1427,6 +1429,7 @@ void
 OptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
    oldPonder = appData.ponderNextMove;
+   oldShow = appData.showCoords; oldBlind = appData.blindfold;
    GenericPopUp(generalOptions, _("General Options"), 0);
 }
 
