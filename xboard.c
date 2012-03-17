@@ -203,14 +203,8 @@ extern char *getenv();
 #include "xgamelist.h"
 #include "xhistory.h"
 #include "xedittags.h"
+#include "menus.h"
 #include "gettext.h"
-
-// must be moved to xengineoutput.h
-
-void EngineOutputProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void EvalGraphProc P((Widget w, XEvent *event,
-		      String *prms, Cardinal *nprms));
 
 
 #ifdef __EMX__
@@ -227,20 +221,6 @@ void EvalGraphProc P((Widget w, XEvent *event,
 # define  _(s) (s)
 # define N_(s)  s
 #endif
-
-typedef struct {
-    String string;
-    String ref;
-    XtActionProc proc;
-} MenuItem;
-
-typedef struct {
-    String name;
-    String ref;
-    MenuItem *mi;
-    int textWidth;
-    Widget subMenu;
-} Menu;
 
 int main P((int argc, char **argv));
 FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
@@ -315,145 +295,16 @@ void PromotionPopDown P((void));
 void PromotionCallback P((Widget w, XtPointer client_data,
 			  XtPointer call_data));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
-void ResetProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void LoadGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void LoadNextGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void LoadPrevGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void ReloadGameProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void LoadPositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void LoadNextPositionProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void LoadPrevPositionProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void ReloadPositionProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void CopyPositionProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void PastePositionProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
-void CopyGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void CopyGameListProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PasteGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SaveGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SavePositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void MailMoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
-			    Cardinal *nprms));
-void QuitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PauseProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void MachineBlackProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void MachineWhiteProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void AnalyzeModeProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void AnalyzeFileProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void TwoMachinesProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void MatchProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void MatchOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void IcsClientProc P((Widget w, XEvent *event, String *prms,
-		      Cardinal *nprms));
-void EditGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EditPositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void TrainingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EditCommentProc P((Widget w, XEvent *event,
-			String *prms, Cardinal *nprms));
-void IcsInputBoxProc P((Widget w, XEvent *event,
-			String *prms, Cardinal *nprms));
-void AcceptProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DeclineProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void RematchProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void CallFlagProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AbortProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjournProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ResignProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjuWhiteProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjuBlackProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjuDrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void KeyBindingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void QuitWrapper P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void StopObservingProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
-void StopExaminingProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
-void UploadProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TempBackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TempForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 Boolean TempBackwardActive = False;
-void ToStartProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ToEndProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void RevertProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AnnotateProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TruncateGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void RetractMoveProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void MoveNowProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AlwaysQueenProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void AnimateDraggingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void AnimateMovingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void AutoflagProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AutoflipProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BlindfoldProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void FlashMovesProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void FlipViewProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void HighlightDraggingProc P((Widget w, XEvent *event, String *prms,
-			      Cardinal *nprms));
-void HighlightLastMoveProc P((Widget w, XEvent *event, String *prms,
-			      Cardinal *nprms));
-void HighlightArrowProc P((Widget w, XEvent *event, String *prms,
-			      Cardinal *nprms));
-void MoveSoundProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-//void IcsAlarmProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void OneClickProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PeriodicUpdatesProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void PonderNextMoveProc P((Widget w, XEvent *event, String *prms,
-			   Cardinal *nprms));
-void PopupMoveErrorsProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void PopupExitMessageProc P((Widget w, XEvent *event, String *prms,
-			     Cardinal *nprms));
-//void PremoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ShowCoordsProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void ShowThinkingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void HideThinkingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void TestLegalityProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
-void SaveSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SaveOnExitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void InfoProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ManProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void GuideProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void HomePageProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void NewsPageProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BugReportProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void HintProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AboutProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
 void DisplayTitle P((char *title));
 void ICSInitScript P((void));
@@ -465,23 +316,6 @@ static void CreateAnimVars P((void));
 static void DragPieceMove P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
-void ShuffleMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EngineMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void UciMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void OptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void IcsTextProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void LoadEngineProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void IcsOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SoundOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BoardOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EditBookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
 void GenericPopDown P(());
@@ -621,203 +455,13 @@ static Pixmap xpmMask[BlackKing + 1];
 
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
-MenuItem fileMenu[] = {
-    {N_("New Game        Ctrl+N"),        "New Game", ResetProc},
-    {N_("New Shuffle Game ..."),          "New Shuffle Game", ShuffleMenuProc},
-    {N_("New Variant ...   Alt+Shift+V"), "New Variant", NewVariantProc},      // [HGM] variant: not functional yet
-    {"----", NULL, NothingProc},
-    {N_("Load Game       Ctrl+O"),        "Load Game", LoadGameProc},
-    {N_("Load Position    Ctrl+Shift+O"), "Load Position", LoadPositionProc},
-//    {N_("Load Next Game"), "Load Next Game", LoadNextGameProc},
-//    {N_("Load Previous Game"), "Load Previous Game", LoadPrevGameProc},
-//    {N_("Reload Same Game"), "Reload Same Game", ReloadGameProc},
-    {N_("Next Position     Shift+PgDn"), "Load Next Position", LoadNextPositionProc},
-    {N_("Prev Position     Shift+PgUp"), "Load Previous Position", LoadPrevPositionProc},
-    {"----", NULL, NothingProc},
-//    {N_("Reload Same Position"), "Reload Same Position", ReloadPositionProc},
-    {N_("Save Game       Ctrl+S"),        "Save Game", SaveGameProc},
-    {N_("Save Position    Ctrl+Shift+S"), "Save Position", SavePositionProc},
-    {"----", NULL, NothingProc},
-    {N_("Mail Move"),            "Mail Move", MailMoveProc},
-    {N_("Reload CMail Message"), "Reload CMail Message", ReloadCmailMsgProc},
-    {"----", NULL, NothingProc},
-    {N_("Quit                 Ctr+Q"), "Exit", QuitProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem editMenu[] = {
-    {N_("Copy Game    Ctrl+C"),        "Copy Game", CopyGameProc},
-    {N_("Copy Position Ctrl+Shift+C"), "Copy Position", CopyPositionProc},
-    {N_("Copy Game List"),        "Copy Game List", CopyGameListProc},
-    {"----", NULL, NothingProc},
-    {N_("Paste Game    Ctrl+V"),        "Paste Game", PasteGameProc},
-    {N_("Paste Position Ctrl+Shift+V"), "Paste Position", PastePositionProc},
-    {"----", NULL, NothingProc},
-    {N_("Edit Game      Ctrl+E"),        "Edit Game", EditGameProc},
-    {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", EditPositionProc},
-    {N_("Edit Tags"),                    "Edit Tags", EditTagsProc},
-    {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
-    {N_("Edit Book"),                    "Edit Book", EditBookProc},
-    {"----", NULL, NothingProc},
-    {N_("Revert              Home"), "Revert", RevertProc},
-    {N_("Annotate"),                 "Annotate", AnnotateProc},
-    {N_("Truncate Game  End"),       "Truncate Game", TruncateGameProc},
-    {"----", NULL, NothingProc},
-    {N_("Backward         Alt+Left"),   "Backward", BackwardProc},
-    {N_("Forward           Alt+Right"), "Forward", ForwardProc},
-    {N_("Back to Start     Alt+Home"),  "Back to Start", ToStartProc},
-    {N_("Forward to End Alt+End"),      "Forward to End", ToEndProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem viewMenu[] = {
-    {N_("Flip View             F2"),         "Flip View", FlipViewProc},
-    {"----", NULL, NothingProc},
-    {N_("Engine Output      Alt+Shift+O"),   "Show Engine Output", EngineOutputProc},
-    {N_("Move History       Alt+Shift+H"),   "Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
-    {N_("Evaluation Graph  Alt+Shift+E"),    "Show Evaluation Graph", EvalGraphProc},
-    {N_("Game List            Alt+Shift+G"), "Show Game List", ShowGameListProc},
-    {N_("ICS text menu"), "ICStex", IcsTextProc},
-    {"----", NULL, NothingProc},
-    {N_("Tags"),             "Show Tags", EditTagsProc},
-    {N_("Comments"),         "Show Comments", EditCommentProc},
-    {N_("ICS Input Box"),    "ICS Input Box", IcsInputBoxProc},
-    {"----", NULL, NothingProc},
-    {N_("Board..."),          "Board Options", BoardOptionsProc},
-    {N_("Game List Tags..."), "Game List", GameListOptionsPopUp},
-    {NULL, NULL, NULL}
-};
-
-MenuItem modeMenu[] = {
-    {N_("Machine White  Ctrl+W"), "Machine White", MachineWhiteProc},
-    {N_("Machine Black  Ctrl+B"), "Machine Black", MachineBlackProc},
-    {N_("Two Machines   Ctrl+T"), "Two Machines", TwoMachinesProc},
-    {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", AnalyzeModeProc},
-    {N_("Analyze Game   Ctrl+G"), "Analyze File", AnalyzeFileProc },
-    {N_("Edit Game         Ctrl+E"), "Edit Game", EditGameProc},
-    {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", EditPositionProc},
-    {N_("Training"),      "Training", TrainingProc},
-    {N_("ICS Client"),    "ICS Client", IcsClientProc},
-    {"----", NULL, NothingProc},
-    {N_("Machine Match"),         "Machine Match", MatchProc},
-    {N_("Pause               Pause"),         "Pause", PauseProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem actionMenu[] = {
-    {N_("Accept             F3"), "Accept", AcceptProc},
-    {N_("Decline            F4"), "Decline", DeclineProc},
-    {N_("Rematch           F12"), "Rematch", RematchProc},
-    {"----", NULL, NothingProc},
-    {N_("Call Flag          F5"), "Call Flag", CallFlagProc},
-    {N_("Draw                F6"), "Draw", DrawProc},
-    {N_("Adjourn            F7"),  "Adjourn", AdjournProc},
-    {N_("Abort                F8"),"Abort", AbortProc},
-    {N_("Resign              F9"), "Resign", ResignProc},
-    {"----", NULL, NothingProc},
-    {N_("Stop Observing  F10"), "Stop Observing", StopObservingProc},
-    {N_("Stop Examining  F11"), "Stop Examining", StopExaminingProc},
-    {N_("Upload to Examine"),   "Upload to Examine", UploadProc},
-    {"----", NULL, NothingProc},
-    {N_("Adjudicate to White"), "Adjudicate to White", AdjuWhiteProc},
-    {N_("Adjudicate to Black"), "Adjudicate to Black", AdjuBlackProc},
-    {N_("Adjudicate Draw"),     "Adjudicate Draw", AdjuDrawProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem engineMenu[] = {
-    {N_("Load New Engine ..."), "Load Engine", LoadEngineProc},
-    {"----", NULL, NothingProc},
-    {N_("Engine #1 Settings ..."), "Engine #1 Settings", FirstSettingsProc},
-    {N_("Engine #2 Settings ..."), "Engine #2 Settings", SecondSettingsProc},
-    {"----", NULL, NothingProc},
-    {N_("Hint"), "Hint", HintProc},
-    {N_("Book"), "Book", BookProc},
-    {"----", NULL, NothingProc},
-    {N_("Move Now     Ctrl+M"),     "Move Now", MoveNowProc},
-    {N_("Retract Move  Ctrl+X"), "Retract Move", RetractMoveProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem optionsMenu[] = {
-#define OPTIONSDIALOG
-#ifdef OPTIONSDIALOG
-    {N_("General ..."), "General", OptionsProc},
-#endif
-    {N_("Time Control ...       Alt+Shift+T"), "Time Control", TimeControlProc},
-    {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", UciMenuProc},
-    {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", EngineMenuProc},
-    {N_("ICS ..."),    "ICS", IcsOptionsProc},
-    {N_("Match ..."), "Match", MatchOptionsProc},
-    {N_("Load Game ..."),    "Load Game", LoadOptionsProc},
-    {N_("Save Game ..."),    "Save Game", SaveOptionsProc},
-//    {N_(" ..."),    "", OptionsProc},
-    {N_("Game List ..."),    "Game List", GameListOptionsPopUp},
-    {N_("Sounds ..."),    "Sounds", SoundOptionsProc},
-    {"----", NULL, NothingProc},
-#ifndef OPTIONSDIALOG
-    {N_("Always Queen        Ctrl+Shift+Q"),   "Always Queen", AlwaysQueenProc},
-    {N_("Animate Dragging"), "Animate Dragging", AnimateDraggingProc},
-    {N_("Animate Moving      Ctrl+Shift+A"),   "Animate Moving", AnimateMovingProc},
-    {N_("Auto Flag               Ctrl+Shift+F"), "Auto Flag", AutoflagProc},
-    {N_("Auto Flip View"),   "Auto Flip View", AutoflipProc},
-    {N_("Blindfold"),        "Blindfold", BlindfoldProc},
-    {N_("Flash Moves"),      "Flash Moves", FlashMovesProc},
-#if HIGHDRAG
-    {N_("Highlight Dragging"),    "Highlight Dragging", HighlightDraggingProc},
-#endif
-    {N_("Highlight Last Move"),   "Highlight Last Move", HighlightLastMoveProc},
-    {N_("Highlight With Arrow"),  "Arrow", HighlightArrowProc},
-    {N_("Move Sound"),            "Move Sound", MoveSoundProc},
-//    {N_("ICS Alarm"),             "ICS Alarm", IcsAlarmProc},
-    {N_("One-Click Moving"),      "OneClick", OneClickProc},
-    {N_("Periodic Updates"),      "Periodic Updates", PeriodicUpdatesProc},
-    {N_("Ponder Next Move  Ctrl+Shift+P"), "Ponder Next Move", PonderNextMoveProc},
-    {N_("Popup Exit Message"),    "Popup Exit Message", PopupExitMessageProc},
-    {N_("Popup Move Errors"),     "Popup Move Errors", PopupMoveErrorsProc},
-//    {N_("Premove"),               "Premove", PremoveProc},
-    {N_("Show Coords"),           "Show Coords", ShowCoordsProc},
-    {N_("Hide Thinking        Ctrl+Shift+H"),   "Hide Thinking", HideThinkingProc},
-    {N_("Test Legality          Ctrl+Shift+L"), "Test Legality", TestLegalityProc},
-    {"----", NULL, NothingProc},
-#endif
-    {N_("Save Settings Now"),     "Save Settings Now", SaveSettingsProc},
-    {N_("Save Settings on Exit"), "Save Settings on Exit", SaveOnExitProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem helpMenu[] = {
-    {N_("Info XBoard"),     "Info XBoard", InfoProc},
-    {N_("Man XBoard   F1"), "Man XBoard", ManProc},
-    {"----", NULL, NothingProc},
-    {N_("XBoard Home Page"), "Home Page", HomePageProc},
-    {N_("On-line User Guide"), "User Guide", GuideProc},
-    {N_("Development News"), "News Page", NewsPageProc},
-    {N_("e-Mail Bug Report"), "Bug Report", BugReportProc},
-    {"----", NULL, NothingProc},
-    {N_("About XBoard"), "About XBoard", AboutProc},
-    {NULL, NULL, NULL}
-};
-
-Menu menuBar[] = {
-    {N_("File"),    "File", fileMenu},
-    {N_("Edit"),    "Edit", editMenu},
-    {N_("View"),    "View", viewMenu},
-    {N_("Mode"),    "Mode", modeMenu},
-    {N_("Action"),  "Action", actionMenu},
-    {N_("Engine"),  "Engine", engineMenu},
-    {N_("Options"), "Options", optionsMenu},
-    {N_("Help"),    "Help", helpMenu},
-    {NULL, NULL, NULL}
-};
-
 #define PAUSE_BUTTON "P"
 MenuItem buttonBar[] = {
-    {"<<", "<<", ToStartProc},
-    {"<", "<", BackwardProc},
-    {N_(PAUSE_BUTTON), PAUSE_BUTTON, PauseProc},
-    {">", ">", ForwardProc},
-    {">>", ">>", ToEndProc},
+    {"<<", "<<", ToStartEvent},
+    {"<", "<", BackwardEvent},
+    {N_(PAUSE_BUTTON), PAUSE_BUTTON, PauseEvent},
+    {">", ">", ForwardEvent},
+    {">>", ">>", ToEndEvent},
     {NULL, NULL, NULL}
 };
 
@@ -936,113 +580,11 @@ XtActionsRec boardActions[] = {
     { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
-    { "ResetProc", ResetProc },
-    { "NewVariantProc", NewVariantProc },
-    { "LoadGameProc", LoadGameProc },
-    { "LoadNextGameProc", LoadNextGameProc },
-    { "LoadPrevGameProc", LoadPrevGameProc },
-    { "LoadSelectedProc", LoadSelectedProc },
-    { "SetFilterProc", SetFilterProc },
-    { "ReloadGameProc", ReloadGameProc },
-    { "LoadPositionProc", LoadPositionProc },
-    { "LoadNextPositionProc", LoadNextPositionProc },
-    { "LoadPrevPositionProc", LoadPrevPositionProc },
-    { "ReloadPositionProc", ReloadPositionProc },
-    { "CopyPositionProc", CopyPositionProc },
-    { "PastePositionProc", PastePositionProc },
-    { "CopyGameProc", CopyGameProc },
-    { "CopyGameListProc", CopyGameListProc },
-    { "PasteGameProc", PasteGameProc },
-    { "SaveGameProc", SaveGameProc },
-    { "SavePositionProc", SavePositionProc },
-    { "MailMoveProc", MailMoveProc },
-    { "ReloadCmailMsgProc", ReloadCmailMsgProc },
-    { "QuitProc", QuitProc },
-    { "MachineWhiteProc", MachineWhiteProc },
-    { "MachineBlackProc", MachineBlackProc },
-    { "AnalysisModeProc", AnalyzeModeProc },
-    { "AnalyzeFileProc", AnalyzeFileProc },
-    { "TwoMachinesProc", TwoMachinesProc },
-    { "IcsClientProc", IcsClientProc },
-    { "EditGameProc", EditGameProc },
-    { "EditPositionProc", EditPositionProc },
-    { "TrainingProc", EditPositionProc },
-    { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
-    { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
-    { "ShowGameListProc", ShowGameListProc },
-    { "ShowMoveListProc", HistoryShowProc},
-    { "EditTagsProc", EditTagsProc },
-    { "EditBookProc", EditBookProc },
-    { "EditCommentProc", EditCommentProc },
-    { "IcsInputBoxProc", IcsInputBoxProc },
-    { "PauseProc", PauseProc },
-    { "AcceptProc", AcceptProc },
-    { "DeclineProc", DeclineProc },
-    { "RematchProc", RematchProc },
-    { "CallFlagProc", CallFlagProc },
-    { "DrawProc", DrawProc },
-    { "AdjournProc", AdjournProc },
-    { "AbortProc", AbortProc },
-    { "ResignProc", ResignProc },
-    { "AdjuWhiteProc", AdjuWhiteProc },
-    { "AdjuBlackProc", AdjuBlackProc },
-    { "AdjuDrawProc", AdjuDrawProc },
-    { "TypeInProc", TypeInProc },
-    { "EnterKeyProc", EnterKeyProc },
-    { "UpKeyProc", UpKeyProc },
-    { "DownKeyProc", DownKeyProc },
-    { "StopObservingProc", StopObservingProc },
-    { "StopExaminingProc", StopExaminingProc },
-    { "UploadProc", UploadProc },
-    { "BackwardProc", BackwardProc },
-    { "ForwardProc", ForwardProc },
+    { "MenuItem", KeyBindingProc }, // [HGM] generic handler for key bindings
+    { "QuitProc", QuitWrapper },
+    { "ManProc", ManInner },
     { "TempBackwardProc", TempBackwardProc },
     { "TempForwardProc", TempForwardProc },
-    { "ToStartProc", ToStartProc },
-    { "ToEndProc", ToEndProc },
-    { "RevertProc", RevertProc },
-    { "AnnotateProc", AnnotateProc },
-    { "TruncateGameProc", TruncateGameProc },
-    { "MoveNowProc", MoveNowProc },
-    { "RetractMoveProc", RetractMoveProc },
-    { "EngineMenuProc", (XtActionProc) EngineMenuProc },
-    { "UciMenuProc", (XtActionProc) UciMenuProc },
-    { "TimeControlProc", (XtActionProc) TimeControlProc },
-    { "FlipViewProc", FlipViewProc },
-    { "PonderNextMoveProc", PonderNextMoveProc },
-#ifndef OPTIONSDIALOG
-    { "AlwaysQueenProc", AlwaysQueenProc },
-    { "AnimateDraggingProc", AnimateDraggingProc },
-    { "AnimateMovingProc", AnimateMovingProc },
-    { "AutoflagProc", AutoflagProc },
-    { "AutoflipProc", AutoflipProc },
-    { "BlindfoldProc", BlindfoldProc },
-    { "FlashMovesProc", FlashMovesProc },
-#if HIGHDRAG
-    { "HighlightDraggingProc", HighlightDraggingProc },
-#endif
-    { "HighlightLastMoveProc", HighlightLastMoveProc },
-//    { "IcsAlarmProc", IcsAlarmProc },
-    { "MoveSoundProc", MoveSoundProc },
-    { "PeriodicUpdatesProc", PeriodicUpdatesProc },
-    { "PopupExitMessageProc", PopupExitMessageProc },
-    { "PopupMoveErrorsProc", PopupMoveErrorsProc },
-//    { "PremoveProc", PremoveProc },
-    { "ShowCoordsProc", ShowCoordsProc },
-    { "ShowThinkingProc", ShowThinkingProc },
-    { "HideThinkingProc", HideThinkingProc },
-    { "TestLegalityProc", TestLegalityProc },
-#endif
-    { "SaveSettingsProc", SaveSettingsProc },
-    { "SaveOnExitProc", SaveOnExitProc },
-    { "InfoProc", InfoProc },
-    { "ManProc", ManProc },
-    { "HintProc", HintProc },
-    { "BookProc", BookProc },
-    { "AboutGameProc", AboutGameProc },
-    { "AboutProc", AboutProc },
-    { "DebugProc", DebugProc },
-    { "NothingProc", NothingProc },
     { "CommentClick", (XtActionProc) CommentClick },
     { "CommentPopDown", (XtActionProc) CommentPopDown },
     { "TagsPopDown", (XtActionProc) TagsPopDown },
@@ -1058,74 +600,81 @@ XtActionsRec boardActions[] = {
     { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
     { "SelectMove", (XtActionProc) SelectMove },
+    { "LoadSelectedProc", LoadSelectedProc },
+    { "SetFilterProc", SetFilterProc },
+    { "TypeInProc", TypeInProc },
+    { "EnterKeyProc", EnterKeyProc },
+    { "UpKeyProc", UpKeyProc },
+    { "DownKeyProc", DownKeyProc },
 };
 
 char globalTranslations[] =
-  ":<Key>F9: ResignProc() \n \
-   :Ctrl<Key>n: ResetProc() \n \
-   :Meta<Key>V: NewVariantProc() \n \
-   :Ctrl<Key>o: LoadGameProc() \n \
-   :Meta<Key>Next: LoadNextGameProc() \n \
-   :Meta<Key>Prior: LoadPrevGameProc() \n \
+  ":<Key>F9: MenuItem(ResignProc) \n \
+   :Ctrl<Key>n: MenuItem(NewGame) \n \
+   :Meta<Key>V: MenuItem(NewVariant) \n \
+   :Ctrl<Key>o: MenuItem(LoadGame) \n \
+   :Meta<Key>Next: MenuItem(LoadNextGameProc) \n \
+   :Meta<Key>Prior: MenuItem(LoadPrevGameProc) \n \
    :Ctrl<Key>Down: LoadSelectedProc(3) \n \
    :Ctrl<Key>Up: LoadSelectedProc(-3) \n \
-   :Ctrl<Key>s: SaveGameProc() \n \
-   :Ctrl<Key>c: CopyGameProc() \n \
-   :Ctrl<Key>v: PasteGameProc() \n \
-   :Ctrl<Key>O: LoadPositionProc() \n \
-   :Shift<Key>Next: LoadNextPositionProc() \n \
-   :Shift<Key>Prior: LoadPrevPositionProc() \n \
-   :Ctrl<Key>S: SavePositionProc() \n \
-   :Ctrl<Key>C: CopyPositionProc() \n \
-   :Ctrl<Key>V: PastePositionProc() \n \
-   :Ctrl<Key>q: QuitProc() \n \
-   :Ctrl<Key>w: MachineWhiteProc() \n \
-   :Ctrl<Key>b: MachineBlackProc() \n \
-   :Ctrl<Key>t: TwoMachinesProc() \n \
-   :Ctrl<Key>a: AnalysisModeProc() \n \
-   :Ctrl<Key>g: AnalyzeFileProc() \n \
-   :Ctrl<Key>e: EditGameProc() \n \
-   :Ctrl<Key>E: EditPositionProc() \n \
-   :Meta<Key>O: EngineOutputProc() \n \
-   :Meta<Key>E: EvalGraphProc() \n \
-   :Meta<Key>G: ShowGameListProc() \n \
-   :Meta<Key>H: ShowMoveListProc() \n \
-   :<Key>Pause: PauseProc() \n \
-   :<Key>F3: AcceptProc() \n \
-   :<Key>F4: DeclineProc() \n \
-   :<Key>F12: RematchProc() \n \
-   :<Key>F5: CallFlagProc() \n \
-   :<Key>F6: DrawProc() \n \
-   :<Key>F7: AdjournProc() \n \
-   :<Key>F8: AbortProc() \n \
-   :<Key>F10: StopObservingProc() \n \
-   :<Key>F11: StopExaminingProc() \n \
-   :Meta Ctrl<Key>F12: DebugProc() \n \
-   :Meta<Key>End: ToEndProc() \n \
-   :Meta<Key>Right: ForwardProc() \n \
-   :Meta<Key>Home: ToStartProc() \n \
-   :Meta<Key>Left: BackwardProc() \n \
-   :<Key>Left: BackwardProc() \n \
-   :<Key>Right: ForwardProc() \n \
-   :<Key>Home: RevertProc() \n \
-   :<Key>End: TruncateGameProc() \n \
-   :Ctrl<Key>m: MoveNowProc() \n \
-   :Ctrl<Key>x: RetractMoveProc() \n \
-   :Meta<Key>J: EngineMenuProc() \n \
-   :Meta<Key>U: UciMenuProc() \n \
-   :Meta<Key>T: TimeControlProc() \n \
-   :Ctrl<Key>P: PonderNextMoveProc() \n "
+   :Ctrl<Key>s: MenuItem(SaveGame) \n \
+   :Ctrl<Key>c: MenuItem(CopyGame) \n \
+   :Ctrl<Key>v: MenuItem(PasteGame) \n \
+   :Ctrl<Key>O: MenuItem(LoadPosition) \n \
+   :Shift<Key>Next: MenuItem(LoadNextPositionProc) \n \
+   :Shift<Key>Prior: MenuItem(LoadPrevPositionProc) \n \
+   :Ctrl<Key>S: MenuItem(SavePosition) \n \
+   :Ctrl<Key>C: MenuItem(CopyPosition) \n \
+   :Ctrl<Key>V: MenuItem(PastePosition) \n \
+   :Ctrl<Key>q: MenuItem(Exit) \n \
+   :Ctrl<Key>w: MenuItem(MachineWhite) \n \
+   :Ctrl<Key>b: MenuItem(MachineBlack) \n \
+   :Ctrl<Key>t: MenuItem(TwoMachines) \n \
+   :Ctrl<Key>a: MenuItem(AnalysisMode) \n \
+   :Ctrl<Key>g: MenuItem(AnalyzeFile) \n \
+   :Ctrl<Key>e: MenuItem(EditGame) \n \
+   :Ctrl<Key>E: MenuItem(EditPosition) \n \
+   :Meta<Key>O: MenuItem(ShowEngineOutput) \n \
+   :Meta<Key>E: MenuItem(ShowEvaluationGraph) \n \
+   :Meta<Key>G: MenuItem(ShowGameList) \n \
+   :Meta<Key>H: MenuItem(ShowMoveHistory) \n \
+   :<Key>Pause: MenuItem(Pause) \n \
+   :<Key>F3: MenuItem(Accept) \n \
+   :<Key>F4: MenuItem(Decline) \n \
+   :<Key>F12: MenuItem(Rematch) \n \
+   :<Key>F5: MenuItem(CallFlag) \n \
+   :<Key>F6: MenuItem(Draw) \n \
+   :<Key>F7: MenuItem(Adjourn) \n \
+   :<Key>F8: MenuItem(Abort) \n \
+   :<Key>F10: MenuItem(StopObserving) \n \
+   :<Key>F11: MenuItem(StopExamining) \n \
+   :Ctrl<Key>d: MenuItem(DebugProc) \n \
+   :Meta Ctrl<Key>F12: MenuItem(DebugProc) \n \
+   :Meta<Key>End: MenuItem(ToEnd) \n \
+   :Meta<Key>Right: MenuItem(Forward) \n \
+   :Meta<Key>Home: MenuItem(ToStart) \n \
+   :Meta<Key>Left: MenuItem(Backward) \n \
+   :<Key>Left: MenuItem(Backward) \n \
+   :<Key>Right: MenuItem(Forward) \n \
+   :<Key>Home: MenuItem(Revert) \n \
+   :<Key>End: MenuItem(TruncateGame) \n \
+   :Ctrl<Key>m: MenuItem(MoveNow) \n \
+   :Ctrl<Key>x: MenuItem(RetractMove) \n \
+   :Meta<Key>J: MenuItem(Adjudications) \n \
+   :Meta<Key>U: MenuItem(CommonEngine) \n \
+   :Meta<Key>T: MenuItem(TimeControl) \n \
+   :Ctrl<Key>P: MenuItem(PonderNextMove) \n "
 #ifndef OPTIONSDIALOG
     "\
-   :Ctrl<Key>Q: AlwaysQueenProc() \n \
-   :Ctrl<Key>F: AutoflagProc() \n \
-   :Ctrl<Key>A: AnimateMovingProc() \n \
-   :Ctrl<Key>L: TestLegalityProc() \n \
-   :Ctrl<Key>H: HideThinkingProc() \n "
+   :Ctrl<Key>Q: MenuItem(AlwaysQueenProc) \n \
+   :Ctrl<Key>F: MenuItem(AutoflagProc) \n \
+   :Ctrl<Key>A: MenuItem(AnimateMovingProc) \n \
+   :Ctrl<Key>L: MenuItem(TestLegalityProc) \n \
+   :Ctrl<Key>H: MenuItem(HideThinkingProc) \n "
 #endif
    "\
-   :<Key>F1: ManProc() \n \
-   :<Key>F2: FlipViewProc() \n \
+   :<Key>F1: MenuItem(Manual) \n \
+   :<Key>F2: MenuItem(FlipView) \n \
    :<KeyDown>Return: TempBackwardProc() \n \
    :<KeyUp>Return: TempForwardProc() \n";
 
@@ -3903,12 +3452,70 @@ CreateGrid ()
     }
 }
 
+int nrOfMenuItems = 7;
+MenuListItem menuItemList[150] = {
+    { "LoadNextGameProc", LoadNextGameProc },
+    { "LoadPrevGameProc", LoadPrevGameProc },
+    { "ReloadGameProc", ReloadGameProc },
+    { "ReloadPositionProc", ReloadPositionProc },
+#ifndef OPTIONSDIALOG
+    { "AlwaysQueenProc", AlwaysQueenProc },
+    { "AnimateDraggingProc", AnimateDraggingProc },
+    { "AnimateMovingProc", AnimateMovingProc },
+    { "AutoflagProc", AutoflagProc },
+    { "AutoflipProc", AutoflipProc },
+    { "BlindfoldProc", BlindfoldProc },
+    { "FlashMovesProc", FlashMovesProc },
+#if HIGHDRAG
+    { "HighlightDraggingProc", HighlightDraggingProc },
+#endif
+    { "HighlightLastMoveProc", HighlightLastMoveProc },
+//    { "IcsAlarmProc", IcsAlarmProc },
+    { "MoveSoundProc", MoveSoundProc },
+    { "PeriodicUpdatesProc", PeriodicUpdatesProc },
+    { "PopupExitMessageProc", PopupExitMessageProc },
+    { "PopupMoveErrorsProc", PopupMoveErrorsProc },
+//    { "PremoveProc", PremoveProc },
+    { "ShowCoordsProc", ShowCoordsProc },
+    { "ShowThinkingProc", ShowThinkingProc },
+    { "HideThinkingProc", HideThinkingProc },
+    { "TestLegalityProc", TestLegalityProc },
+#endif
+    { "AboutGameProc", AboutGameEvent },
+    { "DebugProc", DebugProc },
+    { "NothingProc", NothingProc },
+  {NULL, NothingProc}
+};
+
+int
+Equal(char *p, char *s)
+{   // compare strings skipping spaces in second
+    while(*s) {
+	if(*s == ' ') { s++; continue; }
+	if(*s++ != *p++) return 0;
+    }
+    return !*p;
+}
+
+void
+KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{   // [HGM] new method of key binding: specify MenuItem(FlipView) in stead of FlipViewProc in translation string
+    int i;
+    if(*nprms == 0) return;
+    for(i=0; menuItemList[i].name; i++) {
+	if(Equal(prms[0], menuItemList[i].name)) {
+	    (menuItemList[i].proc) ();
+	    return;
+	}
+    }
+}
+
 static void
 MenuBarSelect (Widget w, caddr_t addr, caddr_t index)
 {
-    XtActionProc proc = (XtActionProc) addr;
+    MenuProc *proc = (MenuProc *) addr;
 
-    (proc)(NULL, NULL, NULL, NULL);
+    (proc)();
 }
 
 static void
@@ -3917,97 +3524,75 @@ MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
     RecentEngineEvent((int) (intptr_t) addr);
 }
 
-void
-AppendEnginesToMenu (Widget menu, char *list)
-{
-    int i=0, j;
-    Widget entry;
-    MenuItem *mi;
-    Arg args[16];
-    char *p;
+// some stuff that must remain in front-end
+static Widget mainBar, currentMenu;
+static int wtot, nr = 0, widths[10];
 
-    if(appData.icsActive || appData.recentEngines <= 0) return;
-    recentEngines = strdup(list);
+void
+AppendMenuItem (char *text, char *name, MenuProc *action)
+{
+    int j;
+    Widget entry;
+    Arg args[16];
+
     j = 0;
     XtSetArg(args[j], XtNleftMargin, 20);   j++;
     XtSetArg(args[j], XtNrightMargin, 20);  j++;
-    while (*list) {
-	p = strchr(list, '\n'); if(p == NULL) break;
-	if(i == 0) XtCreateManagedWidget(_("----"), smeLineObjectClass, menu, args, j); // at least one valid item to add
-	*p = 0;
-	XtSetArg(args[j], XtNlabel, XtNewString(list));
-	entry = XtCreateManagedWidget("engine", smeBSBObjectClass, menu, args, j+1);
-	XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) MenuEngineSelect,
-			  (caddr_t) (intptr_t) i);
-	i++; *p = '\n'; list = p + 1;
-    }
+
+	if (strcmp(text, "----") == 0) {
+	  entry = XtCreateManagedWidget(text, smeLineObjectClass,
+					  currentMenu, args, j);
+	} else {
+          XtSetArg(args[j], XtNlabel, XtNewString(_(text)));
+	    entry = XtCreateManagedWidget(name, smeBSBObjectClass,
+					  currentMenu, args, j+1);
+	    XtAddCallback(entry, XtNcallback,
+			  (XtCallbackProc) (strcmp(name, "recent") ? MenuBarSelect : MenuEngineSelect),
+			  (caddr_t) action);
+	}
 }
 
 void
-CreateMenuBarPopup (Widget parent, String name, Menu *mb)
-{
-    int j;
-    Widget menu, entry;
-    MenuItem *mi;
+CreateMenuButton (char *name, Menu *mb)
+{   // create menu button on main bar, and shell for pull-down list
+    int i, j;
     Arg args[16];
+    Dimension w;
 
-    menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
-			      parent, NULL, 0);
-    j = 0;
-    XtSetArg(args[j], XtNleftMargin, 20);   j++;
-    XtSetArg(args[j], XtNrightMargin, 20);  j++;
-    mi = mb->mi;
-    while (mi->string != NULL) {
-	if (strcmp(mi->string, "----") == 0) {
-	  entry = XtCreateManagedWidget(_(mi->string), smeLineObjectClass,
-					  menu, args, j);
-	} else {
-          XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string)));
-	    entry = XtCreateManagedWidget(mi->ref, smeBSBObjectClass,
-					  menu, args, j+1);
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) MenuBarSelect,
-			  (caddr_t) mi->proc);
-	}
-	mi++;
-    }
-    if(!strcmp(mb->name, "Engine")) AppendEnginesToMenu(menu, appData.recentEngineList);
+	j = 0;
+	XtSetArg(args[j], XtNmenuName, XtNewString(name));  j++;
+	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name)));  j++;
+	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
+	mb->subMenu = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
+				       mainBar, args, j);
+    currentMenu = XtCreatePopupShell(name, simpleMenuWidgetClass,
+			      mainBar, NULL, 0);
+	j = 0;
+	XtSetArg(args[j], XtNwidth, &w);                   j++;
+	XtGetValues(mb->subMenu, args, j);
+	wtot += mb->textWidth = widths[nr++] = w;
 }
 
 Widget
 CreateMenuBar (Menu *mb, int boardWidth)
 {
-    int i, j, nr = 0, wtot = 0, widths[10];
-    Widget menuBar;
+    int i, j;
     Arg args[16];
     char menuName[MSG_SIZ];
     Dimension w;
     Menu *ma = mb;
 
+    // create bar itself
     j = 0;
     XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
     XtSetArg(args[j], XtNvSpace, 0);                        j++;
     XtSetArg(args[j], XtNborderWidth, 0);                   j++;
-    menuBar = XtCreateWidget("menuBar", boxWidgetClass,
+    mainBar = XtCreateWidget("menuBar", boxWidgetClass,
 			     formWidget, args, j);
 
-    while (mb->name != NULL) {
-        safeStrCpy(menuName, "menu", sizeof(menuName)/sizeof(menuName[0]) );
-	strncat(menuName, mb->ref, MSG_SIZ - strlen(menuName) - 1);
-	j = 0;
-	XtSetArg(args[j], XtNmenuName, XtNewString(menuName));  j++;
-	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name)));  j++;
-	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
-	mb->subMenu = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
-				       menuBar, args, j);
-	CreateMenuBarPopup(menuBar, menuName, mb);
-	j = 0;
-	XtSetArg(args[j], XtNwidth, &w);                   j++;
-	XtGetValues(mb->subMenu, args, j);
-	wtot += mb->textWidth = widths[nr++] = w;
-	mb++;
-    }
+    CreateMainMenus(mb); // put menus in bar according to description in back-end
+
+    // size buttons to make menu bar fit, clipping menu names where necessary
     while(wtot > boardWidth - 40) {
 	int wmax=0, imax=0;
 	for(i=0; i<nr; i++) if(widths[i] > wmax) wmax = widths[imax=i];
@@ -4019,7 +3604,8 @@ CreateMenuBar (Menu *mb, int boardWidth)
 	XtSetArg(args[j], XtNwidth, widths[i]);                   j++;
 	XtSetValues(ma[i].subMenu, args, j);
     }
-    return menuBar;
+
+    return mainBar;
 }
 
 Widget
@@ -4258,6 +3844,7 @@ SetHighlights (int fromX, int fromY, int toX, int toY)
 	    drawHighlight(hi1X, hi1Y, lineGC);
 	}
     } // [HGM] first erase both, then draw new!
+
     if (hi2X != toX || hi2Y != toY) {
 	if (hi2X >= 0 && hi2Y >= 0) {
 	    drawHighlight(hi2X, hi2Y, lineGC);
@@ -4273,8 +3860,10 @@ SetHighlights (int fromX, int fromY, int toX, int toY)
 	    drawHighlight(toX, toY, highlineGC);
 	}
     }
+
     if(toX<0) // clearing the highlights must have damaged arrow
 	DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y); // for now, redraw it (should really be cleared!)
+
     hi1X = fromX;
     hi1Y = fromY;
     hi2X = toX;
@@ -5523,12 +5112,6 @@ ModeHighlight ()
 /*
  * Button/menu procedures
  */
-void
-ResetProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    ResetGameEvent();
-}
-
 int
 LoadGamePopUp (FILE *f, int gameNumber, char *title)
 {
@@ -5549,7 +5132,7 @@ LoadGamePopUp (FILE *f, int gameNumber, char *title)
 }
 
 void
-LoadGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+LoadGameProc ()
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
@@ -5558,43 +5141,43 @@ LoadGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-LoadNextGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+LoadNextGameProc ()
 {
     ReloadGame(1);
 }
 
 void
-LoadPrevGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+LoadPrevGameProc ()
 {
     ReloadGame(-1);
 }
 
 void
-ReloadGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+ReloadGameProc ()
 {
     ReloadGame(0);
 }
 
 void
-LoadNextPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+LoadNextPositionProc ()
 {
     ReloadPosition(1);
 }
 
 void
-LoadPrevPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+LoadPrevPositionProc ()
 {
     ReloadPosition(-1);
 }
 
 void
-ReloadPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+ReloadPositionProc ()
 {
     ReloadPosition(0);
 }
 
 void
-LoadPositionProc(Widget w, XEvent *event, String *prms, Cardinal *nprms) 
+LoadPositionProc() 
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
@@ -5603,7 +5186,7 @@ LoadPositionProc(Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-SaveGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+SaveGameProc ()
 {
     FileNamePopUp(_("Save game file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
@@ -5612,7 +5195,7 @@ SaveGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-SavePositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+SavePositionProc ()
 {
     FileNamePopUp(_("Save position file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
@@ -5621,15 +5204,9 @@ SavePositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-ReloadCmailMsgProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+ReloadCmailMsgProc ()
 {
     ReloadCmailMsgEvent(FALSE);
-}
-
-void
-MailMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    MailMoveEvent();
 }
 
 /* this variable is shared between CopyPositionProc and SendPositionSelection */
@@ -5685,7 +5262,7 @@ SendPositionSelection (Widget w, Atom *selection, Atom *target,
  * Widget which was clicked on was, or what the click event was
  */
 void
-CopyPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+CopyPositionProc ()
 {
     /*
      * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
@@ -5711,7 +5288,7 @@ CopyPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 CopyFENToClipboard ()
 { // wrapper to make call from back-end possible
-  CopyPositionProc(NULL, NULL, NULL, NULL);
+  CopyPositionProc();
 }
 
 /* function called when the data to Paste is ready */
@@ -5728,11 +5305,8 @@ PastePositionCB (Widget w, XtPointer client_data, Atom *selection,
 
 /* called when Paste Position button is pressed,
  * all parameters will be NULL */
-void PastePositionProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
+void
+PastePositionProc ()
 {
     XtGetSelectionValue(menuBarWidget,
       appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
@@ -5825,7 +5399,7 @@ CopySomething ()
  * Widget which was clicked on was, or what the click event was
  */
 void
-CopyGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+CopyGameProc ()
 {
   int ret;
 
@@ -5836,7 +5410,7 @@ CopyGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-CopyGameListProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+CopyGameListProc ()
 {
   if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
   CopySomething();
@@ -5865,7 +5439,7 @@ PasteGameCB (Widget w, XtPointer client_data, Atom *selection,
 /* called when Paste Game button is pressed,
  * all parameters will be NULL */
 void
-PasteGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+PasteGameProc ()
 {
     XtGetSelectionValue(menuBarWidget,
       appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
@@ -5884,36 +5458,24 @@ PasteGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 AutoSaveGame ()
 {
-    SaveGameProc(NULL, NULL, NULL, NULL);
+    SaveGameProc();
 }
 
 
 void
-QuitProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+QuitProc ()
 {
     ExitEvent(0);
 }
 
 void
-PauseProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+QuitWrapper (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    PauseEvent();
+    QuitProc();
 }
 
 void
-MachineBlackProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    MachineBlackEvent();
-}
-
-void
-MachineWhiteProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    MachineWhiteEvent();
-}
-
-void
-AnalyzeModeProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AnalyzeModeProc ()
 {
     char buf[MSG_SIZ];
 
@@ -5948,14 +5510,14 @@ AnalyzeModeProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     }
 #ifndef OPTIONSDIALOG
     if (!appData.showThinking)
-      ShowThinkingProc(w,event,prms,nprms);
+      ShowThinkingProc();
 #endif
 
     AnalyzeModeEvent();
 }
 
 void
-AnalyzeFileProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AnalyzeFileProc ()
 {
     if (!first.analysisSupport) {
       char buf[MSG_SIZ];
@@ -5966,7 +5528,7 @@ AnalyzeFileProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 //    Reset(FALSE, TRUE);
 #ifndef OPTIONSDIALOG
     if (!appData.showThinking)
-      ShowThinkingProc(w,event,prms,nprms);
+      ShowThinkingProc();
 #endif
     AnalyzeFileEvent();
 //    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
@@ -5974,43 +5536,13 @@ AnalyzeFileProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-TwoMachinesProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    TwoMachinesEvent();
-}
-
-void
-MatchProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+MatchProc ()
 {
     MatchEvent(2);
 }
 
 void
-IcsClientProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    IcsClientEvent();
-}
-
-void
-EditGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    EditGameEvent();
-}
-
-void
-EditPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    EditPositionEvent();
-}
-
-void
-TrainingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    TrainingEvent();
-}
-
-void
-EditCommentProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+EditCommentProc ()
 {
     Arg args[5];
     int j;
@@ -6024,73 +5556,25 @@ EditCommentProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-IcsInputBoxProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+IcsInputBoxProc ()
 {
     if (!PopDown(4)) ICSInputBoxPopUp();
 }
 
 void
-AcceptProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    AcceptEvent();
-}
-
-void
-DeclineProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    DeclineEvent();
-}
-
-void
-RematchProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    RematchEvent();
-}
-
-void
-CallFlagProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    CallFlagEvent();
-}
-
-void
-DrawProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    DrawEvent();
-}
-
-void
-AbortProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    AbortEvent();
-}
-
-void
-AdjournProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    AdjournEvent();
-}
-
-void
-ResignProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    ResignEvent();
-}
-
-void
-AdjuWhiteProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AdjuWhiteProc ()
 {
     UserAdjudicationEvent(+1);
 }
 
 void
-AdjuBlackProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AdjuBlackProc ()
 {
     UserAdjudicationEvent(-1);
 }
 
 void
-AdjuDrawProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AdjuDrawProc ()
 {
     UserAdjudicationEvent(0);
 }
@@ -6146,38 +5630,6 @@ DownKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-StopObservingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    StopObservingEvent();
-}
-
-void
-StopExaminingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    StopExaminingEvent();
-}
-
-void
-UploadProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    UploadGameEvent();
-}
-
-
-void
-ForwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    ForwardEvent();
-}
-
-
-void
-BackwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    BackwardEvent();
-}
-
-void
 TempBackwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
 	if (!TempBackwardActive) {
@@ -6203,56 +5655,26 @@ TempForwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-ToStartProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    ToStartEvent();
-}
-
-void
-ToEndProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    ToEndEvent();
-}
-
-void
-RevertProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+RevertProc ()
 {
     RevertEvent(False);
 }
 
 void
-AnnotateProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AnnotateProc ()
 {
     RevertEvent(True);
 }
 
 void
-TruncateGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    TruncateGameEvent();
-}
-
-void
-RetractMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    RetractMoveEvent();
-}
-
-void
-MoveNowProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    MoveNowEvent();
-}
-
-void
-FlipViewProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+FlipViewProc ()
 {
     flipView = !flipView;
     DrawPosition(True, NULL);
 }
 
 void
-PonderNextMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+PonderNextMoveProc ()
 {
     Arg args[16];
 
@@ -6270,7 +5692,7 @@ PonderNextMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 
 #ifndef OPTIONSDIALOG
 void
-AlwaysQueenProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AlwaysQueenProc ()
 {
     Arg args[16];
 
@@ -6286,7 +5708,7 @@ AlwaysQueenProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-AnimateDraggingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AnimateDraggingProc ()
 {
     Arg args[16];
 
@@ -6303,7 +5725,7 @@ AnimateDraggingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-AnimateMovingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AnimateMovingProc ()
 {
     Arg args[16];
 
@@ -6320,7 +5742,7 @@ AnimateMovingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-AutoflagProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AutoflagProc ()
 {
     Arg args[16];
 
@@ -6336,7 +5758,7 @@ AutoflagProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-AutoflipProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AutoflipProc ()
 {
     Arg args[16];
 
@@ -6352,7 +5774,7 @@ AutoflipProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-BlindfoldProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+BlindfoldProc ()
 {
     Arg args[16];
 
@@ -6370,7 +5792,7 @@ BlindfoldProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-TestLegalityProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+TestLegalityProc ()
 {
     Arg args[16];
 
@@ -6387,7 +5809,7 @@ TestLegalityProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 
 
 void
-FlashMovesProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+FlashMovesProc ()
 {
     Arg args[16];
 
@@ -6408,7 +5830,7 @@ FlashMovesProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 
 #if HIGHDRAG
 void
-HighlightDraggingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+HighlightDraggingProc ()
 {
     Arg args[16];
 
@@ -6425,7 +5847,7 @@ HighlightDraggingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 #endif
 
 void
-HighlightLastMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+HighlightLastMoveProc ()
 {
     Arg args[16];
 
@@ -6441,7 +5863,7 @@ HighlightLastMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-HighlightArrowProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+HighlightArrowProc ()
 {
     Arg args[16];
 
@@ -6458,7 +5880,7 @@ HighlightArrowProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 
 #if 0
 void
-IcsAlarmProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+IcsAlarmProc ()
 {
     Arg args[16];
 
@@ -6475,7 +5897,7 @@ IcsAlarmProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 #endif
 
 void
-MoveSoundProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+MoveSoundProc ()
 {
     Arg args[16];
 
@@ -6491,7 +5913,7 @@ MoveSoundProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-OneClickProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+OneClickProc ()
 {
     Arg args[16];
 
@@ -6507,7 +5929,7 @@ OneClickProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-PeriodicUpdatesProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+PeriodicUpdatesProc ()
 {
     Arg args[16];
 
@@ -6523,7 +5945,7 @@ PeriodicUpdatesProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-PopupExitMessageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+PopupExitMessageProc ()
 {
     Arg args[16];
 
@@ -6539,7 +5961,7 @@ PopupExitMessageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-PopupMoveErrorsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+PopupMoveErrorsProc ()
 {
     Arg args[16];
 
@@ -6556,7 +5978,7 @@ PopupMoveErrorsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 
 #if 0
 void
-PremoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+PremoveProc ()
 {
     Arg args[16];
 
@@ -6573,7 +5995,7 @@ PremoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 #endif
 
 void
-ShowCoordsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+ShowCoordsProc ()
 {
     Arg args[16];
 
@@ -6591,14 +6013,14 @@ ShowCoordsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-ShowThinkingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+ShowThinkingProc ()
 {
     appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
     ShowThinkingEvent();
 }
 
 void
-HideThinkingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+HideThinkingProc ()
 {
     Arg args[16];
 
@@ -6616,7 +6038,7 @@ HideThinkingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 #endif
 
 void
-SaveOnExitProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+SaveOnExitProc ()
 {
     Arg args[16];
 
@@ -6632,13 +6054,13 @@ SaveOnExitProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-SaveSettingsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+SaveSettingsProc ()
 {
      SaveSettings(settingsFileName);
 }
 
 void
-InfoProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+InfoProc ()
 {
     char buf[MSG_SIZ];
     snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
@@ -6647,8 +6069,8 @@ InfoProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-ManProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
+ManInner (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{   // called as key binding
     char buf[MSG_SIZ];
     String name;
     if (nprms && *nprms > 0)
@@ -6660,19 +6082,13 @@ ManProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-HintProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    HintEvent();
+ManProc ()
+{   // called from menu
+    ManInner(NULL, NULL, NULL, NULL);
 }
 
 void
-BookProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    BookEvent();
-}
-
-void
-BugReportProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+BugReportProc ()
 {
     char buf[MSG_SIZ];
     snprintf(buf, MSG_SIZ, "%s mailto:bug-xboard@gnu.org", appData.sysOpen);
@@ -6680,7 +6096,7 @@ BugReportProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-GuideProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+GuideProc ()
 {
     char buf[MSG_SIZ];
     snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/user_guide/UserGuide.html", appData.sysOpen);
@@ -6688,7 +6104,7 @@ GuideProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-HomePageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+HomePageProc ()
 {
     char buf[MSG_SIZ];
     snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/", appData.sysOpen);
@@ -6696,7 +6112,7 @@ HomePageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-NewsPageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+NewsPageProc ()
 {
     char buf[MSG_SIZ];
     snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/whats_new/portal.html", appData.sysOpen);
@@ -6704,7 +6120,7 @@ NewsPageProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-AboutProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+AboutProc ()
 {
     char buf[2 * MSG_SIZ];
 #if ZIPPY
@@ -6728,19 +6144,13 @@ _("%s%s\n\n"
 }
 
 void
-DebugProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+DebugProc ()
 {
     appData.debugMode = !appData.debugMode;
 }
 
 void
-AboutGameProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    AboutGameEvent();
-}
-
-void
-NothingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+NothingProc ()
 {
     return;
 }

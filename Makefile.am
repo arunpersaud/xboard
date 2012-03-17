@@ -19,7 +19,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 parser.c parser.h \
 		 pgntags.c \
 	  	 uci.c \
-	 	 xboard.c xboard.h args.h \
+	 	 xboard.c xboard.h args.h menus.c menus.h \
 		 xedittags.c xedittags.h \
 		 engineoutput.c engineoutput.h \
 		 xengineoutput.c \

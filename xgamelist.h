@@ -23,8 +23,7 @@
 #ifndef _XGAMEL_H
 #define _XGAMEL_H 1
 
-void ShowGameListProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
+void ShowGameListProc P((void));
 void LoadSelectedProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void SetFilterProc P((Widget w, XEvent *event,

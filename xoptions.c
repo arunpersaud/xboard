@@ -1373,26 +1373,26 @@ GenericPopUp (Option *option, char *title, int dlgNr)
 
 
 void
-IcsOptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+IcsOptionsProc ()
 {
    GenericPopUp(icsOptions, _("ICS Options"), 0);
 }
 
 void
-LoadOptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+LoadOptionsProc ()
 {
    ASSIGN(searchMode, modeValues[appData.searchMode-1]);
    GenericPopUp(loadOptions, _("Load Game Options"), 0);
 }
 
 void
-SaveOptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+SaveOptionsProc ()
 {
    GenericPopUp(saveOptions, _("Save Game Options"), 0);
 }
 
 void
-SoundOptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+SoundOptionsProc ()
 {
    free(soundFiles[2]);
    soundFiles[2] = strdup("*");
@@ -1400,19 +1400,19 @@ SoundOptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-BoardOptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+BoardOptionsProc ()
 {
    GenericPopUp(boardOptions, _("Board Options"), 0);
 }
 
 void
-EngineMenuProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+EngineMenuProc ()
 {
    GenericPopUp(adjudicationOptions, _("Adjudicate non-ICS Games"), 0);
 }
 
 void
-UciMenuProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+UciMenuProc ()
 {
    oldCores = appData.smpCores;
    oldPonder = appData.ponderNextMove;
@@ -1420,13 +1420,13 @@ UciMenuProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-NewVariantProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+NewVariantProc ()
 {
    GenericPopUp(variantDescriptors, _("New Variant"), 0);
 }
 
 void
-OptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+OptionsProc ()
 {
    oldPonder = appData.ponderNextMove;
    oldShow = appData.showCoords; oldBlind = appData.blindfold;
@@ -1434,7 +1434,7 @@ OptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-MatchOptionsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+MatchOptionsProc ()
 {
    NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
    comboCallback = &AddToTourney;
@@ -1492,7 +1492,7 @@ SendText (int n)
 }
 
 void
-IcsTextProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+IcsTextProc ()
 {
    int i=0, j;
    char *p, *q, *r;
@@ -1719,13 +1719,13 @@ SettingsPopUp (ChessProgramState *cps)
 }
 
 void
-FirstSettingsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+FirstSettingsProc ()
 {
     SettingsPopUp(&first);
 }
 
 void
-SecondSettingsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+SecondSettingsProc ()
 {
    if(WaitForEngine(&second, SettingsMenuIfReady)) return;
    SettingsPopUp(&second);
@@ -1757,7 +1757,7 @@ Option installOptions[] = {
 };
 
 void
-LoadEngineProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+LoadEngineProc ()
 {
    isUCI = storeVariant = v1 = useNick = False; addToList = hasBook = True; // defaults
    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
@@ -1770,7 +1770,7 @@ LoadEngineProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-EditBookProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+EditBookProc ()
 {
     EditBookEvent();
 }
@@ -1803,7 +1803,7 @@ SetRandom (int n)
 }
 
 void
-ShuffleMenuProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+ShuffleMenuProc ()
 {
     GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
 }
@@ -1889,7 +1889,7 @@ SetTcType (int n)
 }
 
 void
-TimeControlProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+TimeControlProc ()
 {
    tmpMoves = appData.movesPerSession;
    tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;

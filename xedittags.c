@@ -114,7 +114,7 @@ TagsPopDown()
 }
 
 void
-EditTagsProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+EditTagsProc ()
 {
     Arg args[5];
     int j;

@@ -1,0 +1,170 @@
+/*
+ * menus.h -- platform-indendent menu handling code for XBoard
+ *
+ * Copyright 1991 by Digital Equipment Corporation, Maynard,
+ * Massachusetts.
+ *
+ * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
+ * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
+ *
+ * The following terms apply to Digital Equipment Corporation's copyright
+ * interest in XBoard:
+ * ------------------------------------------------------------------------
+ * All Rights Reserved
+ *
+ * Permission to use, copy, modify, and distribute this software and its
+ * documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright notice appear in all copies and that
+ * both that copyright notice and this permission notice appear in
+ * supporting documentation, and that the name of Digital not be
+ * used in advertising or publicity pertaining to distribution of the
+ * software without specific, written prior permission.
+ *
+ * DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+ * ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
+ * DIGITAL BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+ * WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+ * SOFTWARE.
+ * ------------------------------------------------------------------------
+ *
+ * The following terms apply to the enhanced version of XBoard
+ * distributed by the Free Software Foundation:
+ * ------------------------------------------------------------------------
+ *
+ * GNU XBoard is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * GNU XBoard is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.  *
+ *
+ *------------------------------------------------------------------------
+ ** See the file ChangeLog for a revision history.  */
+
+
+
+typedef void MenuProc P((void));
+
+typedef struct {
+    char *name;
+    MenuProc *proc;
+} MenuListItem;
+
+typedef struct {
+    String string;
+    String ref;
+    MenuProc *proc;
+} MenuItem;
+
+typedef struct {
+    String name;
+    String ref;
+    MenuItem *mi;
+    int textWidth;
+    Widget subMenu;
+} Menu;
+
+extern int nrOfMenuItems;
+extern MenuListItem menuItemList[];
+extern Menu menuBar[];
+
+void LoadGameProc P((void));
+void LoadNextGameProc P((void));
+void LoadPrevGameProc P((void));
+void ReloadGameProc P((void));
+void LoadPositionProc P((void));
+void LoadNextPositionProc P((void));
+void LoadPrevPositionProc P((void));
+void ReloadPositionProc P((void));
+void CopyPositionProc P((void));
+void PastePositionProc P((void));
+void CopyGameProc P((void));
+void CopyGameListProc P((void));
+void PasteGameProc P((void));
+void SaveGameProc P((void));
+void SavePositionProc P((void));
+void ReloadCmailMsgProc P((void));
+void QuitProc P((void));
+void AnalyzeModeProc P((void));
+void AnalyzeFileProc P((void));
+void MatchProc P((void));
+void MatchOptionsProc P((void));
+void EditCommentProc P((void));
+void IcsInputBoxProc P((void));
+void AdjuWhiteProc P((void));
+void AdjuBlackProc P((void));
+void AdjuDrawProc P((void));
+void RevertProc P((void));
+void AnnotateProc P((void));
+void AlwaysQueenProc P((void));
+void AnimateDraggingProc P((void));
+void AnimateMovingProc P((void));
+void AutoflagProc P((void));
+void AutoflipProc P((void));
+void BlindfoldProc P((void));
+void FlashMovesProc P((void));
+void FlipViewProc P((void));
+void HighlightDraggingProc P((void));
+void HighlightLastMoveProc P((void));
+void HighlightArrowProc P((void));
+void MoveSoundProc P((void));
+//void IcsAlarmProc P((void));
+void OneClickProc P((void));
+void PeriodicUpdatesProc P((void));
+void PonderNextMoveProc P((void));
+void PopupMoveErrorsProc P((void));
+void PopupExitMessageProc P((void));
+//void PremoveProc P((void));
+void ShowCoordsProc P((void));
+void ShowThinkingProc P((void));
+void HideThinkingProc P((void));
+void TestLegalityProc P((void));
+void SaveSettingsProc P((void));
+void SaveOnExitProc P((void));
+void InfoProc P((void));
+void ManProc P((void));
+void GuideProc P((void));
+void HomePageProc P((void));
+void NewsPageProc P((void));
+void BugReportProc P((void));
+void AboutGameProc P((void));
+void AboutProc P((void));
+void DebugProc P((void));
+void NothingProc P((void));
+void ShuffleMenuProc P((void));
+void EngineMenuProc P((void));
+void UciMenuProc P((void));
+void TimeControlProc P((void));
+void OptionsProc P((void));
+void NewVariantProc P((void));
+void IcsTextProc P((void));
+void LoadEngineProc P((void));
+void FirstSettingsProc P((void));
+void SecondSettingsProc P((void));
+void GameListOptionsPopUp P((void));
+void IcsOptionsProc P((void));
+void SoundOptionsProc P((void));
+void BoardOptionsProc P((void));
+void LoadOptionsProc P((void));
+void SaveOptionsProc P((void));
+void EditBookProc P((void));
+
+// must be moved to xengineoutput.h
+
+void EngineOutputProc P((void));
+void EvalGraphProc P((void));
+
+void CreateMainMenus P((Menu *mb));
+void AppendMenuItem P((char *text, char *name, MenuProc *action));
+void CreateMenuButton P((char *name, Menu *mb));
+
+#define OPTIONSDIALOG
+

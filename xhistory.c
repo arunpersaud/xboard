@@ -156,7 +156,7 @@ HistoryPopUp ()
 }
 
 void
-HistoryShowProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+HistoryShowProc ()
 {
   if (!shellUp[7]) {
     ASSIGN(historyText, "");

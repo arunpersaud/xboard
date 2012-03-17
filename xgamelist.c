@@ -521,7 +521,7 @@ GameListDestroy ()
 }
 
 void
-ShowGameListProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+ShowGameListProc ()
 {
     Arg args[16];
     int j;
