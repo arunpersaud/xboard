@@ -72,6 +72,11 @@ typedef struct {
     Widget subMenu;
 } Menu;
 
+typedef struct {
+    char *name;
+    Boolean value;
+} Enables;
+
 extern int nrOfMenuItems;
 extern MenuListItem menuItemList[];
 extern Menu menuBar[];
@@ -165,6 +170,8 @@ void EvalGraphProc P((void));
 void CreateMainMenus P((Menu *mb));
 void AppendMenuItem P((char *text, char *name, MenuProc *action));
 void CreateMenuButton P((char *name, Menu *mb));
+int  MenuToNumber P((char *menuName));
+void SetMenuEnables P((Enables *enab));
 
 #define OPTIONSDIALOG
 

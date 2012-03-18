@@ -152,7 +152,7 @@ HistoryPopUp ()
 {
     if(GenericPopUp(historyOptions, _("Move list"), 7))
 	XtOverrideTranslations(historyOptions[0].handle, XtParseTranslationTable(historyTranslations));
-    MarkMenu("menuView.Show Move History", 7);
+    MarkMenu("Show Move History", 7);
 }
 
 void

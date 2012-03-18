@@ -2072,100 +2072,99 @@ XBoard square size (hint): %d\n\
     XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
 #ifndef OPTIONSDIALOG
     if (appData.alwaysPromoteToQueen) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
+	XtSetValues(XtNameToWidget(menuBarWidget, "Always Queen"),
 		    args, 1);
     }
     if (appData.animateDragging) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Animate Dragging"),
+				   "Animate Dragging"),
 		    args, 1);
     }
     if (appData.animate) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
+	XtSetValues(XtNameToWidget(menuBarWidget, "Animate Moving"),
 		    args, 1);
     }
     if (appData.autoCallFlag) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
+	XtSetValues(XtNameToWidget(menuBarWidget, "Auto Flag"),
 		    args, 1);
     }
     if (appData.autoFlipView) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Auto Flip View"),
+	XtSetValues(XtNameToWidget(menuBarWidget,"Auto Flip View"),
 		    args, 1);
     }
     if (appData.blindfold) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Blindfold"), args, 1);
+				   "Blindfold"), args, 1);
     }
     if (appData.flashCount > 0) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Flash Moves"),
+				   "Flash Moves"),
 		    args, 1);
     }
 #if HIGHDRAG
     if (appData.highlightDragging) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Highlight Dragging"),
+				   "Highlight Dragging"),
 		    args, 1);
     }
 #endif
     if (appData.highlightLastMove) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Highlight Last Move"),
+				   "Highlight Last Move"),
 		    args, 1);
     }
     if (appData.highlightMoveWithArrow) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Arrow"),
+				   "Arrow"),
 		    args, 1);
     }
 //    if (appData.icsAlarm) {
-//	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.ICS Alarm"),
+//	XtSetValues(XtNameToWidget(menuBarWidget, "ICS Alarm"),
 //		    args, 1);
 //    }
     if (appData.ringBellAfterMoves) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
+	XtSetValues(XtNameToWidget(menuBarWidget, "Move Sound"),
 		    args, 1);
     }
     if (appData.oneClick) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.OneClick"), args, 1);
+				   "OneClick"), args, 1);
     }
     if (appData.periodicUpdates) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Periodic Updates"), args, 1);
+				   "Periodic Updates"), args, 1);
     }
     if (appData.ponderNextMove) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Ponder Next Move"), args, 1);
+				   "Ponder Next Move"), args, 1);
     }
     if (appData.popupExitMessage) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Popup Exit Message"), args, 1);
+				   "Popup Exit Message"), args, 1);
     }
     if (appData.popupMoveErrors) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Popup Move Errors"), args, 1);
+				   "Popup Move Errors"), args, 1);
     }
 //    if (appData.premove) {
 //	XtSetValues(XtNameToWidget(menuBarWidget,
-//				   "menuOptions.Premove"), args, 1);
+//				   "Premove"), args, 1);
 //    }
     if (appData.showCoords) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
+	XtSetValues(XtNameToWidget(menuBarWidget, "Show Coords"),
 		    args, 1);
     }
     if (appData.hideThinkingFromHuman) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
+	XtSetValues(XtNameToWidget(menuBarWidget, "Hide Thinking"),
 		    args, 1);
     }
     if (appData.testLegality) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Test Legality"),
+	XtSetValues(XtNameToWidget(menuBarWidget,"Test Legality"),
 		    args, 1);
     }
 #endif
     if (saveSettingsOnExit) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
-		    args, 1);
+	MarkMenuItem("Save Settings on Exit", True);
     }
 
     /*
@@ -2262,6 +2261,7 @@ XBoard square size (hint): %d\n\
 	    signal(SIGUSR1, CmailSigHandler);
 	}
     }
+
     gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
     InitPosition(TRUE);
 //    XtSetKeyboardFocus(shellWidget, formWidget);
@@ -2361,217 +2361,184 @@ ResetFrontEnd ()
     return;
 }
 
-typedef struct {
-    char *name;
-    Boolean value;
-} Enables;
-
 void
 GreyRevert (Boolean grey)
 {
-    Widget w;
-    if (!menuBarWidget) return;
-    w = XtNameToWidget(menuBarWidget, "menuEdit.Revert");
-    if (w == NULL) {
-      DisplayError("menuEdit.Revert", 0);
-    } else {
-      XtSetSensitive(w, !grey);
-    }
-    w = XtNameToWidget(menuBarWidget, "menuEdit.Annotate");
-    if (w == NULL) {
-      DisplayError("menuEdit.Annotate", 0);
-    } else {
-      XtSetSensitive(w, !grey);
-    }
-}
-
-void
-SetMenuEnables (Enables *enab)
-{
-  Widget w;
-  if (!menuBarWidget) return;
-  while (enab->name != NULL) {
-    w = XtNameToWidget(menuBarWidget, enab->name);
-    if (w == NULL) {
-      DisplayError(enab->name, 0);
-    } else {
-      XtSetSensitive(w, enab->value);
-    }
-    enab++;
-  }
+    MarkMenuItem("Revert", !grey);
+    MarkMenuItem("Annotate", !grey);
 }
 
 Enables icsEnables[] = {
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
-    { "menuMode.Machine Black", False },
-    { "menuMode.Machine White", False },
-    { "menuMode.Analysis Mode", False },
-    { "menuMode.Analyze File", False },
-    { "menuMode.Two Machines", False },
-    { "menuMode.Machine Match", False },
+    { "Mail Move", False },
+    { "Reload CMail Message", False },
+    { "Machine Black", False },
+    { "Machine White", False },
+    { "Analysis Mode", False },
+    { "Analyze File", False },
+    { "Two Machines", False },
+    { "Machine Match", False },
 #ifndef ZIPPY
-    { "menuEngine.Hint", False },
-    { "menuEngine.Book", False },
-    { "menuEngine.Move Now", False },
+    { "Hint", False },
+    { "Book", False },
+    { "Move Now", False },
 #ifndef OPTIONSDIALOG
-    { "menuOptions.Periodic Updates", False },
-    { "menuOptions.Hide Thinking", False },
-    { "menuOptions.Ponder Next Move", False },
+    { "Periodic Updates", False },
+    { "Hide Thinking", False },
+    { "Ponder Next Move", False },
 #endif
 #endif
-    { "menuEngine.Engine #1 Settings", False },
-    { "menuEngine.Engine #2 Settings", False },
-    { "menuEngine.Load Engine", False },
-    { "menuEdit.Annotate", False },
-    { "menuOptions.Match", False },
+    { "Engine #1 Settings", False },
+    { "Engine #2 Settings", False },
+    { "Load Engine", False },
+    { "Annotate", False },
+    { "Match", False },
     { NULL, False }
 };
 
 Enables ncpEnables[] = {
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
-    { "menuMode.Machine White", False },
-    { "menuMode.Machine Black", False },
-    { "menuMode.Analysis Mode", False },
-    { "menuMode.Analyze File", False },
-    { "menuMode.Two Machines", False },
-    { "menuMode.Machine Match", False },
-    { "menuMode.ICS Client", False },
-    { "menuView.ICStex", False },
-    { "menuView.ICS Input Box", False },
+    { "Mail Move", False },
+    { "Reload CMail Message", False },
+    { "Machine White", False },
+    { "Machine Black", False },
+    { "Analysis Mode", False },
+    { "Analyze File", False },
+    { "Two Machines", False },
+    { "Machine Match", False },
+    { "ICS Client", False },
+    { "ICStex", False },
+    { "ICS Input Box", False },
     { "Action", False },
-    { "menuEdit.Revert", False },
-    { "menuEdit.Annotate", False },
-    { "menuEngine.Engine #1 Settings", False },
-    { "menuEngine.Engine #2 Settings", False },
-    { "menuEngine.Move Now", False },
-    { "menuEngine.Retract Move", False },
-    { "menuOptions.ICS", False },
+    { "Revert", False },
+    { "Annotate", False },
+    { "Engine #1 Settings", False },
+    { "Engine #2 Settings", False },
+    { "Move Now", False },
+    { "Retract Move", False },
+    { "ICS", False },
 #ifndef OPTIONSDIALOG
-    { "menuOptions.Auto Flag", False },
-    { "menuOptions.Auto Flip View", False },
-//    { "menuOptions.ICS Alarm", False },
-    { "menuOptions.Move Sound", False },
-    { "menuOptions.Hide Thinking", False },
-    { "menuOptions.Periodic Updates", False },
-    { "menuOptions.Ponder Next Move", False },
+    { "Auto Flag", False },
+    { "Auto Flip View", False },
+//    { "ICS Alarm", False },
+    { "Move Sound", False },
+    { "Hide Thinking", False },
+    { "Periodic Updates", False },
+    { "Ponder Next Move", False },
 #endif
-    { "menuEngine.Hint", False },
-    { "menuEngine.Book", False },
+    { "Hint", False },
+    { "Book", False },
     { NULL, False }
 };
 
 Enables gnuEnables[] = {
-    { "menuMode.ICS Client", False },
-    { "menuView.ICStex", False },
-    { "menuView.ICS Input Box", False },
-    { "menuAction.Accept", False },
-    { "menuAction.Decline", False },
-    { "menuAction.Rematch", False },
-    { "menuAction.Adjourn", False },
-    { "menuAction.Stop Examining", False },
-    { "menuAction.Stop Observing", False },
-    { "menuAction.Upload to Examine", False },
-    { "menuEdit.Revert", False },
-    { "menuEdit.Annotate", False },
-    { "menuOptions.ICS", False },
+    { "ICS Client", False },
+    { "ICStex", False },
+    { "ICS Input Box", False },
+    { "Accept", False },
+    { "Decline", False },
+    { "Rematch", False },
+    { "Adjourn", False },
+    { "Stop Examining", False },
+    { "Stop Observing", False },
+    { "Upload to Examine", False },
+    { "Revert", False },
+    { "Annotate", False },
+    { "ICS", False },
 
     /* The next two options rely on SetCmailMode being called *after*    */
     /* SetGNUMode so that when GNU is being used to give hints these     */
     /* menu options are still available                                  */
 
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
+    { "Mail Move", False },
+    { "Reload CMail Message", False },
     // [HGM] The following have been added to make a switch from ncp to GNU mode possible
-    { "menuMode.Machine White", True },
-    { "menuMode.Machine Black", True },
-    { "menuMode.Analysis Mode", True },
-    { "menuMode.Analyze File", True },
-    { "menuMode.Two Machines", True },
-    { "menuMode.Machine Match", True },
-    { "menuEngine.Engine #1 Settings", True },
-    { "menuEngine.Engine #2 Settings", True },
-    { "menuEngine.Hint", True },
-    { "menuEngine.Book", True },
-    { "menuEngine.Move Now", True },
-    { "menuEngine.Retract Move", True },
+    { "Machine White", True },
+    { "Machine Black", True },
+    { "Analysis Mode", True },
+    { "Analyze File", True },
+    { "Two Machines", True },
+    { "Machine Match", True },
+    { "Engine #1 Settings", True },
+    { "Engine #2 Settings", True },
+    { "Hint", True },
+    { "Book", True },
+    { "Move Now", True },
+    { "Retract Move", True },
     { "Action", True },
     { NULL, False }
 };
 
 Enables cmailEnables[] = {
     { "Action", True },
-    { "menuAction.Call Flag", False },
-    { "menuAction.Draw", True },
-    { "menuAction.Adjourn", False },
-    { "menuAction.Abort", False },
-    { "menuAction.Stop Observing", False },
-    { "menuAction.Stop Examining", False },
-    { "menuFile.Mail Move", True },
-    { "menuFile.Reload CMail Message", True },
+    { "Call Flag", False },
+    { "Draw", True },
+    { "Adjourn", False },
+    { "Abort", False },
+    { "Stop Observing", False },
+    { "Stop Examining", False },
+    { "Mail Move", True },
+    { "Reload CMail Message", True },
     { NULL, False }
 };
 
 Enables trainingOnEnables[] = {
-  { "menuMode.Edit Comment", False },
-  { "menuMode.Pause", False },
-  { "menuEdit.Forward", False },
-  { "menuEdit.Backward", False },
-  { "menuEdit.Forward to End", False },
-  { "menuEdit.Back to Start", False },
-  { "menuEngine.Move Now", False },
-  { "menuEdit.Truncate Game", False },
+  { "Edit Comment", False },
+  { "Pause", False },
+  { "Forward", False },
+  { "Backward", False },
+  { "Forward to End", False },
+  { "Back to Start", False },
+  { "Move Now", False },
+  { "Truncate Game", False },
   { NULL, False }
 };
 
 Enables trainingOffEnables[] = {
-  { "menuMode.Edit Comment", True },
-  { "menuMode.Pause", True },
-  { "menuEdit.Forward", True },
-  { "menuEdit.Backward", True },
-  { "menuEdit.Forward to End", True },
-  { "menuEdit.Back to Start", True },
-  { "menuEngine.Move Now", True },
-  { "menuEdit.Truncate Game", True },
+  { "Edit Comment", True },
+  { "Pause", True },
+  { "Forward", True },
+  { "Backward", True },
+  { "Forward to End", True },
+  { "Back to Start", True },
+  { "Move Now", True },
+  { "Truncate Game", True },
   { NULL, False }
 };
 
 Enables machineThinkingEnables[] = {
-  { "menuFile.Load Game", False },
-//  { "menuFile.Load Next Game", False },
-//  { "menuFile.Load Previous Game", False },
-//  { "menuFile.Reload Same Game", False },
-  { "menuEdit.Paste Game", False },
-  { "menuFile.Load Position", False },
-//  { "menuFile.Load Next Position", False },
-//  { "menuFile.Load Previous Position", False },
-//  { "menuFile.Reload Same Position", False },
-  { "menuEdit.Paste Position", False },
-  { "menuMode.Machine White", False },
-  { "menuMode.Machine Black", False },
-  { "menuMode.Two Machines", False },
-//  { "menuMode.Machine Match", False },
-  { "menuEngine.Retract Move", False },
+  { "Load Game", False },
+//  { "Load Next Game", False },
+//  { "Load Previous Game", False },
+//  { "Reload Same Game", False },
+  { "Paste Game", False },
+  { "Load Position", False },
+//  { "Load Next Position", False },
+//  { "Load Previous Position", False },
+//  { "Reload Same Position", False },
+  { "Paste Position", False },
+  { "Machine White", False },
+  { "Machine Black", False },
+  { "Two Machines", False },
+//  { "Machine Match", False },
+  { "Retract Move", False },
   { NULL, False }
 };
 
 Enables userThinkingEnables[] = {
-  { "menuFile.Load Game", True },
-//  { "menuFile.Load Next Game", True },
-//  { "menuFile.Load Previous Game", True },
-//  { "menuFile.Reload Same Game", True },
-  { "menuEdit.Paste Game", True },
-  { "menuFile.Load Position", True },
-//  { "menuFile.Load Next Position", True },
-//  { "menuFile.Load Previous Position", True },
-//  { "menuFile.Reload Same Position", True },
-  { "menuEdit.Paste Position", True },
-  { "menuMode.Machine White", True },
-  { "menuMode.Machine Black", True },
-  { "menuMode.Two Machines", True },
-//  { "menuMode.Machine Match", True },
-  { "menuEngine.Retract Move", True },
+  { "Load Game", True },
+//  { "Load Next Game", True },
+//  { "Load Previous Game", True },
+//  { "Reload Same Game", True },
+  { "Paste Game", True },
+  { "Load Position", True },
+//  { "Load Next Position", True },
+//  { "Load Previous Position", True },
+//  { "Reload Same Position", True },
+  { "Paste Position", True },
+  { "Machine White", True },
+  { "Machine Black", True },
+  { "Two Machines", True },
+//  { "Machine Match", True },
+  { "Retract Move", True },
   { NULL, False }
 };
 
@@ -2582,8 +2549,8 @@ SetICSMode ()
 
 #if ZIPPY
   if (appData.zippyPlay && !appData.noChessProgram) { /* [DM] icsEngineAnalyze */
-     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
-     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuEngine.Engine #1 Settings"), True);
+     EnableMenuItem("Analysis Mode", True);
+     EnableMenuItem("Engine #1 Settings", True);
   }
 #endif
 }
@@ -2641,8 +2608,7 @@ SetMachineThinkingEnables ()
   case MachinePlaysBlack:
   case MachinePlaysWhite:
   case TwoMachinesPlay:
-    XtSetSensitive(XtNameToWidget(menuBarWidget,
-				  ModeToWidgetName(gameMode)), True);
+    EnableMenuItem(ModeToWidgetName(gameMode), True);
     break;
   default:
     break;
@@ -3453,6 +3419,7 @@ CreateGrid ()
 }
 
 int nrOfMenuItems = 7;
+Widget menuWidget[150];
 MenuListItem menuItemList[150] = {
     { "LoadNextGameProc", LoadNextGameProc },
     { "LoadPrevGameProc", LoadPrevGameProc },
@@ -3486,6 +3453,33 @@ MenuListItem menuItemList[150] = {
     { "NothingProc", NothingProc },
   {NULL, NothingProc}
 };
+
+void
+MarkMenuItem (char *menuRef, int state)
+{
+    int nr = MenuToNumber(menuRef);
+    if(nr >= 0) {
+	Arg args[2];
+	XtSetArg(args[0], XtNleftBitmap, state ? xMarkPixmap : None);
+	XtSetValues(menuWidget[nr], args, 1);
+    }
+}
+
+void
+EnableMenuItem (char *menuRef, int state)
+{
+    int nr = MenuToNumber(menuRef);
+    if(nr >= 0) XtSetSensitive(menuWidget[nr], state);
+}
+
+void
+SetMenuEnables (Enables *enab)
+{
+  while (enab->name != NULL) {
+    EnableMenuItem(enab->name, enab->value);
+    enab++;
+  }
+}
 
 int
 Equal(char *p, char *s)
@@ -3549,6 +3543,7 @@ AppendMenuItem (char *text, char *name, MenuProc *action)
 	    XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) (strcmp(name, "recent") ? MenuBarSelect : MenuEngineSelect),
 			  (caddr_t) action);
+	    menuWidget[nrOfMenuItems] = entry;
 	}
 }
 
@@ -4480,9 +4475,7 @@ XDrawPosition (Widget w, int repaint, Board board)
 	board = lastBoard[nr];
     }
     if (!lastBoardValid[nr] || (nr == 0 && lastFlipView != flipView)) {
-	XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Flip View"),
-		    args, 1);
+	MarkMenuItem("Flip View", flipView);
     }
 
     /*
@@ -5016,36 +5009,36 @@ ModeToWidgetName (GameMode mode)
     switch (mode) {
       case BeginningOfGame:
 	if (appData.icsActive)
-	  return "menuMode.ICS Client";
+	  return "ICS Client";
 	else if (appData.noChessProgram ||
 		 *appData.cmailGameName != NULLCHAR)
-	  return "menuMode.Edit Game";
+	  return "Edit Game";
 	else
-	  return "menuMode.Machine Black";
+	  return "Machine Black";
       case MachinePlaysBlack:
-	return "menuMode.Machine Black";
+	return "Machine Black";
       case MachinePlaysWhite:
-	return "menuMode.Machine White";
+	return "Machine White";
       case AnalyzeMode:
-	return "menuMode.Analysis Mode";
+	return "Analysis Mode";
       case AnalyzeFile:
-	return "menuMode.Analyze File";
+	return "Analyze File";
       case TwoMachinesPlay:
-	return "menuMode.Two Machines";
+	return "Two Machines";
       case EditGame:
-	return "menuMode.Edit Game";
+	return "Edit Game";
       case PlayFromGameFile:
-	return "menuFile.Load Game";
+	return "Load Game";
       case EditPosition:
-	return "menuMode.Edit Position";
+	return "Edit Position";
       case Training:
-	return "menuMode.Training";
+	return "Training";
       case IcsPlayingWhite:
       case IcsPlayingBlack:
       case IcsObserving:
       case IcsIdle:
       case IcsExamining:
-	return "menuMode.ICS Client";
+	return "ICS Client";
       default:
       case EndOfGame:
 	return NULL;
@@ -5064,13 +5057,7 @@ ModeHighlight ()
 
     if (pausing != oldPausing) {
 	oldPausing = pausing;
-	if (pausing) {
-	    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-	} else {
-	    XtSetArg(args[0], XtNleftBitmap, None);
-	}
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Pause"),
-		    args, 1);
+	MarkMenuItem("Pause", pausing);
 
 	if (appData.showButtonBar) {
 	  /* Always toggle, don't set.  Previous code messes up when
@@ -5091,21 +5078,17 @@ ModeHighlight ()
 
     wname = ModeToWidgetName(oldmode);
     if (wname != NULL) {
-	XtSetArg(args[0], XtNleftBitmap, None);
-	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
+	MarkMenuItem(wname, False);
     }
     wname = ModeToWidgetName(gameMode);
     if (wname != NULL) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
+	MarkMenuItem(wname, True);
     }
     oldmode = gameMode;
-    XtSetArg(args[0], XtNleftBitmap, matchMode && matchGame < appData.matchGames ? xMarkPixmap : None);
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Machine Match"), args, 1);
+    MarkMenuItem("Machine Match", matchMode && matchGame < appData.matchGames);
 
     /* Maybe all the enables should be handled here, not just this one */
-    XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Training"),
-		   gameMode == Training || gameMode == PlayFromGameFile);
+    EnableMenuItem("Training", gameMode == Training || gameMode == PlayFromGameFile);
 }
 
 
@@ -5547,10 +5530,8 @@ EditCommentProc ()
     Arg args[5];
     int j;
     if (PopDown(1)) { // popdown succesful
-	j = 0;
-	XtSetArg(args[j], XtNleftBitmap, None); j++;
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"), args, j);
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"), args, j);
+	MarkMenuItem("Edit Comment", False);
+	MarkMenuItem("Show Comments", False);
     } else // was not up
 	EditCommentEvent();
 }
@@ -5685,7 +5666,7 @@ PonderNextMoveProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Ponder Next Move"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Ponder Next Move"),
 		args, 1);
 #endif
 }
@@ -5703,7 +5684,7 @@ AlwaysQueenProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Always Queen"),
 		args, 1);
 }
 
@@ -5720,7 +5701,7 @@ AnimateDraggingProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Dragging"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Animate Dragging"),
 		args, 1);
 }
 
@@ -5737,7 +5718,7 @@ AnimateMovingProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Animate Moving"),
 		args, 1);
 }
 
@@ -5753,7 +5734,7 @@ AutoflagProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Auto Flag"),
 		args, 1);
 }
 
@@ -5769,7 +5750,7 @@ AutoflipProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flip View"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Auto Flip View"),
 		args, 1);
 }
 
@@ -5785,7 +5766,7 @@ BlindfoldProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Blindfold"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Blindfold"),
 		args, 1);
 
     DrawPosition(True, NULL);
@@ -5803,7 +5784,7 @@ TestLegalityProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Test Legality"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Test Legality"),
 		args, 1);
 }
 
@@ -5824,7 +5805,7 @@ FlashMovesProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flash Moves"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Flash Moves"),
 		args, 1);
 }
 
@@ -5842,7 +5823,7 @@ HighlightDraggingProc ()
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Highlight Dragging"), args, 1);
+			       "Highlight Dragging"), args, 1);
 }
 #endif
 
@@ -5859,7 +5840,7 @@ HighlightLastMoveProc ()
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Highlight Last Move"), args, 1);
+			       "Highlight Last Move"), args, 1);
 }
 
 void
@@ -5875,7 +5856,7 @@ HighlightArrowProc ()
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Arrow"), args, 1);
+			       "Arrow"), args, 1);
 }
 
 #if 0
@@ -5892,7 +5873,7 @@ IcsAlarmProc ()
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.ICS Alarm"), args, 1);
+			       "ICS Alarm"), args, 1);
 }
 #endif
 
@@ -5908,7 +5889,7 @@ MoveSoundProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Move Sound"),
 		args, 1);
 }
 
@@ -5924,7 +5905,7 @@ OneClickProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.OneClick"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "OneClick"),
 		args, 1);
 }
 
@@ -5940,7 +5921,7 @@ PeriodicUpdatesProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Periodic Updates"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Periodic Updates"),
 		args, 1);
 }
 
@@ -5957,7 +5938,7 @@ PopupExitMessageProc ()
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Popup Exit Message"), args, 1);
+			       "Popup Exit Message"), args, 1);
 }
 
 void
@@ -5972,7 +5953,7 @@ PopupMoveErrorsProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Popup Move Errors"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Popup Move Errors"),
 		args, 1);
 }
 
@@ -5990,7 +5971,7 @@ PremoveProc ()
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Premove"), args, 1);
+			       "Premove"), args, 1);
 }
 #endif
 
@@ -6006,7 +5987,7 @@ ShowCoordsProc ()
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "Show Coords"),
 		args, 1);
 
     DrawPosition(True, NULL);
@@ -6027,13 +6008,7 @@ HideThinkingProc ()
     appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: tken out of ShowThinkingEvent
     ShowThinkingEvent();
 
-    if (appData.hideThinkingFromHuman) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
-		args, 1);
+    MarkMenuItem("Hide Thinking", appData.hideThinkingFromHuman);
 }
 #endif
 
@@ -6044,13 +6019,7 @@ SaveOnExitProc ()
 
     saveSettingsOnExit = !saveSettingsOnExit;
 
-    if (saveSettingsOnExit) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
-		args, 1);
+    MarkMenuItem("Save Settings on Exit", saveSettingsOnExit);
 }
 
 void

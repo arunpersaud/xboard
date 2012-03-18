@@ -214,6 +214,8 @@ extern int commentUp;
 extern char *firstChessProgramNames;
 
 void GreyRevert P((Boolean grey));
+void MarkMenuItem P((char *menuRef, int state));
+void EnableMenuItem P((char *menuRef, int state));
 
 typedef struct FrontEndProgramStats_TAG {
     int which;

@@ -257,7 +257,7 @@ void CreateAnyPieces P((void));
 int GenericReadout P((int selected));
 void GenericUpdate P((int selected));
 Widget shells[10];
-Widget marked[10];
+char *marked[10];
 Boolean shellUp[10];
 WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory };
 Option *dialogOptions[10];
@@ -265,9 +265,7 @@ Option *dialogOptions[10];
 void
 MarkMenu (char *item, int dlgNr)
 {
-    Arg args[2];
-    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    XtSetValues(marked[dlgNr] = XtNameToWidget(menuBarWidget, item), args, 1);
+    MarkMenuItem(marked[dlgNr] = item, True);
 }
 
 int
@@ -294,8 +292,8 @@ PopDown (int n)
     if(n == 0) XtDestroyWidget(shells[n]);
     shellUp[n] = False;
     if(marked[n]) {
-	XtSetArg(args[0], XtNleftBitmap, None);
-	XtSetValues(marked[n], args, 1);
+	MarkMenuItem(marked[n], False);
+	marked[n] = NULL;
     }
     if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
     return 1;
@@ -1519,7 +1517,7 @@ IcsTextProc ()
    textOptions[i].type = EndMark;
    textOptions[i].target = NULL;
    textOptions[i].min = 2;
-   MarkMenu("menuView.ICStex", 3);
+   MarkMenu("ICStex", 3);
    GenericPopUp(textOptions, _("ICS text menu"), 3);
 }
 
@@ -1577,7 +1575,7 @@ NewCommentPopup (char *title, char *text, int index)
     }
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
-    MarkMenu("menuView.Show Comments", 1);
+    MarkMenu("Show Comments", 1);
     if(GenericPopUp(commentOptions, title, 1))
 	XtOverrideTranslations(commentOptions[0].handle, XtParseTranslationTable(commentTranslations));
 }
@@ -1619,7 +1617,7 @@ NewTagsPopup (char *text, char *msg)
     }
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].textValue = msg;
-    MarkMenu("menuView.Show Tags", 2);
+    MarkMenu("Show Tags", 2);
     GenericPopUp(tagsOptions, title, 2);
 }
 
@@ -1651,7 +1649,7 @@ PutText (char *text, int pos)
 void
 InputBoxPopup ()
 {
-    MarkMenu("menuView.ICS Input Box", 4);
+    MarkMenu("ICS Input Box", 4);
     if(GenericPopUp(boxOptions, _("ICS input box"), 4))
 	XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(ICSInputTranslations));
 }

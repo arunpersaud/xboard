@@ -135,8 +135,8 @@ MenuItem editMenu[] = {
     {N_("Paste Game    Ctrl+V"),        "Paste Game", PasteGameProc},
     {N_("Paste Position Ctrl+Shift+V"), "Paste Position", PastePositionProc},
     {"----", NULL, NothingProc},
-    {N_("Edit Game      Ctrl+E"),        "Edit Game", EditGameEvent},
-    {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", EditPositionEvent},
+    {N_("Edit Game      Ctrl+E"),        "Edit Game 2", EditGameEvent},
+    {N_("Edit Position   Ctrl+Shift+E"), "Edit Position 2", EditPositionEvent},
     {N_("Edit Tags"),                    "Edit Tags", EditTagsProc},
     {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
     {N_("Edit Book"),                    "Edit Book", EditBookEvent},
@@ -292,6 +292,15 @@ Menu menuBar[] = {
     {NULL, NULL, NULL}
 };
 
+int
+MenuToNumber(char *menuName)
+{
+    int i;
+    for(i=0; i<nrOfMenuItems; i++)
+	if(!strcmp(menuName, menuItemList[i].name)) return i;
+    return -1;
+}
+
 void
 AppendEnginesToMenu (char *list)
 {
@@ -321,7 +330,7 @@ AddPullDownMenu (char *name, Menu *mb)
 	AppendMenuItem(mi->string, mi->ref, mi->proc);
 	menuItemList[nrOfMenuItems].name = mi->ref;
 	menuItemList[nrOfMenuItems].proc = mi->proc;
-	nrOfMenuItems++;
+	if(strcmp(mi->string, "----")) nrOfMenuItems++;
 	mi++;
     }
 
@@ -332,6 +341,8 @@ void
 CreateMainMenus (Menu *mb)
 {
     char menuName[MSG_SIZ];
+
+    while(menuItemList[nrOfMenuItems].name) nrOfMenuItems++; // skip any predefined items
 
     while (mb->name != NULL) {
         safeStrCpy(menuName, "menu", sizeof(menuName)/sizeof(menuName[0]) );
