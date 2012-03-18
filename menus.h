@@ -161,6 +161,7 @@ void BoardOptionsProc P((void));
 void LoadOptionsProc P((void));
 void SaveOptionsProc P((void));
 void EditBookProc P((void));
+void InitMenuMarkers P((void));
 
 // must be moved to xengineoutput.h
 
@@ -172,6 +173,18 @@ void AppendMenuItem P((char *text, char *name, MenuProc *action));
 void CreateMenuButton P((char *name, Menu *mb));
 int  MenuToNumber P((char *menuName));
 void SetMenuEnables P((Enables *enab));
+void EnableButtonBar P((int state));
+char *ModeToWidgetName P((GameMode mode));
+int LoadGamePopUp P((FILE *f, int gameNumber, char *title));
+void CreateAnimVars P((void));
+
+
+extern char  *gameCopyFilename, *gamePasteFilename;
+extern Boolean saveSettingsOnExit;
+extern char *settingsFileName;
+
+
 
 #define OPTIONSDIALOG
+#define INFOFILE     "xboard.info"
 

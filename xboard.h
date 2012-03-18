@@ -52,7 +52,6 @@
 #include <stdio.h>
 
 #define ICS_LOGON    ".icsrc"
-#define INFOFILE     "xboard.info"
 #define MANPAGE      "xboard.6"
 #if ENABLE_NLS
 #define CLOCK_FONT_NAME \

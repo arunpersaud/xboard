@@ -308,14 +308,11 @@ void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
 void DisplayTitle P((char *title));
 void ICSInitScript P((void));
-int LoadGamePopUp P((FILE *f, int gameNumber, char *title));
 void ErrorPopUp P((char *title, char *text, int modal));
 void ErrorPopDown P((void));
 static char *ExpandPathName P((char *path));
-static void CreateAnimVars P((void));
 static void DragPieceMove P((int x, int y));
 static void DrawDragPiece P((void));
-char *ModeToWidgetName P((GameMode mode));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
 void GenericPopDown P(());
@@ -382,11 +379,8 @@ int squareSize, smallLayout = 0, tinyLayout = 0,
 Dimension textHeight;
 Pixel timerForegroundPixel, timerBackgroundPixel;
 Pixel buttonForegroundPixel, buttonBackgroundPixel;
-char *chessDir, *programName, *programVersion,
-  *gameCopyFilename, *gamePasteFilename;
+char *chessDir, *programName, *programVersion;
 Boolean alwaysOnTop = False;
-Boolean saveSettingsOnExit;
-char *settingsFileName;
 char *icsTextMenuString;
 char *icsNames;
 char *firstChessProgramNames;
@@ -2069,103 +2063,7 @@ XBoard square size (hint): %d\n\
      */
     ReadBitmap(&xMarkPixmap, "checkmark.bm",
 	       checkmark_bits, checkmark_width, checkmark_height);
-    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-#ifndef OPTIONSDIALOG
-    if (appData.alwaysPromoteToQueen) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "Always Queen"),
-		    args, 1);
-    }
-    if (appData.animateDragging) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Animate Dragging"),
-		    args, 1);
-    }
-    if (appData.animate) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "Animate Moving"),
-		    args, 1);
-    }
-    if (appData.autoCallFlag) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "Auto Flag"),
-		    args, 1);
-    }
-    if (appData.autoFlipView) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"Auto Flip View"),
-		    args, 1);
-    }
-    if (appData.blindfold) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Blindfold"), args, 1);
-    }
-    if (appData.flashCount > 0) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Flash Moves"),
-		    args, 1);
-    }
-#if HIGHDRAG
-    if (appData.highlightDragging) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Highlight Dragging"),
-		    args, 1);
-    }
-#endif
-    if (appData.highlightLastMove) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Highlight Last Move"),
-		    args, 1);
-    }
-    if (appData.highlightMoveWithArrow) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Arrow"),
-		    args, 1);
-    }
-//    if (appData.icsAlarm) {
-//	XtSetValues(XtNameToWidget(menuBarWidget, "ICS Alarm"),
-//		    args, 1);
-//    }
-    if (appData.ringBellAfterMoves) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "Move Sound"),
-		    args, 1);
-    }
-    if (appData.oneClick) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "OneClick"), args, 1);
-    }
-    if (appData.periodicUpdates) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Periodic Updates"), args, 1);
-    }
-    if (appData.ponderNextMove) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Ponder Next Move"), args, 1);
-    }
-    if (appData.popupExitMessage) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Popup Exit Message"), args, 1);
-    }
-    if (appData.popupMoveErrors) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "Popup Move Errors"), args, 1);
-    }
-//    if (appData.premove) {
-//	XtSetValues(XtNameToWidget(menuBarWidget,
-//				   "Premove"), args, 1);
-//    }
-    if (appData.showCoords) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "Show Coords"),
-		    args, 1);
-    }
-    if (appData.hideThinkingFromHuman) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "Hide Thinking"),
-		    args, 1);
-    }
-    if (appData.testLegality) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"Test Legality"),
-		    args, 1);
-    }
-#endif
-    if (saveSettingsOnExit) {
-	MarkMenuItem("Save Settings on Exit", True);
-    }
+    InitMenuMarkers();
 
     /*
      * Create an icon.
@@ -2359,260 +2257,6 @@ ResetFrontEnd ()
     CommentPopDown();
     TagsPopDown();
     return;
-}
-
-void
-GreyRevert (Boolean grey)
-{
-    MarkMenuItem("Revert", !grey);
-    MarkMenuItem("Annotate", !grey);
-}
-
-Enables icsEnables[] = {
-    { "Mail Move", False },
-    { "Reload CMail Message", False },
-    { "Machine Black", False },
-    { "Machine White", False },
-    { "Analysis Mode", False },
-    { "Analyze File", False },
-    { "Two Machines", False },
-    { "Machine Match", False },
-#ifndef ZIPPY
-    { "Hint", False },
-    { "Book", False },
-    { "Move Now", False },
-#ifndef OPTIONSDIALOG
-    { "Periodic Updates", False },
-    { "Hide Thinking", False },
-    { "Ponder Next Move", False },
-#endif
-#endif
-    { "Engine #1 Settings", False },
-    { "Engine #2 Settings", False },
-    { "Load Engine", False },
-    { "Annotate", False },
-    { "Match", False },
-    { NULL, False }
-};
-
-Enables ncpEnables[] = {
-    { "Mail Move", False },
-    { "Reload CMail Message", False },
-    { "Machine White", False },
-    { "Machine Black", False },
-    { "Analysis Mode", False },
-    { "Analyze File", False },
-    { "Two Machines", False },
-    { "Machine Match", False },
-    { "ICS Client", False },
-    { "ICStex", False },
-    { "ICS Input Box", False },
-    { "Action", False },
-    { "Revert", False },
-    { "Annotate", False },
-    { "Engine #1 Settings", False },
-    { "Engine #2 Settings", False },
-    { "Move Now", False },
-    { "Retract Move", False },
-    { "ICS", False },
-#ifndef OPTIONSDIALOG
-    { "Auto Flag", False },
-    { "Auto Flip View", False },
-//    { "ICS Alarm", False },
-    { "Move Sound", False },
-    { "Hide Thinking", False },
-    { "Periodic Updates", False },
-    { "Ponder Next Move", False },
-#endif
-    { "Hint", False },
-    { "Book", False },
-    { NULL, False }
-};
-
-Enables gnuEnables[] = {
-    { "ICS Client", False },
-    { "ICStex", False },
-    { "ICS Input Box", False },
-    { "Accept", False },
-    { "Decline", False },
-    { "Rematch", False },
-    { "Adjourn", False },
-    { "Stop Examining", False },
-    { "Stop Observing", False },
-    { "Upload to Examine", False },
-    { "Revert", False },
-    { "Annotate", False },
-    { "ICS", False },
-
-    /* The next two options rely on SetCmailMode being called *after*    */
-    /* SetGNUMode so that when GNU is being used to give hints these     */
-    /* menu options are still available                                  */
-
-    { "Mail Move", False },
-    { "Reload CMail Message", False },
-    // [HGM] The following have been added to make a switch from ncp to GNU mode possible
-    { "Machine White", True },
-    { "Machine Black", True },
-    { "Analysis Mode", True },
-    { "Analyze File", True },
-    { "Two Machines", True },
-    { "Machine Match", True },
-    { "Engine #1 Settings", True },
-    { "Engine #2 Settings", True },
-    { "Hint", True },
-    { "Book", True },
-    { "Move Now", True },
-    { "Retract Move", True },
-    { "Action", True },
-    { NULL, False }
-};
-
-Enables cmailEnables[] = {
-    { "Action", True },
-    { "Call Flag", False },
-    { "Draw", True },
-    { "Adjourn", False },
-    { "Abort", False },
-    { "Stop Observing", False },
-    { "Stop Examining", False },
-    { "Mail Move", True },
-    { "Reload CMail Message", True },
-    { NULL, False }
-};
-
-Enables trainingOnEnables[] = {
-  { "Edit Comment", False },
-  { "Pause", False },
-  { "Forward", False },
-  { "Backward", False },
-  { "Forward to End", False },
-  { "Back to Start", False },
-  { "Move Now", False },
-  { "Truncate Game", False },
-  { NULL, False }
-};
-
-Enables trainingOffEnables[] = {
-  { "Edit Comment", True },
-  { "Pause", True },
-  { "Forward", True },
-  { "Backward", True },
-  { "Forward to End", True },
-  { "Back to Start", True },
-  { "Move Now", True },
-  { "Truncate Game", True },
-  { NULL, False }
-};
-
-Enables machineThinkingEnables[] = {
-  { "Load Game", False },
-//  { "Load Next Game", False },
-//  { "Load Previous Game", False },
-//  { "Reload Same Game", False },
-  { "Paste Game", False },
-  { "Load Position", False },
-//  { "Load Next Position", False },
-//  { "Load Previous Position", False },
-//  { "Reload Same Position", False },
-  { "Paste Position", False },
-  { "Machine White", False },
-  { "Machine Black", False },
-  { "Two Machines", False },
-//  { "Machine Match", False },
-  { "Retract Move", False },
-  { NULL, False }
-};
-
-Enables userThinkingEnables[] = {
-  { "Load Game", True },
-//  { "Load Next Game", True },
-//  { "Load Previous Game", True },
-//  { "Reload Same Game", True },
-  { "Paste Game", True },
-  { "Load Position", True },
-//  { "Load Next Position", True },
-//  { "Load Previous Position", True },
-//  { "Reload Same Position", True },
-  { "Paste Position", True },
-  { "Machine White", True },
-  { "Machine Black", True },
-  { "Two Machines", True },
-//  { "Machine Match", True },
-  { "Retract Move", True },
-  { NULL, False }
-};
-
-void
-SetICSMode ()
-{
-  SetMenuEnables(icsEnables);
-
-#if ZIPPY
-  if (appData.zippyPlay && !appData.noChessProgram) { /* [DM] icsEngineAnalyze */
-     EnableMenuItem("Analysis Mode", True);
-     EnableMenuItem("Engine #1 Settings", True);
-  }
-#endif
-}
-
-void
-SetNCPMode ()
-{
-  SetMenuEnables(ncpEnables);
-}
-
-void
-SetGNUMode ()
-{
-  SetMenuEnables(gnuEnables);
-}
-
-void
-SetCmailMode ()
-{
-  SetMenuEnables(cmailEnables);
-}
-
-void
-SetTrainingModeOn ()
-{
-  SetMenuEnables(trainingOnEnables);
-  if (appData.showButtonBar) {
-    XtSetSensitive(buttonBarWidget, False);
-  }
-  CommentPopDown();
-}
-
-void
-SetTrainingModeOff ()
-{
-  SetMenuEnables(trainingOffEnables);
-  if (appData.showButtonBar) {
-    XtSetSensitive(buttonBarWidget, True);
-  }
-}
-
-void
-SetUserThinkingEnables ()
-{
-  if (appData.noChessProgram) return;
-  SetMenuEnables(userThinkingEnables);
-}
-
-void
-SetMachineThinkingEnables ()
-{
-  if (appData.noChessProgram) return;
-  SetMenuEnables(machineThinkingEnables);
-  switch (gameMode) {
-  case MachinePlaysBlack:
-  case MachinePlaysWhite:
-  case TwoMachinesPlay:
-    EnableMenuItem(ModeToWidgetName(gameMode), True);
-    break;
-  default:
-    break;
-  }
 }
 
 // [HGM] code borrowed from winboard.c (which should thus go to backend.c!)
@@ -3471,6 +3115,13 @@ EnableMenuItem (char *menuRef, int state)
     int nr = MenuToNumber(menuRef);
     if(nr >= 0) XtSetSensitive(menuWidget[nr], state);
 }
+
+void
+EnableButtonBar (int state)
+{
+    XtSetSensitive(buttonBarWidget, state);
+}
+
 
 void
 SetMenuEnables (Enables *enab)
@@ -5003,48 +4654,6 @@ ThawUI ()
   frozen = 0;
 }
 
-char *
-ModeToWidgetName (GameMode mode)
-{
-    switch (mode) {
-      case BeginningOfGame:
-	if (appData.icsActive)
-	  return "ICS Client";
-	else if (appData.noChessProgram ||
-		 *appData.cmailGameName != NULLCHAR)
-	  return "Edit Game";
-	else
-	  return "Machine Black";
-      case MachinePlaysBlack:
-	return "Machine Black";
-      case MachinePlaysWhite:
-	return "Machine White";
-      case AnalyzeMode:
-	return "Analysis Mode";
-      case AnalyzeFile:
-	return "Analyze File";
-      case TwoMachinesPlay:
-	return "Two Machines";
-      case EditGame:
-	return "Edit Game";
-      case PlayFromGameFile:
-	return "Load Game";
-      case EditPosition:
-	return "Edit Position";
-      case Training:
-	return "Training";
-      case IcsPlayingWhite:
-      case IcsPlayingBlack:
-      case IcsObserving:
-      case IcsIdle:
-      case IcsExamining:
-	return "ICS Client";
-      default:
-      case EndOfGame:
-	return NULL;
-    }
-}
-
 void
 ModeHighlight ()
 {
@@ -5112,84 +4721,6 @@ LoadGamePopUp (FILE *f, int gameNumber, char *title)
 	gameNumber = 1;
     }
     return LoadGame(f, gameNumber, title, FALSE);
-}
-
-void
-LoadGameProc ()
-{
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
-	Reset(FALSE, TRUE);
-    }
-    FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb");
-}
-
-void
-LoadNextGameProc ()
-{
-    ReloadGame(1);
-}
-
-void
-LoadPrevGameProc ()
-{
-    ReloadGame(-1);
-}
-
-void
-ReloadGameProc ()
-{
-    ReloadGame(0);
-}
-
-void
-LoadNextPositionProc ()
-{
-    ReloadPosition(1);
-}
-
-void
-LoadPrevPositionProc ()
-{
-    ReloadPosition(-1);
-}
-
-void
-ReloadPositionProc ()
-{
-    ReloadPosition(0);
-}
-
-void
-LoadPositionProc() 
-{
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
-	Reset(FALSE, TRUE);
-    }
-    FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb");
-}
-
-void
-SaveGameProc ()
-{
-    FileNamePopUp(_("Save game file name?"),
-		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
-		  appData.oldSaveStyle ? ".game" : ".pgn",
-		  SaveGame, "a");
-}
-
-void
-SavePositionProc ()
-{
-    FileNamePopUp(_("Save position file name?"),
-		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
-		  appData.oldSaveStyle ? ".pos" : ".fen",
-		  SavePosition, "a");
-}
-
-void
-ReloadCmailMsgProc ()
-{
-    ReloadCmailMsgEvent(FALSE);
 }
 
 /* this variable is shared between CopyPositionProc and SendPositionSelection */
@@ -5266,12 +4797,6 @@ CopyPositionProc ()
 		   SendPositionSelection,
 		   NULL/* lose_ownership_proc */ ,
 		   NULL/* transfer_done_proc */);
-}
-
-void
-CopyFENToClipboard ()
-{ // wrapper to make call from back-end possible
-  CopyPositionProc();
 }
 
 /* function called when the data to Paste is ready */
@@ -5381,24 +4906,6 @@ CopySomething ()
 /* note: when called from menu all parameters are NULL, so no clue what the
  * Widget which was clicked on was, or what the click event was
  */
-void
-CopyGameProc ()
-{
-  int ret;
-
-  ret = SaveGameToFile(gameCopyFilename, FALSE);
-  if (!ret) return;
-
-  CopySomething();
-}
-
-void
-CopyGameListProc ()
-{
-  if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
-  CopySomething();
-}
-
 /* function called when the data to Paste is ready */
 static void
 PasteGameCB (Widget w, XtPointer client_data, Atom *selection,
@@ -5439,132 +4946,9 @@ PasteGameProc ()
 
 
 void
-AutoSaveGame ()
-{
-    SaveGameProc();
-}
-
-
-void
-QuitProc ()
-{
-    ExitEvent(0);
-}
-
-void
 QuitWrapper (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     QuitProc();
-}
-
-void
-AnalyzeModeProc ()
-{
-    char buf[MSG_SIZ];
-
-    if (!first.analysisSupport) {
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-    /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
-    if (appData.icsActive) {
-        if (gameMode != IcsObserving) {
-	  snprintf(buf, MSG_SIZ, _("You are not observing a game"));
-            DisplayError(buf, 0);
-            /* secure check */
-            if (appData.icsEngineAnalyze) {
-                if (appData.debugMode)
-                    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
-                ExitAnalyzeMode();
-                ModeHighlight();
-            }
-            return;
-        }
-        /* if enable, use want disable icsEngineAnalyze */
-        if (appData.icsEngineAnalyze) {
-                ExitAnalyzeMode();
-                ModeHighlight();
-                return;
-        }
-        appData.icsEngineAnalyze = TRUE;
-        if (appData.debugMode)
-            fprintf(debugFP, _("ICS engine analyze starting... \n"));
-    }
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc();
-#endif
-
-    AnalyzeModeEvent();
-}
-
-void
-AnalyzeFileProc ()
-{
-    if (!first.analysisSupport) {
-      char buf[MSG_SIZ];
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-//    Reset(FALSE, TRUE);
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc();
-#endif
-    AnalyzeFileEvent();
-//    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
-    AnalysisPeriodicEvent(1);
-}
-
-void
-MatchProc ()
-{
-    MatchEvent(2);
-}
-
-void
-EditCommentProc ()
-{
-    Arg args[5];
-    int j;
-    if (PopDown(1)) { // popdown succesful
-	MarkMenuItem("Edit Comment", False);
-	MarkMenuItem("Show Comments", False);
-    } else // was not up
-	EditCommentEvent();
-}
-
-void
-IcsInputBoxProc ()
-{
-    if (!PopDown(4)) ICSInputBoxPopUp();
-}
-
-void
-AdjuWhiteProc ()
-{
-    UserAdjudicationEvent(+1);
-}
-
-void
-AdjuBlackProc ()
-{
-    UserAdjudicationEvent(-1);
-}
-
-void
-AdjuDrawProc ()
-{
-    UserAdjudicationEvent(0);
-}
-
-void
-EnterKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    if (shellUp[4] == True)
-      ICSInputSendText();
 }
 
 void
@@ -5611,6 +4995,13 @@ DownKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
+EnterKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{
+    if (shellUp[4] == True)
+      ICSInputSendText();
+}
+
+void
 TempBackwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
 	if (!TempBackwardActive) {
@@ -5636,408 +5027,6 @@ TempForwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-RevertProc ()
-{
-    RevertEvent(False);
-}
-
-void
-AnnotateProc ()
-{
-    RevertEvent(True);
-}
-
-void
-FlipViewProc ()
-{
-    flipView = !flipView;
-    DrawPosition(True, NULL);
-}
-
-void
-PonderNextMoveProc ()
-{
-    Arg args[16];
-
-    PonderNextMoveEvent(!appData.ponderNextMove);
-#ifndef OPTIONSDIALOG
-    if (appData.ponderNextMove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Ponder Next Move"),
-		args, 1);
-#endif
-}
-
-#ifndef OPTIONSDIALOG
-void
-AlwaysQueenProc ()
-{
-    Arg args[16];
-
-    appData.alwaysPromoteToQueen = !appData.alwaysPromoteToQueen;
-
-    if (appData.alwaysPromoteToQueen) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Always Queen"),
-		args, 1);
-}
-
-void
-AnimateDraggingProc ()
-{
-    Arg args[16];
-
-    appData.animateDragging = !appData.animateDragging;
-
-    if (appData.animateDragging) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-        CreateAnimVars();
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Animate Dragging"),
-		args, 1);
-}
-
-void
-AnimateMovingProc ()
-{
-    Arg args[16];
-
-    appData.animate = !appData.animate;
-
-    if (appData.animate) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-        CreateAnimVars();
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Animate Moving"),
-		args, 1);
-}
-
-void
-AutoflagProc ()
-{
-    Arg args[16];
-
-    appData.autoCallFlag = !appData.autoCallFlag;
-
-    if (appData.autoCallFlag) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Auto Flag"),
-		args, 1);
-}
-
-void
-AutoflipProc ()
-{
-    Arg args[16];
-
-    appData.autoFlipView = !appData.autoFlipView;
-
-    if (appData.autoFlipView) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Auto Flip View"),
-		args, 1);
-}
-
-void
-BlindfoldProc ()
-{
-    Arg args[16];
-
-    appData.blindfold = !appData.blindfold;
-
-    if (appData.blindfold) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Blindfold"),
-		args, 1);
-
-    DrawPosition(True, NULL);
-}
-
-void
-TestLegalityProc ()
-{
-    Arg args[16];
-
-    appData.testLegality = !appData.testLegality;
-
-    if (appData.testLegality) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Test Legality"),
-		args, 1);
-}
-
-
-void
-FlashMovesProc ()
-{
-    Arg args[16];
-
-    if (appData.flashCount == 0) {
-	appData.flashCount = 3;
-    } else {
-	appData.flashCount = -appData.flashCount;
-    }
-
-    if (appData.flashCount > 0) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Flash Moves"),
-		args, 1);
-}
-
-#if HIGHDRAG
-void
-HighlightDraggingProc ()
-{
-    Arg args[16];
-
-    appData.highlightDragging = !appData.highlightDragging;
-
-    if (appData.highlightDragging) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "Highlight Dragging"), args, 1);
-}
-#endif
-
-void
-HighlightLastMoveProc ()
-{
-    Arg args[16];
-
-    appData.highlightLastMove = !appData.highlightLastMove;
-
-    if (appData.highlightLastMove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "Highlight Last Move"), args, 1);
-}
-
-void
-HighlightArrowProc ()
-{
-    Arg args[16];
-
-    appData.highlightMoveWithArrow = !appData.highlightMoveWithArrow;
-
-    if (appData.highlightMoveWithArrow) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "Arrow"), args, 1);
-}
-
-#if 0
-void
-IcsAlarmProc ()
-{
-    Arg args[16];
-
-    appData.icsAlarm = !appData.icsAlarm;
-
-    if (appData.icsAlarm) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "ICS Alarm"), args, 1);
-}
-#endif
-
-void
-MoveSoundProc ()
-{
-    Arg args[16];
-
-    appData.ringBellAfterMoves = !appData.ringBellAfterMoves;
-
-    if (appData.ringBellAfterMoves) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Move Sound"),
-		args, 1);
-}
-
-void
-OneClickProc ()
-{
-    Arg args[16];
-
-    appData.oneClick = !appData.oneClick;
-
-    if (appData.oneClick) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "OneClick"),
-		args, 1);
-}
-
-void
-PeriodicUpdatesProc ()
-{
-    Arg args[16];
-
-    PeriodicUpdatesEvent(!appData.periodicUpdates);
-
-    if (appData.periodicUpdates) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Periodic Updates"),
-		args, 1);
-}
-
-void
-PopupExitMessageProc ()
-{
-    Arg args[16];
-
-    appData.popupExitMessage = !appData.popupExitMessage;
-
-    if (appData.popupExitMessage) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "Popup Exit Message"), args, 1);
-}
-
-void
-PopupMoveErrorsProc ()
-{
-    Arg args[16];
-
-    appData.popupMoveErrors = !appData.popupMoveErrors;
-
-    if (appData.popupMoveErrors) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Popup Move Errors"),
-		args, 1);
-}
-
-#if 0
-void
-PremoveProc ()
-{
-    Arg args[16];
-
-    appData.premove = !appData.premove;
-
-    if (appData.premove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "Premove"), args, 1);
-}
-#endif
-
-void
-ShowCoordsProc ()
-{
-    Arg args[16];
-
-    appData.showCoords = !appData.showCoords;
-
-    if (appData.showCoords) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "Show Coords"),
-		args, 1);
-
-    DrawPosition(True, NULL);
-}
-
-void
-ShowThinkingProc ()
-{
-    appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
-    ShowThinkingEvent();
-}
-
-void
-HideThinkingProc ()
-{
-    Arg args[16];
-
-    appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: tken out of ShowThinkingEvent
-    ShowThinkingEvent();
-
-    MarkMenuItem("Hide Thinking", appData.hideThinkingFromHuman);
-}
-#endif
-
-void
-SaveOnExitProc ()
-{
-    Arg args[16];
-
-    saveSettingsOnExit = !saveSettingsOnExit;
-
-    MarkMenuItem("Save Settings on Exit", saveSettingsOnExit);
-}
-
-void
-SaveSettingsProc ()
-{
-     SaveSettings(settingsFileName);
-}
-
-void
-InfoProc ()
-{
-    char buf[MSG_SIZ];
-    snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
-	    INFODIR, INFOFILE);
-    system(buf);
-}
-
-void
 ManInner (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // called as key binding
     char buf[MSG_SIZ];
@@ -6048,80 +5037,6 @@ ManInner (Widget w, XEvent *event, String *prms, Cardinal *nprms)
       name = "xboard";
     snprintf(buf, sizeof(buf), "xterm -e man %s &", name);
     system(buf);
-}
-
-void
-ManProc ()
-{   // called from menu
-    ManInner(NULL, NULL, NULL, NULL);
-}
-
-void
-BugReportProc ()
-{
-    char buf[MSG_SIZ];
-    snprintf(buf, MSG_SIZ, "%s mailto:bug-xboard@gnu.org", appData.sysOpen);
-    system(buf);
-}
-
-void
-GuideProc ()
-{
-    char buf[MSG_SIZ];
-    snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/user_guide/UserGuide.html", appData.sysOpen);
-    system(buf);
-}
-
-void
-HomePageProc ()
-{
-    char buf[MSG_SIZ];
-    snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/", appData.sysOpen);
-    system(buf);
-}
-
-void
-NewsPageProc ()
-{
-    char buf[MSG_SIZ];
-    snprintf(buf, MSG_SIZ, "%s http://www.gnu.org/software/xboard/whats_new/portal.html", appData.sysOpen);
-    system(buf);
-}
-
-void
-AboutProc ()
-{
-    char buf[2 * MSG_SIZ];
-#if ZIPPY
-    char *zippy = _(" (with Zippy code)");
-#else
-    char *zippy = "";
-#endif
-    snprintf(buf, sizeof(buf), 
-_("%s%s\n\n"
-"Copyright 1991 Digital Equipment Corporation\n"
-"Enhancements Copyright 1992-2012 Free Software Foundation\n"
-"Enhancements Copyright 2005 Alessandro Scotti\n\n"
-"%s is free software and carries NO WARRANTY;"
-"see the file COPYING for more information.\n\n"
-"Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n\n"
-"Report bugs via email at: <bug-xboard@gnu.org>\n\n"
-  ),
-	    programVersion, zippy, PACKAGE);
-    ErrorPopUp(_("About XBoard"), buf, FALSE);
-}
-
-void
-DebugProc ()
-{
-    appData.debugMode = !appData.debugMode;
-}
-
-void
-NothingProc ()
-{
-    return;
 }
 
 void
@@ -7359,7 +6274,7 @@ InitAnimState (AnimState *anim, XWindowAttributes *info)
   anim->outlineGC = None;
 }
 
-static void
+void
 CreateAnimVars ()
 {
   XWindowAttributes info;
