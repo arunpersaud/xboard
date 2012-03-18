@@ -1187,8 +1187,6 @@ ConvertToLine (int argc, char **argv)
 
 //--------------------------------------------------------------------------------------------
 
-extern Boolean twoBoards, partnerUp;
-
 #ifdef IDSIZES
   // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
 #else
