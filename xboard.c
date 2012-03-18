@@ -205,6 +205,7 @@ extern char *getenv();
 #include "xedittags.h"
 #include "menus.h"
 #include "board.h"
+#include "dialogs.h"
 #include "gettext.h"
 
 
@@ -229,8 +230,8 @@ FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *fail
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
-void CreateGCs P((int redo));
-void CreateAnyPieces P((void));
+static void CreateGCs P((int redo));
+static void CreateAnyPieces P((void));
 void CreateXIMPieces P((void));
 void CreateXPMPieces P((void));
 void CreateXPMBoard P((char *s, int n));
@@ -254,7 +255,7 @@ void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void DelayedDrag P((void));
-void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
+static void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((Widget w, XEvent * event,
@@ -392,8 +393,6 @@ WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
 WindowPlacement wpTags;
 
-extern Widget shells[];
-extern Boolean shellUp[];
 
 #define SOLID 0
 #define OUTLINE 1
@@ -1115,11 +1114,11 @@ GetWindowCoords ()
   // In XBoard this will have to wait until awareness of window parameters is implemented
   GetActualPlacement(shellWidget, &wpMain);
   if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput);
-  if(MoveHistoryIsUp()) GetActualPlacement(shells[7], &wpMoveHistory);
+  if(MoveHistoryIsUp()) GetActualPlacement(shells[HistoryDlg], &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
-  if(shellUp[1]) GetActualPlacement(shells[1], &wpComment);
-  if(shellUp[2]) GetActualPlacement(shells[2], &wpTags);
+  if(shellUp[CommentDlg]) GetActualPlacement(shells[CommentDlg], &wpComment);
+  if(shellUp[TagsDlg]) GetActualPlacement(shells[TagsDlg], &wpTags);
 }
 
 void
@@ -1384,7 +1383,7 @@ ParseIcsTextColors ()
       }
 }
 
-int
+static int
 MakeOneColor (char *name, Pixel *color)
 {
     XrmValue vFrom, vTo;
@@ -1402,7 +1401,7 @@ MakeOneColor (char *name, Pixel *color)
     return False;
 }
 
-int
+static int
 MakeColors ()
 {   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
     int forceMono = False;
@@ -1417,7 +1416,7 @@ MakeColors ()
     return forceMono;
 }
 
-void
+static void
 CreateAnyPieces ()
 {   // [HGM] taken out of main
 #if HAVE_LIBXPM
@@ -1437,6 +1436,13 @@ CreateAnyPieces ()
     /* Create regular pieces */
     if (!useImages) CreatePieces();
 #endif
+}
+
+void
+InitDrawingParams ()
+{
+    MakeColors(); CreateGCs(True);
+    CreateAnyPieces();
 }
 
 int
@@ -2427,7 +2433,7 @@ CreateOneGC (XGCValues *gc_values, Pixel foreground, Pixel background)
     return XtGetGC(shellWidget, value_mask, gc_values);
 }
 
-void
+static void
 CreateGCs (int redo)
 {
     XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
@@ -3662,7 +3668,7 @@ DragProc ()
 	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) // not sized
 	    return; // false alarm
 	if(EngineOutputIsUp()) CoDrag(engineOutputShell, &wpEngineOutput);
-	if(MoveHistoryIsUp()) CoDrag(shells[7], &wpMoveHistory);
+	if(MoveHistoryIsUp()) CoDrag(shells[HistoryDlg], &wpMoveHistory);
 	if(EvalGraphIsUp()) CoDrag(evalGraphShell, &wpEvalGraph);
 	if(GameListIsUp()) CoDrag(gameListShell, &wpGameList);
 	wpMain = wpNew;
@@ -3860,7 +3866,7 @@ ICSInputSendText ()
 void
 ICSInputBoxPopDown ()
 {
-    PopDown(4);
+    PopDown(InputBoxDlg);
 }
 
 void
@@ -3873,7 +3879,7 @@ CommentPopUp (char *title, char *text)
 void
 CommentPopDown ()
 {
-    PopDown(1);
+    PopDown(CommentDlg);
 }
 
 static char *openName;
@@ -4122,7 +4128,7 @@ ErrorPopUp (char *title, char *label, int modal)
     XtSetArg(args[i], XtNtitle, title); i++;
     errorShell =
       XtCreatePopupShell("errorpopup", transientShellWidgetClass,
-			 shellUp[0] ? (dialogError = modal = TRUE, shells[0]) : shellWidget, args, i);
+			 shellUp[TransientDlg] ? (dialogError = modal = TRUE, shells[TransientDlg]) : shellWidget, args, i);
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, errorShell,
 			    layoutArgs, XtNumber(layoutArgs));
@@ -4490,6 +4496,24 @@ QuitWrapper (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     QuitProc();
 }
 
+static void
+MoveTypeInProc (Widget widget, caddr_t unused, XEvent *event)
+{
+    char buf[10], keys[32];
+    KeySym sym;
+    KeyCode metaL, metaR; //, ctrlL, ctrlR;
+    int n = XLookupString(&(event->xkey), buf, 10, &sym, NULL);
+    XQueryKeymap(xDisplay,keys);
+    metaL = XKeysymToKeycode(xDisplay, XK_Meta_L);
+    metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
+//    ctrlL = XKeysymToKeycode(xDisplay, XK_Control_L);
+//    ctrlR = XKeysymToKeycode(xDisplay, XK_Control_R);
+    if ( n == 1 && *buf >= 32 // printable
+	 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7)) // no alt key pressed
+//	 && !(keys[ctrlL>>3]&1<<(ctrlL&7)) && !(keys[ctrlR>>3]&1<<(ctrlR&7)) // no ctrl key pressed
+       ) BoxAutoPopUp (buf);
+}
+
 void
 UpKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] input: let up-arrow recall previous line from history
@@ -4499,7 +4523,7 @@ UpKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     String val;
     XawTextBlock t;
 
-    if (!shellUp[4]) return;
+    if (!shellUp[InputBoxDlg]) return;
     edit = boxOptions[0].handle;
     j = 0;
     XtSetArg(args[j], XtNstring, &val); j++;
@@ -4521,7 +4545,7 @@ DownKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     String val;
     XawTextBlock t;
 
-    if (!shellUp[4]) return;
+    if (!shellUp[InputBoxDlg]) return;
     edit = boxOptions[0].handle;
     val = NextInHistory();
     XtCallActionProc(edit, "select-all", NULL, NULL, 0);
@@ -4536,7 +4560,7 @@ DownKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 EnterKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    if (shellUp[4] == True)
+    if (shellUp[InputBoxDlg] == True)
       ICSInputSendText();
 }
 

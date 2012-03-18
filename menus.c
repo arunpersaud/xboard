@@ -294,24 +294,6 @@ MatchProc ()
 }
 
 void
-EditCommentProc ()
-{
-    Arg args[5];
-    int j;
-    if (PopDown(1)) { // popdown succesful
-	MarkMenuItem("Edit Comment", False);
-	MarkMenuItem("Show Comments", False);
-    } else // was not up
-	EditCommentEvent();
-}
-
-void
-IcsInputBoxProc ()
-{
-    if (!PopDown(4)) ICSInputBoxPopUp();
-}
-
-void
 AdjuWhiteProc ()
 {
     UserAdjudicationEvent(+1);

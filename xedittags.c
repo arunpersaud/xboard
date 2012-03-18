@@ -81,6 +81,7 @@ extern char *getenv();
 #include "backend.h"
 #include "xboard.h"
 #include "xedittags.h"
+#include "dialogs.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS
@@ -109,7 +110,7 @@ EditTagsPopUp (char *tags, char **dest)
 void
 TagsPopDown()
 {
-    PopDown(2);
+    PopDown(TagsDlg);
     bookUp = False;
 }
 
@@ -118,7 +119,7 @@ EditTagsProc ()
 {
     Arg args[5];
     int j;
-    if (!bookUp && PopDown(2)) {
+    if (!bookUp && PopDown(TagsDlg)) {
 	j = 0;
 	XtSetArg(args[j], XtNleftBitmap, None); j++;
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"), args, j);

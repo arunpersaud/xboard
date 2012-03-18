@@ -132,10 +132,8 @@ typedef struct {
 
 typedef int (*FileProc) P((FILE *f, int n, char *title));
 
-int PopDown P((int n));
 void NewTagsPopup P((char *text, char *msg));
 int AppendText P((Option *opt, char *s));
-int GenericPopUp P((Option *option, char *title, int dlgNr));
 void NewCommentPopup P((char *title, char *text, int index));
 void MarkMenu P((char *item, int dlgNr));
 void GetWidgetText P((Option *opt, char **buf));
@@ -151,7 +149,6 @@ FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *fail
 		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
 
 extern Widget shells[];
-extern Boolean shellUp[];
 extern int dialogError;
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell, historyShell;
 extern Display *xDisplay;

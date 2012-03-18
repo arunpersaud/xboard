@@ -50,6 +50,7 @@
 #include "backend.h"
 #include "xhistory.h"
 #include "xboard.h"
+#include "dialogs.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS
@@ -80,7 +81,7 @@ HighlightMove (int from, int to, Boolean highlight)
 void
 ClearHistoryMemo ()
 {
-    ClearTextWidget(&historyOptions[0]);
+    SetWidgetText(&historyOptions[0], "", HistoryDlg);
 }
 
 // the bold argument says 0 = normal, 1 = bold typeface
@@ -138,31 +139,31 @@ Option historyOptions[] = {
 Boolean
 MoveHistoryIsUp ()
 {
-    return shellUp[7];
+    return shellUp[HistoryDlg];
 }
 
 Boolean
 MoveHistoryDialogExists ()
 {
-    return shells[7] != NULL;
+    return DialogExists(HistoryDlg);
 }
 
 void
 HistoryPopUp ()
 {
-    if(GenericPopUp(historyOptions, _("Move list"), 7))
-	XtOverrideTranslations(historyOptions[0].handle, XtParseTranslationTable(historyTranslations));
-    MarkMenu("Show Move History", 7);
+    if(GenericPopUp(historyOptions, _("Move list"), HistoryDlg))
+	AddHandler(&historyOptions[0], 0);
+    MarkMenu("Show Move History", HistoryDlg);
 }
 
 void
 HistoryShowProc ()
 {
-  if (!shellUp[7]) {
+  if (!shellUp[HistoryDlg]) {
     ASSIGN(historyText, "");
     HistoryPopUp();
     RefreshMemoContent();
     MemoContentUpdated();
-  } else PopDown(7);
+  } else PopDown(HistoryDlg);
   ToNrEvent(currentMove);
 }
