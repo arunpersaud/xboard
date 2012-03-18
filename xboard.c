@@ -1410,79 +1410,35 @@ ParseIcsTextColors ()
 }
 
 int
+MakeOneColor (char *name, Pixel *color)
+{
+    XrmValue vFrom, vTo;
+    if (!appData.monoMode) {
+	vFrom.addr = (caddr_t) name;
+	vFrom.size = strlen(name);
+	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	if (vTo.addr == NULL) {
+	  appData.monoMode = True;
+	  return True;
+	} else {
+	  *color = *(Pixel *) vTo.addr;
+	}
+    }
+    return False;
+}
+
+int
 MakeColors ()
 {   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
-    XrmValue vFrom, vTo;
     int forceMono = False;
 
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.lightSquareColor;
-	vFrom.size = strlen(appData.lightSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  lightSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.darkSquareColor;
-	vFrom.size = strlen(appData.darkSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  darkSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.whitePieceColor;
-	vFrom.size = strlen(appData.whitePieceColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  whitePieceColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.blackPieceColor;
-	vFrom.size = strlen(appData.blackPieceColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  blackPieceColor = *(Pixel *) vTo.addr;
-	}
-    }
+    forceMono |= MakeOneColor(appData.lightSquareColor, &lightSquareColor);
+    forceMono |= MakeOneColor(appData.darkSquareColor, &darkSquareColor);
+    forceMono |= MakeOneColor(appData.whitePieceColor, &whitePieceColor);
+    forceMono |= MakeOneColor(appData.blackPieceColor, &blackPieceColor);
+    forceMono |= MakeOneColor(appData.highlightSquareColor, &highlightSquareColor);
+    forceMono |= MakeOneColor(appData.premoveHighlightColor, &premoveHighlightColor);
 
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.highlightSquareColor;
-	vFrom.size = strlen(appData.highlightSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  highlightSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.premoveHighlightColor;
-	vFrom.size = strlen(appData.premoveHighlightColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  premoveHighlightColor = *(Pixel *) vTo.addr;
-	}
-    }
     return forceMono;
 }
 
@@ -2486,6 +2442,16 @@ DeleteGCs ()
     }
 }
 
+static GC
+CreateOneGC (XGCValues *gc_values, Pixel foreground, Pixel background)
+{
+    XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
+      | GCBackground | GCFunction | GCPlaneMask;
+    gc_values->foreground = foreground;
+    gc_values->background = background;
+    return XtGetGC(shellWidget, value_mask, gc_values);
+}
+
 void
 CreateGCs (int redo)
 {
@@ -2493,6 +2459,8 @@ CreateGCs (int redo)
       | GCBackground | GCFunction | GCPlaneMask;
     XGCValues gc_values;
     GC copyInvertedGC;
+    Pixel white = XWhitePixel(xDisplay, xScreen);
+    Pixel black = XBlackPixel(xDisplay, xScreen);
 
     gc_values.plane_mask = AllPlanes;
     gc_values.line_width = lineGap;
@@ -2502,40 +2470,25 @@ CreateGCs (int redo)
   if(redo) {
     DeleteGCs(); // called a second time; clean up old GCs first
   } else { // [HGM] grid and font GCs created on first call only
-    gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-    gc_values.background = XWhitePixel(xDisplay, xScreen);
-    coordGC = XtGetGC(shellWidget, value_mask, &gc_values);
+    coordGC = CreateOneGC(&gc_values, black, white);
     XSetFont(xDisplay, coordGC, coordFontID);
 
     // [HGM] make font for holdings counts (white on black)
-    gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-    gc_values.background = XBlackPixel(xDisplay, xScreen);
-    countGC = XtGetGC(shellWidget, value_mask, &gc_values);
+    countGC = CreateOneGC(&gc_values, white, black);
     XSetFont(xDisplay, countGC, countFontID);
   }
-    gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-    gc_values.background = XBlackPixel(xDisplay, xScreen);
-    lineGC = XtGetGC(shellWidget, value_mask, &gc_values);
+    lineGC = CreateOneGC(&gc_values, black, black);
 
     if (appData.monoMode) {
-	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-	gc_values.background = XWhitePixel(xDisplay, xScreen);
-	highlineGC = XtGetGC(shellWidget, value_mask, &gc_values);
 
-	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-	gc_values.background = XBlackPixel(xDisplay, xScreen);
-	lightSquareGC = wbPieceGC
-	  = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-	gc_values.background = XWhitePixel(xDisplay, xScreen);
-	darkSquareGC = bwPieceGC
-	  = XtGetGC(shellWidget, value_mask, &gc_values);
+	highlineGC = CreateOneGC(&gc_values, white, white);
+	lightSquareGC = wbPieceGC = CreateOneGC(&gc_values, white, black);
+	darkSquareGC = bwPieceGC = CreateOneGC(&gc_values, black, white);
 
 	if (DefaultDepth(xDisplay, xScreen) == 1) {
 	    /* Avoid XCopyPlane on 1-bit screens to work around Sun bug */
 	    gc_values.function = GXcopyInverted;
-	    copyInvertedGC = XtGetGC(shellWidget, value_mask, &gc_values);
+	    copyInvertedGC = CreateOneGC(&gc_values, black, white);
 	    gc_values.function = GXcopy;
 	    if (XBlackPixel(xDisplay, xScreen) == 1) {
 		bwPieceGC = darkSquareGC;
@@ -2546,49 +2499,18 @@ CreateGCs (int redo)
 	    }
 	}
     } else {
-	gc_values.foreground = highlightSquareColor;
-	gc_values.background = highlightSquareColor;
-	highlineGC = XtGetGC(shellWidget, value_mask, &gc_values);
 
-	gc_values.foreground = premoveHighlightColor;
-	gc_values.background = premoveHighlightColor;
-	prelineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = lightSquareColor;
-	gc_values.background = darkSquareColor;
-	lightSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = darkSquareColor;
-	gc_values.background = lightSquareColor;
-	darkSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = jailSquareColor;
-	gc_values.background = jailSquareColor;
-	jailSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = darkSquareColor;
-	wdPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = lightSquareColor;
-	wlPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = jailSquareColor;
-	wjPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = darkSquareColor;
-	bdPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = lightSquareColor;
-	blPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = jailSquareColor;
-	bjPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
+	highlineGC = CreateOneGC(&gc_values, highlightSquareColor, highlightSquareColor);
+	prelineGC = CreateOneGC(&gc_values, premoveHighlightColor, premoveHighlightColor);
+	lightSquareGC = CreateOneGC(&gc_values, lightSquareColor, darkSquareColor);
+	darkSquareGC = CreateOneGC(&gc_values, darkSquareColor, lightSquareColor);
+	jailSquareGC = CreateOneGC(&gc_values, jailSquareColor, jailSquareColor);
+	wdPieceGC = CreateOneGC(&gc_values, whitePieceColor, darkSquareColor);
+	wlPieceGC = CreateOneGC(&gc_values, whitePieceColor, lightSquareColor);
+	wjPieceGC = CreateOneGC(&gc_values, whitePieceColor, jailSquareColor);
+	bdPieceGC = CreateOneGC(&gc_values, blackPieceColor, darkSquareColor);
+	blPieceGC = CreateOneGC(&gc_values, blackPieceColor, lightSquareColor);
+	bjPieceGC = CreateOneGC(&gc_values, blackPieceColor, jailSquareColor);
     }
 }
 
