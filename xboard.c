@@ -275,9 +275,6 @@ void CommentClick P((Widget w, XEvent * event,
 void ICSInputBoxPopUp P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
 		      FileProc proc, char *openMode));
-void AskQuestionReplyAction P((Widget w, XEvent *event,
-			  String *prms, Cardinal *nprms));
-void AskQuestionPopDown P((void));
 void PromotionPopDown P((void));
 void PromotionCallback P((Widget w, XtPointer client_data,
 			  XtPointer call_data));
@@ -317,7 +314,7 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
-  ICSInputShell, fileNameShell, askQuestionShell;
+  ICSInputShell, fileNameShell;
 Widget historyShell, evalGraphShell, gameListShell;
 XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
@@ -346,7 +343,7 @@ int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int smallLayout = 0, tinyLayout = 0,
   marginW, marginH, // [HGM] for run-time resizing
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
-  ICSInputBoxUp = False, askQuestionUp = False,
+  ICSInputBoxUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
   errorUp = False, errorExitStatus = -1, defaultLineGap;
 Dimension textHeight;
@@ -519,7 +516,6 @@ XtActionsRec boardActions[] = {
     { "HandlePV", HandlePV },
     { "SelectPV", SelectPV },
     { "StopPV", StopPV },
-    { "AskQuestionReplyAction", AskQuestionReplyAction },
     { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
@@ -530,7 +526,6 @@ XtActionsRec boardActions[] = {
     { "TempForwardProc", TempForwardProc },
     { "CommentClick", (XtActionProc) CommentClick },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
-    { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
@@ -654,7 +649,6 @@ char ICSInputTranslations[] =
 char commentTranslations[] = "<Btn3Down>: extend-end() select-start() CommentClick() \n";
 
 String xboardResources[] = {
-    "*question*value.translations: #override\\n <Key>Return: AskQuestionReplyAction()",
     "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
     NULL
   };
@@ -4232,105 +4226,6 @@ DisplayIcsInteractionTitle (String message)
   }
   printf("\033]0;%s\007", message);
   fflush(stdout);
-}
-
-char pendingReplyPrefix[MSG_SIZ];
-ProcRef pendingReplyPR;
-
-void
-AskQuestionPopDown ()
-{
-    if (!askQuestionUp) return;
-    XtPopdown(askQuestionShell);
-    XtDestroyWidget(askQuestionShell);
-    askQuestionUp = False;
-}
-
-void
-AskQuestionReplyAction (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    char buf[MSG_SIZ];
-    int err;
-    String reply;
-
-    reply = XawDialogGetValueString(w = XtParent(w));
-    safeStrCpy(buf, pendingReplyPrefix, sizeof(buf)/sizeof(buf[0]) );
-    if (*buf) strncat(buf, " ", MSG_SIZ - strlen(buf) - 1);
-    strncat(buf, reply, MSG_SIZ - strlen(buf) - 1);
-    strncat(buf, "\n",  MSG_SIZ - strlen(buf) - 1);
-    OutputToProcess(pendingReplyPR, buf, strlen(buf), &err);
-    AskQuestionPopDown();
-
-    if (err) DisplayFatalError(_("Error writing to chess program"), err, 0);
-}
-
-void
-AskQuestionCallback (Widget w, XtPointer client_data, XtPointer call_data)
-{
-    String name;
-    Arg args[16];
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("cancel")) == 0) {
-        AskQuestionPopDown();
-    } else {
-	AskQuestionReplyAction(w, NULL, NULL, NULL);
-    }
-}
-
-void
-AskQuestion (char *title, char *question, char *replyPrefix, ProcRef pr)
-{
-    Arg args[16];
-    Widget popup, layout, dialog, edit;
-    Window root, child;
-    int x, y, i;
-    int win_x, win_y;
-    unsigned int mask;
-
-    safeStrCpy(pendingReplyPrefix, replyPrefix, sizeof(pendingReplyPrefix)/sizeof(pendingReplyPrefix[0]) );
-    pendingReplyPR = pr;
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    askQuestionShell = popup =
-      XtCreatePopupShell(title, transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    i = 0;
-    XtSetArg(args[i], XtNlabel, question); i++;
-    XtSetArg(args[i], XtNvalue, ""); i++;
-    XtSetArg(args[i], XtNborderWidth, 0); i++;
-    dialog = XtCreateManagedWidget("question", dialogWidgetClass,
-				   layout, args, i);
-
-    XawDialogAddButton(dialog, _("enter"), AskQuestionCallback,
-		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("cancel"), AskQuestionCallback,
-		       (XtPointer) dialog);
-
-    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "AskQuestionPopDown");
-
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    askQuestionUp = True;
-
-    edit = XtNameToWidget(dialog, "*value");
-    XtSetKeyboardFocus(popup, edit);
 }
 
 

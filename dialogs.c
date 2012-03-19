@@ -1341,6 +1341,46 @@ TimeControlProc ()
    GenericPopUp(tcOptions, _("Time Control"), TransientDlg, BoardWindow, MODAL);
 }
 
+//------------------------------- Ask Question -----------------------------------------
+
+int SendReply P((int n));
+char pendingReplyPrefix[MSG_SIZ];
+ProcRef pendingReplyPR;
+char *answer;
+
+Option askOptions[] = {
+{ 0, 0, 0, NULL, NULL, NULL, NULL, Label,  NULL },
+{ 0, 0, 0, NULL, (void*) &answer, "", NULL, TextBox, "" },
+{ 0, 0, 0, NULL, (void*) &SendReply, "", NULL, EndMark , "" }
+};
+
+int
+SendReply (int n)
+{
+    char buf[MSG_SIZ];
+    int err;
+    char *reply=answer;
+//    GetWidgetText(&askOptions[1], &reply);
+    safeStrCpy(buf, pendingReplyPrefix, sizeof(buf)/sizeof(buf[0]) );
+    if (*buf) strncat(buf, " ", MSG_SIZ - strlen(buf) - 1);
+    strncat(buf, reply, MSG_SIZ - strlen(buf) - 1);
+    strncat(buf, "\n",  MSG_SIZ - strlen(buf) - 1);
+    OutputToProcess(pendingReplyPR, buf, strlen(buf), &err); // does not go into debug file??? => bug
+    if (err) DisplayFatalError(_("Error writing to chess program"), err, 0);
+    return TRUE;
+}
+
+void
+AskQuestion (char *title, char *question, char *replyPrefix, ProcRef pr)
+{
+    safeStrCpy(pendingReplyPrefix, replyPrefix, sizeof(pendingReplyPrefix)/sizeof(pendingReplyPrefix[0]) );
+    pendingReplyPR = pr;
+    ASSIGN(answer, "");
+    askOptions[0].name = question;
+    if(GenericPopUp(askOptions, title, AskDlg, BoardWindow, MODAL))
+	AddHandler(&askOptions[1], 2);
+}
+
 //---------------------------- Chat Windows ----------------------------------------------
 
 void
