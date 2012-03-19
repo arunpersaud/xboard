@@ -63,4 +63,6 @@ void ErrorPopUp P((char *title, char *text, int modal));
 
 void BoxAutoPopUp P((char *buf));
 void IcsKey P((int n));
+void ICSInputBoxPopUp P((void));
+
 

@@ -1074,7 +1074,7 @@ PutText (char *text, int pos)
 }
 
 void
-InputBoxPopup ()
+ICSInputBoxPopUp ()
 {
     MarkMenu("ICS Input Box", InputBoxDlg);
     if(GenericPopUp(boxOptions, _("ICS input box"), InputBoxDlg))
@@ -1109,7 +1109,7 @@ BoxAutoPopUp (char *buf)
 		SetWidgetText(&boxOptions[0], newText, InputBoxDlg);
 		if(shellUp[InputBoxDlg]) HardSetFocus (&boxOptions[0]); //why???
 	    } else icsText = buf; // box did not exist: make sure it pops up with char in it
-	    InputBoxPopup();
+	    ICSInputBoxPopUp();
 	} else PopUpMoveDialog(*buf);
 }
 

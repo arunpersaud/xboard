@@ -272,7 +272,6 @@ void DrawPositionProc P((Widget w, XEvent *event,
 void CommentClick P((Widget w, XEvent * event,
 		   String * params, Cardinal * nParams));
 void ICSInputBoxPopUp P((void));
-void ICSInputBoxPopDown P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
 		      FileProc proc, char *openMode));
 void AskQuestionReplyAction P((Widget w, XEvent *event,
@@ -532,7 +531,6 @@ XtActionsRec boardActions[] = {
     { "TempForwardProc", TempForwardProc },
     { "CommentClick", (XtActionProc) CommentClick },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
-    { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
@@ -3738,19 +3736,6 @@ EditCommentPopUp (int index, char *title, char *text)
     savedIndex = index;
     if (text == NULL) text = "";
     NewCommentPopup(title, text, index);
-}
-
-void
-ICSInputBoxPopUp ()
-{
-    InputBoxPopup();
-}
-
-
-void
-ICSInputBoxPopDown ()
-{
-    PopDown(InputBoxDlg);
 }
 
 void

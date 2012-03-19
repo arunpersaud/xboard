@@ -138,7 +138,6 @@ void NewCommentPopup P((char *title, char *text, int index));
 void MarkMenu P((char *item, int dlgNr));
 void GetWidgetText P((Option *opt, char **buf));
 void ClearTextWidget P((Option *opt));
-void InputBoxPopup P((void));
 void CatchDeleteWindow(Widget w, String procname);
 void GenericPopDown P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void PlaySound P((char *name));
