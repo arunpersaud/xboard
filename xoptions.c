@@ -66,11 +66,13 @@ extern char *getenv();
 #include <X11/Xaw/AsciiText.h>
 #include <X11/Xaw/Viewport.h>
 #include <X11/Xaw/Toggle.h>
+#include <X11/Xaw/Scrollbar.h>
 
 #include "common.h"
 #include "backend.h"
 #include "xboard.h"
 #include "dialogs.h"
+#include "menus.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS
@@ -87,16 +89,25 @@ static Widget previous = NULL;
 static Option *currentOption;
 
 void
+UnCaret ()
+{
+    Arg args[2];
+
+    if(previous) {
+	XtSetArg(args[0], XtNdisplayCaret, False);
+	XtSetValues(previous, args, 1);
+    }
+    previous = NULL;
+}
+
+void
 SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
 {
     Arg args[2];
     char *s;
     int j;
 
-    if(previous) {
-	XtSetArg(args[0], XtNdisplayCaret, False);
-	XtSetValues(previous, args, 1);
-    }
+    UnCaret();
     XtSetArg(args[0], XtNstring, &s);
     XtGetValues(w, args, 1);
     j = 1;
@@ -107,10 +118,17 @@ SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
     previous = w;
 }
 
+void
+BoardFocus ()
+{
+    XtSetKeyboardFocus(shellWidget, formWidget);
+}
+
 //--------------------------- Engine-specific options menu ----------------------------------
 
 int dialogError;
 static Boolean browserUp;
+Option *dialogOptions[NrOfDialogs];
 
 void
 GetWidgetText (Option *opt, char **buf)
@@ -146,6 +164,14 @@ SetWidgetState (Option *opt, int state)
 }
 
 void
+SetWidgetLabel (Option *opt, char *buf)
+{
+    Arg arg;
+    XtSetArg(arg, XtNlabel, (XtArgVal) buf);
+    XtSetValues(opt->handle, &arg, 1);
+}
+
+void
 SetDialogTitle (DialogClass dlg, char *title)
 {
     Arg args[16];
@@ -153,16 +179,101 @@ SetDialogTitle (DialogClass dlg, char *title)
     XtSetValues(shells[dlg], args, 1);
 }
 
-static void
-CheckCallback (Widget ww, XtPointer data, XEvent *event, Boolean *b)
+void
+LoadListBox (Option *opt, char *emptyText)
 {
-    Widget w = currentOption[(int)(intptr_t)data].handle;
-    Boolean s;
-    Arg args[16];
+    static char *dummyList[2];
+    dummyList[0] = emptyText; // empty listboxes tend to crash X, so display user-supplied warning string instead
+    XawListChange(opt->handle, *(char*)opt->target ? opt->target : dummyList, 0, 0, True);
+}
 
-    XtSetArg(args[0], XtNstate, &s);
-    XtGetValues(w, args, 1);
-    SetWidgetState(&currentOption[(int)(intptr_t)data], !s);
+int
+ReadScroll (Option *opt, float *top, float *bottom)
+{   // retreives fractions of top and bottom of thumb
+    Arg args[16];
+    Widget w = XtParent(opt->handle); // viewport
+    Widget v = XtNameToWidget(w, "vertical");
+    int j=0;
+    float h;
+    if(!v) return FALSE; // no scroll bar
+    XtSetArg(args[j], XtNshown, &h); j++;
+    XtSetArg(args[j], XtNtopOfThumb, top); j++;
+    XtGetValues(v, args, j);
+    *bottom = *top + h;
+    return TRUE;
+}
+
+void
+SetScroll (Option *opt, float f)
+{   // sets top of thumb to given fraction
+    static char *params[3] = { "", "Continuous", "Proportional" };
+    static XEvent event;
+    Widget w = XtParent(opt->handle); // viewport
+    Widget v = XtNameToWidget(w, "vertical");
+    if(!v) return; // no scroll bar
+    XtCallActionProc(v, "StartScroll", &event, params+1, 1);
+    XawScrollbarSetThumb(v, f, -1.0);
+    XtCallActionProc(v, "NotifyThumb", &event, params, 0);
+//    XtCallActionProc(v, "NotifyScroll", &event, params+2, 1);
+    XtCallActionProc(v, "EndScroll", &event, params, 0);
+}
+
+void
+HighlightListBoxItem (Option *opt, int nr)
+{
+    XawListHighlight(opt->handle, nr);
+}
+
+void
+HighlightWithScroll (Option *opt, int sel, int max)
+{
+    float top, bottom, f, g;
+    HighlightListBoxItem(opt, sel);
+    if(!ReadScroll(opt, &top, &bottom)) return; // no scroll bar
+    bottom = bottom*max - 1.;
+    f = g = top;
+    top *= max;
+    if(sel > (top + 3*bottom)/4) f = (sel - 0.75*(bottom-top))/max; else
+    if(sel < (3*top + bottom)/4) f = (sel - 0.25*(bottom-top))/max;
+    if(f < 0.) f = 0.; if(f + 1./max > 1.) f = 1. - 1./max;
+    if(f != g) SetScroll(opt, f);
+}
+
+int
+SelectedListBoxItem (Option *opt)
+{
+    XawListReturnStruct *rs;
+    rs = XawListShowCurrent(opt->handle);
+    return rs->list_index;
+}
+
+void
+FocusOnWidget (Option *opt, DialogClass dlg)
+{
+    UnCaret();
+    XtSetKeyboardFocus(shells[dlg], opt->handle);
+}
+
+void
+SetIconName (DialogClass dlg, char *name)
+{
+	Arg args[16];
+	int j = 0;
+	XtSetArg(args[j], XtNiconName, (XtArgVal) name);  j++;
+//	XtSetArg(args[j], XtNtitle, (XtArgVal) name);  j++;
+	XtSetValues(shells[dlg], args, j);
+}
+
+static void
+CheckCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
+{
+    int s, data = (intptr_t) client_data;
+    Option *opt = dialogOptions[data >> 8] + (data & 255);
+
+    if(opt->type == Label) { ((ButtonCallback*) opt->target)(data&255); return; }
+
+    GetWidgetState(opt, &s);
+    SetWidgetState(opt, !s);
 }
 
 static void
@@ -171,95 +282,116 @@ SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
     String name, val;
     Arg args[16];
     char buf[MSG_SIZ], *p;
-    int j = 0; // Initialiasation is necessary because the text value may be non-numeric causing the scanf conversion to fail
+    int j = 0; // Initialisation is necessary because the text value may be non-numeric causing the scanf conversion to fail
     int data = (intptr_t) client_data;
+    Option *opt = dialogOptions[data >> 8] + (data & 255);
 
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
 
-    GetWidgetText(&currentOption[data], &val);
+    GetWidgetText(opt, &val);
     sscanf(val, "%d", &j);
     if (strcmp(name, _("browse")) == 0) {
 	char *q=val, *r;
 	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
-	if(!strcmp(r, "") && !currentCps && currentOption[data].type == FileName && currentOption[data].textValue)
-		r = currentOption[data].textValue;
+	if(!strcmp(r, "") && !currentCps && opt->type == FileName && opt->textValue)
+		r = opt->textValue;
 	browserUp = True;
-	if(XsraSelFile(shells[TransientDlg], currentOption[data].name, NULL, NULL, "", "", r,
-			 	  currentOption[data].type == PathName ? "p" : "f", NULL, &p)) {
+	if(XsraSelFile(shells[TransientDlg], opt->name, NULL, NULL, "", "", r,
+			 	  opt->type == PathName ? "p" : "f", NULL, &p)) {
 		int len = strlen(p);
 		if(len && p[len-1] == '/') p[len-1] = NULLCHAR;
 		XtSetArg(args[0], XtNstring, p);
-		XtSetValues(currentOption[data].handle, args, 1);
+		XtSetValues(opt->handle, args, 1);
 	}
 	browserUp = False;
-	SetFocus(currentOption[data].handle, shells[TransientDlg], (XEvent*) NULL, False);
+	SetFocus(opt->handle, shells[TransientDlg], (XEvent*) NULL, False);
 	return;
     } else
     if (strcmp(name, "+") == 0) {
-	if(++j > currentOption[data].max) return;
+	if(++j > opt->max) return;
     } else
     if (strcmp(name, "-") == 0) {
-	if(--j < currentOption[data].min) return;
+	if(--j < opt->min) return;
     } else return;
     snprintf(buf, MSG_SIZ,  "%d", j);
-    SetWidgetText(&currentOption[data], buf, TransientDlg);
+    SetWidgetText(opt, buf, TransientDlg);
 }
 
 static void
 ComboSelect (Widget w, caddr_t addr, caddr_t index) // callback for all combo items
 {
     Arg args[16];
-    int i = ((intptr_t)addr)>>8;
-    int j = 255 & (intptr_t) addr;
+    Option *opt = dialogOptions[((intptr_t)addr)>>24]; // applicable option list
+    int i = ((intptr_t)addr)>>16 & 255; // option number
+    int j = 0xFFFF & (intptr_t) addr;
 
-    values[i] = j; // store in temporary, for transfer at OK
+    values[i] = j; // store selected value in Option struct, for retrieval at OK
 
-    if(currentOption[i].min & NO_GETTEXT)
-      XtSetArg(args[0], XtNlabel, ((char**)currentOption[i].textValue)[j]);
+    if(opt[i].type == Graph || opt[i].min & COMBO_CALLBACK && !currentCps) {
+	((ButtonCallback*) opt[i].target)(i);
+	return;
+    }
+
+    if(opt[i].min & NO_GETTEXT)
+      XtSetArg(args[0], XtNlabel, ((char**)opt[i].choice)[j]);
     else
-      XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
+      XtSetArg(args[0], XtNlabel, _(((char**)opt[i].choice)[j]));
 
-    XtSetValues(currentOption[i].handle, args, 1);
-
-    if(currentOption[i].min & COMBO_CALLBACK && !currentCps && comboCallback) (comboCallback)(i);
+    XtSetValues(opt[i].handle, args, 1);
 }
 
-static void
-CreateComboPopup (Widget parent, Option *option, int n)
+Widget
+CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
 {
-    int i=0, j;
-    Widget menu, entry;
+    int j=0;
+    Widget entry;
     Arg args[16];
-    char **mb = (char **) option->textValue;
+    XtSetArg(args[j], XtNleftMargin, 20);   j++;
+    XtSetArg(args[j], XtNrightMargin, 20);  j++;
+    if(!strcmp(msg, "----")) { XtCreateManagedWidget(msg, smeLineObjectClass, menu, args, j); return NULL; }
+    XtSetArg(args[j], XtNlabel, msg);
+    entry = XtCreateManagedWidget("item", smeBSBObjectClass, menu, args, j+1);
+    XtAddCallback(entry, XtNcallback, CB, (caddr_t)(intptr_t) n);
+    return entry;
+}
 
-    if(mb[0] == NULL) return; // avoid empty menus, as they cause crash
-    menu = XtCreatePopupShell(option->name, simpleMenuWidgetClass,
-			      parent, NULL, 0);
-    j = 0;
-    XtSetArg(args[j], XtNwidth, 100);  j++;
-    while (mb[i] != NULL) 
+static Widget
+CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
+{   // fromList determines if the item texts are taken from a list of strings, or from a menu table
+    int i, j;
+    Widget menu, entry;
+    Arg arg;
+    MenuItem *mb = (MenuItem *) opt->choice;
+    char **list = (char **) opt->choice;
+
+    if(list[0] == NULL) return NULL; // avoid empty menus, as they cause crash
+    menu = XtCreatePopupShell(opt->name, simpleMenuWidgetClass, parent, NULL, 0);
+
+    for (i=0; 1; i++) 
       {
-	if (option->min & NO_GETTEXT)
-	  XtSetArg(args[j], XtNlabel, mb[i]);
-	else
-	  XtSetArg(args[j], XtNlabel, _(mb[i]));
-	entry = XtCreateManagedWidget((String) mb[i], smeBSBObjectClass,
-				      menu, args, j+1);
-	XtAddCallback(entry, XtNcallback,
-		      (XtCallbackProc) ComboSelect,
-		      (caddr_t)(intptr_t) (256*n+i));
-	i++;
+	char *msg = fromList ? list[i] : mb[i].string, *msg2;
+	if(!msg) break;
+	entry = CreateMenuItem(menu, opt->min & NO_GETTEXT ? msg : _(msg), (XtCallbackProc) ComboSelect, (n<<16)+i);
+	if(!fromList) mb[i].handle = (void*) entry; // save item ID, for enabling / checkmarking
+	if(i==def) {
+	    XtSetArg(arg, XtNpopupOnEntry, entry);
+	    XtSetValues(menu, &arg, 1);
+	}
       }
+      return menu;
 }
 
 char moveTypeInTranslations[] =
     "<Key>Return: TypeInProc(1) \n"
     "<Key>Escape: TypeInProc(0) \n";
+extern char filterTranslations[];
+extern char gameListTranslations[];
 
 
 char *translationTable[] = {
    historyTranslations, commentTranslations, moveTypeInTranslations, ICSInputTranslations,
+   filterTranslations, gameListTranslations,
 };
 
 void
@@ -273,22 +405,24 @@ AddHandler (Option *opt, int nr)
 // cloned from Engine Settings dialog (and later merged with it)
 
 Widget shells[NrOfDialogs];
-WindowPlacement *wp[NrOfDialogs] = { NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory };
-static Option *dialogOptions[NrOfDialogs];
+DialogClass parents[NrOfDialogs];
+WindowPlacement *wp[NrOfDialogs] = { // Beware! Order must correspond to DialogClass enum
+    NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory, &wpGameList, &wpEngineOutput
+};
 
 int
 DialogExists (DialogClass n)
-{
+{   // accessor for use in back-end
     return shells[n] != NULL;
 }
 
 int
 PopDown (DialogClass n)
-{
+{   // pops down any dialog created by GenericPopUp (or returns False if it wasn't up), unmarks any associated marked menu
     int j;
     Arg args[10];
     Dimension windowH, windowW; Position windowX, windowY;
-    if (!shellUp[n]) return 0;
+    if (!shellUp[n] || !shells[n]) return 0;
     if(n && wp[n]) { // remember position
 	j = 0;
 	XtSetArg(args[j], XtNx, &windowX); j++;
@@ -303,21 +437,27 @@ PopDown (DialogClass n)
     }
     previous = NULL;
     XtPopdown(shells[n]);
-    if(n == 0) XtDestroyWidget(shells[n]);
-    shellUp[n] = False;
+    shellUp[n]--; // count rather than clear
+    if(n == 0 || n >= PromoDlg) XtDestroyWidget(shells[n]), shells[n] = NULL;
     if(marked[n]) {
 	MarkMenuItem(marked[n], False);
 	marked[n] = NULL;
     }
     if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
+    currentOption = dialogOptions[TransientDlg]; // just in case a transient dialog was up (to allow its check and combo callbacks to work)
+    XtSetKeyboardFocus(shells[parents[n]], n == BoardWindow ? formWidget:  shells[parents[n]]);
     return 1;
 }
 
 void
 GenericPopDown (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
+{   // to cause popdown through a translation (Delete Window button!)
+    int dlg = atoi(prms[0]);
+    Widget sh = shells[dlg];
     if(browserUp || dialogError) return; // prevent closing dialog when it has an open file-browse daughter
-    PopDown(prms[0][0] - '0');
+    shells[dlg] = w;
+    PopDown(dlg);
+    shells[dlg] = sh; // restore
 }
 
 int
@@ -335,7 +475,7 @@ AppendText (Option *opt, char *s)
 
 void
 SetColor (char *colorName, Option *box)
-{
+{       // sets the color of a widget
 	Arg args[5];
 	Pixel buttonColor;
 	XrmValue vFrom, vTo;
@@ -355,58 +495,208 @@ SetColor (char *colorName, Option *box)
 
 void
 ColorChanged (Widget w, XtPointer data, XEvent *event, Boolean *b)
-{
+{   // for detecting a typed change in color
     char buf[10];
     if ( (XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1) && *buf == '\r' )
 	RefreshColor((int)(intptr_t) data, 0);
 }
 
-void
+static void
+GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
+{   // handle expose and mouse events on Graph widget
+    Dimension w, h;
+    Arg args[16];
+    int j, button=10, f=1;
+    Option *opt;
+    if (!XtIsRealized(widget)) return;
+
+    switch(event->type) {
+	case Expose:
+	    if (((XExposeEvent*)event)->count > 0) return;  // don't bother if further exposure is pending
+	    /* Get client area */
+	    j = 0;
+	    XtSetArg(args[j], XtNwidth, &w); j++;
+	    XtSetArg(args[j], XtNheight, &h); j++;
+	    XtGetValues(widget, args, j);
+	    break;
+	case MotionNotify:
+	    f = 0;
+	    w = ((XButtonEvent*)event)->x; h = ((XButtonEvent*)event)->y;
+	    break;
+	case ButtonRelease:
+	    f = -1; // release indicated by negative button numbers
+	case ButtonPress:
+	    w = ((XButtonEvent*)event)->x; h = ((XButtonEvent*)event)->y;
+	    switch(((XButtonEvent*)event)->button) {
+		case Button1: button = 1; break;
+		case Button2: button = 2; break;
+		case Button3: button = 3; break;
+		case Button4: button = 4; break;
+		case Button5: button = 5; break;
+	    }
+    }
+    button *= f;
+    opt = ((PointerCallback*) client_data)(button, w, h);
+    if(opt) { // user callback specifies a context menu; pop it up
+	XUngrabPointer(xDisplay, CurrentTime);
+	XtCallActionProc(widget, "XawPositionSimpleMenu", event, &(opt->name), 1);
+	XtPopupSpringLoaded(opt->handle);
+    }
+    XSync(xDisplay, False);
+}
+
+static void
 GenericCallback (Widget w, XtPointer client_data, XtPointer call_data)
-{
+{   // all Buttons in a dialog (including OK, cancel) invoke this
     String name;
     Arg args[16];
     char buf[MSG_SIZ];
     int data = (intptr_t) client_data;
+    DialogClass dlg;
+    Widget sh = XtParent(XtParent(XtParent(w))), oldSh;
 
-    currentOption = dialogOptions[data>>16]; data &= 0xFFFF;
+    currentOption = dialogOptions[dlg=data>>16]; data &= 0xFFFF;
+    oldSh = shells[dlg]; shells[dlg] = sh; // bow to reality
+    if (data == 30000) { // cancel
+        PopDown(dlg); 
+    } else
+    if (data == 30001) { // save buttons imply OK
+        if(GenericReadout(currentOption, -1)) PopDown(dlg); // calls OK-proc after full readout, but no popdown if it returns false
+    } else
 
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("cancel")) == 0) {
-        PopDown(data);
-        return;
-    }
-    if (strcmp(name, _("OK")) == 0) { // save buttons imply OK
-        if(GenericReadout(currentOption, -1)) PopDown(data);
-        return;
-    }
     if(currentCps) {
+	XtSetArg(args[0], XtNlabel, &name);
+	XtGetValues(w, args, 1);
 	if(currentOption[data].type == SaveButton) GenericReadout(currentOption, -1);
 	snprintf(buf, MSG_SIZ,  "option %s\n", name);
 	SendToProgram(buf, currentCps);
     } else ((ButtonCallback*) currentOption[data].target)(data);
+
+    shells[dlg] = oldSh; // in case of multiple instances, restore previous (as this one could be popped down now)
 }
 
-static char *oneLiner  = "<Key>Return:	redraw-display()\n";
+void
+TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{   // for transfering focus to the next text-edit
+    Option *opt;
+    for(opt = currentOption; opt->type != EndMark; opt++) {
+	if(opt->handle == w) {
+	    while(++opt) {
+		if(opt->type == EndMark) opt = currentOption; // wrap
+		if(opt->handle == w) return; // full circle
+		if(opt->type == TextBox || opt->type == Spin || opt->type == Fractional || opt->type == FileName || opt->type == PathName) {
+		    SetFocus(opt->handle, XtParent(XtParent(XtParent(w))), NULL, 0);
+		    return;
+	        }
+	    }
+	}
+    }
+}
+
+void
+WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+{   // for scrolling a widget seen through a viewport with the mouse wheel (ListBox!)
+    int j=0, n = atoi(prms[0]);
+    static char *params[3] = { "", "Continuous", "Proportional" };
+    Arg args[16];
+    float f, h, top;
+    Widget v;
+    if(!n) { // transient dialogs also use this for list-selection callback
+	n = prms[1][0]-'0';
+	Option *opt=dialogOptions[prms[2][0]-'A'] + n;
+	if(opt->textValue) ((ListBoxCallback*) opt->textValue)(n, SelectedListBoxItem(opt));
+	return;
+    }
+    v = XtNameToWidget(XtParent(w), "vertical");
+    if(!v) return;
+    XtSetArg(args[j], XtNshown, &h); j++;
+    XtSetArg(args[j], XtNtopOfThumb, &top); j++;
+    XtGetValues(v, args, j);
+    top += 0.1*h*n; if(top < 0.) top = 0.;
+    XtCallActionProc(v, "StartScroll", event, params+1, 1);
+    XawScrollbarSetThumb(v, top, -1.0);
+    XtCallActionProc(v, "NotifyThumb", event, params, 0);
+//    XtCallActionProc(w, "NotifyScroll", event, params+2, 1);
+    XtCallActionProc(v, "EndScroll", event, params, 0);
+}
+
+static char *oneLiner  =
+   "<Key>Return: redraw-display() \n \
+    <Key>Tab: TabProc() \n ";
+static char scrollTranslations[] =
+   "<Btn1Up>(2): WheelProc(0 0 A) \n \
+    <Btn4Down>: WheelProc(-1) \n \
+    <Btn5Down>: WheelProc(1) \n ";
+
+static void
+SqueezeIntoBox (Option *opt, int nr, int width)
+{   // size buttons in bar to fit, clipping button names where necessary
+    int i, j, wtot = 0;
+    Dimension widths[20], oldWidths[20];
+    Arg arg;
+    for(i=1; i<nr; i++) {
+	XtSetArg(arg, XtNwidth, &widths[i]);
+	XtGetValues(opt[i].handle, &arg, 1);
+	wtot +=  oldWidths[i] = widths[i];
+    }
+    opt->min = wtot;
+    if(width <= 0) return;
+    while(wtot > width) {
+	int wmax=0, imax=0;
+	for(i=1; i<nr; i++) if(widths[i] > wmax) wmax = widths[imax=i];
+	widths[imax]--;
+	wtot--;
+    }
+    for(i=1; i<nr; i++) if(widths[i] != oldWidths[i]) {
+	XtSetArg(arg, XtNwidth, widths[i]);
+	XtSetValues(opt[i].handle, &arg, 1);
+    }
+    opt->min = wtot;
+}
 
 int
-GenericPopUp (Option *option, char *title, DialogClass dlgNr)
+SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int w, int h, int chaining)
+{   // sizing and positioning most widgets have in common
+    int j = 0;
+    // first position the widget w.r.t. earlier ones
+    if(chaining & 1) { // same row: position w.r.t. last (on current row) and lastrow
+	XtSetArg(args[j], XtNfromVert, topNeigbor); j++;
+	XtSetArg(args[j], XtNfromHoriz, leftNeigbor); j++;
+    } else // otherwise it goes at left margin (which is default), below the previous element
+	XtSetArg(args[j], XtNfromVert, leftNeigbor),  j++;
+    // arrange chaining ('2'-bit indicates top and bottom chain the same)
+    if((chaining & 14) == 6) XtSetArg(args[j], XtNtop,    XtChainBottom), j++;
+    if((chaining & 14) == 10) XtSetArg(args[j], XtNbottom, XtChainTop ), j++;
+    if(chaining & 4) XtSetArg(args[j], XtNbottom, XtChainBottom ), j++;
+    if(chaining & 8) XtSetArg(args[j], XtNtop,    XtChainTop), j++;
+    if(chaining & 0x10) XtSetArg(args[j], XtNright, XtChainRight), j++;
+    if(chaining & 0x20) XtSetArg(args[j], XtNleft,  XtChainRight), j++;
+    if(chaining & 0x40) XtSetArg(args[j], XtNright, XtChainLeft ), j++;
+    if(chaining & 0x80) XtSetArg(args[j], XtNleft,  XtChainLeft ), j++;
+    // set size (if given)
+    if(w) XtSetArg(args[j], XtNwidth, w), j++;
+    if(h) XtSetArg(args[j], XtNheight, h),  j++;
+    // border
+    XtSetArg(args[j], XtNborderWidth, b);  j++;
+    return j;
+}
+
+int
+GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal)
 {
-    Arg args[16];
-    Widget popup, layout, dialog=NULL, edit=NULL, form,  last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
+    Arg args[24];
+    Widget popup, layout, dialog=NULL, edit=NULL, form,  last, b_ok, b_cancel, previousPane = NULL, textField = NULL, oldForm, oldLastRow, oldForeLast;
     Window root, child;
-    int x, y, i, j, height=999, width=1, h, c, w, shrink=FALSE;
+    int x, y, i, j, height=999, width=1, h, c, w, shrink=FALSE, stack = 0, box, chain;
     int win_x, win_y, maxWidth, maxTextWidth;
     unsigned int mask;
     char def[MSG_SIZ], *msg;
     static char pane[6] = "paneX";
     Widget texts[100], forelast = NULL, anchor, widest, lastrow = NULL, browse = NULL;
-    Dimension bWidth = 50;
+    Dimension bWidth = 50, m;
 
-    if(shellUp[dlgNr]) return 0; // already up		
-    if(dlgNr && shells[dlgNr]) {
+    if(dlgNr < PromoDlg && shellUp[dlgNr]) return 0; // already up
+    if(dlgNr && dlgNr < PromoDlg && shells[dlgNr]) { // reusable, and used before (but popped down)
 	XtPopup(shells[dlgNr], XtGrabNone);
 	shellUp[dlgNr] = True;
 	return 0;
@@ -427,9 +717,15 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
     }
      i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
+    shells[BoardWindow] = shellWidget; parents[dlgNr] = parent;
+
     popup = shells[dlgNr] =
+#if TOPLEVEL
+      XtCreatePopupShell(title, modal ? transientShellWidgetClass : topLevelShellWidgetClass,
+#else
       XtCreatePopupShell(title, transientShellWidgetClass,
-			 shellWidget, args, i);
+#endif
+                                                           shells[parent], args, i);
 
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
@@ -440,14 +736,16 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
       XtCreateManagedWidget(pane, formWidgetClass, layout,
 			    formArgs, XtNumber(formArgs));
     j=0;
-    XtSetArg(args[j], XtNfromHoriz, leftMargin);  j++;
+    XtSetArg(args[j], stack ? XtNfromVert : XtNfromHoriz, previousPane);  j++;
     XtSetValues(form, args, j);
-    leftMargin = form;
+    lastrow = forelast = NULL;
+    previousPane = form;
 
     last = widest = NULL; anchor = lastrow;
-    for(h=0; h<height; h++) {
+    for(h=0; h<height || c == width-1; h++) {
 	i = h + c*height;
 	if(option[i].type == EndMark) break;
+	if(option[i].type == -1) continue;
 	lastrow = forelast;
 	forelast = last;
 	switch(option[i].type) {
@@ -462,37 +760,27 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
 	  case FileName:
 	  case PathName:
           tBox:
-	    if(option[i].name[0]) {
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNheight, textHeight),  j++;
-	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
-	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
-	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
-	    texts[h] =
-	    dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
-	    } else texts[h] = dialog = NULL;
+	    if(option[i].name[0]) { // prefixed by label with option name
+		j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				       0 /* w */, textHeight /* h */, 0xC0 /* chain to left edge */);
+		XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+		XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
+		texts[h] = dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
+	    } else texts[h] = dialog = NULL; // kludge to position from left margin
 	    w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
-	    XtSetArg(args[j], XtNborderWidth, 1); j++;
-	    XtSetArg(args[j], XtNwidth, w); j++;
-	    if(option[i].type == TextBox && option[i].min) {
-		XtSetArg(args[j], XtNheight, option[i].min); j++;
-		if(option[i].value & 1) { XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++; }
-		if(option[i].value & 2) { XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollAlways);  j++; }
-		if(option[i].value & 4) { XtSetArg(args[j], XtNautoFill, True);  j++; }
-		if(option[i].value & 8) { XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++; }
+	    j = SetPositionAndSize(args, dialog, last, 1 /* border */,
+				   w /* w */, option[i].type == TextBox ? option[i].value : 0 /* h */, 0x91 /* chain full width */);
+	    if(option[i].type == TextBox && option[i].value) { // decorations for multi-line text-edits
+		if(option[i].min & T_VSCRL) { XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++; }
+		if(option[i].min & T_HSCRL) { XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollAlways);  j++; }
+		if(option[i].min & T_FILL)  { XtSetArg(args[j], XtNautoFill, True);  j++; }
+		if(option[i].min & T_WRAP)  { XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++; }
+		if(option[i].min & T_TOP)   { XtSetArg(args[j], XtNtop, XtChainTop); j++; }
 	    } else shrink = TRUE;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
 	    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
 	    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-	    XtSetArg(args[j], XtNright, XtChainRight);  j++;
 	    XtSetArg(args[j], XtNresizable, True);  j++;
 	    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
 	    XtSetArg(args[j], XtNstring, option[i].type==Spin || option[i].type==Fractional ? def : 
@@ -500,89 +788,79 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
 	    edit = last;
 	    option[i].handle = (void*)
 		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));
-	    XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup);
+	    XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup); // gets focus on mouse click
 	    if(option[i].min == 0 || option[i].type != TextBox)
-		XtOverrideTranslations(last, XtParseTranslationTable(oneLiner));
+		XtOverrideTranslations(last, XtParseTranslationTable(oneLiner)); // standard handler for <Enter> and <Tab>
 
 	    if(option[i].type == TextBox || option[i].type == Fractional) break;
 
 	    // add increment and decrement controls for spin
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, edit);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
-	    XtSetArg(args[j], XtNright, XtChainRight); j++;
 	    if(option[i].type == FileName || option[i].type == PathName) {
-		msg = _("browse"); w = 0;
-		/* automatically scale to width of text */
-		XtSetArg(args[j], XtNwidth, (XtArgVal) NULL );  j++;
-		if(textHeight) XtSetArg(args[j], XtNheight, textHeight),  j++;
+		msg = _("browse"); w = 0; // automatically scale to width of text
+		j = textHeight ? textHeight : 0;
 	    } else {
-		w = 20; msg = "+";
-		XtSetArg(args[j], XtNheight, textHeight/2);  j++;
-		XtSetArg(args[j], XtNwidth,   w);  j++;
+		w = 20; msg = "+"; j = textHeight/2; // spin button
 	    }
+	    j = SetPositionAndSize(args, last, edit, 1 /* border */,
+				   w /* w */, j /* h */, 0x31 /* chain to right edge */);
 	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
-	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
+	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
 	    if(w == 0) browse = edit;
 
 	    if(option[i].type != Spin) break;
 
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, edit);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
+	    j = SetPositionAndSize(args, last, edit, 1 /* border */,
+				   20 /* w */, textHeight/2 /* h */, 0x31 /* chain to right edge */);
 	    XtSetArg(args[j], XtNvertDistance, -1);  j++;
-	    XtSetArg(args[j], XtNheight, textHeight/2);  j++;
-	    XtSetArg(args[j], XtNwidth, 20);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
-	    XtSetArg(args[j], XtNright, XtChainRight); j++;
 	    last = XtCreateManagedWidget("-", commandWidgetClass, form, args, j);
-	    XtAddCallback(last, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
+	    XtAddCallback(last, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
 	    break;
 	  case CheckBox:
-	    if(!currentCps) option[i].value = *(Boolean*)option[i].target;
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    if(!currentCps) option[i].value = *(Boolean*)option[i].target; // where checkbox callback uses it
+	    j = SetPositionAndSize(args, last, lastrow, 1 /* border */,
+				   textHeight/2 /* w */, textHeight/2 /* h */, 0xC0 /* chain both to left edge */);
 	    XtSetArg(args[j], XtNvertDistance, (textHeight+2)/4 + 3);  j++;
-	    XtSetArg(args[j], XtNwidth, textHeight/2);  j++;
-	    XtSetArg(args[j], XtNheight, textHeight/2);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNstate, option[i].value);  j++;
+	    lastrow  = last;
 	    option[i].handle = (void*)
-		(dialog = XtCreateManagedWidget(" ", toggleWidgetClass, form, args, j));
+		(last = XtCreateManagedWidget(" ", toggleWidgetClass, form, args, j));
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   option[i].max /* w */, textHeight /* h */, 0xC1 /* chain */);
+	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
+	    last = XtCreateManagedWidget("label", commandWidgetClass, form, args, j);
+	    // make clicking the text toggle checkbox
+	    XtAddEventHandler(last, ButtonPressMask, False, CheckCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
+	    shrink = TRUE; // following buttons must get text height
+	    break;
 	  case Label:
 	    msg = option[i].name;
-	    if(*msg == NULLCHAR) msg = option[i].textValue;
 	    if(!msg) break;
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, option[i].type != Label ? dialog : NULL);  j++;
-	    if(option[i].type != Label) XtSetArg(args[j], XtNheight, textHeight),  j++, shrink = TRUE;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
+	    chain = option[i].min;
+	    if(chain & SAME_ROW) forelast = lastrow; else shrink = FALSE;
+	    j = SetPositionAndSize(args, last, lastrow, (chain & 2) != 0 /* border */,
+				   option[i].max /* w */, shrink ? textHeight : 0 /* h */, chain | 2 /* chain */);
+#if ENABLE_NLS
+	    if(option[i].choice) XtSetArg(args[j], XtNfontSet, *(XFontSet*)option[i].choice), j++;
+#else
+	    if(option[i].choice) XtSetArg(args[j], XtNfont, *(XFontStruct*)option[i].choice), j++;
+#endif
+	    XtSetArg(args[j], XtNresizable, False);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
 	    XtSetArg(args[j], XtNlabel, _(msg));  j++;
-	    last = XtCreateManagedWidget(msg, labelWidgetClass, form, args, j);
-	    if(option[i].type == CheckBox)
-		XtAddEventHandler(last, ButtonPressMask, False, CheckCallback, (XtPointer)(intptr_t) i);
+	    option[i].handle = (void*) (last = XtCreateManagedWidget("label", labelWidgetClass, form, args, j));
+	    if(option[i].target) // allow user to specify event handler for button presses
+		XtAddEventHandler(last, ButtonPressMask, False, CheckCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
 	    break;
 	  case SaveButton:
 	  case Button:
-	    j=0;
 	    if(option[i].min & SAME_ROW) {
-		XtSetArg(args[j], XtNfromVert, lastrow);  j++;
-		XtSetArg(args[j], XtNfromHoriz, last);  j++;
-		XtSetArg(args[j], XtNleft, XtChainRight); j++;
-		XtSetArg(args[j], XtNright, XtChainRight); j++;
-		if(shrink) XtSetArg(args[j], XtNheight, textHeight),  j++;
-	    } else {
-		XtSetArg(args[j], XtNfromVert, last);  j++;
-		XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast;
-		shrink = FALSE;
-	    }
+		chain = 0x31; // 0011.0001 = both left and right side to right edge
+		forelast = lastrow;
+	    } else chain = 0, shrink = FALSE;
+	    j = SetPositionAndSize(args, last, lastrow, 1 /* border */,
+				   option[i].max /* w */, shrink ? textHeight : 0 /* h */, chain /* chain */);
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
-	    if(option[i].max) { XtSetArg(args[j], XtNwidth, option[i].max);  j++; }
 	    if(option[i].textValue) { // special for buttons of New Variant dialog
 		XtSetArg(args[j], XtNsensitive, appData.noChessProgram || option[i].value < 0
 					 || strstr(first.variants, VariantName(option[i].value))); j++;
@@ -590,49 +868,100 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
 	    }
 	    option[i].handle = (void*)
 		(dialog = last = XtCreateManagedWidget(option[i].name, commandWidgetClass, form, args, j));
-	    if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) {
+	    if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) { // for the color picker default-reset
 		SetColor( *(char**) option[i-1].target, &option[i]);
 		XtAddEventHandler(option[i-1].handle, KeyReleaseMask, False, ColorChanged, (XtPointer)(intptr_t) i-1);
 	    }
-	    XtAddCallback(last, XtNcallback, GenericCallback,
-			  (XtPointer)(intptr_t) i + (dlgNr<<16));
-	    if(option[i].textValue) SetColor( option[i].textValue, &option[i]);
-	    forelast = lastrow; // next button can go on same row
+	    XtAddCallback(last, XtNcallback, GenericCallback, (XtPointer)(intptr_t) i + (dlgNr<<16)); // invokes user callback
+	    if(option[i].textValue) SetColor( option[i].textValue, &option[i]); // for new-variant buttons
 	    break;
 	  case ComboBox:
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNheight, textHeight),  j++;
-	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   0 /* w */, textHeight /* h */, 0xC0 /* chain both sides to left edge */);
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
 	    texts[h] = dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
 
-	    if(currentCps) option[i].choice = (char**) option[i].textValue; else {
-	      for(j=0; option[i].choice[j]; j++)
-		if(*(char**)option[i].target && !strcmp(*(char**)option[i].target, option[i].choice[j])) break;
-	      option[i].value = j + (option[i].choice[j] == NULL);
+	    if(option[i].min & COMBO_CALLBACK) msg = _(option[i].name); else {
+	      if(!currentCps) SetCurrentComboSelection(option+i);
+	      msg=_(((char**)option[i].choice)[option[i].value]);
 	    }
 
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
-	    XtSetArg(args[j], XtNwidth, option[i].max && !currentCps ? option[i].max : 100);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+	    j = SetPositionAndSize(args, dialog, last, (option[i].min & 2) == 0 /* border */,
+				   option[i].max && !currentCps ? option[i].max : 100 /* w */,
+				   textHeight /* h */, 0x91 /* chain */); // same row as its label!
 	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
-	    XtSetArg(args[j], XtNlabel, _(((char**)option[i].textValue)[option[i].value]));  j++;
-	    XtSetArg(args[j], XtNheight, textHeight),  j++;
+	    XtSetArg(args[j], XtNlabel, msg);  j++;
 	    shrink = TRUE;
 	    option[i].handle = (void*)
 		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));
-	    CreateComboPopup(last, option + i, i);
+	    CreateComboPopup(last, option + i, i + 256*dlgNr, TRUE, -1);
 	    values[i] = option[i].value;
+	    break;
+	  case ListBox:
+	    // Listbox goes in viewport, as needed for game list
+	    if(option[i].min & SAME_ROW) forelast = lastrow;
+	    j = SetPositionAndSize(args, last, lastrow, 1 /* border */,
+				   option[i].max /* w */, option[i].value /* h */, option[i].min /* chain */);
+	    XtSetArg(args[j], XtNresizable, False);  j++;
+	    XtSetArg(args[j], XtNallowVert, True); j++; // scoll direction
+	    last =
+	      XtCreateManagedWidget("viewport", viewportWidgetClass, form, args, j);
+	    j = 0; // now list itself
+	    XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
+	    XtSetArg(args[j], XtNforceColumns, True);  j++;
+	    XtSetArg(args[j], XtNverticalList, True);  j++;
+	    option[i].handle = (void*)
+	        (edit = XtCreateManagedWidget("list", listWidgetClass, last, args, j));
+	    XawListChange(option[i].handle, option[i].target, 0, 0, True);
+	    XawListHighlight(option[i].handle, 0);
+	    scrollTranslations[25] = '0' + i;
+	    scrollTranslations[27] = 'A' + dlgNr;
+	    XtOverrideTranslations(edit, XtParseTranslationTable(scrollTranslations)); // for mouse-wheel
+	    break;
+	  case Graph:
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   option[i].max /* w */, option[i].value /* h */, option[i].min /* chain */);
+	    option[i].handle = (void*)
+		(last = XtCreateManagedWidget("graph", widgetClass, form, args, j));
+	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
+		      (XtEventHandler) GraphEventProc, option[i].target); // mandatory user-supplied expose handler
+	    break;
+	  case PopUp: // note: used only after Graph, so 'last' refers to the Graph widget
+	    option[i].handle = (void*) CreateComboPopup(last, option + i, i + 256*dlgNr, TRUE, option[i].value);
+	    break;
+	  case BoxBegin:
+	    if(option[i].min & SAME_ROW) forelast = lastrow;
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   0 /* w */, 0 /* h */, option[i].min /* chain */);
+	    XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
+	    XtSetArg(args[j], XtNvSpace, 0);                        j++;
+	    option[box=i].handle = (void*)
+		(last = XtCreateWidget("box", boxWidgetClass, form, args, j));
+	    oldForm = form; form = last; oldLastRow = lastrow; oldForeLast = forelast;
+	    lastrow = NULL; last = NULL;
+	    break;
+	  case DropDown:
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   0 /* w */, 0 /* h */, 1 /* chain (always on same row) */);
+	    forelast = lastrow;
+	    msg = _(option[i].name); // write name on the menu button
+	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
+	    XtSetArg(args[j], XtNlabel, msg);  j++;
+	    option[i].handle = (void*)
+		(last = XtCreateManagedWidget(option[i].name, menuButtonWidgetClass, form, args, j));
+	    option[i].textValue = (char*) CreateComboPopup(last, option + i, i + 256*dlgNr, FALSE, -1);
+	    break;
+	  case BoxEnd:
+	    XtManageChildren(&form, 1);
+	    SqueezeIntoBox(&option[box], i-box, option[box].max);
+	    if(option[i].target) ((ButtonCallback*)option[i].target)(box); // callback that can make sizing decisions
+	    last = form; lastrow = oldLastRow; form = oldForm; forelast = oldForeLast;
 	    break;
 	  case Break:
 	    width++;
 	    height = i+1;
+	    stack = !(option[i].min & SAME_ROW);
 	    break;
 	default:
 	    printf("GenericPopUp: unexpected case in switch.\n");
@@ -647,7 +976,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
 	XtSetArg(args[j], XtNwidth, &bWidth);  j++;
 	XtGetValues(browse, args, j);
     }
-    for(h=0; h<height; h++) {
+    for(h=0; h<height || c == width-1; h++) {
 	i = h + c*height;
 	if(option[i].type == EndMark) break;
 	if(option[i].type == Spin || option[i].type == TextBox || option[i].type == ComboBox
@@ -669,7 +998,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
     if(maxTextWidth + 110 < maxWidth)
 	 maxTextWidth = maxWidth - 110;
     else maxWidth = maxTextWidth + 110;
-    for(h=0; h<height; h++) {
+    for(h=0; h<height || c == width-1; h++) {
 	i = h + c*height;
 	if(option[i].type == EndMark) break;
 	if(!texts[h]) continue; // Note: texts[h] can be undefined (giving errors in valgrind), but then both if's below will be false.
@@ -691,34 +1020,31 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
     }
   }
 
-  if(!(option[i].min & NO_OK)) {
-    j=0;
-    if(option[i].min & SAME_ROW) {
-	for(j=i-1; option[j+1].min & SAME_ROW && option[j].type == Button; j--) {
+    if(option[i].min & SAME_ROW) { // even when OK suppressed this EndMark bit can request chaining of last row to bottom
+	for(j=i-1; option[j+1].min & SAME_ROW; j--) {
 	    XtSetArg(args[0], XtNtop, XtChainBottom);
 	    XtSetArg(args[1], XtNbottom, XtChainBottom);
 	    XtSetValues(option[j].handle, args, 2);
 	}
-	if(option[j].type == TextBox && option[j].name[0] == NULLCHAR) {
+	if((option[j].type == TextBox || option[j].type == ListBox) && option[j].name[0] == NULLCHAR) {
+	    Widget w = option[j].handle;
+	    if(option[j].type == ListBox) w = XtParent(w); // for listbox we must chain viewport
 	    XtSetArg(args[0], XtNbottom, XtChainBottom);
-	    XtSetValues(option[j].handle, args, 1);
+	    XtSetValues(w, args, 1);
 	}
-	j = 0;
-	XtSetArg(args[j], XtNfromHoriz, last); last = forelast;
-    } else shrink = FALSE,
-    XtSetArg(args[j], XtNfromHoriz, widest ? widest : dialog);  j++;
-    XtSetArg(args[j], XtNfromVert, anchor ? anchor : last);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    if(shrink) XtSetArg(args[j], XtNheight, textHeight),  j++;
-    b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer)(intptr_t) dlgNr + (dlgNr<<16));
+	lastrow = forelast;
+    } else shrink = FALSE, lastrow = last, last = widest ? widest : dialog;
+    j = SetPositionAndSize(args, last, anchor ? anchor : lastrow, 1 /* border */,
+			   0 /* w */, shrink ? textHeight : 0 /* h */, 0x37 /* chain: right, bottom and use both neighbors */);
 
-    XtSetArg(args[0], XtNfromHoriz, b_ok);
-    b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, GenericCallback, (XtPointer)(intptr_t) dlgNr);
+  if(!(option[i].min & NO_OK)) {
+    option[i].handle = b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
+    XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer)(intptr_t) (30001 + (dlgNr<<16)));
+    if(!(option[i].min & NO_CANCEL)) {
+      XtSetArg(args[1], XtNfromHoriz, b_ok); // overwrites!
+      b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
+      XtAddCallback(b_cancel, XtNcallback, GenericCallback, (XtPointer)(intptr_t) (30000 + (dlgNr<<16)));
+    }
   }
 
     XtRealizeWidget(popup);
@@ -732,10 +1058,10 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
     XtSetArg(args[1], XtNy, y - 30);
     XtSetValues(popup, args, 2);
 
-    XtPopup(popup, dlgNr ? XtGrabNone : XtGrabExclusive);
-    shellUp[dlgNr] = True;
+    XtPopup(popup, modal ? XtGrabExclusive : XtGrabNone);
+    shellUp[dlgNr]++; // count rather than flag
     previous = NULL;
-    if(textField)SetFocus(textField, popup, (XEvent*) NULL, False);
+    if(textField) SetFocus(textField, popup, (XEvent*) NULL, False);
     if(dlgNr && wp[dlgNr] && wp[dlgNr]->width > 0) { // if persistent window-info available, reposition
 	j = 0;
 	XtSetArg(args[j], XtNheight, (Dimension) (wp[dlgNr]->height));  j++;
@@ -744,7 +1070,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr)
 	XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
 	XtSetValues(popup, args, j);
     }
-    return 1;
+    return 1; // tells caller he must do initialization (e.g. add specific event handlers)
 }
 
 
@@ -789,14 +1115,15 @@ SetInsertPos (Option *opt, int pos)
 
 void
 TypeInProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    char *val;
+{   // can be used as handler for any text edit in any dialog (from GenericPopUp, that is)
+    int n = prms[0][0] - '0';
+    Widget sh = XtParent(XtParent(XtParent(w))); // popup shell
 
-    if(prms[0][0] == '1') {
-	GetWidgetText(&boxOptions[0], &val);
-	TypeInDoneEvent(val);
+    if(n<2) { // Enter or Esc typed from primed text widget: treat as if dialog OK or cancel button hit.
+	int dlgNr; // figure out what the dialog number is by comparing shells (because we must pass it :( )
+	for(dlgNr=0; dlgNr<NrOfDialogs; dlgNr++) if(shellUp[dlgNr] && shells[dlgNr] == sh)
+	    GenericCallback (w, (XtPointer)(intptr_t) (30000 + n + (dlgNr<<16)), NULL);
     }
-    PopDown(TransientDlg);
 }
 
 void

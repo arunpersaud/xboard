@@ -20,10 +20,76 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-typedef enum {
-TransientDlg=0, CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, ErrorDlg, BrowserDlg, HistoryDlg, NrOfDialogs
+// [HGM] Some remarks about the generic dialog creator of XBoard:
+// GenericPopUp is needed to create a dialog from the lists of options supplied by the engines.
+// But once it is there, it provides a very easy way for creating other settings dialogs as well,
+// by letting XBoard provide its own, compiled-in lists of XBoard options (located in dialogs.c).
+// The Option struct uses the following fields (E = for engine options, X = for XBoard options):
+//                    Option types                  | XBoard-only ->
+// TYPE    NAME       spin check string combo button box label list graph menu break end
+// int     value       E     E    (h)    X/E         [w]       (h)   (h)
+// int     min        X/E         (2)    (3)         (1)  (1)  (1)   (1)  (3)   (1)  (4)
+// int     max        X/E   (w)   (w)    (w)   (w)   (w)  (w)  (w)   (w)
+// void*   handle     X/E   X/E   X/E    X/E   X/E    X    X    X     X    X
+// void*   target      X     X     X      X     C          X    X     C    C
+// char*   textValue               E     X/E    *
+// char ** choice                        X/E    *                          X
+// enum    type       X/E   X/E   X/E    X/E    X     X    X    X     X    X     X    X
+// char[]  name       X/E   X/E   X/E    X/E    X          X    X     X    X
+// File and Path options are like String (but get a browse button added in the dialog), and Slider
+// is like Spin. Menu can be PopUp or PopDown; both need the COMBO_CALLBACK bit (1) set, and the
+// latter also uses the min flags for positioning the menu button.
+// (h) or (w) means the field optionally (when non-null) specifies the height or width of the main
+// control element (excluding accompanying description texts). [w] means the width is written there.
+// C specifies the 'target' is a user-supplied callback function, which will be executed when the
+// option is exercised.
+
+
+/* Flags Option.min used (2) for TextBox (-string): */
+#define T_VSCRL		(1 << 0)
+#define T_HSCRL		(1 << 1)
+#define T_FILL		(1 << 2)
+#define T_WRAP		(1 << 3)
+#define T_TOP		(1 << 4)
+
+/* Flags Option.min used (3) for ComboBox (-combo): */
+#define COMBO_CALLBACK	(1 << 0)
+#define NO_GETTEXT	(1 << 2)
+
+/* Flags for Option.min used (1) for Button, SaveButton, ListBox, Label: */
+#define SAME_ROW	(1 << 0) /* also in Break & EndMark */
+#define BORDER		(1 << 1) /* Label */
+#define FIX_H		(1 << 1) /* in other, this bit specifies top and botom of the control chain to same window edge */
+#define B2B		(1 << 2) /* chain bottom to bottom (by default, no chaining is done) */
+#define T2T		(1 << 3)
+#define R2R		(1 << 4)
+#define L2R		(1 << 5)
+#define R2L		(1 << 6)
+#define L2L		(1 << 7)
+#define TT		(T2T|FIX_H) /* useful combinations: 0xA = entirely to top */
+#define BB		(B2B|FIX_H) /*   6 = entirely to bottom */
+#define TB		(B2B|T2T)   /*   0xC = absorb all vertical size change */
+#define LL		(L2L|R2L)   /*   0xC0 = entirely to left */
+#define RR		(L2R|R2R)   /*   0x30 = entirely to right */
+#define LR		(L2L|R2R)   /*   0x90 = absorb all horizontal size change */
+
+/* Flags for Option.min used (3) for EndMark: */
+#define NO_OK		(1 << 1)
+#define NO_CANCEL	(1 << 2)
+
+#define MODAL 1
+#define NONMODAL 0
+
+typedef enum {  // identifier of dialogs done by GenericPopup
+TransientDlg=0, // transient: grabs mouse events and is destroyed at pop-down (so other dialog can use this ID next time)
+CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, NoDlg, BrowserDlg, HistoryDlg, // persistent: no grab and reused
+PromoDlg,       // this and beyond are destroyed at pop-down
+AskDlg,         // this and beyond do grab mouse events (and are destroyed)
+BoardWindow,
+NrOfDialogs     // dummy for total
 } DialogClass;
 
+typedef Option *PointerCallback(int n, int x, int y);
 typedef void ButtonCallback(int n);
 typedef int OKCallback(int n);
 
@@ -38,11 +104,11 @@ extern ButtonCallback *comboCallback;
 extern WindowPlacement wpComment, wpTags, wpMoveHistory;
 extern char *marked[];
 extern Boolean shellUp[];
-extern Option textOptions[], boxOptions[];
+extern Option textOptions[], typeOptions[];
 
 
 int DialogExists P((DialogClass n));
-int GenericPopUp P((Option *option, char *title, DialogClass dlgNr));
+int GenericPopUp P((Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal));
 int GenericReadout P((Option *currentOption, int selected));
 int PopDown P((DialogClass n));
 int AppendText P((Option *opt, char *s));
@@ -55,6 +121,16 @@ void SetWidgetText  P((Option *opt, char *buf, int n));
 void GetWidgetState  P((Option *opt, int *state));
 void SetWidgetState  P((Option *opt, int state));
 void SetDialogTitle  P((DialogClass dlg, char *title));
+void LoadListBox P((Option *opt, char *emptyText));
+void HighlightListBoxItem P((Option *opt, int nr));
+void HighlightWithScroll P((Option *opt, int sel, int max));
+int  SelectedListBoxItem P((Option *opt));
+void BoardFocus P((void));
+void FocusOnWidget P((Option *opt, DialogClass dlg));
+void UnCaret P((void));
+void SetIconName P((DialogClass dlg, char *name));
+int  ReadScroll P((Option *opt, float *top, float *bottom));
+void SetScroll P((Option *opt, float f));
 void AddHandler  P((Option *opt, int nr));
 void SendText P((int n));
 
@@ -62,6 +138,7 @@ void InitDrawingParams P(()); // in xboard.c
 void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));
 
+int  SetCurrentComboSelection P((Option *opt));
 void BoxAutoPopUp P((char *buf));
 void IcsKey P((int n));
 void ICSInputBoxPopUp P((void));

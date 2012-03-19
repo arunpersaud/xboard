@@ -15534,8 +15534,8 @@ ParseOption (Option *opt, ChessProgramState *cps)
 	    if(sscanf(p, " -check %d", &def) < 1) return FALSE;
 	    opt->value = (def != 0);
 	    opt->type = CheckBox;
-	} else if(p = strstr(opt->name, " -combo ")) {
-	    opt->textValue = (char*) (&cps->comboList[cps->comboCnt]); // cheat with pointer type
+	} else if(p = strstr(opt->name,	" -combo ")) {
+	    opt->textValue = (char*) (opt->choice = &cps->comboList[cps->comboCnt]); // cheat with pointer type
 	    cps->comboList[cps->comboCnt++] = q = p+8; // holds possible choices
 	    if(*q == '*') cps->comboList[cps->comboCnt-1]++;
 	    opt->value = n = 0;
@@ -15656,7 +15656,10 @@ ParseFeatures (char *args, ChessProgramState *cps)
     if (BoolFeature(&p, "memory", &cps->memSize, cps)) continue;
     if (BoolFeature(&p, "smp", &cps->maxCores, cps)) continue;
     if (StringFeature(&p, "egt", cps->egtFormats, cps)) continue;
-    if (StringFeature(&p, "option", cps->option[cps->nrOptions].name, cps)) {
+    if (StringFeature(&p, "option", buf, cps)) {
+	FREE(cps->option[cps->nrOptions].name);
+	cps->option[cps->nrOptions].name = malloc(MSG_SIZ);
+	safeStrCpy(cps->option[cps->nrOptions].name, buf, MSG_SIZ);
 	if(!ParseOption(&(cps->option[cps->nrOptions++]), cps)) { // [HGM] options: add option feature
 	  snprintf(buf, MSG_SIZ, "rejected option %s\n", cps->option[--cps->nrOptions].name);
 	    SendToProgram(buf, cps);

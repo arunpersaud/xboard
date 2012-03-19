@@ -545,6 +545,8 @@ XtActionsRec boardActions[] = {
     { "EnterKeyProc", EnterKeyProc },
     { "UpKeyProc", UpKeyProc },
     { "DownKeyProc", DownKeyProc },
+    { "WheelProc", WheelProc },
+    { "TabProc", TabProc },
 };
 
 char globalTranslations[] =

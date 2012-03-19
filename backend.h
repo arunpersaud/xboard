@@ -318,16 +318,8 @@ extern Boolean set_cont_sequence P((char *new_seq));
 extern int wrap P((char *dest, char *src, int count, int width, int *lp));
 int Explode P((Board board, int fromX, int fromY, int toX, int toY));
 
-typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton, ListBox,
-		 FileName, PathName, Slider, Message, Fractional, Label, Break, EndMark } Control;
-
-/* Flags Option.min used for ComboBox: */
-#define COMBO_CALLBACK	(1 << 0)
-#define NO_GETTEXT	(1 << 1)
-
-/* Flags for Option.min used for Button, SaveButton, EndMark: */
-#define SAME_ROW	(1 << 0)
-#define NO_OK		(1 << 1)
+typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton, ListBox, Graph, PopUp,
+		 FileName, PathName, Slider, Message, Fractional, Label, BoxBegin, BoxEnd, DropDown, Break, EndMark } Control;
 
 typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
     int value;          // current setting, starts as default
@@ -338,7 +330,7 @@ typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
     char *textValue;    // points to beginning of text value in name field
     char **choice;      // points to array of combo choices in cps->combo
     Control type;
-    char name[MSG_SIZ]; // holds both option name and text value
+    char *name;         // holds both option name and text value (in allocated memory)
 } Option;
 
 typedef struct _CPS {

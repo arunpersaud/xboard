@@ -130,8 +130,8 @@ SelectMove (Widget w, XEvent * event, String * params, Cardinal * nParams)
 }
 
 Option historyOptions[] = {
-{ 0xD, 200, 400, NULL, (void*) &historyText, "", NULL, TextBox, "" },
-{   0,  2,    0, NULL, (void*) NULL, "", NULL, EndMark , "" }
+{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 400, NULL, (void*) &historyText, "", NULL, TextBox, "" },
+{   0,           NO_OK,             0, NULL, (void*) NULL, "", NULL, EndMark , "" }
 };
 
 // ------------ standard entry points into MoveHistory code -----------
@@ -151,7 +151,7 @@ MoveHistoryDialogExists ()
 void
 HistoryPopUp ()
 {
-    if(GenericPopUp(historyOptions, _("Move list"), HistoryDlg))
+    if(GenericPopUp(historyOptions, _("Move list"), HistoryDlg, BoardWindow, NONMODAL))
 	AddHandler(&historyOptions[0], 0);
     MarkMenu("Show Move History", HistoryDlg);
 }
