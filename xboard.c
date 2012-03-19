@@ -298,19 +298,15 @@ void PromotionCallback P((Widget w, XtPointer client_data,
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
 void KeyBindingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void QuitWrapper P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+static void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+static void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+static void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TempBackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TempForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 Boolean TempBackwardActive = False;
 void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
-void DisplayTitle P((char *title));
 void ICSInitScript P((void));
-void ErrorPopUp P((char *title, char *text, int modal));
-void ErrorPopDown P((void));
 static char *ExpandPathName P((char *path));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
@@ -2196,51 +2192,6 @@ ResetFrontEnd ()
     return;
 }
 
-// [HGM] code borrowed from winboard.c (which should thus go to backend.c!)
-#define HISTORY_SIZE 64
-static char *history[HISTORY_SIZE];
-int histIn = 0, histP = 0;
-
-void
-SaveInHistory (char *cmd)
-{
-  if (history[histIn] != NULL) {
-    free(history[histIn]);
-    history[histIn] = NULL;
-  }
-  if (*cmd == NULLCHAR) return;
-  history[histIn] = StrSave(cmd);
-  histIn = (histIn + 1) % HISTORY_SIZE;
-  if (history[histIn] != NULL) {
-    free(history[histIn]);
-    history[histIn] = NULL;
-  }
-  histP = histIn;
-}
-
-char *
-PrevInHistory (char *cmd)
-{
-  int newhp;
-  if (histP == histIn) {
-    if (history[histIn] != NULL) free(history[histIn]);
-    history[histIn] = StrSave(cmd);
-  }
-  newhp = (histP - 1 + HISTORY_SIZE) % HISTORY_SIZE;
-  if (newhp == histIn || history[newhp] == NULL) return NULL;
-  histP = newhp;
-  return history[histP];
-}
-
-char *
-NextInHistory ()
-{
-  if (histP == histIn) return NULL;
-  histP = (histP + 1) % HISTORY_SIZE;
-  return history[histP];   
-}
-// end of borrowed code
-
 #define Abs(n) ((n)<0 ? -(n) : (n))
 
 #ifdef ENABLE_NLS
@@ -3846,24 +3797,6 @@ ICSInputBoxPopUp ()
 extern Option boxOptions[];
 
 void
-ICSInputSendText ()
-{
-    Widget edit;
-    int j;
-    Arg args[16];
-    String val;
-
-    edit = boxOptions[0].handle;
-    j = 0;
-    XtSetArg(args[j], XtNstring, &val); j++;
-    XtGetValues(edit, args, j);
-    SaveInHistory(val);
-    SendMultiLineToICS(val);
-    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
-}
-
-void
 ICSInputBoxPopDown ()
 {
     PopDown(InputBoxDlg);
@@ -4514,54 +4447,22 @@ MoveTypeInProc (Widget widget, caddr_t unused, XEvent *event)
        ) BoxAutoPopUp (buf);
 }
 
-void
+static void
 UpKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] input: let up-arrow recall previous line from history
-    Widget edit;
-    int j;
-    Arg args[16];
-    String val;
-    XawTextBlock t;
-
-    if (!shellUp[InputBoxDlg]) return;
-    edit = boxOptions[0].handle;
-    j = 0;
-    XtSetArg(args[j], XtNstring, &val); j++;
-    XtGetValues(edit, args, j);
-    val = PrevInHistory(val);
-    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
-    if(val) {
-	t.ptr = val; t.firstPos = 0; t.length = strlen(val); t.format = XawFmt8Bit;
-	XawTextReplace(edit, 0, 0, &t);
-	XawTextSetInsertionPoint(edit, 9999);
-    }
+    IcsKey(1);
 }
 
-void
+static void
 DownKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] input: let down-arrow recall next line from history
-    Widget edit;
-    String val;
-    XawTextBlock t;
-
-    if (!shellUp[InputBoxDlg]) return;
-    edit = boxOptions[0].handle;
-    val = NextInHistory();
-    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
-    if(val) {
-	t.ptr = val; t.firstPos = 0; t.length = strlen(val); t.format = XawFmt8Bit;
-	XawTextReplace(edit, 0, 0, &t);
-	XawTextSetInsertionPoint(edit, 9999);
-    }
+    IcsKey(-1);
 }
 
-void
+static void
 EnterKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    if (shellUp[InputBoxDlg] == True)
-      ICSInputSendText();
+    IcsKey(0);
 }
 
 void
@@ -4638,47 +4539,14 @@ DisplayMessage (char *message, char *extMessage)
 }
 
 void
-DisplayTitle (char *text)
+SetWindowTitle (char *text, char *title, char *icon)
 {
     Arg args[16];
     int i;
-    char title[MSG_SIZ];
-    char icon[MSG_SIZ];
-
-    if (text == NULL) text = "";
-
     if (appData.titleInWindow) {
 	i = 0;
 	XtSetArg(args[i], XtNlabel, text);   i++;
 	XtSetValues(titleWidget, args, i);
-    }
-
-    if (*text != NULLCHAR) {
-      safeStrCpy(icon, text, sizeof(icon)/sizeof(icon[0]) );
-      safeStrCpy(title, text, sizeof(title)/sizeof(title[0]) );
-    } else if (appData.icsActive) {
-        snprintf(icon, sizeof(icon), "%s", appData.icsHost);
-	snprintf(title, sizeof(title), "%s: %s", programName, appData.icsHost);
-    } else if (appData.cmailGameName[0] != NULLCHAR) {
-        snprintf(icon, sizeof(icon), "%s", "CMail");
-	snprintf(title,sizeof(title), "%s: %s", programName, "CMail");
-#ifdef GOTHIC
-    // [HGM] license: This stuff should really be done in back-end, but WinBoard already had a pop-up for it
-    } else if (gameInfo.variant == VariantGothic) {
-      safeStrCpy(icon,  programName, sizeof(icon)/sizeof(icon[0]) );
-      safeStrCpy(title, GOTHIC,     sizeof(title)/sizeof(title[0]) );
-#endif
-#ifdef FALCON
-    } else if (gameInfo.variant == VariantFalcon) {
-      safeStrCpy(icon, programName, sizeof(icon)/sizeof(icon[0]) );
-      safeStrCpy(title, FALCON, sizeof(title)/sizeof(title[0]) );
-#endif
-    } else if (appData.noChessProgram) {
-      safeStrCpy(icon, programName, sizeof(icon)/sizeof(icon[0]) );
-      safeStrCpy(title, programName, sizeof(title)/sizeof(title[0]) );
-    } else {
-      safeStrCpy(icon, first.tidy, sizeof(icon)/sizeof(icon[0]) );
-	snprintf(title,sizeof(title), "%s: %s", programName, first.tidy);
     }
     i = 0;
     XtSetArg(args[i], XtNiconName, (XtArgVal) icon);    i++;
@@ -4687,79 +4555,6 @@ DisplayTitle (char *text)
     XSync(xDisplay, False);
 }
 
-
-void
-DisplayError (String message, int error)
-{
-    char buf[MSG_SIZ];
-
-    if (error == 0) {
-	if (appData.debugMode || appData.matchMode) {
-	    fprintf(stderr, "%s: %s\n", programName, message);
-	}
-    } else {
-	if (appData.debugMode || appData.matchMode) {
-	    fprintf(stderr, "%s: %s: %s\n",
-		    programName, message, strerror(error));
-	}
-	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
-	message = buf;
-    }
-    ErrorPopUp(_("Error"), message, FALSE);
-}
-
-
-void
-DisplayMoveError (String message)
-{
-    fromX = fromY = -1;
-    ClearHighlights();
-    DrawPosition(FALSE, NULL);
-    if (appData.debugMode || appData.matchMode) {
-	fprintf(stderr, "%s: %s\n", programName, message);
-    }
-    if (appData.popupMoveErrors) {
-	ErrorPopUp(_("Error"), message, FALSE);
-    } else {
-	DisplayMessage(message, "");
-    }
-}
-
-
-void
-DisplayFatalError (String message, int error, int status)
-{
-    char buf[MSG_SIZ];
-
-    errorExitStatus = status;
-    if (error == 0) {
-	fprintf(stderr, "%s: %s\n", programName, message);
-    } else {
-	fprintf(stderr, "%s: %s: %s\n",
-		programName, message, strerror(error));
-	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
-	message = buf;
-    }
-    if (appData.popupExitMessage && boardWidget && XtIsRealized(boardWidget)) {
-      ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
-    } else {
-      ExitEvent(status);
-    }
-}
-
-void
-DisplayInformation (String message)
-{
-    ErrorPopDown();
-    ErrorPopUp(_("Information"), message, TRUE);
-}
-
-void
-DisplayNote (String message)
-{
-    ErrorPopDown();
-    ErrorPopUp(_("Note"), message, FALSE);
-}
 
 static int
 NullXErrorCheck (Display *dpy, XErrorEvent *error_event)

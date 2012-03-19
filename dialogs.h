@@ -59,6 +59,8 @@ void AddHandler  P((Option *opt, int nr));
 void SendText P((int n));
 
 void InitDrawingParams P(()); // in xboard.c
+void ErrorPopUp P((char *title, char *text, int modal));
 
 void BoxAutoPopUp P((char *buf));
+void IcsKey P((int n));
 

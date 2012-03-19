@@ -978,6 +978,82 @@ NewTagsPopup (char *text, char *msg)
 
 char *icsText;
 
+// [HGM] code borrowed from winboard.c (which should thus go to backend.c!)
+#define HISTORY_SIZE 64
+static char *history[HISTORY_SIZE];
+static int histIn = 0, histP = 0;
+
+static void
+SaveInHistory (char *cmd)
+{
+  if (history[histIn] != NULL) {
+    free(history[histIn]);
+    history[histIn] = NULL;
+  }
+  if (*cmd == NULLCHAR) return;
+  history[histIn] = StrSave(cmd);
+  histIn = (histIn + 1) % HISTORY_SIZE;
+  if (history[histIn] != NULL) {
+    free(history[histIn]);
+    history[histIn] = NULL;
+  }
+  histP = histIn;
+}
+
+static char *
+PrevInHistory (char *cmd)
+{
+  int newhp;
+  if (histP == histIn) {
+    if (history[histIn] != NULL) free(history[histIn]);
+    history[histIn] = StrSave(cmd);
+  }
+  newhp = (histP - 1 + HISTORY_SIZE) % HISTORY_SIZE;
+  if (newhp == histIn || history[newhp] == NULL) return NULL;
+  histP = newhp;
+  return history[histP];
+}
+
+static char *
+NextInHistory ()
+{
+  if (histP == histIn) return NULL;
+  histP = (histP + 1) % HISTORY_SIZE;
+  return history[histP];   
+}
+// end of borrowed code
+
+void
+ICSInputSendText ()
+{
+    char *val;
+
+    GetWidgetText(&boxOptions[0], &val);
+    SaveInHistory(val);
+    SendMultiLineToICS(val);
+    SetWidgetText(&boxOptions[0], val, InputBoxDlg);
+}
+
+void
+IcsKey (int n)
+{   // [HGM] input: let up-arrow recall previous line from history
+    char *val;
+
+    if (!shellUp[InputBoxDlg]) return;
+    switch(n) {
+      case 0:
+	ICSInputSendText();
+	return;
+      case 1:
+	GetWidgetText(&boxOptions[0], &val);
+	val = PrevInHistory(val);
+	break;
+      case -1:
+	val = NextInHistory();
+    }
+    SetWidgetText(&boxOptions[0], val ? val : "", InputBoxDlg);
+}
+
 Option boxOptions[] = {
 {   0, 30,  400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
 {   0,  3,    0, NULL, NULL, "", NULL, EndMark , "" }
@@ -1246,4 +1322,118 @@ OutputChatMessage (int partner, char *mess)
 {
     return; // dummy
 }
+
+//----------------------------- Various display boxes -----------------------------
+
+void
+DisplayError (String message, int error)
+{
+    char buf[MSG_SIZ];
+
+    if (error == 0) {
+	if (appData.debugMode || appData.matchMode) {
+	    fprintf(stderr, "%s: %s\n", programName, message);
+	}
+    } else {
+	if (appData.debugMode || appData.matchMode) {
+	    fprintf(stderr, "%s: %s: %s\n",
+		    programName, message, strerror(error));
+	}
+	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
+	message = buf;
+    }
+    ErrorPopUp(_("Error"), message, FALSE);
+}
+
+
+void
+DisplayMoveError (String message)
+{
+    fromX = fromY = -1;
+    ClearHighlights();
+    DrawPosition(FALSE, NULL);
+    if (appData.debugMode || appData.matchMode) {
+	fprintf(stderr, "%s: %s\n", programName, message);
+    }
+    if (appData.popupMoveErrors) {
+	ErrorPopUp(_("Error"), message, FALSE);
+    } else {
+	DisplayMessage(message, "");
+    }
+}
+
+
+void
+DisplayFatalError (String message, int error, int status)
+{
+    char buf[MSG_SIZ];
+
+    errorExitStatus = status;
+    if (error == 0) {
+	fprintf(stderr, "%s: %s\n", programName, message);
+    } else {
+	fprintf(stderr, "%s: %s: %s\n",
+		programName, message, strerror(error));
+	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
+	message = buf;
+    }
+    if (appData.popupExitMessage && boardWidget && XtIsRealized(boardWidget)) {
+      ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
+    } else {
+      ExitEvent(status);
+    }
+}
+
+void
+DisplayInformation (String message)
+{
+    ErrorPopDown();
+    ErrorPopUp(_("Information"), message, TRUE);
+}
+
+void
+DisplayNote (String message)
+{
+    ErrorPopDown();
+    ErrorPopUp(_("Note"), message, FALSE);
+}
+
+void
+DisplayTitle (char *text)
+{
+    char title[MSG_SIZ];
+    char icon[MSG_SIZ];
+
+    if (text == NULL) text = "";
+
+    if (*text != NULLCHAR) {
+      safeStrCpy(icon, text, sizeof(icon)/sizeof(icon[0]) );
+      safeStrCpy(title, text, sizeof(title)/sizeof(title[0]) );
+    } else if (appData.icsActive) {
+        snprintf(icon, sizeof(icon), "%s", appData.icsHost);
+	snprintf(title, sizeof(title), "%s: %s", programName, appData.icsHost);
+    } else if (appData.cmailGameName[0] != NULLCHAR) {
+        snprintf(icon, sizeof(icon), "%s", "CMail");
+	snprintf(title,sizeof(title), "%s: %s", programName, "CMail");
+#ifdef GOTHIC
+    // [HGM] license: This stuff should really be done in back-end, but WinBoard already had a pop-up for it
+    } else if (gameInfo.variant == VariantGothic) {
+      safeStrCpy(icon,  programName, sizeof(icon)/sizeof(icon[0]) );
+      safeStrCpy(title, GOTHIC,     sizeof(title)/sizeof(title[0]) );
+#endif
+#ifdef FALCON
+    } else if (gameInfo.variant == VariantFalcon) {
+      safeStrCpy(icon, programName, sizeof(icon)/sizeof(icon[0]) );
+      safeStrCpy(title, FALCON, sizeof(title)/sizeof(title[0]) );
+#endif
+    } else if (appData.noChessProgram) {
+      safeStrCpy(icon, programName, sizeof(icon)/sizeof(icon[0]) );
+      safeStrCpy(title, programName, sizeof(title)/sizeof(title[0]) );
+    } else {
+      safeStrCpy(icon, first.tidy, sizeof(icon)/sizeof(icon[0]) );
+	snprintf(title,sizeof(title), "%s: %s", programName, first.tidy);
+    }
+    SetWindowTitle(text, title, icon);
+}
+
 
