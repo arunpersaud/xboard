@@ -275,9 +275,6 @@ void CommentClick P((Widget w, XEvent * event,
 void ICSInputBoxPopUp P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
 		      FileProc proc, char *openMode));
-void PromotionPopDown P((void));
-void PromotionCallback P((Widget w, XtPointer client_data,
-			  XtPointer call_data));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
 void KeyBindingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void QuitWrapper P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -312,7 +309,7 @@ GC lightSquareGC, darkSquareGC, lineGC, wdPieceGC, wlPieceGC,
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
-  commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
+  commentShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell;
 Widget historyShell, evalGraphShell, gameListShell;
@@ -344,7 +341,7 @@ int smallLayout = 0, tinyLayout = 0,
   marginW, marginH, // [HGM] for run-time resizing
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
   ICSInputBoxUp = False,
-  filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
+  filenameUp = False, pmFromX = -1, pmFromY = -1,
   errorUp = False, errorExitStatus = -1, defaultLineGap;
 Dimension textHeight;
 Pixel timerForegroundPixel, timerBackgroundPixel;
@@ -528,7 +525,6 @@ XtActionsRec boardActions[] = {
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
-    { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
@@ -3508,11 +3504,9 @@ HandleUserMove (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     if (w != boardWidget || errorExitStatus != -1) return;
     if(nprms) shiftKey = !strcmp(prms[0], "1");
 
-    if (promotionUp) {
+    if (shellUp[PromoDlg]) { // [HGM] is this still needed?
 	if (event->type == ButtonPress) {
-	    XtPopdown(promotionShell);
-	    XtDestroyWidget(promotionShell);
-	    promotionUp = False;
+	    PopDown(PromoDlg);
 	    ClearHighlights();
 	    fromX = fromY = -1;
 	} else {
@@ -3597,118 +3591,6 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
 	  // [HGM] delay to give expose event opportunity to redraw board after browser-dialog popdown before lengthy load starts
 	  ScheduleDelayedEvent(&DelayedLoad, 50);
     }
-}
-
-void
-PromotionPopUp ()
-{
-    Arg args[16];
-    Widget dialog, layout;
-    Position x, y;
-    Dimension bw_width, pw_width;
-    int j;
-    char *PromoChars = "wglcqrbnkac+=\0";
-
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &bw_width); j++;
-    XtGetValues(boardWidget, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True); j++;
-    XtSetArg(args[j], XtNtitle, XtNewString(_("Promotion"))); j++;
-    promotionShell =
-      XtCreatePopupShell("Promotion", transientShellWidgetClass,
-			 shellWidget, args, j);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, promotionShell,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    j = 0;
-    XtSetArg(args[j], XtNlabel, _("Promote to what?")); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    dialog = XtCreateManagedWidget("promotion", dialogWidgetClass,
-				   layout, args, j);
-
-  if(gameInfo.variant != VariantShogi) {
-   if(gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove)) {
-      XawDialogAddButton(dialog, _("Warlord"), PromotionCallback, PromoChars + 0);
-      XawDialogAddButton(dialog, _("General"), PromotionCallback, PromoChars + 1);
-      XawDialogAddButton(dialog, _("Lieutenant"), PromotionCallback, PromoChars + 2);
-      XawDialogAddButton(dialog, _("Captain"), PromotionCallback, PromoChars + 3);
-    } else {
-    XawDialogAddButton(dialog, _("Queen"), PromotionCallback, PromoChars + 4);
-    XawDialogAddButton(dialog, _("Rook"), PromotionCallback, PromoChars + 5);
-    XawDialogAddButton(dialog, _("Bishop"), PromotionCallback, PromoChars + 6);
-    XawDialogAddButton(dialog, _("Knight"), PromotionCallback, PromoChars + 7);
-    }
-    if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
-        gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
-        gameInfo.variant == VariantGiveaway) {
-      XawDialogAddButton(dialog, _("King"), PromotionCallback, PromoChars + 8);
-    }
-    if(gameInfo.variant == VariantCapablanca ||
-       gameInfo.variant == VariantGothic ||
-       gameInfo.variant == VariantCapaRandom) {
-      XawDialogAddButton(dialog, _("Archbishop"), PromotionCallback, PromoChars + 9);
-      XawDialogAddButton(dialog, _("Chancellor"), PromotionCallback, PromoChars + 10);
-    }
-  } else // [HGM] shogi
-  {
-      XawDialogAddButton(dialog, _("Promote"), PromotionCallback, PromoChars + 11);
-      XawDialogAddButton(dialog, _("Defer"), PromotionCallback, PromoChars + 12);
-  }
-    XawDialogAddButton(dialog, _("cancel"), PromotionCallback, PromoChars + 13);
-
-    XtRealizeWidget(promotionShell);
-    CatchDeleteWindow(promotionShell, "PromotionPopDown");
-
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &pw_width); j++;
-    XtGetValues(promotionShell, args, j);
-
-    XtTranslateCoords(boardWidget, (bw_width - pw_width) / 2,
-		      lineGap + squareSize/3 +
-		      ((toY == BOARD_HEIGHT-1) ^ (flipView) ?
-		       0 : 6*(squareSize + lineGap)), &x, &y);
-
-    j = 0;
-    XtSetArg(args[j], XtNx, x); j++;
-    XtSetArg(args[j], XtNy, y); j++;
-    XtSetValues(promotionShell, args, j);
-
-    XtPopup(promotionShell, XtGrabNone);
-
-    promotionUp = True;
-}
-
-void
-PromotionPopDown ()
-{
-    if (!promotionUp) return;
-    XtPopdown(promotionShell);
-    XtDestroyWidget(promotionShell);
-    promotionUp = False;
-}
-
-void
-PromotionCallback (Widget w, XtPointer client_data, XtPointer call_data)
-{
-    int promoChar = * (const char *) client_data;
-
-    PromotionPopDown();
-
-    if (fromX == -1) return;
-
-    if (! promoChar) {
-	fromX = fromY = -1;
-	ClearHighlights();
-	return;
-    }
-    UserMoveEvent(fromX, fromY, toX, toY, promoChar);
-
-    if (!appData.highlightLastMove || gotPremove) ClearHighlights();
-    if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
-    fromX = fromY = -1;
 }
 
 

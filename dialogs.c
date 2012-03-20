@@ -1381,6 +1381,88 @@ AskQuestion (char *title, char *question, char *replyPrefix, ProcRef pr)
 	AddHandler(&askOptions[1], 2);
 }
 
+//---------------------------- Promotion Popup --------------------------------------
+
+static int count;
+
+static void PromoPick P((int n));
+
+static Option promoOptions[] = {
+{   0,         0,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
+{   0, SAME_ROW | NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
+};
+
+static void
+PromoPick (int n)
+{
+    int promoChar = promoOptions[n+count].value;
+
+    PopDown(PromoDlg);
+
+    if (promoChar == 0) fromX = -1;
+    if (fromX == -1) return;
+
+    if (! promoChar) {
+	fromX = fromY = -1;
+	ClearHighlights();
+	return;
+    }
+    UserMoveEvent(fromX, fromY, toX, toY, promoChar);
+
+    if (!appData.highlightLastMove || gotPremove) ClearHighlights();
+    if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
+    fromX = fromY = -1;
+}
+
+static void
+SetPromo (char *name, int nr, char promoChar)
+{
+    safeStrCpy(promoOptions[nr].name, name, MSG_SIZ);
+    promoOptions[nr].value = promoChar;
+}
+
+void
+PromotionPopUp ()
+{ // choice depends on variant: prepare dialog acordingly
+  count = 7;
+  SetPromo(_("Cancel"), --count, 0); // Beware: GenericPopUp cannot handle user buttons named "cancel" (lowe case)!
+  if(gameInfo.variant != VariantShogi) {
+    if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
+        gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
+        gameInfo.variant == VariantGiveaway) {
+      SetPromo(_("King"), --count, 'k');
+    }
+    if(gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove)) {
+      SetPromo(_("Captain"), --count, 'c');
+      SetPromo(_("Lieutenant"), --count, 'l');
+      SetPromo(_("General"), --count, 'g');
+      SetPromo(_("Warlord"), --count, 'w');
+    } else {
+      SetPromo(_("Knight"), --count, 'n');
+      SetPromo(_("Bishop"), --count, 'b');
+      SetPromo(_("Rook"), --count, 'r');
+      if(gameInfo.variant == VariantCapablanca ||
+         gameInfo.variant == VariantGothic ||
+         gameInfo.variant == VariantCapaRandom) {
+        SetPromo(_("Archbishop"), --count, 'a');
+        SetPromo(_("Chancellor"), --count, 'c');
+      }
+      SetPromo(_("Queen"), --count, 'q');
+    }
+  } else // [HGM] shogi
+  {
+      SetPromo(_("Defer"), --count, '=');
+      SetPromo(_("Promote"), --count, '+');
+  }
+  GenericPopUp(promoOptions + count, "Promotion", PromoDlg, BoardWindow, NONMODAL);
+}
+
 //---------------------------- Chat Windows ----------------------------------------------
 
 void
