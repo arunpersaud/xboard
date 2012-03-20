@@ -342,7 +342,7 @@ int smallLayout = 0, tinyLayout = 0,
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
   ICSInputBoxUp = False,
   filenameUp = False, pmFromX = -1, pmFromY = -1,
-  errorUp = False, errorExitStatus = -1, defaultLineGap;
+  errorExitStatus = -1, defaultLineGap;
 Dimension textHeight;
 Pixel timerForegroundPixel, timerBackgroundPixel;
 Pixel buttonForegroundPixel, buttonBackgroundPixel;
@@ -522,12 +522,12 @@ XtActionsRec boardActions[] = {
     { "TempBackwardProc", TempBackwardProc },
     { "TempForwardProc", TempForwardProc },
     { "CommentClick", (XtActionProc) CommentClick },
-    { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
+    { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
     { "SelectMove", (XtActionProc) SelectMove },
     { "LoadSelectedProc", LoadSelectedProc },
@@ -645,7 +645,7 @@ char ICSInputTranslations[] =
 char commentTranslations[] = "<Btn3Down>: extend-end() select-start() CommentClick() \n";
 
 String xboardResources[] = {
-    "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
+    "*Error*translations: #override\\n <Key>Return: ErrorPopDown()",
     NULL
   };
 
@@ -3026,7 +3026,7 @@ PieceMenuPopup (Widget w, XEvent *event, String *params, Cardinal *num_params)
       case 0: whichMenu = params[0]; break;
       case 1: SetupDropMenu(); whichMenu = "menuD"; break;
       case 2:
-      case -1: if (errorUp) ErrorPopDown();
+      case -1: ErrorPopDown();
       default: return;
     }
     XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
@@ -3593,93 +3593,6 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
     }
 }
 
-
-void
-ErrorCallback (Widget w, XtPointer client_data, XtPointer call_data)
-{
-    dialogError = errorUp = False;
-    XtPopdown(w = XtParent(XtParent(XtParent(w))));
-    XtDestroyWidget(w);
-    if (errorExitStatus != -1) ExitEvent(errorExitStatus);
-}
-
-
-void
-ErrorPopDown ()
-{
-    if (!errorUp) return;
-    dialogError = errorUp = False;
-    XtPopdown(errorShell);
-    XtDestroyWidget(errorShell);
-    if (errorExitStatus != -1) ExitEvent(errorExitStatus);
-}
-
-void
-ErrorPopUp (char *title, char *label, int modal)
-{
-    Arg args[16];
-    Widget dialog, layout;
-    Position x, y;
-    int xx, yy;
-    Window junk;
-    Dimension bw_width, pw_width;
-    Dimension pw_height;
-    int i;
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True);  i++;
-    XtSetArg(args[i], XtNtitle, title); i++;
-    errorShell =
-      XtCreatePopupShell("errorpopup", transientShellWidgetClass,
-			 shellUp[TransientDlg] ? (dialogError = modal = TRUE, shells[TransientDlg]) : shellWidget, args, i);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, errorShell,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    i = 0;
-    XtSetArg(args[i], XtNlabel, label); i++;
-    XtSetArg(args[i], XtNborderWidth, 0); i++;
-    dialog = XtCreateManagedWidget("dialog", dialogWidgetClass,
-				   layout, args, i);
-
-    XawDialogAddButton(dialog, _("ok"), ErrorCallback, (XtPointer) dialog);
-
-    XtRealizeWidget(errorShell);
-    CatchDeleteWindow(errorShell, "ErrorPopDown");
-
-    i = 0;
-    XtSetArg(args[i], XtNwidth, &bw_width);  i++;
-    XtGetValues(boardWidget, args, i);
-    i = 0;
-    XtSetArg(args[i], XtNwidth, &pw_width);  i++;
-    XtSetArg(args[i], XtNheight, &pw_height);  i++;
-    XtGetValues(errorShell, args, i);
-
-#ifdef NOTDEF
-    /* This code seems to tickle an X bug if it is executed too soon
-       after xboard starts up.  The coordinates get transformed as if
-       the main window was positioned at (0, 0).
-       */
-    XtTranslateCoords(boardWidget, (bw_width - pw_width) / 2,
-		      0 - pw_height + squareSize / 3, &x, &y);
-#else
-    XTranslateCoordinates(xDisplay, XtWindow(boardWidget),
-			  RootWindowOfScreen(XtScreen(boardWidget)),
-			  (bw_width - pw_width) / 2,
-			  0 - pw_height + squareSize / 3, &xx, &yy, &junk);
-    x = xx;
-    y = yy;
-#endif
-    if (y < 0) y = 0; /*avoid positioning top offscreen*/
-
-    i = 0;
-    XtSetArg(args[i], XtNx, x);  i++;
-    XtSetArg(args[i], XtNy, y);  i++;
-    XtSetValues(errorShell, args, i);
-
-    errorUp = True;
-    XtPopup(errorShell, modal ? XtGrabExclusive : XtGrabNone);
-}
 
 /* Disable all user input other than deleting the window */
 static int frozen = 0;

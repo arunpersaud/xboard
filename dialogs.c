@@ -1471,7 +1471,55 @@ OutputChatMessage (int partner, char *mess)
     return; // dummy
 }
 
-//----------------------------- Various display boxes -----------------------------
+//----------------------------- Error popup in various uses -----------------------------
+
+/*
+ * [HGM] Note:
+ * XBoard has always had some pathologic behavior with multiple simultaneous error popups,
+ * (which can occur even for modal popups when asynchrounous events, e.g. caused by engine, request a popup),
+ * and this new implementation reproduces that as well:
+ * Only the shell of the last instance is remembered in shells[ErrorDlg] (which replaces errorShell),
+ * so that PopDowns ordered from the code always refer to that instance, and once that is down,
+ * have no clue as to how to reach the others. For the Delete Window button calling PopDown this
+ * has now been repaired, as the action routine assigned to it gets the shell passed as argument.
+ */
+
+int errorUp = False;
+
+void
+ErrorPopDown ()
+{
+    if (!errorUp) return;
+    dialogError = errorUp = False;
+    PopDown(ErrorDlg); PopDown(FatalDlg); // on explicit request we pop down any error dialog
+    if (errorExitStatus != -1) ExitEvent(errorExitStatus);
+}
+
+static int
+ErrorOK (int n)
+{
+    dialogError = errorUp = False;
+    PopDown(n == 1 ? FatalDlg : ErrorDlg); // kludge: non-modal dialogs have one less (dummy) option
+    if (errorExitStatus != -1) ExitEvent(errorExitStatus);
+    return FALSE; // prevent second Popdown !
+}
+
+static Option errorOptions[] = {
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label,  NULL }, // dummy option: will never be displayed
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label,  NULL }, // textValue field will be set before popup
+{ 0,NO_CANCEL,0, NULL, (void*) &ErrorOK, "", NULL, EndMark , "" }
+};
+
+void
+ErrorPopUp (char *title, char *label, int modal)
+{
+    errorUp = True;
+    errorOptions[1].name = label;
+    if(dialogError = shellUp[TransientDlg])
+        GenericPopUp(errorOptions+1, title, FatalDlg, TransientDlg, MODAL); // pop up as daughter of the transient dialog
+    else
+        GenericPopUp(errorOptions+modal, title, modal ? FatalDlg: ErrorDlg, BoardWindow, modal); // kludge: option start address indicates modality
+}
 
 void
 DisplayError (String message, int error)
