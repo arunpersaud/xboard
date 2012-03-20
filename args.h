@@ -123,8 +123,6 @@ void SaveColor(FILE *f, ArgDescriptor *ad);
 void SaveBoardSize(FILE *f, char *name, void *addr);
 void PrintCommPortSettings(FILE *f, char *name);
 void GetWindowCoords();
-int  MySearchPath(char *installDir, char *name, char *fullname);
-int  MyGetFullPathName(char *name, char *fullname);
 int  MainWindowUp();
 void PopUpStartupDialog();
 typedef char GetFunc(void *getClosure);

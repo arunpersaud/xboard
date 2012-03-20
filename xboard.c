@@ -206,6 +206,7 @@ extern char *getenv();
 #include "menus.h"
 #include "board.h"
 #include "dialogs.h"
+#include "usystem.h"
 #include "gettext.h"
 
 
@@ -292,7 +293,6 @@ Boolean TempBackwardActive = False;
 void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
 void ICSInitScript P((void));
-static char *ExpandPathName P((char *path));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void update_ics_width P(());
 int get_term_width P(());
@@ -331,7 +331,6 @@ Font coordFontID, countFontID;
 XFontStruct *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
 char *layoutName;
-char *oldICSInteractionTitle;
 
 FileProc fileProc;
 char *fileOpenMode;
@@ -783,77 +782,6 @@ Warning: No DIR structure found on this system --\n\
 }
 #endif /* HAVE_DIR_STRUCT */
 
-static char *cnames[9] = { "black", "red", "green", "yellow", "blue",
-			     "magenta", "cyan", "white" };
-typedef struct {
-    int attr, bg, fg;
-} TextColors;
-TextColors textColors[(int)NColorClasses];
-
-/* String is: "fg, bg, attr". Which is 0, 1, 2 */
-static int
-parse_color (char *str, int which)
-{
-    char *p, buf[100], *d;
-    int i;
-
-    if (strlen(str) > 99)	/* watch bounds on buf */
-      return -1;
-
-    p = str;
-    d = buf;
-    for (i=0; i<which; ++i) {
-	p = strchr(p, ',');
-	if (!p)
-	  return -1;
-	++p;
-    }
-
-    /* Could be looking at something like:
-       black, , 1
-       .. in which case we want to stop on a comma also */
-    while (*p && *p != ',' && !isalpha(*p) && !isdigit(*p))
-      ++p;
-
-    if (*p == ',') {
-	return -1;		/* Use default for empty field */
-    }
-
-    if (which == 2 || isdigit(*p))
-      return atoi(p);
-
-    while (*p && isalpha(*p))
-      *(d++) = *(p++);
-
-    *d = 0;
-
-    for (i=0; i<8; ++i) {
-	if (!StrCaseCmp(buf, cnames[i]))
-	  return which? (i+40) : (i+30);
-    }
-    if (!StrCaseCmp(buf, "default")) return -1;
-
-    fprintf(stderr, _("%s: unrecognized color %s\n"), programName, buf);
-    return -2;
-}
-
-static int
-parse_cpair (ColorClass cc, char *str)
-{
-    if ((textColors[(int)cc].fg=parse_color(str, 0)) == -2) {
-	fprintf(stderr, _("%s: can't parse foreground color in `%s'\n"),
-		programName, str);
-	return -1;
-    }
-
-    /* bg and attr are optional */
-    textColors[(int)cc].bg = parse_color(str, 1);
-    if ((textColors[(int)cc].attr = parse_color(str, 2)) < 0) {
-	textColors[(int)cc].attr = 0;
-    }
-    return 0;
-}
-
 
 /* Arrange to catch delete-window events */
 Atom wm_delete_window;
@@ -1095,26 +1023,6 @@ PrintCommPortSettings (FILE *f, char *name)
 { // This option does not exist in XBoard
 }
 
-int
-MySearchPath (char *installDir, char *name, char *fullname)
-{ // just append installDir and name. Perhaps ExpandPath should be used here?
-  name = ExpandPathName(name);
-  if(name && name[0] == '/')
-    safeStrCpy(fullname, name, MSG_SIZ );
-  else {
-    sprintf(fullname, "%s%c%s", installDir, '/', name);
-  }
-  return 1;
-}
-
-int
-MyGetFullPathName (char *name, char *fullname)
-{ // should use ExpandPath?
-  name = ExpandPathName(name);
-  safeStrCpy(fullname, name, MSG_SIZ );
-  return 1;
-}
-
 void
 EnsureOnScreen (int *x, int *y, int minX, int minY)
 {
@@ -1328,29 +1236,6 @@ InitDrawingSizes (BoardSize boardSize, int flags)
   oldMono = appData.monoMode;
 }
 #endif
-
-void
-ParseIcsTextColors ()
-{   // [HGM] tken out of main(), so it can be called from ICS-Options dialog
-    if (parse_cpair(ColorShout, appData.colorShout) < 0 ||
-	parse_cpair(ColorSShout, appData.colorSShout) < 0 ||
-	parse_cpair(ColorChannel1, appData.colorChannel1) < 0  ||
-	parse_cpair(ColorChannel, appData.colorChannel) < 0  ||
-	parse_cpair(ColorKibitz, appData.colorKibitz) < 0 ||
-	parse_cpair(ColorTell, appData.colorTell) < 0 ||
-	parse_cpair(ColorChallenge, appData.colorChallenge) < 0  ||
-	parse_cpair(ColorRequest, appData.colorRequest) < 0  ||
-	parse_cpair(ColorSeek, appData.colorSeek) < 0  ||
-	parse_cpair(ColorNormal, appData.colorNormal) < 0)
-      {
-	  if (appData.colorize) {
-	      fprintf(stderr,
-		      _("%s: can't parse color names; disabling colorization\n"),
-		      programName);
-	  }
-	  appData.colorize = FALSE;
-      }
-}
 
 static int
 MakeOneColor (char *name, Pixel *color)
@@ -1691,8 +1576,6 @@ XBoard square size (hint): %d\n\
     }
 
     ParseIcsTextColors();
-    textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
-    textColors[ColorNone].attr = 0;
 
     XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
 
@@ -2063,20 +1946,6 @@ XBoard square size (hint): %d\n\
     return 0;
 }
 
-static Boolean noEcho;
-
-void
-ShutDownFrontEnd ()
-{
-    if (appData.icsActive && oldICSInteractionTitle != NULL) {
-        DisplayIcsInteractionTitle(oldICSInteractionTitle);
-    }
-    if (saveSettingsOnExit) SaveSettings(settingsFileName);
-    unlink(gameCopyFilename);
-    unlink(gamePasteFilename);
-    if(noEcho) EchoOn();
-}
-
 RETSIGTYPE
 TermSizeSigHandler (int sig)
 {
@@ -2111,46 +1980,6 @@ CmailSigHandlerCallBack (InputSourceRef isr, VOIDSTAR closure, char *message, in
 }
 /**** end signal code ****/
 
-
-void
-ICSInitScript ()
-{
-  /* try to open the icsLogon script, either in the location given
-   * or in the users HOME directory
-   */
-
-  FILE *f;
-  char buf[MSG_SIZ];
-  char *homedir;
-
-  f = fopen(appData.icsLogon, "r");
-  if (f == NULL)
-    {
-      homedir = getenv("HOME");
-      if (homedir != NULL)
-	{
-	  safeStrCpy(buf, homedir, sizeof(buf)/sizeof(buf[0]) );
-	  strncat(buf, "/", MSG_SIZ - strlen(buf) - 1);
-	  strncat(buf, appData.icsLogon,  MSG_SIZ - strlen(buf) - 1);
-	  f = fopen(buf, "r");
-	}
-    }
-
-  if (f != NULL)
-    ProcessICSInitScript(f);
-  else
-    printf("Warning: Couldn't open icsLogon file (checked %s and %s).\n", appData.icsLogon, buf);
-
-  return;
-}
-
-void
-ResetFrontEnd ()
-{
-    CommentPopDown();
-    TagsPopDown();
-    return;
-}
 
 #define Abs(n) ((n)<0 ? -(n) : (n))
 
@@ -4503,216 +4332,6 @@ AskQuestion (char *title, char *question, char *replyPrefix, ProcRef pr)
 }
 
 
-void
-PlaySound (char *name)
-{
-  if (*name == NULLCHAR) {
-    return;
-  } else if (strcmp(name, "$") == 0) {
-    putc(BELLCHAR, stderr);
-  } else {
-    char buf[2048];
-    char *prefix = "", *sep = "";
-    if(appData.soundProgram[0] == NULLCHAR) return;
-    if(!strchr(name, '/')) { prefix = appData.soundDirectory; sep = "/"; }
-    snprintf(buf, sizeof(buf), "%s '%s%s%s' &", appData.soundProgram, prefix, sep, name);
-    system(buf);
-  }
-}
-
-void
-RingBell ()
-{
-  PlaySound(appData.soundMove);
-}
-
-void
-PlayIcsWinSound ()
-{
-  PlaySound(appData.soundIcsWin);
-}
-
-void
-PlayIcsLossSound ()
-{
-  PlaySound(appData.soundIcsLoss);
-}
-
-void
-PlayIcsDrawSound ()
-{
-  PlaySound(appData.soundIcsDraw);
-}
-
-void
-PlayIcsUnfinishedSound ()
-{
-  PlaySound(appData.soundIcsUnfinished);
-}
-
-void
-PlayAlarmSound ()
-{
-  PlaySound(appData.soundIcsAlarm);
-}
-
-void
-PlayTellSound ()
-{
-  PlaySound(appData.soundTell);
-}
-
-void
-EchoOn ()
-{
-    system("stty echo");
-    noEcho = False;
-}
-
-void
-EchoOff ()
-{
-    system("stty -echo");
-    noEcho = True;
-}
-
-void
-RunCommand (char *buf)
-{
-    system(buf);
-}
-
-void
-Colorize (ColorClass cc, int continuation)
-{
-    char buf[MSG_SIZ];
-    int count, outCount, error;
-
-    if (textColors[(int)cc].bg > 0) {
-	if (textColors[(int)cc].fg > 0) {
-	  snprintf(buf, MSG_SIZ, "\033[0;%d;%d;%dm", textColors[(int)cc].attr,
-		   textColors[(int)cc].fg, textColors[(int)cc].bg);
-	} else {
-	  snprintf(buf, MSG_SIZ, "\033[0;%d;%dm", textColors[(int)cc].attr,
-		   textColors[(int)cc].bg);
-	}
-    } else {
-	if (textColors[(int)cc].fg > 0) {
-	  snprintf(buf, MSG_SIZ, "\033[0;%d;%dm", textColors[(int)cc].attr,
-		    textColors[(int)cc].fg);
-	} else {
-	  snprintf(buf, MSG_SIZ, "\033[0;%dm", textColors[(int)cc].attr);
-	}
-    }
-    count = strlen(buf);
-    outCount = OutputToProcess(NoProc, buf, count, &error);
-    if (outCount < count) {
-	DisplayFatalError(_("Error writing to display"), error, 1);
-    }
-
-    if (continuation) return;
-    switch (cc) {
-    case ColorShout:
-      PlaySound(appData.soundShout);
-      break;
-    case ColorSShout:
-      PlaySound(appData.soundSShout);
-      break;
-    case ColorChannel1:
-      PlaySound(appData.soundChannel1);
-      break;
-    case ColorChannel:
-      PlaySound(appData.soundChannel);
-      break;
-    case ColorKibitz:
-      PlaySound(appData.soundKibitz);
-      break;
-    case ColorTell:
-      PlaySound(appData.soundTell);
-      break;
-    case ColorChallenge:
-      PlaySound(appData.soundChallenge);
-      break;
-    case ColorRequest:
-      PlaySound(appData.soundRequest);
-      break;
-    case ColorSeek:
-      PlaySound(appData.soundSeek);
-      break;
-    case ColorNormal:
-    case ColorNone:
-    default:
-      break;
-    }
-}
-
-char *
-UserName ()
-{
-    return getpwuid(getuid())->pw_name;
-}
-
-static char *
-ExpandPathName (char *path)
-{
-    static char static_buf[4*MSG_SIZ];
-    char *d, *s, buf[4*MSG_SIZ];
-    struct passwd *pwd;
-
-    s = path;
-    d = static_buf;
-
-    while (*s && isspace(*s))
-      ++s;
-
-    if (!*s) {
-	*d = 0;
-	return static_buf;
-    }
-
-    if (*s == '~') {
-	if (*(s+1) == '/') {
-	  safeStrCpy(d, getpwuid(getuid())->pw_dir, 4*MSG_SIZ );
-	  strcat(d, s+1);
-	}
-	else {
-	  safeStrCpy(buf, s+1, sizeof(buf)/sizeof(buf[0]) );
-	  { char *p; if(p = strchr(buf, '/')) *p = 0; }
-	  pwd = getpwnam(buf);
-	  if (!pwd)
-	    {
-	      fprintf(stderr, _("ERROR: Unknown user %s (in path %s)\n"),
-		      buf, path);
-	      return NULL;
-	    }
-	  safeStrCpy(d, pwd->pw_dir, 4*MSG_SIZ );
-	  strcat(d, strchr(s+1, '/'));
-	}
-    }
-    else
-      safeStrCpy(d, s, 4*MSG_SIZ );
-
-    return static_buf;
-}
-
-char *
-HostName ()
-{
-    static char host_name[MSG_SIZ];
-
-#if HAVE_GETHOSTNAME
-    gethostname(host_name, MSG_SIZ);
-    return host_name;
-#else  /* not HAVE_GETHOSTNAME */
-# if HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
-    sysinfo(SI_HOSTNAME, host_name, MSG_SIZ);
-    return host_name;
-# else /* not (HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H) */
-    return "localhost";
-# endif/* not (HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H) */
-#endif /* not HAVE_GETHOSTNAME */
-}
-
 XtIntervalId delayedEventTimerXID = 0;
 DelayedEventCallback delayedEventCallback = 0;
 
@@ -4909,258 +4528,6 @@ DisplayBlackClock (long timeRemaining, int highlight)
     }
 }
 
-#define CPNone 0
-#define CPReal 1
-#define CPComm 2
-#define CPSock 3
-#define CPLoop 4
-typedef int CPKind;
-
-typedef struct {
-    CPKind kind;
-    int pid;
-    int fdTo, fdFrom;
-} ChildProc;
-
-
-int
-StartChildProcess (char *cmdLine, char *dir, ProcRef *pr)
-{
-    char *argv[64], *p;
-    int i, pid;
-    int to_prog[2], from_prog[2];
-    ChildProc *cp;
-    char buf[MSG_SIZ];
-
-    if (appData.debugMode) {
-	fprintf(debugFP, "StartChildProcess (dir=\"%s\") %s\n",dir, cmdLine);
-    }
-
-    /* We do NOT feed the cmdLine to the shell; we just
-       parse it into blank-separated arguments in the
-       most simple-minded way possible.
-       */
-    i = 0;
-    safeStrCpy(buf, cmdLine, sizeof(buf)/sizeof(buf[0]) );
-    p = buf;
-    for (;;) {
-	while(*p == ' ') p++;
-	argv[i++] = p;
-	if(*p == '"' || *p == '\'')
-	     p = strchr(++argv[i-1], *p);
-	else p = strchr(p, ' ');
-	if (p == NULL) break;
-	*p++ = NULLCHAR;
-    }
-    argv[i] = NULL;
-
-    SetUpChildIO(to_prog, from_prog);
-
-    if ((pid = fork()) == 0) {
-	/* Child process */
-	// [HGM] PSWBTM: made order resistant against case where fd of created pipe was 0 or 1
-	close(to_prog[1]);     // first close the unused pipe ends
-	close(from_prog[0]);
-	dup2(to_prog[0], 0);   // to_prog was created first, nd is the only one to use 0 or 1
-	dup2(from_prog[1], 1);
-	if(to_prog[0] >= 2) close(to_prog[0]); // if 0 or 1, the dup2 already cosed the original
-	close(from_prog[1]);                   // and closing again loses one of the pipes!
-	if(fileno(stderr) >= 2) // better safe than sorry...
-		dup2(1, fileno(stderr)); /* force stderr to the pipe */
-
-	if (dir[0] != NULLCHAR && chdir(dir) != 0) {
-	    perror(dir);
-	    exit(1);
-	}
-
-	nice(appData.niceEngines); // [HGM] nice: adjust priority of engine proc
-
-        execvp(argv[0], argv);
-
-	/* If we get here, exec failed */
-	perror(argv[0]);
-	exit(1);
-    }
-
-    /* Parent process */
-    close(to_prog[0]);
-    close(from_prog[1]);
-
-    cp = (ChildProc *) calloc(1, sizeof(ChildProc));
-    cp->kind = CPReal;
-    cp->pid = pid;
-    cp->fdFrom = from_prog[0];
-    cp->fdTo = to_prog[1];
-    *pr = (ProcRef) cp;
-    return 0;
-}
-
-// [HGM] kill: implement the 'hard killing' of AS's Winboard_x
-static RETSIGTYPE
-AlarmCallBack (int n)
-{
-    return;
-}
-
-void
-DestroyChildProcess (ProcRef pr, int signalType)
-{
-    ChildProc *cp = (ChildProc *) pr;
-
-    if (cp->kind != CPReal) return;
-    cp->kind = CPNone;
-    if (signalType == 10) { // [HGM] kill: if it does not terminate in 3 sec, kill
-	signal(SIGALRM, AlarmCallBack);
-	alarm(3);
-	if(wait((int *) 0) == -1) { // process does not terminate on its own accord
-	    kill(cp->pid, SIGKILL); // kill it forcefully
-	    wait((int *) 0);        // and wait again
-	}
-    } else {
-	if (signalType) {
-	    kill(cp->pid, signalType == 9 ? SIGKILL : SIGTERM); // [HGM] kill: use hard kill if so requested
-	}
-	/* Process is exiting either because of the kill or because of
-	   a quit command sent by the backend; either way, wait for it to die.
-	*/
-	wait((int *) 0);
-    }
-    close(cp->fdFrom);
-    close(cp->fdTo);
-}
-
-void
-InterruptChildProcess (ProcRef pr)
-{
-    ChildProc *cp = (ChildProc *) pr;
-
-    if (cp->kind != CPReal) return;
-    (void) kill(cp->pid, SIGINT); /* stop it thinking */
-}
-
-int
-OpenTelnet (char *host, char *port, ProcRef *pr)
-{
-    char cmdLine[MSG_SIZ];
-
-    if (port[0] == NULLCHAR) {
-      snprintf(cmdLine, sizeof(cmdLine), "%s %s", appData.telnetProgram, host);
-    } else {
-      snprintf(cmdLine, sizeof(cmdLine), "%s %s %s", appData.telnetProgram, host, port);
-    }
-    return StartChildProcess(cmdLine, "", pr);
-}
-
-int
-OpenTCP (char *host, char *port, ProcRef *pr)
-{
-#if OMIT_SOCKETS
-    DisplayFatalError(_("Socket support is not configured in"), 0, 2);
-#else  /* !OMIT_SOCKETS */
-    struct addrinfo hints;
-    struct addrinfo *ais, *ai;
-    int error;
-    int s=0;
-    ChildProc *cp;
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-
-    error = getaddrinfo(host, port, &hints, &ais);
-    if (error != 0) {
-      /* a getaddrinfo error is not an errno, so can't return it */
-      fprintf(debugFP, "getaddrinfo(%s, %s): %s\n",
-	      host, port, gai_strerror(error));
-      return ENOENT;
-    }
-     
-    for (ai = ais; ai != NULL; ai = ai->ai_next) {
-      if ((s = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) < 0) {
-	error = errno;
-	continue;
-      }
-      if (connect(s, ai->ai_addr, ai->ai_addrlen) < 0) {
-	error = errno;
-	continue;
-      }
-      error = 0;
-      break;
-    }
-    freeaddrinfo(ais);
-
-    if (error != 0) {
-      return error;
-    }
-
-    cp = (ChildProc *) calloc(1, sizeof(ChildProc));
-    cp->kind = CPSock;
-    cp->pid = 0;
-    cp->fdFrom = s;
-    cp->fdTo = s;
-    *pr = (ProcRef) cp;
-#endif /* !OMIT_SOCKETS */
-
-    return 0;
-}
-
-int
-OpenCommPort (char *name, ProcRef *pr)
-{
-    int fd;
-    ChildProc *cp;
-
-    fd = open(name, 2, 0);
-    if (fd < 0) return errno;
-
-    cp = (ChildProc *) calloc(1, sizeof(ChildProc));
-    cp->kind = CPComm;
-    cp->pid = 0;
-    cp->fdFrom = fd;
-    cp->fdTo = fd;
-    *pr = (ProcRef) cp;
-
-    return 0;
-}
-
-int
-OpenLoopback (ProcRef *pr)
-{
-    ChildProc *cp;
-    int to[2], from[2];
-
-    SetUpChildIO(to, from);
-
-    cp = (ChildProc *) calloc(1, sizeof(ChildProc));
-    cp->kind = CPLoop;
-    cp->pid = 0;
-    cp->fdFrom = to[0];		/* note not from[0]; we are doing a loopback */
-    cp->fdTo = to[1];
-    *pr = (ProcRef) cp;
-
-    return 0;
-}
-
-int
-OpenRcmd (char *host, char *user, char *cmd, ProcRef *pr)
-{
-    DisplayFatalError(_("internal rcmd not implemented for Unix"), 0, 1);
-    return -1;
-}
-
-#define INPUT_SOURCE_BUF_SIZE 8192
-
-typedef struct {
-    CPKind kind;
-    int fd;
-    int lineByLine;
-    char *unused;
-    InputCallback func;
-    XtInputId xid;
-    char buf[INPUT_SOURCE_BUF_SIZE];
-    VOIDSTAR closure;
-} InputSource;
-
 void
 DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 {
@@ -5236,72 +4603,6 @@ RemoveInputSource (InputSourceRef isr)
     if (is->xid == 0) return;
     XtRemoveInput(is->xid);
     is->xid = 0;
-}
-
-int
-OutputToProcess (ProcRef pr, char *message, int count, int *outError)
-{
-    static int line = 0;
-    ChildProc *cp = (ChildProc *) pr;
-    int outCount;
-
-    if (pr == NoProc)
-    {
-        if (appData.noJoin || !appData.useInternalWrap)
-            outCount = fwrite(message, 1, count, stdout);
-        else
-        {
-            int width = get_term_width();
-            int len = wrap(NULL, message, count, width, &line);
-            char *msg = malloc(len);
-            int dbgchk;
-
-            if (!msg)
-                outCount = fwrite(message, 1, count, stdout);
-            else
-            {
-                dbgchk = wrap(msg, message, count, width, &line);
-                if (dbgchk != len && appData.debugMode)
-                    fprintf(debugFP, "wrap(): dbgchk(%d) != len(%d)\n", dbgchk, len);
-                outCount = fwrite(msg, 1, dbgchk, stdout);
-                free(msg);
-            }
-        }
-    }
-    else
-      outCount = write(cp->fdTo, message, count);
-
-    if (outCount == -1)
-      *outError = errno;
-    else
-      *outError = 0;
-
-    return outCount;
-}
-
-/* Output message to process, with "ms" milliseconds of delay
-   between each character. This is needed when sending the logon
-   script to ICC, which for some reason doesn't like the
-   instantaneous send. */
-int
-OutputToProcessDelayed (ProcRef pr, char *message, int count, int *outError, long msdelay)
-{
-    ChildProc *cp = (ChildProc *) pr;
-    int outCount = 0;
-    int r;
-
-    while (count--) {
-	r = write(cp->fdTo, message++, 1);
-	if (r == -1) {
-	    *outError = errno;
-	    return outCount;
-	}
-	++outCount;
-	if (msdelay >= 0)
-	  TimeDelay(msdelay);
-    }
-
-    return outCount;
 }
 
 /****	Animation code by Hugh Fisher, DCS, ANU. ****/
@@ -5582,44 +4883,6 @@ SetDragPiece (AnimNr anr, ChessSquare piece)
   /* The piece will be drawn using its own bitmap as a matte	*/
   SelectGCMask(piece, &animGCs[anr+2], &animGCs[anr+4], &mask);
   XSetClipMask(xDisplay, animGCs[anr+2], mask);
-}
-
-#include <sys/ioctl.h>
-int
-get_term_width ()
-{
-    int fd, default_width;
-
-    fd = STDIN_FILENO;
-    default_width = 79; // this is FICS default anyway...
-
-#if !defined(TIOCGWINSZ) && defined(TIOCGSIZE)
-    struct ttysize win;
-    if (!ioctl(fd, TIOCGSIZE, &win))
-        default_width = win.ts_cols;
-#elif defined(TIOCGWINSZ)
-    struct winsize win;
-    if (!ioctl(fd, TIOCGWINSZ, &win))
-        default_width = win.ws_col;
-#endif
-    return default_width;
-}
-
-void
-update_ics_width ()
-{
-  static int old_width = 0;
-  int new_width = get_term_width();
-
-  if (old_width != new_width)
-    ics_printf("set width %d\n", new_width);
-  old_width = new_width;
-}
-
-void
-NotifyFrontendLogin ()
-{
-    update_ics_width();
 }
 
 /* [AS] Arrow highlighting support */
