@@ -98,7 +98,8 @@ static char filterString[MSG_SIZ];
 static int listLength, wins, losses, draws, page;
 
 char gameListTranslations[] =
-  "<Btn1Up>(2): LoadSelectedProc(0) \n \
+  "<Btn1Down>: LoadSelectedProc(100) Set() \n \
+   <Btn1Up>(2): LoadSelectedProc(0) \n \
    <Key>Home: LoadSelectedProc(-2) \n \
    <Key>End: LoadSelectedProc(2) \n \
    Ctrl<Key>Up: LoadSelectedProc(-3) \n \
@@ -177,7 +178,7 @@ GameListCreate (char *name, XtCallbackProc callback, XtPointer client_data)
     listwidg =
       XtCreateManagedWidget("list", listWidgetClass, viewport, args, j);
     XawListHighlight(listwidg, 0);
-    XtAugmentTranslations(listwidg,
+    XtOverrideTranslations(listwidg,
 			  XtParseTranslationTable(gameListTranslations));
 
     j = 0;
@@ -548,9 +549,10 @@ LoadSelectedProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     Widget listwidg;
     XawListReturnStruct *rs;
     int index, direction = atoi(prms[0]);
-
+printf("action(%d)\n",direction);
     if (glc == NULL || listLength == 0) return;
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
+    if(direction == 100) { XtSetKeyboardFocus(glc->shell, listwidg); return; }
     rs = XawListShowCurrent(listwidg);
     index = rs->list_index;
     if (index < 0) return;
