@@ -1472,6 +1472,94 @@ OutputChatMessage (int partner, char *mess)
     return; // dummy
 }
 
+//--------------------------------- Game-List options dialog ------------------------------------------
+
+char *strings[LPUSERGLT_SIZE];
+int stringPtr;
+
+void
+GLT_ClearList ()
+{
+    strings[0] = NULL;
+    stringPtr = 0;
+}
+
+void
+GLT_AddToList (char *name)
+{
+    strings[stringPtr++] = name;
+    strings[stringPtr] = NULL;
+}
+
+Boolean
+GLT_GetFromList (int index, char *name)
+{
+  safeStrCpy(name, strings[index], MSG_SIZ);
+  return TRUE;
+}
+
+void
+GLT_DeSelectList ()
+{
+}
+
+static void GLT_Button P((int n));
+static int GLT_OK P((int n));
+
+static Option listOptions[] = {
+{ 0, LR|TB,  200, NULL, (void*) strings, "", NULL, ListBox, "" },
+{ 0,    0,     0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("factory") },
+{ 0, SAME_ROW, 0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("up") },
+{ 0, SAME_ROW, 0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("down") },
+{ 0, SAME_ROW, 0, NULL, (void*) &GLT_OK, "", NULL, EndMark , "" }
+};
+
+static int
+GLT_OK (int n)
+{
+    GLT_ParseList();
+    appData.gameListTags = strdup(lpUserGLT);
+    return 1;
+}
+
+static void
+GLT_Button (int n)
+{
+    int index = SelectedListBoxItem (&listOptions[0]);
+    char *p;
+    if (index < 0) {
+	DisplayError(_("No tag selected"), 0);
+	return;
+    }
+    p = strings[index];
+    if (n == 3) {
+        if(index >= strlen(GLT_ALL_TAGS)) return;
+	strings[index] = strings[index+1];
+	strings[++index] = p;
+    } else
+    if (n == 2) {
+        if(index == 0) return;
+	strings[index] = strings[index-1];
+	strings[--index] = p;
+    } else
+    if (n == 1) {
+      safeStrCpy(lpUserGLT, GLT_DEFAULT_TAGS, LPUSERGLT_SIZE);
+      GLT_TagsToList(lpUserGLT);
+      index = 0;
+      LoadListBox(&listOptions[0]); // Note: the others don't need this, as the highligh
+    }
+    HighlightListBoxItem(&listOptions[0], index);
+}
+
+void
+GameListOptionsPopUp ()
+{
+    safeStrCpy(lpUserGLT, appData.gameListTags, LPUSERGLT_SIZE);
+    GLT_TagsToList(lpUserGLT);
+
+    GenericPopUp(listOptions, _("Game-list options"), TransientDlg);
+}
+
 //----------------------------- Error popup in various uses -----------------------------
 
 /*

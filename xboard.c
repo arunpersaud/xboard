@@ -523,7 +523,6 @@ XtActionsRec boardActions[] = {
     { "TempForwardProc", TempForwardProc },
     { "CommentClick", (XtActionProc) CommentClick },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
-    { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
