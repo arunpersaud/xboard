@@ -152,7 +152,7 @@ FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *fail
 
 extern Widget shells[];
 extern int dialogError;
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell, historyShell;
+extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, historyShell;
 extern Display *xDisplay;
 extern Window xBoardWindow;
 extern int squareSize;

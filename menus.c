@@ -89,7 +89,6 @@ extern char *getenv();
 #include "backend.h"
 #include "backendz.h"
 #include "moves.h"
-#include "xgamelist.h"
 #include "xhistory.h"
 #include "xedittags.h"
 #include "menus.h"
@@ -685,7 +684,7 @@ MenuItem viewMenu[] = {
     {N_("ICS Input Box"),    "ICS Input Box", IcsInputBoxProc},
     {"----", NULL, NothingProc},
     {N_("Board..."),          "Board Options", BoardOptionsProc},
-    {N_("Game List Tags..."), "Game List", GameListOptionsPopUp},
+    {N_("Game List Tags..."), "Game List", GameListOptionsProc},
     {NULL, NULL, NULL}
 };
 
@@ -752,7 +751,7 @@ MenuItem optionsMenu[] = {
     {N_("Load Game ..."),    "Load Game", LoadOptionsProc},
     {N_("Save Game ..."),    "Save Game", SaveOptionsProc},
 //    {N_(" ..."),    "", OptionsProc},
-    {N_("Game List ..."),    "Game List", GameListOptionsPopUp},
+    {N_("Game List ..."),    "Game List", GameListOptionsProc},
     {N_("Sounds ..."),    "Sounds", SoundOptionsProc},
     {"----", NULL, NothingProc},
 #ifndef OPTIONSDIALOG

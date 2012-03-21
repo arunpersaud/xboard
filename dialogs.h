@@ -82,6 +82,7 @@
 typedef enum {  // identifier of dialogs done by GenericPopup
 TransientDlg=0, // transient: grabs mouse events and is destroyed at pop-down (so other dialog can use this ID next time)
 CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, NoDlg, BrowserDlg, HistoryDlg, // persistent: no grab and reused
+GameListDlg,
 PromoDlg,       // this and beyond are destroyed at pop-down
 ErrorDlg,
 AskDlg,         // this and beyond do grab mouse events (and are destroyed)
@@ -143,5 +144,12 @@ int  SetCurrentComboSelection P((Option *opt));
 void BoxAutoPopUp P((char *buf));
 void IcsKey P((int n));
 void ICSInputBoxPopUp P((void));
+void LoadOptionsPopUp P((DialogClass parent));
+void GameListOptionsPopUp P((DialogClass parent));
+
+// in ngamelist.c
+int GameListClicks P((int direction));
+void SetFilter P((void));
+int SaveGameListAsText P((FILE *f));
 
 

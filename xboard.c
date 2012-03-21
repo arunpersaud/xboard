@@ -312,7 +312,7 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   commentShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell;
-Widget historyShell, evalGraphShell, gameListShell;
+Widget historyShell, evalGraphShell;
 XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 #if ENABLE_NLS
@@ -522,7 +522,6 @@ XtActionsRec boardActions[] = {
     { "TempBackwardProc", TempBackwardProc },
     { "TempForwardProc", TempForwardProc },
     { "CommentClick", (XtActionProc) CommentClick },
-    { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
@@ -807,9 +806,6 @@ BoardToTop ()
 #define OPTCHAR "-"
 #define SEPCHAR " "
 
-// these two must some day move to frontend.h, when they are implemented
-Boolean GameListIsUp();
-
 // The option definition and parsing code common to XBoard and WinBoard is collected in this file
 #include "args.h"
 
@@ -1004,7 +1000,7 @@ GetWindowCoords ()
   if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput);
   if(MoveHistoryIsUp()) GetActualPlacement(shells[HistoryDlg], &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
-  if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
+  if(shellUp[GameListDlg]) GetActualPlacement(shells[GameListDlg], &wpGameList);
   if(shellUp[CommentDlg]) GetActualPlacement(shells[CommentDlg], &wpComment);
   if(shellUp[TagsDlg]) GetActualPlacement(shells[TagsDlg], &wpTags);
 }
@@ -3393,7 +3389,7 @@ DragProc ()
 	if(EngineOutputIsUp()) CoDrag(engineOutputShell, &wpEngineOutput);
 	if(MoveHistoryIsUp()) CoDrag(shells[HistoryDlg], &wpMoveHistory);
 	if(EvalGraphIsUp()) CoDrag(evalGraphShell, &wpEvalGraph);
-	if(GameListIsUp()) CoDrag(gameListShell, &wpGameList);
+	if(shellUp[GameListDlg]) CoDrag(shells[GameListDlg], &wpGameList);
 	wpMain = wpNew;
 	DrawPosition(True, NULL);
 	delayedDragID = 0; // now drag executed, make sure next DelayedDrag will not cancel timer event (which could now be used by other)

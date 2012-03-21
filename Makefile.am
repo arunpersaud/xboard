@@ -12,7 +12,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 childio.c childio.h \
 	 	 common.h \
 		 frontend.h \
-	  	 gamelist.c \
+	  	 gamelist.c ngamelist.c \
 	 	 gettext.h  \
 		 lists.c lists.h \
 		 moves.c moves.h \

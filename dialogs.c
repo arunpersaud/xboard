@@ -611,10 +611,16 @@ static Option loadOptions[] = {
 };
 
 void
-LoadOptionsProc ()
+LoadOptionsPopUp (DialogClass parent)
 {
    ASSIGN(searchMode, modeValues[appData.searchMode-1]);
-   GenericPopUp(loadOptions, _("Load Game Options"), TransientDlg, BoardWindow, MODAL, 0);
+   GenericPopUp(loadOptions, _("Load Game Options"), TransientDlg, parent, MODAL, 0);
+}
+
+void
+LoadOptionsProc ()
+{   // called from menu
+    LoadOptionsPopUp(BoardWindow);
 }
 
 //------------------------------------------- Save Game Options --------------------------------------------
@@ -1546,18 +1552,24 @@ GLT_Button (int n)
       safeStrCpy(lpUserGLT, GLT_DEFAULT_TAGS, LPUSERGLT_SIZE);
       GLT_TagsToList(lpUserGLT);
       index = 0;
-      LoadListBox(&listOptions[0]); // Note: the others don't need this, as the highligh
+      LoadListBox(&listOptions[0], "?"); // Note: the others don't need this, as the highlight switching redraws the change items
     }
     HighlightListBoxItem(&listOptions[0], index);
 }
 
 void
-GameListOptionsPopUp ()
+GameListOptionsPopUp (DialogClass parent)
 {
     safeStrCpy(lpUserGLT, appData.gameListTags, LPUSERGLT_SIZE);
     GLT_TagsToList(lpUserGLT);
 
-    GenericPopUp(listOptions, _("Game-list options"), TransientDlg);
+    GenericPopUp(listOptions, _("Game-list options"), TransientDlg, parent, MODAL, 0);
+}
+
+void
+GameListOptionsProc ()
+{
+    GameListOptionsPopUp(BoardWindow);
 }
 
 //----------------------------- Error popup in various uses -----------------------------

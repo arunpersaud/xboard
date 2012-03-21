@@ -154,7 +154,7 @@ void IcsTextProc P((void));
 void LoadEngineProc P((void));
 void FirstSettingsProc P((void));
 void SecondSettingsProc P((void));
-void GameListOptionsPopUp P((void));
+void GameListOptionsProc P((void));
 void IcsOptionsProc P((void));
 void SoundOptionsProc P((void));
 void BoardOptionsProc P((void));
@@ -162,6 +162,8 @@ void LoadOptionsProc P((void));
 void SaveOptionsProc P((void));
 void EditBookProc P((void));
 void InitMenuMarkers P((void));
+void ShowGameListProc P((void)); // in ngamelist.c
+
 
 // must be moved to xengineoutput.h
 
