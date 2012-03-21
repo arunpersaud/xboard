@@ -236,7 +236,7 @@ MatchOK (int n)
     if(!CreateTourney(tfName) || matchMode) return matchMode || !appData.participants[0];
     PopDown(TransientDlg); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
     MatchEvent(2); // start tourney
-    return 1;
+    return FALSE;  // no double PopDown!
 }
 
 static Option matchOptions[] = {
@@ -1146,7 +1146,7 @@ InstallOK (int n)
 {
     PopDown(TransientDlg); // early popdown, to allow FreezeUI to instate grab
     if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
-    return 1;
+    return FALSE; // no double PopDown!
 }
 
 static Option installOptions[] = {
