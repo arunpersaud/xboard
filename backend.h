@@ -113,6 +113,7 @@ extern Board boards[];
 extern char marker[BOARD_RANKS][BOARD_FILES];
 extern char lastMsg[MSG_SIZ];
 extern Boolean bookUp;
+extern int tinyLayout, smallLayout;
 
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */

@@ -70,6 +70,8 @@ extern char *getenv();
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
+#include "dialogs.h"
+#include "menus.h"
 #include "xboard.h"
 #include "evalgraph.h"
 #include "gettext.h"
@@ -98,23 +100,15 @@ static char *title = N_("Evaluation graph");
 
 Position evalGraphX = -1, evalGraphY = -1;
 Dimension evalGraphW, evalGraphH;
-Widget evalGraphShell;
-static int evalGraphDialogUp;
 
 /* Module variables */
 
 char *crWhite = "#FFFFB0";
 char *crBlack = "#AD5D3D";
-static Display *yDisplay;
 static Window eGraphWindow;
 
 static GC pens[6]; // [HGM] put all pens in one array
 static GC hbrHist[3];
-
-#if 0
-static HDC hdcPB = NULL;
-static HBITMAP hbmPB = NULL;
-#endif
 
 // [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end)
 void
@@ -123,7 +117,7 @@ DrawSegment (int x, int y, int *lastX, int *lastY, int penType)
   static int curX, curY;
 
   if(penType != PEN_NONE)
-    XDrawLine(yDisplay, eGraphWindow, pens[penType], curX, curY, x, y);
+    XDrawLine(xDisplay, eGraphWindow, pens[penType], curX, curY, x, y);
   if(lastX != NULL) { *lastX = curX; *lastY = curY; }
   curX = x; curY = y;
 }
@@ -132,9 +126,9 @@ DrawSegment (int x, int y, int *lastX, int *lastY, int penType)
 void
 DrawRectangle (int left, int top, int right, int bottom, int side, int style)
 {
-    XFillRectangle(yDisplay, eGraphWindow, hbrHist[side], left, top, right-left, bottom-top);
+    XFillRectangle(xDisplay, eGraphWindow, hbrHist[side], left, top, right-left, bottom-top);
     if(style != FILLED)
-      XDrawRectangle(yDisplay, eGraphWindow, pens[PEN_BLACK], left, top, right-left-1, bottom-top-1);
+      XDrawRectangle(xDisplay, eGraphWindow, pens[PEN_BLACK], left, top, right-left-1, bottom-top-1);
 }
 
 // front-end wrapper for putting text in graph
@@ -142,7 +136,7 @@ void
 DrawEvalText (char *buf, int cbBuf, int y)
 {
     // the magic constants 7 and 5 should really be derived from the font size somehow
-    XDrawString(yDisplay, eGraphWindow, coordGC, MarginX - 2 - 7*cbBuf, y+5, buf, cbBuf);
+    XDrawString(xDisplay, eGraphWindow, coordGC, MarginX - 2 - 7*cbBuf, y+5, buf, cbBuf);
 }
 
 // front-end
@@ -153,7 +147,7 @@ MakeColor (char *color)
 
     vFrom.addr = (caddr_t) color;
     vFrom.size = strlen(color);
-    XtConvert(evalGraphShell, XtRString, &vFrom, XtRPixel, &vTo);
+    XtConvert(shells[EvalGraphDlg], XtRString, &vFrom, XtRPixel, &vTo);
     // test for NULL?
 
     return *(Pixel *) vTo.addr;
@@ -174,46 +168,16 @@ CreateGC (int width, char *fg, char *bg, int style)
     gc_values.foreground = MakeColor(fg);
     gc_values.background = MakeColor(bg);
 
-    return XtGetGC(evalGraphShell, value_mask, &gc_values);
+    return XtGetGC(shells[EvalGraphDlg], value_mask, &gc_values);
 }
 
-// front-end. Create pens, device context and buffer bitmap for global use, copy result to display
-// The back-end part n the middle has been taken out and moed to PainEvalGraph()
-static void
-DisplayEvalGraph ()
-{
-    int j;
-    int width;
-    int height;
-    Dimension w, h;
-    Arg args[6];
-
-    /* Get client area */
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &w); j++;
-    XtSetArg(args[j], XtNheight, &h); j++;
-    XtGetValues(evalGraphShell, args, j);
-    width = w;
-    height = h;
-
-    /* Create or recreate paint box if needed */
-    if( width != nWidthPB || height != nHeightPB ) {
-
-        nWidthPB = width;
-        nHeightPB = height;
-    }
-
-    // back-end painting; calls back front-end primitives for lines, rectangles and text
-    PaintEvalGraph();
-    XtSetArg(args[0], XtNtitle, MakeEvalTitle(_(title))); j++;
-    XtSetValues(evalGraphShell, args, 1);
-
-    XSync(yDisplay, False);
-}
+static int initDone = FALSE;
 
 static void
-InitializeEvalGraph ()
+InitializeEvalGraph (Option *opt)
 {
+  eGraphWindow = XtWindow(opt->handle);
+
   pens[PEN_BLACK]      = CreateGC(1, "black", "black", LineSolid);
   pens[PEN_DOTTED]     = CreateGC(1, "#A0A0A0", "#A0A0A0", LineOnOffDash);
   pens[PEN_BLUEDOTTED] = CreateGC(1, "#0000FF", "#0000FF", LineOnOffDash);
@@ -222,215 +186,98 @@ InitializeEvalGraph ()
   hbrHist[0] = CreateGC(3, crWhite, crWhite, LineSolid);
   hbrHist[1] = CreateGC(3, crBlack, crBlack, LineSolid);
   hbrHist[2] = CreateGC(3, "#E0E0F0", "#E0E0F0", LineSolid);; // background (a bit blueish, for contrst with yellow curve)
+
+  initDone = TRUE;
 }
 
-void
-EvalClick (Widget widget, caddr_t unused, XEvent *event)
+// The following stuff is really back-end (but too little to bother with a separate file)
+
+static void
+DisplayEvalGraph ()
+{   // back-end painting; calls back front-end primitives for lines, rectangles and text
+    char *t = MakeEvalTitle(_(title));
+    if(t != title && nWidthPB < 340) t = MakeEvalTitle(nWidthPB < 240 ? "" : _("Eval"));
+    PaintEvalGraph();
+    SetDialogTitle(EvalGraphDlg, t);
+}
+
+static void
+EvalClick (int x, int y)
 {
-        if( widget && event->type == ButtonPress ) {
-            int index = GetMoveIndexFromPoint( event->xbutton.x, event->xbutton.y );
+    int index = GetMoveIndexFromPoint( x, y );
 
-            if( index >= 0 && index < currLast ) {
-                ToNrEvent( index + 1 );
-            }
-        }
+    if( index >= 0 && index < currLast ) ToNrEvent( index + 1 );
 }
 
-// This (cloned from EventProc in xboard.c) is needed as event handler, to prevent
-// the graph being wiped out after covering / uncovering by other windows.
-void
-EvalEventProc (Widget widget, caddr_t unused, XEvent *event)
+static Option *
+EvalCallback (int button, int x, int y)
 {
-    if (!XtIsRealized(widget))
-      return;
+    if(!initDone) return NULL;
 
-    switch (event->type) {
-      case Expose:
-	if (event->xexpose.count > 0) return;  /* no clipping is done */
-	DisplayEvalGraph();
-	break;
-      default:
-	return;
+    switch(button) {
+	case 10: // expose event
+	    /* Create or recreate paint box if needed */
+	    nWidthPB = x;
+	    nHeightPB = y;
+	    DisplayEvalGraph();
+	    break;
+	case 1: EvalClick(x, y); // left button
+	default: break; // other buttons ignored
     }
+    return NULL; // no context menu!
 }
-// The following routines are mutated clones of the commentPopUp routines
 
-Widget
-EvalGraphCreate (char *name)
-{
-    Arg args[16];
-    Widget shell, layout, form;
-    Dimension bw_width, bw_height;
-    int j;
-
-    // get board width
-    j = 0;
-    XtSetArg(args[j], XtNwidth,  &bw_width);  j++;
-    XtSetArg(args[j], XtNheight, &bw_height);  j++;
-    XtGetValues(boardWidget, args, j);
-
-    // define form within layout within shell.
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    shell =
-#if TOPLEVEL
-     XtCreatePopupShell(name, topLevelShellWidgetClass,
-#else
-      XtCreatePopupShell(name, transientShellWidgetClass,
-#endif
-			 shellWidget, args, j);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-			    layoutArgs, XtNumber(layoutArgs));
-    // divide window vertically into two equal parts, by creating two forms
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-    // make sure width is known in advance, for better placement of child widgets
-    j = 0;
-    XtSetArg(args[j], XtNwidth,     (XtArgVal) bw_width-16); j++;
-    XtSetArg(args[j], XtNheight,    (XtArgVal) bw_height/4); j++;
-    XtSetValues(shell, args, j);
-
-    XtRealizeWidget(shell);
-
-    if(wpEvalGraph.width > 0) {
-      evalGraphW = wpEvalGraph.width;
-      evalGraphH = wpEvalGraph.height;
-      evalGraphX = wpEvalGraph.x;
-      evalGraphY = wpEvalGraph.y;
-    }
-
-    if (evalGraphX == -1) {
-	int xx, yy;
-	Window junk;
-	evalGraphH = bw_height/4;
-	evalGraphW = bw_width-16;
-
-	XSync(xDisplay, False);
-#ifdef NOTDEF
-	/* This code seems to tickle an X bug if it is executed too soon
-	   after xboard starts up.  The coordinates get transformed as if
-	   the main window was positioned at (0, 0).
-	   */
-	XtTranslateCoords(shellWidget,
-			  (bw_width - evalGraphW) / 2, 0 - evalGraphH / 2,
-			  &evalGraphX, &evalGraphY);
-#else  /*!NOTDEF*/
-        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			      RootWindowOfScreen(XtScreen(shellWidget)),
-			      (bw_width - evalGraphW) / 2, 0 - evalGraphH / 2,
-			      &xx, &yy, &junk);
-	evalGraphX = xx;
-	evalGraphY = yy;
-#endif /*!NOTDEF*/
-	if (evalGraphY < 0) evalGraphY = 0; /*avoid positioning top offscreen*/
-    }
-    j = 0;
-    XtSetArg(args[j], XtNheight, evalGraphH);  j++;
-    XtSetArg(args[j], XtNwidth, evalGraphW);  j++;
-    XtSetArg(args[j], XtNx, evalGraphX);  j++;
-    XtSetArg(args[j], XtNy, evalGraphY);  j++;
-    XtSetValues(shell, args, j);
-
-    yDisplay = XtDisplay(shell);
-    eGraphWindow = XtWindow(form);
-    XtAddEventHandler(form, ExposureMask, False,
-		      (XtEventHandler) EvalEventProc, NULL);
-    XtAddEventHandler(form, ButtonPressMask, False,
-		      (XtEventHandler) EvalClick, NULL);
-
-    return shell;
-}
+static Option graphOptions[] = {
+{ 150, 0x9C, 300, NULL, (void*) &EvalCallback, NULL, NULL, Graph , "" },
+{ 0, 2, 0, NULL, NULL, "", NULL, EndMark , "" }
+};
 
 void
 EvalGraphPopUp ()
 {
     Arg args[16];
     int j;
-    static int  needInit = TRUE;
 
-    if (evalGraphShell == NULL) {
-
-	evalGraphShell =
-	  EvalGraphCreate(_(title));
-	XtRealizeWidget(evalGraphShell);
-	CatchDeleteWindow(evalGraphShell, "EvalGraphPopDown");
-	if( needInit ) {
-	    InitializeEvalGraph();
-	    needInit = FALSE;
-	}
+    if (GenericPopUp(graphOptions, _(title), EvalGraphDlg, BoardWindow, NONMODAL, 1)) {
+	InitializeEvalGraph(&graphOptions[0]); // first time: add callbacks and initialize pens
     } else {
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) _(title));   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) _(title));      j++;
-	XtSetValues(evalGraphShell, args, j);
+	SetDialogTitle(EvalGraphDlg, _(title));
+	SetIconName(EvalGraphDlg, _(title));
     }
 
-    XtPopup(evalGraphShell, XtGrabNone);
-    XSync(yDisplay, False);
+    MarkMenu("Show Evaluation Graph", EvalGraphDlg);
 
-    j=0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Evaluation Graph"),
-		args, j);
-
-    evalGraphDialogUp = True;
 //    ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
 }
 
 void
 EvalGraphPopDown ()
 {
-    Arg args[16];
-    int j;
+    PopDown(EvalGraphDlg);
 
-    if (!evalGraphDialogUp) return;
-    j = 0;
-    XtSetArg(args[j], XtNx, &evalGraphX); j++;
-    XtSetArg(args[j], XtNy, &evalGraphY); j++;
-    XtSetArg(args[j], XtNwidth, &evalGraphW); j++;
-    XtSetArg(args[j], XtNheight, &evalGraphH); j++;
-    XtGetValues(evalGraphShell, args, j);
-    wpEvalGraph.x = evalGraphX - 4;
-    wpEvalGraph.y = evalGraphY - 23;
-    wpEvalGraph.width = evalGraphW;
-    wpEvalGraph.height = evalGraphH;
-    XtPopdown(evalGraphShell);
-    XSync(xDisplay, False);
-    j=0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Evaluation Graph"),
-		args, j);
-
-    evalGraphDialogUp = False;
 //    ShowThinkingEvent(); // [HGM] thinking: might need to shut off thinking output
 }
 
 Boolean
 EvalGraphIsUp ()
 {
-    return evalGraphDialogUp;
+    return shellUp[EvalGraphDlg];
 }
 
 int
 EvalGraphDialogExists ()
 {
-    return evalGraphShell != NULL;
+    return DialogExists(EvalGraphDlg);
 }
 
 void
-EvalGraphProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+EvalGraphProc ()
 {
-  if (evalGraphDialogUp) {
-    EvalGraphPopDown();
-  } else {
-    EvalGraphPopUp();
-  }
+  if (!PopDown(EvalGraphDlg)) EvalGraphPopUp();
 }
-// This function is the interface to the back-end. It is currently called through the front-end,
-// though, where it shares the HistorySet() wrapper with MoveHistorySet(). Once all front-ends
-// support the eval graph, it would be more logical to call it directly from the back-end.
+
+// This function is the interface to the back-end.
+
 void
 EvalGraphSet (int first, int last, int current, ChessProgramStats_Move * pvInfo)
 {
@@ -441,7 +288,8 @@ EvalGraphSet (int first, int last, int current, ChessProgramStats_Move * pvInfo)
     currCurrent = current;
     currPvInfo = pvInfo;
 
-    if( evalGraphShell ) {
+    if( DialogExists(EvalGraphDlg) ) {
         DisplayEvalGraph();
     }
 }
+

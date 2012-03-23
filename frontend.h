@@ -238,7 +238,6 @@ void EngineOutputPopDown P((void));
 int  EngineOutputIsUp P((void));
 int  EngineOutputDialogExists P((void));
 void EvalGraphPopUp P((void));
-void EvalGraphPopDown P((void));
 Boolean EvalGraphIsUp P((void));
 int  EvalGraphDialogExists P((void));
 

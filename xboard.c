@@ -309,7 +309,7 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   commentShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell;
-Widget historyShell, evalGraphShell;
+Widget historyShell;
 XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 #if ENABLE_NLS
@@ -519,7 +519,6 @@ XtActionsRec boardActions[] = {
     { "TempBackwardProc", TempBackwardProc },
     { "TempForwardProc", TempForwardProc },
     { "CommentClick", (XtActionProc) CommentClick },
-    { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
@@ -993,8 +992,8 @@ GetWindowCoords ()
   // In XBoard this will have to wait until awareness of window parameters is implemented
   GetActualPlacement(shellWidget, &wpMain);
   if(shellUp[EngOutDlg]) GetActualPlacement(shells[EngOutDlg], &wpEngineOutput);
-  if(MoveHistoryIsUp()) GetActualPlacement(shells[HistoryDlg], &wpMoveHistory);
-  if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
+  if(shellUp[HistoryDlg]) GetActualPlacement(shells[HistoryDlg], &wpMoveHistory);
+  if(shellUp[EvalGraphDlg]) GetActualPlacement(shells[EvalGraphDlg], &wpEvalGraph);
   if(shellUp[GameListDlg]) GetActualPlacement(shells[GameListDlg], &wpGameList);
   if(shellUp[CommentDlg]) GetActualPlacement(shells[CommentDlg], &wpComment);
   if(shellUp[TagsDlg]) GetActualPlacement(shells[TagsDlg], &wpTags);
@@ -3382,8 +3381,8 @@ DragProc ()
 	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) // not sized
 	    return; // false alarm
 	if(shellUp[EngOutDlg]) CoDrag(shells[EngOutDlg], &wpEngineOutput);
-	if(MoveHistoryIsUp()) CoDrag(shells[HistoryDlg], &wpMoveHistory);
-	if(EvalGraphIsUp()) CoDrag(evalGraphShell, &wpEvalGraph);
+	if(shellUp[HistoryDlg]) CoDrag(shells[HistoryDlg], &wpMoveHistory);
+	if(shellUp[EvalGraphDlg]) CoDrag(shells[EvalGraphDlg], &wpEvalGraph);
 	if(shellUp[GameListDlg]) CoDrag(shells[GameListDlg], &wpGameList);
 	wpMain = wpNew;
 	DrawPosition(True, NULL);
