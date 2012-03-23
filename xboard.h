@@ -143,12 +143,17 @@ void GenericPopDown P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void InitDrawingSizes P((int i, int j));
 void SendToICS P((char *buf));
 void SendToProgram P((char *message, ChessProgramState *cps));
+void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b); // from xoptions.c
 void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void WheelProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TabProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GenericMenu P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
 		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
+
+// from xengineoutput.c
+extern char memoTranslations[];
+
 
 extern Widget shells[];
 extern int dialogError;

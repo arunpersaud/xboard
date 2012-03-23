@@ -34,11 +34,14 @@
 
 // [HGM] same for output fields (note that there are two of each type, one per color)
 #define nColorIcon 1
-#define nStateIcon 2
-#define nLabel     3
+#define nLabel     2
+#define nStateIcon 3
 #define nStateData 4
 #define nLabelNPS  5
-#define nMemo      6
+#define nMemo      6 /* must match the ranking of the TextBox in following option list! */
+
+#define STRIDE 7 /* must match the number of option in one pane! */
+#define MEMO  (nMemo-1)
 
 /* Module variables */
 #define H_MARGIN            2
@@ -61,6 +64,7 @@ extern char exclusionHeader[];
 void SetEngineState( int which, int state, char * state_data );
 
 // front-end called by back-end
+void SetEngineColorIcon( int which );
 void SetIcon( int which, int field, int nIcon );
 void DoSetWindowText(int which, int field, char *s_label);
 void InsertIntoMemo( int which, char * text, int where );
@@ -68,4 +72,10 @@ void DoClearMemo(int which);
 void ResizeWindowControls( int mode );
 int EngineOutputDialogExists();
 void SetEngineOutputTitle( char *title );
+void InitializeEngineOutput P((Option *opt, Option *memo2));
+void DrawIcon P((Option *opt, int nIcon));
+
+// front-end shared with xboard.c
+void SelectPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
+void StopPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 

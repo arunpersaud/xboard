@@ -206,6 +206,7 @@ extern char *getenv();
 #include "menus.h"
 #include "board.h"
 #include "dialogs.h"
+#include "engineoutput.h"
 #include "usystem.h"
 #include "gettext.h"
 
@@ -259,10 +260,6 @@ void HandleUserMove P((Widget w, XEvent *event,
 void AnimateUserMove P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
 void HandlePV P((Widget w, XEvent * event,
-		     String * params, Cardinal * nParams));
-void SelectPV P((Widget w, XEvent * event,
-		     String * params, Cardinal * nParams));
-void StopPV P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
 void WhiteClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
@@ -522,7 +519,6 @@ XtActionsRec boardActions[] = {
     { "TempBackwardProc", TempBackwardProc },
     { "TempForwardProc", TempForwardProc },
     { "CommentClick", (XtActionProc) CommentClick },
-    { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
@@ -967,7 +963,6 @@ ParseCommPortSettings (char *s)
 { // no such option in XBoard (yet)
 }
 
-extern Widget engineOutputShell;
 int frameX, frameY;
 
 void
@@ -997,7 +992,7 @@ GetWindowCoords ()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
   GetActualPlacement(shellWidget, &wpMain);
-  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput);
+  if(shellUp[EngOutDlg]) GetActualPlacement(shells[EngOutDlg], &wpEngineOutput);
   if(MoveHistoryIsUp()) GetActualPlacement(shells[HistoryDlg], &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(shellUp[GameListDlg]) GetActualPlacement(shells[GameListDlg], &wpGameList);
@@ -3386,7 +3381,7 @@ DragProc ()
 	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
 	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) // not sized
 	    return; // false alarm
-	if(EngineOutputIsUp()) CoDrag(engineOutputShell, &wpEngineOutput);
+	if(shellUp[EngOutDlg]) CoDrag(shells[EngOutDlg], &wpEngineOutput);
 	if(MoveHistoryIsUp()) CoDrag(shells[HistoryDlg], &wpMoveHistory);
 	if(EvalGraphIsUp()) CoDrag(evalGraphShell, &wpEvalGraph);
 	if(shellUp[GameListDlg]) CoDrag(shells[GameListDlg], &wpGameList);

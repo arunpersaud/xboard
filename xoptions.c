@@ -387,11 +387,12 @@ char moveTypeInTranslations[] =
     "<Key>Escape: TypeInProc(0) \n";
 extern char filterTranslations[];
 extern char gameListTranslations[];
+extern char memoTranslations[];
 
 
-char *translationTable[] = {
+char *translationTable[] = { // beware: order is essential!
    historyTranslations, commentTranslations, moveTypeInTranslations, ICSInputTranslations,
-   filterTranslations, gameListTranslations,
+   filterTranslations, gameListTranslations, memoTranslations
 };
 
 void

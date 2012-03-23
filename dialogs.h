@@ -83,6 +83,7 @@ typedef enum {  // identifier of dialogs done by GenericPopup
 TransientDlg=0, // transient: grabs mouse events and is destroyed at pop-down (so other dialog can use this ID next time)
 CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, NoDlg, BrowserDlg, HistoryDlg, // persistent: no grab and reused
 GameListDlg,
+EngOutDlg,
 PromoDlg,       // this and beyond are destroyed at pop-down
 ErrorDlg,
 AskDlg,         // this and beyond do grab mouse events (and are destroyed)
@@ -122,6 +123,7 @@ void GetWidgetText  P((Option *opt, char **buf));
 void SetWidgetText  P((Option *opt, char *buf, int n));
 void GetWidgetState  P((Option *opt, int *state));
 void SetWidgetState  P((Option *opt, int state));
+void SetWidgetLabel P((Option *opt, char *buf));
 void SetDialogTitle  P((DialogClass dlg, char *title));
 void LoadListBox P((Option *opt, char *emptyText));
 void HighlightListBoxItem P((Option *opt, int nr));

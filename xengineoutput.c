@@ -71,6 +71,7 @@ extern char *getenv();
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
+#include "dialogs.h"
 #include "xboard.h"
 #include "engineoutput.h"
 #include "gettext.h"
@@ -94,52 +95,19 @@ extern char *getenv();
 #include "pixmaps/PONDER_14.xpm"
 #include "pixmaps/ANALYZING_14.xpm"
 
-#ifdef SNAP
-#include "wsnap.h"
-#endif
-
-#define _LL_ 100
-
-Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
-Widget outputField[2][7]; // [HGM] front-end array to translate output field to window handle
-
-void EngineOutputPopDown();
-void engineOutputPopUp();
-int  EngineOutputIsUp();
-void SetEngineColorIcon( int which );
-
-//extern WindowPlacement wpEngineOutput;
-
-Position engineOutputX = -1, engineOutputY = -1;
-Dimension engineOutputW, engineOutputH;
-Widget engineOutputShell;
-static int engineOutputDialogUp;
 
 /* Module variables */
-int  windowMode = 1;
 static int currentPV, highTextStart[2], highTextEnd[2];
+static Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
+static Widget memoWidget;
 
-typedef struct {
-    char * name;
-    int which;
-    int depth;
-    u64 nodes;
-    int score;
-    int time;
-    char * pv;
-    char * hint;
-    int an_move_index;
-    int an_move_count;
-} EngineOutputData;
 
-//static void UpdateControls( EngineOutputData * ed );
-
-void
-ReadIcon (char *pixData[], int iconNr)
+static void
+ReadIcon (char *pixData[], int iconNr, Widget w)
 {
     int r;
 
-	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(outputField[0][nColorIcon]),
+	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(w),
 				       pixData,
 				       &(icons[iconNr]),
 				       NULL, NULL /*&attr*/)) != 0) {
@@ -148,34 +116,28 @@ ReadIcon (char *pixData[], int iconNr)
 	}
 }
 
-static void
-InitializeEngineOutput ()
-{
-        ReadIcon(WHITE_14,   nColorWhite);
-        ReadIcon(BLACK_14,   nColorBlack);
-        ReadIcon(UNKNOWN_14, nColorUnknown);
+void
+InitializeEngineOutput (Option *opt, Option *memo2)
+{	// front-end, because it must have access to the pixmaps
+	Widget w = opt->handle;
+	memoWidget = memo2->handle;
 
-        ReadIcon(CLEAR_14,   nClear);
-        ReadIcon(PONDER_14,  nPondering);
-        ReadIcon(THINK_14,   nThinking);
-        ReadIcon(ANALYZE_14, nAnalyzing);
+        ReadIcon(WHITE_14,   nColorWhite, w);
+        ReadIcon(BLACK_14,   nColorBlack, w);
+        ReadIcon(UNKNOWN_14, nColorUnknown, w);
+
+        ReadIcon(CLEAR_14,   nClear, w);
+        ReadIcon(PONDER_14,  nPondering, w);
+        ReadIcon(THINK_14,   nThinking, w);
+        ReadIcon(ANALYZE_14, nAnalyzing, w);
 }
 
 void
-DoSetWindowText (int which, int field, char *s_label)
-{
-	Arg arg;
-
-	XtSetArg(arg, XtNlabel, (XtArgVal) s_label);
-	XtSetValues(outputField[which][field], &arg, 1);
-}
-
-void
-SetEngineOutputTitle (char *title)
-{
-	Arg arg;
-	XtSetArg(arg, XtNtitle, (XtArgVal) title);
-	XtSetValues(engineOutputShell, &arg, 1);
+DrawIcon (Option *opt, int nIcon)
+{   // as we are already in X front-end, so do X-stuff here
+    Arg arg;
+    XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);
+    XtSetValues(opt->handle, &arg, 1);
 }
 
 void
@@ -189,43 +151,16 @@ InsertIntoMemo (int which, char * text, int where)
 	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
 
 	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
-	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
+	edit = XtNameToWidget(shells[EngOutDlg], which ? "*paneB.text" : "*paneA.text");
 	XawTextReplace(edit, where, where, &t);
 	if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
 	    int len = strlen(text);
 	    highTextStart[which] += len; highTextEnd[which] += len;
-	    XawTextSetSelection( outputField[which][nMemo], highTextStart[which], highTextEnd[which] );
+	    XawTextSetSelection( edit, highTextStart[which], highTextEnd[which] );
 	}
 }
 
-void
-SetIcon (int which, int field, int nIcon)
-{
-    Arg arg;
-
-    if( nIcon != 0 ) {
-	XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);
-	XtSetValues(outputField[which][field], &arg, 1);
-    }
-}
-
-void
-DoClearMemo (int which)
-{
-    Widget edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
-    Arg arg;
-//    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-//    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
-    XtSetArg(arg, XtNstring, ""); // clear without disturbing selection!
-    XtSetValues(edit, &arg, 1);
-}
-
-// cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
-
-Boolean SendPositionSelection(Widget w, Atom *selection, Atom *target,
-		 Atom *type_return, XtPointer *value_return,
-		 unsigned long *length_return, int *format_return); // from xboard.c
-void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b); // from xoptions.c
+//--------------------------------- PV walking ---------------------------------------
 
 char memoTranslations[] =
 ":Ctrl<Key>c: CopyMemoProc() \n \
@@ -244,13 +179,13 @@ SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	Arg arg;
 
 	x = event->xmotion.x; y = event->xmotion.y;
-	currentPV = (w == outputField[1][nMemo]);
+	currentPV = (w != memoWidget);
 	XawTextGetSelectionPos(w, &index, &dummy);
 	XtSetArg(arg, XtNstring, &val);
 	XtGetValues(w, &arg, 1);
 	shiftKey = strcmp(params[0], "0");
 	if(LoadMultiPV(x, y, val, index, &start, &end)) {
-	    XawTextSetSelection( outputField[currentPV][nMemo], start, end );
+	    XawTextSetSelection( w, start, end );
 	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
 	}
 }
@@ -262,6 +197,20 @@ StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
         highTextStart[currentPV] = highTextEnd[currentPV] = 0;
         UnLoadPV();
 }
+
+//------------------------- Ctrl-C copying of memo texts ---------------------------
+
+// Awfull code: first read our own primary selection into selected_fen_position,
+//              and then transfer ownership of this to the clipboard, so that the
+//              copy-position callback can fetch it there when somebody pastes it
+// Worst of all is that I only added it because I did not know how to copy primary:
+// my laptop has no middle button. Ctrl-C might not be needed at all... [HGM]
+
+// cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
+
+Boolean SendPositionSelection(Widget w, Atom *selection, Atom *target,
+		 Atom *type_return, XtPointer *value_return,
+		 unsigned long *length_return, int *format_return); // from xboard.c
 
 static void
 MemoCB (Widget w, XtPointer client_data, Atom *selection,
@@ -294,210 +243,20 @@ CopyMemoProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     );
 }
 
-// The following routines are mutated clones of the commentPopUp routines
-
-void
-PositionControlSet (int which, Widget shell, Widget form, Dimension bw_width)
-{
-    Arg args[16];
-    Widget edit, NameWidget, ColorWidget, ModeWidget, MoveWidget, NodesWidget;
-    int j, mutable=1;
-    j = 0;
-    XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
-    XtSetArg(args[j], XtNlabel,     (XtArgVal) ""); j++;
-    XtSetArg(args[j], XtNtop,       XtChainTop); j++;
-    XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
-    XtSetArg(args[j], XtNleft,      XtChainLeft); j++;
-    XtSetArg(args[j], XtNright,     XtChainLeft); j++;
-    XtSetArg(args[j], XtNwidth,     (XtArgVal) 17); j++;
-    outputField[which][nColorIcon] = ColorWidget =
-      XtCreateManagedWidget("Color", labelWidgetClass,
-		     form, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
-    XtSetArg(args[j], XtNjustify,   (XtArgVal) XtJustifyLeft); j++;
-    XtSetArg(args[j], XtNfromHoriz, (XtArgVal) ColorWidget); j++;
-    XtSetArg(args[j], XtNtop,       XtChainTop); j++;
-    XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
-    XtSetArg(args[j], XtNleft,      XtChainLeft); j++;
-    XtSetArg(args[j], XtNwidth,     (XtArgVal) bw_width/2 - 57); j++;
-    outputField[which][nLabel] = NameWidget =
-      XtCreateManagedWidget("Engine", labelWidgetClass,
-		     form, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
-    XtSetArg(args[j], XtNlabel,     (XtArgVal) ""); j++;
-    XtSetArg(args[j], XtNfromHoriz, (XtArgVal) NameWidget); j++;
-    XtSetArg(args[j], XtNtop,       XtChainTop); j++;
-    XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
-    XtSetArg(args[j], XtNwidth,     (XtArgVal) 20); j++;
-    outputField[which][nStateIcon] = ModeWidget =
-      XtCreateManagedWidget("Mode", labelWidgetClass,
-		     form, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
-    XtSetArg(args[j], XtNjustify,   (XtArgVal) XtJustifyLeft); j++;
-    XtSetArg(args[j], XtNlabel,     (XtArgVal) ""); j++;
-    XtSetArg(args[j], XtNfromHoriz, (XtArgVal) ModeWidget); j++;
-    XtSetArg(args[j], XtNtop,       XtChainTop); j++;
-    XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
-    XtSetArg(args[j], XtNright,     XtChainRight); j++;
-    XtSetArg(args[j], XtNwidth,     (XtArgVal) bw_width/2 - 102); j++;
-    outputField[which][nStateData] = MoveWidget =
-      XtCreateManagedWidget("Move", labelWidgetClass,
-		     form, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
-    XtSetArg(args[j], XtNjustify,   (XtArgVal) XtJustifyRight); j++;
-    XtSetArg(args[j], XtNlabel,     (XtArgVal) _("NPS")); j++;
-    XtSetArg(args[j], XtNfromHoriz, (XtArgVal) MoveWidget); j++;
-    XtSetArg(args[j], XtNtop,       XtChainTop); j++;
-    XtSetArg(args[j], XtNbottom,    XtChainTop); j++;
-    XtSetArg(args[j], XtNleft,      XtChainRight); j++;
-    XtSetArg(args[j], XtNright,     XtChainRight); j++;
-    XtSetArg(args[j], XtNwidth,     (XtArgVal) 100); j++;
-    outputField[which][nLabelNPS] = NodesWidget =
-      XtCreateManagedWidget("Nodes", labelWidgetClass,
-		     form, args, j);
-
-    // create "text" within "form"
-    j = 0;
-    if (mutable) {
-	XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-	XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    }
-    XtSetArg(args[j], XtNstring, "");  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth, bw_width);  j++; /*force wider than buttons*/
-    /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-    XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollWhenNeeded);  j++;
-//    XtSetArg(args[j], XtNautoFill, True);  j++;
-//    XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
-    outputField[which][nMemo] = edit =
-      XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
-
-    XtOverrideTranslations(edit, XtParseTranslationTable(memoTranslations));
-    XtAddEventHandler(edit, ButtonPressMask, False, SetFocus, (XtPointer) shell);
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, ColorWidget); j++;
-//    XtSetArg(args[j], XtNresizable, (XtArgVal) True); j++;
-    XtSetValues(edit, args, j);
-}
-
-Widget
-EngineOutputCreate (char *name, char *text)
-{
-    Arg args[16];
-    Widget shell, layout, form, form2;
-    Dimension bw_width, bw_height;
-    int j;
-
-    // get board width
-    j = 0;
-    XtSetArg(args[j], XtNwidth,  &bw_width);  j++;
-    XtSetArg(args[j], XtNheight, &bw_height);  j++;
-    XtGetValues(boardWidget, args, j);
-
-    // define form within layout within shell.
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    shell =
-#if TOPLEVEL
-     XtCreatePopupShell(name, topLevelShellWidgetClass,
-#else
-      XtCreatePopupShell(name, transientShellWidgetClass,
-#endif
-			 shellWidget, args, j);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-			    layoutArgs, XtNumber(layoutArgs));
-    // divide window vertically into two equal parts, by creating two forms
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-    form2 =
-      XtCreateManagedWidget("form2", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-    j = 0;
-    XtSetArg(args[j], XtNfromVert,  (XtArgVal) form); j++;
-    XtSetValues(form2, args, j);
-    // make sure width is known in advance, for better placement of child widgets
-    j = 0;
-    XtSetArg(args[j], XtNwidth,     (XtArgVal) bw_width-16); j++;
-    XtSetArg(args[j], XtNheight,    (XtArgVal) bw_height/2); j++;
-    XtSetValues(shell, args, j);
-
-    // fill up both forms with control elements
-    PositionControlSet(0, shell, form,  bw_width);
-    PositionControlSet(1, shell, form2, bw_width);
-
-    XtRealizeWidget(shell);
-
-    if(wpEngineOutput.width > 0) {
-      engineOutputW = wpEngineOutput.width;
-      engineOutputH = wpEngineOutput.height;
-      engineOutputX = wpEngineOutput.x;
-      engineOutputY = wpEngineOutput.y;
-    }
-
-    if (engineOutputX == -1) {
-	int xx, yy;
-	Window junk;
-
-	engineOutputH = bw_height/2;
-	engineOutputW = bw_width-16;
-
-	XSync(xDisplay, False);
-#ifdef NOTDEF
-	/* This code seems to tickle an X bug if it is executed too soon
-	   after xboard starts up.  The coordinates get transformed as if
-	   the main window was positioned at (0, 0).
-	   */
-	XtTranslateCoords(shellWidget,
-			  (bw_width - engineOutputW) / 2, 0 - engineOutputH / 2,
-			  &engineOutputX, &engineOutputY);
-#else  /*!NOTDEF*/
-        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			      RootWindowOfScreen(XtScreen(shellWidget)),
-			      (bw_width - engineOutputW) / 2, 0 - engineOutputH / 2,
-			      &xx, &yy, &junk);
-	engineOutputX = xx;
-	engineOutputY = yy;
-#endif /*!NOTDEF*/
-	if (engineOutputY < 0) engineOutputY = 0; /*avoid positioning top offscreen*/
-    }
-    j = 0;
-    XtSetArg(args[j], XtNheight, engineOutputH);  j++;
-    XtSetArg(args[j], XtNwidth, engineOutputW);  j++;
-    XtSetArg(args[j], XtNx, engineOutputX);  j++;
-    XtSetArg(args[j], XtNy, engineOutputY);  j++;
-    XtSetValues(shell, args, j);
-
-    return shell;
-}
+//------------------------------- pane switching -----------------------------------
 
 void
 ResizeWindowControls (int mode)
-{
+{   // another hideous kludge: to have only a single pane, we resize the
+    // second to 5 pixels (which makes it too small to display anything)
     Widget form1, form2;
     Arg args[16];
     int j;
     Dimension ew_height, tmp;
-    Widget shell = engineOutputShell;
+    Widget shell = shells[EngOutDlg];
 
-    form1 = XtNameToWidget(shell, "*form");
-    form2 = XtNameToWidget(shell, "*form2");
+    form1 = XtNameToWidget(shell, "*paneA");
+    form2 = XtNameToWidget(shell, "*paneB");
 
     j = 0;
     XtSetArg(args[j], XtNheight, (XtArgVal) &ew_height); j++;
@@ -524,98 +283,3 @@ ResizeWindowControls (int mode)
     }
 }
 
-void
-EngineOutputPopUp ()
-{
-    Arg args[16];
-    int j;
-    Widget edit;
-    static int  needInit = TRUE;
-    static char *title = N_("Engine output"), *text = N_("This feature is experimental");
-
-    if (engineOutputShell == NULL) {
-	engineOutputShell =
-	  EngineOutputCreate(_(title), _(text));
-	XtRealizeWidget(engineOutputShell);
-	CatchDeleteWindow(engineOutputShell, "EngineOutputPopDown");
-	if( needInit ) {
-	    InitializeEngineOutput();
-	    needInit = FALSE;
-	}
-        SetEngineColorIcon( 0 );
-        SetEngineColorIcon( 1 );
-        SetEngineState( 0, STATE_IDLE, "" );
-        SetEngineState( 1, STATE_IDLE, "" );
-    } else {
-	edit = XtNameToWidget(engineOutputShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, text); j++;
-	XtSetValues(edit, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) _(title));   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) _(title));      j++;
-	XtSetValues(engineOutputShell, args, j);
-    }
-
-    XtPopup(engineOutputShell, XtGrabNone);
-    XSync(xDisplay, False);
-
-    j=0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
-		args, j);
-
-    engineOutputDialogUp = True;
-    ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
-}
-
-void
-EngineOutputPopDown ()
-{
-    Arg args[16];
-    int j;
-
-    if (!engineOutputDialogUp) return;
-    DoClearMemo(1);
-    j = 0;
-    XtSetArg(args[j], XtNx, &engineOutputX); j++;
-    XtSetArg(args[j], XtNy, &engineOutputY); j++;
-    XtSetArg(args[j], XtNwidth, &engineOutputW); j++;
-    XtSetArg(args[j], XtNheight, &engineOutputH); j++;
-    XtGetValues(engineOutputShell, args, j);
-    wpEngineOutput.x = engineOutputX - 4;
-    wpEngineOutput.y = engineOutputY - 23;
-    wpEngineOutput.width = engineOutputW;
-    wpEngineOutput.height = engineOutputH;
-    XtPopdown(engineOutputShell);
-    XSync(xDisplay, False);
-    j=0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
-		args, j);
-
-    engineOutputDialogUp = False;
-    ShowThinkingEvent(); // [HGM] thinking: might need to shut off thinking output
-}
-
-int
-EngineOutputIsUp ()
-{
-    return engineOutputDialogUp;
-}
-
-int
-EngineOutputDialogExists ()
-{
-    return engineOutputShell != NULL;
-}
-
-void
-EngineOutputProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-  if (engineOutputDialogUp) {
-    EngineOutputPopDown();
-  } else {
-    EngineOutputPopUp();
-  }
-}
