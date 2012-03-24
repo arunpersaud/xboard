@@ -28,7 +28,7 @@ and the tournament file tells XBoard how to do that.
 All the tourney parameters that are kept in the tourney file
 can in principle also be specified from the command line, through options, 
 but that still would not cause XBoard to run a tourney.
-It is realy essential that XBoard has a tournament file for that,
+It is really essential that XBoard has a tournament file for that,
 because it uses the latter also for recording the progress of the tourney:
 which games have already been played (and how they ended),
 and which games are currently in progress.
@@ -48,7 +48,7 @@ By starting multiple instances of XBoard with the same tourney file,
 these instances will then cooperate on completing the tourney.
 Each one will 'grab' a game from the tourney file that has not yet been played and is not in progress,
 mark it as being in progress, and starts playing it.
-When that game then finishes, The XBoard instance that had been playing it
+When that game then finishes, the XBoard instance that had been playing it
 will replace the "in-progress" mark in the tourney file by the game result,
 and grab the next game that has not had any attention yet.
 This continues until the entire tourney is done.
@@ -173,11 +173,21 @@ When you let all XBoard instances save the games they play to the same file,
 you can use your favorite PGN-to-cross-table utility on it any time you want.
 </p>
 
+<h3>Issuing external commands during or after a tourney</h3>
+<p>
+XBoard supports two new command-line options, -afterGame and -afterTourney, 
+which can specify a text string to be executed as a system command.
+The -afterGame command is executed after every game of the tournament,
+and could for instance be used to automatically run a cross-table generator on the PGN save file.
+The -afterTourney command is called after the last game of the tourney is completed,
+and could for instance be used to automatically shut down the computer.
+</p>
+
 <h3>Synchronization in concurrent play</h3>
 <p>
 When you use multiple instances of XBoard to concurrently work on playing a tourney,
 the option -syncAfterRound can be used to prevent XBoard from starting games from a new round,
-when there are still unfnished games of a previous round.
+when there are still unfinished games of a previous round.
 XBoard will then wait until all these games are finished,
 and automatically resume after that with the game of the next round it already picked.
 This way you can guarantee that the rounds appear well-ordered in the PGN file.
@@ -245,7 +255,7 @@ with exactly the same parameters as the cloned one.
 <p>
 Usually you would want to change some of the paramters first, however.
 Like replacing the name of the gauntlet engine in the 'participants' field by that of the newer version.
-Basicaly you can change anything you like, without restriction,
+Basically you can change anything you like, without restriction,
 as you are really setting up a completely new and independent tourney.
 The cloning was just a convenient way to quickly get some default settings for all of the parameters loaded into the dialog.
 </p>
@@ -253,7 +263,7 @@ The cloning was just a convenient way to quickly get some default settings for a
 <h3>Editing tourney files</h3>
 
 <p>
-Although this is not recommended for a novice user, (and should also not be needed in normal applications),
+Although this is not recommended for a novice user, (and should also not be needed in normal use),
 an experienced user that understands very well how things work might see some benefits in editing the tourney file.
 Remember that the tourney file is read by every XBoard instance playing on that tourney, before every game.
 So the tourney file is an ideal place to 'broadcast' a setting to all XBoards playing for that tourney, and none other.
@@ -297,7 +307,7 @@ Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
 
 <p>Updated:
 <!-- timestamp start -->
-$Date: 2012/02/29 05:47:12 $
+$Date: 2012/03/24 18:02:47 $
 <!-- timestamp end -->
 </p>
 </div>
