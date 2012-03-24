@@ -157,13 +157,12 @@ extern char memoTranslations[];
 
 extern Widget shells[];
 extern int dialogError;
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, historyShell;
+extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
 extern Window xBoardWindow;
 extern int squareSize;
 extern Pixmap xMarkPixmap, wIconPixmap, bIconPixmap;
 extern char *layoutName;
-extern Arg layoutArgs[2], formArgs[2], messageArgs[4];
 extern Pixel timerForegroundPixel, timerBackgroundPixel, dialogColor, buttonColor;
 extern int searchTime;
 extern Atom wm_delete_window;

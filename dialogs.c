@@ -1735,4 +1735,187 @@ DisplayTitle (char *text)
     SetWindowTitle(text, title, icon);
 }
 
+void
+DisplayWhiteClock (long timeRemaining, int highlight)
+{
+    if(appData.noGUI) return;
+    DisplayTimerLabel(11, _("White"), timeRemaining, highlight);
+    if(highlight) SetClockIcon(0);
+}
+
+void
+DisplayBlackClock (long timeRemaining, int highlight)
+{
+    if(appData.noGUI) return;
+    DisplayTimerLabel(12, _("Black"), timeRemaining, highlight);
+    if(highlight) SetClockIcon(1);
+}
+
+#define PAUSE_BUTTON "P"
+#define PIECE_MENU_SIZE 18
+static String pieceMenuStrings[2][PIECE_MENU_SIZE+1] = {
+    { N_("White"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
+      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"),
+      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
+      N_("Empty square"), N_("Clear board"), NULL },
+    { N_("Black"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
+      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"),
+      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
+      N_("Empty square"), N_("Clear board"), NULL }
+};
+/* must be in same order as pieceMenuStrings! */
+static ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
+    { WhitePlay, (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
+	WhiteRook, WhiteQueen, WhiteKing, (ChessSquare) 0, WhiteAlfil,
+	WhiteCannon, WhiteAngel, WhiteMarshall, (ChessSquare) 0,
+	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
+    { BlackPlay, (ChessSquare) 0, BlackPawn, BlackKnight, BlackBishop,
+	BlackRook, BlackQueen, BlackKing, (ChessSquare) 0, BlackAlfil,
+	BlackCannon, BlackAngel, BlackMarshall, (ChessSquare) 0,
+	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
+};
+
+#define DROP_MENU_SIZE 6
+static String dropMenuStrings[DROP_MENU_SIZE+1] = {
+    "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"), N_("Queen"), NULL
+  };
+/* must be in same order as dropMenuStrings! */
+static ChessSquare dropMenuTranslation[DROP_MENU_SIZE] = {
+    (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
+    WhiteRook, WhiteQueen
+};
+
+// [HGM] experimental code to pop up window just like the main window, using GenercicPopUp
+
+static Option *Exp P((int n, int x, int y));
+void MenuCallback P((int n));
+void SizeKludge P((int n));
+
+static int pmFromX = -1, pmFromY = -1;
+
+static void
+PMSelect (int n)
+{   // user callback for board context menus
+    if (pmFromX < 0 || pmFromY < 0) return;
+    if(n == 25) DropMenuEvent(dropMenuTranslation[values[n]], pmFromX, pmFromY);
+    else EditPositionMenuEvent(pieceMenuTranslation[n-23][values[n]], pmFromX, pmFromY);
+}
+
+int
+CCB (int n)
+{
+    shiftKey = (ShiftKeys() & 3) != 0;
+    ClockClick(n == 12);
+}
+
+Option mainOptions[] = { // description of main window in terms of generic dialog creator
+{ 0, 0xCA, 0, NULL, NULL, "", NULL, BoxBegin, "" }, // menu bar
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("File") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Edit") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("View") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Mode") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Action") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Engine") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Options") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Help") },
+{ 0, 0, 0, NULL, (void*)&SizeKludge, "", NULL, BoxEnd, "" },
+{ 0, LR|T2T|BORDER|SAME_ROW, 0, NULL, NULL, "", NULL, Label, "1" }, // optional title in window
+{ 0, L2L|T2T,              200, NULL, (void*) &CCB, NULL, NULL, Label, "White" }, // white clock
+{ 0, R2R|T2T|SAME_ROW,     200, NULL, (void*) &CCB, NULL, NULL, Label, "Black" }, // black clock
+{ 0, LR|T2T|BORDER,        401, NULL, NULL, "", NULL, -1, "2" }, // backup for title in window (if no room for other)
+{ 0, LR|T2T|BORDER,        270, NULL, NULL, "", NULL, Label, "message" }, // message field
+{ 0, RR|TT|SAME_ROW,       125, NULL, NULL, "", NULL, BoxBegin, "" }, // (optional) button bar
+  { 0,    0,     0, NULL, (void*) &ToStartEvent, NULL, NULL, Button, N_("<<") },
+  { 0, SAME_ROW, 0, NULL, (void*) &BackwardEvent, NULL, NULL, Button, N_("<") },
+  { 0, SAME_ROW, 0, NULL, (void*) &PauseEvent, NULL, NULL, Button, N_(PAUSE_BUTTON) },
+  { 0, SAME_ROW, 0, NULL, (void*) &ForwardEvent, NULL, NULL, Button, N_(">") },
+  { 0, SAME_ROW, 0, NULL, (void*) &ToEndEvent, NULL, NULL, Button, N_(">>") },
+{ 0, 0, 0, NULL, NULL, "", NULL, BoxEnd, "" },
+{ 401, LR|TT, 401, NULL, (char*) &Exp, NULL, NULL, Graph, "shadow board" }, // board
+  { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[0], PopUp, "menuW" },
+  { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[1], PopUp, "menuB" },
+  { -1, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, dropMenuStrings, PopUp, "menuD" },
+{ 0,  NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
+};
+
+void
+SizeKludge (int n)
+{   // callback called by GenericPopUp immediately after sizing the menu bar
+    int width = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
+    int w = width - 44 - mainOptions[n].min;
+    mainOptions[10].max = w; // width left behind menu bar
+    if(w < 0.4*width) // if no reasonable amount of space for title, force small layout
+	mainOptions[13].type = mainOptions[10].type, mainOptions[10].type = -1; 
+}
+
+void
+MenuCallback (int n)
+{
+    MenuProc *proc = (MenuProc *) (((MenuItem*)(mainOptions[n].choice))[values[n]].proc);
+
+    (proc)();
+}
+
+static Option *
+Exp (int n, int x, int y)
+{
+    static int but1, but3;
+    int menuNr = -3;
+
+    if(n == 0) { // motion
+	if(SeekGraphClick(Press, x, y, 1)) return NULL;
+	if(but1 && !PromoScroll(x, y)) DragPieceMove(x, y);
+	if(but3) MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
+	return NULL;
+    }
+    shiftKey = (ShiftKeys() & 3) != 0;
+    switch(n) {
+	case  1: LeftClick(Press,   x, y), but1 = 1; break;
+	case -1: LeftClick(Release, x, y), but1 = 0; break;
+	case  2: shiftKey = !shiftKey;
+	case  3: menuNr = RightClick(Press,   x, y, &pmFromX, &pmFromY), but3 = 1; break;
+	case -2: shiftKey = !shiftKey;
+	case -3: menuNr = RightClick(Release, x, y, &pmFromX, &pmFromY), but3 = 0; break;
+	case 10:
+	    DrawPosition(True, NULL);
+	    if(twoBoards) { // [HGM] dual: draw other board in other orientation
+		flipView = !flipView; partnerUp = !partnerUp;
+		DrawPosition(True, NULL);
+		flipView = !flipView; partnerUp = !partnerUp;
+	    }
+	default:
+	    return NULL;
+    }
+
+    switch(menuNr) {
+      case 0: return &mainOptions[shiftKey ? 23: 24];
+      case 1: SetupDropMenu(); return &mainOptions[25];
+      case 2:
+      case -1: ErrorPopDown();
+      case -2:
+      default: break; // -3, so no clicks caught
+    }
+    return NULL;
+}
+
+Option *
+BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
+{
+    extern Option *dialogOptions[];
+    int i, size = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
+    mainOptions[11].choice = (char**) clockFontThingy;
+    mainOptions[12].choice = (char**) clockFontThingy;
+    mainOptions[22].value = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
+    mainOptions[22].max = mainOptions[13].max = size; // board size
+    mainOptions[13].max = size - 2; // board title (subtract border!)
+    mainOptions[12].max = mainOptions[11].max = size/2-3; // clock width
+    mainOptions[14].max = appData.showButtonBar ? size-130 : size-2; // message
+    mainOptions[0].max = size-40; // menu bar
+    mainOptions[10].type = appData.titleInWindow ? Label : -1 ;
+    if(!appData.showButtonBar) for(i=15; i<22; i++) mainOptions[i].type = -1;
+    for(i=0; i<8; i++) mainOptions[i+1].choice = (char**) menuBar[i].mi;
+    GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1);
+    return mainOptions;
+}
+
 

@@ -130,6 +130,16 @@ int dialogError;
 static Boolean browserUp;
 Option *dialogOptions[NrOfDialogs];
 
+static Arg layoutArgs[] = {
+    { XtNborderWidth, 0 },
+    { XtNdefaultDistance, 0 },
+};
+
+static Arg formArgs[] = {
+    { XtNborderWidth, 0 },
+    { XtNresizable, (XtArgVal) True },
+};
+
 void
 GetWidgetText (Option *opt, char **buf)
 {
@@ -408,7 +418,8 @@ AddHandler (Option *opt, int nr)
 Widget shells[NrOfDialogs];
 DialogClass parents[NrOfDialogs];
 WindowPlacement *wp[NrOfDialogs] = { // Beware! Order must correspond to DialogClass enum
-    NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph
+    NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
+    NULL, NULL, NULL, NULL, &wpMain
 };
 
 int
@@ -726,6 +737,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     XtSetArg(args[i], XtNresizable, True); i++;
     shells[BoardWindow] = shellWidget; parents[dlgNr] = parent;
 
+    if(dlgNr == BoardWindow) popup = shellWidget; else
     popup = shells[dlgNr] =
       XtCreatePopupShell(title, !top || !appData.topLevel ? transientShellWidgetClass : topLevelShellWidgetClass,
                                                            shells[parent], args, i);
@@ -1055,16 +1067,17 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
   }
 
     XtRealizeWidget(popup);
-    XSetWMProtocols(xDisplay, XtWindow(popup), &wm_delete_window, 1);
-    snprintf(def, MSG_SIZ, "<Message>WM_PROTOCOLS: GenericPopDown(\"%d\") \n", dlgNr);
-    XtAugmentTranslations(popup, XtParseTranslationTable(def));
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
+    if(dlgNr != BoardWindow) { // assign close button, and position w.r.t. pointer, if not main window
+	XSetWMProtocols(xDisplay, XtWindow(popup), &wm_delete_window, 1);
+	snprintf(def, MSG_SIZ, "<Message>WM_PROTOCOLS: GenericPopDown(\"%d\") \n", dlgNr);
+	XtAugmentTranslations(popup, XtParseTranslationTable(def));
+	XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+			&x, &y, &win_x, &win_y, &mask);
 
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
+	XtSetArg(args[0], XtNx, x - 10);
+	XtSetArg(args[1], XtNy, y - 30);
+	XtSetValues(popup, args, 2);
+    }
     XtPopup(popup, modal ? XtGrabExclusive : XtGrabNone);
     shellUp[dlgNr]++; // count rather than flag
     previous = NULL;

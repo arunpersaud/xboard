@@ -105,7 +105,7 @@ extern ChessProgramState *currentCps;
 extern int dialogError;
 extern ButtonCallback *comboCallback;
 
-extern WindowPlacement wpComment, wpTags, wpMoveHistory;
+extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain;
 extern char *marked[];
 extern Boolean shellUp[];
 extern Option textOptions[], typeOptions[];
@@ -142,6 +142,9 @@ void SendText P((int n));
 void InitDrawingParams P(()); // in xboard.c
 void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));
+void SetClockIcon P((int color));
+void DisplayTimerLabel P((int optNr, char *color, long timer, int highlight));
+Option *BoardPopUp P((int squareSize, int lineGap, void *clockFontThingy));
 
 int  SetCurrentComboSelection P((Option *opt));
 void BoxAutoPopUp P((char *buf));

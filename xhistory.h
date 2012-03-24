@@ -1,5 +1,5 @@
 /*
- * xgamelist.h -- Game list window, part of X front end for XBoard
+ * xhistory.h -- Eval graph window, part of X front end for XBoard
  *
  * Copyright 1995, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
@@ -26,6 +26,5 @@
 void HistoryShowProc P((void));
 Boolean MoveHistoryIsUp P((void));
 
-extern Widget historyShell;
 #endif /* _XHISTL_H */
  

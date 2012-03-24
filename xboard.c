@@ -236,35 +236,21 @@ void CreateXIMPieces P((void));
 void CreateXPMPieces P((void));
 void CreateXPMBoard P((char *s, int n));
 void CreatePieces P((void));
-void CreatePieceMenus P((void));
 Widget CreateMenuBar P((Menu *mb, int boardWidth));
-Widget CreateButtonBar P ((MenuItem *mi));
 #if ENABLE_NLS
 char *InsertPxlSize P((char *pattern, int targetPxlSize));
 XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
 #endif
-void PieceMenuPopup P((Widget w, XEvent *event,
-		       String *params, Cardinal *num_params));
-static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
-static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
 		   u_int wreq, u_int hreq));
 void CreateGrid P((void));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void DelayedDrag P((void));
 static void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
-void HandleUserMove P((Widget w, XEvent *event,
-		     String *prms, Cardinal *nprms));
-void AnimateUserMove P((Widget w, XEvent * event,
-		     String * params, Cardinal * nParams));
 void HandlePV P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
-void WhiteClock P((Widget w, XEvent *event,
-		   String *prms, Cardinal *nprms));
-void BlackClock P((Widget w, XEvent *event,
-		   String *prms, Cardinal *nprms));
 void DrawPositionProc P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void CommentClick P((Widget w, XEvent * event,
@@ -288,6 +274,7 @@ void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams
 void update_ics_width P(());
 int get_term_width P(());
 int CopyMemoProc P(());
+void SetupDropMenu P((void));
 
 /*
 * XBoard depends on Xt R4 or higher
@@ -304,12 +291,8 @@ GC lightSquareGC, darkSquareGC, lineGC, wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
   prelineGC, countGC;
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
-Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
-  whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
-  commentShell, whitePieceMenu, blackPieceMenu, dropMenu,
-  menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
-  ICSInputShell, fileNameShell;
-Widget historyShell;
+Widget shellWidget, formWidget, boardWidget, titleWidget, dropMenu, menuBarWidget;
+Option *optList; // contains all widgets of main window
 XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 #if ENABLE_NLS
@@ -336,9 +319,7 @@ Boolean chessProgram;
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int smallLayout = 0, tinyLayout = 0,
   marginW, marginH, // [HGM] for run-time resizing
-  fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
-  ICSInputBoxUp = False,
-  filenameUp = False, pmFromX = -1, pmFromY = -1,
+  fromX = -1, fromY = -1, toX, toY, commentUp = False,
   errorExitStatus = -1, defaultLineGap;
 Dimension textHeight;
 Pixel timerForegroundPixel, timerBackgroundPixel;
@@ -391,49 +372,6 @@ static Pixmap xpmMask[BlackKing + 1];
 
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
-#define PAUSE_BUTTON "P"
-MenuItem buttonBar[] = {
-    {"<<", "<<", ToStartEvent},
-    {"<", "<", BackwardEvent},
-    {N_(PAUSE_BUTTON), PAUSE_BUTTON, PauseEvent},
-    {">", ">", ForwardEvent},
-    {">>", ">>", ToEndEvent},
-    {NULL, NULL, NULL}
-};
-
-#define PIECE_MENU_SIZE 18
-String pieceMenuStrings[2][PIECE_MENU_SIZE] = {
-    { N_("White"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"),
-      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
-      N_("Empty square"), N_("Clear board") },
-    { N_("Black"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"),
-      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
-      N_("Empty square"), N_("Clear board") }
-};
-/* must be in same order as pieceMenuStrings! */
-ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
-    { WhitePlay, (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
-	WhiteRook, WhiteQueen, WhiteKing, (ChessSquare) 0, WhiteAlfil,
-	WhiteCannon, WhiteAngel, WhiteMarshall, (ChessSquare) 0,
-	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
-    { BlackPlay, (ChessSquare) 0, BlackPawn, BlackKnight, BlackBishop,
-	BlackRook, BlackQueen, BlackKing, (ChessSquare) 0, BlackAlfil,
-	BlackCannon, BlackAngel, BlackMarshall, (ChessSquare) 0,
-	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
-};
-
-#define DROP_MENU_SIZE 6
-String dropMenuStrings[DROP_MENU_SIZE] = {
-    "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"), N_("Queen")
-  };
-/* must be in same order as dropMenuStrings! */
-ChessSquare dropMenuTranslation[DROP_MENU_SIZE] = {
-    (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
-    WhiteRook, WhiteQueen
-};
-
 typedef struct {
     char piece;
     char* widget;
@@ -456,41 +394,6 @@ Arg shellArgs[] = {
     { XtNmaxHeight, 0 }
 };
 
-Arg layoutArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNdefaultDistance, 0 },
-};
-
-Arg formArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNresizable, (XtArgVal) True },
-};
-
-Arg boardArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNwidth, 0 },
-    { XtNheight, 0 }
-};
-
-Arg titleArgs[] = {
-    { XtNjustify, (XtArgVal) XtJustifyRight },
-    { XtNlabel, (XtArgVal) "..." },
-    { XtNresizable, (XtArgVal) True },
-    { XtNresize, (XtArgVal) False }
-};
-
-Arg messageArgs[] = {
-    { XtNjustify, (XtArgVal) XtJustifyLeft },
-    { XtNlabel, (XtArgVal) "..." },
-    { XtNresizable, (XtArgVal) True },
-    { XtNresize, (XtArgVal) False }
-};
-
-Arg timerArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNjustify, (XtArgVal) XtJustifyLeft }
-};
-
 XtResource clientResources[] = {
     { "flashCount", "flashCount", XtRInt, sizeof(int),
 	XtOffset(AppDataPtr, flashCount), XtRImmediate,
@@ -505,14 +408,9 @@ XrmOptionDescRec shellOptions[] = {
 
 XtActionsRec boardActions[] = {
     { "DrawPosition", DrawPositionProc },
-    { "HandleUserMove", HandleUserMove },
-    { "AnimateUserMove", AnimateUserMove },
     { "HandlePV", HandlePV },
     { "SelectPV", SelectPV },
     { "StopPV", StopPV },
-    { "PieceMenuPopup", PieceMenuPopup },
-    { "WhiteClock", WhiteClock },
-    { "BlackClock", BlackClock },
     { "MenuItem", KeyBindingProc }, // [HGM] generic handler for key bindings
     { "QuitProc", QuitWrapper },
     { "ManProc", ManInner },
@@ -602,31 +500,6 @@ char globalTranslations[] =
    :<Key>F2: MenuItem(FlipView) \n \
    :<KeyDown>Return: TempBackwardProc() \n \
    :<KeyUp>Return: TempForwardProc() \n";
-
-char boardTranslations[] =
-   "<Btn1Down>: HandleUserMove(0) \n \
-   Shift<Btn1Up>: HandleUserMove(1) \n \
-   <Btn1Up>: HandleUserMove(0) \n \
-   <Btn1Motion>: AnimateUserMove() \n \
-   <Btn3Motion>: HandlePV() \n \
-   <Btn2Motion>: HandlePV() \n \
-   <Btn3Up>: PieceMenuPopup(menuB) \n \
-   <Btn2Up>: PieceMenuPopup(menuB) \n \
-   Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
-                 PieceMenuPopup(menuB) \n \
-   Any<Btn2Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD) \
-                 PieceMenuPopup(menuW) \n \
-   Shift<Btn3Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD)\
-                 PieceMenuPopup(menuW) \n \
-   Any<Btn3Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD) \
-                 PieceMenuPopup(menuB) \n";
-
-char whiteTranslations[] =
-   "Shift<BtnDown>: WhiteClock(1)\n \
-   <BtnDown>: WhiteClock(0)\n";
-char blackTranslations[] =
-   "Shift<BtnDown>: BlackClock(1)\n \
-   <BtnDown>: BlackClock(0)\n";
 
 char ICSInputTranslations[] =
     "<Key>Up: UpKeyProc() \n "
@@ -1044,9 +917,6 @@ ConvertToLine (int argc, char **argv)
 
 //--------------------------------------------------------------------------------------------
 
-#ifdef IDSIZES
-  // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
-#else
 #define BoardSize int
 void
 InitDrawingSizes (BoardSize boardSize, int flags)
@@ -1066,19 +936,6 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
 
   if(boardWidth != oldWidth || boardHeight != oldHeight || oldDual != twoBoards) { // do resizing stuff only if size actually changed
-    /*
-     * Enable shell resizing.
-     */
-    shellArgs[0].value = (XtArgVal) &w;
-    shellArgs[1].value = (XtArgVal) &h;
-    XtGetValues(shellWidget, shellArgs, 2);
-
-    shellArgs[4].value = 3*w; shellArgs[2].value = 10;
-    shellArgs[5].value = 2*h; shellArgs[3].value = 10;
-    XtSetValues(shellWidget, &shellArgs[2], 4);
-
-    XtSetArg(args[0], XtNdefaultDistance, &sep);
-    XtGetValues(formWidget, args, 1);
 
     oldWidth = boardWidth; oldHeight = boardHeight; oldDual = twoBoards;
     CreateGrid();
@@ -1088,40 +945,6 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 	secondSegments[i].x1 += hOffset;
 	secondSegments[i].x2 += hOffset;
     }
-
-    XtSetArg(args[0], XtNwidth, boardWidth);
-    XtSetArg(args[1], XtNheight, boardHeight);
-    XtSetValues(boardWidget, args, 2);
-
-    timerWidth = (boardWidth - sep) / 2;
-    XtSetArg(args[0], XtNwidth, timerWidth);
-    XtSetValues(whiteTimerWidget, args, 1);
-    XtSetValues(blackTimerWidget, args, 1);
-
-    XawFormDoLayout(formWidget, False);
-
-    if (appData.titleInWindow) {
-	i = 0;
-	XtSetArg(args[i], XtNborderWidth, &bor); i++;
-	XtSetArg(args[i], XtNheight, &h);  i++;
-	XtGetValues(titleWidget, args, i);
-	if (smallLayout) {
-	    w = boardWidth - 2*bor;
-	} else {
-	    XtSetArg(args[0], XtNwidth, &w);
-	    XtGetValues(menuBarWidget, args, 1);
-	    w = boardWidth - w - sep - 2*bor - 2; // WIDTH_FUDGE
-	}
-
-	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
-	if (gres != XtGeometryYes && appData.debugMode) {
-	    fprintf(stderr,
-		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
-		    programName, gres, w, h, wr, hr);
-	}
-    }
-
-    XawFormDoLayout(formWidget, True);
 
     /*
      * Inhibit shell resizing.
@@ -1216,7 +1039,6 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 #endif
   oldMono = appData.monoMode;
 }
-#endif
 
 static int
 MakeOneColor (char *name, Pixel *color)
@@ -1391,9 +1213,6 @@ main (int argc, char **argv)
 	gameInfo.variant = StringToVariant(appData.variant);
 	InitPosition(FALSE);
 
-#ifdef IDSIZE
-    InitDrawingSizes(-1, 0); // [HGM] initsize: make this into a subroutine
-#else
     if (isdigit(appData.boardSize[0])) {
         i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
 		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
@@ -1481,8 +1300,6 @@ XBoard square size (hint): %d\n\
     /* [HR] height treated separately (hacked) */
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
-	XtSetArg(boardArgs[2], XtNheight, boardHeight);
 
     /*
      * Determine what fonts to use.
@@ -1513,6 +1330,7 @@ XBoard square size (hint): %d\n\
     clockFontStruct = XQueryFont(xDisplay, clockFontID);
     coordFontID = XLoadFont(xDisplay, appData.coordFont);
     coordFontStruct = XQueryFont(xDisplay, coordFontID);
+    // textHeight in !NLS mode!
 #endif
     countFontID = coordFontID;  // [HGM] holdings
     countFontStruct = coordFontStruct;
@@ -1572,250 +1390,31 @@ XBoard square size (hint): %d\n\
     } else {
 	layoutName = "normalLayout";
     }
-    /* Outer layoutWidget is there only to provide a name for use in
-       resources that depend on the layout style */
-    layoutWidget =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shellWidget,
-			    layoutArgs, XtNumber(layoutArgs));
-    formWidget =
-      XtCreateManagedWidget("form", formWidgetClass, layoutWidget,
-			    formArgs, XtNumber(formArgs));
-    XtSetArg(args[0], XtNdefaultDistance, &sep);
-    XtGetValues(formWidget, args, 1);
 
-    j = 0;
-    widgetList[j++] = menuBarWidget = CreateMenuBar(menuBar, boardWidth);
-    XtSetArg(args[0], XtNtop,    XtChainTop);
-    XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetArg(args[2], XtNright,  XtChainLeft);
-    XtSetValues(menuBarWidget, args, 3);
-
-    widgetList[j++] = whiteTimerWidget =
-      XtCreateWidget("whiteTime", labelWidgetClass,
-		     formWidget, timerArgs, XtNumber(timerArgs));
+    optList = BoardPopUp(squareSize, lineGap, (void*)
 #if ENABLE_NLS
-    XtSetArg(args[0], XtNfontSet, clockFontSet);
+						&clockFontSet);
 #else
-    XtSetArg(args[0], XtNfont, clockFontStruct);
+						&clockFonStruct);
 #endif
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainTop);
-    XtSetValues(whiteTimerWidget, args, 3);
-
-    widgetList[j++] = blackTimerWidget =
-      XtCreateWidget("blackTime", labelWidgetClass,
-		     formWidget, timerArgs, XtNumber(timerArgs));
-#if ENABLE_NLS
-    XtSetArg(args[0], XtNfontSet, clockFontSet);
-#else
-    XtSetArg(args[0], XtNfont, clockFontStruct);
-#endif
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainTop);
-    XtSetValues(blackTimerWidget, args, 3);
-
-    if (appData.titleInWindow) {
-	widgetList[j++] = titleWidget =
-	  XtCreateWidget("title", labelWidgetClass, formWidget,
-			 titleArgs, XtNumber(titleArgs));
-	XtSetArg(args[0], XtNtop,    XtChainTop);
-	XtSetArg(args[1], XtNbottom, XtChainTop);
-	XtSetValues(titleWidget, args, 2);
-    }
-
-    if (appData.showButtonBar) {
-      widgetList[j++] = buttonBarWidget = CreateButtonBar(buttonBar);
-      XtSetArg(args[0], XtNleft,  XtChainRight); // [HGM] glue to right window edge
-      XtSetArg(args[1], XtNright, XtChainRight); //       for good run-time sizing
-      XtSetArg(args[2], XtNtop,    XtChainTop);
-      XtSetArg(args[3], XtNbottom, XtChainTop);
-      XtSetValues(buttonBarWidget, args, 4);
-    }
-
-    widgetList[j++] = messageWidget =
-      XtCreateWidget("message", labelWidgetClass, formWidget,
-		     messageArgs, XtNumber(messageArgs));
-    XtSetArg(args[0], XtNtop,    XtChainTop);
-    XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetValues(messageWidget, args, 2);
-
-    widgetList[j++] = boardWidget =
-      XtCreateWidget("board", widgetClass, formWidget, boardArgs,
-		     XtNumber(boardArgs));
-
-    XtManageChildren(widgetList, j);
-
-    timerWidth = (boardWidth - sep) / 2;
-    XtSetArg(args[0], XtNwidth, timerWidth);
-    XtSetValues(whiteTimerWidget, args, 1);
-    XtSetValues(blackTimerWidget, args, 1);
-
+    boardWidget      = optList[22].handle;
+    menuBarWidget    = optList[ 0].handle;
+    dropMenu         = optList[25].handle;
+    titleWidget = optList[optList[10].type != -1 ? 10 : 13].handle;
+    formWidget  = XtParent(boardWidget);
     XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
     XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
-    XtGetValues(whiteTimerWidget, args, 2);
-
-    if (appData.showButtonBar) {
+    XtGetValues(optList[11].handle, args, 2);
+    if (appData.showButtonBar) { // can't we use timer pixels for this? (Or better yet, just black & white?)
       XtSetArg(args[0], XtNbackground, &buttonBackgroundPixel);
       XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
-      XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
+      XtGetValues(optList[18].handle, args, 2);
     }
-
-    /*
-     * formWidget uses these constraints but they are stored
-     * in the children.
-     */
-    i = 0;
-    XtSetArg(args[i], XtNfromHoriz, 0); i++;
-    XtSetValues(menuBarWidget, args, i);
-    if (appData.titleInWindow) {
-	if (smallLayout) {
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	    XtSetValues(whiteTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	    XtSetValues(blackTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-            XtSetArg(args[i], XtNjustify, XtJustifyLeft); i++;
-	    XtSetValues(titleWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	    XtSetValues(messageWidget, args, i);
-	    if (appData.showButtonBar) {
-	      i = 0;
-	      XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	      XtSetValues(buttonBarWidget, args, i);
-	    }
-	} else {
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetValues(whiteTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	    XtSetValues(blackTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromHoriz, menuBarWidget); i++;
-	    XtSetValues(titleWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	    XtSetValues(messageWidget, args, i);
-	    if (appData.showButtonBar) {
-	      i = 0;
-	      XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	      XtSetValues(buttonBarWidget, args, i);
-	    }
-	}
-    } else {
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	XtSetValues(whiteTimerWidget, args, i);
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	XtSetValues(blackTimerWidget, args, i);
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	XtSetValues(messageWidget, args, i);
-	if (appData.showButtonBar) {
-	  i = 0;
-	  XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	  XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	  XtSetValues(buttonBarWidget, args, i);
-	}
-    }
-    i = 0;
-    XtSetArg(args[0], XtNfromVert, messageWidget);
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainBottom);
-    XtSetArg(args[3], XtNleft,   XtChainLeft);
-    XtSetArg(args[4], XtNright,  XtChainRight);
-    XtSetValues(boardWidget, args, 5);
-
-    XtRealizeWidget(shellWidget);
-
-    if(wpMain.x > 0) {
-      XtSetArg(args[0], XtNx, wpMain.x);
-      XtSetArg(args[1], XtNy, wpMain.y);
-      XtSetValues(shellWidget, args, 2);
-    }
-
-    /*
-     * Correct the width of the message and title widgets.
-     * It is not known why some systems need the extra fudge term.
-     * The value "2" is probably larger than needed.
-     */
-    XawFormDoLayout(formWidget, False);
-
-#define WIDTH_FUDGE 2
-    i = 0;
-    XtSetArg(args[i], XtNborderWidth, &bor);  i++;
-    XtSetArg(args[i], XtNheight, &h);  i++;
-    XtGetValues(messageWidget, args, i);
-    if (appData.showButtonBar) {
-      i = 0;
-      XtSetArg(args[i], XtNwidth, &w);  i++;
-      XtGetValues(buttonBarWidget, args, i);
-      w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
-    } else {
-      w = boardWidth - 2*bor + 1; /*!! +1 compensates for kludge below */
-    }
-
-    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
-    if (gres != XtGeometryYes && appData.debugMode) {
-      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
-	      programName, gres, w, h, wr, hr);
-    }
-
-    /* !! Horrible hack to work around bug in XFree86 4.0.1 (X11R6.4.3) */
-    /* The size used for the child widget in layout lags one resize behind
-       its true size, so we resize a second time, 1 pixel smaller.  Yeech! */
-    w--;
-    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
-    if (gres != XtGeometryYes && appData.debugMode) {
-      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
-	      programName, gres, w, h, wr, hr);
-    }
-    /* !! end hack */
-    if(!textHeight) textHeight = hr; // [HGM] if !NLS textHeight is still undefined, and we grab it from here
-    XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
-    XtSetArg(args[1], XtNright, XtChainRight);
-    XtSetValues(messageWidget, args, 2);
-
-    if (appData.titleInWindow) {
-	i = 0;
-	XtSetArg(args[i], XtNborderWidth, &bor); i++;
-	XtSetArg(args[i], XtNheight, &h);  i++;
-	XtGetValues(titleWidget, args, i);
-	if (smallLayout) {
-	    w = boardWidth - 2*bor;
-	} else {
-	    XtSetArg(args[0], XtNwidth, &w);
-	    XtGetValues(menuBarWidget, args, 1);
-	    w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
-	}
-
-	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
-	if (gres != XtGeometryYes && appData.debugMode) {
-	    fprintf(stderr,
-		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
-		    programName, gres, w, h, wr, hr);
-	}
-    }
-    XawFormDoLayout(formWidget, True);
 
     xBoardWindow = XtWindow(boardWidget);
 
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
     //       not need to go into InitDrawingSizes().
-#endif
 
     /*
      * Create X checkmark bitmap and initialize option menu checks.
@@ -1861,25 +1460,12 @@ XBoard square size (hint): %d\n\
     CreateGrid();
     CreateAnyPieces();
 
-    CreatePieceMenus();
-
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
     XtAugmentTranslations(formWidget,
 			  XtParseTranslationTable(globalTranslations));
-    XtAugmentTranslations(boardWidget,
-			  XtParseTranslationTable(boardTranslations));
-    XtAugmentTranslations(whiteTimerWidget,
-			  XtParseTranslationTable(whiteTranslations));
-    XtAugmentTranslations(blackTimerWidget,
-			  XtParseTranslationTable(blackTranslations));
 
-    /* Why is the following needed on some versions of X instead
-     * of a translation? */
-    XtAddEventHandler(boardWidget, ExposureMask|PointerMotionMask, False,
-		      (XtEventHandler) EventProc, NULL);
-    /* end why */
     XtAddEventHandler(formWidget, KeyPressMask, False,
 		      (XtEventHandler) MoveTypeInProc, NULL);
     XtAddEventHandler(shellWidget, StructureNotifyMask, False,
@@ -2722,6 +2308,7 @@ void
 MarkMenuItem (char *menuRef, int state)
 {
     int nr = MenuToNumber(menuRef);
+return;
     if(nr >= 0) {
 	Arg args[2];
 	XtSetArg(args[0], XtNleftBitmap, state ? xMarkPixmap : None);
@@ -2733,13 +2320,14 @@ void
 EnableMenuItem (char *menuRef, int state)
 {
     int nr = MenuToNumber(menuRef);
+return;
     if(nr >= 0) XtSetSensitive(menuWidget[nr], state);
 }
 
 void
 EnableButtonBar (int state)
 {
-    XtSetSensitive(buttonBarWidget, state);
+    XtSetSensitive(optList[15].handle, state);
 }
 
 
@@ -2766,6 +2354,7 @@ void
 KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] new method of key binding: specify MenuItem(FlipView) in stead of FlipViewProc in translation string
     int i;
+    char *p;
     if(*nprms == 0) return;
     for(i=0; menuItemList[i].name; i++) {
 	if(Equal(prms[0], menuItemList[i].name)) {
@@ -2874,111 +2463,6 @@ CreateMenuBar (Menu *mb, int boardWidth)
     return mainBar;
 }
 
-Widget
-CreateButtonBar (MenuItem *mi)
-{
-    int j;
-    Widget button, buttonBar;
-    Arg args[16];
-
-    j = 0;
-    XtSetArg(args[j], XtNorientation, XtorientHorizontal); j++;
-    if (tinyLayout) {
-	XtSetArg(args[j], XtNhSpace, 0); j++;
-    }
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNvSpace, 0);                        j++;
-    buttonBar = XtCreateWidget("buttonBar", boxWidgetClass,
-			       formWidget, args, j);
-
-    while (mi->string != NULL) {
-	j = 0;
-	if (tinyLayout) {
-	    XtSetArg(args[j], XtNinternalWidth, 2); j++;
-	    XtSetArg(args[j], XtNborderWidth, 0); j++;
-	}
-      XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string))); j++;
-	button = XtCreateManagedWidget(mi->string, commandWidgetClass,
-				       buttonBar, args, j);
-	XtAddCallback(button, XtNcallback,
-		      (XtCallbackProc) MenuBarSelect,
-		      (caddr_t) mi->proc);
-	mi++;
-    }
-    return buttonBar;
-}
-
-Widget
-CreatePieceMenu (char *name, int color)
-{
-    int i;
-    Widget entry, menu;
-    Arg args[16];
-    ChessSquare selection;
-
-    menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
-			      boardWidget, args, 0);
-
-    for (i = 0; i < PIECE_MENU_SIZE; i++) {
-	String item = pieceMenuStrings[color][i];
-
-	if (strcmp(item, "----") == 0) {
-	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
-					  menu, NULL, 0);
-	} else {
-          XtSetArg(args[0], XtNlabel, XtNewString(_(item)));
-	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-                                menu, args, 1);
-	    selection = pieceMenuTranslation[color][i];
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) PieceMenuSelect,
-			  (caddr_t) selection);
-	    if (selection == WhitePawn || selection == BlackPawn) {
-		XtSetArg(args[0], XtNpopupOnEntry, entry);
-		XtSetValues(menu, args, 1);
-	    }
-	}
-    }
-    return menu;
-}
-
-void
-CreatePieceMenus ()
-{
-    int i;
-    Widget entry;
-    Arg args[16];
-    ChessSquare selection;
-
-    whitePieceMenu = CreatePieceMenu("menuW", 0);
-    blackPieceMenu = CreatePieceMenu("menuB", 1);
-
-    if(appData.pieceMenu) // [HGM] sweep: no idea what this was good for, but it stopped reporting button events outside the window
-    XtRegisterGrabAction(PieceMenuPopup, True,
-			 (unsigned)(ButtonPressMask|ButtonReleaseMask),
-			 GrabModeAsync, GrabModeAsync);
-
-    XtSetArg(args[0], XtNlabel, _("Drop"));
-    dropMenu = XtCreatePopupShell("menuD", simpleMenuWidgetClass,
-				  boardWidget, args, 1);
-    for (i = 0; i < DROP_MENU_SIZE; i++) {
-	String item = dropMenuStrings[i];
-
-	if (strcmp(item, "----") == 0) {
-	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
-					  dropMenu, NULL, 0);
-	} else {
-          XtSetArg(args[0], XtNlabel, XtNewString(_(item)));
-	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-                                dropMenu, args, 1);
-	    selection = dropMenuTranslation[i];
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) DropMenuSelect,
-			  (caddr_t) selection);
-	}
-    }
-}
-
 void
 SetupDropMenu ()
 {
@@ -3002,53 +2486,6 @@ SetupDropMenu ()
 	XtSetArg(args[j], XtNlabel, label); j++;
 	XtSetValues(entry, args, j);
     }
-}
-
-void
-PieceMenuPopup (Widget w, XEvent *event, String *params, Cardinal *num_params)
-{
-    String whichMenu; int menuNr = -2;
-    shiftKey = strcmp(params[0], "menuW"); // used to indicate black
-    if (event->type == ButtonRelease)
-        menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
-    else if (event->type == ButtonPress)
-        menuNr = RightClick(Press,   event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
-    switch(menuNr) {
-      case 0: whichMenu = params[0]; break;
-      case 1: SetupDropMenu(); whichMenu = "menuD"; break;
-      case 2:
-      case -1: ErrorPopDown();
-      default: return;
-    }
-    XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
-}
-
-static void
-PieceMenuSelect (Widget w, ChessSquare piece, caddr_t junk)
-{
-    if (pmFromX < 0 || pmFromY < 0) return;
-    EditPositionMenuEvent(piece, pmFromX, pmFromY);
-}
-
-static void
-DropMenuSelect (Widget w, ChessSquare piece, caddr_t junk)
-{
-    if (pmFromX < 0 || pmFromY < 0) return;
-    DropMenuEvent(piece, pmFromX, pmFromY);
-}
-
-void
-WhiteClock (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    shiftKey = prms[0][0] & 1;
-    ClockClick(0);
-}
-
-void
-BlackClock (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    shiftKey = prms[0][0] & 1;
-    ClockClick(1);
 }
 
 
@@ -3398,33 +2835,12 @@ DelayedDrag ()
       XtAppAddTimeOut(appContext, 50, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
 }
 
-/* Why is this needed on some versions of X? */
 void
 EventProc (Widget widget, caddr_t unused, XEvent *event)
 {
-    if (!XtIsRealized(widget))
-      return;
-    switch (event->type) {
-      case ConfigureNotify: // main window is being dragged: drag attached windows with it
-	if(appData.useStickyWindows)
-	    DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
-	break;
-      case Expose:
-	if (event->xexpose.count > 0) return;  /* no clipping is done */
-	DrawPosition(True, NULL);
-	if(twoBoards) { // [HGM] dual: draw other board in other orientation
-	    flipView = !flipView; partnerUp = !partnerUp;
-	    DrawPosition(True, NULL);
-	    flipView = !flipView; partnerUp = !partnerUp;
-	}
-	break;
-      case MotionNotify:
-        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, 1)) break;
-      default:
-	return;
-    }
+    if(XtIsRealized(widget) && event->type == ConfigureNotify || appData.useStickyWindows)
+	DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
 }
-/* end why */
 
 // [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph
 void
@@ -3478,44 +2894,6 @@ DrawPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     DrawPosition(True, NULL);
 }
 
-
-/*
- * event handler for parsing user moves
- */
-// [HGM] This routine will need quite some reworking. Although the backend still supports the old
-//       way of doing things, by calling UserMoveEvent() to test the legality of the move and then perform
-//       it at the end, and doing all kind of preliminary tests here (e.g. to weed out self-captures), it
-//       should be made to use the new way, of calling UserMoveTest early  to determine the legality of the
-//       move, (which will weed out the illegal selfcaptures and moves into the holdings, and flag promotions),
-//       and at the end FinishMove() to perform the move after optional promotion popups.
-//       For now I patched it to allow self-capture with King, and suppress clicks between board and holdings.
-void
-HandleUserMove (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    if (w != boardWidget || errorExitStatus != -1) return;
-    if(nprms) shiftKey = !strcmp(prms[0], "1");
-
-    if (shellUp[PromoDlg]) { // [HGM] is this still needed?
-	if (event->type == ButtonPress) {
-	    PopDown(PromoDlg);
-	    ClearHighlights();
-	    fromX = fromY = -1;
-	} else {
-	    return;
-	}
-    }
-
-    // [HGM] mouse: the rest of the mouse handler is moved to the backend, and called here
-    if(event->type == ButtonPress)   LeftClick(Press,   event->xbutton.x, event->xbutton.y);
-    if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
-}
-
-void
-AnimateUserMove (Widget w, XEvent *event, String *params, Cardinal *nParams)
-{
-    if(!PromoScroll(event->xmotion.x, event->xmotion.y))
-    DragPieceMove(event->xmotion.x, event->xmotion.y);
-}
 
 void
 HandlePV (Widget w, XEvent * event, String * params, Cardinal * nParams)
@@ -3593,7 +2971,7 @@ FreezeUI ()
 {
   if (frozen) return;
   /* Grab by a widget that doesn't accept input */
-  XtAddGrab(messageWidget, TRUE, FALSE);
+  XtAddGrab(optList[14].handle, TRUE, FALSE);
   frozen = 1;
 }
 
@@ -3602,7 +2980,7 @@ void
 ThawUI ()
 {
   if (!frozen) return;
-  XtRemoveGrab(messageWidget);
+  XtRemoveGrab(optList[14].handle);
   frozen = 0;
 }
 
@@ -3628,12 +3006,12 @@ ModeHighlight ()
 	    Pixel oldbg, oldfg;
 	    XtSetArg(args[0], XtNbackground, &oldbg);
 	    XtSetArg(args[1], XtNforeground, &oldfg);
-	    XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON),
+	    XtGetValues(optList[18].handle,
 			args, 2);
 	    XtSetArg(args[0], XtNbackground, oldfg);
 	    XtSetArg(args[1], XtNforeground, oldbg);
 	  }
-	  XtSetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
+	  XtSetValues(optList[18].handle, args, 2);
 	}
     }
 
@@ -3952,10 +3330,10 @@ DisplayMessage (char *message, char *extMessage)
   /* need to test if messageWidget already exists, since this function
      can also be called during the startup, if for example a Xresource
      is not set up correctly */
-  if(messageWidget)
+  if(optList && optList[14].handle)
     {
       XtSetArg(arg, XtNlabel, message);
-      XtSetValues(messageWidget, &arg, 1);
+      XtSetValues(optList[14].handle, &arg, 1);
     };
 
   return;
@@ -4150,10 +3528,11 @@ StartClockTimer (long millisec)
 }
 
 void
-DisplayTimerLabel (Widget w, char *color, long timer, int highlight)
+DisplayTimerLabel (int optNr, char *color, long timer, int highlight)
 {
     char buf[MSG_SIZ];
     Arg args[16];
+    Widget w = optList[optNr].handle;
 
     /* check for low time warning */
     Pixel foregroundOrWarningColor = timerForegroundPixel;
@@ -4183,29 +3562,15 @@ DisplayTimerLabel (Widget w, char *color, long timer, int highlight)
     XtSetValues(w, args, 3);
 }
 
-void
-DisplayWhiteClock (long timeRemaining, int highlight)
-{
-    Arg args[16];
-
-    if(appData.noGUI) return;
-    DisplayTimerLabel(whiteTimerWidget, _("White"), timeRemaining, highlight);
-    if (highlight && iconPixmap == bIconPixmap) {
-	iconPixmap = wIconPixmap;
-	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
-	XtSetValues(shellWidget, args, 1);
-    }
-}
+static Pixmap *clockIcons[] = { &wIconPixmap, &bIconPixmap };
 
 void
-DisplayBlackClock (long timeRemaining, int highlight)
+SetClockIcon (int color)
 {
     Arg args[16];
-
-    if(appData.noGUI) return;
-    DisplayTimerLabel(blackTimerWidget, _("Black"), timeRemaining, highlight);
-    if (highlight && iconPixmap == wIconPixmap) {
-	iconPixmap = bIconPixmap;
+    Pixmap pm = *clockIcons[color];
+    if (iconPixmap != pm) {
+	iconPixmap = pm;
 	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
 	XtSetValues(shellWidget, args, 1);
     }

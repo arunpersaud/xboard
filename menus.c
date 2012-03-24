@@ -1239,3 +1239,5 @@ InitMenuMarkers()
 	MarkMenuItem("Save Settings on Exit", True);
     }
 }
+
+
