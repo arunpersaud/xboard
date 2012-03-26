@@ -382,7 +382,10 @@ OptionsProc ()
 
 static void Pick P((int n));
 
+static char warning[MSG_SIZ];
+
 static Option variantDescriptors[] = {
+{ 0, 0, 275, NULL, NULL, NULL, NULL, Label, warning },
 { VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("normal")},
 { VariantFairy,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
 { VariantFischeRandom,  0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("FRC")},
@@ -463,6 +466,7 @@ Pick (int n)
 void
 NewVariantProc ()
 {
+   sprintf(warning, _("All variants not supported by first engine\n(currently %s) are disabled"), first.tidy);
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
