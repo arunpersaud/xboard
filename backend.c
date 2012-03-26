@@ -13553,6 +13553,11 @@ TwoMachinesEvent P((void))
 
     if (appData.noChessProgram) return;
 
+    if(second.protocolVersion >= 2 && !strstr(second.variants, VariantName(gameInfo.variant))) {
+	DisplayError("second engine does not play this", 0);
+	return;
+    }
+
     switch (gameMode) {
       case TwoMachinesPlay:
 	return;
