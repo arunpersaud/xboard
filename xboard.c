@@ -4233,22 +4233,30 @@ QuitWrapper (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     QuitProc();
 }
 
+int
+ShiftKeys ()
+{   // bassic primitive for determining if modifier keys are pressed
+    long int codes[] = { XK_Meta_L, XK_Meta_R, XK_Control_L, XK_Control_R, XK_Shift_L, XK_Shift_R };
+    char keys[32];
+    int i,j,  k=0;
+    XQueryKeymap(xDisplay,keys);
+    for(i=0; i<6; i++) {
+	k <<= 1;
+	j = XKeysymToKeycode(xDisplay, codes[i]);
+	k += ( (keys[j>>3]&1<<(j&7)) != 0 );
+    }
+    return k;
+}
+
 static void
 MoveTypeInProc (Widget widget, caddr_t unused, XEvent *event)
 {
-    char buf[10], keys[32];
+    char buf[10];
     KeySym sym;
-    KeyCode metaL, metaR; //, ctrlL, ctrlR;
     int n = XLookupString(&(event->xkey), buf, 10, &sym, NULL);
-    XQueryKeymap(xDisplay,keys);
-    metaL = XKeysymToKeycode(xDisplay, XK_Meta_L);
-    metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
-//    ctrlL = XKeysymToKeycode(xDisplay, XK_Control_L);
-//    ctrlR = XKeysymToKeycode(xDisplay, XK_Control_R);
     if ( n == 1 && *buf >= 32 // printable
-	 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7)) // no alt key pressed
-//	 && !(keys[ctrlL>>3]&1<<(ctrlL&7)) && !(keys[ctrlR>>3]&1<<(ctrlR&7)) // no ctrl key pressed
-       ) BoxAutoPopUp (buf);
+	 && !(ShiftKeys() & 0x3C) // no Alt, Ctrl
+	) BoxAutoPopUp (buf);
 }
 
 static void
