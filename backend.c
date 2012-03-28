@@ -850,7 +850,7 @@ LoadEngine ()
     SendToProgram("force\n", savCps);
     DisplayMessage("", "");
     if (startedFromSetupPosition) SendBoard(savCps, backwardMostMove);
-    for (i = backwardMostMove; i < forwardMostMove; i++) SendMoveToProgram(i, savCps);
+    for (i = backwardMostMove; i < currentMove; i++) SendMoveToProgram(i, savCps);
     ThawUI();
     SetGNUMode();
 }
