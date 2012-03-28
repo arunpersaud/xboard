@@ -682,7 +682,7 @@ SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int
 }
 
 int
-GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal)
+GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int top)
 {
     Arg args[24];
     Widget popup, layout, dialog=NULL, edit=NULL, form,  last, b_ok, b_cancel, previousPane = NULL, textField = NULL, oldForm, oldLastRow, oldForeLast;
@@ -720,11 +720,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     shells[BoardWindow] = shellWidget; parents[dlgNr] = parent;
 
     popup = shells[dlgNr] =
-#if TOPLEVEL
-      XtCreatePopupShell(title, modal ? transientShellWidgetClass : topLevelShellWidgetClass,
-#else
-      XtCreatePopupShell(title, transientShellWidgetClass,
-#endif
+      XtCreatePopupShell(title, !top || !appData.topLevel ? transientShellWidgetClass : topLevelShellWidgetClass,
                                                            shells[parent], args, i);
 
     layout =

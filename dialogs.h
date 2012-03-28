@@ -31,14 +31,13 @@
 // int     min        X/E         (2)    (3)         (1)  (1)  (1)   (1)  (3)   (1)  (4)
 // int     max        X/E   (w)   (w)    (w)   (w)   (w)  (w)  (w)   (w)
 // void*   handle     X/E   X/E   X/E    X/E   X/E    X    X    X     X    X
-// void*   target      X     X     X      X     C          X    X     C    C
+// void*   target      X     X     X     X/C    C          X    X     C    C
 // char*   textValue               E     X/E    *
 // char ** choice                        X/E    *                          X
 // enum    type       X/E   X/E   X/E    X/E    X     X    X    X     X    X     X    X
 // char[]  name       X/E   X/E   X/E    X/E    X          X    X     X    X
 // File and Path options are like String (but get a browse button added in the dialog), and Slider
-// is like Spin. Menu can be PopUp or PopDown; both need the COMBO_CALLBACK bit (1) set, and the
-// latter also uses the min flags for positioning the menu button.
+// is like Spin. Menu can be PopUp or PopDown; both need the COMBO_CALLBACK bit (3) set!
 // (h) or (w) means the field optionally (when non-null) specifies the height or width of the main
 // control element (excluding accompanying description texts). [w] means the width is written there.
 // C specifies the 'target' is a user-supplied callback function, which will be executed when the
@@ -52,7 +51,7 @@
 #define T_WRAP		(1 << 3)
 #define T_TOP		(1 << 4)
 
-/* Flags Option.min used (3) for ComboBox (-combo): */
+/* Flags Option.min used (3) for ComboBox (-combo) and menus (PopUp, PopDown): */
 #define COMBO_CALLBACK	(1 << 0)
 #define NO_GETTEXT	(1 << 2)
 
@@ -73,7 +72,7 @@
 #define RR		(L2R|R2R)   /*   0x30 = entirely to right */
 #define LR		(L2L|R2R)   /*   0x90 = absorb all horizontal size change */
 
-/* Flags for Option.min used (3) for EndMark: */
+/* Flags for Option.min used (4) for EndMark: */
 #define NO_OK		(1 << 1)
 #define NO_CANCEL	(1 << 2)
 
@@ -110,7 +109,7 @@ extern Option textOptions[], typeOptions[];
 
 
 int DialogExists P((DialogClass n));
-int GenericPopUp P((Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal));
+int GenericPopUp P((Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int topLevel));
 int GenericReadout P((Option *currentOption, int selected));
 int PopDown P((DialogClass n));
 int AppendText P((Option *opt, char *s));

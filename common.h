@@ -461,8 +461,7 @@ typedef struct {
     Boolean autoComment;
     Boolean getMoveList;
     Boolean testLegality;
-    int borderXoffset; /* xboard only */
-    int borderYoffset; /* xboard only */
+    Boolean topLevel;      /* xboard, top-level auxiliary windows */
     Boolean titleInWindow; /* xboard only */
     Boolean localLineEditing; /* WinBoard only */
     Boolean zippyTalk;

@@ -319,7 +319,7 @@ MatchOptionsProc ()
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
    ASSIGN(engineName, appData.participants);
-   GenericPopUp(matchOptions, _("Match Options"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(matchOptions, _("Match Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 // ------------------------------------------- General Options --------------------------------------------------
@@ -360,6 +360,7 @@ static Option generalOptions[] = {
 { 0,  0, 0, NULL, (void*) &appData.markers, "", NULL, CheckBox, N_("Show Target Squares") },
 { 0,  0, 0, NULL, (void*) &appData.useStickyWindows, "", NULL, CheckBox, N_("Sticky Windows") },
 { 0,  0, 0, NULL, (void*) &appData.testLegality, "", NULL, CheckBox, N_("Test Legality") },
+{ 0,  0, 0, NULL, (void*) &appData.topLevel, "", NULL, CheckBox, N_("Top-Level Dialogs") },
 { 0, 0,10,  NULL, (void*) &appData.flashCount, "", NULL, Spin, N_("Flash Moves (0 = no flashing):") },
 { 0, 1,10,  NULL, (void*) &appData.flashRate, "", NULL, Spin, N_("Flash Rate (high = fast):") },
 { 0, 5,100, NULL, (void*) &appData.animSpeed, "", NULL, Spin, N_("Animation Speed (high = slow):") },
@@ -372,7 +373,7 @@ OptionsProc ()
 {
    oldPonder = appData.ponderNextMove;
    oldShow = appData.showCoords; oldBlind = appData.blindfold;
-   GenericPopUp(generalOptions, _("General Options"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(generalOptions, _("General Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //---------------------------------------------- New Variant ------------------------------------------------
@@ -460,7 +461,7 @@ Pick (int n)
 void
 NewVariantProc ()
 {
-   GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //------------------------------------------- Common Engine Options -------------------------------------
@@ -504,7 +505,7 @@ UciMenuProc ()
 {
    oldCores = appData.smpCores;
    oldPonder = appData.ponderNextMove;
-   GenericPopUp(commonEngineOptions, _("Common Engine Settings"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(commonEngineOptions, _("Common Engine Settings"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //------------------------------------------ Adjudication Options --------------------------------------
@@ -526,7 +527,7 @@ static Option adjudicationOptions[] = {
 void
 EngineMenuProc ()
 {
-   GenericPopUp(adjudicationOptions, _("Adjudicate non-ICS Games"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(adjudicationOptions, _("Adjudicate non-ICS Games"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //--------------------------------------------- ICS Options ---------------------------------------------
@@ -574,7 +575,7 @@ Option icsOptions[] = {
 void
 IcsOptionsProc ()
 {
-   GenericPopUp(icsOptions, _("ICS Options"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(icsOptions, _("ICS Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //-------------------------------------------- Load Game Options ---------------------------------
@@ -613,7 +614,7 @@ void
 LoadOptionsProc ()
 {
    ASSIGN(searchMode, modeValues[appData.searchMode-1]);
-   GenericPopUp(loadOptions, _("Load Game Options"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(loadOptions, _("Load Game Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //------------------------------------------- Save Game Options --------------------------------------------
@@ -633,7 +634,7 @@ static Option saveOptions[] = {
 void
 SaveOptionsProc ()
 {
-   GenericPopUp(saveOptions, _("Save Game Options"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(saveOptions, _("Save Game Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //----------------------------------------------- Sound Options ---------------------------------------------
@@ -713,7 +714,7 @@ SoundOptionsProc ()
 {
    free(soundFiles[2]);
    soundFiles[2] = strdup("*");
-   GenericPopUp(soundOptions, _("Sound Options"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(soundOptions, _("Sound Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //--------------------------------------------- Board Options --------------------------------------
@@ -830,7 +831,7 @@ AdjustColor (int i)
 void
 BoardOptionsProc ()
 {
-   GenericPopUp(boardOptions, _("Board Options"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(boardOptions, _("Board Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //-------------------------------------------- ICS Text Menu Options ------------------------------
@@ -882,7 +883,7 @@ IcsTextProc ()
    textOptions[i].target = NULL;
    textOptions[i].min = 2;
    MarkMenu("ICStex", TextMenuDlg);
-   GenericPopUp(textOptions, _("ICS text menu"), TextMenuDlg, BoardWindow, NONMODAL);
+   GenericPopUp(textOptions, _("ICS text menu"), TextMenuDlg, BoardWindow, NONMODAL, 1);
 }
 
 //---------------------------------------------------- Edit Comment -----------------------------------
@@ -929,7 +930,7 @@ NewCommentPopup (char *title, char *text, int index)
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
     MarkMenu("Show Comments", CommentDlg);
-    if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL))
+    if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL, 1))
 	AddHandler(&commentOptions[0], 1);
 }
 
@@ -983,7 +984,7 @@ NewTagsPopup (char *text, char *msg)
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].name = msg;
     MarkMenu("Show Tags", TagsDlg);
-    GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL);
+    GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL, 1);
 }
 
 //---------------------------------------------- ICS Input Box ----------------------------------
@@ -1089,7 +1090,7 @@ void
 ICSInputBoxPopUp ()
 {
     MarkMenu("ICS Input Box", InputBoxDlg);
-    if(GenericPopUp(boxOptions, _("ICS input box"), InputBoxDlg, BoardWindow, NONMODAL))
+    if(GenericPopUp(boxOptions, _("ICS input box"), InputBoxDlg, BoardWindow, NONMODAL, 0))
 	AddHandler(&boxOptions[0], 3);
 }
 
@@ -1120,7 +1121,7 @@ PopUpMoveDialog (char firstchar)
 {
     static char buf[2];
     buf[0] = firstchar; ASSIGN(icsText, buf);
-    if(GenericPopUp(typeOptions, _("Type a move"), TransientDlg, BoardWindow, MODAL))
+    if(GenericPopUp(typeOptions, _("Type a move"), TransientDlg, BoardWindow, MODAL, 0))
 	AddHandler(&typeOptions[0], 2);
 }
 
@@ -1145,7 +1146,7 @@ void
 SettingsPopUp (ChessProgramState *cps)
 {
    currentCps = cps;
-   GenericPopUp(cps->option, _("Engine Settings"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(cps->option, _("Engine Settings"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 void
@@ -1202,7 +1203,7 @@ LoadEngineProc ()
    if(nickName)     free(nickName);     nickName = strdup("");
    if(params)       free(params);       params = strdup("");
    NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
-   GenericPopUp(installOptions, _("Load engine"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(installOptions, _("Load engine"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //----------------------------------------------------- Edit Book -----------------------------------------
@@ -1245,7 +1246,7 @@ SetRandom (int n)
 void
 ShuffleMenuProc ()
 {
-    GenericPopUp(shuffleOptions, _("New Shuffle Game"), TransientDlg, BoardWindow, MODAL);
+    GenericPopUp(shuffleOptions, _("New Shuffle Game"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //------------------------------------------------------ Time Control -----------------------------------
@@ -1338,7 +1339,7 @@ TimeControlProc ()
    tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;
    tmpOdds1 = tmpOdds2 = 1; tcType = 0;
    tmpTc = atoi(appData.timeControl);
-   GenericPopUp(tcOptions, _("Time Control"), TransientDlg, BoardWindow, MODAL);
+   GenericPopUp(tcOptions, _("Time Control"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 //------------------------------- Ask Question -----------------------------------------
@@ -1377,7 +1378,7 @@ AskQuestion (char *title, char *question, char *replyPrefix, ProcRef pr)
     pendingReplyPR = pr;
     ASSIGN(answer, "");
     askOptions[0].name = question;
-    if(GenericPopUp(askOptions, title, AskDlg, BoardWindow, MODAL))
+    if(GenericPopUp(askOptions, title, AskDlg, BoardWindow, MODAL, 0))
 	AddHandler(&askOptions[1], 2);
 }
 
@@ -1460,7 +1461,7 @@ PromotionPopUp ()
       SetPromo(_("Defer"), --count, '=');
       SetPromo(_("Promote"), --count, '+');
   }
-  GenericPopUp(promoOptions + count, "Promotion", PromoDlg, BoardWindow, NONMODAL);
+  GenericPopUp(promoOptions + count, "Promotion", PromoDlg, BoardWindow, NONMODAL, 0);
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
@@ -1515,10 +1516,10 @@ ErrorPopUp (char *title, char *label, int modal)
 {
     errorUp = True;
     errorOptions[1].name = label;
-    if(dialogError = shellUp[TransientDlg])
-        GenericPopUp(errorOptions+1, title, FatalDlg, TransientDlg, MODAL); // pop up as daughter of the transient dialog
+    if(dialogError = shellUp[TransientDlg]) 
+	GenericPopUp(errorOptions+1, title, FatalDlg, TransientDlg, MODAL, 0); // pop up as daughter of the transient dialog
     else
-        GenericPopUp(errorOptions+modal, title, modal ? FatalDlg: ErrorDlg, BoardWindow, modal); // kludge: option start address indicates modality
+	GenericPopUp(errorOptions+modal, title, modal ? FatalDlg: ErrorDlg, BoardWindow, modal, 0); // kludge: option start address indicates modality
 }
 
 void
