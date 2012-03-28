@@ -11515,7 +11515,7 @@ QuickCompare (Board board, int *minCounts, int *maxCounts)
 int
 QuickScan (Board board, Move *move)
 {   // reconstruct game,and compare all positions in it
-    int cnt=0, stretch=0, total = MakePieceList(board, counts);
+    int cnt=0, stretch=0, total = MakePieceList(board, counts), delayedKing = -1;
     do {
 	int piece = move->piece;
 	int to = move->to, from = pieceList[piece];
@@ -11533,18 +11533,22 @@ QuickScan (Board board, Move *move)
 	    move++;
 	    continue;
 	  } else if(piece <= Q_BCASTL) { // castling, encoded as (Q_XCASTL, king-to) + (rook, rook-to)
+	    int rook;
 	    piece = pieceList[piece]; // first two elements of pieceList contain King numbers
 	    from  = pieceList[piece]; // so this must be King
 	    quickBoard[from] = 0;
-	    quickBoard[to] = piece;
 	    pieceList[piece] = to;
-	    move++;
-	    continue;
+	    from = pieceList[(++move)->piece]; // for FRC this has to be done here
+	    quickBoard[from] = 0; // rook
+	    quickBoard[to] = piece;
+	    to = move->to; piece = move->piece;
+	    goto aftercastle;
 	  }
 	}
 	if(appData.searchMode > 2) counts[pieceType[quickBoard[to]]]--; // account capture
 	if((total -= (quickBoard[to] != 0)) < soughtTotal) return -1; // piece count dropped below what we search for
 	quickBoard[from] = 0;
+      aftercastle:
 	quickBoard[to] = piece;
 	pieceList[piece] = to;
 	cnt++; turn ^= 3;
@@ -11559,7 +11563,7 @@ QuickScan (Board board, Move *move)
 	    if(stretch++ == 0) for(i=0; i<EmptySquare; i++) lastCounts[i] = counts[i]; // remember actual material
 	} else stretch = 0;
 	if(stretch && (appData.searchMode == 1 || stretch >= appData.stretch)) return cnt + 1 - stretch;
-	move++;
+	move++; delayedKing = -1;
     } while(1);
 }
 
