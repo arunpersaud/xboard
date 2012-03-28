@@ -11382,15 +11382,18 @@ QuickScan (Board board, Move *move)
 	    piece = pieceList[piece]; // first two elements of pieceList contain King numbers
 	    from  = pieceList[piece]; // so this must be King
 	    quickBoard[from] = 0;
-	    quickBoard[to] = piece;
 	    pieceList[piece] = to;
-	    move++;
-	    continue;
+	    from = pieceList[(++move)->piece]; // for FRC this has to be done here
+	    quickBoard[from] = 0; // rook
+	    quickBoard[to] = piece;
+	    to = move->to; piece = move->piece;
+	    goto aftercastle;
 	  }
 	}
 	if(appData.searchMode > 2) counts[pieceType[quickBoard[to]]]--; // account capture
 	if((total -= (quickBoard[to] != 0)) < soughtTotal) return -1; // piece count dropped below what we search for
 	quickBoard[from] = 0;
+      aftercastle:
 	quickBoard[to] = piece;
 	pieceList[piece] = to;
 	cnt++; turn ^= 3;
