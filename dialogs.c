@@ -254,8 +254,10 @@ MatchOK (int n)
 
 static Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:") },
-{ 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round    (for concurrent playing of a single") },
-{ 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle      tourney with multiple XBoards)") },
+{ 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round") },
+{ 0, SAME_ROW|LL, 0, NULL, NULL, "", NULL, Label, N_("    (for concurrent playing of a single") },
+{ 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
+{ 0, SAME_ROW|LL, 0, NULL, NULL, "", NULL, Label, N_("      tourney with multiple XBoards)") },
 { 150, T_VSCRL | T_FILL | T_WRAP,
                   0, NULL, (void*) &engineName, "", NULL, TextBox, N_("Tourney participants:") },
 { 0,  COMBO_CALLBACK | NO_GETTEXT,
@@ -280,14 +282,14 @@ static Option matchOptions[] = {
 static void
 ReplaceParticipant ()
 {
-    GenericReadout(matchOptions, 3);
+    GenericReadout(matchOptions, 5);
     Substitute(strdup(engineName), True);
 }
 
 static void
 UpgradeParticipant ()
 {
-    GenericReadout(matchOptions, 3);
+    GenericReadout(matchOptions, 5);
     Substitute(strdup(engineName), False);
 }
 
@@ -309,14 +311,14 @@ CloneTourney ()
 static void
 AddToTourney (int n)
 {
-    AddLine(&matchOptions[3], engineMnemonic[values[4]+1]);
+    AddLine(&matchOptions[5], engineMnemonic[values[6]+1]);
 }
 
 void
 MatchOptionsProc ()
 {
    NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
-   matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
+   matchOptions[7].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
    ASSIGN(engineName, appData.participants);
    GenericPopUp(matchOptions, _("Match Options"), TransientDlg, BoardWindow, MODAL, 0);
