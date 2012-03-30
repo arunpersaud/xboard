@@ -60,6 +60,7 @@ extern char *getenv();
 #include <X11/Xaw3d/Text.h>
 #include <X11/Xaw3d/AsciiText.h>
 #include <X11/Xaw3d/Viewport.h>
+#include <X11/Xaw3d/Scrollbar.h>
 #else
 #include <X11/Xaw/Dialog.h>
 #include <X11/Xaw/Form.h>
@@ -73,6 +74,7 @@ extern char *getenv();
 #include <X11/Xaw/Text.h>
 #include <X11/Xaw/AsciiText.h>
 #include <X11/Xaw/Viewport.h>
+#include <X11/Xaw/Scrollbar.h>
 #endif
 
 #include "common.h"
@@ -96,6 +98,8 @@ void SetFocus P((Widget w, XtPointer data, XEvent *event, Boolean *b));
 static Widget filterText;
 static char filterString[MSG_SIZ];
 static int listLength, wins, losses, draws, page;
+static char *list[1003];
+int listEnd;
 
 char gameListTranslations[] =
   "<Btn1Up>(2): LoadSelectedProc(0) \n \
@@ -123,6 +127,64 @@ typedef struct {
     char **strings;
 } GameListClosure;
 static GameListClosure *glc = NULL;
+
+int
+ReadScroll (Widget listwidg, float *top, float *bottom)
+{   // retreives fractions of top and bottom of thumb
+    Arg args[16];
+    Widget w = XtParent(listwidg); // viewport
+    Widget v = XtNameToWidget(w, "vertical");
+    int j=0;
+    float h;
+    if(!v) return FALSE; // no scroll bar
+    XtSetArg(args[j], XtNshown, &h); j++;
+    XtSetArg(args[j], XtNtopOfThumb, top); j++;
+    XtGetValues(v, args, j);
+    *bottom = *top + h;
+    return TRUE;
+}
+
+void
+SetScroll (Widget listwidg, float f)
+{   // sets top of thumb to given fraction
+    static char *params[3] = { "", "Continuous", "Proportional" };
+    static XEvent event;
+    Widget w = XtParent(listwidg); // viewport
+    Widget v = XtNameToWidget(w, "vertical");
+    if(!v) return; // no scroll bar
+    XtCallActionProc(v, "StartScroll", &event, params+1, 1);
+    XawScrollbarSetThumb(v, f, -1.0);
+    XtCallActionProc(v, "NotifyThumb", &event, params, 0);
+//    XtCallActionProc(v, "NotifyScroll", &event, params+2, 1);
+    XtCallActionProc(v, "EndScroll", &event, params, 0);
+}
+
+void
+HighlightWithScroll (Widget listwidg, int sel, int max)
+{
+    float top, bottom, f, g;
+    XawListHighlight(listwidg, sel);
+    if(!ReadScroll(listwidg, &top, &bottom)) return; // no scroll bar
+    bottom = bottom*max - 1.;
+    f = g = top;
+    top *= max;
+    if(sel > (top + 3*bottom)/4) f = (sel - 0.75*(bottom-top))/max; else
+    if(sel < (3*top + bottom)/4) f = (sel - 0.25*(bottom-top))/max;
+    if(f < 0.) f = 0.; if(f + 1./max > 1.) f = 1. - 1./max;
+    if(f != g) SetScroll(listwidg, f);
+}
+
+void
+GameListHighlight (int index)
+{
+    Widget listwidg;
+    int i=0; char **st;
+    if (glc == NULL || !glc->up) return;
+    listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
+    st = list;
+    while(*st && atoi(*st)<index) st++,i++;
+    HighlightWithScroll(listwidg, i, listLength);
+}
 
 Widget
 GameListCreate (char *name, XtCallbackProc callback, XtPointer client_data)
@@ -360,9 +422,6 @@ GetTimeMark(&t2);printf("GameListPrepare %ld msec\n", SubtractTimeMarks(&t2,&t))
     return listLength;
 }
 
-static char *list[1003];
-int listEnd;
-
 static void
 GameListReplace (int page)
 {
@@ -382,7 +441,7 @@ GameListReplace (int page)
   XtSetArg(arg, XtNlist, listLength ? list : dummyList); // empty list displays message
   XawListChange(listwidg, list, 0, 0, True);
   XtSetValues(listwidg, &arg, 1);
-  XawListHighlight(listwidg, 0);
+  HighlightWithScroll(listwidg, 0, listLength);
   snprintf(buf, MSG_SIZ, _("%s - %d/%d games (%d-%d-%d)"), glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
   XtSetArg(arg, XtNtitle, buf);
   XtSetValues(glc->shell, &arg, 1);
@@ -425,14 +484,14 @@ GameListCallback (Widget w, XtPointer client_data, XtPointer call_data)
 	    DisplayError(_("Can't go forward any further"), 0);
 	    return;
 	}
-	XawListHighlight(listwidg, index);
+	HighlightWithScroll(listwidg, index, listLength);
     } else if (strcmp(name, _("prev")) == 0) {
 	index = rs->list_index - 1;
 	if (index < 0) {
 	    DisplayError(_("Can't back up any further"), 0);
 	    return;
 	}
-	XawListHighlight(listwidg, index);
+	HighlightWithScroll(listwidg, index, listLength);
     } else if (strcmp(name, _("apply")) == 0 ||
                strcmp(name, _("find position")) == 0) {
         String text;
@@ -440,7 +499,7 @@ GameListCallback (Widget w, XtPointer client_data, XtPointer call_data)
         XtSetArg(args[j], XtNstring, &text);  j++;
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, text, sizeof(filterString)/sizeof(filterString[0]));
-	XawListHighlight(listwidg, 0);
+	HighlightWithScroll(listwidg, 0, listLength);
         GameListPrepare(strcmp(name, _("find position")) == 0); GameListReplace(0);
         return;
     }
@@ -567,7 +626,7 @@ LoadSelectedProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 	if(direction == -2) index = 0;
 	if(direction == 2) index = listEnd-1;
 	if(index < 0 || index >= listEnd) return;
-	XawListHighlight(listwidg, index);
+	HighlightWithScroll(listwidg, index, listLength);
 	if(!doLoad) return;
     }
     index = atoi(list[index])-1; // [HGM] filter: read true index from sequence nr of line
@@ -592,7 +651,7 @@ SetFilterProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
         safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
         GameListPrepare(False); GameListReplace(0);
 	list = XtNameToWidget(glc->shell, "*form.viewport.list");
-	XawListHighlight(list, 0);
+	HighlightWithScroll(list, 0, listLength);
         j = 0;
 	XtSetArg(args[j], XtNdisplayCaret, False); j++;
 	XtSetValues(filterText, args, j);
@@ -623,18 +682,6 @@ GameListPopDown ()
     XtSetArg(args[j], XtNleftBitmap, None); j++;
     XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
 		args, j);
-}
-
-void
-GameListHighlight (int index)
-{
-    Widget listwidg;
-    int i=0; char **st;
-    if (glc == NULL || !glc->up) return;
-    listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-    st = list;
-    while(*st && atoi(*st)<index) st++,i++;
-    XawListHighlight(listwidg, i);
 }
 
 Boolean
