@@ -462,14 +462,16 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		          ofn.hwndOwner = hDlg;
 		          ofn.hInstance = hInst;
 		          ofn.lpstrFilter = filter;
-			  ofn.nFilterIndex      = 1L + (ext = activeCps ? 0 : activeList[layoutList[(i-2000)/2+1]].max);
+			  ofn.nFilterIndex      = 1L + (ext = activeCps ? 0 : activeList[layoutList[(i-2000)/2+1]].max & 31);
 			  ofn.lpstrDefExt       = defaultExt[ext];
 		          ofn.lpstrFile = buf;
 		          ofn.nMaxFile = sizeof(buf);
 		          ofn.lpstrTitle = _("Choose File");
 		          ofn.Flags = OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
 
-		          if( GetOpenFileName( &ofn ) ) {
+		          if( activeList[layoutList[(i-2000)/2+1]].max & 32 ?
+		                                       GetOpenFileName( &ofn ) :
+		                                       GetSaveFileName( &ofn ) ) {
 		              SetDlgItemText( hDlg, i+3, buf );
 		          }
 		} else
@@ -640,7 +642,7 @@ Option installOptions[] = {
   {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
   {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
   {   0,  0,    0, NULL, (void*) &useNick, NULL, NULL, CheckBox, N_("Use nickname in PGN tag") },
-  {   0,  0,    3, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine (*.exe):") },
+  {   0,  0, 32+3, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine (*.exe):") },
   {   0,  0,    0, NULL, (void*) &params, NULL, NULL, TextBox, N_("command-line parameters:") },
   {   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("directory:") },
   {  95,  0,    0, NULL, NULL, NULL, NULL, Label, N_("(Directory will be derived from engine path when left empty)") },
@@ -779,9 +781,9 @@ Option tourneyOptions[] = {
   { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round") },
   { 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Games per Match / Pairing:") },
   { 0,  0,          1, NULL, (void*) &appData.saveGameFile, "", NULL, FileName, N_("File for saving tourney games:") },
-  { 0,  0,          1, NULL, (void*) &appData.loadGameFile, "", NULL, FileName, N_("Game File with Opening Lines:") },
+  { 0,  0,       32+1, NULL, (void*) &appData.loadGameFile, "", NULL, FileName, N_("Game File with Opening Lines:") },
   { 0, -2, 1000000000, NULL, (void*) &appData.loadGameIndex, "", NULL, Spin, N_("Game Number:") },
-  { 0,  0,          2, NULL, (void*) &appData.loadPositionFile, "", NULL, FileName, N_("File with Start Positions:") },
+  { 0,  0,       32+2, NULL, (void*) &appData.loadPositionFile, "", NULL, FileName, N_("File with Start Positions:") },
   { 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, N_("Position Number:") },
   { 0,  0,          0, NULL, (void*) &autoinc, "", NULL, CheckBox, N_("Step through lines/positions in file") },
   { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind after (0 = never):") },
@@ -817,6 +819,7 @@ int AddToTourney(HWND hDlg)
   }
   SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) 0, (LPARAM) buf);
   return 0;
+
 }
 
 void TourneyPopup(HWND hwnd)
