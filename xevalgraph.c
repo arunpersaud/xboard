@@ -273,11 +273,7 @@ EvalGraphCreate (char *name)
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
     shell =
-#if TOPLEVEL
-     XtCreatePopupShell(name, topLevelShellWidgetClass,
-#else
-      XtCreatePopupShell(name, transientShellWidgetClass,
-#endif
+     XtCreatePopupShell(name, appData.topLevel ? topLevelShellWidgetClass : transientShellWidgetClass,
 			 shellWidget, args, j);
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,

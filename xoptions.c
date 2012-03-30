@@ -1052,7 +1052,9 @@ GenericPopUp (Option *option, char *title, int dlgNr)
      i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
     popup = shells[dlgNr] =
-      XtCreatePopupShell(title, transientShellWidgetClass,
+      XtCreatePopupShell(title, appData.topLevel && (dlgNr == 7 || dlgNr == 2 || dlgNr == 1 || dlgNr == 4) ?
+					topLevelShellWidgetClass :
+					transientShellWidgetClass,
 			 shellWidget, args, i);
 
     layout =

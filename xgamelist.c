@@ -141,15 +141,9 @@ GameListCreate (char *name, XtCallbackProc callback, XtPointer client_data)
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNallowShellResize, True);  j++;
-#if TOPLEVEL
     shell = gameListShell =
-      XtCreatePopupShell(name, topLevelShellWidgetClass,
+      XtCreatePopupShell(name, appData.topLevel ? topLevelShellWidgetClass : transientShellWidgetClass,
 			 shellWidget, args, j);
-#else
-    shell = gameListShell =
-      XtCreatePopupShell(name, transientShellWidgetClass,
-			 shellWidget, args, j);
-#endif
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,
 			    layoutArgs, XtNumber(layoutArgs));
