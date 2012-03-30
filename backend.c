@@ -9483,10 +9483,13 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
         board[fromY][fromX] = CharToPiece(piece < BlackPawn ? ToUpper(promoChar) : ToLower(promoChar)); // S-Chess gating
     } else
     if(promoChar == '+') {
-        /* [HGM] Shogi-style promotions, to piece implied by original (Might overwrite orinary Pawn promotion) */
+        /* [HGM] Shogi-style promotions, to piece implied by original (Might overwrite ordinary Pawn promotion) */
         board[toY][toX] = (ChessSquare) (PROMOTED piece);
     } else if(!appData.testLegality && promoChar != NULLCHAR && promoChar != '=') { // without legality testing, unconditionally believe promoChar
-        board[toY][toX] = CharToPiece(piece < BlackPawn ? ToUpper(promoChar) : ToLower(promoChar));
+        ChessSquare newPiece = CharToPiece(piece < BlackPawn ? ToUpper(promoChar) : ToLower(promoChar));
+	if((newPiece <= WhiteMan || newPiece >= BlackPawn && newPiece <= BlackMan) // unpromoted piece specified
+	   && pieceToChar[PROMOTED newPiece] == '~') newPiece = PROMOTED newPiece; // but promoted version available
+        board[toY][toX] = newPiece;
     }
     if((gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat || gameInfo.variant == VariantGrand)
 		&& promoChar != NULLCHAR && gameInfo.holdingsSize) {
