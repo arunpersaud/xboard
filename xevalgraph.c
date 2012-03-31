@@ -245,7 +245,7 @@ EvalGraphPopUp ()
 	SetIconName(EvalGraphDlg, _(title));
     }
 
-    MarkMenu("Show Evaluation Graph", EvalGraphDlg);
+    MarkMenu("View.EvaluationGraph", EvalGraphDlg);
 
 //    ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
 }

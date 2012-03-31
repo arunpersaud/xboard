@@ -890,7 +890,7 @@ IcsTextProc ()
    textOptions[i].type = EndMark;
    textOptions[i].target = NULL;
    textOptions[i].min = 2;
-   MarkMenu("ICStex", TextMenuDlg);
+   MarkMenu("View.ICStextmenu", TextMenuDlg);
    GenericPopUp(textOptions, _("ICS text menu"), TextMenuDlg, BoardWindow, NONMODAL, 1);
 }
 
@@ -937,7 +937,7 @@ NewCommentPopup (char *title, char *text, int index)
     }
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
-    MarkMenu("Show Comments", CommentDlg);
+    MarkMenu("View.Comments", CommentDlg);
     if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL, 1))
 	AddHandler(&commentOptions[0], 1);
 }
@@ -947,8 +947,8 @@ EditCommentProc ()
 {
     int j;
     if (PopDown(CommentDlg)) { // popdown succesful
-	MarkMenuItem("Edit Comment", False);
-	MarkMenuItem("Show Comments", False);
+//	MarkMenuItem("Edit.EditComment", False);
+//	MarkMenuItem("View.Comments", False);
     } else // was not up
 	EditCommentEvent();
 }
@@ -991,7 +991,7 @@ NewTagsPopup (char *text, char *msg)
     }
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].name = msg;
-    MarkMenu("Show Tags", TagsDlg);
+    MarkMenu("View.Tags", TagsDlg);
     GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL, 1);
 }
 
@@ -1097,7 +1097,7 @@ PutText (char *text, int pos)
 void
 ICSInputBoxPopUp ()
 {
-    MarkMenu("ICS Input Box", InputBoxDlg);
+    MarkMenu("View.ICSInputBox", InputBoxDlg);
     if(GenericPopUp(boxOptions, _("ICS input box"), InputBoxDlg, BoardWindow, NONMODAL, 0))
 	AddHandler(&boxOptions[0], 3);
 }

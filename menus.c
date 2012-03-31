@@ -347,7 +347,7 @@ SaveOnExitProc ()
 
     saveSettingsOnExit = !saveSettingsOnExit;
 
-    MarkMenuItem("Save Settings on Exit", saveSettingsOnExit);
+    MarkMenuItem("Options.SaveSettingsonExit", saveSettingsOnExit);
 }
 
 void
@@ -451,14 +451,14 @@ PonderNextMoveProc ()
     Arg args[16];
 
     PonderNextMoveEvent(!appData.ponderNextMove);
-    MARK_MENU_ITEM("Ponder Next Move", appData.ponderNextMove);
+    MARK_MENU_ITEM("Options.PonderNextMove", appData.ponderNextMove);
 }
 
 void
 AlwaysQueenProc ()
 {
     appData.alwaysPromoteToQueen = !appData.alwaysPromoteToQueen;
-    MARK_MENU_ITEM("Always Queen", appData.alwaysPromoteToQueen);
+    MARK_MENU_ITEM("Options.AlwaysQueen", appData.alwaysPromoteToQueen);
 }
 
 void
@@ -467,7 +467,7 @@ AnimateDraggingProc ()
     appData.animateDragging = !appData.animateDragging;
 
     if (appData.animateDragging) CreateAnimVars();
-    MARK_MENU_ITEM("Animate Dragging", appData.animateDragging);
+    MARK_MENU_ITEM("Options.AnimateDragging", appData.animateDragging);
 }
 
 void
@@ -475,28 +475,28 @@ AnimateMovingProc ()
 {
     appData.animate = !appData.animate;
     if (appData.animate) CreateAnimVars();
-    MARK_MENU_ITEM("Animate Moving", appData.animate);
+    MARK_MENU_ITEM("Options.AnimateMoving", appData.animate);
 }
 
 void
 AutoflagProc ()
 {
     appData.autoCallFlag = !appData.autoCallFlag;
-    MARK_MENU_ITEM("Auto Flag", appData.autoCallFlag);
+    MARK_MENU_ITEM("Options.AutoFlag", appData.autoCallFlag);
 }
 
 void
 AutoflipProc ()
 {
     appData.autoFlipView = !appData.autoFlipView;
-    MARK_MENU_ITEM("Auto Flip View", appData.autoFlipView);
+    MARK_MENU_ITEM("Options.AutoFlipView", appData.autoFlipView);
 }
 
 void
 BlindfoldProc ()
 {
     appData.blindfold = !appData.blindfold;
-    MARK_MENU_ITEM("Blindfold", appData.blindfold);
+    MARK_MENU_ITEM("Options.Blindfold", appData.blindfold);
     DrawPosition(True, NULL);
 }
 
@@ -504,7 +504,7 @@ void
 TestLegalityProc ()
 {
     appData.testLegality = !appData.testLegality;
-    MARK_MENU_ITEM("Test Legality", appData.testLegality);
+    MARK_MENU_ITEM("Options.TestLegality", appData.testLegality);
 }
 
 
@@ -516,7 +516,7 @@ FlashMovesProc ()
     } else {
 	appData.flashCount = -appData.flashCount;
     }
-    MARK_MENU_ITEM("Flash Moves", appData.flashCount > 0);
+    MARK_MENU_ITEM("Options.FlashMoves", appData.flashCount > 0);
 }
 
 #if HIGHDRAG
@@ -524,7 +524,7 @@ void
 HighlightDraggingProc ()
 {
     appData.highlightDragging = !appData.highlightDragging;
-    MARK_MENU_ITEM("Highlight Dragging", appData.highlightDragging);
+    MARK_MENU_ITEM("Options.HighlightDragging", appData.highlightDragging);
 }
 #endif
 
@@ -532,70 +532,70 @@ void
 HighlightLastMoveProc ()
 {
     appData.highlightLastMove = !appData.highlightLastMove;
-    MARK_MENU_ITEM("Highlight Last Move", appData.highlightLastMove);
+    MARK_MENU_ITEM("Options.HighlightLastMove", appData.highlightLastMove);
 }
 
 void
 HighlightArrowProc ()
 {
     appData.highlightMoveWithArrow = !appData.highlightMoveWithArrow;
-    MARK_MENU_ITEM("Arrow", appData.highlightMoveWithArrow);
+    MARK_MENU_ITEM("Options.HighlightWithArrow", appData.highlightMoveWithArrow);
 }
 
 void
 IcsAlarmProc ()
 {
     appData.icsAlarm = !appData.icsAlarm;
-//    MARK_MENU_ITEM("ICS Alarm", appData.icsAlarm);
+//    MARK_MENU_ITEM("Options.ICSAlarm", appData.icsAlarm);
 }
 
 void
 MoveSoundProc ()
 {
     appData.ringBellAfterMoves = !appData.ringBellAfterMoves;
-    MARK_MENU_ITEM("Move Sound", appData.ringBellAfterMoves);
+    MARK_MENU_ITEM("Options.MoveSound", appData.ringBellAfterMoves);
 }
 
 void
 OneClickProc ()
 {
     appData.oneClick = !appData.oneClick;
-    MARK_MENU_ITEM("OneClick", appData.oneClick);
+    MARK_MENU_ITEM("Options.OneClickMoving", appData.oneClick);
 }
 
 void
 PeriodicUpdatesProc ()
 {
     PeriodicUpdatesEvent(!appData.periodicUpdates);
-    MARK_MENU_ITEM("Periodic Updates", appData.periodicUpdates);
+    MARK_MENU_ITEM("Options.PeriodicUpdates", appData.periodicUpdates);
 }
 
 void
 PopupExitMessageProc ()
 {
     appData.popupExitMessage = !appData.popupExitMessage;
-    MARK_MENU_ITEM("Popup Exit Message", appData.popupExitMessage);
+    MARK_MENU_ITEM("Options.PopupExitMessage", appData.popupExitMessage);
 }
 
 void
 PopupMoveErrorsProc ()
 {
     appData.popupMoveErrors = !appData.popupMoveErrors;
-    MARK_MENU_ITEM("Popup Move Errors", appData.popupMoveErrors);
+    MARK_MENU_ITEM("Options.PopupMoveErrors", appData.popupMoveErrors);
 }
 
 void
 PremoveProc ()
 {
     appData.premove = !appData.premove;
-//    MARK_MENU_ITEM("Premove", appData.premove);
+//    MARK_MENU_ITEM("Options.Premove", appData.premove);
 }
 
 void
 ShowCoordsProc ()
 {
     appData.showCoords = !appData.showCoords;
-    MARK_MENU_ITEM("Show Coords", appData.showCoords);
+    MARK_MENU_ITEM("Options.ShowCoords", appData.showCoords);
     DrawPosition(True, NULL);
 }
 
@@ -614,7 +614,7 @@ HideThinkingProc ()
     appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: taken out of ShowThinkingEvent
     ShowThinkingEvent();
 
-    MARK_MENU_ITEM("Hide Thinking", appData.hideThinkingFromHuman);
+    MARK_MENU_ITEM("Options.HideThinking", appData.hideThinkingFromHuman);
 }
 
 /*
@@ -622,84 +622,84 @@ HideThinkingProc ()
  */
 
 MenuItem fileMenu[] = {
-    {N_("New Game        Ctrl+N"),        "New Game", ResetGameEvent},
-    {N_("New Shuffle Game ..."),          "New Shuffle Game", ShuffleMenuProc},
-    {N_("New Variant ...   Alt+Shift+V"), "New Variant", NewVariantProc},      // [HGM] variant: not functional yet
+    {N_("New Game        Ctrl+N"),        "NewGame", ResetGameEvent},
+    {N_("New Shuffle Game ..."),          "NewShuffleGame", ShuffleMenuProc},
+    {N_("New Variant ...   Alt+Shift+V"), "NewVariant", NewVariantProc},      // [HGM] variant: not functional yet
     {"----", NULL, NothingProc},
-    {N_("Load Game       Ctrl+O"),        "Load Game", LoadGameProc},
-    {N_("Load Position    Ctrl+Shift+O"), "Load Position", LoadPositionProc},
-//    {N_("Load Next Game"), "Load Next Game", LoadNextGameProc},
-//    {N_("Load Previous Game"), "Load Previous Game", LoadPrevGameProc},
-//    {N_("Reload Same Game"), "Reload Same Game", ReloadGameProc},
-    {N_("Next Position     Shift+PgDn"), "Load Next Position", LoadNextPositionProc},
-    {N_("Prev Position     Shift+PgUp"), "Load Previous Position", LoadPrevPositionProc},
+    {N_("Load Game       Ctrl+O"),        "LoadGame", LoadGameProc},
+    {N_("Load Position    Ctrl+Shift+O"), "LoadPosition", LoadPositionProc},
+//    {N_("Load Next Game"), "LoadNextGame", LoadNextGameProc},
+//    {N_("Load Previous Game"), "LoadPreviousGame", LoadPrevGameProc},
+//    {N_("Reload Same Game"), "ReloadSameGame", ReloadGameProc},
+    {N_("Next Position     Shift+PgDn"), "LoadNextPosition", LoadNextPositionProc},
+    {N_("Prev Position     Shift+PgUp"), "LoadPreviousPosition", LoadPrevPositionProc},
     {"----", NULL, NothingProc},
 //    {N_("Reload Same Position"), "Reload Same Position", ReloadPositionProc},
-    {N_("Save Game       Ctrl+S"),        "Save Game", SaveGameProc},
-    {N_("Save Position    Ctrl+Shift+S"), "Save Position", SavePositionProc},
+    {N_("Save Game       Ctrl+S"),        "SaveGame", SaveGameProc},
+    {N_("Save Position    Ctrl+Shift+S"), "SavePosition", SavePositionProc},
     {"----", NULL, NothingProc},
-    {N_("Mail Move"),            "Mail Move", MailMoveEvent},
-    {N_("Reload CMail Message"), "Reload CMail Message", ReloadCmailMsgProc},
+    {N_("Mail Move"),            "MailMove", MailMoveEvent},
+    {N_("Reload CMail Message"), "ReloadCMailMessage", ReloadCmailMsgProc},
     {"----", NULL, NothingProc},
-    {N_("Quit                 Ctr+Q"), "Exit", QuitProc},
+    {N_("Quit                 Ctr+Q"), "Quit", QuitProc},
     {NULL, NULL, NULL}
 };
 
 MenuItem editMenu[] = {
-    {N_("Copy Game    Ctrl+C"),        "Copy Game", CopyGameProc},
-    {N_("Copy Position Ctrl+Shift+C"), "Copy Position", CopyPositionProc},
-    {N_("Copy Game List"),        "Copy Game List", CopyGameListProc},
+    {N_("Copy Game    Ctrl+C"),        "CopyGame", CopyGameProc},
+    {N_("Copy Position Ctrl+Shift+C"), "CopyPosition", CopyPositionProc},
+    {N_("Copy Game List"),        "CopyGameList", CopyGameListProc},
     {"----", NULL, NothingProc},
-    {N_("Paste Game    Ctrl+V"),        "Paste Game", PasteGameProc},
-    {N_("Paste Position Ctrl+Shift+V"), "Paste Position", PastePositionProc},
+    {N_("Paste Game    Ctrl+V"),        "PasteGame", PasteGameProc},
+    {N_("Paste Position Ctrl+Shift+V"), "PastePosition", PastePositionProc},
     {"----", NULL, NothingProc},
-    {N_("Edit Game      Ctrl+E"),        "Edit Game 2", EditGameEvent},
-    {N_("Edit Position   Ctrl+Shift+E"), "Edit Position 2", EditPositionEvent},
-    {N_("Edit Tags"),                    "Edit Tags", EditTagsProc},
-    {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
-    {N_("Edit Book"),                    "Edit Book", EditBookEvent},
+    {N_("Edit Game      Ctrl+E"),        "EditGame", EditGameEvent},
+    {N_("Edit Position   Ctrl+Shift+E"), "EditPosition", EditPositionEvent},
+    {N_("Edit Tags"),                    "EditTags", EditTagsProc},
+    {N_("Edit Comment"),                 "EditComment", EditCommentProc},
+    {N_("Edit Book"),                    "EditBook", EditBookEvent},
     {"----", NULL, NothingProc},
     {N_("Revert              Home"), "Revert", RevertProc},
     {N_("Annotate"),                 "Annotate", AnnotateProc},
-    {N_("Truncate Game  End"),       "Truncate Game", TruncateGameEvent},
+    {N_("Truncate Game  End"),       "TruncateGame", TruncateGameEvent},
     {"----", NULL, NothingProc},
     {N_("Backward         Alt+Left"),   "Backward", BackwardEvent},
     {N_("Forward           Alt+Right"), "Forward", ForwardEvent},
-    {N_("Back to Start     Alt+Home"),  "Back to Start", ToStartEvent},
-    {N_("Forward to End Alt+End"),      "Forward to End", ToEndEvent},
+    {N_("Back to Start     Alt+Home"),  "BacktoStart", ToStartEvent},
+    {N_("Forward to End Alt+End"),      "ForwardtoEnd", ToEndEvent},
     {NULL, NULL, NULL}
 };
 
 MenuItem viewMenu[] = {
-    {N_("Flip View             F2"),         "Flip View", FlipViewProc},
+    {N_("Flip View             F2"),         "FlipView", FlipViewProc},
     {"----", NULL, NothingProc},
-    {N_("Engine Output      Alt+Shift+O"),   "Show Engine Output", EngineOutputProc},
-    {N_("Move History       Alt+Shift+H"),   "Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
-    {N_("Evaluation Graph  Alt+Shift+E"),    "Show Evaluation Graph", EvalGraphProc},
-    {N_("Game List            Alt+Shift+G"), "Show Game List", ShowGameListProc},
-    {N_("ICS text menu"), "ICStex", IcsTextProc},
+    {N_("Engine Output      Alt+Shift+O"),   "EngineOutput", EngineOutputProc},
+    {N_("Move History       Alt+Shift+H"),   "MoveHistory", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
+    {N_("Evaluation Graph  Alt+Shift+E"),    "EvaluationGraph", EvalGraphProc},
+    {N_("Game List            Alt+Shift+G"), "GameList", ShowGameListProc},
+    {N_("ICS text menu"), "ICStextmenu", IcsTextProc},
     {"----", NULL, NothingProc},
-    {N_("Tags"),             "Show Tags", EditTagsProc},
-    {N_("Comments"),         "Show Comments", EditCommentProc},
-    {N_("ICS Input Box"),    "ICS Input Box", IcsInputBoxProc},
+    {N_("Tags"),             "Tags", EditTagsProc},
+    {N_("Comments"),         "Comments", EditCommentProc},
+    {N_("ICS Input Box"),    "ICSInputBox", IcsInputBoxProc},
     {"----", NULL, NothingProc},
-    {N_("Board..."),          "Board Options", BoardOptionsProc},
-    {N_("Game List Tags..."), "Game List", GameListOptionsProc},
+    {N_("Board..."),          "Board", BoardOptionsProc},
+    {N_("Game List Tags..."), "GameListTags", GameListOptionsProc},
     {NULL, NULL, NULL}
 };
 
 MenuItem modeMenu[] = {
-    {N_("Machine White  Ctrl+W"), "Machine White", MachineWhiteEvent},
-    {N_("Machine Black  Ctrl+B"), "Machine Black", MachineBlackEvent},
-    {N_("Two Machines   Ctrl+T"), "Two Machines", TwoMachinesEvent},
-    {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", AnalyzeModeProc},
-    {N_("Analyze Game   Ctrl+G"), "Analyze File", AnalyzeFileProc },
-    {N_("Edit Game         Ctrl+E"), "Edit Game", EditGameEvent},
-    {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", EditPositionEvent},
+    {N_("Machine White  Ctrl+W"), "MachineWhite", MachineWhiteEvent},
+    {N_("Machine Black  Ctrl+B"), "MachineBlack", MachineBlackEvent},
+    {N_("Two Machines   Ctrl+T"), "TwoMachines", TwoMachinesEvent},
+    {N_("Analysis Mode  Ctrl+A"), "AnalysisMode", AnalyzeModeProc},
+    {N_("Analyze Game   Ctrl+G"), "AnalyzeFile", AnalyzeFileProc },
+    {N_("Edit Game         Ctrl+E"), "EditGame", EditGameEvent},
+    {N_("Edit Position      Ctrl+Shift+E"), "EditPosition", EditPositionEvent},
     {N_("Training"),      "Training", TrainingEvent},
-    {N_("ICS Client"),    "ICS Client", IcsClientEvent},
+    {N_("ICS Client"),    "ICSClient", IcsClientEvent},
     {"----", NULL, NothingProc},
-    {N_("Machine Match"),         "Machine Match", MatchProc},
+    {N_("Machine Match"),         "MachineMatch", MatchProc},
     {N_("Pause               Pause"),         "Pause", PauseEvent},
     {NULL, NULL, NULL}
 };
@@ -709,33 +709,33 @@ MenuItem actionMenu[] = {
     {N_("Decline            F4"), "Decline", DeclineEvent},
     {N_("Rematch           F12"), "Rematch", RematchEvent},
     {"----", NULL, NothingProc},
-    {N_("Call Flag          F5"), "Call Flag", CallFlagEvent},
+    {N_("Call Flag          F5"), "CallFlag", CallFlagEvent},
     {N_("Draw                F6"), "Draw", DrawEvent},
     {N_("Adjourn            F7"),  "Adjourn", AdjournEvent},
     {N_("Abort                F8"),"Abort", AbortEvent},
     {N_("Resign              F9"), "Resign", ResignEvent},
     {"----", NULL, NothingProc},
-    {N_("Stop Observing  F10"), "Stop Observing", StopObservingEvent},
-    {N_("Stop Examining  F11"), "Stop Examining", StopExaminingEvent},
-    {N_("Upload to Examine"),   "Upload to Examine", UploadGameEvent},
+    {N_("Stop Observing  F10"), "StopObserving", StopObservingEvent},
+    {N_("Stop Examining  F11"), "StopExamining", StopExaminingEvent},
+    {N_("Upload to Examine"),   "UploadtoExamine", UploadGameEvent},
     {"----", NULL, NothingProc},
-    {N_("Adjudicate to White"), "Adjudicate to White", AdjuWhiteProc},
-    {N_("Adjudicate to Black"), "Adjudicate to Black", AdjuBlackProc},
-    {N_("Adjudicate Draw"),     "Adjudicate Draw", AdjuDrawProc},
+    {N_("Adjudicate to White"), "AdjudicatetoWhite", AdjuWhiteProc},
+    {N_("Adjudicate to Black"), "AdjudicatetoBlack", AdjuBlackProc},
+    {N_("Adjudicate Draw"),     "AdjudicateDraw", AdjuDrawProc},
     {NULL, NULL, NULL}
 };
 
 MenuItem engineMenu[] = {
-    {N_("Load New Engine ..."), "Load Engine", LoadEngineProc},
+    {N_("Load New Engine ..."), "LoadEngine", LoadEngineProc},
     {"----", NULL, NothingProc},
-    {N_("Engine #1 Settings ..."), "Engine #1 Settings", FirstSettingsProc},
-    {N_("Engine #2 Settings ..."), "Engine #2 Settings", SecondSettingsProc},
+    {N_("Engine #1 Settings ..."), "Engine#1Settings", FirstSettingsProc},
+    {N_("Engine #2 Settings ..."), "Engine#2Settings", SecondSettingsProc},
     {"----", NULL, NothingProc},
     {N_("Hint"), "Hint", HintEvent},
     {N_("Book"), "Book", BookEvent},
     {"----", NULL, NothingProc},
-    {N_("Move Now     Ctrl+M"),     "Move Now", MoveNowEvent},
-    {N_("Retract Move  Ctrl+X"), "Retract Move", RetractMoveEvent},
+    {N_("Move Now     Ctrl+M"),     "MoveNow", MoveNowEvent},
+    {N_("Retract Move  Ctrl+X"), "RetractMove", RetractMoveEvent},
     {NULL, NULL, NULL}
 };
 
@@ -743,58 +743,92 @@ MenuItem optionsMenu[] = {
 #ifdef OPTIONSDIALOG
     {N_("General ..."), "General", OptionsProc},
 #endif
-    {N_("Time Control ...       Alt+Shift+T"), "Time Control", TimeControlProc},
-    {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", UciMenuProc},
+    {N_("Time Control ...       Alt+Shift+T"), "TimeControl", TimeControlProc},
+    {N_("Common Engine ...  Alt+Shift+U"),     "CommonEngine", UciMenuProc},
     {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", EngineMenuProc},
     {N_("ICS ..."),    "ICS", IcsOptionsProc},
     {N_("Match ..."), "Match", MatchOptionsProc},
-    {N_("Load Game ..."),    "Load Game", LoadOptionsProc},
-    {N_("Save Game ..."),    "Save Game", SaveOptionsProc},
+    {N_("Load Game ..."),    "LoadGame", LoadOptionsProc},
+    {N_("Save Game ..."),    "SaveGame", SaveOptionsProc},
 //    {N_(" ..."),    "", OptionsProc},
-    {N_("Game List ..."),    "Game List", GameListOptionsProc},
+    {N_("Game List ..."),    "GameList", GameListOptionsProc},
     {N_("Sounds ..."),    "Sounds", SoundOptionsProc},
     {"----", NULL, NothingProc},
 #ifndef OPTIONSDIALOG
-    {N_("Always Queen        Ctrl+Shift+Q"),   "Always Queen", AlwaysQueenProc},
-    {N_("Animate Dragging"), "Animate Dragging", AnimateDraggingProc},
-    {N_("Animate Moving      Ctrl+Shift+A"),   "Animate Moving", AnimateMovingProc},
-    {N_("Auto Flag               Ctrl+Shift+F"), "Auto Flag", AutoflagProc},
-    {N_("Auto Flip View"),   "Auto Flip View", AutoflipProc},
+    {N_("Always Queen        Ctrl+Shift+Q"),   "AlwaysQueen", AlwaysQueenProc},
+    {N_("Animate Dragging"), "AnimateDragging", AnimateDraggingProc},
+    {N_("Animate Moving      Ctrl+Shift+A"),   "AnimateMoving", AnimateMovingProc},
+    {N_("Auto Flag               Ctrl+Shift+F"), "AutoFlag", AutoflagProc},
+    {N_("Auto Flip View"),   "AutoFlipView", AutoflipProc},
     {N_("Blindfold"),        "Blindfold", BlindfoldProc},
-    {N_("Flash Moves"),      "Flash Moves", FlashMovesProc},
+    {N_("Flash Moves"),      "FlashMoves", FlashMovesProc},
 #if HIGHDRAG
-    {N_("Highlight Dragging"),    "Highlight Dragging", HighlightDraggingProc},
+    {N_("Highlight Dragging"),    "HighlightDragging", HighlightDraggingProc},
 #endif
-    {N_("Highlight Last Move"),   "Highlight Last Move", HighlightLastMoveProc},
-    {N_("Highlight With Arrow"),  "Arrow", HighlightArrowProc},
-    {N_("Move Sound"),            "Move Sound", MoveSoundProc},
-//    {N_("ICS Alarm"),             "ICS Alarm", IcsAlarmProc},
-    {N_("One-Click Moving"),      "OneClick", OneClickProc},
-    {N_("Periodic Updates"),      "Periodic Updates", PeriodicUpdatesProc},
-    {N_("Ponder Next Move  Ctrl+Shift+P"), "Ponder Next Move", PonderNextMoveProc},
-    {N_("Popup Exit Message"),    "Popup Exit Message", PopupExitMessageProc},
-    {N_("Popup Move Errors"),     "Popup Move Errors", PopupMoveErrorsProc},
+    {N_("Highlight Last Move"),   "HighlightLastMove", HighlightLastMoveProc},
+    {N_("Highlight With Arrow"),  "HighlightWithArrow", HighlightArrowProc},
+    {N_("Move Sound"),            "MoveSound", MoveSoundProc},
+//    {N_("ICS Alarm"),             "ICSAlarm", IcsAlarmProc},
+    {N_("One-Click Moving"),      "OneClickMoving", OneClickProc},
+    {N_("Periodic Updates"),      "PeriodicUpdates", PeriodicUpdatesProc},
+    {N_("Ponder Next Move  Ctrl+Shift+P"), "PonderNextMove", PonderNextMoveProc},
+    {N_("Popup Exit Message"),    "PopupExitMessage", PopupExitMessageProc},
+    {N_("Popup Move Errors"),     "PopupMoveErrors", PopupMoveErrorsProc},
 //    {N_("Premove"),               "Premove", PremoveProc},
-    {N_("Show Coords"),           "Show Coords", ShowCoordsProc},
-    {N_("Hide Thinking        Ctrl+Shift+H"),   "Hide Thinking", HideThinkingProc},
-    {N_("Test Legality          Ctrl+Shift+L"), "Test Legality", TestLegalityProc},
+    {N_("Show Coords"),           "ShowCoords", ShowCoordsProc},
+    {N_("Hide Thinking        Ctrl+Shift+H"),   "HideThinking", HideThinkingProc},
+    {N_("Test Legality          Ctrl+Shift+L"), "TestLegality", TestLegalityProc},
     {"----", NULL, NothingProc},
 #endif
-    {N_("Save Settings Now"),     "Save Settings Now", SaveSettingsProc},
-    {N_("Save Settings on Exit"), "Save Settings on Exit", SaveOnExitProc},
+    {N_("Save Settings Now"),     "SaveSettingsNow", SaveSettingsProc},
+    {N_("Save Settings on Exit"), "SaveSettingsonExit", SaveOnExitProc},
     {NULL, NULL, NULL}
 };
 
 MenuItem helpMenu[] = {
-    {N_("Info XBoard"),     "Info XBoard", InfoProc},
-    {N_("Man XBoard   F1"), "Man XBoard", ManProc},
+    {N_("Info XBoard"),     "InfoXBoard", InfoProc},
+    {N_("Man XBoard   F1"), "ManXBoard", ManProc},
     {"----", NULL, NothingProc},
-    {N_("XBoard Home Page"), "Home Page", HomePageProc},
-    {N_("On-line User Guide"), "User Guide", GuideProc},
-    {N_("Development News"), "News Page", NewsPageProc},
-    {N_("e-Mail Bug Report"), "Bug Report", BugReportProc},
+    {N_("XBoard Home Page"), "XBoardHomePage", HomePageProc},
+    {N_("On-line User Guide"), "On-lineUserGuide", GuideProc},
+    {N_("Development News"), "DevelopmentNews", NewsPageProc},
+    {N_("e-Mail Bug Report"), "e-MailBugReport", BugReportProc},
     {"----", NULL, NothingProc},
-    {N_("About XBoard"), "About XBoard", AboutProc},
+    {N_("About XBoard"), "AboutXBoard", AboutProc},
+    {NULL, NULL, NULL}
+};
+
+MenuItem noMenu[] = {
+    { "", "LoadNextGame", LoadNextGameProc },
+    { "", "LoadPrevGame", LoadPrevGameProc },
+    { "", "ReloadGame", ReloadGameProc },
+    { "", "ReloadPosition", ReloadPositionProc },
+#ifndef OPTIONSDIALOG
+    { "", "AlwaysQueen", AlwaysQueenProc },
+    { "", "AnimateDragging", AnimateDraggingProc },
+    { "", "AnimateMoving", AnimateMovingProc },
+    { "", "Autoflag", AutoflagProc },
+    { "", "Autoflip", AutoflipProc },
+    { "", "Blindfold", BlindfoldProc },
+    { "", "FlashMoves", FlashMovesProc },
+#if HIGHDRAG
+    { "", "HighlightDragging", HighlightDraggingProc },
+#endif
+    { "", "HighlightLastMove", HighlightLastMoveProc },
+//    { "", "IcsAlarm", IcsAlarmProc },
+    { "", "MoveSound", MoveSoundProc },
+    { "", "PeriodicUpdates", PeriodicUpdatesProc },
+    { "", "PopupExitMessage", PopupExitMessageProc },
+    { "", "PopupMoveErrors", PopupMoveErrorsProc },
+//    { "", "Premove", PremoveProc },
+    { "", "ShowCoords", ShowCoordsProc },
+    { "", "ShowThinking", ShowThinkingProc },
+    { "", "HideThinking", HideThinkingProc },
+    { "", "TestLegality", TestLegalityProc },
+#endif
+    { "", "AboutGame", AboutGameEvent },
+    { "", "Debug", DebugProc },
+    { "", "Nothing", NothingProc },
     {NULL, NULL, NULL}
 };
 
@@ -810,13 +844,27 @@ Menu menuBar[] = {
     {NULL, NULL, NULL}
 };
 
-int
-MenuToNumber(char *menuName)
+MenuItem *
+MenuNameToItem (char *menuName)
 {
     int i;
-    for(i=0; i<nrOfMenuItems; i++)
-	if(!strcmp(menuName, menuItemList[i].name)) return i;
-    return -1;
+    char buf[MSG_SIZ], *p;
+    MenuItem *menuTab;
+    static MenuItem a = { NULL, NULL, NothingProc };
+    extern Option mainOptions[];
+    safeStrCpy(buf, menuName, MSG_SIZ);
+    p = strchr(buf, '.');
+    if(!p) menuTab = noMenu; else {
+	*p++ = NULLCHAR;
+	for(i=0; menuBar[i].name; i++)
+	    if(!strcmp(buf, menuBar[i].name)) break;
+	if(!menuBar[i].name) return NULL; // main menu not found
+	menuTab = menuBar[i].mi;
+    }
+    if(*p == NULLCHAR) { a.handle = mainOptions[i+1].handle; return &a; } // main menu bar
+    for(i=0; menuTab[i].string; i++)
+	if(menuTab[i].ref && !strcmp(p, menuTab[i].ref)) return menuTab + i;
+    return NULL; // item not found
 }
 
 void
@@ -824,7 +872,7 @@ AppendEnginesToMenu (char *list)
 {
     int i=0;
     char *p;
-
+#if 0
     if(appData.icsActive || appData.recentEngines <= 0) return;
     recentEngines = strdup(list);
     while (*list) {
@@ -834,212 +882,180 @@ AppendEnginesToMenu (char *list)
 	AppendMenuItem(list, "recent", (MenuProc *) i);
 	i++; *p = '\n'; list = p + 1;
     }
-}
-
-void
-AddPullDownMenu (char *name, Menu *mb)
-{
-    MenuItem *mi;
-
-    CreateMenuButton(name, mb);
-
-    mi = mb->mi;
-    while (mi->string != NULL) {
-	AppendMenuItem(mi->string, mi->ref, mi->proc);
-	menuItemList[nrOfMenuItems].name = mi->ref;
-	menuItemList[nrOfMenuItems].proc = mi->proc;
-	if(strcmp(mi->string, "----")) nrOfMenuItems++;
-	mi++;
-    }
-
-    if(!strcmp(mb->name, "Engine")) AppendEnginesToMenu(appData.recentEngineList);
-}
-
-void
-CreateMainMenus (Menu *mb)
-{
-    char menuName[MSG_SIZ];
-
-    while(menuItemList[nrOfMenuItems].name) nrOfMenuItems++; // skip any predefined items
-
-    while (mb->name != NULL) {
-        safeStrCpy(menuName, "menu", sizeof(menuName)/sizeof(menuName[0]) );
-	strncat(menuName, mb->ref, MSG_SIZ - strlen(menuName) - 1);
-	AddPullDownMenu(menuName, mb++);
-    }
+#endif
 }
 
 Enables icsEnables[] = {
-    { "Mail Move", False },
-    { "Reload CMail Message", False },
-    { "Machine Black", False },
-    { "Machine White", False },
-    { "Analysis Mode", False },
-    { "Analyze File", False },
-    { "Two Machines", False },
-    { "Machine Match", False },
+    { "File.MailMove", False },
+    { "File.ReloadCMailMessage", False },
+    { "Mode.MachineBlack", False },
+    { "Mode.MachineWhite", False },
+    { "Mode.AnalysisMode", False },
+    { "Mode.AnalyzeFile", False },
+    { "Mode.TwoMachines", False },
+    { "Mode.MachineMatch", False },
 #ifndef ZIPPY
-    { "Hint", False },
-    { "Book", False },
-    { "Move Now", False },
+    { "Engine.Hint", False },
+    { "Engine.Book", False },
+    { "Engine.MoveNow", False },
 #ifndef OPTIONSDIALOG
-    { "Periodic Updates", False },
-    { "Hide Thinking", False },
-    { "Ponder Next Move", False },
+    { "PeriodicUpdates", False },
+    { "HideThinking", False },
+    { "PonderNextMove", False },
 #endif
 #endif
-    { "Engine #1 Settings", False },
-    { "Engine #2 Settings", False },
-    { "Load Engine", False },
-    { "Annotate", False },
-    { "Match", False },
+    { "Engine.Engine#1Settings", False },
+    { "Engine.Engine#2Settings", False },
+    { "Engine.LoadEngine", False },
+    { "Edit.Annotate", False },
+    { "Options.Match", False },
     { NULL, False }
 };
 
 Enables ncpEnables[] = {
-    { "Mail Move", False },
-    { "Reload CMail Message", False },
-    { "Machine White", False },
-    { "Machine Black", False },
-    { "Analysis Mode", False },
-    { "Analyze File", False },
-    { "Two Machines", False },
-    { "Machine Match", False },
-    { "ICS Client", False },
-    { "ICStex", False },
-    { "ICS Input Box", False },
-    { "Action", False },
-    { "Revert", False },
-    { "Annotate", False },
-    { "Engine #1 Settings", False },
-    { "Engine #2 Settings", False },
-    { "Move Now", False },
-    { "Retract Move", False },
-    { "ICS", False },
+    { "File.MailMove", False },
+    { "File.ReloadCMailMessage", False },
+    { "Mode.MachineWhite", False },
+    { "Mode.MachineBlack", False },
+    { "Mode.AnalysisMode", False },
+    { "Mode.AnalyzeFile", False },
+    { "Mode.TwoMachines", False },
+    { "Mode.MachineMatch", False },
+    { "Mode.ICSClient", False },
+    { "View.ICStextmenu", False },
+    { "View.ICSInputBox", False },
+    { "Action.", False },
+    { "Edit.Revert", False },
+    { "Edit.Annotate", False },
+    { "Engine.Engine#1Settings", False },
+    { "Engine.Engine#2Settings", False },
+    { "Engine.MoveNow", False },
+    { "Engine.RetractMove", False },
+    { "Options.ICS", False },
 #ifndef OPTIONSDIALOG
-    { "Auto Flag", False },
-    { "Auto Flip View", False },
-//    { "ICS Alarm", False },
-    { "Move Sound", False },
-    { "Hide Thinking", False },
-    { "Periodic Updates", False },
-    { "Ponder Next Move", False },
+    { "Options.AutoFlag", False },
+    { "Options.AutoFlip View", False },
+//    { "Options.ICSAlarm", False },
+    { "Options.MoveSound", False },
+    { "Options.HideThinking", False },
+    { "Options.PeriodicUpdates", False },
+    { "Options.PonderNextMove", False },
 #endif
-    { "Hint", False },
-    { "Book", False },
+    { "Engine.Hint", False },
+    { "Engine.Book", False },
     { NULL, False }
 };
 
 Enables gnuEnables[] = {
-    { "ICS Client", False },
-    { "ICStex", False },
-    { "ICS Input Box", False },
-    { "Accept", False },
-    { "Decline", False },
-    { "Rematch", False },
-    { "Adjourn", False },
-    { "Stop Examining", False },
-    { "Stop Observing", False },
-    { "Upload to Examine", False },
-    { "Revert", False },
-    { "Annotate", False },
-    { "ICS", False },
+    { "Mode.ICSClient", False },
+    { "View.ICStextmenu", False },
+    { "View.ICSInputBox", False },
+    { "Action.Accept", False },
+    { "Action.Decline", False },
+    { "Action.Rematch", False },
+    { "Action.Adjourn", False },
+    { "Action.StopExamining", False },
+    { "Action.StopObserving", False },
+    { "Action.UploadtoExamine", False },
+    { "Edit.Revert", False },
+    { "Edit.Annotate", False },
+    { "Options.ICS", False },
 
     /* The next two options rely on SetCmailMode being called *after*    */
     /* SetGNUMode so that when GNU is being used to give hints these     */
     /* menu options are still available                                  */
 
-    { "Mail Move", False },
-    { "Reload CMail Message", False },
+    { "File.MailMove", False },
+    { "File.ReloadCMailMessage", False },
     // [HGM] The following have been added to make a switch from ncp to GNU mode possible
-    { "Machine White", True },
-    { "Machine Black", True },
-    { "Analysis Mode", True },
-    { "Analyze File", True },
-    { "Two Machines", True },
-    { "Machine Match", True },
-    { "Engine #1 Settings", True },
-    { "Engine #2 Settings", True },
-    { "Hint", True },
-    { "Book", True },
-    { "Move Now", True },
-    { "Retract Move", True },
-    { "Action", True },
+    { "Mode.MachineWhite", True },
+    { "Mode.MachineBlack", True },
+    { "Mode.AnalysisMode", True },
+    { "Mode.AnalyzeFile", True },
+    { "Mode.TwoMachines", True },
+    { "Mode.MachineMatch", True },
+    { "Engine.Engine#1Settings", True },
+    { "Engine.Engine#2Settings", True },
+    { "Engine.Hint", True },
+    { "Engine.Book", True },
+    { "Engine.MoveNow", True },
+    { "Engine.RetractMove", True },
+    { "Action.", True },
     { NULL, False }
 };
 
 Enables cmailEnables[] = {
-    { "Action", True },
-    { "Call Flag", False },
-    { "Draw", True },
-    { "Adjourn", False },
-    { "Abort", False },
-    { "Stop Observing", False },
-    { "Stop Examining", False },
-    { "Mail Move", True },
-    { "Reload CMail Message", True },
+    { "Action.", True },
+    { "Action.CallFlag", False },
+    { "Action.Draw", True },
+    { "Action.Adjourn", False },
+    { "Action.Abort", False },
+    { "Action.StopObserving", False },
+    { "Action.StopExamining", False },
+    { "File.MailMove", True },
+    { "File.ReloadCMailMessage", True },
     { NULL, False }
 };
 
 Enables trainingOnEnables[] = {
-  { "Edit Comment", False },
-  { "Pause", False },
-  { "Forward", False },
-  { "Backward", False },
-  { "Forward to End", False },
-  { "Back to Start", False },
-  { "Move Now", False },
-  { "Truncate Game", False },
+  { "Edit.EditComment", False },
+  { "Mode.Pause", False },
+  { "Edit.Forward", False },
+  { "Edit.Backward", False },
+  { "Edit.ForwardtoEnd", False },
+  { "Edit.BacktoStart", False },
+  { "Engine.MoveNow", False },
+  { "Edit.TruncateGame", False },
   { NULL, False }
 };
 
 Enables trainingOffEnables[] = {
-  { "Edit Comment", True },
-  { "Pause", True },
-  { "Forward", True },
-  { "Backward", True },
-  { "Forward to End", True },
-  { "Back to Start", True },
-  { "Move Now", True },
-  { "Truncate Game", True },
+  { "Edit.EditComment", True },
+  { "Mode.Pause", True },
+  { "Edit.Forward", True },
+  { "Edit.Backward", True },
+  { "Edit.ForwardtoEnd", True },
+  { "Edit.BacktoStart", True },
+  { "Engine.MoveNow", True },
+  { "Engine.TruncateGame", True },
   { NULL, False }
 };
 
 Enables machineThinkingEnables[] = {
-  { "Load Game", False },
-//  { "Load Next Game", False },
-//  { "Load Previous Game", False },
-//  { "Reload Same Game", False },
-  { "Paste Game", False },
-  { "Load Position", False },
-//  { "Load Next Position", False },
-//  { "Load Previous Position", False },
-//  { "Reload Same Position", False },
-  { "Paste Position", False },
-  { "Machine White", False },
-  { "Machine Black", False },
-  { "Two Machines", False },
-//  { "Machine Match", False },
-  { "Retract Move", False },
+  { "File.LoadGame", False },
+//  { "LoadNextGame", False },
+//  { "LoadPreviousGame", False },
+//  { "ReloadSameGame", False },
+  { "Edit.PasteGame", False },
+  { "File.LoadPosition", False },
+//  { "LoadNextPosition", False },
+//  { "LoadPreviousPosition", False },
+//  { "ReloadSamePosition", False },
+  { "Edit.PastePosition", False },
+  { "Mode.MachineWhite", False },
+  { "Mode.MachineBlack", False },
+  { "Mode.TwoMachines", False },
+//  { "MachineMatch", False },
+  { "Engine.RetractMove", False },
   { NULL, False }
 };
 
 Enables userThinkingEnables[] = {
-  { "Load Game", True },
-//  { "Load Next Game", True },
-//  { "Load Previous Game", True },
-//  { "Reload Same Game", True },
-  { "Paste Game", True },
-  { "Load Position", True },
-//  { "Load Next Position", True },
-//  { "Load Previous Position", True },
-//  { "Reload Same Position", True },
-  { "Paste Position", True },
-  { "Machine White", True },
-  { "Machine Black", True },
-  { "Two Machines", True },
-//  { "Machine Match", True },
-  { "Retract Move", True },
+  { "File.LoadGame", True },
+//  { "LoadNextGame", True },
+//  { "LoadPreviousGame", True },
+//  { "ReloadSameGame", True },
+  { "Edit.PasteGame", True },
+  { "File.LoadPosition", True },
+//  { "LoadNextPosition", True },
+//  { "LoadPreviousPosition", True },
+//  { "ReloadSamePosition", True },
+  { "Edit.PastePosition", True },
+  { "Mode.MachineWhite", True },
+  { "Mode.MachineBlack", True },
+  { "Mode.TwoMachines", True },
+//  { "MachineMatch", True },
+  { "Engine.RetractMove", True },
   { NULL, False }
 };
 
@@ -1119,8 +1135,8 @@ SetMachineThinkingEnables ()
 void
 GreyRevert (Boolean grey)
 {
-    MarkMenuItem("Revert", !grey);
-    MarkMenuItem("Annotate", !grey);
+    MarkMenuItem("Edit.Revert", !grey);
+    MarkMenuItem("Edit.Annotate", !grey);
 }
 
 char *
@@ -1129,36 +1145,36 @@ ModeToWidgetName (GameMode mode)
     switch (mode) {
       case BeginningOfGame:
 	if (appData.icsActive)
-	  return "ICS Client";
+	  return "Mode.ICSClient";
 	else if (appData.noChessProgram ||
 		 *appData.cmailGameName != NULLCHAR)
-	  return "Edit Game";
+	  return "Mode.EditGame";
 	else
-	  return "Machine Black";
+	  return "Mode.MachineBlack";
       case MachinePlaysBlack:
-	return "Machine Black";
+	return "Mode.MachineBlack";
       case MachinePlaysWhite:
-	return "Machine White";
+	return "Mode.MachineWhite";
       case AnalyzeMode:
-	return "Analysis Mode";
+	return "Mode.AnalysisMode";
       case AnalyzeFile:
-	return "Analyze File";
+	return "Mode.AnalyzeFile";
       case TwoMachinesPlay:
-	return "Two Machines";
+	return "Mode.TwoMachines";
       case EditGame:
-	return "Edit Game";
+	return "Mode.EditGame";
       case PlayFromGameFile:
-	return "Load Game";
+	return "File.LoadGame";
       case EditPosition:
-	return "Edit Position";
+	return "Mode.EditPosition";
       case Training:
-	return "Training";
+	return "Mode.Training";
       case IcsPlayingWhite:
       case IcsPlayingBlack:
       case IcsObserving:
       case IcsIdle:
       case IcsExamining:
-	return "ICS Client";
+	return "Mode.ICSClient";
       default:
       case EndOfGame:
 	return NULL;
@@ -1170,73 +1186,73 @@ InitMenuMarkers()
 {
 #ifndef OPTIONSDIALOG
     if (appData.alwaysPromoteToQueen) {
-	MarkMenuItem("Always Queen", True);
+	MarkMenuItem("Options.Always Queen", True);
     }
     if (appData.animateDragging) {
-	MarkMenuItem("Animate Dragging", True);
+	MarkMenuItem("Options.Animate Dragging", True);
     }
     if (appData.animate) {
-	MarkMenuItem("Animate Moving", True);
+	MarkMenuItem("Options.Animate Moving", True);
     }
     if (appData.autoCallFlag) {
-	MarkMenuItem("Auto Flag", True);
+	MarkMenuItem("Options.Auto Flag", True);
     }
     if (appData.autoFlipView) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"Auto Flip View", True);
+	XtSetValues(XtNameToWidget(menuBarWidget,"Options.Auto Flip View", True);
     }
     if (appData.blindfold) {
-	MarkMenuItem("Blindfold", True);
+	MarkMenuItem("Options.Blindfold", True);
     }
     if (appData.flashCount > 0) {
-	MarkMenuItem("Flash Moves", True);
+	MarkMenuItem("Options.Flash Moves", True);
     }
 #if HIGHDRAG
     if (appData.highlightDragging) {
-	MarkMenuItem("Highlight Dragging", True);
+	MarkMenuItem("Options.Highlight Dragging", True);
     }
 #endif
     if (appData.highlightLastMove) {
-	MarkMenuItem("Highlight Last Move", True);
+	MarkMenuItem("Options.Highlight Last Move", True);
     }
     if (appData.highlightMoveWithArrow) {
-	MarkMenuItem("Arrow", True);
+	MarkMenuItem("Options.Arrow", True);
     }
 //    if (appData.icsAlarm) {
-//	MarkMenuItem("ICS Alarm", True);
+//	MarkMenuItem("Options.ICS Alarm", True);
 //    }
     if (appData.ringBellAfterMoves) {
-	MarkMenuItem("Move Sound", True);
+	MarkMenuItem("Options.Move Sound", True);
     }
     if (appData.oneClick) {
-	MarkMenuItem("OneClick", True);
+	MarkMenuItem("Options.OneClick", True);
     }
     if (appData.periodicUpdates) {
-	MarkMenuItem("Periodic Updates", True);
+	MarkMenuItem("Options.Periodic Updates", True);
     }
     if (appData.ponderNextMove) {
-	MarkMenuItem("Ponder Next Move", True);
+	MarkMenuItem("Options.Ponder Next Move", True);
     }
     if (appData.popupExitMessage) {
-	MarkMenuItem("Popup Exit Message", True);
+	MarkMenuItem("Options.Popup Exit Message", True);
     }
     if (appData.popupMoveErrors) {
-	MarkMenuItem("Popup Move Errors", True);
+	MarkMenuItem("Options.Popup Move Errors", True);
     }
 //    if (appData.premove) {
-//	MarkMenuItem("Premove", True);
+//	MarkMenuItem("Options.Premove", True);
 //    }
     if (appData.showCoords) {
-	MarkMenuItem("Show Coords", True);
+	MarkMenuItem("Options.Show Coords", True);
     }
     if (appData.hideThinkingFromHuman) {
-	MarkMenuItem("Hide Thinking", True);
+	MarkMenuItem("Options.Hide Thinking", True);
     }
     if (appData.testLegality) {
-	MarkMenuItem("Test Legality", True);
+	MarkMenuItem("Options.Test Legality", True);
     }
 #endif
     if (saveSettingsOnExit) {
-	MarkMenuItem("Save Settings on Exit", True);
+	MarkMenuItem("Options.SaveSettingsonExit", True);
     }
 }
 

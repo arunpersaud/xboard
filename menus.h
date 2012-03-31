@@ -54,22 +54,16 @@
 typedef void MenuProc P((void));
 
 typedef struct {
-    char *name;
-    MenuProc *proc;
-} MenuListItem;
-
-typedef struct {
     String string;
     String ref;
     MenuProc *proc;
+    void *handle;
 } MenuItem;
 
 typedef struct {
     String name;
     String ref;
     MenuItem *mi;
-    int textWidth;
-    Widget subMenu;
 } Menu;
 
 typedef struct {
@@ -77,8 +71,6 @@ typedef struct {
     Boolean value;
 } Enables;
 
-extern int nrOfMenuItems;
-extern MenuListItem menuItemList[];
 extern Menu menuBar[];
 
 void LoadGameProc P((void));
@@ -173,7 +165,7 @@ void EvalGraphProc P((void));
 void CreateMainMenus P((Menu *mb));
 void AppendMenuItem P((char *text, char *name, MenuProc *action));
 void CreateMenuButton P((char *name, Menu *mb));
-int  MenuToNumber P((char *menuName));
+MenuItem *MenuNameToItem P((char *menuName));
 void SetMenuEnables P((Enables *enab));
 void EnableButtonBar P((int state));
 char *ModeToWidgetName P((GameMode mode));

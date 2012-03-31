@@ -239,7 +239,7 @@ GameListPopUp (FILE *fp, char *filename)
 
     page = 0;
     GameListReplace(0); // [HGM] filter: code put in separate routine, and also called to set title
-    MarkMenu("Show Game List", GameListDlg);
+    MarkMenu("View.GameList", GameListDlg);
 }
 
 void
@@ -274,7 +274,7 @@ ShowGameListProc ()
 	return;
     }
     GenericPopUp(NULL, NULL, GameListDlg, BoardWindow, NONMODAL, 1); // first two args ignored when shell exists!
-    MarkMenu("Show Game List", GameListDlg);
+    MarkMenu("View.GameList", GameListDlg);
     GameListHighlight(lastLoadGameNumber);
 }
 

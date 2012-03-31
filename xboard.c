@@ -432,60 +432,60 @@ XtActionsRec boardActions[] = {
 };
 
 char globalTranslations[] =
-  ":<Key>F9: MenuItem(ResignProc) \n \
-   :Ctrl<Key>n: MenuItem(NewGame) \n \
-   :Meta<Key>V: MenuItem(NewVariant) \n \
-   :Ctrl<Key>o: MenuItem(LoadGame) \n \
+  ":<Key>F9: MenuItem(Actions.Resign) \n \
+   :Ctrl<Key>n: MenuItem(File.NewGame) \n \
+   :Meta<Key>V: MenuItem(File.NewVariant) \n \
+   :Ctrl<Key>o: MenuItem(File.LoadGame) \n \
    :Meta<Key>Next: MenuItem(LoadNextGameProc) \n \
    :Meta<Key>Prior: MenuItem(LoadPrevGameProc) \n \
    :Ctrl<Key>Down: LoadSelectedProc(3) \n \
    :Ctrl<Key>Up: LoadSelectedProc(-3) \n \
-   :Ctrl<Key>s: MenuItem(SaveGame) \n \
-   :Ctrl<Key>c: MenuItem(CopyGame) \n \
-   :Ctrl<Key>v: MenuItem(PasteGame) \n \
-   :Ctrl<Key>O: MenuItem(LoadPosition) \n \
+   :Ctrl<Key>s: MenuItem(File.SaveGame) \n \
+   :Ctrl<Key>c: MenuItem(Edit.CopyGame) \n \
+   :Ctrl<Key>v: MenuItem(Edit.PasteGame) \n \
+   :Ctrl<Key>O: MenuItem(File.LoadPosition) \n \
    :Shift<Key>Next: MenuItem(LoadNextPositionProc) \n \
    :Shift<Key>Prior: MenuItem(LoadPrevPositionProc) \n \
-   :Ctrl<Key>S: MenuItem(SavePosition) \n \
-   :Ctrl<Key>C: MenuItem(CopyPosition) \n \
-   :Ctrl<Key>V: MenuItem(PastePosition) \n \
-   :Ctrl<Key>q: MenuItem(Exit) \n \
-   :Ctrl<Key>w: MenuItem(MachineWhite) \n \
-   :Ctrl<Key>b: MenuItem(MachineBlack) \n \
-   :Ctrl<Key>t: MenuItem(TwoMachines) \n \
-   :Ctrl<Key>a: MenuItem(AnalysisMode) \n \
-   :Ctrl<Key>g: MenuItem(AnalyzeFile) \n \
-   :Ctrl<Key>e: MenuItem(EditGame) \n \
-   :Ctrl<Key>E: MenuItem(EditPosition) \n \
-   :Meta<Key>O: MenuItem(ShowEngineOutput) \n \
-   :Meta<Key>E: MenuItem(ShowEvaluationGraph) \n \
-   :Meta<Key>G: MenuItem(ShowGameList) \n \
-   :Meta<Key>H: MenuItem(ShowMoveHistory) \n \
-   :<Key>Pause: MenuItem(Pause) \n \
-   :<Key>F3: MenuItem(Accept) \n \
-   :<Key>F4: MenuItem(Decline) \n \
-   :<Key>F12: MenuItem(Rematch) \n \
-   :<Key>F5: MenuItem(CallFlag) \n \
-   :<Key>F6: MenuItem(Draw) \n \
-   :<Key>F7: MenuItem(Adjourn) \n \
-   :<Key>F8: MenuItem(Abort) \n \
-   :<Key>F10: MenuItem(StopObserving) \n \
-   :<Key>F11: MenuItem(StopExamining) \n \
+   :Ctrl<Key>S: MenuItem(File.SavePosition) \n \
+   :Ctrl<Key>C: MenuItem(Edit.CopyPosition) \n \
+   :Ctrl<Key>V: MenuItem(Edit.PastePosition) \n \
+   :Ctrl<Key>q: MenuItem(File.Quit) \n \
+   :Ctrl<Key>w: MenuItem(Mode.MachineWhite) \n \
+   :Ctrl<Key>b: MenuItem(Mode.MachineBlack) \n \
+   :Ctrl<Key>t: MenuItem(Mode.TwoMachines) \n \
+   :Ctrl<Key>a: MenuItem(Mode.AnalysisMode) \n \
+   :Ctrl<Key>g: MenuItem(Mode.AnalyzeFile) \n \
+   :Ctrl<Key>e: MenuItem(Mode.EditGame) \n \
+   :Ctrl<Key>E: MenuItem(Mode.EditPosition) \n \
+   :Meta<Key>O: MenuItem(View.EngineOutput) \n \
+   :Meta<Key>E: MenuItem(View.EvaluationGraph) \n \
+   :Meta<Key>G: MenuItem(View.GameList) \n \
+   :Meta<Key>H: MenuItem(View.MoveHistory) \n \
+   :<Key>Pause: MenuItem(Mode.Pause) \n \
+   :<Key>F3: MenuItem(Action.Accept) \n \
+   :<Key>F4: MenuItem(Action.Decline) \n \
+   :<Key>F12: MenuItem(Action.Rematch) \n \
+   :<Key>F5: MenuItem(Action.CallFlag) \n \
+   :<Key>F6: MenuItem(Action.Draw) \n \
+   :<Key>F7: MenuItem(Action.Adjourn) \n \
+   :<Key>F8: MenuItem(Action.Abort) \n \
+   :<Key>F10: MenuItem(Action.StopObserving) \n \
+   :<Key>F11: MenuItem(Action.StopExamining) \n \
    :Ctrl<Key>d: MenuItem(DebugProc) \n \
    :Meta Ctrl<Key>F12: MenuItem(DebugProc) \n \
-   :Meta<Key>End: MenuItem(ToEnd) \n \
-   :Meta<Key>Right: MenuItem(Forward) \n \
-   :Meta<Key>Home: MenuItem(ToStart) \n \
-   :Meta<Key>Left: MenuItem(Backward) \n \
-   :<Key>Left: MenuItem(Backward) \n \
-   :<Key>Right: MenuItem(Forward) \n \
-   :<Key>Home: MenuItem(Revert) \n \
-   :<Key>End: MenuItem(TruncateGame) \n \
-   :Ctrl<Key>m: MenuItem(MoveNow) \n \
-   :Ctrl<Key>x: MenuItem(RetractMove) \n \
-   :Meta<Key>J: MenuItem(Adjudications) \n \
-   :Meta<Key>U: MenuItem(CommonEngine) \n \
-   :Meta<Key>T: MenuItem(TimeControl) \n \
+   :Meta<Key>End: MenuItem(Edit.ForwardtoEnd) \n \
+   :Meta<Key>Right: MenuItem(Edit.Forward) \n \
+   :Meta<Key>Home: MenuItem(Edit.BacktoStart) \n \
+   :Meta<Key>Left: MenuItem(Edit.Backward) \n \
+   :<Key>Left: MenuItem(Edit.Backward) \n \
+   :<Key>Right: MenuItem(Edit.Forward) \n \
+   :<Key>Home: MenuItem(Edit.Revert) \n \
+   :<Key>End: MenuItem(Edit.TruncateGame) \n \
+   :Ctrl<Key>m: MenuItem(Engine.MoveNow) \n \
+   :Ctrl<Key>x: MenuItem(Engine.RetractMove) \n \
+   :Meta<Key>J: MenuItem(Options.Adjudications) \n \
+   :Meta<Key>U: MenuItem(Options.CommonEngine) \n \
+   :Meta<Key>T: MenuItem(Options.TimeControl) \n \
    :Ctrl<Key>P: MenuItem(PonderNextMove) \n "
 #ifndef OPTIONSDIALOG
     "\
@@ -496,8 +496,8 @@ char globalTranslations[] =
    :Ctrl<Key>H: MenuItem(HideThinkingProc) \n "
 #endif
    "\
-   :<Key>F1: MenuItem(Manual) \n \
-   :<Key>F2: MenuItem(FlipView) \n \
+   :<Key>F1: MenuItem(Help.ManXBoard) \n \
+   :<Key>F2: MenuItem(View.FlipView) \n \
    :<KeyDown>Return: TempBackwardProc() \n \
    :<KeyUp>Return: TempForwardProc() \n";
 
@@ -2268,60 +2268,24 @@ CreateGrid ()
     }
 }
 
-int nrOfMenuItems = 7;
-Widget menuWidget[150];
-MenuListItem menuItemList[150] = {
-    { "LoadNextGameProc", LoadNextGameProc },
-    { "LoadPrevGameProc", LoadPrevGameProc },
-    { "ReloadGameProc", ReloadGameProc },
-    { "ReloadPositionProc", ReloadPositionProc },
-#ifndef OPTIONSDIALOG
-    { "AlwaysQueenProc", AlwaysQueenProc },
-    { "AnimateDraggingProc", AnimateDraggingProc },
-    { "AnimateMovingProc", AnimateMovingProc },
-    { "AutoflagProc", AutoflagProc },
-    { "AutoflipProc", AutoflipProc },
-    { "BlindfoldProc", BlindfoldProc },
-    { "FlashMovesProc", FlashMovesProc },
-#if HIGHDRAG
-    { "HighlightDraggingProc", HighlightDraggingProc },
-#endif
-    { "HighlightLastMoveProc", HighlightLastMoveProc },
-//    { "IcsAlarmProc", IcsAlarmProc },
-    { "MoveSoundProc", MoveSoundProc },
-    { "PeriodicUpdatesProc", PeriodicUpdatesProc },
-    { "PopupExitMessageProc", PopupExitMessageProc },
-    { "PopupMoveErrorsProc", PopupMoveErrorsProc },
-//    { "PremoveProc", PremoveProc },
-    { "ShowCoordsProc", ShowCoordsProc },
-    { "ShowThinkingProc", ShowThinkingProc },
-    { "HideThinkingProc", HideThinkingProc },
-    { "TestLegalityProc", TestLegalityProc },
-#endif
-    { "AboutGameProc", AboutGameEvent },
-    { "DebugProc", DebugProc },
-    { "NothingProc", NothingProc },
-  {NULL, NothingProc}
-};
-
 void
 MarkMenuItem (char *menuRef, int state)
 {
-    int nr = MenuToNumber(menuRef);
-return;
-    if(nr >= 0) {
+    MenuItem *item = MenuNameToItem(menuRef);
+
+    if(item) {
 	Arg args[2];
 	XtSetArg(args[0], XtNleftBitmap, state ? xMarkPixmap : None);
-	XtSetValues(menuWidget[nr], args, 1);
+	XtSetValues(item->handle, args, 1);
     }
 }
 
 void
 EnableMenuItem (char *menuRef, int state)
 {
-    int nr = MenuToNumber(menuRef);
-return;
-    if(nr >= 0) XtSetSensitive(menuWidget[nr], state);
+    MenuItem *item = MenuNameToItem(menuRef);
+
+    if(item) XtSetSensitive(item->handle, state);
 }
 
 void
@@ -2340,28 +2304,15 @@ SetMenuEnables (Enables *enab)
   }
 }
 
-int
-Equal(char *p, char *s)
-{   // compare strings skipping spaces in second
-    while(*s) {
-	if(*s == ' ') { s++; continue; }
-	if(*s++ != *p++) return 0;
-    }
-    return !*p;
-}
-
 void
 KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] new method of key binding: specify MenuItem(FlipView) in stead of FlipViewProc in translation string
     int i;
     char *p;
+    MenuItem *item;
     if(*nprms == 0) return;
-    for(i=0; menuItemList[i].name; i++) {
-	if(Equal(prms[0], menuItemList[i].name)) {
-	    (menuItemList[i].proc) ();
-	    return;
-	}
-    }
+    item = MenuNameToItem(prms[0]);
+    if(item) ((MenuProc *) item->proc) ();
 }
 
 static void
@@ -2376,91 +2327,6 @@ static void
 MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
 {
     RecentEngineEvent((int) (intptr_t) addr);
-}
-
-// some stuff that must remain in front-end
-static Widget mainBar, currentMenu;
-static int wtot, nr = 0, widths[10];
-
-void
-AppendMenuItem (char *text, char *name, MenuProc *action)
-{
-    int j;
-    Widget entry;
-    Arg args[16];
-
-    j = 0;
-    XtSetArg(args[j], XtNleftMargin, 20);   j++;
-    XtSetArg(args[j], XtNrightMargin, 20);  j++;
-
-	if (strcmp(text, "----") == 0) {
-	  entry = XtCreateManagedWidget(text, smeLineObjectClass,
-					  currentMenu, args, j);
-	} else {
-          XtSetArg(args[j], XtNlabel, XtNewString(_(text)));
-	    entry = XtCreateManagedWidget(name, smeBSBObjectClass,
-					  currentMenu, args, j+1);
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) (strcmp(name, "recent") ? MenuBarSelect : MenuEngineSelect),
-			  (caddr_t) action);
-	    menuWidget[nrOfMenuItems] = entry;
-	}
-}
-
-void
-CreateMenuButton (char *name, Menu *mb)
-{   // create menu button on main bar, and shell for pull-down list
-    int i, j;
-    Arg args[16];
-    Dimension w;
-
-	j = 0;
-	XtSetArg(args[j], XtNmenuName, XtNewString(name));  j++;
-	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name)));  j++;
-	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
-	mb->subMenu = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
-				       mainBar, args, j);
-    currentMenu = XtCreatePopupShell(name, simpleMenuWidgetClass,
-			      mainBar, NULL, 0);
-	j = 0;
-	XtSetArg(args[j], XtNwidth, &w);                   j++;
-	XtGetValues(mb->subMenu, args, j);
-	wtot += mb->textWidth = widths[nr++] = w;
-}
-
-Widget
-CreateMenuBar (Menu *mb, int boardWidth)
-{
-    int i, j;
-    Arg args[16];
-    char menuName[MSG_SIZ];
-    Dimension w;
-    Menu *ma = mb;
-
-    // create bar itself
-    j = 0;
-    XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
-    XtSetArg(args[j], XtNvSpace, 0);                        j++;
-    XtSetArg(args[j], XtNborderWidth, 0);                   j++;
-    mainBar = XtCreateWidget("menuBar", boxWidgetClass,
-			     formWidget, args, j);
-
-    CreateMainMenus(mb); // put menus in bar according to description in back-end
-
-    // size buttons to make menu bar fit, clipping menu names where necessary
-    while(wtot > boardWidth - 40) {
-	int wmax=0, imax=0;
-	for(i=0; i<nr; i++) if(widths[i] > wmax) wmax = widths[imax=i];
-	widths[imax]--;
-	wtot--;
-    }
-    for(i=0; i<nr; i++) if(widths[i] != ma[i].textWidth) {
-	j = 0;
-	XtSetArg(args[j], XtNwidth, widths[i]);                   j++;
-	XtSetValues(ma[i].subMenu, args, j);
-    }
-
-    return mainBar;
 }
 
 void
@@ -2996,7 +2862,7 @@ ModeHighlight ()
 
     if (pausing != oldPausing) {
 	oldPausing = pausing;
-	MarkMenuItem("Pause", pausing);
+	MarkMenuItem("Mode.Pause", pausing);
 
 	if (appData.showButtonBar) {
 	  /* Always toggle, don't set.  Previous code messes up when
@@ -3024,10 +2890,10 @@ ModeHighlight ()
 	MarkMenuItem(wname, True);
     }
     oldmode = gameMode;
-    MarkMenuItem("Machine Match", matchMode && matchGame < appData.matchGames);
+    MarkMenuItem("Mode.MachineMatch", matchMode && matchGame < appData.matchGames);
 
     /* Maybe all the enables should be handled here, not just this one */
-    EnableMenuItem("Training", gameMode == Training || gameMode == PlayFromGameFile);
+    EnableMenuItem("Mode.Training", gameMode == Training || gameMode == PlayFromGameFile);
 }
 
 

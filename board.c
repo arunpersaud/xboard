@@ -896,7 +896,7 @@ DrawPosition (int repaint, Board board)
 	board = lastBoard[nr];
     }
     if (!lastBoardValid[nr] || (nr == 0 && lastFlipView != flipView)) {
-	MarkMenuItem("Flip View", flipView);
+	MarkMenuItem("View.Flip View", flipView);
     }
 
     /*

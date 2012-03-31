@@ -135,7 +135,7 @@ EngineOutputPopUp ()
 	SetDialogTitle(EngOutDlg, _(title));
     }
 
-    MarkMenu("Show Engine Output", EngOutDlg);
+    MarkMenu("View.EngineOutput", EngOutDlg);
 
     ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
 }

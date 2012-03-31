@@ -153,7 +153,7 @@ HistoryPopUp ()
 {
     if(GenericPopUp(historyOptions, _("Move list"), HistoryDlg, BoardWindow, NONMODAL, 1))
 	AddHandler(&historyOptions[0], 0);
-    MarkMenu("Show Move History", HistoryDlg);
+    MarkMenu("View.MoveHistory", HistoryDlg);
 }
 
 void
