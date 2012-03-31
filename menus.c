@@ -431,6 +431,13 @@ void
 DebugProc ()
 {
     appData.debugMode = !appData.debugMode;
+    if(!strcmp(appData.nameOfDebugFile, "stderr")) return; // stderr is already open, and should never be closed
+    if(!appData.debugMode) fclose(debugFP);
+    else {
+	debugFP = fopen(appData.nameOfDebugFile, "w");
+	if(debugFP == NULL) debugFP = stderr;
+	else setbuf(debugFP, NULL);
+    }
 }
 
 void
