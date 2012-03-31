@@ -170,7 +170,6 @@ MenuItem *MenuNameToItem P((char *menuName));
 void SetMenuEnables P((Enables *enab));
 void EnableButtonBar P((int state));
 char *ModeToWidgetName P((GameMode mode));
-int LoadGamePopUp P((FILE *f, int gameNumber, char *title));
 void CreateAnimVars P((void));
 
 

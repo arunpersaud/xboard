@@ -2907,24 +2907,6 @@ ModeHighlight ()
 /*
  * Button/menu procedures
  */
-int
-LoadGamePopUp (FILE *f, int gameNumber, char *title)
-{
-    cmailMsgLoaded = FALSE;
-    if (gameNumber == 0) {
-	int error = GameListBuild(f);
-	if (error) {
-	    DisplayError(_("Cannot build game list"), error);
-	} else if (!ListEmpty(&gameList) &&
-		   ((ListGame *) gameList.tailPred)->number > 1) {
-	    GameListPopUp(f, title);
-	    return TRUE;
-	}
-	GameListDestroy();
-	gameNumber = 1;
-    }
-    return LoadGame(f, gameNumber, title, FALSE);
-}
 
 /* this variable is shared between CopyPositionProc and SendPositionSelection */
 char *selected_fen_position=NULL;
