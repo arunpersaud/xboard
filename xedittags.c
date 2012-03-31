@@ -119,11 +119,5 @@ EditTagsProc ()
 {
     Arg args[5];
     int j;
-    if (!bookUp && PopDown(TagsDlg)) {
-	j = 0;
-	XtSetArg(args[j], XtNleftBitmap, None); j++;
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"), args, j);
-    } else {
-	EditTagsEvent();
-    }
+    if (bookUp || !PopDown(TagsDlg)) EditTagsEvent();
 }
