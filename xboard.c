@@ -1100,7 +1100,7 @@ char globalTranslations[] =
    :<Key>F8: AbortProc() \n \
    :<Key>F10: StopObservingProc() \n \
    :<Key>F11: StopExaminingProc() \n \
-   :Meta Ctrl<Key>F12: DebugProc() \n \
+   :Ctrl<Key>d: DebugProc() \n \
    :Meta<Key>End: ToEndProc() \n \
    :Meta<Key>Right: ForwardProc() \n \
    :Meta<Key>Home: ToStartProc() \n \
@@ -6731,6 +6731,13 @@ void
 DebugProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     appData.debugMode = !appData.debugMode;
+    if(!strcmp(appData.nameOfDebugFile, "stderr")) return; // stderr is already open, and should never be closed
+    if(!appData.debugMode) fclose(debugFP);
+    else {
+	debugFP = fopen(appData.nameOfDebugFile, "w");
+	if(debugFP == NULL) debugFP = stderr;
+	else setbuf(debugFP, NULL);
+    }
 }
 
 void
