@@ -4066,6 +4066,7 @@ zic2xpm ~/ziics/fritz4.*
 @example
 xboard -pixmap ~/fritz4
 @end example
+@end table
 
 (*) ZIICS is a separate copyrighted work of Andy McFarland.
 The ``ZIICS pieces'' are copyrighted works of their respective
