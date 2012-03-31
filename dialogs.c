@@ -1918,4 +1918,35 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
     return mainOptions;
 }
 
+void
+DisplayMessage (char *message, char *extMessage)
+{
+  /* display a message in the message widget */
+
+  char buf[MSG_SIZ];
+
+  if (extMessage)
+    {
+      if (*message)
+	{
+	  snprintf(buf, sizeof(buf), "%s  %s", message, extMessage);
+	  message = buf;
+	}
+      else
+	{
+	  message = extMessage;
+	};
+    };
+
+    safeStrCpy(lastMsg, message, MSG_SIZ); // [HGM] make available
+
+  /* need to test if messageWidget already exists, since this function
+     can also be called during the startup, if for example a Xresource
+     is not set up correctly */
+  if(mainOptions[14].handle)
+    SetWidgetLabel(&mainOptions[14], message);
+
+  return;
+}
+
 

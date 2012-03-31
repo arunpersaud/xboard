@@ -3178,41 +3178,6 @@ ManInner (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-DisplayMessage (char *message, char *extMessage)
-{
-  /* display a message in the message widget */
-
-  char buf[MSG_SIZ];
-  Arg arg;
-
-  if (extMessage)
-    {
-      if (*message)
-	{
-	  snprintf(buf, sizeof(buf), "%s  %s", message, extMessage);
-	  message = buf;
-	}
-      else
-	{
-	  message = extMessage;
-	};
-    };
-
-    safeStrCpy(lastMsg, message, MSG_SIZ); // [HGM] make available
-
-  /* need to test if messageWidget already exists, since this function
-     can also be called during the startup, if for example a Xresource
-     is not set up correctly */
-  if(optList && optList[14].handle)
-    {
-      XtSetArg(arg, XtNlabel, message);
-      XtSetValues(optList[14].handle, &arg, 1);
-    };
-
-  return;
-}
-
-void
 SetWindowTitle (char *text, char *title, char *icon)
 {
     Arg args[16];
