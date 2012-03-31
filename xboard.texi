@@ -1567,6 +1567,28 @@ or the variant you are playing.
 Such options would still be understood when they appear in the settings
 file in case they were put there with the aid of a text editor, but they
 would disappear from the file as soon as you save the settings.
+
+Note that XBoard no longer pays attention to options values specified
+in the .Xresources file.
+(Specifying key bindings there will still work, though.)
+To alter the default of volatile options, you can use the following method:
+Rename your ~/.xboardrc settings file (to ~/.yboardrc, say), and create
+a new file ~/.xboardrc, which only contains the options
+
+@example
+-settingsFile  ~/.yboardrc
+-saveSettingsFile  ~/.yboardrc
+@end example
+
+@noindent
+This will cause your settings to be saved on ~/.yboardrc in the future,
+so that ~/.xboardrc is no longer overwritten.
+You can then safely specify volatile options in ~/.xboardrc, either
+before or after the settingsFile options.
+Note that when you specify persistent options after the settingsFile options
+in ~/.xboardrc, you will essentially turn them into volatile options
+with the specified value as default, because that value will overrule
+the value loaded from the settings file (being read later).
 @item Save Settings on Exit
 @cindex Save Settings on Exit, Menu Item
 Setting this option has no immediate effect, but causes the settings
@@ -1887,10 +1909,8 @@ random
 Setting this option from the command line is tricky, because you must
 type in real newline characters, including one at the very end.
 In most shells you can do this by
-entering a @samp{\} character followed by a newline. It is easier to set
-the option from your @file{.Xresources} file; in that case you can
-include the character sequence @samp{\n} in the string, and it will
-be converted to a newline.
+entering a @samp{\} character followed by a newline. 
+Using the character sequence @samp{\n} in the string should work too, though.
 
 If you change this option, don't remove the @samp{new} 
 command; it is required by all chess engines to
@@ -2502,24 +2522,6 @@ Here ``default'' means the default foreground or background color of
 your xterm.  Bold can be 1 or 0.  If background is omitted, ``default''
 is assumed; if bold is omitted, 0 is assumed.
 
-Here is an example of how to set the colors in your @file{.Xresources} file.
-The colors shown here are the default values; you will get
-them if you turn @code{-colorize} on without specifying your own colors.
-CShout is synonymous with SShout.
-
-@example
-xboard*colorizeMessages: true	
-xboard*colorShout: green
-xboard*colorSShout: green, black, 1
-xboard*colorChannel1: cyan
-xboard*colorChannel: cyan, black, 1
-xboard*colorKibitz: magenta, black, 1
-xboard*colorTell: yellow, black, 1
-xboard*colorChallenge: red, black, 1
-xboard*colorRequest: red
-xboard*colorSeek: blue
-xboard*colorNormal: default
-@end example
 @item -soundProgram progname
 @cindex soundProgram, option
 @cindex Sounds
@@ -2579,26 +2581,6 @@ This sound is played when you draw an ICS game.  Default: "" (no sound).
 This sound is played when an ICS game that you are participating in is
 aborted, adjourned, or otherwise ends inconclusively.  Default: "" (no
 sound).
-
-Here is an example of how to set the sounds in your @file{.Xresources} file:
-
-@example
-xboard*soundShout: shout.wav
-xboard*soundSShout: sshout.wav
-xboard*soundChannel1: channel1.wav
-xboard*soundChannel: channel.wav
-xboard*soundKibitz: kibitz.wav
-xboard*soundTell: tell.wav
-xboard*soundChallenge: challenge.wav
-xboard*soundRequest: request.wav
-xboard*soundSeek: seek.wav
-xboard*soundMove: move.wav
-xboard*soundIcsWin: win.wav
-xboard*soundIcsLoss: lose.wav
-xboard*soundIcsDraw: draw.wav
-xboard*soundIcsUnfinished: unfinished.wav
-xboard*soundIcsAlarm: alarm.wav
-@end example
 @end table
 
 @node Load and Save options
@@ -3565,13 +3547,6 @@ command-line options as follows:
 xboard -ics -icshost firewall.example.com -icsport 23
 @end example
 @noindent
-Or in your @file{.Xresources} file:
-
-@example
-XBoard*internetChessServerHost: firewall.example.com
-XBoard*internetChessServerPort: 23
-@end example
-@noindent
 Then when you run XBoard in ICS mode, you will be prompted
 to log in to the firewall host. This works because port 23 is the
 standard telnet login service. Do so, then telnet to ICS, using a
@@ -3603,13 +3578,6 @@ xboard -ics -gateway rsh.example.com -icshost chessclub.com
 @end example
 
 @noindent
-Or in your @file{.Xresources} file:
-
-@example
-XBoard*gateway: rsh.example.com
-XBoard*internetChessServerHost: chessclub.com
-@end example
-
 Then when you run XBoard in ICS mode, it will connect to
 the ICS by using @file{rsh} to run the command
 @samp{telnet chessclub.com 5000} on host @samp{rsh.example.com}.
@@ -3626,14 +3594,6 @@ xboard -ics -telnet -telnetProgram ptelnet
 @end example
 
 @noindent
-Or in your @file{.Xresources} file:
-
-@example
-XBoard*useTelnet: true
-XBoard*telnetProgram: ptelnet
-@end example
-
-@noindent
 Then when you run XBoard in ICS mode, it will issue the
 command @samp{ptelnet chessclub.com 5000} to connect to the ICS.
 
@@ -3641,8 +3601,7 @@ Next, suppose that @samp{ptelnet chessclub.com 5000} doesn't work;
 that is, your @file{ptelnet} program doesn't let you connect to
 alternative ports. As noted above, your chess server may allow you to
 connect on port 23 instead.  In that case, just add the option
-@samp{-icsport ""} to the above command, or add
-@samp{XBoard*internetChessServerPort:} to your @file{.Xresources} file.
+@samp{-icsport ""} to the above command.
 But if your chess server doesn't let you connect on port 23, you will have
 to find some other host outside the firewall and hop through it. For
 instance, suppose you have a shell account at @samp{foo.edu}. Set
@@ -3650,16 +3609,6 @@ command line options as follows:
 
 @example
 xboard -ics -telnet -telnetProgram ptelnet -icshost foo.edu -icsport ""
-@end example
-
-@noindent
-Or in your @file{.Xresources} file:
-
-@example
-XBoard*useTelnet: true
-XBoard*telnetProgram: ptelnet
-XBoard*internetChessServerHost: foo.edu
-XBoard*internetChessServerPort:
 @end example
 
 @noindent
@@ -4116,12 +4065,6 @@ zic2xpm ~/ziics/fritz4.*
 
 @example
 xboard -pixmap ~/fritz4
-@end example
-
-Alternatively, you can add this line to your @file{.Xresources} file:
-
-@example
-xboard*pixmapDirectory: ~/fritz4
 @end example
 @end table
 
