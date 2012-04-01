@@ -220,10 +220,13 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
     if( clearMemo ) {
         DoClearMemo(which); nrVariations[which] = 0;
         header[0] = NULLCHAR;
-        if(gameMode == AnalyzeMode && (multi = MultiPV(&first)) >= 0) {
+        if(gameMode == AnalyzeMode) {
+          if((multi = MultiPV(&first)) >= 0) {
             snprintf(header, MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
                                        appData.whitePOV || appData.scoreWhite ? "white" : "mover", first.option[multi].value);
-            InsertIntoMemo( which, header, 0);
+	  }
+          snprintf(header+strlen(header), MSG_SIZ-strlen(header), exclusionHeader);
+          InsertIntoMemo( which, header, 0);
         } else
         if(appData.ponderNextMove && lastLine[which][0]) {
             InsertIntoMemo( which, lastLine[which], 0 );

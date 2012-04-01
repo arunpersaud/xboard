@@ -5426,6 +5426,9 @@ LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end)
 		first.option[multi].value = n;
 		*start = *end = 0;
 		return FALSE;
+	} else if(strstr(buf+lineStart, "exclude:") == buf+lineStart) { // exclude moves clicked
+		DisplayNote("Yes!");
+		return;
 	}
 	ParsePV(buf+startPV, FALSE, gameMode != AnalyzeMode);
 	*start = startPV; *end = index-1;
@@ -6104,6 +6107,45 @@ SendBoard (ChessProgramState *cps, int moveNum)
     setboardSpoiledMachineBlack = 0; /* [HGM] assume WB 4.2.7 already solves this after sending setboard */
 }
 
+char exclusionHeader[MSG_SIZ];
+int exCnt, excludePtr, mappedMove = -1;
+typedef struct { int ff, fr, tf, tr, pc, mark; } Exclusion;
+static Exclusion excluTab[200];
+static char excludeMap[(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8]; // [HGM] exclude: bitmap for excluced moves
+
+void
+ClearMap ()
+{
+    int j;
+    mappedMove = -1;
+    for(j=0; j<(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8; j++) excludeMap[j] = 0;
+    safeStrCpy(exclusionHeader, "exclude: none best  tail                                          \n", MSG_SIZ);
+    excludePtr = 24; exCnt = 0;
+}
+
+void
+UpdateExcludeHeader (int fromY, int fromX, int toY, int toX, char promoChar, int incl)
+{
+    char buf[2*MOVE_LEN], *p, c = incl ? '+' : '-';
+    Exclusion *e = excluTab;
+    int i;
+    for(i=0; i<exCnt; i++)
+	if(e[i].ff == fromX && e[i].fr == fromY &&
+	   e[i].tf == toX   && e[i].tr == toY && e[i].pc == promoChar) break;
+    if(i == exCnt) { // was not in exclude list; add it
+	CoordsToAlgebraic(boards[currentMove], PosFlags(currentMove), fromY, fromX, toY, toX, promoChar, buf);
+	if(strlen(exclusionHeader + excludePtr) < strlen(buf)) { // no space to write move
+	    if(c != exclusionHeader[19]) exclusionHeader[19] = '*'; // tail is now in mixed state
+	    return; // abort
+	}
+	e[i].ff = fromX; e[i].fr = fromY; e[i].tf = toX; e[i].tr = toY; e[i].pc = promoChar;
+	excludePtr++; e[i].mark = excludePtr++;
+	for(p=buf; *p; p++) exclusionHeader[excludePtr++] = *p; // copy move
+	exCnt++;
+    }
+    exclusionHeader[e[i].mark] = c;
+}
+
 ChessSquare
 DefaultPromoChoice (int white)
 {
@@ -6405,14 +6447,13 @@ int lastLoadGameNumber = 0, lastLoadPositionNumber = 0;
 int lastLoadGameUseList = FALSE;
 char lastLoadGameTitle[MSG_SIZ], lastLoadPositionTitle[MSG_SIZ];
 ChessMove lastLoadGameStart = EndOfFile;
-int doubleClick, mappedMove = -1;
+int doubleClick;
 
 void
 UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 {
     ChessMove moveType;
     ChessSquare pdown, pup;
-    static char excludeMap[(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8]; // [HGM] exclude: bitmap for excluced moves
     int ff=fromX, rf=fromY, ft=toX, rt=toY;
 
 
@@ -6596,15 +6637,16 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
     if(doubleClick) { // [HGM] exclude: move entered with double-click on from square is for exclusion, not playing
 	int i=(BOARD_FILES*rf+ff)*BOARD_RANKS*BOARD_FILES + (BOARD_FILES*rt+ft), j;
 	char buf[MSG_SIZ];
-	if(mappedMove != currentMove)
-	    for(j=0; j<(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8; j++) excludeMap[j] = 0;
+	if(mappedMove != currentMove) ClearMap();
 	j = i%8; i >>= 3;
 	snprintf(buf, MSG_SIZ, "%sclude ", excludeMap[i] & 1<<j ? "in" : "ex");
 	if(excludeMap[i] & 1<<j) ClearPremoveHighlights();
 	else ClearHighlights(), SetPremoveHighlights(ff, rf, ft, rt);
-	if(!promoChar) excludeMap[i] ^= 1<<j; mappedMove = currentMove;
+	if(!promoChar) excludeMap[i] ^= 1<<j;
+	mappedMove = currentMove;
 	CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar, buf+8);
 	SendToProgram(buf, &first);
+	UpdateExcludeHeader(fromY, fromX, toY, toX, promoChar, buf[0] == 'i');
 	return;
     }
 
@@ -6678,6 +6720,8 @@ FinishMove (ChessMove moveType, int fromX, int fromY, int toX, int toY, int prom
     if(appData.variations && shiftKey) PushTail(currentMove, forwardMostMove); // [HGM] vari: save tail of game
     else forwardMostMove = currentMove;
   }
+
+  ClearMap();
 
   /* If we need the chess program but it's dead, restart it */
   ResurrectChessProgram();
@@ -10753,7 +10797,7 @@ Reset (int redraw, int init)
     DisplayMessage("", "");
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
     lastSavedGame = 0; // [HGM] save: make sure next game counts as unsaved
-    mappedMove = -1;   // [HGM] exclude: invalidate map
+    ClearMap();        // [HGM] exclude: invalidate map
 }
 
 void
@@ -14344,7 +14388,7 @@ ForwardInner (int target)
     if ( !matchMode && gameMode != Training) { // [HGM] PV info: routine tests if empty
 	DisplayComment(currentMove - 1, commentList[currentMove]);
     }
-    mappedMove = -1; // [HGM] exclude: invalidate map
+    ClearMap(); // [HGM] exclude: invalidate map
 }
 
 
@@ -14458,7 +14502,7 @@ BackwardInner (int target)
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
     // [HGM] PV info: routine tests if comment empty
     DisplayComment(currentMove - 1, commentList[currentMove]);
-    mappedMove = -1; // [HGM] exclude: invalidate map
+    ClearMap(); // [HGM] exclude: invalidate map
 }
 
 void

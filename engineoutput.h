@@ -55,6 +55,7 @@
 #define STATE_ANALYZING  3
 
 extern int  windowMode;
+extern char exclusionHeader[];
 
 // back-end called by front-end
 void SetEngineState( int which, int state, char * state_data );
