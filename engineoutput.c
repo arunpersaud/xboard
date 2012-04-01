@@ -74,6 +74,7 @@ typedef struct {
     char * hint;
     int an_move_index;
     int an_move_count;
+    int moveKey;
 } EngineOutputData;
 
 // called by other front-end
@@ -91,7 +92,7 @@ static char lastLine[2][MSG_SIZ];
 static char header[MSG_SIZ];
 
 #define MAX_VAR 400
-static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
+static int scores[MAX_VAR], textEnd[MAX_VAR], keys[MAX_VAR], curDepth[2], nrVariations[2];
 
 extern int initialRulePlies;
 
@@ -161,6 +162,9 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
     EngineOutputData ed;
     int clearMemo = FALSE;
     int which, depth, multi;
+    ChessMove moveType;
+    int ff, ft, rf, rt;
+    char pc;
 
     if( stats == 0 ) {
         SetEngineState( 0, STATE_IDLE, "" );
@@ -230,6 +234,10 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
             InsertIntoMemo( which, "\n", 0 );
         }
     }
+
+    if(ParseOneMove(ed.pv, currentMove, &moveType, &ff, &rf, &ft, &rt, &pc))
+	ed.moveKey = (ff<<24 | rf << 16 | ft << 8 | rt) ^ pc*87161;
+    else ed.moveKey = ed.nodes; // kludge to get unique key unlikely to match any move
 
     /* Update */
     lastDepth[which] = depth == 1 && ed.nodes == 0 ? 0 : depth; // [HGM] info-line kudge
@@ -395,10 +403,13 @@ InsertionPoint (int len, EngineOutputData *ed)
 		offs = textEnd[i+n];
 		textEnd[i+n+2] = offs + len;
 		scores[i+n+2] = newScore;
-		if(newScore < scores[i+n]) break;
+		keys[i+n+2] = ed->moveKey;
+		if(ed->moveKey != keys[i+n] && // same move always tops previous one (as a higher score must be a fail low)
+		   newScore < scores[i+n]) break;
 		// if it had higher score as previous, move previous in stead
 		scores[i+n+2] = scores[i+n];
 		textEnd[i+n+2] = textEnd[i+n] + len;
+		keys[i+n+2] = keys[i+n];
 	}
 	if(i<0) {
 		offs = 0;
