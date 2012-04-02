@@ -258,10 +258,14 @@ static Option matchOptions[] = {
 { 0, SAME_ROW|LL, 0, NULL, NULL, "", NULL, Label, N_("    (for concurrent playing of a single") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
 { 0, SAME_ROW|LL, 0, NULL, NULL, "", NULL, Label, N_("      tourney with multiple XBoards)") },
+{ 0,  LR,       200, NULL, NULL, "", NULL, Label, N_("Tourney participants:") },
+{ 0, SAME_ROW|RR, 0, NULL, NULL, "", NULL, Label, N_("Select Engine:") },
 { 150, T_VSCRL | T_FILL | T_WRAP,
-                  0, NULL, (void*) &engineName, "", NULL, TextBox, N_("Tourney participants:") },
-{ 0,  COMBO_CALLBACK | NO_GETTEXT,
-		  0, NULL, (void*) &AddToTourney, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
+                175, NULL, (void*) &engineName, "", NULL, TextBox, "" },
+{ 150, SAME_ROW|RR,
+                175, NULL, (void*) (engineMnemonic+1), (char*) &AddToTourney, NULL, ListBox, "" },
+//{ 0,  COMBO_CALLBACK | NO_GETTEXT,
+//		  0, NULL, (void*) &AddToTourney, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
 { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
 { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles (or Swiss rounds):") },
 { 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Default Number of Games in Match (or Pairing):") },
@@ -282,14 +286,14 @@ static Option matchOptions[] = {
 static void
 ReplaceParticipant ()
 {
-    GenericReadout(matchOptions, 5);
+    GenericReadout(matchOptions, 7);
     Substitute(strdup(engineName), True);
 }
 
 static void
 UpgradeParticipant ()
 {
-    GenericReadout(matchOptions, 5);
+    GenericReadout(matchOptions, 7);
     Substitute(strdup(engineName), False);
 }
 
@@ -311,14 +315,14 @@ CloneTourney ()
 static void
 AddToTourney (int n)
 {
-    AddLine(&matchOptions[5], engineMnemonic[values[6]+1]);
+    AddLine(&matchOptions[7], engineMnemonic[SelectedListBoxItem(&matchOptions[8])+1]);
 }
 
 void
 MatchOptionsProc ()
 {
    NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
-   matchOptions[7].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
+   matchOptions[9].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
    ASSIGN(engineName, appData.participants);
    GenericPopUp(matchOptions, _("Match Options"), TransientDlg, BoardWindow, MODAL, 0);
