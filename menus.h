@@ -73,6 +73,7 @@ typedef struct {
 
 extern Menu menuBar[];
 
+void AppendEnginesToMenu P((char *list));
 void LoadGameProc P((void));
 void LoadNextGameProc P((void));
 void LoadPrevGameProc P((void));
@@ -163,7 +164,7 @@ void EngineOutputProc P((void));
 void EvalGraphProc P((void));
 
 void CreateMainMenus P((Menu *mb));
-void AppendMenuItem P((char *text, char *name, MenuProc *action));
+void AppendMenuItem P((char *text, int n));
 void CreateMenuButton P((char *name, Menu *mb));
 MenuItem *MenuNameToItem P((char *menuName));
 void SetMenuEnables P((Enables *enab));

@@ -1410,6 +1410,7 @@ XBoard square size (hint): %d\n\
       XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
       XtGetValues(optList[18].handle, args, 2);
     }
+    AppendEnginesToMenu(appData.recentEngineList);
 
     xBoardWindow = XtWindow(boardWidget);
 
@@ -2327,6 +2328,12 @@ static void
 MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
 {
     RecentEngineEvent((int) (intptr_t) addr);
+}
+
+void
+AppendMenuItem (char *msg, int n)
+{
+    CreateMenuItem((Widget) optList[6].textValue, msg, (XtCallbackProc) MenuEngineSelect, n);
 }
 
 void

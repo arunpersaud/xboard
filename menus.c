@@ -872,17 +872,15 @@ AppendEnginesToMenu (char *list)
 {
     int i=0;
     char *p;
-#if 0
     if(appData.icsActive || appData.recentEngines <= 0) return;
     recentEngines = strdup(list);
     while (*list) {
 	p = strchr(list, '\n'); if(p == NULL) break;
-	if(i == 0) AppendMenuItem("----", "----", NULL); // at least one valid item to add
+	if(i == 0) AppendMenuItem("----", 0); // at least one valid item to add
 	*p = 0;
-	AppendMenuItem(list, "recent", (MenuProc *) i);
+	AppendMenuItem(list, i);
 	i++; *p = '\n'; list = p + 1;
     }
-#endif
 }
 
 Enables icsEnables[] = {

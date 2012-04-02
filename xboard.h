@@ -145,6 +145,7 @@ void SendToICS P((char *buf));
 void SendToProgram P((char *message, ChessProgramState *cps));
 void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b); // from xoptions.c
 void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+Widget CreateMenuItem P((Widget menu, char *msg, XtCallbackProc CB, int n));
 void WheelProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TabProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GenericMenu P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
