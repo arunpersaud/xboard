@@ -1177,19 +1177,15 @@ SecondSettingsProc ()
 //----------------------------------------------- Load Engine --------------------------------------
 
 char *engineDir, *engineLine, *nickName, *params;
-Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
-static char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
+Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick, secondEng;
 
-static int
-InstallOK (int n)
-{
-    PopDown(TransientDlg); // early popdown, to allow FreezeUI to instate grab
-    if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
-    return FALSE; // no double PopDown!
-}
+static void EngSel P((int n, int sel));
+static int InstallOK P((int n));
 
 static Option installOptions[] = {
-{   0,  NO_GETTEXT, 0, NULL, (void*) &engineLine, (char*) engineList, engineMnemonic, ComboBox, N_("Select engine from list:") },
+{   0,LR|T2T, 0, NULL, NULL, NULL, NULL, Label, N_("Select engine from list:") },
+{ 300,LR|TB,200, NULL, (void*) engineMnemonic, (char*) &EngSel, NULL, ListBox, "" },
+{ 0,SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, NULL },
 {   0,  LR,   0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
 {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
 {   0,  0,    0, NULL, (void*) &useNick, NULL, NULL, CheckBox, N_("Use nickname in PGN player tags of engine-engine games") },
@@ -1201,21 +1197,51 @@ static Option installOptions[] = {
 {   0,  0,    0, NULL, (void*) &hasBook, NULL, NULL, CheckBox, N_("Must not use GUI book") },
 {   0,  0,    0, NULL, (void*) &addToList, NULL, NULL, CheckBox, N_("Add this engine to the list") },
 {   0,  0,    0, NULL, (void*) &storeVariant, NULL, NULL, CheckBox, N_("Force current variant with this engine") },
-{   0,  0,    0, NULL, (void*) &engineChoice, (char*) engineNr, engineNr, ComboBox, N_("Load mentioned engine as") },
-{ 0,SAME_ROW, 0, NULL, (void*) &InstallOK, "", NULL, EndMark , "" }
+{   0,  0,    0, NULL, (void*) &InstallOK, "", NULL, EndMark , "" }
 };
 
-void
-LoadEngineProc ()
+static int
+InstallOK (int n)
+{
+    if(n && (n = SelectedListBoxItem(&installOptions[1])) > 0) { // called by pressing OK, and engine selected
+	ASSIGN(engineLine, engineList[n]);
+    }
+    PopDown(TransientDlg); // early popdown, to allow FreezeUI to instate grab
+    if(!secondEng) Load(&first, 0); else Load(&second, 1);
+    return FALSE; // no double PopDown!
+}
+
+static void
+EngSel (int n, int sel)
+{
+    if(sel < 1) return;
+    ASSIGN(engineLine, engineList[sel]);
+    InstallOK(0);
+}
+
+static void
+LoadEngineProc (int engineNr, char *title)
 {
    isUCI = storeVariant = v1 = useNick = False; addToList = hasBook = True; // defaults
-   if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
+   secondEng = engineNr;
    if(engineLine)   free(engineLine);   engineLine = strdup("");
    if(engineDir)    free(engineDir);    engineDir = strdup("");
    if(nickName)     free(nickName);     nickName = strdup("");
    if(params)       free(params);       params = strdup("");
    NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
-   GenericPopUp(installOptions, _("Load engine"), TransientDlg, BoardWindow, MODAL, 0);
+   GenericPopUp(installOptions, title, TransientDlg, BoardWindow, MODAL, 0);
+}
+
+void
+LoadEngine1Proc ()
+{
+    LoadEngineProc (0, _("Load first engine"));
+}
+
+void
+LoadEngine2Proc ()
+{
+    LoadEngineProc (1, _("Load second engine"));
 }
 
 //----------------------------------------------------- Edit Book -----------------------------------------

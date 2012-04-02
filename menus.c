@@ -752,7 +752,8 @@ MenuItem actionMenu[] = {
 };
 
 MenuItem engineMenu[] = {
-    {N_("Load New Engine ..."), "LoadEngine", LoadEngineProc},
+    {N_("Load New 1st Engine ..."), "LoadEngine", LoadEngine1Proc},
+    {N_("Load New 2nd Engine ..."), "LoadEngine", LoadEngine2Proc},
     {"----", NULL, NothingProc},
     {N_("Engine #1 Settings ..."), "Engine#1Settings", FirstSettingsProc},
     {N_("Engine #2 Settings ..."), "Engine#2Settings", SecondSettingsProc},
