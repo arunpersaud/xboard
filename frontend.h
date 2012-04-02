@@ -170,7 +170,7 @@ void CmailSigHandlerCallBack P((InputSourceRef isr, VOIDSTAR closure,
 				char *buf, int count, int error));
 
 extern ProcRef cmailPR;
-extern int shiftKey;
+extern int shiftKey, controlKey;
 
 /* in xgamelist.c or winboard.c */
 void GLT_ClearList();

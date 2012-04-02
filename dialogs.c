@@ -1909,7 +1909,9 @@ Exp (int n, int x, int y)
 	if(but3) MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 	return NULL;
     }
-    shiftKey = (ShiftKeys() & 3) != 0;
+    shiftKey = ShiftKeys();
+    controlKey = (shiftKey & 0xC) != 0;
+    shiftKey = (shiftKey & 3) != 0;
     switch(n) {
 	case  1: LeftClick(Press,   x, y), but1 = 1; break;
 	case -1: LeftClick(Release, x, y), but1 = 0; break;

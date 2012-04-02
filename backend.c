@@ -450,7 +450,7 @@ int adjudicateLossPlies = 6;
 char white_holding[64], black_holding[64];
 TimeMark lastNodeCountTime;
 long lastNodeCount=0;
-int shiftKey; // [HGM] set by mouse handler
+int shiftKey, controlKey; // [HGM] set by mouse handler
 
 int have_sent_ICS_logon = 0;
 int movesPerSession;
@@ -6664,7 +6664,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 		    if(boards[0][fromY][BOARD_WIDTH-2] == 0)  boards[0][fromY][BOARD_WIDTH-1] = EmptySquare;
 		}
 	    } else
-	    boards[0][fromY][fromX] = EmptySquare;
+	    boards[0][fromY][fromX] = gatingPiece;
 	    DrawPosition(FALSE, boards[currentMove]);
 	    return;
 	}
@@ -7060,6 +7060,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    if (OKToStartUserMove(fromX, fromY)) {
 		second = 0;
 		MarkTargetSquares(0);
+		if(gameMode == EditPosition && controlKey) gatingPiece = boards[currentMove][fromY][fromX];
 		DragPieceBegin(xPix, yPix, FALSE); dragging = 1;
 		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][fromY][fromX], fromY)) {
 		    promoSweep = defaultPromoChoice;
