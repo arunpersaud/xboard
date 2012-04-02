@@ -222,6 +222,7 @@ int NextTourneyGame P((int nr, int *swap));
 int Pairing P((int nr, int nPlayers, int *w, int *b, int *sync));
 FILE *WriteTourneyFile P((char *results, FILE *f));
 void DisplayTwoMachinesTitle P(());
+static void ExcludeClick P((int index));
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -5427,8 +5428,8 @@ LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end)
 		*start = *end = 0;
 		return FALSE;
 	} else if(strstr(buf+lineStart, "exclude:") == buf+lineStart) { // exclude moves clicked
-		DisplayNote("Yes!");
-		return;
+		ExcludeClick(origIndex - lineStart);
+		return FALSE;
 	}
 	ParsePV(buf+startPV, FALSE, gameMode != AnalyzeMode);
 	*start = startPV; *end = index-1;
@@ -6108,25 +6109,32 @@ SendBoard (ChessProgramState *cps, int moveNum)
 }
 
 char exclusionHeader[MSG_SIZ];
-int exCnt, excludePtr, mappedMove = -1;
+int exCnt, excludePtr;
 typedef struct { int ff, fr, tf, tr, pc, mark; } Exclusion;
 static Exclusion excluTab[200];
 static char excludeMap[(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8]; // [HGM] exclude: bitmap for excluced moves
 
-void
+static void
+WriteMap (int s)
+{
+    int j;
+    for(j=0; j<(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8; j++) excludeMap[j] = s;
+    exclusionHeader[19] = s ? '-' : '+'; // update tail state
+}
+
+static void
 ClearMap ()
 {
     int j;
-    mappedMove = -1;
-    for(j=0; j<(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8; j++) excludeMap[j] = 0;
-    safeStrCpy(exclusionHeader, "exclude: none best  tail                                          \n", MSG_SIZ);
+    safeStrCpy(exclusionHeader, "exclude: none best +tail                                          \n", MSG_SIZ);
     excludePtr = 24; exCnt = 0;
+    WriteMap(0);
 }
 
-void
-UpdateExcludeHeader (int fromY, int fromX, int toY, int toX, char promoChar, int incl)
-{
-    char buf[2*MOVE_LEN], *p, c = incl ? '+' : '-';
+static void
+UpdateExcludeHeader (int fromY, int fromX, int toY, int toX, char promoChar, char state)
+{   // search given move in table of header moves, to know where it is listed (and add if not there), and update state
+    char buf[2*MOVE_LEN], *p;
     Exclusion *e = excluTab;
     int i;
     for(i=0; i<exCnt; i++)
@@ -6135,7 +6143,7 @@ UpdateExcludeHeader (int fromY, int fromX, int toY, int toX, char promoChar, int
     if(i == exCnt) { // was not in exclude list; add it
 	CoordsToAlgebraic(boards[currentMove], PosFlags(currentMove), fromY, fromX, toY, toX, promoChar, buf);
 	if(strlen(exclusionHeader + excludePtr) < strlen(buf)) { // no space to write move
-	    if(c != exclusionHeader[19]) exclusionHeader[19] = '*'; // tail is now in mixed state
+	    if(state != exclusionHeader[19]) exclusionHeader[19] = '*'; // tail is now in mixed state
 	    return; // abort
 	}
 	e[i].ff = fromX; e[i].fr = fromY; e[i].tf = toX; e[i].tr = toY; e[i].pc = promoChar;
@@ -6143,7 +6151,72 @@ UpdateExcludeHeader (int fromY, int fromX, int toY, int toX, char promoChar, int
 	for(p=buf; *p; p++) exclusionHeader[excludePtr++] = *p; // copy move
 	exCnt++;
     }
-    exclusionHeader[e[i].mark] = c;
+    exclusionHeader[e[i].mark] = state;
+}
+
+static int
+ExcludeOneMove (int fromY, int fromX, int toY, int toX, signed char promoChar, char state)
+{   // include or exclude the given move, as specified by state ('+' or '-'), or toggle
+    char *p, buf[MSG_SIZ];
+    int j, k;
+    ChessMove moveType;
+    if(promoChar == -1) { // kludge to indicate best move
+	if(!ParseOneMove(lastPV[0], currentMove, &moveType, &fromX, &fromY, &toX, &toY, &promoChar)) // get current best move from last PV
+	    return 1; // if unparsable, abort
+    }
+    // update exclusion map (resolving toggle by consulting existing state)
+    k=(BOARD_FILES*fromY+fromX)*BOARD_RANKS*BOARD_FILES + (BOARD_FILES*toY+toX);
+    j = k%8; k >>= 3;
+    if(state == '*') state = (excludeMap[k] & 1<<j ? '+' : '-'); // toggle
+    if(state == '-' && !promoChar) // only non-promotions get marked as excluded, to allow exclusion of under-promotions
+	 excludeMap[k] |=   1<<j;
+    else excludeMap[k] &= ~(1<<j);
+    // update header
+    UpdateExcludeHeader(fromY, fromX, toY, toX, promoChar, state);
+    // inform engine
+    snprintf(buf, MSG_SIZ, "%sclude ", state == '+' ? "in" : "ex");
+    CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar, buf+8);
+    SendToProgram(buf, &first);
+    return (state == '+');
+}
+
+static void
+ExcludeClick (int index)
+{
+    int i, j;
+    char buf[MSG_SIZ];
+    Exclusion *e = excluTab;
+    if(index < 25) { // none, best or tail clicked
+	if(index < 13) { // none: include all
+	    WriteMap(0); // clear map
+	    for(i=0; i<exCnt; i++) exclusionHeader[excluTab[i].mark] = '+'; // and moves
+	    SendToProgram("include all\n", &first); // and inform engine
+	} else if(index > 18) { // tail
+	    if(exclusionHeader[19] == '-') { // tail was excluded
+		SendToProgram("include all\n", &first);
+		WriteMap(0); // clear map completely
+		// now re-exclude selected moves
+		for(i=0; i<exCnt; i++) if(exclusionHeader[e[i].mark] == '-')
+		    ExcludeOneMove(e[i].fr, e[i].ff, e[i].tr, e[i].tf, e[i].pc, '-');
+	    } else { // tail was included or in mixed state
+		SendToProgram("exclude all\n", &first);
+		WriteMap(0xFF); // fill map completely
+		// now re-include selected moves
+		j = 0; // count them
+		for(i=0; i<exCnt; i++) if(exclusionHeader[e[i].mark] == '+')
+		    ExcludeOneMove(e[i].fr, e[i].ff, e[i].tr, e[i].tf, e[i].pc, '+'), j++;
+		if(!j) ExcludeOneMove(0, 0, 0, 0, -1, '+'); // if no moves were selected, keep best
+	    }
+	} else { // best
+	    ExcludeOneMove(0, 0, 0, 0, -1, '-'); // exclude it
+	}
+    } else {
+	for(i=0; i<exCnt; i++) if(i == exCnt-1 || excluTab[i+1].mark > index) {
+	    char *p=exclusionHeader + excluTab[i].mark; // do trust header more than map (promotions!)
+	    ExcludeOneMove(e[i].fr, e[i].ff, e[i].tr, e[i].tf, e[i].pc, *p == '+' ? '-' : '+');
+	    break;
+	}
+    }
 }
 
 ChessSquare
@@ -6591,18 +6664,6 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
         return;
     }
 
-    if(doubleClick && (toX == -2 || toY == -2)) { // [HGM] exclude: off-board move means exclude all
-	int i; // note that drop moves still have holdings coords as from-square at this point
-	ChessMove moveType; char pc;
-	for(i=0; i<(BOARD_RANKS*BOARD_FILES*BOARD_RANKS*BOARD_FILES+7)/8; i++) excludeMap[i] = -(toY == -2);
-	mappedMove = currentMove;
-	if(toY != -2) { SendToProgram("include all\n", &first); return; }
-	SendToProgram("exclude all\n", &first);
-	i = ParseOneMove(lastPV[0], currentMove, &moveType, &fromX, &fromY, &toX, &toY, &pc);
-	ff=fromX, rf=fromY, ft=toX, rt=toY, promoChar = pc; // make copy that will survive drop encoding
-	if(!i) return; // kludge: continue with move changed to engine's last-reported best, so it gets included again.
-    }
-
     if(toX < 0 || toY < 0) return;
     pdown = boards[currentMove][fromY][fromX];
     pup = boards[currentMove][toY][toX];
@@ -6635,18 +6696,9 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
     }
 
     if(doubleClick) { // [HGM] exclude: move entered with double-click on from square is for exclusion, not playing
-	int i=(BOARD_FILES*rf+ff)*BOARD_RANKS*BOARD_FILES + (BOARD_FILES*rt+ft), j;
-	char buf[MSG_SIZ];
-	if(mappedMove != currentMove) ClearMap();
-	j = i%8; i >>= 3;
-	snprintf(buf, MSG_SIZ, "%sclude ", excludeMap[i] & 1<<j ? "in" : "ex");
-	if(excludeMap[i] & 1<<j) ClearPremoveHighlights();
-	else ClearHighlights(), SetPremoveHighlights(ff, rf, ft, rt);
-	if(!promoChar) excludeMap[i] ^= 1<<j;
-	mappedMove = currentMove;
-	CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar, buf+8);
-	SendToProgram(buf, &first);
-	UpdateExcludeHeader(fromY, fromX, toY, toX, promoChar, buf[0] == 'i');
+        if(ExcludeOneMove(fromY, fromX, toY, toX, promoChar, '*')) // toggle
+	     ClearPremoveHighlights(); // was included
+	else ClearHighlights(), SetPremoveHighlights(ff, rf, ft, rt); // exclusion indicated  by premove highlights
 	return;
     }
 
