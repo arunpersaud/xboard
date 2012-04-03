@@ -29,9 +29,6 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 xgamelist.c xgamelist.h\
 		 history.c xhistory.c xhistory.h \
 		 xoptions.c dialogs.c dialogs.h \
-		 filebrowser/selfile.c filebrowser/selfile.h \
-		 filebrowser/draw.c filebrowser/path.c \
-		 filebrowser/dir.c filebrowser/xstat.h \
 		 $(ZPY)
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@

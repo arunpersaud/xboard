@@ -149,8 +149,6 @@ Widget CreateMenuItem P((Widget menu, char *msg, XtCallbackProc CB, int n));
 void WheelProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TabProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GenericMenu P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
-		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
 
 // from xengineoutput.c
 extern char memoTranslations[];

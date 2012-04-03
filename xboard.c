@@ -2828,10 +2828,7 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
     fileOpenMode = openMode;	/*   to use globals here */
     {   // [HGM] use file-selector dialog stolen from Ghostview
 	int index; // this is not supported yet
-	if(openFP = XsraSelFile(shellWidget, label, NULL, NULL, _("could not open: "),
-			   (def[0] ? def : NULL), filter, openMode, NULL, &openName))
-	  // [HGM] delay to give expose event opportunity to redraw board after browser-dialog popdown before lengthy load starts
-	  ScheduleDelayedEvent(&DelayedLoad, 50);
+	Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, &openName, &openFP);
     }
 }
 

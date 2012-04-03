@@ -127,7 +127,6 @@ BoardFocus ()
 //--------------------------- Engine-specific options menu ----------------------------------
 
 int dialogError;
-static Boolean browserUp;
 Option *dialogOptions[NrOfDialogs];
 
 static Arg layoutArgs[] = {
@@ -306,16 +305,7 @@ SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
 	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
 	if(!strcmp(r, "") && !currentCps && opt->type == FileName && opt->textValue)
 		r = opt->textValue;
-	browserUp = True;
-	if(XsraSelFile(shells[TransientDlg], opt->name, NULL, NULL, "", "", r,
-			 	  opt->type == PathName ? "p" : "f", NULL, &p)) {
-		int len = strlen(p);
-		if(len && p[len-1] == '/') p[len-1] = NULLCHAR;
-		XtSetArg(args[0], XtNstring, p);
-		XtSetValues(opt->handle, args, 1);
-	}
-	browserUp = False;
-	SetFocus(opt->handle, shells[TransientDlg], (XEvent*) NULL, False);
+	Browse(data>>8, opt->name, NULL, r, opt->type == PathName, "", &p, (FILE**) opt);
 	return;
     } else
     if (strcmp(name, "+") == 0) {
@@ -338,7 +328,7 @@ ComboSelect (Widget w, caddr_t addr, caddr_t index) // callback for all combo it
 
     values[i] = j; // store selected value in Option struct, for retrieval at OK
 
-    if(opt[i].type == Graph || opt[i].min & COMBO_CALLBACK && !currentCps) {
+    if(opt[i].type == Graph || opt[i].min & COMBO_CALLBACK && (!currentCps || shellUp[BrowserDlg])) {
 	((ButtonCallback*) opt[i].target)(i);
 	return;
     }
@@ -428,6 +418,32 @@ DialogExists (DialogClass n)
     return shells[n] != NULL;
 }
 
+void
+RaiseWindow (DialogClass dlg)
+{
+    static XEvent xev;
+    Window root = RootWindow(xDisplay, DefaultScreen(xDisplay));
+    Atom atom = XInternAtom (xDisplay, "_NET_ACTIVE_WINDOW", False);
+
+    xev.xclient.type = ClientMessage;
+    xev.xclient.serial = 0;
+    xev.xclient.send_event = True;
+    xev.xclient.display = xDisplay;
+    xev.xclient.window = XtWindow(shells[dlg]);
+    xev.xclient.message_type = atom;
+    xev.xclient.format = 32;
+    xev.xclient.data.l[0] = 1;
+    xev.xclient.data.l[1] = CurrentTime;
+
+    XSendEvent (xDisplay,
+          root, False,
+          SubstructureRedirectMask | SubstructureNotifyMask,
+          &xev);
+
+    XFlush(xDisplay); 
+    XSync(xDisplay, False);
+}
+
 int
 PopDown (DialogClass n)
 {   // pops down any dialog created by GenericPopUp (or returns False if it wasn't up), unmarks any associated marked menu
@@ -455,9 +471,10 @@ PopDown (DialogClass n)
 	MarkMenuItem(marked[n], False);
 	marked[n] = NULL;
     }
-    if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
+    if(!n && n != BrowserDlg) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
     currentOption = dialogOptions[TransientDlg]; // just in case a transient dialog was up (to allow its check and combo callbacks to work)
-    XtSetKeyboardFocus(shells[parents[n]], n == BoardWindow ? formWidget:  shells[parents[n]]);
+    RaiseWindow(parents[n]);
+    if(parents[n] == BoardWindow) XtSetKeyboardFocus(shellWidget, formWidget);
     return 1;
 }
 
@@ -466,7 +483,7 @@ GenericPopDown (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // to cause popdown through a translation (Delete Window button!)
     int dlg = atoi(prms[0]);
     Widget sh = shells[dlg];
-    if(browserUp || dialogError) return; // prevent closing dialog when it has an open file-browse daughter
+    if(shellUp[BrowserDlg] && dlg != BrowserDlg || dialogError) return; // prevent closing dialog when it has an open file-browse daughter
     shells[dlg] = w;
     PopDown(dlg);
     shells[dlg] = sh; // restore
@@ -576,7 +593,7 @@ GenericCallback (Widget w, XtPointer client_data, XtPointer call_data)
         if(GenericReadout(currentOption, -1)) PopDown(dlg); // calls OK-proc after full readout, but no popdown if it returns false
     } else
 
-    if(currentCps) {
+    if(currentCps && dlg != BrowserDlg) {
 	XtSetArg(args[0], XtNlabel, &name);
 	XtGetValues(w, args, 1);
 	if(currentOption[data].type == SaveButton) GenericReadout(currentOption, -1);
@@ -708,7 +725,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     int x, y, i, j, height=999, width=1, h, c, w, shrink=FALSE, stack = 0, box, chain;
     int win_x, win_y, maxWidth, maxTextWidth;
     unsigned int mask;
-    char def[MSG_SIZ], *msg;
+    char def[MSG_SIZ], *msg, engineDlg = (currentCps != NULL && dlgNr != BrowserDlg);
     static char pane[6] = "paneX";
     Widget texts[100], forelast = NULL, anchor, widest, lastrow = NULL, browse = NULL;
     Dimension bWidth = 50, m;
@@ -725,7 +742,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     // WARNING: this kludge does not work for persistent dialogs, so that these cannot have spin or combo controls!
     currentOption = option;
 
-    if(currentCps) { // Settings popup for engine: format through heuristic
+    if(engineDlg) { // Settings popup for engine: format through heuristic
 	int n = currentCps->nrOptions;
 	if(!n) { DisplayNote(_("Engine has no options")); currentCps = NULL; return 0; }
 	if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
@@ -773,7 +790,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    option[i].value = *(float*)option[i].target;
 	    goto tBox;
 	  case Spin:
-	    if(!currentCps) option[i].value = *(int*)option[i].target;
+	    if(!engineDlg) option[i].value = *(int*)option[i].target;
 	    snprintf(def, MSG_SIZ,  "%d", option[i].value);
 	  case TextBox:
 	  case FileName:
@@ -803,7 +820,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    XtSetArg(args[j], XtNresizable, True);  j++;
 	    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
 	    XtSetArg(args[j], XtNstring, option[i].type==Spin || option[i].type==Fractional ? def : 
-				currentCps ? option[i].textValue : *(char**)option[i].target);  j++;
+				engineDlg ? option[i].textValue : *(char**)option[i].target);  j++;
 	    edit = last;
 	    option[i].handle = (void*)
 		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));
@@ -835,7 +852,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    XtAddCallback(last, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
 	    break;
 	  case CheckBox:
-	    if(!currentCps) option[i].value = *(Boolean*)option[i].target; // where checkbox callback uses it
+	    if(!engineDlg) option[i].value = *(Boolean*)option[i].target; // where checkbox callback uses it
 	    j = SetPositionAndSize(args, last, lastrow, 1 /* border */,
 				   textHeight/2 /* w */, textHeight/2 /* h */, 0xC0 /* chain both to left edge */);
 	    XtSetArg(args[j], XtNvertDistance, (textHeight+2)/4 + 3);  j++;
@@ -887,7 +904,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    }
 	    option[i].handle = (void*)
 		(dialog = last = XtCreateManagedWidget(option[i].name, commandWidgetClass, form, args, j));
-	    if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) { // for the color picker default-reset
+	    if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !engineDlg) { // for the color picker default-reset
 		SetColor( *(char**) option[i-1].target, &option[i]);
 		XtAddEventHandler(option[i-1].handle, KeyReleaseMask, False, ColorChanged, (XtPointer)(intptr_t) i-1);
 	    }
@@ -902,12 +919,12 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    texts[h] = dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
 
 	    if(option[i].min & COMBO_CALLBACK) msg = _(option[i].name); else {
-	      if(!currentCps) SetCurrentComboSelection(option+i);
+	      if(!engineDlg) SetCurrentComboSelection(option+i);
 	      msg=_(((char**)option[i].choice)[option[i].value]);
 	    }
 
 	    j = SetPositionAndSize(args, dialog, last, (option[i].min & 2) == 0 /* border */,
-				   option[i].max && !currentCps ? option[i].max : 100 /* w */,
+				   option[i].max && !engineDlg ? option[i].max : 100 /* w */,
 				   textHeight /* h */, 0x91 /* chain */); // same row as its label!
 	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 	    XtSetArg(args[j], XtNlabel, msg);  j++;
@@ -1090,6 +1107,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
 	XtSetValues(popup, args, j);
     }
+    RaiseWindow(dlgNr);
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
 }
 

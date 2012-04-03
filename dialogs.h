@@ -81,7 +81,7 @@
 
 typedef enum {  // identifier of dialogs done by GenericPopup
 TransientDlg=0, // transient: grabs mouse events and is destroyed at pop-down (so other dialog can use this ID next time)
-CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, NoDlg, BrowserDlg, HistoryDlg, // persistent: no grab and reused
+CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, NoDlg, DummyDlg, HistoryDlg, // persistent: no grab and reused
 GameListDlg,
 EngOutDlg,
 EvalGraphDlg,
@@ -90,10 +90,12 @@ ErrorDlg,
 AskDlg,         // this and beyond do grab mouse events (and are destroyed)
 FatalDlg,
 BoardWindow,
+BrowserDlg,
 NrOfDialogs     // dummy for total
 } DialogClass;
 
 typedef Option *PointerCallback(int n, int x, int y);
+typedef void ListBoxCallback(int n, int selected);
 typedef void ButtonCallback(int n);
 typedef int OKCallback(int n);
 
@@ -138,11 +140,14 @@ int  ReadScroll P((Option *opt, float *top, float *bottom));
 void SetScroll P((Option *opt, float f));
 void AddHandler  P((Option *opt, int nr));
 void SendText P((int n));
+FILE *Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
+			Boolean pathFlag, char *mode, char **name, FILE **fp));
 
 void InitDrawingParams P(()); // in xboard.c
 void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));
 void SetClockIcon P((int color));
+void DelayedLoad P((void));
 void DisplayTimerLabel P((int optNr, char *color, long timer, int highlight));
 Option *BoardPopUp P((int squareSize, int lineGap, void *clockFontThingy));
 

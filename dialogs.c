@@ -1983,4 +1983,238 @@ DisplayMessage (char *message, char *extMessage)
   return;
 }
 
+//----------------------------------- File Browser -------------------------------
+
+#ifdef HAVE_DIRENT_H
+#include <dirent.h>
+#else
+#include <sys/dir.h>
+#define dirent direct
+#endif
+
+#include <sys/stat.h>
+
+static ChessProgramState *savCps;
+static FILE **savFP;
+static char *fileName, *extFilter, *dirListing, *savMode, **namePtr;
+static int folderPtr, filePtr, oldVal, byExtension, extFlag;
+static char curDir[MSG_SIZ], title[MSG_SIZ], *folderList[1000], *fileList[1000];
+
+static char *FileTypes[] = {
+"Chess Games",
+"Chess Positions",
+"Tournaments",
+"Opening Books",
+"Settings (*.ini)",
+"Log files",
+"All files",
+NULL,
+"PGN",
+"Old-Style Games",
+"FEN",
+"Old-Style Positions",
+NULL,
+NULL
+};
+
+static char *Extensions[] = {
+".pgn .game",
+".fen .epd .pos",
+".trn",
+".bin",
+".ini",
+".log",
+"",
+"INVALID",
+".pgn",
+".game",
+".fen",
+".pos",
+NULL,
+""
+};
+
+void DirSelProc P((int n, int sel));
+void FileSelProc P((int n, int sel));
+void SetTypeFilter P((int n));
+int BrowseOK P((int n));
+void Switch P((int n));
+
+Option browseOptions[] = {
+{   0,    LR|T2T,      500, NULL, NULL, NULL, NULL, Label, title },
+{   0,    L2L|T2T,     250, NULL, NULL, NULL, NULL, Label, N_("Directories:") },
+{   0,R2R|T2T|SAME_ROW,100, NULL, NULL, NULL, NULL, Label, N_("Files:") },
+{   0,R2R|T2T|SAME_ROW, 70, NULL, (void*) &Switch, NULL, NULL, Button, N_("by name") },
+{   0,R2R|T2T|SAME_ROW, 70, NULL, (void*) &Switch, NULL, NULL, Button, N_("by type") },
+{ 300,    L2L|T2T,     250, NULL, (void*) folderList, (char*) &DirSelProc, NULL, ListBox, "" },
+{ 300,R2R|T2T|SAME_ROW,250, NULL, (void*) fileList, (char*) &FileSelProc, NULL, ListBox, "" },
+{   0,       0,        350, NULL, (void*) &fileName, NULL, NULL, TextBox, N_("Filename:") },
+{   0, COMBO_CALLBACK, 150, NULL, (void*) &SetTypeFilter, NULL, FileTypes, ComboBox, N_("File type:") },
+{   0,    SAME_ROW,      0, NULL, (void*) &BrowseOK, "", NULL, EndMark , "" }
+};
+
+int
+BrowseOK (int n)
+{
+	if(!fileName[0]) { // it is enough to have a file selected
+	    if(browseOptions[6].textValue) { // kludge: if callback specified we browse for file
+		int sel = SelectedListBoxItem(&browseOptions[6]);
+		if(sel < 0 || sel >= filePtr) return FALSE;
+		ASSIGN(fileName, fileList[sel]);
+	    } else { // we browse for path
+		ASSIGN(fileName, curDir); // kludge: without callback we browse for path
+	    }
+	}
+	if(!fileName[0]) return FALSE; // refuse OK when no file
+	if(!savMode[0]) { // browsing for name only (dialog Browse button)
+		snprintf(title, MSG_SIZ, "%s/%s", curDir, fileName);
+		SetWidgetText((Option*) savFP, title, TransientDlg);
+		currentCps = savCps; // could return to Engine Settings dialog!
+		return TRUE;
+	}
+	*savFP = fopen(fileName, savMode);
+	if(*savFP == NULL) return FALSE; // refuse OK if file not openable
+	ASSIGN(*namePtr, fileName);
+	ScheduleDelayedEvent(DelayedLoad, 50);
+	currentCps = savCps; // not sure this is ever non-null
+	return TRUE;
+}
+
+void
+FileSelProc (int n, int sel)
+{
+    if(sel<0) return;
+    ASSIGN(fileName, fileList[sel]);
+    if(BrowseOK(0)) PopDown(BrowserDlg);
+}
+
+int
+AlphaNumCompare (char *p, char *q)
+{
+    while(*p) {
+	if(isdigit(*p) && isdigit(*q) && atoi(p) != atoi(q))
+	     return (atoi(p) > atoi(q) ? 1 : -1);
+	if(*p != *q) break;
+	p++, q++;
+    }
+    if(*p == *q) return 0;
+    return (*p > *q ? 1 : -1);
+}
+
+int
+Comp (const void *s, const void *t)
+{
+    char *p = *(char**) s, *q = *(char**) t;
+    if(extFlag) {
+	char *h; int r;
+	while(h = strchr(p, '.')) p = h+1;
+	if(p == *(char**) s) p = "";
+	while(h = strchr(q, '.')) q = h+1;
+	if(q == *(char**) t) q = "";
+	r = AlphaNumCompare(p, q);
+	if(r) return r;
+    }
+    return AlphaNumCompare( *(char**) s, *(char**) t );
+}
+
+void
+ListDir (int pathFlag)
+{
+	DIR *dir;
+	struct dirent *dp;
+	struct stat statBuf;
+	static int lastFlag;
+	char buf[MSG_SIZ];
+
+	if(pathFlag < 0) pathFlag = lastFlag;
+	lastFlag = pathFlag;
+	dir = opendir(".");
+	getcwd(curDir, MSG_SIZ);
+	snprintf(title, MSG_SIZ, "%s   %s", _("Contents of"), curDir);
+	folderPtr = filePtr = 0; // clear listing
+
+	while (dp = readdir(dir)) { // pass 1: list foders
+	    char *s = dp->d_name, match;
+	    if(!stat(s, &statBuf) && S_ISDIR(statBuf.st_mode)) { // stat succeeds and tells us it is directory
+		if(s[0] == '.' && strcmp(s, "..")) continue; // suppress hidden, except ".."
+		ASSIGN(folderList[folderPtr], s); folderPtr++;
+	    } else if(!pathFlag) {
+		char *s = dp->d_name, match=0;
+		if(s[0] == '.') continue; // suppress hidden files
+		if(extFilter[0]) { // [HGM] filter on extension
+		    char *p = extFilter, *q;
+		    do {
+			if(q = strchr(p, ' ')) *q = 0;
+			if(strstr(s, p)) match++;
+			if(q) *q = ' ';
+		    } while(q && (p = q+1));
+		    if(!match) continue;
+		}
+		ASSIGN(fileList[filePtr], s); filePtr++;
+	    }
+	}
+	FREE(folderList[folderPtr]); folderList[folderPtr] = NULL;
+	FREE(fileList[filePtr]); fileList[filePtr] = NULL;
+	closedir(dir);
+	extFlag = 0;         qsort((void*)folderList, folderPtr, sizeof(char*), &Comp);
+	extFlag = byExtension; qsort((void*)fileList, filePtr, sizeof(char*), &Comp);
+}
+
+void
+Refresh (int pathFlag)
+{
+    ListDir(pathFlag); // and make new one
+    LoadListBox(&browseOptions[5], "");
+    LoadListBox(&browseOptions[6], "");
+}
+
+void
+Switch (int n)
+{
+    if(byExtension == (n == 4)) return;
+    extFlag = byExtension = (n == 4);
+    qsort((void*)fileList, filePtr, sizeof(char*), &Comp);
+    LoadListBox(&browseOptions[6], "");
+}
+
+void
+SetTypeFilter (int n)
+{
+    int j = values[n];
+    if(j == browseOptions[n].value) return; // no change
+    browseOptions[n].value = j;
+    SetWidgetLabel(&browseOptions[n], FileTypes[j]);
+    ASSIGN(extFilter, Extensions[j]);
+    Refresh(-1); // uses pathflag remembered by ListDir
+    values[n] = oldVal; // do not disturb combo settings of underlying dialog
+}
+
+void
+DirSelProc (int n, int sel)
+{
+    if(!chdir(folderList[sel])) { // cd succeeded, so we are in new directory now
+	Refresh(-1);
+	SetWidgetLabel(&browseOptions[0], title);
+    }
+}
+
+FILE *
+Browse (DialogClass dlg, char *label, char *proposed, char *ext, Boolean pathFlag, char *mode, char **name, FILE **fp)
+{
+    int j=0;
+    savFP = fp; savMode = mode, namePtr = name, savCps = currentCps, oldVal = values[8]; // save params, for use in callback
+    ASSIGN(extFilter, ext);
+    ASSIGN(fileName, proposed ? proposed : "");
+    for(j=0; Extensions[j]; j++) // look up actual value in list of possible values, to get selection nr
+	if(extFilter && !strcmp(extFilter, Extensions[j])) break;
+    if(Extensions[j] == NULL) { j++; ASSIGN(FileTypes[j], extFilter); }
+    browseOptions[8].value = j;
+    browseOptions[6].textValue = (char*) (pathFlag ? NULL : &FileSelProc); // disable file listbox during path browsing
+    ListDir(pathFlag);
+    currentCps = NULL;
+    if(GenericPopUp(browseOptions, label, BrowserDlg, dlg, MODAL, 0)) {
+    }
+    SetWidgetLabel(&browseOptions[8], FileTypes[j]);
+}
+
 
