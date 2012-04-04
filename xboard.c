@@ -293,7 +293,6 @@ GC lightSquareGC, darkSquareGC, lineGC, wdPieceGC, wlPieceGC,
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, formWidget, boardWidget, titleWidget, dropMenu, menuBarWidget;
 Option *optList; // contains all widgets of main window
-XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 #if ENABLE_NLS
 XFontSet fontSet, clockFontSet;
@@ -889,6 +888,16 @@ MainWindowUp ()
   return xBoardWindow != 0;
 }
 
+void SwitchWindow()
+{
+    extern Option dualOptions[];
+    static Window dual;
+    Window tmp = xBoardWindow;
+    if(!dual) dual = XtWindow(dualOptions[3].handle); // must be first call
+    xBoardWindow = dual; // swap them
+    dual = tmp;
+}
+
 void
 PopUpStartupDialog ()
 {  // start menu not implemented in XBoard
@@ -927,7 +936,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     int i;
     static Dimension oldWidth, oldHeight;
     static VariantClass oldVariant;
-    static int oldDual = -1, oldMono = -1;
+    static int oldMono = -1;
 
     if(!formWidget) return;
 
@@ -935,21 +944,15 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
 
-  if(boardWidth != oldWidth || boardHeight != oldHeight || oldDual != twoBoards) { // do resizing stuff only if size actually changed
+  if(boardWidth != oldWidth || boardHeight != oldHeight) { // do resizing stuff only if size actually changed
 
-    oldWidth = boardWidth; oldHeight = boardHeight; oldDual = twoBoards;
+    oldWidth = boardWidth; oldHeight = boardHeight;
     CreateGrid();
-    hOffset = boardWidth + 10;
-    for(i=0; i<BOARD_WIDTH+BOARD_HEIGHT+2; i++) { // [HGM] dual: grid for second board
-	secondSegments[i] = gridSegments[i];
-	secondSegments[i].x1 += hOffset;
-	secondSegments[i].x2 += hOffset;
-    }
 
     /*
      * Inhibit shell resizing.
      */
-    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW + twoBoards*hOffset; // [HGM] dual
+    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW ;
     shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
@@ -2750,10 +2753,9 @@ DrawSeekDot (int x, int y, int colorNr)
 }
 
 void
-DrawGrid (int second)
+DrawGrid ()
 {
 	  XDrawSegments(xDisplay, xBoardWindow, lineGC,
-			second ? secondSegments : // [HGM] dual
 			gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
 }
 
@@ -3345,11 +3347,11 @@ StartClockTimer (long millisec)
 }
 
 void
-DisplayTimerLabel (int optNr, char *color, long timer, int highlight)
+DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
 {
     char buf[MSG_SIZ];
     Arg args[16];
-    Widget w = optList[optNr].handle;
+    Widget w = (Widget) opt->handle;
 
     /* check for low time warning */
     Pixel foregroundOrWarningColor = timerForegroundPixel;

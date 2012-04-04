@@ -7497,6 +7497,7 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
   COLORREF oldFg, oldBg;
   HFONT oldFont;
 
+  if (twoBoards && partnerUp) return;
   if (appData.clockMode) {
     if (tinyLayout)
       snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%c %s %s", color[0], TimeString(timeRemaining), flagFell);
@@ -9207,6 +9208,7 @@ OpenTCP(char *host, char *port, ProcRef *pr)
   ChildProc *cp;
   int err;
   SOCKET s;
+
   struct sockaddr_in sa, mysa;
   struct hostent FAR *hp;
   unsigned short uport;

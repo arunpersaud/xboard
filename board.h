@@ -80,7 +80,7 @@ extern AnimState anims[];
 void DrawPolygon P((Pnt arrow[], int nr));
 void DrawOneSquare P((int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align));
 void DrawDot P((int marker, int x, int y, int r));
-void DrawGrid P((int second));
+void DrawGrid P((void));
 int SquareColor P((int row, int column));
 void ScreenSquare P((int column, int row, Pnt *pt, int *color));
 void BoardSquare P((int x, int y, int *column, int *row));
@@ -93,6 +93,5 @@ void DragPieceMove P((int x, int y));
 void DrawArrowHighlight P((int fromX, int fromY, int toX,int toY));
 Boolean IsDrawArrowEnabled P((void));
 
-extern int hOffset; // [HGM] dual
 extern int damage[2][BOARD_RANKS][BOARD_FILES];
 

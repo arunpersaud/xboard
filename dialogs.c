@@ -1792,22 +1792,6 @@ DisplayTitle (char *text)
     SetWindowTitle(text, title, icon);
 }
 
-void
-DisplayWhiteClock (long timeRemaining, int highlight)
-{
-    if(appData.noGUI) return;
-    DisplayTimerLabel(11, _("White"), timeRemaining, highlight);
-    if(highlight) SetClockIcon(0);
-}
-
-void
-DisplayBlackClock (long timeRemaining, int highlight)
-{
-    if(appData.noGUI) return;
-    DisplayTimerLabel(12, _("Black"), timeRemaining, highlight);
-    if(highlight) SetClockIcon(1);
-}
-
 #define PAUSE_BUTTON "P"
 #define PIECE_MENU_SIZE 18
 static String pieceMenuStrings[2][PIECE_MENU_SIZE+1] = {
@@ -1935,11 +1919,6 @@ Exp (int n, int x, int y)
 	case -3: menuNr = RightClick(Release, x, y, &pmFromX, &pmFromY), but3 = 0; break;
 	case 10:
 	    DrawPosition(True, NULL);
-	    if(twoBoards) { // [HGM] dual: draw other board in other orientation
-		flipView = !flipView; partnerUp = !partnerUp;
-		DrawPosition(True, NULL);
-		flipView = !flipView; partnerUp = !partnerUp;
-	    }
 	default:
 	    return NULL;
     }
@@ -1974,6 +1953,64 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
     GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1);
     return mainOptions;
 }
+
+static Option *
+SlaveExp (int n, int x, int y)
+{
+    if(n == 10) { // expose event
+	flipView = !flipView; partnerUp = !partnerUp;
+	DrawPosition(True, NULL); // [HGM] dual: draw other board in other orientation
+	flipView = !flipView; partnerUp = !partnerUp;
+    }
+    return NULL;
+}
+
+Option dualOptions[] = { // auxiliary board window
+{ 0, L2L|T2T,              198, NULL, NULL, NULL, NULL, Label, "White" }, // white clock
+{ 0, R2R|T2T|SAME_ROW,     198, NULL, NULL, NULL, NULL, Label, "Black" }, // black clock
+{ 0, LR|T2T|BORDER,        401, NULL, NULL, NULL, NULL, Label, "message" }, // message field
+{ 401, LR|TT, 401, NULL, (char*) &SlaveExp, NULL, NULL, Graph, "shadow board" }, // board
+{ 0,  NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
+};
+
+void
+SlavePopUp ()
+{
+    // copy params from main board
+    dualOptions[0].choice = mainOptions[11].choice;
+    dualOptions[1].choice = mainOptions[12].choice;
+    dualOptions[3].value = mainOptions[22].value;
+    dualOptions[3].max = dualOptions[2].max = mainOptions[22].max; // board size
+    dualOptions[0].max = dualOptions[1].max = mainOptions[11].max; // clock width
+    GenericPopUp(dualOptions, "XBoard", DummyDlg, BoardWindow, NONMODAL, 1);
+}
+
+void
+DisplayWhiteClock (long timeRemaining, int highlight)
+{
+    if(appData.noGUI) return;
+    if(twoBoards && partnerUp) {
+	DisplayTimerLabel(&dualOptions[0], _("White"), timeRemaining, highlight);
+	return;
+    }
+    DisplayTimerLabel(&mainOptions[11], _("White"), timeRemaining, highlight);
+    if(highlight) SetClockIcon(0);
+}
+
+void
+DisplayBlackClock (long timeRemaining, int highlight)
+{
+    if(appData.noGUI) return;
+    if(twoBoards && partnerUp) {
+	DisplayTimerLabel(&dualOptions[1], _("Black"), timeRemaining, highlight);
+	return;
+    }
+    DisplayTimerLabel(&mainOptions[12], _("Black"), timeRemaining, highlight);
+    if(highlight) SetClockIcon(1);
+}
+
+
+//---------------------------------------------
 
 void
 DisplayMessage (char *message, char *extMessage)

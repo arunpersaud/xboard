@@ -148,7 +148,7 @@ void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));
 void SetClockIcon P((int color));
 void DelayedLoad P((void));
-void DisplayTimerLabel P((int optNr, char *color, long timer, int highlight));
+void DisplayTimerLabel P((Option *opt, char *color, long timer, int highlight));
 Option *BoardPopUp P((int squareSize, int lineGap, void *clockFontThingy));
 
 int  SetCurrentComboSelection P((Option *opt));

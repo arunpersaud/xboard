@@ -108,7 +108,7 @@ extern char *getenv();
 #endif
 
 
-int squareSize, lineGap, hOffset;
+int squareSize, lineGap;
 
 int damage[2][BOARD_RANKS][BOARD_FILES];
 
@@ -778,8 +778,6 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
 	  (squareSize + lineGap);
     }
 
-    if(twoBoards && partnerUp) x += hOffset; // [HGM] dual: draw second board
-
     square_color = SquareColor(row, column);
 
     string[1] = NULLCHAR;
@@ -899,6 +897,8 @@ DrawPosition (int repaint, Board board)
 	MarkMenuItem("View.Flip View", flipView);
     }
 
+    if(nr) { SlavePopUp(); SwitchWindow(); } // [HGM] popup board if not yet popped up, and switch drawing to it.
+
     /*
      * It would be simpler to clear the window with XClearWindow()
      * but this causes a very distracting flicker.
@@ -907,7 +907,7 @@ DrawPosition (int repaint, Board board)
     if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
 
 	if ( lineGap && IsDrawArrowEnabled())
-	    DrawGrid(0);
+	    DrawGrid();
 
 	/* If too much changes (begin observing new game, etc.), don't
 	   do flashing */
@@ -942,7 +942,7 @@ DrawPosition (int repaint, Board board)
 	    }
     } else {
 	if (lineGap > 0)
-	  DrawGrid(twoBoards & partnerUp);
+	  DrawGrid();
 
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++) {
@@ -971,10 +971,13 @@ DrawPosition (int repaint, Board board)
     }
     DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y);
   }
+  else DrawArrowHighlight (board[EP_STATUS-3], board[EP_STATUS-4], board[EP_STATUS-1], board[EP_STATUS-2]);
+
     /* If piece being dragged around board, must redraw that too */
     DrawDragPiece();
 
     FlashDelay(0); // this flushes drawing queue;
+    if(nr) SwitchWindow();
 }
 
 /* [AS] Arrow highlighting support */
@@ -1115,13 +1118,13 @@ DrawArrowBetweenPoints (int s_x, int s_y, int d_x, int d_y)
 void
 ArrowDamage (int s_col, int s_row, int d_col, int d_row)
 {
-    int hor, vert, i;
+    int hor, vert, i, n = partnerUp * twoBoards;
     hor = 64*s_col + 32; vert = 64*s_row + 32;
     for(i=0; i<= 64; i++) {
-            damage[0][vert+6>>6][hor+6>>6] = True;
-            damage[0][vert-6>>6][hor+6>>6] = True;
-            damage[0][vert+6>>6][hor-6>>6] = True;
-            damage[0][vert-6>>6][hor-6>>6] = True;
+            damage[n][vert+6>>6][hor+6>>6] = True;
+            damage[n][vert-6>>6][hor+6>>6] = True;
+            damage[n][vert+6>>6][hor-6>>6] = True;
+            damage[n][vert-6>>6][hor-6>>6] = True;
             hor += d_col - s_col; vert += d_row - s_row;
     }
 }
@@ -1173,7 +1176,7 @@ DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
 Boolean
 IsDrawArrowEnabled ()
 {
-    return appData.highlightMoveWithArrow && squareSize >= 32;
+    return (appData.highlightMoveWithArrow || twoBoards && partnerUp) && squareSize >= 32;
 }
 
 void

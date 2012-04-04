@@ -4265,7 +4265,10 @@ ParseBoard12 (char *string)
       if(appData.dualBoard && !twoBoards) { twoBoards = 1; InitDrawingSizes(-2,0); }
       if(twoBoards) { partnerUp = 1; flipView = !flipView; } // [HGM] dual
       if(partnerUp) DrawPosition(FALSE, partnerBoard);
-      if(twoBoards) { partnerUp = 0; flipView = !flipView; } // [HGM] dual
+      if(twoBoards) {
+	  DisplayWhiteClock(white_time, to_play == 'W');
+	  DisplayBlackClock(black_time, to_play != 'W');
+	              partnerUp = 0; flipView = !flipView; } // [HGM] dual
       snprintf(partnerStatus, MSG_SIZ,"W: %d:%02d B: %d:%02d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
 		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
       DisplayMessage(partnerStatus, "");
