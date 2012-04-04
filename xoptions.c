@@ -1764,7 +1764,7 @@ LoadEngineProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
    isUCI = storeVariant = v1 = useNick = False; addToList = hasBook = True; // defaults
    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
    if(engineLine)   free(engineLine);   engineLine = strdup("");
-   if(engineDir)    free(engineDir);    engineDir = strdup("");
+   if(engineDir)    free(engineDir);    engineDir = strdup(".");
    if(nickName)     free(nickName);     nickName = strdup("");
    if(params)       free(params);       params = strdup("");
    NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
