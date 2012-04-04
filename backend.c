@@ -876,7 +876,8 @@ extern Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 static char resetOptions[] = 
 	"-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 "
 	"-firstInitString \"" INIT_STRING "\" -firstComputerString \"" COMPUTER_STRING "\" "
-	"-firstOptions \"\" -firstNPS -1 -fn \"\"";
+	"-firstFeatures \"\" -firstLogo \"\" -firstAccumulateTC 1 "
+	"-firstOptions \"\" -firstNPS -1 -fn \"\" -firstScoreAbs false";
 
 void
 FloatToFront(char **list, char *engineLine)
@@ -904,7 +905,8 @@ Load (ChessProgramState *cps, int i)
     if(engineLine && engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
-	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
+	ParseArgsFromString(resetOptions); appData.pvSAN[0] = FALSE;
+	FREE(appData.fenOverride[0]); appData.fenOverride[0] = NULL;
 	appData.firstProtocolVersion = PROTOVER;
 	ParseArgsFromString(buf);
 	SwapEngines(i);
@@ -915,20 +917,20 @@ Load (ChessProgramState *cps, int i)
     p = engineName;
     while(q = strchr(p, SLASH)) p = q+1;
     if(*p== NULLCHAR) { DisplayError(_("You did not specify the engine executable"), 0); return; }
-    if(engineDir[0] != NULLCHAR)
-	appData.directory[i] = engineDir;
-    else if(p != engineName) { // derive directory from engine path, when not given
+    if(engineDir[0] != NULLCHAR) {
+	ASSIGN(appData.directory[i], engineDir);
+    } else if(p != engineName) { // derive directory from engine path, when not given
 	p[-1] = 0;
-	appData.directory[i] = strdup(engineName);
+	ASSIGN(appData.directory[i], engineName);
 	p[-1] = SLASH;
 	if(SLASH == '/' && p - engineName > 1) *(p -= 2) = '.'; // for XBoard use ./exeName as command after split!
-    } else appData.directory[i] = ".";
+    } else { ASSIGN(appData.directory[i], "."); }
     if(params[0]) {
 	if(strchr(p, ' ') && !strchr(p, '"')) snprintf(buf2, MSG_SIZ, "\"%s\"", p), p = buf2; // quote if it contains spaces
 	snprintf(command, MSG_SIZ, "%s %s", p, params);
 	p = command;
     }
-    appData.chessProgram[i] = strdup(p);
+    ASSIGN(appData.chessProgram[i], p);
     appData.isUCI[i] = isUCI;
     appData.protocolVersion[i] = v1 ? 1 : PROTOVER;
     appData.hasOwnBookUCI[i] = hasBook;
@@ -10077,6 +10079,13 @@ SwapEngines (int n)
     SWAP(pgnName, p)
     SWAP(pvSAN, h)
     SWAP(engOptions, p)
+    SWAP(engInitString, p)
+    SWAP(computerString, p)
+    SWAP(features, p)
+    SWAP(fenOverride, p)
+    SWAP(NPS, h)
+    SWAP(accumulateTC, h)
+    SWAP(host, p)
 }
 
 int
