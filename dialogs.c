@@ -235,7 +235,7 @@ GenericReadout (Option *opts, int selected)
 //------------------------------------------- Match Options ------------------------------------------------------
 
 char *engineName, *engineChoice, *tfName;
-char *engineList[MAXENGINES] = {" "}, *engineMnemonic[MAXENGINES] = {""};
+char *engineList[MAXENGINES] = {" "}, *engineMnemonic[MAXENGINES];
 
 static void AddToTourney P((int n));
 static void CloneTourney P((void));
@@ -1218,9 +1218,19 @@ InstallOK (int n)
 static void
 EngSel (int n, int sel)
 {
-    if(sel < 1) return;
-    ASSIGN(engineLine, engineList[sel]);
-    InstallOK(0);
+    int nr;
+    char buf[MSG_SIZ];
+    if(sel < 1) buf[0] = NULLCHAR; // back to top level
+    else if(engineList[sel][0] == '#') safeStrCpy(buf, engineList[sel], MSG_SIZ); // group header, open group
+    else { // normal line, select engine
+	ASSIGN(engineLine, engineList[sel]);
+	InstallOK(0);
+	return;
+    }
+    nr = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
+    ASSIGN(engineMnemonic[0], buf);
+    LoadListBox(&installOptions[1], _("# no engines are installed"));
+    HighlightWithScroll(&installOptions[1], 0, nr);
 }
 
 static void
@@ -1232,7 +1242,8 @@ LoadEngineProc (int engineNr, char *title)
    if(engineDir)    free(engineDir);    engineDir = strdup("");
    if(nickName)     free(nickName);     nickName = strdup("");
    if(params)       free(params);       params = strdup("");
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
+   ASSIGN(engineMnemonic[0], "");
+   NamesToList(firstChessProgramNames, engineList, engineMnemonic, "");
    GenericPopUp(installOptions, title, TransientDlg, BoardWindow, MODAL, 0);
 }
 
