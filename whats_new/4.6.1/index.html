@@ -19,6 +19,7 @@
  <p> This version fixes some bugs found in 4.6.0. Here is a quick list of the changes: </p>
 
    <ul>
+	<li>Fix memory corruption bug on second-engine loading (through menu or in tournament), which could destroy -firstInitString</li>
 	<li>Fix bug loading a new engine through the menu (not loading it with the full game, but just upto the current move)</li>
 	<li>Prefix engine command with "./" when a pathname is split up during install, so the engine actually runs (XB)</li>
 	<li>Fix fall-back to -ncp mode when engine does not start (cutting short the feature timeout)</li>
@@ -27,6 +28,7 @@
 	<li>Fix a bug that could stop the clock when the board window was dragged (XB)</li>
 	<li>Fix switching off highlighting during game (so last highlights do not remain for the rest of the game)</li>
 	<li>Allow user to enter the name of a non-existing file when browsing for a save file (WB)</li>
+	<li>Make sure rarely used engine-related options (such as -firstNPS) are also correctly loaded during session</li>
 	<li>Correctly handle parsing of Crazyhouse promotions with legality-testing off</li>
 	<li>Consistently make auxiliary windows top level-shells or not, with new -topLevel option (XB)</li>
 	<li>No longer fatal if second engine does not support current variant (just refuse Two Machines mode)</li>
