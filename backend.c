@@ -875,7 +875,8 @@ extern Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 static char resetOptions[] = 
 	"-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 "
 	"-firstInitString \"" INIT_STRING "\" -firstComputerString \"" COMPUTER_STRING "\" "
-	"-firstOptions \"\" -firstNPS -1 -fn \"\"";
+	"-firstFeatures \"\" -firstLogo \"\" -firstAccumulateTC 1 "
+	"-firstOptions \"\" -firstNPS -1 -fn \"\" -firstScoreAbs false";
 
 void
 FloatToFront(char **list, char *engineLine)
@@ -903,7 +904,8 @@ Load (ChessProgramState *cps, int i)
     if(engineLine && engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
-	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
+	ParseArgsFromString(resetOptions); appData.pvSAN[0] = FALSE;
+	FREE(appData.fenOverride[0]); appData.fenOverride[0] = NULL;
 	appData.firstProtocolVersion = PROTOVER;
 	ParseArgsFromString(buf);
 	SwapEngines(i);
@@ -9944,6 +9946,11 @@ SwapEngines (int n)
     SWAP(engOptions, p)
     SWAP(engInitString, p)
     SWAP(computerString, p)
+    SWAP(features, p)
+    SWAP(fenOverride, p)
+    SWAP(NPS, h)
+    SWAP(accumulateTC, h)
+    SWAP(host, p)
 }
 
 int
