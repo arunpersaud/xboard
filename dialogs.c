@@ -237,7 +237,7 @@ GenericReadout (Option *opts, int selected)
 char *engineName, *engineChoice, *tfName;
 char *engineList[MAXENGINES] = {" "}, *engineMnemonic[MAXENGINES];
 
-static void AddToTourney P((int n));
+static void AddToTourney P((int n, int sel));
 static void CloneTourney P((void));
 static void ReplaceParticipant P((void));
 static void UpgradeParticipant P((void));
@@ -263,7 +263,7 @@ static Option matchOptions[] = {
 { 150, T_VSCRL | T_FILL | T_WRAP,
                 175, NULL, (void*) &engineName, "", NULL, TextBox, "" },
 { 150, SAME_ROW|RR,
-                175, NULL, (void*) (engineMnemonic+1), (char*) &AddToTourney, NULL, ListBox, "" },
+                175, NULL, (void*) engineMnemonic, (char*) &AddToTourney, NULL, ListBox, "" },
 //{ 0,  COMBO_CALLBACK | NO_GETTEXT,
 //		  0, NULL, (void*) &AddToTourney, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
 { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
@@ -313,18 +313,30 @@ CloneTourney ()
 }
 
 static void
-AddToTourney (int n)
+AddToTourney (int n, int sel)
 {
-    AddLine(&matchOptions[7], engineMnemonic[SelectedListBoxItem(&matchOptions[8])+1]);
+    int nr;
+    char buf[MSG_SIZ];
+    if(sel < 1) buf[0] = NULLCHAR; // back to top level
+    else if(engineList[sel][0] == '#') safeStrCpy(buf, engineList[sel], MSG_SIZ); // group header, open group
+    else { // normal line, select engine
+	AddLine(&matchOptions[7], engineMnemonic[sel]);
+	return;
+    }
+    nr = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
+    ASSIGN(engineMnemonic[0], buf);
+    LoadListBox(&matchOptions[8], _("# no engines are installed"));
+    HighlightWithScroll(&matchOptions[8], 0, nr);
 }
 
 void
 MatchOptionsProc ()
 {
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic, "all");
+   NamesToList(firstChessProgramNames, engineList, engineMnemonic, "");
    matchOptions[9].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
    ASSIGN(engineName, appData.participants);
+   ASSIGN(engineMnemonic[0], "");
    GenericPopUp(matchOptions, _("Match Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
