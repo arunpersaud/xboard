@@ -676,6 +676,12 @@ SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int
     // set size (if given)
     if(w) XtSetArg(args[j], XtNwidth, w), j++;
     if(h) XtSetArg(args[j], XtNheight, h),  j++;
+    // color
+    if(!appData.monoMode) {
+	if(!b && appData.dialogColor[0]) XtSetArg(args[j], XtNbackground, dialogColor),  j++;
+	if(b == 3 && appData.buttonColor[0]) XtSetArg(args[j], XtNbackground, buttonColor),  j++;
+	if(b == 3) b = 1;
+    }
     // border
     XtSetArg(args[j], XtNborderWidth, b);  j++;
     return j;
@@ -726,6 +732,9 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
 			    layoutArgs, XtNumber(layoutArgs));
+    if(!appData.monoMode && appData.dialogColor[0]) XtSetArg(args[0], XtNbackground, dialogColor);
+    XtSetValues(layout, args, 1);
+
   for(c=0; c<width; c++) {
     pane[4] = 'A'+c;
     form =
@@ -733,6 +742,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 			    formArgs, XtNumber(formArgs));
     j=0;
     XtSetArg(args[j], stack ? XtNfromVert : XtNfromHoriz, previousPane);  j++;
+    if(!appData.monoMode && appData.dialogColor[0]) XtSetArg(args[j], XtNbackground, dialogColor),  j++;
     XtSetValues(form, args, j);
     lastrow = forelast = NULL;
     previousPane = form;
@@ -797,7 +807,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    } else {
 		w = 20; msg = "+"; j = textHeight/2; // spin button
 	    }
-	    j = SetPositionAndSize(args, last, edit, 1 /* border */,
+	    j = SetPositionAndSize(args, last, edit, 3 /* border */,
 				   w /* w */, j /* h */, 0x31 /* chain to right edge */);
 	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
 	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
@@ -805,7 +815,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 
 	    if(option[i].type != Spin) break;
 
-	    j = SetPositionAndSize(args, last, edit, 1 /* border */,
+	    j = SetPositionAndSize(args, last, edit, 3 /* border */,
 				   20 /* w */, textHeight/2 /* h */, 0x31 /* chain to right edge */);
 	    XtSetArg(args[j], XtNvertDistance, -1);  j++;
 	    last = XtCreateManagedWidget("-", commandWidgetClass, form, args, j);
@@ -854,7 +864,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 		chain = 0x31; // 0011.0001 = both left and right side to right edge
 		forelast = lastrow;
 	    } else chain = 0, shrink = FALSE;
-	    j = SetPositionAndSize(args, last, lastrow, 1 /* border */,
+	    j = SetPositionAndSize(args, last, lastrow, 3 /* border */,
 				   option[i].max /* w */, shrink ? textHeight : 0 /* h */, chain /* chain */);
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
 	    if(option[i].textValue) { // special for buttons of New Variant dialog
@@ -1030,7 +1040,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	}
 	lastrow = forelast;
     } else shrink = FALSE, lastrow = last, last = widest ? widest : dialog;
-    j = SetPositionAndSize(args, last, anchor ? anchor : lastrow, 1 /* border */,
+    j = SetPositionAndSize(args, last, anchor ? anchor : lastrow, 3 /* border */,
 			   0 /* w */, shrink ? textHeight : 0 /* h */, 0x37 /* chain: right, bottom and use both neighbors */);
 
   if(!(option[i].min & NO_OK)) {

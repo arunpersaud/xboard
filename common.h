@@ -384,6 +384,8 @@ typedef struct {
     char *jailSquareColor;
     char *highlightSquareColor;
     char *premoveHighlightColor;
+    char *dialogColor;
+    char *buttonColor;
 #else
     int whitePieceColor;
     int blackPieceColor;

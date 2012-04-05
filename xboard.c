@@ -301,7 +301,7 @@ int xScreen;
 Display *xDisplay;
 Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
-  highlightSquareColor, premoveHighlightColor;
+  highlightSquareColor, premoveHighlightColor, dialogColor, buttonColor;
 Pixel lowTimeWarningColor;
 GC lightSquareGC, darkSquareGC, lineGC, wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
@@ -1258,6 +1258,8 @@ MakeColors ()
     forceMono |= MakeOneColor(appData.blackPieceColor, &blackPieceColor);
     forceMono |= MakeOneColor(appData.highlightSquareColor, &highlightSquareColor);
     forceMono |= MakeOneColor(appData.premoveHighlightColor, &premoveHighlightColor);
+    if(appData.dialogColor[0]) MakeOneColor(appData.dialogColor, &dialogColor);
+    if(appData.buttonColor[0]) MakeOneColor(appData.buttonColor, &buttonColor);
 
     return forceMono;
 }
