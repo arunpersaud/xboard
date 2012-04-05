@@ -229,7 +229,7 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
             snprintf(header, MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
                                        appData.whitePOV || appData.scoreWhite ? "white" : "mover", first.option[multi].value);
 	  }
-          snprintf(header+strlen(header), MSG_SIZ-strlen(header), exclusionHeader);
+          snprintf(header+strlen(header), MSG_SIZ-strlen(header), "%s", exclusionHeader);
           InsertIntoMemo( which, header, 0);
         } else
         if(appData.ponderNextMove && lastLine[which][0]) {
