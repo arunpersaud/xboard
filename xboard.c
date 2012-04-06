@@ -1072,6 +1072,8 @@ MakeColors ()
     forceMono |= MakeOneColor(appData.blackPieceColor, &blackPieceColor);
     forceMono |= MakeOneColor(appData.highlightSquareColor, &highlightSquareColor);
     forceMono |= MakeOneColor(appData.premoveHighlightColor, &premoveHighlightColor);
+    if (appData.lowTimeWarning)
+	forceMono |= MakeOneColor(appData.lowTimeWarningColor, &lowTimeWarningColor);
     if(appData.dialogColor[0]) MakeOneColor(appData.dialogColor, &dialogColor);
     if(appData.buttonColor[0]) MakeOneColor(appData.buttonColor, &buttonColor);
 
@@ -1107,6 +1109,61 @@ InitDrawingParams ()
     CreateAnyPieces();
 }
 
+void
+InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
+{   // determine what fonts to use, and create them
+    XrmValue vFrom, vTo;
+    XrmDatabase xdb;
+
+    if(!fontIsSet[CLOCK_FONT] && fontValid[CLOCK_FONT][squareSize])
+	appData.clockFont = fontTable[CLOCK_FONT][squareSize];
+    if(!fontIsSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
+	appData.font = fontTable[MESSAGE_FONT][squareSize];
+    if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
+	appData.coordFont = fontTable[COORD_FONT][squareSize];
+
+#if ENABLE_NLS
+    appData.font = InsertPxlSize(appData.font, fontPxlSize);
+    appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
+    appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
+    fontSet = CreateFontSet(appData.font);
+    clockFontSet = CreateFontSet(appData.clockFont);
+    {
+      /* For the coordFont, use the 0th font of the fontset. */
+      XFontSet coordFontSet = CreateFontSet(appData.coordFont);
+      XFontStruct **font_struct_list;
+      XFontSetExtents *fontSize;
+      char **font_name_list;
+      XFontsOfFontSet(coordFontSet, &font_struct_list, &font_name_list);
+      coordFontID = XLoadFont(xDisplay, font_name_list[0]);
+      coordFontStruct = XQueryFont(xDisplay, coordFontID);
+      fontSize = XExtentsOfFontSet(fontSet); // [HGM] figure out how much vertical space font takes
+      textHeight = fontSize->max_logical_extent.height + 5; // add borderWidth
+    }
+#else
+    appData.font = FindFont(appData.font, fontPxlSize);
+    appData.clockFont = FindFont(appData.clockFont, clockFontPxlSize);
+    appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
+    clockFontID = XLoadFont(xDisplay, appData.clockFont);
+    clockFontStruct = XQueryFont(xDisplay, clockFontID);
+    coordFontID = XLoadFont(xDisplay, appData.coordFont);
+    coordFontStruct = XQueryFont(xDisplay, coordFontID);
+    // textHeight in !NLS mode!
+#endif
+    countFontID = coordFontID;  // [HGM] holdings
+    countFontStruct = coordFontStruct;
+
+    xdb = XtDatabase(xDisplay);
+#if ENABLE_NLS
+    XrmPutLineResource(&xdb, "*international: True");
+    vTo.size = sizeof(XFontSet);
+    vTo.addr = (XtPointer) &fontSet;
+    XrmPutResource(&xdb, "*fontSet", XtRFontSet, &vTo);
+#else
+    XrmPutStringResource(&xdb, "*font", appData.font);
+#endif
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1114,10 +1171,8 @@ main (int argc, char **argv)
     XSetWindowAttributes window_attributes;
     Arg args[16];
     Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
-    XrmValue vFrom, vTo;
     XtGeometryResult gres;
     char *p;
-    XrmDatabase xdb;
     int forceMono = False;
 
     srandom(time(0)); // [HGM] book: make random truly random
@@ -1138,15 +1193,10 @@ main (int argc, char **argv)
       programName++;
 
 #ifdef ENABLE_NLS
-    XtSetLanguageProc(NULL, NULL, NULL);
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
 #endif
 
-    shellWidget =
-      XtAppInitialize(&appContext, "XBoard", shellOptions,
-		      XtNumber(shellOptions),
-		      &argc, argv, xboardResources, NULL, 0);
     appData.boardSize = "";
     InitAppData(ConvertToLine(argc, argv));
     p = getenv("HOME");
@@ -1156,10 +1206,6 @@ main (int argc, char **argv)
     gamePasteFilename = (char*) malloc(i);
     snprintf(gameCopyFilename,i, "%s/.xboard%05uc.pgn", p, getpid());
     snprintf(gamePasteFilename,i, "%s/.xboard%05up.pgn", p, getpid());
-
-    XtGetApplicationResources(shellWidget, (XtPointer) &appData,
-			      clientResources, XtNumber(clientResources),
-			      NULL, 0);
 
     { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
 	static char buf[MSG_SIZ];
@@ -1192,12 +1238,6 @@ main (int argc, char **argv)
         setbuf(debugFP, NULL);
     }
 
-#if ENABLE_NLS
-    if (appData.debugMode) {
-      fprintf(debugFP, "locale = %s\n", setlocale(LC_ALL, NULL));
-    }
-#endif
-
     /* [HGM,HR] make sure board size is acceptable */
     if(appData.NrFiles > BOARD_FILES ||
        appData.NrRanks > BOARD_RANKS   )
@@ -1209,13 +1249,31 @@ main (int argc, char **argv)
 #endif
     InitBackEnd1();
 
+	gameInfo.variant = StringToVariant(appData.variant);
+	InitPosition(FALSE);
+
+    shellWidget =
+      XtAppInitialize(&appContext, "XBoard", shellOptions,
+		      XtNumber(shellOptions),
+		      &argc, argv, xboardResources, NULL, 0);
+#ifdef ENABLE_NLS
+    XtSetLanguageProc(NULL, NULL, NULL);
+    if (appData.debugMode) {
+      fprintf(debugFP, "locale = %s\n", setlocale(LC_ALL, NULL));
+    }
+#endif
+
+    XtGetApplicationResources(shellWidget, (XtPointer) &appData,
+			      clientResources, XtNumber(clientResources),
+			      NULL, 0);
+
     xDisplay = XtDisplay(shellWidget);
     xScreen = DefaultScreen(xDisplay);
     wm_delete_window = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
 
-	gameInfo.variant = StringToVariant(appData.variant);
-	InitPosition(FALSE);
-
+    /*
+     * determine size, based on supplied or remembered -size, or screen size
+     */
     if (isdigit(appData.boardSize[0])) {
         i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
 		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
@@ -1272,12 +1330,6 @@ main (int argc, char **argv)
 	tinyLayout = szd->tinyLayout;
 	// [HGM] font: use defaults from settings file if available and not overruled
     }
-    if(!fontIsSet[CLOCK_FONT] && fontValid[CLOCK_FONT][squareSize])
-	appData.clockFont = fontTable[CLOCK_FONT][squareSize];
-    if(!fontIsSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
-	appData.font = fontTable[MESSAGE_FONT][squareSize];
-    if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
-	appData.coordFont = fontTable[COORD_FONT][squareSize];
 
     /* Now, using squareSize as a hint, find a good XPM/XIM set size */
     if (strlen(appData.pixmapDirectory) > 0) {
@@ -1307,46 +1359,7 @@ XBoard square size (hint): %d\n\
     /*
      * Determine what fonts to use.
      */
-#if ENABLE_NLS
-    appData.font = InsertPxlSize(appData.font, fontPxlSize);
-    appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
-    appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
-    fontSet = CreateFontSet(appData.font);
-    clockFontSet = CreateFontSet(appData.clockFont);
-    {
-      /* For the coordFont, use the 0th font of the fontset. */
-      XFontSet coordFontSet = CreateFontSet(appData.coordFont);
-      XFontStruct **font_struct_list;
-      XFontSetExtents *fontSize;
-      char **font_name_list;
-      XFontsOfFontSet(coordFontSet, &font_struct_list, &font_name_list);
-      coordFontID = XLoadFont(xDisplay, font_name_list[0]);
-      coordFontStruct = XQueryFont(xDisplay, coordFontID);
-      fontSize = XExtentsOfFontSet(fontSet); // [HGM] figure out how much vertical space font takes
-      textHeight = fontSize->max_logical_extent.height + 5; // add borderWidth
-    }
-#else
-    appData.font = FindFont(appData.font, fontPxlSize);
-    appData.clockFont = FindFont(appData.clockFont, clockFontPxlSize);
-    appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
-    clockFontID = XLoadFont(xDisplay, appData.clockFont);
-    clockFontStruct = XQueryFont(xDisplay, clockFontID);
-    coordFontID = XLoadFont(xDisplay, appData.coordFont);
-    coordFontStruct = XQueryFont(xDisplay, coordFontID);
-    // textHeight in !NLS mode!
-#endif
-    countFontID = coordFontID;  // [HGM] holdings
-    countFontStruct = coordFontStruct;
-
-    xdb = XtDatabase(xDisplay);
-#if ENABLE_NLS
-    XrmPutLineResource(&xdb, "*international: True");
-    vTo.size = sizeof(XFontSet);
-    vTo.addr = (XtPointer) &fontSet;
-    XrmPutResource(&xdb, "*fontSet", XtRFontSet, &vTo);
-#else
-    XrmPutStringResource(&xdb, "*font", appData.font);
-#endif
+    InitializeFonts(clockFontPxlSize, coordFontPxlSize, fontPxlSize);
 
     /*
      * Detect if there are not enough colors available and adapt.
@@ -1361,16 +1374,6 @@ XBoard square size (hint): %d\n\
       fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	      programName);
 	appData.monoMode = True;
-    }
-
-    if (appData.lowTimeWarning && !appData.monoMode) {
-      vFrom.addr = (caddr_t) appData.lowTimeWarningColor;
-      vFrom.size = strlen(appData.lowTimeWarningColor);
-      XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-      if (vTo.addr == NULL)
-		appData.monoMode = True;
-      else
-		lowTimeWarningColor = *(Pixel *) vTo.addr;
     }
 
     if (appData.monoMode && appData.debugMode) {
