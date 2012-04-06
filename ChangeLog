@@ -3,6 +3,165 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2012-04-05 13:25:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+updated po/pot files
+
+
+2012-04-05 13:23:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+new version number for developer release
+
+
+2012-04-05 10:11:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Swap all engine-related options during engine loading
+
+Some of the rare options were not swapped, and would thus not be
+correctly loaded with the engine when -singleEngineList was true.
+They are now also all reset to their default, before engine load,
+to prevent options of one engine to linger on for a next that does
+not specify them. The intentional exception is -firstHost.
+
+2012-04-04 12:57:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Change default value for diretory to . in Load Engine dialog
+
+
+2012-04-04 12:18:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix memory corruption through InitString
+
+The InitString and ComputerString options were not swapped when replacing
+the second engine, so that the ChessProgramStates of the first engine
+could point to an invalid (already freed) init string. Also make sure
+that appData.directory contains its value in allocated memory, even
+when hand-loading engines.
+
+2012-04-01 20:51:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix PV sorting during fail low
+
+When an engine reports a fail low as thinking output, and then re-searches
+the same move with larger window, it now gets a lower score. This line
+would then be sorted below the earlier fail low, because it was mistaken
+for a multi-PV line for an inferior move. This patch suppresses PVs
+overtaking each other if they start with the same move.
+
+2012-03-31 15:53:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix texi bug
+
+
+2012-03-31 15:22:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Correct texi file for use of .Xresources
+
+
+2012-03-31 15:26:06 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix switching of debug mode
+
+Switching debug mode during a session did not properly open and close
+the requested debug file. Also alter the key binding of this to Ctrl-D.
+
+2012-03-30 20:09:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Extend smallLayout regime up to size Medium
+
+Because of the increase number of menus, there is not enough space for a
+title next to the menu bar at smaller sizes. In fact it is questionable if
+the title should ever go on the same line as the menu bar.
+
+2012-03-30 16:31:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let Game List scroll to keep highlighted item in view
+
+
+2012-03-26 17:12:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make variant-unsupported-by-second error non-fatal
+
+
+2012-03-30 11:20:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix TOPLEVEL stuff
+
+The compiler switch TOPLEVEL was no longer doing what it should,
+because the windows created by GenericPopUp (Move List, Tags and Comment)
+were no longer obeying it. Especially the difference in behavior between
+Move List and Engine Output/Eval Graph was very annoying.
+ The compiler switch now only acts as default value for a newly added
+command-line option -topLevel, which uniformly controls the behavior
+off all auxiliary windows.
+
+2012-03-30 10:38:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parsing crazyhouse promotions with legality testing off
+
+With legality testing off, any promotion suffixes in a move are taken
+'on faith'. But in crazyhouse the piece ID for normal pieces is used as
+promotion suffix for promoted pieces, so this would Loop Chess rather than
+Crazyhouse. Now attention is payed to presence of ID-less promotion pieces
+(indicated by ~ in the pieceToCharTable), and if there are, these prevail
+ovr the specified type.
+
+2012-03-30 10:07:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix browsing for save file in WB
+
+The generic popup browse buttons used the wrong flavor of browser,
+which would only accept existing files. This was inconvenient when browsing
+for a save file. The other flavor of browser is now used by default (so that
+engine options also use it), and a new flag is added in the option.max field
+(which was already indicating file type) to request readonly browsing for a
+save file.
+
+2012-03-28 12:25:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug on loading engine
+
+A newly loaded engine was put at the end of the game, rather than at the
+current position, (which is required in EditGame mode).
+
+2012-03-28 23:51:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in FRC castling for position search
+
+In FRC it is essential that both pieces are taken off the board before
+any of them is put back, lest they obliterate each other.
+
+2012-03-16 22:41:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix taking effect of some option changes
+
+This fixes a bug reported at Ubuntu: when switching off move highlighting
+in Two Machines mode, the last move before the switch stayed highlighted.
+The GeneralOptionsOK() now clears any remaining highlights when highlighing
+is off. Similar problems with blind-fold mode and coordinates, which require
+a total board redraw to take effect, are now solved by also forcing such a
+redraw in GeneralOptionsOK() when they change.
+
+2012-03-16 14:47:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix clock stop after dragging
+
+DelayedDrag always cancelled the previous drag timeout event, even when
+this was no longer pending because it had already taken place, and the
+event ID was resused by some other timeout (usually a clock tick).
+
+2012-03-13 14:11:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Inform user in EditPosition mode how to clear board
+
+With -pieceMenu false the board is cleared by clicking the clock, but
+since this is impossible to guess, it is now printed in the message field.
+
+2012-03-13 21:25:22 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Install engines as ./exefile in XBoard
+
+When a path name is split into directory and filename, the latter in Linux
+must be preceded by ./ in order to make it executable in the directory
+XBoard starts it in.
+
+2012-03-13 14:06:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix fall-back on -ncp mode
+
+When the requested engine could not be started, the user still had to
+wait for the feature timeout to expire before the UI was re-enabled,
+and the now-useless loading action would continue. In stead we now
+cancel any scheduled continuation, thaw the UI immediately, and switch
+the menus and gameMode to ncp straight away.
+  The ProcRef and InputSource are also cleared, and just to be sure there
+are no surviving adapters, the child is killed when engine startup fails.
+
+2012-03-11 12:48:35 -0700 Arun Persaud <arun@nubati.net>:
+release of version 4.6.0
+
+
+2012-03-11 12:46:00 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
 2012-03-10 19:00:08 -0800 Arun Persaud <arun@nubati.net>:
 updated po/pot files
 

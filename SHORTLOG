@@ -1,3 +1,31 @@
+** Version 4.6.1 **
+
+(git shortlog --no-merges v4.6.0..HEAD)
+
+H.G. Muller (22):
+      Fix fall-back on -ncp mode
+      Install engines as ./exefile in XBoard
+      Inform user in EditPosition mode how to clear board
+      Fix clock stop after dragging
+      Fix taking effect of some option changes
+      Fix bug in FRC castling for position search
+      Fix bug on loading engine
+      Fix browsing for save file in WB
+      Fix parsing crazyhouse promotions with legality testing off
+      Fix TOPLEVEL stuff
+      Make variant-unsupported-by-second error non-fatal
+      Let Game List scroll to keep highlighted item in view
+      Extend smallLayout regime up to size Medium
+      Fix switching of debug mode
+      Correct texi file for use of .Xresources
+      Fix texi bug
+      Fix PV sorting during fail low
+      Fix memory corruption through InitString
+      Change default value for diretory to . in Load Engine dialog
+      Swap all engine-related options during engine loading
+      new version number for developer release
+      updated po/pot files
+
 ** Version 4.6.0 **
 
 (git log --pretty=short --cherry-pick --left-only v4.6.x...v4.5.x^   |git shortlog --no-merges)
