@@ -61,6 +61,7 @@ extern char *getenv();
 
 static char filterString[MSG_SIZ];
 static int listLength, wins, losses, draws, page;
+int narrowFlag;
 
 
 typedef struct {
@@ -76,17 +77,17 @@ static char *filterPtr;
 static char *list[1003];
 static int listEnd;
 
-static int GameListPrepare P((int byPos));
+static int GameListPrepare P((int byPos, int narrow));
 static void GameListReplace P((int page));
 static void GL_Button P((int n));
 
 static Option gamesOptions[] = {
 { 200,  LR|TB,     400, NULL, (void*) list,       "", NULL, ListBox, "" },
 {   0,  0,         100, NULL, (void*) &filterPtr, "", NULL, TextBox, "" },
-{   2,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("(filter)") }, // buttons referred to by ID in value (=first) field!
+{   4,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("find position") },
+{   2,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("narrow") }, // buttons referred to by ID in value (=first) field!
 {   3,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("thresholds") },
 {   9,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("tags") },
-{   4,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("find position") },
 {   5,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("next") },
 {   6,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("close") },
 {   0,  SAME_ROW | NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
@@ -129,12 +130,12 @@ GL_Button (int n)
 	    return;
 	}
 	HighlightWithScroll(&gamesOptions[0], index, listEnd);
-    } else if (n == 2 || // filter
+    } else if (n == 2 || // narrow
                n == 4) { // find position
 	char *text;
 	GetWidgetText(&gamesOptions[1], &text);
         safeStrCpy(filterString, text, sizeof(filterString)/sizeof(filterString[0]));
-        GameListPrepare(n == 4); GameListReplace(0);
+        GameListPrepare(True, n == 2); GameListReplace(0);
         return;
     }
 
@@ -158,7 +159,7 @@ GameListCreate (char *name)
 }
 
 static int
-GameListPrepare (int byPos)
+GameListPrepare (int byPos, int narrow)
 {   // [HGM] filter: put in separate routine, to make callable from call-back
     int nstrings;
     ListGame *lg;
@@ -175,13 +176,16 @@ GameListPrepare (int byPos)
     if(byPos) InitSearch();
     while (nstrings--) {
 	int pos = -1;
-	line = GameListLine(lg->number, &lg->gameInfo);
-	if((filterString[0] == NULLCHAR || SearchPattern( line, filterString )) && (!byPos || (pos=GameContainsPosition(glc->fp, lg)) >= 0) ) {
+	if(!narrow || lg->position >= 0) { // only consider already selected positions when narrowing
+	  line = GameListLine(lg->number, &lg->gameInfo);
+	  if((filterString[0] == NULLCHAR || SearchPattern( line, filterString )) && (!byPos || (pos=GameContainsPosition(glc->fp, lg)) >= 0) ) {
             *st++ = line; // [HGM] filter: make adding line conditional.
 	    listLength++;
             if( lg->gameInfo.result == WhiteWins ) wins++; else
             if( lg->gameInfo.result == BlackWins ) losses++; else
             if( lg->gameInfo.result == GameIsDrawn ) draws++;
+	    if(!byPos) pos = 0; // indicate selected
+	  }
 	}
 	if(lg->number % 2000 == 0) {
 	    char buf[MSG_SIZ];
@@ -190,9 +194,9 @@ GameListPrepare (int byPos)
 	}
 	lg->position = pos;
 	lg = (ListGame *) lg->node.succ;
-     }
+    }
 GetTimeMark(&t2);printf("GameListPrepare %ld msec\n", SubtractTimeMarks(&t2,&t));
-     DisplayTitle("XBoard");
+    DisplayTitle("XBoard");
     *st = NULL;
     return listLength;
 }
@@ -227,7 +231,7 @@ GameListPopUp (FILE *fp, char *filename)
 	glc->filename = NULL;
     }
 
-    GameListPrepare(False); // [HGM] filter: code put in separate routine
+    GameListPrepare(False, False); // [HGM] filter: code put in separate routine
 
     glc->fp = fp;
 
@@ -325,7 +329,7 @@ SetFilter ()
         char *name;
 	GetWidgetText(&gamesOptions[1], &name);
         safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-        GameListPrepare(False); GameListReplace(0);
+        GameListPrepare(False, False); GameListReplace(0);
 	UnCaret(); // filter text-edit
 	FocusOnWidget(&gamesOptions[0], GameListDlg); // listbox
 }
