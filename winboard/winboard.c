@@ -4997,9 +4997,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       EditTagsPopUp(firstChessProgramNames, &firstChessProgramNames);
       break;
 
-    case IDM_EditProgs2:
-     LoadEnginePopUp(hwndMain);
-//      EditTagsPopUp(secondChessProgramNames, &secondChessProgramNames);
+    case IDM_LoadProg1:
+     LoadEnginePopUp(hwndMain, 0);
+      break;
+
+    case IDM_LoadProg2:
+     LoadEnginePopUp(hwndMain, 1);
       break;
 
     case IDM_EditServers:
@@ -7858,7 +7861,8 @@ Enables icsEnables[] = {
   { IDM_MoveNow, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Hint, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Book, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_EditProgs2, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_LoadProg1, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_LoadProg2, MF_BYCOMMAND|MF_GRAYED },
   { IDM_IcsOptions, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },

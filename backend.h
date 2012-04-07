@@ -97,6 +97,7 @@
 #include "lists.h"
 #include "frontend.h"
 
+extern char *wbOptions;
 extern int gotPremove;
 extern GameMode gameMode;
 extern int matchMode;
@@ -317,7 +318,7 @@ extern Boolean set_cont_sequence P((char *new_seq));
 extern int wrap P((char *dest, char *src, int count, int width, int *lp));
 int Explode P((Board board, int fromX, int fromY, int toX, int toY));
 
-typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton,
+typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton, ListBox,
 		 FileName, PathName, Slider, Message, Fractional, Label, Break, EndMark } Control;
 
 /* Flags Option.min used for ComboBox: */

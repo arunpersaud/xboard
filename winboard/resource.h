@@ -58,7 +58,7 @@
 #define IDM_Comment                     173
 #define IDM_Debug                       174
 #define IDM_EditProgs1                  175
-#define IDM_EditProgs2                  176
+#define IDM_LoadProg1                   176
 #define IDM_AnalysisMode                177
 #define IDM_AnalyzeFile                 178
 #define IDM_Annotate                    179
@@ -627,6 +627,7 @@
 #define OPT_ChoosePieceFont             1980
 #define OPT_GameListFind                1981
 #define OPT_Grid                        1983
+#define IDM_LoadProg2                   1984
 
 
 // Next default values for new objects

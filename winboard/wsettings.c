@@ -36,8 +36,7 @@ char title[MSG_SIZ];
 char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
 Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick, isUCCI;
 extern Option installOptions[], matchOptions[];
-char *engineNr[] = { N_("First"), N_("Second"), NULL };
-char *engineList[MAXENGINES] = {" "}, *engineMnemonic[MAXENGINES] = {""};
+char *engineList[MAXENGINES] = {""}, *engineMnemonic[MAXENGINES] = {""};
 void (*okFunc)();
 ChessProgramState *activeCps;
 Option *activeList;
@@ -113,6 +112,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 		case SaveButton:
 		case Button:  buttonList[buttons++] = nextOption; lastType = Button; break;
 		case TextBox:
+		case ListBox:
 		case FileName:
 		case PathName:
 		case Slider:
@@ -127,7 +127,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	if(!stop)
 	    nextType = Button; // kudge to flush remaining checks and combos undistorted
 	// Take a new line if a spin follows combos or checks, or when we encounter a textbox
-	if((combos+checks || nextType == TextBox || nextType == FileName || nextType == PathName || nextType == Label) && layout&1) {
+	if((combos+checks || nextType == TextBox || nextType == ListBox || nextType == FileName || nextType == PathName || nextType == Label) && layout&1) {
 	    layoutList[layout++] = -1;
 	}
 	// The last check or combo before a spin will be put on the same line as that spin (prefix)
@@ -139,7 +139,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	}
 	// if a combo is followed by a textbox, it must stay at the end of the combo/checks list to appear
 	// immediately above the textbox, so treat it as check. (A check would automatically be and remain there.)
-	if((nextType == TextBox || nextType == FileName || nextType == PathName) && lastType == ComboBox)
+	if((nextType == TextBox || nextType == ListBox || nextType == FileName || nextType == PathName) && lastType == ComboBox)
 	    checkList[checks++] = comboList[--combos];
 	// Now append the checks behind the (remaining) combos to treat them as one group
 	for(i=0; i< checks; i++)
@@ -157,14 +157,25 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	    layoutList[layout++] = -1;
 	    layoutList[layout++] = comboList[2*right];
 	}
+	if(nextType == ListBox) {
+	    // A listBox will be left-adjusted, and cause rearrangement of the elements before it to the right column
+	    breaks[layout/2] = lastType == Button ? 0 : 100;
+	    layoutList[layout++] = -1;
+	    layoutList[layout++] = nextOption - 1;
+	    for(i=optionList[nextOption-1].min; i>0; i--) { // extra high text edit
+		breaks[layout/2] = -1;
+		layoutList[layout++] = -1;
+		layoutList[layout++] = -1;
+	    }
+	} else 
 	if(nextType == TextBox || nextType == FileName || nextType == PathName || nextType == Label) {
 	    // A textBox is double width, so must be left-adjusted, and the right column remains empty
 	    breaks[layout/2] = lastType == Button ? 0 : 100;
 	    layoutList[layout++] = -1;
 	    layoutList[layout++] = nextOption - 1;
-	    for(i=optionList[nextOption-1].min; i>0; i--) { // extra high text edit
-		layoutList[layout++] = -1;
-		layoutList[layout++] = -1;
+	    if(optionList[nextOption-1].min) { // extra high text edit: goes right of existing listbox
+		layout -= 2; // remove
+		layoutList[layout-2*optionList[nextOption-1].min-2] = nextOption - 1;
 	    }
 	} else if(nextType == Spin) {
 	    // A spin will go in the next available position (right to left!). If it had to be prefixed with
@@ -312,6 +323,14 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 		}
 		SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) -1, (LPARAM) choices[optionList[j].value]);
 		break;
+	    case ListBox:
+		choices = (char**) optionList[j].choice;
+		hwndCombo = GetDlgItem(hDlg, 2001+2*i);
+		SendMessage(hwndCombo, LB_RESETCONTENT, 0, 0);
+		for(k=0; k<optionList[j].max; k++) {
+		    SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) choices[k]);
+		}
+		break;
 	    case Button:
 	    case SaveButton:
 	    default:
@@ -397,6 +416,9 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 		changed = new >= 0 && (optionList[j].value != new);
 		if(changed) optionList[j].value = new;
 		break;
+	    case ListBox:
+		if(optionList[j].textValue)
+		    *(int*) optionList[j].textValue = SendDlgItemMessage(hDlg, 2001+2*i, LB_GETCURSEL, 0, 0);
 	    case Button:
 	    default:
 		break; // are treated instantly, so they have been sent already
@@ -482,8 +504,12 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		}
 		if(j < 0) break;
 		if(comboCallback && activeList[j].type == ComboBox && HIWORD(wParam) == CBN_SELCHANGE) {
-		    if(j > 5) break; // Yegh! Must solve problem with more than one ombobox in dialog
+		    if(j > 5) break; // Yegh! Must solve problem with more than one combobox in dialog
 		    (*comboCallback)(hDlg);
+		    break;
+		} else
+		if(activeList[j].type == ListBox && HIWORD(wParam) == /*LBN_SELCHANGE*/ LBN_DBLCLK) {
+		    ((ButtonCallback *) activeList[j].target)(hDlg);
 		    break;
 		} else
 		if( activeList[j].type  == SaveButton)
@@ -532,10 +558,16 @@ void AddOption(int x, int y, Control type, int i)
 	    AddControl(x+95, y, 50, 11, 0x0081, ES_AUTOHSCROLL | ES_NUMBER | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
 	    break;
 	case TextBox:
+	    extra = 13*activeList[layoutList[i/2]].min; // when extra high, left-align and put description text above it
+	    AddControl(x+(extra?50:0), y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
+	    AddControl(x+(extra?50:95), y+(extra?13:0), extra?105:200, 11+(extra?extra-13:0), 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE |
+					WS_CHILD | WS_TABSTOP | (extra ? ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL :0), i+1);
+	    break;
+	case ListBox:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
 	    extra = 13*activeList[layoutList[i/2]].min;
-	    AddControl(x+95, y, 200, 11+extra, 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP | 
-								(extra ? ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL :0), i+1);
+	    AddControl(x, y+13, 105, 11+extra-13, 0x0083, LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_BORDER | LBS_NOTIFY |
+								 WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
 	    break;
 	case Label:
 	    extra = activeList[layoutList[i/2]].value;
@@ -570,7 +602,7 @@ void AddOption(int x, int y, Control type, int i)
 void
 CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 {
-    int i, ii, j, x=1, y=0, buttonRows, breakPoint = -1, k=0;
+    int i, ii, j, x=1, y=0, maxY=0, buttonRows, breakPoint = -1, k=0;
 
     template.header.cdit = 0;
     template.header.cx = 307;
@@ -590,12 +622,15 @@ CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 						0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, 2*(ii+MAX_OPTIONS));
 	}
 	j = layoutList[i];
-	if(j >= 0)
+	if(j >= 0) {
 	    AddOption(x+155-150*(i&1), y+13*(i>>1)+5, optionList[j].type, 2*i);
+	    // listboxes have the special power to adjust the width of the column they are in
+	    if(optionList[j].type == ListBox) x -= optionList[j].value, template.header.cx -= optionList[j].value;
+	}
 	if(k < groups && ii+1 == boxList[k+1]) {
 	    k += 2; y += 4;
 	}
-	if(ii+1 == breakPoint) { x += 318; y = -13*(breakPoint>>1); }
+	if(ii+1 >= breakPoint && breaks[ii+1>>1] >= 0) { x += 318; maxY = y+13*(ii+1>>1)+5; y = -13*(ii+1>>1); breakPoint = 1000; }
     }
     // add butons at the bottom of dialog window
     y += 13*(nr>>1)+5;
@@ -606,8 +641,9 @@ CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
     }
     AddControl(x+225, y+18*(buttonRows-1), 30, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, IDOK-2000);
     AddControl(x+260, y+18*(buttonRows-1), 40, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, IDCANCEL-2000);
+    y += 18*buttonRows; if(y < maxY) y = maxY;
     template.title[8] = optionList == first.option ? '1' :  '2';
-    template.header.cy = y += 18*buttonRows+2;
+    template.header.cy = y+2;
     template.header.style &= ~WS_VSCROLL;
 }
 
@@ -629,30 +665,36 @@ EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
     return;
 }
 
+int EnterGroup P((HWND hDlg));
+
+static int engineNr, selected;
+
 int InstallOK()
 {
+    if(selected >= 0) { ASSIGN(engineLine, engineList[selected]); }
     if(engineLine[0] == '#') { DisplayError(_("Select single engine from the group"), 0); return 0; }
     if(isUCCI) isUCI = 2;
-    if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
+    if(!engineNr) Load(&first, 0); else Load(&second, 1);
     return 1;
 }
 
 Option installOptions[] = {
-  {   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
+//  {   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
+  { 195, 14,    0, NULL, (void*) &EnterGroup, (char*) &selected, engineMnemonic, ListBox, N_("Select engine from list:") },
   {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
   {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
   {   0,  0,    0, NULL, (void*) &useNick, NULL, NULL, CheckBox, N_("Use nickname in PGN tag") },
   {   0,  0, 32+3, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine (*.exe):") },
   {   0,  0,    0, NULL, (void*) &params, NULL, NULL, TextBox, N_("command-line parameters:") },
+  {   0,  0,    0, NULL, (void*) &wbOptions, NULL, NULL, TextBox, N_("Special WinBoard options:") },
   {   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("directory:") },
   {  95,  0,    0, NULL, NULL, NULL, NULL, Label, N_("(Directory will be derived from engine path when left empty)") },
   {   0,  0,    0, NULL, (void*) &addToList, NULL, NULL, CheckBox, N_("Add this engine to the list") },
   {   0,  0,    0, NULL, (void*) &hasBook, NULL, NULL, CheckBox, N_("Must not use GUI book") },
+  {   0,  0,    0, NULL, (void*) &storeVariant, NULL, NULL, CheckBox, N_("Force current variant with this engine") },
   {   0,  0,    0, NULL, (void*) &isUCI, NULL, NULL, CheckBox, N_("UCI") },
   {   0,  0,    0, NULL, (void*) &v1, NULL, NULL, CheckBox, N_("WB protocol v1 (skip waiting for features)") },
   {   0,  0,    0, NULL, (void*) &isUCCI, NULL, NULL, CheckBox, N_("UCCI / USI (uses specified /uxiAdapter)") },
-  {   0,  0,    0, NULL, (void*) &storeVariant, NULL, NULL, CheckBox, N_("Force current variant with this engine") },
-  {   0,  0,    2, NULL, (void*) &engineChoice, (char*) engineNr, engineNr, ComboBox, N_("Load mentioned engine as") },
   {   0,  1,    0, NULL, (void*) &InstallOK, "", NULL, EndMark , "" }
 };
 
@@ -679,32 +721,38 @@ EnterGroup(HWND hDlg)
 {
     char buf[MSG_SIZ];
     HANDLE hwndCombo = GetDlgItem(hDlg, 2001+2*1);
-    int i = ComboBox_GetCurSel(hwndCombo);
+    int i = SendDlgItemMessage(hDlg, 2001+2*1, LB_GETCURSEL, 0, 0);
     if(i == 0) buf[0] = NULLCHAR; // back to top level
     else if(engineList[i][0] == '#') safeStrCpy(buf, engineList[i], MSG_SIZ); // group header, open group
-    else return 0; // normal line, select engine
-    installOptions[0].max = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
-    SendMessage(hwndCombo, CB_RESETCONTENT, 0, 0);
-    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) buf);
-    for(i=1; i<installOptions[0].max; i++) {
-	    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) engineMnemonic[i]);
+    else {
+	ASSIGN(engineLine, engineList[i]);
+	if(isUCCI) isUCI = 2;
+	if(!engineNr) Load(&first, 0); else Load(&second, 1);
+	EndDialog( hDlg, 0 );
+	return 0; // normal line, select engine
     }
-    SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) 0, (LPARAM) buf);
+    installOptions[0].max = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
+    SendMessage(hwndCombo, LB_RESETCONTENT, 0, 0);
+    SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) buf);
+    for(i=1; i<installOptions[0].max; i++) {
+	    SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) engineMnemonic[i]);
+    }
+//    SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) 0, (LPARAM) buf);
     return 0;
 }
 
-void LoadEnginePopUp(HWND hwnd)
+void LoadEnginePopUp(HWND hwnd, int nr)
 {
     isUCI = isUCCI = storeVariant = v1 = useNick = FALSE; addToList = hasBook = TRUE; // defaults
+    engineNr = nr;
     if(engineDir)    free(engineDir);    engineDir = strdup("");
     if(params)       free(params);       params = strdup("");
     if(nickName)     free(nickName);     nickName = strdup("");
-    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
     if(engineLine)   free(engineLine);   engineLine = strdup("");
     if(engineName)   free(engineName);   engineName = strdup("");
+    ASSIGN(wbOptions, "");
     installOptions[0].max = NamesToList(firstChessProgramNames, engineList, engineMnemonic, ""); // only top level
-    snprintf(title, MSG_SIZ, _("Load Engine"));
-    comboCallback = &EnterGroup;
+    snprintf(title, MSG_SIZ, _("Load %s Engine"), nr ? _("second") : _("first"));
 
     GenericPopup(hwnd, installOptions);
 }
@@ -726,11 +774,11 @@ int MatchOK()
 
 char *GetParticipants(HWND hDlg)
 {
-    int len = GetWindowTextLength(GetDlgItem(hDlg, 2001+2*9)) + 1;
+    int len = GetWindowTextLength(GetDlgItem(hDlg, 2001+2*0)) + 1;
     char *participants,*p, *q;
     if(len < 4) return NULL; // box is empty (enough)
     participants = (char*) malloc(len);
-    GetDlgItemText(hDlg, 2001+2*9, participants, len );
+    GetDlgItemText(hDlg, 2001+2*0, participants, len );
     p = q = participants;
     while(*p++ = *q++) if(p[-1] == '\r') p--;
     return participants;
@@ -752,8 +800,8 @@ void Inspect(HWND hDlg)
 {
     FILE *f;
     char name[MSG_SIZ];
-    GetDlgItemText(hDlg, 2001+2*1, name, MSG_SIZ );
-    if(name && name[0] && (f = fopen(name, "r")) ) {
+    GetDlgItemText(hDlg, 2001+2*33, name, MSG_SIZ );
+    if(name[0] && (f = fopen(name, "r")) ) {
 	char *saveSaveFile;
 	saveSaveFile = appData.saveGameFile; appData.saveGameFile = NULL; // this is a persistent option, protect from change
 	ParseArgsFromFile(f);
@@ -767,13 +815,14 @@ void Inspect(HWND hDlg)
 
 void TimeControlOptionsPopup P((HWND hDlg));
 void UciOptionsPopup P((HWND hDlg));
+int AddToTourney P((HWND hDlg));
 
 Option tourneyOptions[] = {
+  { 80,  15,        0, NULL, (void*) &AddToTourney, NULL, engineMnemonic, ListBox, N_("Select Engine:") },
+  { 0xD, 15,        0, NULL, (void*) &appData.participants, "", NULL, TextBox, N_("Tourney participants:") },
   { 0,  0,          4, NULL, (void*) &tfName, "", NULL, FileName, N_("Tournament file:") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("If you specify an existing file, the rest of this dialog will be ignored.") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("Otherwise, the file will be created, with the settings you specify below:") },
-  { 0,  1,          0, NULL, (void*) &engineChoice, (char*) engineMnemonic, engineMnemonic, ComboBox, N_("Select Engine:") },
-  { 0xD, 7,         0, NULL, (void*) &appData.participants, "", NULL, TextBox, N_("Tourney participants:") },
   { 0,  0,          0, NULL, (void*) &swiss, "", NULL, CheckBox, N_("Use Swiss pairing engine (cycles = rounds)") },
   { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0=RR, 1=gauntlet):") },
   { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
@@ -801,34 +850,33 @@ Option tourneyOptions[] = {
 int AddToTourney(HWND hDlg)
 {
   char buf[MSG_SIZ];
-  HANDLE hwndCombo = GetDlgItem(hDlg, 2001+2*7);
-  int i = ComboBox_GetCurSel(hwndCombo);
+  HANDLE hwndCombo = GetDlgItem(hDlg, 2001+2*1);
+  int i = SendDlgItemMessage(hDlg, 2001+2*1, LB_GETCURSEL, 0, 0);
+  if(i<0) return 0;
   if(i == 0) buf[0] = NULLCHAR; // back to top level
   else if(engineList[i][0] == '#') safeStrCpy(buf, engineList[i], MSG_SIZ); // group header, open group
   else { // normal line, select engine
     snprintf(buf, MSG_SIZ, "%s\r\n", engineMnemonic[i]);
-    SendMessage( GetDlgItem(hDlg, 2001+2*9), EM_SETSEL, 99999, 99999 );
-    SendMessage( GetDlgItem(hDlg, 2001+2*9), EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) buf );
+    SendMessage( GetDlgItem(hDlg, 2001+2*0), EM_SETSEL, 99999, 99999 );
+    SendMessage( GetDlgItem(hDlg, 2001+2*0), EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) buf );
     return 0;
   }
-  installOptions[0].max = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
-  SendMessage(hwndCombo, CB_RESETCONTENT, 0, 0);
-  SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) buf);
-  for(i=1; i<installOptions[0].max; i++) {
-    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) engineMnemonic[i]);
+  tourneyOptions[0].max = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
+  SendMessage(hwndCombo, LB_RESETCONTENT, 0, 0);
+  SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) buf);
+  for(i=1; i<tourneyOptions[0].max; i++) {
+    SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) engineMnemonic[i]);
   }
-  SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) 0, (LPARAM) buf);
+//  SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) 0, (LPARAM) buf);
   return 0;
-
 }
 
 void TourneyPopup(HWND hwnd)
 {
     int n = NamesToList(firstChessProgramNames, engineList, engineMnemonic, "");
-    comboCallback = &AddToTourney;
     autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
     twice = FALSE; swiss = appData.tourneyType < 0;
-    tourneyOptions[3].max = n;
+    tourneyOptions[0].max = n;
     snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
     ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
 

@@ -898,6 +898,8 @@ FloatToFront(char **list, char *engineLine)
     ASSIGN(*list, tidy+1);
 }
 
+char *wbOptions;
+
 void
 Load (ChessProgramState *cps, int i)
 {

@@ -1253,10 +1253,11 @@ BEGIN
     POPUP "E&ngine"
     BEGIN
         MENUITEM "Edit Engine List...",         IDM_EditProgs1
-        MENUITEM "Load Engine...",              IDM_EditProgs2
+        MENUITEM "Load &First Engine...",       IDM_LoadProg1
+        MENUITEM "Load &Second Engine...",      IDM_LoadProg2
         MENUITEM SEPARATOR
-        MENUITEM "Engine #&1 Settings...",       IDM_Engine1Options
-        MENUITEM "Engine #&2 Settings...",       IDM_Engine2Options
+        MENUITEM "Engine #&1 Settings...",      IDM_Engine1Options
+        MENUITEM "Engine #&2 Settings...",      IDM_Engine2Options
         MENUITEM SEPARATOR
         MENUITEM "&Hint...",                    IDM_Hint
         MENUITEM "&Book...",                    IDM_Book
