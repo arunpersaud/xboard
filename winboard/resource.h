@@ -197,6 +197,7 @@
 #define OPT_GameListPrev                1010
 #define OPT_GameListText                1011
 #define OPT_GameListLoad                1012
+#define OPT_GameListNarrow              1010
 #define OPT_GameListNext                1013
 #define OPT_GameListClose               1014
 #define DLG_EditTags                    1015

@@ -259,19 +259,20 @@ BEGIN
     LTEXT           "(unofficial version ""X"")",IDC_STATIC,68,154,71,8
 END
 
-DLG_GameList DIALOG DISCARDABLE  6, 18, 259, 153
+DLG_GameList DIALOG DISCARDABLE  6, 18, 282, 153
 STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Game List"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LISTBOX         OPT_GameListText,2,2,254,130,LBS_NOINTEGRALHEIGHT | 
+    LISTBOX         OPT_GameListText,2,2,277,130,LBS_NOINTEGRALHEIGHT | 
                     WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
     PUSHBUTTON      "&Thresholds",OPT_GameListLoad,2,136,40,15
     PUSHBUTTON      "&Find Position",OPT_GameListFind,45,136,48,15
-    PUSHBUTTON      "&Close",OPT_GameListClose,96,136,30,15
-    PUSHBUTTON      ">",OPT_GameListNext,129,136,17,15
-    PUSHBUTTON      "&Filter",IDC_GameListDoFilter,149,136,25,14
-    EDITTEXT        IDC_GameListFilter,178,136,78,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Narrow",OPT_GameListNarrow,96,136,30,15
+    PUSHBUTTON      "&Close",OPT_GameListClose,129,136,20,15
+    PUSHBUTTON      ">",OPT_GameListNext,152,136,17,15
+    PUSHBUTTON      "&Filter",IDC_GameListDoFilter,172,136,25,14
+    EDITTEXT        IDC_GameListFilter,201,136,78,14,ES_AUTOHSCROLL
 END
 
 DLG_EditTags DIALOG DISCARDABLE  6, 18, 167, 140
