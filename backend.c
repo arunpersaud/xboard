@@ -6131,7 +6131,6 @@ WriteMap (int s)
 static void
 ClearMap ()
 {
-    int j;
     safeStrCpy(exclusionHeader, "exclude: none best +tail                                          \n", MSG_SIZ);
     excludePtr = 24; exCnt = 0;
     WriteMap(0);
@@ -6163,7 +6162,7 @@ UpdateExcludeHeader (int fromY, int fromX, int toY, int toX, char promoChar, cha
 static int
 ExcludeOneMove (int fromY, int fromX, int toY, int toX, signed char promoChar, char state)
 {   // include or exclude the given move, as specified by state ('+' or '-'), or toggle
-    char *p, buf[MSG_SIZ];
+    char buf[MSG_SIZ];
     int j, k;
     ChessMove moveType;
     if(promoChar == -1) { // kludge to indicate best move
@@ -6190,7 +6189,6 @@ static void
 ExcludeClick (int index)
 {
     int i, j;
-    char buf[MSG_SIZ];
     Exclusion *e = excluTab;
     if(index < 25) { // none, best or tail clicked
 	if(index < 13) { // none: include all
