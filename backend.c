@@ -898,7 +898,7 @@ FloatToFront(char **list, char *engineLine)
     ASSIGN(*list, tidy+1);
 }
 
-char *wbOptions;
+char *insert, *wbOptions; // point in ChessProgramNames were we should insert new engine
 
 void
 Load (ChessProgramState *cps, int i)
@@ -954,8 +954,10 @@ Load (ChessProgramState *cps, int i)
 			isUCI ? (isUCI == TRUE ? " -fUCI" : gameInfo.variant == VariantShogi ? " -fUSI" : " -fUCCI") : "",
 			storeVariant ? " -variant " : "",
 			storeVariant ? VariantName(gameInfo.variant) : "");
+	if(wbOptions && wbOptions[0]) snprintf(buf+strlen(buf)-1, MSG_SIZ-strlen(buf), " %s\n", wbOptions);
 	firstChessProgramNames = malloc(len = strlen(q) + strlen(buf) + 1);
-	snprintf(firstChessProgramNames, len, "%s%s", q, buf);
+	if(insert != q) insert[-1] = NULLCHAR;
+	snprintf(firstChessProgramNames, len, "%s\n%s%s", q, buf, insert);
 	if(q) 	free(q);
 	FloatToFront(&appData.recentEngineList, buf);
     }
@@ -10030,6 +10032,7 @@ NamesToList (char *names, char **engineList, char **engineMnemonic, char *group)
 {
     char buf[MSG_SIZ], *p, *q;
     int i=1, header, skip, all = !strcmp(group, "all"), depth = 0;
+    insert = names; // afterwards, this global will point just after last retrieved engine line or group end in the 'names'
     skip = !all && group[0]; // if group requested, we start in skip mode
     for(;*names && depth >= 0 && i < MAXENGINES-1; names = p) {
 	p = names; q = buf; header = 0;
@@ -10037,7 +10040,7 @@ NamesToList (char *names, char **engineList, char **engineMnemonic, char *group)
 	*q = 0;
 	if(*p == '\n') p++;
 	if(buf[0] == '#') {
-	    if(strstr(buf, "# end") == buf) { depth--; continue; } // leave group, and suppress printing label
+	    if(strstr(buf, "# end") == buf) { if(!--depth) insert = p; continue; } // leave group, and suppress printing label
 	    depth++; // we must be entering a new group
 	    if(all) continue; // suppress printing group headers when complete list requested
 	    header = 1;
@@ -10046,7 +10049,7 @@ NamesToList (char *names, char **engineList, char **engineMnemonic, char *group)
 	if(depth != header && !all || skip) continue; // skip contents of group (but print first-level header)
 	if(engineList[i]) free(engineList[i]);
 	engineList[i] = strdup(buf);
-	if(buf[0] != '#') TidyProgramName(engineList[i], "localhost", buf); // group headers not tidied
+	if(buf[0] != '#') insert = p, TidyProgramName(engineList[i], "localhost", buf); // group headers not tidied
 	if(engineMnemonic[i]) free(engineMnemonic[i]);
 	if((q = strstr(engineList[i]+2, "variant")) && q[-2]== ' ' && (q[-1]=='/' || q[-1]=='-') && (q[7]==' ' || q[7]=='=')) {
 	    strcat(buf, " (");
