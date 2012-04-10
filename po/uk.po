@@ -5,19 +5,18 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard-4.6.0.20120304\n"
+"Project-Id-Version: GNU xboard-4.6.0.20120405\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2012-04-05 13:10+0200\n"
-"PO-Revision-Date: 2012-03-05 21:55+0200\n"
+"POT-Creation-Date: 2012-04-05 21:18-0700\n"
+"PO-Revision-Date: 2012-04-09 10:47+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: uk\n"
-"X-Generator: Lokalize 1.2\n"
-"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n%"
-"10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
@@ -140,9 +139,7 @@ msgstr "Робота режиму гри комп’ютером білими р
 
 #: backend.c:1669
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
-"Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено "
-"шаховий рушій"
+msgstr "Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено шаховий рушій"
 
 #: backend.c:1674
 msgid "TwoMachines mode does not work with ICS mode"
@@ -230,8 +227,7 @@ msgstr ""
 
 #: backend.c:4204 backend.c:9439
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
+msgstr "Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
 
 #: backend.c:4299
 msgid "Error gathering move list: extra board"
@@ -253,8 +249,7 @@ msgstr "Ця дія неможлива у режимі гри або спост�
 
 #: backend.c:5926
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
-"Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
+msgstr "Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
 
 #: backend.c:6279
 msgid "You are playing Black"
@@ -319,8 +314,7 @@ msgstr "У %s не передбачено аналізу"
 #: backend.c:8352
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
-"Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
+msgstr "Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
 
 #: backend.c:8379
 #, c-format
@@ -567,8 +561,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Повідомлення cmail не завантажено.\n"
-"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш "
-"хід."
+"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш хід."
 
 #: backend.c:12825
 msgid "No unfinished games"
@@ -689,7 +682,7 @@ msgstr "Попередження: ви ще вивчаєте гру"
 
 #: backend.c:13720
 msgid "Click clock to clear board"
-msgstr ""
+msgstr "Клацніть на годиннику, щоб спорожнити дошку"
 
 #: backend.c:13730
 msgid "Close ICS engine analyze..."
@@ -1436,9 +1429,7 @@ msgstr "Не вдалося відкрити файл «%s»\n"
 
 #: xboard.c:2062
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з "
-"більшими значеннями BOARD_RANKS або BOARD_FILES"
+msgstr "Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з більшими значеннями BOARD_RANKS або BOARD_FILES"
 
 #: xboard.c:2085
 #, c-format
@@ -1603,9 +1594,7 @@ msgstr "%s: %s… використовуємо вбудоване\n"
 #: xboard.c:3868
 #, c-format
 msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
-msgstr ""
-"%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… "
-"використовуємо вбудоване\n"
+msgstr "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… використовуємо вбудоване\n"
 
 #: xboard.c:3936
 msgid "----"
@@ -1716,12 +1705,10 @@ msgid ""
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -1732,13 +1719,10 @@ msgstr ""
 "© Free Software Foundation, 1992–2012\n"
 "© Alessandro Scotti, 2005\n"
 "\n"
-"%s є вільним програмним забезпеченням, його працездатність не гарантується. "
-"Докладніше про це у файлі COPYING.\n"
+"%s є вільним програмним забезпеченням, його працездатність не гарантується. Докладніше про це у файлі COPYING.\n"
 "\n"
-"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/"
-"xboard/\n"
-"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/"
-"software/xboard/whats_new.html\n"
+"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/xboard/\n"
+"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Надішліть повідомлення про ваду на адресу: <bug-xboard@gnu.org>\n"
 "\n"
@@ -1978,8 +1962,7 @@ msgstr "Номер позиції (-1 або -2 = автоматичне збі�
 
 #: xoptions.c:399
 msgid "Rewind Index after this many Games (0 = never):"
-msgstr ""
-"Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
+msgstr "Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
 
 #: xoptions.c:400
 msgid "Disable own engine books by default"
@@ -2855,8 +2838,7 @@ msgstr "Команда рушія:"
 
 #: xoptions.c:1751
 msgid "(Directory will be derived from engine path when empty)"
-msgstr ""
-"(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
+msgstr "(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
 
 #: xoptions.c:1752
 msgid "UCI"
