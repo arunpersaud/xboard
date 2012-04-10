@@ -8,213 +8,213 @@ msgid ""
 msgstr ""
 "Project-Id-Version: XBoard 4.2.7\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2012-03-10 18:55-0800\n"
+"POT-Creation-Date: 2012-04-10 13:35+0200\n"
 "PO-Revision-Date: 2011-04-24 12:00-0700\n"
 "Last-Translator: Arun Persaud <arun@nubati.net>\n"
 "Language-Team: German\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
-#: backend.c:739
+#: backend.c:740
 msgid "first"
 msgstr ""
 
 #. TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
-#: backend.c:742
+#: backend.c:743
 msgid "second"
 msgstr ""
 
-#: backend.c:820
+#: backend.c:821
 #, c-format
 msgid "protocol version %d not supported"
 msgstr "Protokollversion %d nicht unterstützt"
 
-#: backend.c:916
+#: backend.c:921
 msgid "You did not specify the engine executable"
 msgstr ""
 
-#: backend.c:969
+#: backend.c:977
 #, c-format
 msgid "bad timeControl option %s"
 msgstr "falsche timeContorl-Option %s"
 
-#: backend.c:984
+#: backend.c:992
 #, c-format
 msgid "bad searchTime option %s"
 msgstr "falsche searchTime-Option %s"
 
-#: backend.c:1090
+#: backend.c:1098
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr "Variante %s wird nur im ICS-Modus unterstützt"
 
-#: backend.c:1108
+#: backend.c:1116
 #, c-format
 msgid "Unknown variant name %s"
 msgstr "Unbekannte Variante mit Namen %s"
 
-#: backend.c:1351
+#: backend.c:1359
 msgid "Starting chess program"
 msgstr "Starte Schachprogramm"
 
-#: backend.c:1374
+#: backend.c:1382
 msgid "Bad game file"
 msgstr "Fehler in Partiedatei"
 
-#: backend.c:1381
+#: backend.c:1389
 msgid "Bad position file"
 msgstr "Fehler in Positionsdatei"
 
-#: backend.c:1395
+#: backend.c:1403
 msgid "Pick new game"
 msgstr ""
 
-#: backend.c:1464
+#: backend.c:1472
 msgid ""
 "You restarted an already completed tourney\n"
 "One more cycle will now be added to it\n"
 "Games commence in 10 sec"
 msgstr ""
 
-#: backend.c:1471
+#: backend.c:1479
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
 msgstr ""
 
-#: backend.c:1478
+#: backend.c:1486
 msgid "Can't have a match with no chess programs"
 msgstr "Partie ohne Schachprogram ist nicht möglich"
 
-#: backend.c:1515
+#: backend.c:1523
 #, c-format
 msgid "Could not open comm port %s"
 msgstr "Konnte Kommunikationsport %s nicht öffnen"
 
-#: backend.c:1518
+#: backend.c:1526
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr ""
 "Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
 
-#: backend.c:1574
+#: backend.c:1582
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr "Unbekannter initalMode %s"
 
-#: backend.c:1600
+#: backend.c:1608
 msgid "AnalyzeFile mode requires a game file"
 msgstr "\"Analysiere Datei\"-Modus benötigt eine Partiedatei"
 
-#: backend.c:1627
+#: backend.c:1635
 msgid "Analysis mode requires a chess engine"
 msgstr "Analyse-Modus benötigt ein Schachprogramm"
 
-#: backend.c:1631
+#: backend.c:1639
 msgid "Analysis mode does not work with ICS mode"
 msgstr "Analyse-Modus funktioniert nicht im ICS-Modus"
 
-#: backend.c:1642
+#: backend.c:1650
 msgid "MachineWhite mode requires a chess engine"
 msgstr "\"Schachprogramm Weiß\"-Modus benötigt ein Schachprogramm"
 
-#: backend.c:1647
+#: backend.c:1655
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr "\"Schachprogramm Weiß\"-Modus funktioniert nicht im ICS-Modus"
 
-#: backend.c:1654
+#: backend.c:1662
 msgid "MachineBlack mode requires a chess engine"
 msgstr "\"Schachprogramm Schwarz\"-Modus benötigt ein Schachprogramm"
 
-#: backend.c:1659
+#: backend.c:1667
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr "\"Schachprogramm Schwarz\"-Modus funktioniert nicht im ICS-Modus"
 
-#: backend.c:1666
+#: backend.c:1674
 msgid "TwoMachines mode requires a chess engine"
 msgstr "\"Zwei Schachprogramme\"-Modus benötigt ein Schachprogramm"
 
-#: backend.c:1671
+#: backend.c:1679
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr "\"Zwei Schachprogramme\"-Modus funktioniert nicht im ICS-Modus"
 
-#: backend.c:1682
+#: backend.c:1690
 msgid "Training mode requires a game file"
 msgstr "Trainieren-Modus benötigt eine Partiedatei"
 
-#: backend.c:1844 backend.c:1888 backend.c:1911 backend.c:2310
+#: backend.c:1852 backend.c:1896 backend.c:1919 backend.c:2318
 msgid "Error writing to ICS"
 msgstr "Fehler beim Schreiben zum ICS"
 
-#: backend.c:1848
+#: backend.c:1856
 msgid "Error reading from keyboard"
 msgstr "Fehler beim Lesen der Tastatur"
 
-#: backend.c:1851
+#: backend.c:1859
 msgid "Got end of file from keyboard"
 msgstr "Habe Ende-der-Datei von der Tastatur erhalten"
 
-#: backend.c:2156
+#: backend.c:2164
 #, c-format
 msgid "Unknown wild type %d"
 msgstr "Unbekannter wild-Variante %d"
 
-#: backend.c:2167
+#: backend.c:2175
 #, c-format
 msgid "recognized '%s' (%d) as variant %s\n"
 msgstr "erkenne '%s' (%d) als Variante %s\n"
 
-#: backend.c:2227 xboard.c:7155
+#: backend.c:2235 usystem.c:327
 msgid "Error writing to display"
 msgstr "Fehler beim Schreiben auf dem Display"
 
-#: backend.c:2976
+#: backend.c:2984
 #, c-format
 msgid "your opponent kibitzes: %s"
 msgstr "Dein Gegner kibitzt: %s"
 
-#: backend.c:3499
+#: backend.c:3507
 msgid "Error gathering move list: two headers"
 msgstr "Fehler beim Erstellen der Zugliste: zwei Dateiköpfe"
 
-#: backend.c:3513
+#: backend.c:3521
 #, c-format
 msgid "Ratings from header: W %d, B %d\n"
 msgstr "Spielstärke vom Dateikopf: W %d, S %d\n"
 
-#: backend.c:3546
+#: backend.c:3554
 msgid "Error gathering move list: nested"
 msgstr "Fehler beim Erstellen der Zugliste: verschachtelt"
 
-#: backend.c:3650 backend.c:4068 backend.c:4803 backend.c:4807 backend.c:6675
-#: backend.c:11609 backend.c:13204 backend.c:13281 backend.c:13327
-#: backend.c:13333 backend.c:13338 backend.c:13343
+#: backend.c:3658 backend.c:4076 backend.c:4814 backend.c:4818 backend.c:6810
+#: backend.c:11779 backend.c:13374 backend.c:13451 backend.c:13497
+#: backend.c:13503 backend.c:13508 backend.c:13513
 msgid "vs."
 msgstr ""
 
-#: backend.c:3778
+#: backend.c:3786
 msgid "Illegal move (rejected by ICS)"
 msgstr "Illegaler Zug (abgelehnt vom ICS)"
 
-#: backend.c:4116
+#: backend.c:4124
 msgid "Connection closed by ICS"
 msgstr "Verbindung zum ICS beendet"
 
-#: backend.c:4118
+#: backend.c:4126
 msgid "Error reading from ICS"
 msgstr "Fehler beim Lesen vom ICS"
 
-#: backend.c:4168
+#: backend.c:4176
 #, c-format
 msgid "Parsing board: %s\n"
 msgstr "Parse Schachbrett: %s\n"
 
-#: backend.c:4192
+#: backend.c:4200
 #, c-format
 msgid ""
 "Failed to parse board string:\n"
@@ -223,108 +223,108 @@ msgstr ""
 "Konnte Schachbrettzeichenkette nicht parsen:\n"
 "\"%s\""
 
-#: backend.c:4201 backend.c:9423
+#: backend.c:4209 backend.c:9580
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr "Partie zu lang; erhöhe MAX_MOVES und kompiliere neu"
 
-#: backend.c:4296
+#: backend.c:4307
 msgid "Error gathering move list: extra board"
 msgstr "Fehler beim Erstellen der Zugliste: extra Schachbrett"
 
-#: backend.c:4727 backend.c:4749
+#: backend.c:4738 backend.c:4760
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
 msgstr "Konnte Zug \"%s\" vom ICS nicht parsen"
 
-#: backend.c:4979
+#: backend.c:4990
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
 msgstr "Interner Fehler; falscher moveType %d (%d,%d-%d,%d)"
 
-#: backend.c:5049
+#: backend.c:5060
 msgid "You cannot do this while you are playing or observing"
 msgstr ""
 
-#: backend.c:5923
+#: backend.c:5937
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
 msgstr "Kompiliere erneut mit Unterstützung von BOARD_RANKS oder BOARD_FILES!"
 
-#: backend.c:6276
+#: backend.c:6399
 msgid "You are playing Black"
 msgstr "Sie spielen Schwarz"
 
-#: backend.c:6285 backend.c:6312
+#: backend.c:6408 backend.c:6435
 msgid "You are playing White"
 msgstr "Sie spielen Weiß"
 
-#: backend.c:6294 backend.c:6320 backend.c:6438 backend.c:6463 backend.c:6479
-#: backend.c:13960
+#: backend.c:6417 backend.c:6443 backend.c:6564 backend.c:6589 backend.c:6605
+#: backend.c:14136
 msgid "It is White's turn"
 msgstr "Weiß ist am Zug"
 
-#: backend.c:6298 backend.c:6324 backend.c:6446 backend.c:6469 backend.c:6500
-#: backend.c:13952
+#: backend.c:6421 backend.c:6447 backend.c:6572 backend.c:6595 backend.c:6626
+#: backend.c:14128
 msgid "It is Black's turn"
 msgstr "Schwarz ist am Zug"
 
-#: backend.c:6337
+#: backend.c:6460
 msgid "Displayed position is not current"
 msgstr "Angezeigte Position ist nicht die Aktuelle"
 
-#: backend.c:6574
+#: backend.c:6700
 msgid "Illegal move"
 msgstr "Ungültiger Zug"
 
-#: backend.c:6634
+#: backend.c:6767
 msgid "End of game"
 msgstr "Ende des Spiels"
 
-#: backend.c:6637
+#: backend.c:6770
 msgid "Incorrect move"
 msgstr "Ungültiger Zug"
 
-#: backend.c:6929 backend.c:7045
+#: backend.c:7069 backend.c:7189
 msgid "Pull pawn backwards to under-promote"
 msgstr "Bewege Bauern rückwärts zum Unterverwandeln"
 
-#: backend.c:7269
+#: backend.c:7413
 msgid "Swiss tourney finished"
 msgstr ""
 
-#: backend.c:7803
+#: backend.c:7947
 msgid "Invalid pairing from pairing engine"
 msgstr ""
 
-#: backend.c:7920
+#: backend.c:8064
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr "Illegaler Zug \"%s\" vom Schachprogramm %s"
 
-#: backend.c:8139
+#: backend.c:8283
 msgid "Bad FEN received from engine"
 msgstr "Schlechte FEN vom Schachprogramm erhalten"
 
-#: backend.c:8283 xboard.c:5919 xboard.c:5960
+#: backend.c:8427 menus.c:264 menus.c:305
 #, c-format
 msgid "%s does not support analysis"
 msgstr "%s unterstützt keine Analyse"
 
-#: backend.c:8349
+#: backend.c:8493
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr "Illegaler Zug \"%s\" (abgelehnt vom Schachprogram %s)"
 
-#: backend.c:8376
+#: backend.c:8520
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr "Konnte %s Schachprogram %s auf %s nicht starten: %s\n"
 
-#: backend.c:8397
+#: backend.c:8551
 #, c-format
 msgid "Hint: %s"
 msgstr "Hinweis: %s"
 
-#: backend.c:8402
+#: backend.c:8556
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
@@ -333,11 +333,11 @@ msgstr ""
 "Illegaler Zughinweis \"%s\"\n"
 "vom Schachprogramm %s"
 
-#: backend.c:8577
+#: backend.c:8731
 msgid "Machine accepts your draw offer"
 msgstr "Das Schachprogramm akzeptiert dein Remiangebot"
 
-#: backend.c:8580
+#: backend.c:8734
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
@@ -345,185 +345,185 @@ msgstr ""
 "Das Schachprogramm bietet Remi an\n"
 "Wähle Aktion/Remi um anzunehmen"
 
-#: backend.c:8659
+#: backend.c:8813
 msgid "failed writing PV"
 msgstr ""
 
-#: backend.c:8957
+#: backend.c:9111
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr "Nicht eindeutiger Zug in der ICS-Ausgabe: \"%s\""
 
-#: backend.c:8967
+#: backend.c:9121
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr "Illegaler Zug in der ICS-Ausgabe: \"%s\""
 
-#: backend.c:8978
+#: backend.c:9132
 msgid "Gap in move list"
 msgstr "Lücke in Zugliste"
 
-#: backend.c:9555 xoptions.c:454
+#: backend.c:9712 dialogs.c:457
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "Variante %s wird von %s nicht unterstützt"
 
-#: backend.c:9671
+#: backend.c:9828
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr "Fehler beim Starten '%s'"
 
-#: backend.c:9699
+#: backend.c:9856
 msgid "Waiting for first chess program"
 msgstr "Warte auf erstes Schachprogramm"
 
-#: backend.c:9704 backend.c:13352
+#: backend.c:9861 backend.c:13522
 msgid "Waiting for second chess program"
 msgstr "Warte auf zweites Schachprogramm"
 
-#: backend.c:9754
+#: backend.c:9911
 msgid "Could not write on tourney file"
 msgstr ""
 
-#: backend.c:9820
+#: backend.c:9977
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
 msgstr ""
 
-#: backend.c:9834
+#: backend.c:9991
 msgid "No engine with the name you gave is installed"
 msgstr ""
 
-#: backend.c:9836
+#: backend.c:9993
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
 
-#: backend.c:9837
+#: backend.c:9994
 msgid "You can only change one engine at the time"
 msgstr ""
 
-#: backend.c:9851
+#: backend.c:10008
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
 msgstr ""
 
-#: backend.c:9861
+#: backend.c:10018
 msgid "Not enough participants"
 msgstr ""
 
-#: backend.c:10024
+#: backend.c:10189
 #, fuzzy
 msgid "Bad tournament file"
 msgstr "Fehler in Partiedatei"
 
-#: backend.c:10036
+#: backend.c:10201
 #, fuzzy
 msgid "Waiting for other game(s)"
 msgstr "Warte auf erstes Schachprogramm"
 
-#: backend.c:10049
+#: backend.c:10214
 msgid "No pairing engine specified"
 msgstr ""
 
-#: backend.c:10514
+#: backend.c:10679
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr "Partie %s gegen %s: letze Punktwertung %d-%d-%d"
 
-#: backend.c:10957 backend.c:10988
+#: backend.c:11123 backend.c:11154
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr "Illegaler Zug: %d.%s%s"
 
-#: backend.c:10977
+#: backend.c:11143
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr "Nicht eindeutiger Zug: %d.%s%s"
 
-#: backend.c:11030 backend.c:12026 backend.c:12219 backend.c:12583
+#: backend.c:11196 backend.c:12196 backend.c:12389 backend.c:12753
 #, c-format
 msgid "Can't open \"%s\""
 msgstr "Kann \"%s\" nicht öffnen"
 
-#: backend.c:11042 xboard.c:5537
+#: backend.c:11208 menus.c:120
 msgid "Cannot build game list"
 msgstr "Kann Zugliste nicht erstellen"
 
-#: backend.c:11127
+#: backend.c:11293
 msgid "No more games in this message"
 msgstr "Keine weiteren Partien in dieser Nachricht"
 
-#: backend.c:11167
+#: backend.c:11333
 msgid "No game has been loaded yet"
 msgstr "Noch keine Partie geladen"
 
-#: backend.c:11171 backend.c:12007 xgamelist.c:438
+#: backend.c:11337 backend.c:12177 ngamelist.c:129
 msgid "Can't back up any further"
 msgstr "Kann nicht weiter zurückgehen"
 
-#: backend.c:11585
+#: backend.c:11755
 msgid "Game number out of range"
 msgstr "Partienummer außerhalb des Bereichs"
 
-#: backend.c:11596
+#: backend.c:11766
 msgid "Can't seek on game file"
 msgstr "Kann nicht in der Partiedatei suchen"
 
-#: backend.c:11654
+#: backend.c:11824
 msgid "Game not found in file"
 msgstr "Spiel in Datei nicht gefunden"
 
-#: backend.c:11782 backend.c:12103
+#: backend.c:11952 backend.c:12273
 msgid "Bad FEN position in file"
 msgstr "Schlechte FEN-Stellung in Datei"
 
-#: backend.c:11932
+#: backend.c:12102
 msgid "No moves in game"
 msgstr "Keine Züge in dem Spiel"
 
-#: backend.c:12003
+#: backend.c:12173
 msgid "No position has been loaded yet"
 msgstr "Noch keine Stellung geladen"
 
-#: backend.c:12064 backend.c:12075
+#: backend.c:12234 backend.c:12245
 msgid "Can't seek on position file"
 msgstr "Kann nicht in Stellungsdatei suchen"
 
-#: backend.c:12082 backend.c:12094
+#: backend.c:12252 backend.c:12264
 msgid "Position not found in file"
 msgstr "Stellung in Datei nicht gefunden"
 
-#: backend.c:12134
+#: backend.c:12304
 msgid "Black to play"
 msgstr "Schwarz am Zug"
 
-#: backend.c:12137
+#: backend.c:12307
 msgid "White to play"
 msgstr "Weiß am Zug"
 
-#: backend.c:12224 backend.c:12588
+#: backend.c:12394 backend.c:12758
 #, fuzzy
 msgid "Waiting for access to save file"
 msgstr "Warte auf zweites Schachprogramm"
 
-#: backend.c:12226
+#: backend.c:12396
 msgid "Saving game"
 msgstr ""
 
-#: backend.c:12227
+#: backend.c:12397
 msgid "Bad Seek"
 msgstr ""
 
-#: backend.c:12590
+#: backend.c:12760
 #, fuzzy
 msgid "Saving position"
 msgstr "Fehler in Positionsdatei"
 
-#: backend.c:12716
+#: backend.c:12886
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
@@ -531,7 +531,7 @@ msgstr ""
 "Sie haben die Partieentwicklung verändert.\n"
 "Benutzen Sie \"Spiel erneut laden\" und führen Sie ihren Zug erneut aus."
 
-#: backend.c:12721
+#: backend.c:12891
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
@@ -539,7 +539,7 @@ msgstr ""
 "Sie haben zu viele Züge eingegeben.\n"
 "Gehen Sie zur richtigen Stellung zurück und versuchen Sie es erneut."
 
-#: backend.c:12726
+#: backend.c:12896
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
@@ -547,11 +547,11 @@ msgstr ""
 "Die angezeigt Stellung ist nicht die aktuelle.\n"
 "Gehen Sie vorwärts zur richtigen Stellung und versuchen Sie es erneut."
 
-#: backend.c:12773
+#: backend.c:12943
 msgid "You have not made a move yet"
 msgstr "Sie haben noch keinen Zug gemacht"
 
-#: backend.c:12794
+#: backend.c:12964
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
@@ -560,11 +560,11 @@ msgstr ""
 "Benutzen sie \"CMail Nachricht erneut laden\" und führen Sie ihren Zug "
 "erneut aus."
 
-#: backend.c:12799
+#: backend.c:12969
 msgid "No unfinished games"
 msgstr "Keine laufenden Partien"
 
-#: backend.c:12805
+#: backend.c:12975
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -579,73 +579,73 @@ msgstr ""
 "\"cmail -remail -game %s\"\n"
 "in die Kommandozeile."
 
-#: backend.c:12820
+#: backend.c:12990
 msgid "Failed to invoke cmail"
 msgstr "Fehler beim Aufruf von cmail"
 
-#: backend.c:12882
+#: backend.c:13052
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr "Warte auf Antwort des Gegners\n"
 
-#: backend.c:12904
+#: backend.c:13074
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr "Sie müssen noch einen Zug für die Partie machen\n"
 
-#: backend.c:12908
+#: backend.c:13078
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr "Sie müssen noch Züge für beide Partien machen\n"
 
-#: backend.c:12912
+#: backend.c:13082
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr "Sie müssen noch Züge für alle %d Partien machen\n"
 
-#: backend.c:12919
+#: backend.c:13089
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr "Sie müssen noch einen Zug für Partie %s machen\n"
 
-#: backend.c:12925
+#: backend.c:13095
 #, c-format
 msgid "No unfinished games\n"
 msgstr "Keine laufenden Partien\n"
 
-#: backend.c:12927
+#: backend.c:13097
 #, c-format
 msgid "Ready to send mail\n"
 msgstr "Bereit zum Versenden der Mail\n"
 
-#: backend.c:12932
+#: backend.c:13102
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr "Sie müssen noch Züge für Partie %s machen\n"
 
-#: backend.c:13088
+#: backend.c:13258
 msgid "Edit comment"
 msgstr "Editiere Kommentar"
 
-#: backend.c:13090
+#: backend.c:13260
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr "Editiere Kommentar für %d.%s%s"
 
-#: backend.c:13184
+#: backend.c:13354
 msgid "It is not White's turn"
 msgstr "Weiß ist nicht am Zug"
 
-#: backend.c:13265
+#: backend.c:13435
 msgid "It is not Black's turn"
 msgstr "Schwarz ist nicht am Zug"
 
-#: backend.c:13372
+#: backend.c:13542
 #, c-format
 msgid "Starting %s chess program"
 msgstr "Starte %s Schachprogramm"
 
-#: backend.c:13400 backend.c:14488
+#: backend.c:13575 backend.c:14666
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
@@ -653,120 +653,124 @@ msgstr ""
 "Warte bis Sie am Zug sind\n"
 "oder wähle \"Ziehe jetzt\""
 
-#: backend.c:13525
+#: backend.c:13700
 msgid "Training mode off"
 msgstr "Trainier-Modus aus"
 
-#: backend.c:13533
+#: backend.c:13708
 msgid "Training mode on"
 msgstr "Trainier-Modus ein"
 
-#: backend.c:13536
+#: backend.c:13711
 msgid "Already at end of game"
 msgstr "Schon am Ende der Partie"
 
-#: backend.c:13616
+#: backend.c:13791
 msgid "Warning: You are still playing a game"
 msgstr "Warnung: Sie spielen noch eine Partie"
 
-#: backend.c:13619
+#: backend.c:13794
 msgid "Warning: You are still observing a game"
 msgstr "Warnung: Sie schauen noch einer Partie zu"
 
-#: backend.c:13622
+#: backend.c:13797
 msgid "Warning: You are still examining a game"
 msgstr "Warnung: Sie untersuchen noch eine Partie"
 
-#: backend.c:13698
+#: backend.c:13864
+msgid "Click clock to clear board"
+msgstr ""
+
+#: backend.c:13874
 msgid "Close ICS engine analyze..."
 msgstr "Schließe ICS Programmanalyse..."
 
-#: backend.c:13977
+#: backend.c:14153
 msgid "That square is occupied"
 msgstr "Dieses Feld ist besetzt"
 
-#: backend.c:14001 backend.c:14027
+#: backend.c:14177 backend.c:14203
 msgid "There is no pending offer on this move"
 msgstr "Es liegt kein unbeantwortes Angebot für diesen Zug vor"
 
-#: backend.c:14063 backend.c:14074
+#: backend.c:14239 backend.c:14250
 msgid "Your opponent is not out of time"
 msgstr "Ihr Gegner hat die Zeit noch nicht überschritten"
 
-#: backend.c:14140
+#: backend.c:14316
 msgid "You must make your move before offering a draw"
 msgstr "Sie müssem erst ziehen bevor Sie Remi anbieten können"
 
-#: backend.c:14470
+#: backend.c:14648
 msgid "You are not examining a game"
 msgstr "Sie untersuchen keine Partie"
 
-#: backend.c:14474
+#: backend.c:14652
 msgid "You can't revert while pausing"
 msgstr "Sie können nicht zurücknehmen solange die Partie pausiert"
 
-#: backend.c:14528 backend.c:14535
+#: backend.c:14706 backend.c:14713
 msgid "It is your turn"
 msgstr "Sie sind am Zug"
 
-#: backend.c:14586 backend.c:14593 backend.c:14612 backend.c:14619
+#: backend.c:14764 backend.c:14771 backend.c:14790 backend.c:14797
 msgid "Wait until your turn"
 msgstr "Warten Sie bis Sie am Zug sind"
 
-#: backend.c:14598
+#: backend.c:14776
 msgid "No hint available"
 msgstr "Kein Hinweis erhältlich"
 
-#: backend.c:15058
+#: backend.c:15236
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr "Fehler beim Schreiben zum Schachprogramm %s"
 
-#: backend.c:15061 backend.c:15092
+#: backend.c:15239 backend.c:15270
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr "%s Schachprogramm beendet in Remistellung (%s)"
 
-#: backend.c:15088
+#: backend.c:15266
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr "Fehler: %s Schachprogramm (%s) unerwartet beendet"
 
-#: backend.c:15105
+#: backend.c:15283
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr "Fehler beim Lesen vom Schachprogramm %s (%s)"
 
-#: backend.c:15501
+#: backend.c:15683
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr "Schachprogramm %s hat zuv viele Optionen\n"
 
-#: backend.c:15657
+#: backend.c:15839
 msgid "Displayed move is not current"
 msgstr "Angezeigter Zug ist nicht aktuell"
 
-#: backend.c:15666
+#: backend.c:15848
 msgid "Could not parse move"
 msgstr "Konnte Zug nicht parsen"
 
-#: backend.c:15791 backend.c:15813
+#: backend.c:15973 backend.c:15995
 msgid "Both flags fell"
 msgstr "Beide Zeitkontrollen überschritten"
 
-#: backend.c:15793
+#: backend.c:15975
 msgid "White's flag fell"
 msgstr "Weiß überschritt die Zeitkontrolle"
 
-#: backend.c:15815
+#: backend.c:15997
 msgid "Black's flag fell"
 msgstr "Schwarz überschritt die Zeitkontrolle"
 
-#: backend.c:15946
+#: backend.c:16128
 msgid "Clock adjustment not allowed in auto-flag mode"
 msgstr ""
 
-#: backend.c:16743
+#: backend.c:16925
 msgid "Bad FEN position in clipboard"
 msgstr "Schlechte FEN-Stellung in der Zwischenablage"
 
@@ -782,914 +786,1362 @@ msgstr ""
 msgid "Hash keys are different"
 msgstr ""
 
-#: engineoutput.c:106
+#: dialogs.c:256
+msgid "Tournament file:"
+msgstr ""
+
+#: dialogs.c:257
+msgid "Sync after round"
+msgstr ""
+
+#: dialogs.c:258
+msgid "    (for concurrent playing of a single"
+msgstr ""
+
+#: dialogs.c:259
+msgid "Sync after cycle"
+msgstr ""
+
+#: dialogs.c:260
+msgid "      tourney with multiple XBoards)"
+msgstr ""
+
+#: dialogs.c:261
+msgid "Tourney participants:"
+msgstr ""
+
+#: dialogs.c:262
+#, fuzzy
+msgid "Select Engine:"
+msgstr "Schachprogramm"
+
+#: dialogs.c:269
+msgid "Tourney type (0 = round-robin, 1 = gauntlet):"
+msgstr ""
+
+#: dialogs.c:270
+msgid "Number of tourney cycles (or Swiss rounds):"
+msgstr ""
+
+#: dialogs.c:271
+msgid "Default Number of Games in Match (or Pairing):"
+msgstr ""
+
+#: dialogs.c:272
+msgid "Pause between Match Games (msec):"
+msgstr ""
+
+#: dialogs.c:273
+#, fuzzy
+msgid "Save Tourney Games on:"
+msgstr "Partien speichern als Datei:"
+
+#: dialogs.c:274
+msgid "Game File with Opening Lines:"
+msgstr ""
+
+#: dialogs.c:275
+msgid "Game Number (-1 or -2 = Auto-Increment):"
+msgstr ""
+
+#: dialogs.c:276
+msgid "File with Start Positions:"
+msgstr ""
+
+#: dialogs.c:277
+msgid "Position Number (-1 or -2 = Auto-Increment):"
+msgstr ""
+
+#: dialogs.c:278
+msgid "Rewind Index after this many Games (0 = never):"
+msgstr ""
+
+#: dialogs.c:279
+msgid "Disable own engine books by default"
+msgstr ""
+
+#: dialogs.c:280
+#, fuzzy
+msgid "Replace Engine"
+msgstr "Schachprogramm"
+
+#: dialogs.c:281
+#, fuzzy
+msgid "Upgrade Engine"
+msgstr "Neues Schachprogramm laden ..."
+
+#: dialogs.c:282
+msgid "Clone Tourney"
+msgstr ""
+
+#: dialogs.c:312
+msgid "First you must specify an existing tourney file to clone"
+msgstr ""
+
+#: dialogs.c:328 dialogs.c:1244
+msgid "# no engines are installed"
+msgstr ""
+
+#: dialogs.c:340
+msgid "Match Options"
+msgstr "Partieeinstellungen"
+
+#: dialogs.c:359
+msgid "Absolute Analysis Scores"
+msgstr ""
+
+#: dialogs.c:360
+msgid "Almost Always Queen (Detour Under-Promote)"
+msgstr ""
+
+#: dialogs.c:361 menus.c:786
+msgid "Animate Dragging"
+msgstr "Ziehen animieren"
+
+#: dialogs.c:362
+msgid "Animate Moving"
+msgstr "Ziehen animieren"
+
+#: dialogs.c:363
+msgid "Auto Flag"
+msgstr "Zeit automatisch reklamieren"
+
+#: dialogs.c:364 menus.c:789
+msgid "Auto Flip View"
+msgstr "Brett automatisch drehen"
+
+#: dialogs.c:365 menus.c:790
+msgid "Blindfold"
+msgstr "Blindschach"
+
+#: dialogs.c:366
+msgid "Drop Menu"
+msgstr ""
+
+#: dialogs.c:367
+msgid "Hide Thinking from Human"
+msgstr ""
+
+#: dialogs.c:368 menus.c:795
+msgid "Highlight Last Move"
+msgstr "Letzten Zug hervorheben"
+
+#: dialogs.c:369
+msgid "Highlight with Arrow"
+msgstr ""
+
+#: dialogs.c:370 menus.c:797
+msgid "Move Sound"
+msgstr "Klang für Zug"
+
+#: dialogs.c:371 menus.c:799
+msgid "One-Click Moving"
+msgstr "Ein-Klick Züge"
+
+#: dialogs.c:372
+msgid "Periodic Updates (in Analysis Mode)"
+msgstr ""
+
+#: dialogs.c:373 dialogs.c:510
+msgid "Ponder Next Move"
+msgstr "Nächsten Zug abwägen"
+
+#: dialogs.c:374
+msgid "Popup Exit Messages"
+msgstr ""
+
+#: dialogs.c:375 menus.c:803
+msgid "Popup Move Errors"
+msgstr "Dialogfenster für Zugfehler"
+
+#: dialogs.c:376
+#, fuzzy
+msgid "Scores in Move List"
+msgstr "Zugliste abholen"
+
+#: dialogs.c:377
+msgid "Show Coordinates"
+msgstr "Zeige Koordinaten"
+
+#: dialogs.c:378
+msgid "Show Target Squares"
+msgstr ""
+
+#: dialogs.c:379
+msgid "Sticky Windows"
+msgstr ""
+
+#: dialogs.c:380
+msgid "Test Legality"
+msgstr ""
+
+#: dialogs.c:381
+msgid "Top-Level Dialogs"
+msgstr ""
+
+#: dialogs.c:382
+msgid "Flash Moves (0 = no flashing):"
+msgstr ""
+
+#: dialogs.c:383
+msgid "Flash Rate (high = fast):"
+msgstr ""
+
+#: dialogs.c:384
+msgid "Animation Speed (high = slow):"
+msgstr ""
+
+#: dialogs.c:385
+#, fuzzy
+msgid "Zoom factor in Evaluation Graph:"
+msgstr "Auswertungsgraph"
+
+#: dialogs.c:394
+msgid "General Options"
+msgstr "Allgemeine Einstellungen"
+
+#: dialogs.c:405
+msgid "normal"
+msgstr ""
+
+#: dialogs.c:406
+msgid "fairy"
+msgstr ""
+
+#: dialogs.c:407
+msgid "FRC"
+msgstr ""
+
+#: dialogs.c:408
+msgid "Seirawan"
+msgstr ""
+
+#: dialogs.c:409
+msgid "wild castle"
+msgstr ""
+
+#: dialogs.c:410
+msgid "Superchess"
+msgstr ""
+
+#: dialogs.c:411
+msgid "no castle"
+msgstr ""
+
+#: dialogs.c:412
+msgid "crazyhouse"
+msgstr ""
+
+#: dialogs.c:413
+msgid "knightmate"
+msgstr ""
+
+#: dialogs.c:414
+msgid "bughouse"
+msgstr ""
+
+#: dialogs.c:415
+msgid "berolina"
+msgstr ""
+
+#: dialogs.c:416
+msgid "shogi (9x9)"
+msgstr ""
+
+#: dialogs.c:417
+msgid "cylinder"
+msgstr ""
+
+#: dialogs.c:418
+msgid "xiangqi (9x10)"
+msgstr ""
+
+#: dialogs.c:419
+msgid "shatranj"
+msgstr ""
+
+#: dialogs.c:420
+msgid "courier (12x8)"
+msgstr ""
+
+#: dialogs.c:421
+msgid "makruk"
+msgstr ""
+
+#: dialogs.c:422
+msgid "Great Shatranj (10x8)"
+msgstr ""
+
+#: dialogs.c:423
+msgid "atomic"
+msgstr ""
+
+#: dialogs.c:424
+msgid "falcon (10x8)"
+msgstr ""
+
+#: dialogs.c:425
+msgid "two kings"
+msgstr ""
+
+#: dialogs.c:426
+msgid "Capablanca (10x8)"
+msgstr ""
+
+#: dialogs.c:427
+msgid "3-checks"
+msgstr ""
+
+#: dialogs.c:428
+msgid "Gothic (10x8)"
+msgstr ""
+
+#: dialogs.c:429
+msgid "suicide"
+msgstr ""
+
+#: dialogs.c:430
+msgid "janus (10x8)"
+msgstr ""
+
+#: dialogs.c:431
+msgid "give-away"
+msgstr ""
+
+#: dialogs.c:432
+msgid "CRC (10x8)"
+msgstr ""
+
+#: dialogs.c:433
+msgid "losers"
+msgstr ""
+
+#: dialogs.c:434
+msgid "grand (10x10)"
+msgstr ""
+
+#: dialogs.c:435
+msgid "Spartan"
+msgstr ""
+
+#: dialogs.c:436
+msgid "Board size ( -1 = default for selected variant):"
+msgstr ""
+
+#: dialogs.c:437
+msgid "Number of Board Ranks:"
+msgstr ""
+
+#: dialogs.c:438
+msgid "Number of Board Files:"
+msgstr ""
+
+#: dialogs.c:439
+msgid "Holdings Size:"
+msgstr ""
+
+#: dialogs.c:441
+msgid ""
+"WARNING: variants with un-orthodox\n"
+"pieces only have built-in bitmaps\n"
+"for -boardSize middling, bulky and\n"
+"petite, and substitute king or amazon\n"
+"for missing bitmaps. (See manual.)"
+msgstr ""
+
+#: dialogs.c:462
+#, c-format
+msgid "Warning: second engine (%s) does not support this!"
+msgstr ""
+
+#: dialogs.c:485
+#, c-format
+msgid ""
+"All variants not supported by first engine\n"
+"(currently %s) are disabled"
+msgstr ""
+
+#: dialogs.c:486
+msgid "New Variant"
+msgstr ""
+
+#: dialogs.c:511
+msgid "Maximum Number of CPUs per Engine:"
+msgstr ""
+
+#: dialogs.c:512
+msgid "Polygot Directory:"
+msgstr ""
+
+#: dialogs.c:513
+msgid "Hash-Table Size (MB):"
+msgstr ""
+
+#: dialogs.c:514
+msgid "Nalimov EGTB Path:"
+msgstr ""
+
+#: dialogs.c:515
+msgid "EGTB Cache Size (MB):"
+msgstr ""
+
+#: dialogs.c:516
+msgid "Use GUI Book"
+msgstr ""
+
+#: dialogs.c:517
+msgid "Opening-Book Filename:"
+msgstr ""
+
+#: dialogs.c:518
+msgid "Book Depth (moves):"
+msgstr ""
+
+#: dialogs.c:519
+msgid "Book Variety (0) vs. Strength (100):"
+msgstr ""
+
+#: dialogs.c:520
+msgid "Engine #1 Has Own Book"
+msgstr ""
+
+#: dialogs.c:521
+msgid "Engine #2 Has Own Book          "
+msgstr ""
+
+#: dialogs.c:530
+msgid "Common Engine Settings"
+msgstr ""
+
+#: dialogs.c:536
+msgid "Detect all Mates"
+msgstr ""
+
+#: dialogs.c:537
+msgid "Verify Engine Result Claims"
+msgstr ""
+
+#: dialogs.c:538
+msgid "Draw if Insufficient Mating Material"
+msgstr ""
+
+#: dialogs.c:539
+msgid "Adjudicate Trivial Draws (3-Move Delay)"
+msgstr ""
+
+#: dialogs.c:540
+msgid "N-Move Rule:"
+msgstr ""
+
+#: dialogs.c:541
+msgid "N-fold Repeats:"
+msgstr ""
+
+#: dialogs.c:542
+msgid "Draw after N Moves Total:"
+msgstr ""
+
+#: dialogs.c:543
+msgid "Win / Loss Threshold:"
+msgstr ""
+
+#: dialogs.c:544
+msgid "Negate Score of Engine #1"
+msgstr ""
+
+#: dialogs.c:545
+msgid "Negate Score of Engine #2"
+msgstr ""
+
+#: dialogs.c:552
+#, fuzzy
+msgid "Adjudicate non-ICS Games"
+msgstr "Gewinn Weiß zuerkennen"
+
+#: dialogs.c:565
+msgid "Auto-Kibitz"
+msgstr ""
+
+#: dialogs.c:566
+msgid "Auto-Comment"
+msgstr "Automatische Kommentare"
+
+#: dialogs.c:567
+msgid "Auto-Observe"
+msgstr ""
+
+#: dialogs.c:568
+msgid "Auto-Raise Board"
+msgstr "Automatisch das Brett in den Vordergrung bringen"
+
+#: dialogs.c:569
+msgid "Background Observe while Playing"
+msgstr ""
+
+#: dialogs.c:570
+msgid "Dual Board for Background-Observed Game"
+msgstr ""
+
+#: dialogs.c:571
+msgid "Get Move List"
+msgstr "Zugliste abholen"
+
+#: dialogs.c:572
+msgid "Quiet Play"
+msgstr ""
+
+#: dialogs.c:573
+msgid "Seek Graph"
+msgstr ""
+
+#: dialogs.c:574
+msgid "Auto-Refresh Seek Graph"
+msgstr ""
+
+#: dialogs.c:575
+msgid "Premove"
+msgstr ""
+
+#: dialogs.c:576
+msgid "Premove for White"
+msgstr ""
+
+#: dialogs.c:577
+msgid "First White Move:"
+msgstr ""
+
+#: dialogs.c:578
+msgid "Premove for Black"
+msgstr ""
+
+#: dialogs.c:579
+msgid "First Black Move:"
+msgstr ""
+
+#: dialogs.c:581
+msgid "Alarm"
+msgstr "Alarm"
+
+#: dialogs.c:582
+msgid "Alarm Time (msec):"
+msgstr ""
+
+#: dialogs.c:584
+msgid "Colorize Messages"
+msgstr ""
+
+#: dialogs.c:585
+msgid "Shout Text Colors:"
+msgstr ""
+
+#: dialogs.c:586
+msgid "S-Shout Text Colors:"
+msgstr ""
+
+#: dialogs.c:587
+msgid "Channel #1 Text Colors:"
+msgstr ""
+
+#: dialogs.c:588
+msgid "Other Channel Text Colors:"
+msgstr ""
+
+#: dialogs.c:589
+msgid "Kibitz Text Colors:"
+msgstr ""
+
+#: dialogs.c:590
+msgid "Tell Text Colors:"
+msgstr ""
+
+#: dialogs.c:591
+msgid "Challenge Text Colors:"
+msgstr ""
+
+#: dialogs.c:592
+msgid "Request Text Colors:"
+msgstr ""
+
+#: dialogs.c:593
+msgid "Seek Text Colors:"
+msgstr ""
+
+#: dialogs.c:600
+msgid "ICS Options"
+msgstr "ICS Optionen"
+
+#: dialogs.c:605
+msgid "Exact position match"
+msgstr ""
+
+#: dialogs.c:605
+msgid "Shown position is subset"
+msgstr ""
+
+#: dialogs.c:605
+msgid "Same material with exactly same Pawn chain"
+msgstr ""
+
+#: dialogs.c:606
+msgid "Same material"
+msgstr ""
+
+#: dialogs.c:606
+msgid "Material range (top board half optional)"
+msgstr ""
+
+#: dialogs.c:606
+msgid "Material difference (optional stuff balanced)"
+msgstr ""
+
+#: dialogs.c:618
+msgid "Auto-Display Tags"
+msgstr ""
+
+#: dialogs.c:619
+msgid "Auto-Display Comment"
+msgstr ""
+
+#: dialogs.c:620
+msgid ""
+"Auto-Play speed of loaded games\n"
+"(0 = instant, -1 = off):"
+msgstr ""
+
+#: dialogs.c:621
+msgid "Seconds per Move:"
+msgstr ""
+
+#: dialogs.c:622
+msgid ""
+"\n"
+"options to use in game-viewer mode:"
+msgstr ""
+
+#: dialogs.c:624
+msgid ""
+"\n"
+"Thresholds for position filtering in game list:"
+msgstr ""
+
+#: dialogs.c:625
+msgid "Elo of strongest player at least:"
+msgstr ""
+
+#: dialogs.c:626
+msgid "Elo of weakest player at least:"
+msgstr ""
+
+#: dialogs.c:627
+#, fuzzy
+msgid "No games before year:"
+msgstr "Noch keine Partie geladen"
+
+#: dialogs.c:628
+msgid "Minimum nr consecutive positions:"
+msgstr ""
+
+#: dialogs.c:629
+msgid "Search mode:"
+msgstr ""
+
+#: dialogs.c:630
+msgid "Also match reversed colors"
+msgstr ""
+
+#: dialogs.c:631
+msgid "Also match left-right flipped position"
+msgstr ""
+
+#: dialogs.c:639
+msgid "Load Game Options"
+msgstr "Spieleinstellungen laden"
+
+#: dialogs.c:651
+msgid "Auto-Save Games"
+msgstr "Automatisch Partien speichern"
+
+#: dialogs.c:652
+msgid "Save Games on File:"
+msgstr "Partien speichern als Datei:"
+
+#: dialogs.c:653
+msgid "Save Final Positions on File:"
+msgstr ""
+
+#: dialogs.c:654
+msgid "PGN Event Header:"
+msgstr ""
+
+#: dialogs.c:655
+msgid "Old Save Style (as opposed to PGN)"
+msgstr ""
+
+#: dialogs.c:656
+msgid "Include Number Tag in tourney PGN"
+msgstr ""
+
+#: dialogs.c:657
+msgid "Save Score/Depth Info in PGN"
+msgstr ""
+
+#: dialogs.c:658
+msgid "Save Out-of-Book Info in PGN           "
+msgstr ""
+
+#: dialogs.c:665
+msgid "Save Game Options"
+msgstr "Spieleinstellungen speichern"
+
+#: dialogs.c:674
+msgid "No Sound"
+msgstr ""
+
+#: dialogs.c:675
+msgid "Default Beep"
+msgstr ""
+
+#: dialogs.c:676
+msgid "Above WAV File"
+msgstr ""
+
+#: dialogs.c:677
+msgid "Car Horn"
+msgstr ""
+
+#: dialogs.c:678
+msgid "Cymbal"
+msgstr ""
+
+#: dialogs.c:679
+msgid "Ding"
+msgstr ""
+
+#: dialogs.c:680
+msgid "Gong"
+msgstr ""
+
+#: dialogs.c:681
+msgid "Laser"
+msgstr ""
+
+#: dialogs.c:682
+msgid "Penalty"
+msgstr ""
+
+#: dialogs.c:683
+msgid "Phone"
+msgstr ""
+
+#: dialogs.c:684
+msgid "Pop"
+msgstr ""
+
+#: dialogs.c:685
+msgid "Slap"
+msgstr ""
+
+#: dialogs.c:686
+msgid "Wood Thunk"
+msgstr ""
+
+#: dialogs.c:688
+msgid "User File"
+msgstr "Benutzerdatei"
+
+#: dialogs.c:710
+msgid "Sound Program:"
+msgstr ""
+
+#: dialogs.c:711
+msgid "Sounds Directory:"
+msgstr ""
+
+#: dialogs.c:712
+msgid "User WAV File:"
+msgstr ""
+
+#: dialogs.c:713
+msgid "Try-Out Sound:"
+msgstr ""
+
+#: dialogs.c:714
+msgid "Play"
+msgstr ""
+
+#: dialogs.c:715
+msgid "Move:"
+msgstr "Zug:"
+
+#: dialogs.c:716
+msgid "Win:"
+msgstr ""
+
+#: dialogs.c:717
+msgid "Lose:"
+msgstr ""
+
+#: dialogs.c:718
+msgid "Draw:"
+msgstr "Remi:"
+
+#: dialogs.c:719
+msgid "Unfinished:"
+msgstr ""
+
+#: dialogs.c:720
+msgid "Alarm:"
+msgstr "Alarm:"
+
+#: dialogs.c:721
+msgid "Shout:"
+msgstr ""
+
+#: dialogs.c:722
+msgid "S-Shout:"
+msgstr ""
+
+#: dialogs.c:723
+msgid "Channel:"
+msgstr "Kanal:"
+
+#: dialogs.c:724
+msgid "Channel 1:"
+msgstr "Kanal 1:"
+
+#: dialogs.c:725
+msgid "Tell:"
+msgstr ""
+
+#: dialogs.c:726
+msgid "Kibitz:"
+msgstr "Kibitz:"
+
+#: dialogs.c:727
+msgid "Challenge:"
+msgstr ""
+
+#: dialogs.c:728
+msgid "Request:"
+msgstr ""
+
+#: dialogs.c:729
+msgid "Seek:"
+msgstr ""
+
+#: dialogs.c:745
+msgid "Sound Options"
+msgstr "Klangeinstellungen"
+
+#: dialogs.c:765
+msgid "White Piece Color:"
+msgstr ""
+
+#. TRANSLATORS: R = single letter for the color red
+#: dialogs.c:768 dialogs.c:777 dialogs.c:783 dialogs.c:789 dialogs.c:795
+#: dialogs.c:801
+msgid "R"
+msgstr ""
+
+#. TRANSLATORS: G = single letter for the color green
+#: dialogs.c:770 dialogs.c:778 dialogs.c:784 dialogs.c:790 dialogs.c:796
+#: dialogs.c:802
+msgid "G"
+msgstr ""
+
+#. TRANSLATORS: B = single letter for the color blue
+#: dialogs.c:772 dialogs.c:779 dialogs.c:785 dialogs.c:791 dialogs.c:797
+#: dialogs.c:803
+msgid "B"
+msgstr ""
+
+#. TRANSLATORS: D = single letter to make a color darker
+#: dialogs.c:774 dialogs.c:780 dialogs.c:786 dialogs.c:792 dialogs.c:798
+#: dialogs.c:804
+msgid "D"
+msgstr ""
+
+#: dialogs.c:775
+msgid "Black Piece Color:"
+msgstr ""
+
+#: dialogs.c:781
+msgid "Light Square Color:"
+msgstr "Weißes Feld:"
+
+#: dialogs.c:787
+msgid "Dark Square Color:"
+msgstr "Schwarzes Feld:"
+
+#: dialogs.c:793
+msgid "Highlight Color:"
+msgstr ""
+
+#: dialogs.c:799
+msgid "Premove Highlight Color:"
+msgstr ""
+
+#: dialogs.c:805
+msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
+msgstr ""
+
+#: dialogs.c:807
+msgid "Mono Mode"
+msgstr ""
+
+#: dialogs.c:808
+msgid "Line Gap ( -1 = default for board size):"
+msgstr ""
+
+#: dialogs.c:809
+msgid "Use Board Textures"
+msgstr ""
+
+#: dialogs.c:810
+msgid "Light-Squares Texture File:"
+msgstr ""
+
+#: dialogs.c:811
+msgid "Dark-Squares Texture File:"
+msgstr ""
+
+#: dialogs.c:812
+msgid "Directory with Bitmap Pieces:"
+msgstr ""
+
+#: dialogs.c:813
+msgid "Directory with Pixmap Pieces:"
+msgstr ""
+
+#: dialogs.c:862
+msgid "Board Options"
+msgstr "Bretteinstellungen"
+
+#: dialogs.c:914 menus.c:706
+msgid "ICS text menu"
+msgstr "ICS-Textmenue"
+
+#: dialogs.c:933
+msgid "clear"
+msgstr ""
+
+#: dialogs.c:934 dialogs.c:991
+msgid "save changes"
+msgstr ""
+
+#: dialogs.c:1006
+#, fuzzy
+msgid "Edit book"
+msgstr "Bearbeiten"
+
+#: dialogs.c:1006 menus.c:708
+msgid "Tags"
+msgstr "Markierungen"
+
+#: dialogs.c:1121
+msgid "ICS input box"
+msgstr "ICS Eingabefeld"
+
+#: dialogs.c:1152
+msgid "Type a move"
+msgstr "Geben Sie einen Zug ein"
+
+#: dialogs.c:1177
+msgid "Engine Settings"
+msgstr ""
+
+#: dialogs.c:1202
+msgid "Select engine from list:"
+msgstr ""
+
+#: dialogs.c:1205
+msgid "or specify one below:"
+msgstr ""
+
+#: dialogs.c:1206
+msgid "Nickname (optional):"
+msgstr ""
+
+#: dialogs.c:1207
+msgid "Use nickname in PGN player tags of engine-engine games"
+msgstr ""
+
+#: dialogs.c:1208
+msgid "Engine Directory:"
+msgstr ""
+
+#: dialogs.c:1209
+msgid "Engine Command:"
+msgstr ""
+
+#: dialogs.c:1210
+msgid "(Directory will be derived from engine path when empty)"
+msgstr ""
+
+#: dialogs.c:1211
+msgid "UCI"
+msgstr ""
+
+#: dialogs.c:1212
+msgid "WB protocol v1 (do not wait for engine features)"
+msgstr ""
+
+#: dialogs.c:1213
+msgid "Must not use GUI book"
+msgstr ""
+
+#: dialogs.c:1214
+msgid "Add this engine to the list"
+msgstr ""
+
+#: dialogs.c:1215
+msgid "Force current variant with this engine"
+msgstr ""
+
+#: dialogs.c:1265
+#, fuzzy
+msgid "Load first engine"
+msgstr "Neues Schachprogramm laden ..."
+
+#: dialogs.c:1271
+#, fuzzy
+msgid "Load second engine"
+msgstr "Neues Schachprogramm laden ..."
+
+#: dialogs.c:1294
+#, fuzzy
+msgid "shuffle"
+msgstr "Shuffle"
+
+#: dialogs.c:1295
+msgid "Start-position number:"
+msgstr "Startposition-Nummer:"
+
+#: dialogs.c:1296
+#, fuzzy
+msgid "randomize"
+msgstr "zufällig"
+
+#: dialogs.c:1297
+msgid "pick fixed"
+msgstr ""
+
+#: dialogs.c:1314
+msgid "New Shuffle Game"
+msgstr "Neue Shuffle-Partie"
+
+#: dialogs.c:1338
+msgid "classical"
+msgstr "klassisch"
+
+#: dialogs.c:1339
+msgid "incremental"
+msgstr "Zuwachs"
+
+#: dialogs.c:1340
+msgid "fixed max"
+msgstr ""
+
+#: dialogs.c:1341
+msgid "Moves per session:"
+msgstr ""
+
+#: dialogs.c:1342
+msgid "Initial time (min):"
+msgstr ""
+
+#: dialogs.c:1343
+msgid "Increment or max (sec/move):"
+msgstr ""
+
+#: dialogs.c:1344
+msgid "Time-Odds factors:"
+msgstr ""
+
+#: dialogs.c:1345
+#, fuzzy
+msgid "Engine #1"
+msgstr "Schachprogramm"
+
+#: dialogs.c:1346
+msgid "Engine #2 / Human"
+msgstr ""
+
+#: dialogs.c:1386 dialogs.c:1389 dialogs.c:1394 dialogs.c:1395
+msgid "Unused"
+msgstr ""
+
+#: dialogs.c:1407
+msgid "Time Control"
+msgstr ""
+
+#: dialogs.c:1435
+msgid "Error writing to chess program"
+msgstr "Fehler beim Schreiben zum Schachprogramm"
+
+#: dialogs.c:1500
+#, fuzzy
+msgid "Cancel"
+msgstr "abbrechen"
+
+#: dialogs.c:1505 dialogs.c:1799 dialogs.c:1803
+msgid "King"
+msgstr "König"
+
+#: dialogs.c:1508
+msgid "Captain"
+msgstr "Kapitän"
+
+#: dialogs.c:1509
+msgid "Lieutenant"
+msgstr "Leutnant"
+
+#: dialogs.c:1510
+msgid "General"
+msgstr "General"
+
+#: dialogs.c:1511
+msgid "Warlord"
+msgstr "Kriegsherr"
+
+#: dialogs.c:1513 dialogs.c:1798 dialogs.c:1802 dialogs.c:1821
+msgid "Knight"
+msgstr "Springer"
+
+#: dialogs.c:1514 dialogs.c:1798 dialogs.c:1802 dialogs.c:1821
+msgid "Bishop"
+msgstr "Läufer"
+
+#: dialogs.c:1515 dialogs.c:1798 dialogs.c:1802 dialogs.c:1821
+msgid "Rook"
+msgstr "Turm"
+
+#: dialogs.c:1519 dialogs.c:1800 dialogs.c:1804
+msgid "Archbishop"
+msgstr "Erzbischof"
+
+#: dialogs.c:1520 dialogs.c:1800 dialogs.c:1804
+msgid "Chancellor"
+msgstr "Kanlzer"
+
+#: dialogs.c:1522 dialogs.c:1799 dialogs.c:1803 dialogs.c:1821
+msgid "Queen"
+msgstr "Königin"
+
+#: dialogs.c:1526
+msgid "Defer"
+msgstr "vertagen"
+
+#: dialogs.c:1527 dialogs.c:1800 dialogs.c:1804
+msgid "Promote"
+msgstr "umwandlung"
+
+#: dialogs.c:1576
+msgid "factory"
+msgstr "Fabrik"
+
+#: dialogs.c:1577
+msgid "up"
+msgstr "hoch"
+
+#: dialogs.c:1578
+msgid "down"
+msgstr "herunter"
+
+#: dialogs.c:1596
+msgid "No tag selected"
+msgstr "Keine Markierung selektiert"
+
+#: dialogs.c:1625
+#, fuzzy
+msgid "Game-list options"
+msgstr "Spieleinstellungen laden"
+
+#: dialogs.c:1701 dialogs.c:1715
+msgid "Error"
+msgstr "Fehler"
+
+#: dialogs.c:1737
+msgid "Fatal Error"
+msgstr "Schwerwiegender Fehler"
+
+#: dialogs.c:1737
+msgid "Exiting"
+msgstr "Beende"
+
+#: dialogs.c:1747
+msgid "Information"
+msgstr "Information"
+
+#: dialogs.c:1754
+msgid "Note"
+msgstr "Notiz"
+
+#: dialogs.c:1798 dialogs.c:1995 dialogs.c:1998
+msgid "White"
+msgstr "Weiß"
+
+#: dialogs.c:1798 dialogs.c:1802 dialogs.c:1821
+msgid "Pawn"
+msgstr "Bauer"
+
+#: dialogs.c:1799 dialogs.c:1803
+msgid "Elephant"
+msgstr "Elefant"
+
+#: dialogs.c:1799 dialogs.c:1803
+msgid "Cannon"
+msgstr "Kanone"
+
+#: dialogs.c:1800 dialogs.c:1804
+msgid "Demote"
+msgstr "degradieren"
+
+#: dialogs.c:1801 dialogs.c:1805
+msgid "Empty square"
+msgstr "Leeres Feld"
+
+#: dialogs.c:1801 dialogs.c:1805
+msgid "Clear board"
+msgstr "Brett leeren"
+
+#: dialogs.c:1802 dialogs.c:2007 dialogs.c:2010
+msgid "Black"
+msgstr "Schwarz"
+
+#: dialogs.c:1854 menus.c:863
+msgid "File"
+msgstr "Datei"
+
+#: dialogs.c:1855 menus.c:864
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: dialogs.c:1856 menus.c:865
+msgid "View"
+msgstr "Anzeigen"
+
+#: dialogs.c:1857 menus.c:866
+msgid "Mode"
+msgstr "Modus"
+
+#: dialogs.c:1858 menus.c:867
+msgid "Action"
+msgstr "Aktion"
+
+#: dialogs.c:1859 menus.c:868
+msgid "Engine"
+msgstr "Schachprogramm"
+
+#: dialogs.c:1860 menus.c:869
+msgid "Options"
+msgstr "Optionen"
+
+#: dialogs.c:1861 menus.c:870
+msgid "Help"
+msgstr "Hilfe"
+
+#: dialogs.c:1869
+msgid "<<"
+msgstr ""
+
+#: dialogs.c:1870
+msgid "<"
+msgstr ""
+
+#: dialogs.c:1872
+msgid ">"
+msgstr ""
+
+#: dialogs.c:1873
+msgid ">>"
+msgstr ""
+
+#: dialogs.c:2107
+msgid "Directories:"
+msgstr ""
+
+#: dialogs.c:2108
+#, fuzzy
+msgid "Files:"
+msgstr "Datei"
+
+#: dialogs.c:2109
+msgid "by name"
+msgstr ""
+
+#: dialogs.c:2110
+msgid "by type"
+msgstr ""
+
+#: dialogs.c:2113
+#, fuzzy
+msgid "Filename:"
+msgstr "Filter:"
+
+#: dialogs.c:2114
+#, fuzzy
+msgid "File type:"
+msgstr "Filter:"
+
+#: dialogs.c:2195
+#, fuzzy
+msgid "Contents of"
+msgstr "Kommentare"
+
+#: engineoutput.c:107
 #, fuzzy, c-format
 msgid "Engine Output"
 msgstr "Schachprogrammausgabe"
 
-#: engineoutput.c:116
+#: engineoutput.c:117
 #, c-format
 msgid "%s (%d reversible ply)"
 msgid_plural "%s (%d reversible plies)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: filebrowser/selfile.c:301
-msgid "Browse"
-msgstr ""
-
-#: filebrowser/selfile.c:404
-msgid "Filter on extensions:"
-msgstr ""
-
-#: filebrowser/selfile.c:785
-msgid "Pathname:"
-msgstr ""
-
-#: filebrowser/selfile.c:789 xgamelist.c:743 xgamelist.c:868 xoptions.c:1003
-#: xoptions.c:1338
-msgid "OK"
-msgstr "OK"
-
-#: filebrowser/selfile.c:793
-#, fuzzy
-msgid "Cancel"
-msgstr "abbrechen"
-
-#: filebrowser/selfile.c:837
-msgid "XsraSelFile: can't get current directory"
-msgstr ""
-
 #: gamelist.c:375
 #, fuzzy, c-format
 msgid "Reading game file (%d)"
 msgstr "Fehler in Partiedatei"
 
-#: xboard.c:625
-msgid "New Game        Ctrl+N"
-msgstr "Neue Partie Strg+N"
-
-#: xboard.c:626
-msgid "New Shuffle Game ..."
-msgstr "Neue Shuffle Partie ... "
-
-#: xboard.c:627
-msgid "New Variant ...   Alt+Shift+V"
-msgstr "Neue Variante .... Alt+Umschalt+V"
-
-#: xboard.c:629
-msgid "Load Game       Ctrl+O"
-msgstr "Partie Laden   Strg+O"
-
-#: xboard.c:630
-msgid "Load Position    Ctrl+Shift+O"
-msgstr "Stellung laden   Strg+Umschalt+O"
-
-#: xboard.c:634
-msgid "Next Position     Shift+PgDn"
-msgstr "Nächste Stellung   Umschalt+Pgdn"
-
-#: xboard.c:635
-msgid "Prev Position     Shift+PgUp"
-msgstr "Vorherige Stellung   Umschalt+PgUp"
-
-#: xboard.c:638
-msgid "Save Game       Ctrl+S"
-msgstr "Partie speichern     Strg+S"
-
-#: xboard.c:639
-msgid "Save Position    Ctrl+Shift+S"
-msgstr "Stellung speichern Strg+Shift+S"
-
-#: xboard.c:641
-msgid "Mail Move"
-msgstr "Verschicke Zug"
-
-#: xboard.c:642
-msgid "Reload CMail Message"
-msgstr "CMail Nachricht erneut laden"
-
-#: xboard.c:644
-msgid "Quit                 Ctr+Q"
-msgstr "Beenden   Strg+Q"
-
-#: xboard.c:649
-msgid "Copy Game    Ctrl+C"
-msgstr "Partie kopieren  Strg+C"
-
-#: xboard.c:650
-msgid "Copy Position Ctrl+Shift+C"
-msgstr "Stellung kopieren Strg+Umschalt+C"
-
-#: xboard.c:651
-msgid "Copy Game List"
-msgstr "Partieliste kopieren"
-
-#: xboard.c:653
-msgid "Paste Game    Ctrl+V"
-msgstr "Partie einfügen   Strg+V"
-
-#: xboard.c:654
-msgid "Paste Position Ctrl+Shift+V"
-msgstr "Stellung einfügen   Strg+Umschalt+V"
-
-#: xboard.c:656
-msgid "Edit Game      Ctrl+E"
-msgstr "Partie bearbeiten   Strg+E"
-
-#: xboard.c:657
-msgid "Edit Position   Ctrl+Shift+E"
-msgstr "Stellung bearbeiten   Strg+Umschalt+E"
-
-#: xboard.c:658
-msgid "Edit Tags"
-msgstr "Markierung bearbeiten"
-
-#: xboard.c:659
-msgid "Edit Comment"
-msgstr "Kommentar bearbeiten"
-
-#: xboard.c:660
-#, fuzzy
-msgid "Edit Book"
-msgstr "Buch"
-
-#: xboard.c:662
-msgid "Revert              Home"
-msgstr "Zurücksetzen       Home"
-
-#: xboard.c:663
-msgid "Annotate"
-msgstr "Annotieren"
-
-#: xboard.c:664
-msgid "Truncate Game  End"
-msgstr "Partie abbrechen         End"
-
-#: xboard.c:666
-msgid "Backward         Alt+Left"
-msgstr "Zurück            Alt+links"
-
-#: xboard.c:667
-msgid "Forward           Alt+Right"
-msgstr "Vorwärts     Alt+rechts"
-
-#: xboard.c:668
-msgid "Back to Start     Alt+Home"
-msgstr "Zurück zum Anfang   Alt+Home"
-
-#: xboard.c:669
-msgid "Forward to End Alt+End"
-msgstr "Vorwärts zum Ende  Alt+End"
-
-#: xboard.c:674
-msgid "Flip View             F2"
-msgstr "Brett drehen          F2"
-
-#: xboard.c:676
-msgid "Engine Output      Alt+Shift+O"
-msgstr "Schachprogramm-Ausgabe    Alt+Umschalt+O"
-
-#: xboard.c:677
-msgid "Move History       Alt+Shift+H"
-msgstr "Zugliste  Alt+Umschalt+H"
-
-#: xboard.c:678
-msgid "Evaluation Graph  Alt+Shift+E"
-msgstr "Auswertungsgraph       Alt+Umschalt+E"
-
-#: xboard.c:679
-msgid "Game List            Alt+Shift+G"
-msgstr "Partieliste         Alt+Umschalt+G"
-
-#: xboard.c:680 xoptions.c:1520
-msgid "ICS text menu"
-msgstr "ICS-Textmenue"
-
-#: xboard.c:682 xoptions.c:1610
-msgid "Tags"
-msgstr "Markierungen"
-
-#: xboard.c:683
-msgid "Comments"
-msgstr "Kommentare"
-
-#: xboard.c:684
-msgid "ICS Input Box"
-msgstr "ICS Eingabefeld"
-
-#: xboard.c:686
-msgid "Board..."
-msgstr "Brett..."
-
-#: xboard.c:687
-msgid "Game List Tags..."
-msgstr "Partie Markierungen..."
-
-#: xboard.c:692
-msgid "Machine White  Ctrl+W"
-msgstr "Schachprogramm weiß   Strg+W"
-
-#: xboard.c:693
-msgid "Machine Black  Ctrl+B"
-msgstr "Schachprogramm schwarz  Strg+B"
-
-#: xboard.c:694
-msgid "Two Machines   Ctrl+T"
-msgstr "Zwei Schachprogramme   Strg+T"
-
-#: xboard.c:695
-msgid "Analysis Mode  Ctrl+A"
-msgstr "Analyse-Modus   Strg+A"
-
-#: xboard.c:696
-#, fuzzy
-msgid "Analyze Game   Ctrl+G"
-msgstr "Datei analysieren   Strg+F"
-
-#: xboard.c:697
-msgid "Edit Game         Ctrl+E"
-msgstr "Partie editieren   Strg+E"
-
-#: xboard.c:698
-msgid "Edit Position      Ctrl+Shift+E"
-msgstr "Stellung editieren   Strg+Umschalt+E"
-
-#: xboard.c:699
-msgid "Training"
-msgstr "Training"
-
-#: xboard.c:700
-msgid "ICS Client"
-msgstr "ICS-client"
-
-#: xboard.c:702
-msgid "Machine Match"
-msgstr "Schachprogramm Partie"
-
-#: xboard.c:703
-msgid "Pause               Pause"
-msgstr "Pause       Pause"
-
-#: xboard.c:708
-msgid "Accept             F3"
-msgstr "Annehmen            F3"
-
-#: xboard.c:709
-msgid "Decline            F4"
-msgstr "Ablehnen         F4"
-
-#: xboard.c:710
-msgid "Rematch           F12"
-msgstr "Revanche       F12"
-
-#: xboard.c:712
-msgid "Call Flag          F5"
-msgstr "Zeit reklamieren    F5"
-
-#: xboard.c:713
-msgid "Draw                F6"
-msgstr "Remi          F6"
-
-#: xboard.c:714
-msgid "Adjourn            F7"
-msgstr "Aussetzen      F7"
-
-#: xboard.c:715
-msgid "Abort                F8"
-msgstr "Abbrechen          F8"
-
-#: xboard.c:716
-msgid "Resign              F9"
-msgstr "Aufgeben      F9"
-
-#: xboard.c:718
-msgid "Stop Observing  F10"
-msgstr "Beobachtung beenden    F10"
-
-#: xboard.c:719
-msgid "Stop Examining  F11"
-msgstr "Untersuchen beenden   F11"
-
-#: xboard.c:720
-msgid "Upload to Examine"
-msgstr "Hochladen zum Untersuchen"
-
-#: xboard.c:722
-msgid "Adjudicate to White"
-msgstr "Gewinn Weiß zuerkennen"
-
-#: xboard.c:723
-msgid "Adjudicate to Black"
-msgstr "Gewinn Schwartz zuerkennnen"
-
-#: xboard.c:724
-msgid "Adjudicate Draw"
-msgstr "Remi zuerkennen"
-
-#: xboard.c:729
-msgid "Load New Engine ..."
-msgstr "Neues Schachprogramm laden ..."
-
-#: xboard.c:731
-msgid "Engine #1 Settings ..."
-msgstr "Schachprogram #1 Einstellungen ..."
-
-#: xboard.c:732
-msgid "Engine #2 Settings ..."
-msgstr "Schachprogram #2 Einstellungen ..."
-
-#: xboard.c:734
-msgid "Hint"
-msgstr "Hinweiß"
-
-#: xboard.c:735
-msgid "Book"
-msgstr "Buch"
-
-#: xboard.c:737
-msgid "Move Now     Ctrl+M"
-msgstr "Jetzt ziehen     Strg+M"
-
-#: xboard.c:738
-msgid "Retract Move  Ctrl+X"
-msgstr "Zug zurücknehmen  Strg+X"
-
-#: xboard.c:745
-msgid "General ..."
-msgstr "Allgemein ..."
-
-#: xboard.c:747
-msgid "Time Control ...       Alt+Shift+T"
-msgstr "Zeitkontrolle ...      Alt+Umschalt+T"
-
-#: xboard.c:748
-msgid "Common Engine ...  Alt+Shift+U"
-msgstr "Allemein Schachprogramme ...    Alt+Umschalt+U"
-
-#: xboard.c:749
-msgid "Adjudications ...      Alt+Shift+J"
-msgstr "Zuerkennung ...        Alt+Umschalt+J"
-
-#: xboard.c:750
-msgid "ICS ..."
-msgstr "ICS ..."
-
-#: xboard.c:751
-msgid "Match ..."
-msgstr "Partie ..."
-
-#: xboard.c:752
-msgid "Load Game ..."
-msgstr "Partie laden ..."
-
-#: xboard.c:753
-msgid "Save Game ..."
-msgstr "Partie speichern ..."
-
-#: xboard.c:755
-msgid "Game List ..."
-msgstr "Partieliste ..."
-
-#: xboard.c:756
-msgid "Sounds ..."
-msgstr "Klang ..."
-
-#: xboard.c:759
-msgid "Always Queen        Ctrl+Shift+Q"
-msgstr "Immer Königin        Strg+Umschalt+Q"
-
-#: xboard.c:760 xoptions.c:419
-msgid "Animate Dragging"
-msgstr "Ziehen animieren"
-
-#: xboard.c:761
-msgid "Animate Moving      Ctrl+Shift+A"
-msgstr "Züge animieren   Strg+Umschalt+A"
-
-#: xboard.c:762
-msgid "Auto Flag               Ctrl+Shift+F"
-msgstr "Automatische Zeitreklamation  Strg+Umschalt+F"
-
-#: xboard.c:763 xoptions.c:422
-msgid "Auto Flip View"
-msgstr "Brett automatisch drehen"
-
-#: xboard.c:764 xoptions.c:423
-msgid "Blindfold"
-msgstr "Blindschach"
-
-#: xboard.c:765
-msgid "Flash Moves"
-msgstr "Züge aufblitzen lassen"
-
-#: xboard.c:767
-msgid "Highlight Dragging"
-msgstr "Züge hervorheben"
-
-#: xboard.c:769 xoptions.c:426
-msgid "Highlight Last Move"
-msgstr "Letzten Zug hervorheben"
-
-#: xboard.c:770
-msgid "Highlight With Arrow"
-msgstr "Mit Pfeil hervorheben"
-
-#: xboard.c:771 xoptions.c:428
-msgid "Move Sound"
-msgstr "Klang für Zug"
-
-#: xboard.c:773 xoptions.c:429
-msgid "One-Click Moving"
-msgstr "Ein-Klick Züge"
-
-#: xboard.c:774
-msgid "Periodic Updates"
-msgstr "Periodische Updates"
-
-#: xboard.c:775
-msgid "Ponder Next Move  Ctrl+Shift+P"
-msgstr "Nächsten Zug abwägen  Strg+Umschalt+P"
-
-#: xboard.c:776
-msgid "Popup Exit Message"
-msgstr "Dialogfenster für Nachricht beim Beenden"
-
-#: xboard.c:777 xoptions.c:433
-msgid "Popup Move Errors"
-msgstr "Dialogfenster für Zugfehler"
-
-#: xboard.c:779
-msgid "Show Coords"
-msgstr "Zeige Koordinaten"
-
-#: xboard.c:780
-msgid "Hide Thinking        Ctrl+Shift+H"
-msgstr "Blende Zugsuche aus        Strg+Umschalt+H"
-
-#: xboard.c:781
-msgid "Test Legality          Ctrl+Shift+L"
-msgstr "Gültigkeit testen      Strg+Umschalt+L"
-
-#: xboard.c:784
-msgid "Save Settings Now"
-msgstr "Einstellungen jetzt speichern"
-
-#: xboard.c:785
-msgid "Save Settings on Exit"
-msgstr "Einstellung am Ende speichern"
-
-#: xboard.c:790
-msgid "Info XBoard"
-msgstr "Info XBoard"
-
-#: xboard.c:791
-msgid "Man XBoard   F1"
-msgstr "Man XBoard   F1"
-
-#: xboard.c:793
-msgid "XBoard Home Page"
-msgstr ""
-
-#: xboard.c:794
-msgid "On-line User Guide"
-msgstr ""
-
-#: xboard.c:795
-msgid "Development News"
-msgstr ""
-
-#: xboard.c:796
-msgid "e-Mail Bug Report"
-msgstr ""
-
-#: xboard.c:798 xboard.c:6725
-msgid "About XBoard"
-msgstr "Über XBoard"
-
-#: xboard.c:803
-msgid "File"
-msgstr "Datei"
-
-#: xboard.c:804
-msgid "Edit"
-msgstr "Bearbeiten"
-
-#: xboard.c:805
-msgid "View"
-msgstr "Anzeigen"
-
-#: xboard.c:806
-msgid "Mode"
-msgstr "Modus"
-
-#: xboard.c:807
-msgid "Action"
-msgstr "Aktion"
-
-#: xboard.c:808
-msgid "Engine"
-msgstr "Schachprogramm"
-
-#: xboard.c:809
-msgid "Options"
-msgstr "Optionen"
-
-#: xboard.c:810
-msgid "Help"
-msgstr "Hilfe"
-
-#: xboard.c:826 xboard.c:7435
-msgid "White"
-msgstr "Weiß"
-
-#: xboard.c:826 xboard.c:830 xboard.c:849
-msgid "Pawn"
-msgstr "Bauer"
-
-#: xboard.c:826 xboard.c:830 xboard.c:849 xboard.c:5241
-msgid "Knight"
-msgstr "Springer"
-
-#: xboard.c:826 xboard.c:830 xboard.c:849 xboard.c:5240
-msgid "Bishop"
-msgstr "Läufer"
-
-#: xboard.c:826 xboard.c:830 xboard.c:849 xboard.c:5239
-msgid "Rook"
-msgstr "Turm"
-
-#: xboard.c:827 xboard.c:831 xboard.c:849 xboard.c:5238
-msgid "Queen"
-msgstr "Königin"
-
-#: xboard.c:827 xboard.c:831 xboard.c:5246
-msgid "King"
-msgstr "König"
-
-#: xboard.c:827 xboard.c:831
-msgid "Elephant"
-msgstr "Elefant"
-
-#: xboard.c:827 xboard.c:831
-msgid "Cannon"
-msgstr "Kanone"
-
-#: xboard.c:828 xboard.c:832 xboard.c:5251
-msgid "Archbishop"
-msgstr "Erzbischof"
-
-#: xboard.c:828 xboard.c:832 xboard.c:5252
-msgid "Chancellor"
-msgstr "Kanlzer"
-
-#: xboard.c:828 xboard.c:832 xboard.c:5256
-msgid "Promote"
-msgstr "umwandlung"
-
-#: xboard.c:828 xboard.c:832
-msgid "Demote"
-msgstr "degradieren"
-
-#: xboard.c:829 xboard.c:833
-msgid "Empty square"
-msgstr "Leeres Feld"
-
-#: xboard.c:829 xboard.c:833
-msgid "Clear board"
-msgstr "Brett leeren"
-
-#: xboard.c:830 xboard.c:7449
-msgid "Black"
-msgstr "Schwarz"
-
-#: xboard.c:1222
-#, c-format
-msgid "%s: Can't access XPM directory %s\n"
-msgstr "%s: XPM-Ordner nicht erreichbar %s\n"
-
-#: xboard.c:1243
-#, c-format
-msgid "Available `%s' sizes:\n"
-msgstr "Mögliche »%s« Größen:\n"
-
-#: xboard.c:1276
-#, c-format
-msgid "Error: No `%s' files!\n"
-msgstr "Fehler: Keine »%s« Datein!\n"
-
-#: xboard.c:1289
-#, c-format
-msgid ""
-"Warning: No DIR structure found on this system --\n"
-"         Unable to autosize for XPM/XIM pieces.\n"
-"   Please report this error to %s.\n"
-"   Include system type & operating system in message.\n"
-msgstr ""
-
-#: xboard.c:1348
-#, c-format
-msgid "%s: unrecognized color %s\n"
-msgstr "%s: nicht erkannte Farbe %s\n"
-
-#: xboard.c:1356
-#, c-format
-msgid "%s: can't parse foreground color in `%s'\n"
-msgstr "%s: Kann Vordergrundfarbe in '%s' nicht parsen\n"
-
-#: xboard.c:1744 xboard.c:2506
-#, c-format
-msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
-msgstr "%s: titleWidget Geometriefehler %d %d %d %d %d\n"
-
-#: xboard.c:1862
-#, c-format
-msgid "%s: can't parse color names; disabling colorization\n"
-msgstr "%s: kann Farbname nicht parsen; deaktiere Farben\n"
-
-#: xboard.c:2038
-#, c-format
-msgid "%s: can't cd to CHESSDIR: "
-msgstr "%s: cd zu CHESSDIR funktioniert nicht: "
-
-#: xboard.c:2047
-#, c-format
-msgid "Failed to open file '%s'\n"
-msgstr "Fehler beim Öffnen der Datei '%s'\n"
-
-#: xboard.c:2062
-msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe "
-"zu unterstützen"
-
-#: xboard.c:2085
-#, c-format
-msgid "%s: bad boardSize syntax %s\n"
-msgstr "%s: falsche boardSize Syntax %s\n"
-
-#: xboard.c:2122
-#, c-format
-msgid "%s: unrecognized boardSize name %s\n"
-msgstr "%s: unbekannter Name fuer boardSize %s\n"
-
-#: xboard.c:2147
-#, c-format
-msgid "Error expanding path name \"%s\"\n"
-msgstr "Fehler beim Expandieren des Pfadnamens \"%s\"\n"
-
-#: xboard.c:2152
-#, c-format
-msgid ""
-"XBoard square size (hint): %d\n"
-"%s fulldir:%s:\n"
-msgstr ""
-"XBoard Feldgröße (Hinweis): %d\n"
-"%s voller Pfad: %s\n"
-
-#: xboard.c:2158
-#, c-format
-msgid "Closest %s size: %d\n"
-msgstr "Nächste %s Größe: %d\n"
-
-#: xboard.c:2236
-#, c-format
-msgid "%s: too few colors available; trying monochrome mode\n"
-msgstr "%s: nicht genügend Farben vorhanden; versuche monochrom Modus\n"
-
-#: xboard.c:2252
-#, c-format
-msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
-msgstr "weißes Pixel = 0x%lx, schwarzes Pixel = 0x%lx\n"
-
-#: xboard.c:2471 xboard.c:2481
-#, c-format
-msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
-msgstr "%s: messageWidget Geometriefehler %d %d %d %d %d\n"
-
-#: xboard.c:3231
-#, fuzzy, c-format
-msgid "Unable to create font set for %s.\n"
-msgstr "Nicht in der Lage Schriftsatz zu generieren.\n"
-
-#: xboard.c:3254
-#, c-format
-msgid "%s: no fonts match pattern %s\n"
-msgstr "%s: keine Schriften stimmen mit Muster %s überein\n"
-
-#: xboard.c:3296
-#, c-format
-msgid ""
-"resolved %s at pixel size %d\n"
-"  to %s\n"
-msgstr ""
-"F\"ur  %s mit Pixelgröße %d\n"
-" verwende %s\n"
-
-#: xboard.c:3447
-#, c-format
-msgid "%s: error loading XIM!\n"
-msgstr "%s: Fehler beim Laden von XIM!\n"
-
-#: xboard.c:3545
-msgid "XIM pieces cannot be used in monochrome mode"
-msgstr "XIM Figuren können nicht im Monochrom-modus benutzt werden"
-
-#: xboard.c:3549
-#, c-format
-msgid ""
-"\n"
-"Loading XIMs...\n"
-msgstr ""
-"\n"
-"Lade XIMs...\n"
-
-#: xboard.c:3564 xboard.c:3587 xboard.c:3594 xboard.c:3710 xboard.c:3747
-#: xboard.c:3758
-#, c-format
-msgid "(File:%s:) "
-msgstr "(Datei:%s) "
-
-#: xboard.c:3582 xboard.c:3740
-#, c-format
-msgid "light square "
-msgstr "weisses Feld "
-
-#: xboard.c:3590 xboard.c:3754
-#, c-format
-msgid "dark square "
-msgstr "schwarze Feld "
-
-#: xboard.c:3601 xboard.c:3767
-#, c-format
-msgid "Done.\n"
-msgstr "Fertig.\n"
-
-#: xboard.c:3665
-msgid "XPM pieces cannot be used in monochrome mode"
-msgstr "XPM Figuren können nicht im Monochrom-modus benutzt werden"
-
-#: xboard.c:3675
-#, c-format
-msgid "No builtin XPM pieces of size %d\n"
-msgstr "Keine XPM-Figuren der Größe %d vorhanden\n"
-
-#: xboard.c:3685
-#, c-format
-msgid "Error %d loading XPM image \"%s\"\n"
-msgstr "Fehler %d beim Laden von XPM-Bild »%s«\n"
-
-#: xboard.c:3698
-#, c-format
-msgid ""
-"\n"
-"Loading XPMs...\n"
-msgstr ""
-"\n"
-"Lade XPMs…\n"
-
-#: xboard.c:3721
-#, c-format
-msgid "(Replace by File:%s:) "
-msgstr "(Ersetze mit Datei:%s:) "
-
-#: xboard.c:3728 xboard.c:3751 xboard.c:3762
-#, c-format
-msgid "Error %d loading XPM file \"%s\"\n"
-msgstr "Fehler %d beim Laden der XPM-Datei \"%s\"\n"
-
-#: xboard.c:3850
-#, c-format
-msgid "Can't open bitmap file %s"
-msgstr "Bitmap file %s kann nicht geöffnet werden"
-
-#: xboard.c:3853
-#, c-format
-msgid "Invalid bitmap in file %s"
-msgstr "Ungültiges Bitmap in Datei %s"
-
-#: xboard.c:3856
-#, c-format
-msgid "Ran out of memory reading bitmap file %s"
-msgstr "Nicht genug Speicher, um Bitmapdatei %s zu laden"
-
-#: xboard.c:3860
-#, c-format
-msgid "Unknown XReadBitmapFile error %d on file %s"
-msgstr "Unbekannter XReadBitmapFile-Fehler %d bei Datei %s"
-
-#: xboard.c:3864
-#, c-format
-msgid "%s: %s...using built-in\n"
-msgstr "%s: %s ... benutze integrierte\n"
-
-#: xboard.c:3868
-#, c-format
-msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
-msgstr "%s: Bitmap %s ist %dx%d und nicht %dx%d... benutze integrierte\n"
-
-#: xboard.c:3936
-msgid "----"
-msgstr ""
-
-#: xboard.c:4109
-msgid "Drop"
-msgstr "Absetzen"
-
-#: xboard.c:5121
-#, fuzzy
-msgid "could not open: "
-msgstr "Konnte Zug nicht parsen"
-
-#: xboard.c:5147 xboard.c:5259 xboard.c:6990 xboard.c:7030 xgamelist.c:749
-#: xgamelist.c:857 xoptions.c:999 xoptions.c:1342
-msgid "cancel"
-msgstr "abbrechen"
-
-#: xboard.c:5181 xboard.c:6849 xboard.c:6863
-msgid "Error"
-msgstr "Fehler"
-
-#: xboard.c:5181
-msgid "Can't open file"
-msgstr "Datei kann nicht geöffnet werden"
-
-#: xboard.c:5186
-msgid "Failed to open file"
-msgstr "Fehler beim Öffnen der Datei"
-
-#: xboard.c:5217
-msgid "Promotion"
-msgstr "Umwandlung"
-
-#: xboard.c:5226
-msgid "Promote to what?"
-msgstr "In Was soll umgewandelt werden?"
-
-#: xboard.c:5233
-msgid "Warlord"
-msgstr "Kriegsherr"
-
-#: xboard.c:5234
-msgid "General"
-msgstr "General"
-
-#: xboard.c:5235
-msgid "Lieutenant"
-msgstr "Leutnant"
-
-#: xboard.c:5236
-msgid "Captain"
-msgstr "Kapitän"
-
-#: xboard.c:5257
-msgid "Defer"
-msgstr "vertagen"
-
-#: xboard.c:5362
-msgid "ok"
-msgstr "Ok"
-
-#: xboard.c:5555
+#: menus.c:138
 msgid "Load game file name?"
 msgstr "Lade Partiedatei mit Namen?"
 
-#: xboard.c:5600
+#: menus.c:183
 msgid "Load position file name?"
 msgstr "Lade Stellungsdatei mit Namen?"
 
-#: xboard.c:5606
+#: menus.c:189
 msgid "Save game file name?"
 msgstr "Speichere Partiedatei mit Namen?"
 
-#: xboard.c:5615
+#: menus.c:198
 msgid "Save position file name?"
 msgstr "Speicher Stellungsdatei mit Namen?"
 
-#: xboard.c:5854
-msgid "Can't open temp file"
-msgstr "Kann temporäre Datei nicht öffnen"
-
-#: xboard.c:5926
+#: menus.c:271
 #, c-format
 msgid "You are not observing a game"
 msgstr "Sie schauen keiner Partie zu"
 
-#: xboard.c:5931
+#: menus.c:276
 #, c-format
 msgid "Found unexpected active ICS engine analyze \n"
 msgstr "Habe unerwartete aktive ICS Analyse vom Schachprogramm gefunden\n"
 
-#: xboard.c:5945
+#: menus.c:290
 #, c-format
 msgid "ICS engine analyze starting... \n"
 msgstr "Schachprogramm started ICS Analyse...\n"
 
-#: xboard.c:6709
+#: menus.c:430
 msgid " (with Zippy code)"
 msgstr ""
 
-#: xboard.c:6714
+#: menus.c:435
 #, c-format
 msgid ""
 "%s%s\n"
@@ -1709,1251 +2161,858 @@ msgid ""
 "\n"
 msgstr ""
 
-#: xboard.c:6885
-msgid "Fatal Error"
-msgstr "Schwerwiegender Fehler"
+#: menus.c:446 menus.c:824
+msgid "About XBoard"
+msgstr "Über XBoard"
 
-#: xboard.c:6885
-msgid "Exiting"
-msgstr "Beende"
+#: menus.c:651
+msgid "New Game        Ctrl+N"
+msgstr "Neue Partie Strg+N"
 
-#: xboard.c:6895
-msgid "Information"
-msgstr "Information"
+#: menus.c:652
+msgid "New Shuffle Game ..."
+msgstr "Neue Shuffle Partie ... "
 
-#: xboard.c:6902
-msgid "Note"
-msgstr "Notiz"
+#: menus.c:653
+msgid "New Variant ...   Alt+Shift+V"
+msgstr "Neue Variante .... Alt+Umschalt+V"
 
-#: xboard.c:6947
-#, c-format
-msgid "AskQuestionProc needed 4 parameters, got %d\n"
-msgstr "AskQuestionProc braucht 4 Parameter, habe %d erhlaten\n"
+#: menus.c:655
+msgid "Load Game       Ctrl+O"
+msgstr "Partie Laden   Strg+O"
 
-#: xboard.c:6978
-msgid "Error writing to chess program"
-msgstr "Fehler beim Schreiben zum Schachprogramm"
+#: menus.c:656
+msgid "Load Position    Ctrl+Shift+O"
+msgstr "Stellung laden   Strg+Umschalt+O"
 
-#: xboard.c:7028
-msgid "enter"
-msgstr "Eingabe"
+#: menus.c:660
+msgid "Next Position     Shift+PgDn"
+msgstr "Nächste Stellung   Umschalt+Pgdn"
 
-#: xboard.c:7229
-#, c-format
-msgid "ERROR: Unknown user %s (in path %s)\n"
-msgstr "FEHLER: unbekannter Benutzer %s (im Pfad %s)\n"
+#: menus.c:661
+msgid "Prev Position     Shift+PgUp"
+msgstr "Vorherige Stellung   Umschalt+PgUp"
 
-#: xboard.c:7603
-msgid "Socket support is not configured in"
-msgstr "Socketunterstützung ist nicht konfiguriert"
+#: menus.c:664
+msgid "Save Game       Ctrl+S"
+msgstr "Partie speichern     Strg+S"
 
-#: xboard.c:7692
-msgid "internal rcmd not implemented for Unix"
-msgstr "Interes rcmd ist in UNIX nicht implementiert"
+#: menus.c:665
+msgid "Save Position    Ctrl+Shift+S"
+msgstr "Stellung speichern Strg+Shift+S"
 
-#: xengineoutput.c:146
-#, c-format
-msgid "Error %d loading icon image\n"
-msgstr "Fehler %d beim Laden von Icon\n"
+#: menus.c:667
+msgid "Mail Move"
+msgstr "Verschicke Zug"
 
-#: xengineoutput.c:356
+#: menus.c:668
+msgid "Reload CMail Message"
+msgstr "CMail Nachricht erneut laden"
+
+#: menus.c:670
+msgid "Quit                 Ctr+Q"
+msgstr "Beenden   Strg+Q"
+
+#: menus.c:675
+msgid "Copy Game    Ctrl+C"
+msgstr "Partie kopieren  Strg+C"
+
+#: menus.c:676
+msgid "Copy Position Ctrl+Shift+C"
+msgstr "Stellung kopieren Strg+Umschalt+C"
+
+#: menus.c:677
+msgid "Copy Game List"
+msgstr "Partieliste kopieren"
+
+#: menus.c:679
+msgid "Paste Game    Ctrl+V"
+msgstr "Partie einfügen   Strg+V"
+
+#: menus.c:680
+msgid "Paste Position Ctrl+Shift+V"
+msgstr "Stellung einfügen   Strg+Umschalt+V"
+
+#: menus.c:682
+msgid "Edit Game      Ctrl+E"
+msgstr "Partie bearbeiten   Strg+E"
+
+#: menus.c:683
+msgid "Edit Position   Ctrl+Shift+E"
+msgstr "Stellung bearbeiten   Strg+Umschalt+E"
+
+#: menus.c:684
+msgid "Edit Tags"
+msgstr "Markierung bearbeiten"
+
+#: menus.c:685
+msgid "Edit Comment"
+msgstr "Kommentar bearbeiten"
+
+#: menus.c:686
+#, fuzzy
+msgid "Edit Book"
+msgstr "Buch"
+
+#: menus.c:688
+msgid "Revert              Home"
+msgstr "Zurücksetzen       Home"
+
+#: menus.c:689
+msgid "Annotate"
+msgstr "Annotieren"
+
+#: menus.c:690
+msgid "Truncate Game  End"
+msgstr "Partie abbrechen         End"
+
+#: menus.c:692
+msgid "Backward         Alt+Left"
+msgstr "Zurück            Alt+links"
+
+#: menus.c:693
+msgid "Forward           Alt+Right"
+msgstr "Vorwärts     Alt+rechts"
+
+#: menus.c:694
+msgid "Back to Start     Alt+Home"
+msgstr "Zurück zum Anfang   Alt+Home"
+
+#: menus.c:695
+msgid "Forward to End Alt+End"
+msgstr "Vorwärts zum Ende  Alt+End"
+
+#: menus.c:700
+msgid "Flip View             F2"
+msgstr "Brett drehen          F2"
+
+#: menus.c:702
+msgid "Engine Output      Alt+Shift+O"
+msgstr "Schachprogramm-Ausgabe    Alt+Umschalt+O"
+
+#: menus.c:703
+msgid "Move History       Alt+Shift+H"
+msgstr "Zugliste  Alt+Umschalt+H"
+
+#: menus.c:704
+msgid "Evaluation Graph  Alt+Shift+E"
+msgstr "Auswertungsgraph       Alt+Umschalt+E"
+
+#: menus.c:705
+msgid "Game List            Alt+Shift+G"
+msgstr "Partieliste         Alt+Umschalt+G"
+
+#: menus.c:709
+msgid "Comments"
+msgstr "Kommentare"
+
+#: menus.c:710
+msgid "ICS Input Box"
+msgstr "ICS Eingabefeld"
+
+#: menus.c:712
+msgid "Board..."
+msgstr "Brett..."
+
+#: menus.c:713
+msgid "Game List Tags..."
+msgstr "Partie Markierungen..."
+
+#: menus.c:718
+msgid "Machine White  Ctrl+W"
+msgstr "Schachprogramm weiß   Strg+W"
+
+#: menus.c:719
+msgid "Machine Black  Ctrl+B"
+msgstr "Schachprogramm schwarz  Strg+B"
+
+#: menus.c:720
+msgid "Two Machines   Ctrl+T"
+msgstr "Zwei Schachprogramme   Strg+T"
+
+#: menus.c:721
+msgid "Analysis Mode  Ctrl+A"
+msgstr "Analyse-Modus   Strg+A"
+
+#: menus.c:722
+#, fuzzy
+msgid "Analyze Game   Ctrl+G"
+msgstr "Datei analysieren   Strg+F"
+
+#: menus.c:723
+msgid "Edit Game         Ctrl+E"
+msgstr "Partie editieren   Strg+E"
+
+#: menus.c:724
+msgid "Edit Position      Ctrl+Shift+E"
+msgstr "Stellung editieren   Strg+Umschalt+E"
+
+#: menus.c:725
+msgid "Training"
+msgstr "Training"
+
+#: menus.c:726
+msgid "ICS Client"
+msgstr "ICS-client"
+
+#: menus.c:728
+msgid "Machine Match"
+msgstr "Schachprogramm Partie"
+
+#: menus.c:729
+msgid "Pause               Pause"
+msgstr "Pause       Pause"
+
+#: menus.c:734
+msgid "Accept             F3"
+msgstr "Annehmen            F3"
+
+#: menus.c:735
+msgid "Decline            F4"
+msgstr "Ablehnen         F4"
+
+#: menus.c:736
+msgid "Rematch           F12"
+msgstr "Revanche       F12"
+
+#: menus.c:738
+msgid "Call Flag          F5"
+msgstr "Zeit reklamieren    F5"
+
+#: menus.c:739
+msgid "Draw                F6"
+msgstr "Remi          F6"
+
+#: menus.c:740
+msgid "Adjourn            F7"
+msgstr "Aussetzen      F7"
+
+#: menus.c:741
+msgid "Abort                F8"
+msgstr "Abbrechen          F8"
+
+#: menus.c:742
+msgid "Resign              F9"
+msgstr "Aufgeben      F9"
+
+#: menus.c:744
+msgid "Stop Observing  F10"
+msgstr "Beobachtung beenden    F10"
+
+#: menus.c:745
+msgid "Stop Examining  F11"
+msgstr "Untersuchen beenden   F11"
+
+#: menus.c:746
+msgid "Upload to Examine"
+msgstr "Hochladen zum Untersuchen"
+
+#: menus.c:748
+msgid "Adjudicate to White"
+msgstr "Gewinn Weiß zuerkennen"
+
+#: menus.c:749
+msgid "Adjudicate to Black"
+msgstr "Gewinn Schwartz zuerkennnen"
+
+#: menus.c:750
+msgid "Adjudicate Draw"
+msgstr "Remi zuerkennen"
+
+#: menus.c:755
+#, fuzzy
+msgid "Load New 1st Engine ..."
+msgstr "Neues Schachprogramm laden ..."
+
+#: menus.c:756
+#, fuzzy
+msgid "Load New 2nd Engine ..."
+msgstr "Neues Schachprogramm laden ..."
+
+#: menus.c:758
+msgid "Engine #1 Settings ..."
+msgstr "Schachprogram #1 Einstellungen ..."
+
+#: menus.c:759
+msgid "Engine #2 Settings ..."
+msgstr "Schachprogram #2 Einstellungen ..."
+
+#: menus.c:761
+msgid "Hint"
+msgstr "Hinweiß"
+
+#: menus.c:762
+msgid "Book"
+msgstr "Buch"
+
+#: menus.c:764
+msgid "Move Now     Ctrl+M"
+msgstr "Jetzt ziehen     Strg+M"
+
+#: menus.c:765
+msgid "Retract Move  Ctrl+X"
+msgstr "Zug zurücknehmen  Strg+X"
+
+#: menus.c:771
+msgid "General ..."
+msgstr "Allgemein ..."
+
+#: menus.c:773
+msgid "Time Control ...       Alt+Shift+T"
+msgstr "Zeitkontrolle ...      Alt+Umschalt+T"
+
+#: menus.c:774
+msgid "Common Engine ...  Alt+Shift+U"
+msgstr "Allemein Schachprogramme ...    Alt+Umschalt+U"
+
+#: menus.c:775
+msgid "Adjudications ...      Alt+Shift+J"
+msgstr "Zuerkennung ...        Alt+Umschalt+J"
+
+#: menus.c:776
+msgid "ICS ..."
+msgstr "ICS ..."
+
+#: menus.c:777
+msgid "Match ..."
+msgstr "Partie ..."
+
+#: menus.c:778
+msgid "Load Game ..."
+msgstr "Partie laden ..."
+
+#: menus.c:779
+msgid "Save Game ..."
+msgstr "Partie speichern ..."
+
+#: menus.c:781
+msgid "Game List ..."
+msgstr "Partieliste ..."
+
+#: menus.c:782
+msgid "Sounds ..."
+msgstr "Klang ..."
+
+#: menus.c:785
+msgid "Always Queen        Ctrl+Shift+Q"
+msgstr "Immer Königin        Strg+Umschalt+Q"
+
+#: menus.c:787
+msgid "Animate Moving      Ctrl+Shift+A"
+msgstr "Züge animieren   Strg+Umschalt+A"
+
+#: menus.c:788
+msgid "Auto Flag               Ctrl+Shift+F"
+msgstr "Automatische Zeitreklamation  Strg+Umschalt+F"
+
+#: menus.c:791
+msgid "Flash Moves"
+msgstr "Züge aufblitzen lassen"
+
+#: menus.c:793
+msgid "Highlight Dragging"
+msgstr "Züge hervorheben"
+
+#: menus.c:796
+msgid "Highlight With Arrow"
+msgstr "Mit Pfeil hervorheben"
+
+#: menus.c:800
+msgid "Periodic Updates"
+msgstr "Periodische Updates"
+
+#: menus.c:801
+msgid "Ponder Next Move  Ctrl+Shift+P"
+msgstr "Nächsten Zug abwägen  Strg+Umschalt+P"
+
+#: menus.c:802
+msgid "Popup Exit Message"
+msgstr "Dialogfenster für Nachricht beim Beenden"
+
+#: menus.c:805
+msgid "Show Coords"
+msgstr "Zeige Koordinaten"
+
+#: menus.c:806
+msgid "Hide Thinking        Ctrl+Shift+H"
+msgstr "Blende Zugsuche aus        Strg+Umschalt+H"
+
+#: menus.c:807
+msgid "Test Legality          Ctrl+Shift+L"
+msgstr "Gültigkeit testen      Strg+Umschalt+L"
+
+#: menus.c:810
+msgid "Save Settings Now"
+msgstr "Einstellungen jetzt speichern"
+
+#: menus.c:811
+msgid "Save Settings on Exit"
+msgstr "Einstellung am Ende speichern"
+
+#: menus.c:816
+msgid "Info XBoard"
+msgstr "Info XBoard"
+
+#: menus.c:817
+msgid "Man XBoard   F1"
+msgstr "Man XBoard   F1"
+
+#: menus.c:819
+msgid "XBoard Home Page"
+msgstr ""
+
+#: menus.c:820
+msgid "On-line User Guide"
+msgstr ""
+
+#: menus.c:821
+msgid "Development News"
+msgstr ""
+
+#: menus.c:822
+msgid "e-Mail Bug Report"
+msgstr ""
+
+#: nengineoutput.c:74 nengineoutput.c:81
+#, fuzzy
+msgid "engine name"
+msgstr "Schachprogramm"
+
+#: nengineoutput.c:76 nengineoutput.c:83
+#, fuzzy
+msgid "move"
+msgstr "Züge"
+
+#: nengineoutput.c:77 nengineoutput.c:84
 msgid "NPS"
 msgstr "NPS"
 
-#: xengineoutput.c:534
+#: nengineoutput.c:118
 msgid "Engine output"
 msgstr "Schachprogrammausgabe"
 
-#: xengineoutput.c:534
-msgid "This feature is experimental"
-msgstr "Dieses Feature is experimentell"
-
-#: xevalgraph.c:95
-msgid "Evaluation graph"
-msgstr "Auswertungsgraph"
-
-#: xgamelist.c:114
-msgid "no games matched your request"
+#: nengineoutput.c:122
+msgid ""
+"Mismatch of STRIDE in nengineoutput.c\n"
+"Change and recompile!"
 msgstr ""
 
-#: xgamelist.c:190 xgamelist.c:416
-msgid "thresholds"
-msgstr ""
-
-#: xgamelist.c:201 xgamelist.c:443 xgamelist.c:450
+#: ngamelist.c:87
 #, fuzzy
 msgid "find position"
 msgstr "Fehler in Positionsdatei"
 
-#: xgamelist.c:212 xgamelist.c:428
+#: ngamelist.c:88
+msgid "narrow"
+msgstr ""
+
+#: ngamelist.c:89
+msgid "thresholds"
+msgstr ""
+
+#: ngamelist.c:90
+#, fuzzy
+msgid "tags"
+msgstr "Markierungen"
+
+#: ngamelist.c:91
 msgid "next"
 msgstr "nächste"
 
-#: xgamelist.c:225 xgamelist.c:412
+#: ngamelist.c:92
 msgid "close"
 msgstr "schließen"
 
-#: xgamelist.c:237
-msgid "Filter:"
-msgstr "Filter:"
+#: ngamelist.c:116
+msgid "No game selected"
+msgstr "Keine Partie selektiert"
 
-#: xgamelist.c:255
-msgid "filtertext"
-msgstr "Filtertext"
+#: ngamelist.c:122
+msgid "Can't go forward any further"
+msgstr "Kann nicht weiter vorwärts gehen"
 
-#: xgamelist.c:268 xgamelist.c:442
-msgid "apply"
-msgstr "anwenden"
-
-#: xgamelist.c:357
+#: ngamelist.c:192
 #, c-format
 msgid "Scanning through games (%d)"
 msgstr ""
 
-#: xgamelist.c:381
+#: ngamelist.c:211
 #, fuzzy
 msgid "previous page"
 msgstr "Vorheriges Spiel laden"
 
-#: xgamelist.c:384
+#: ngamelist.c:214
 #, fuzzy
 msgid "next page"
 msgstr "nächste"
 
-#: xgamelist.c:392
+#: ngamelist.c:217
+msgid "no games matched your request"
+msgstr ""
+
+#: ngamelist.c:219
 #, fuzzy, c-format
 msgid "%s - %d/%d games (%d-%d-%d)"
 msgstr "Partie %s gegen %s: letze Punktwertung %d-%d-%d"
 
-#: xgamelist.c:422
-msgid "load"
-msgstr "lade"
-
-#: xgamelist.c:425
-msgid "No game selected"
-msgstr "Keine Partie selektiert"
-
-#: xgamelist.c:431
-msgid "Can't go forward any further"
-msgstr "Kann nicht weiter vorwärts gehen"
-
-#: xgamelist.c:435
-msgid "prev"
-msgstr "vorh."
-
-#: xgamelist.c:529
+#: ngamelist.c:273
 msgid "There is no game list"
 msgstr "Partieliste existiert nicht"
 
-#: xgamelist.c:659
+#: ngamelist.c:354
 #, fuzzy
 msgid "Game list not loaded or empty"
 msgstr "Noch keine Partie geladen"
 
-#: xgamelist.c:757
-msgid "No tag selected"
-msgstr "Keine Markierung selektiert"
+#: usystem.c:220
+#, c-format
+msgid "%s: unrecognized color %s\n"
+msgstr "%s: nicht erkannte Farbe %s\n"
 
-#: xgamelist.c:761 xgamelist.c:846
-msgid "down"
-msgstr "herunter"
+#: usystem.c:228
+#, c-format
+msgid "%s: can't parse foreground color in `%s'\n"
+msgstr "%s: Kann Vordergrundfarbe in '%s' nicht parsen\n"
 
-#: xgamelist.c:766 xgamelist.c:835
-msgid "up"
-msgstr "hoch"
+#: usystem.c:257
+#, c-format
+msgid "%s: can't parse color names; disabling colorization\n"
+msgstr "%s: kann Farbname nicht parsen; deaktiere Farben\n"
 
-#: xgamelist.c:771 xgamelist.c:824
-msgid "factory"
-msgstr "Fabrik"
+#: usystem.c:369
+#, c-format
+msgid "ERROR: Unknown user %s (in path %s)\n"
+msgstr "FEHLER: unbekannter Benutzer %s (im Pfad %s)\n"
 
-#: xgamelist.c:797
-#, fuzzy
-msgid "Game-list options"
-msgstr "Spieleinstellungen laden"
+#: usystem.c:554
+msgid "Socket support is not configured in"
+msgstr "Socketunterstützung ist nicht konfiguriert"
 
-#: xhistory.c:153
+#: usystem.c:643
+msgid "internal rcmd not implemented for Unix"
+msgstr "Interes rcmd ist in UNIX nicht implementiert"
+
+#: xboard.c:566
+#, c-format
+msgid "%s: Can't access XPM directory %s\n"
+msgstr "%s: XPM-Ordner nicht erreichbar %s\n"
+
+#: xboard.c:587
+#, c-format
+msgid "Available `%s' sizes:\n"
+msgstr "Mögliche »%s« Größen:\n"
+
+#: xboard.c:620
+#, c-format
+msgid "Error: No `%s' files!\n"
+msgstr "Fehler: Keine »%s« Datein!\n"
+
+#: xboard.c:633
+#, c-format
+msgid ""
+"Warning: No DIR structure found on this system --\n"
+"         Unable to autosize for XPM/XIM pieces.\n"
+"   Please report this error to %s.\n"
+"   Include system type & operating system in message.\n"
+msgstr ""
+
+#: xboard.c:1226
+#, c-format
+msgid "%s: can't cd to CHESSDIR: "
+msgstr "%s: cd zu CHESSDIR funktioniert nicht: "
+
+#: xboard.c:1235
+#, c-format
+msgid "Failed to open file '%s'\n"
+msgstr "Fehler beim Öffnen der Datei '%s'\n"
+
+#: xboard.c:1244
+msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
+msgstr ""
+"Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe "
+"zu unterstützen"
+
+#: xboard.c:1282
+#, c-format
+msgid "%s: bad boardSize syntax %s\n"
+msgstr "%s: falsche boardSize Syntax %s\n"
+
+#: xboard.c:1319
+#, c-format
+msgid "%s: unrecognized boardSize name %s\n"
+msgstr "%s: unbekannter Name fuer boardSize %s\n"
+
+#: xboard.c:1338
+#, c-format
+msgid "Error expanding path name \"%s\"\n"
+msgstr "Fehler beim Expandieren des Pfadnamens \"%s\"\n"
+
+#: xboard.c:1343
+#, c-format
+msgid ""
+"XBoard square size (hint): %d\n"
+"%s fulldir:%s:\n"
+msgstr ""
+"XBoard Feldgröße (Hinweis): %d\n"
+"%s voller Pfad: %s\n"
+
+#: xboard.c:1349
+#, c-format
+msgid "Closest %s size: %d\n"
+msgstr "Nächste %s Größe: %d\n"
+
+#: xboard.c:1374
+#, c-format
+msgid "%s: too few colors available; trying monochrome mode\n"
+msgstr "%s: nicht genügend Farben vorhanden; versuche monochrom Modus\n"
+
+#: xboard.c:1380
+#, c-format
+msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
+msgstr "weißes Pixel = 0x%lx, schwarzes Pixel = 0x%lx\n"
+
+#: xboard.c:1643
+#, fuzzy, c-format
+msgid "Unable to create font set for %s.\n"
+msgstr "Nicht in der Lage Schriftsatz zu generieren.\n"
+
+#: xboard.c:1666
+#, c-format
+msgid "%s: no fonts match pattern %s\n"
+msgstr "%s: keine Schriften stimmen mit Muster %s überein\n"
+
+#: xboard.c:1708
+#, c-format
+msgid ""
+"resolved %s at pixel size %d\n"
+"  to %s\n"
+msgstr ""
+"F\"ur  %s mit Pixelgröße %d\n"
+" verwende %s\n"
+
+#: xboard.c:1819
+#, c-format
+msgid "%s: error loading XIM!\n"
+msgstr "%s: Fehler beim Laden von XIM!\n"
+
+#: xboard.c:1917
+msgid "XIM pieces cannot be used in monochrome mode"
+msgstr "XIM Figuren können nicht im Monochrom-modus benutzt werden"
+
+#: xboard.c:1921
+#, c-format
+msgid ""
+"\n"
+"Loading XIMs...\n"
+msgstr ""
+"\n"
+"Lade XIMs...\n"
+
+#: xboard.c:1936 xboard.c:1959 xboard.c:1966 xboard.c:2082 xboard.c:2119
+#: xboard.c:2130
+#, c-format
+msgid "(File:%s:) "
+msgstr "(Datei:%s) "
+
+#: xboard.c:1954 xboard.c:2112
+#, c-format
+msgid "light square "
+msgstr "weisses Feld "
+
+#: xboard.c:1962 xboard.c:2126
+#, c-format
+msgid "dark square "
+msgstr "schwarze Feld "
+
+#: xboard.c:1973 xboard.c:2139
+#, c-format
+msgid "Done.\n"
+msgstr "Fertig.\n"
+
+#: xboard.c:2037
+msgid "XPM pieces cannot be used in monochrome mode"
+msgstr "XPM Figuren können nicht im Monochrom-modus benutzt werden"
+
+#: xboard.c:2047
+#, c-format
+msgid "No builtin XPM pieces of size %d\n"
+msgstr "Keine XPM-Figuren der Größe %d vorhanden\n"
+
+#: xboard.c:2057
+#, c-format
+msgid "Error %d loading XPM image \"%s\"\n"
+msgstr "Fehler %d beim Laden von XPM-Bild »%s«\n"
+
+#: xboard.c:2070
+#, c-format
+msgid ""
+"\n"
+"Loading XPMs...\n"
+msgstr ""
+"\n"
+"Lade XPMs…\n"
+
+#: xboard.c:2093
+#, c-format
+msgid "(Replace by File:%s:) "
+msgstr "(Ersetze mit Datei:%s:) "
+
+#: xboard.c:2100 xboard.c:2123 xboard.c:2134
+#, c-format
+msgid "Error %d loading XPM file \"%s\"\n"
+msgstr "Fehler %d beim Laden der XPM-Datei \"%s\"\n"
+
+#: xboard.c:2222
+#, c-format
+msgid "Can't open bitmap file %s"
+msgstr "Bitmap file %s kann nicht geöffnet werden"
+
+#: xboard.c:2225
+#, c-format
+msgid "Invalid bitmap in file %s"
+msgstr "Ungültiges Bitmap in Datei %s"
+
+#: xboard.c:2228
+#, c-format
+msgid "Ran out of memory reading bitmap file %s"
+msgstr "Nicht genug Speicher, um Bitmapdatei %s zu laden"
+
+#: xboard.c:2232
+#, c-format
+msgid "Unknown XReadBitmapFile error %d on file %s"
+msgstr "Unbekannter XReadBitmapFile-Fehler %d bei Datei %s"
+
+#: xboard.c:2236
+#, c-format
+msgid "%s: %s...using built-in\n"
+msgstr "%s: %s ... benutze integrierte\n"
+
+#: xboard.c:2240
+#, c-format
+msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
+msgstr "%s: Bitmap %s ist %dx%d und nicht %dx%d... benutze integrierte\n"
+
+#: xboard.c:3048
+msgid "Can't open temp file"
+msgstr "Kann temporäre Datei nicht öffnen"
+
+#: xengineoutput.c:114
+#, c-format
+msgid "Error %d loading icon image\n"
+msgstr "Fehler %d beim Laden von Icon\n"
+
+#: xevalgraph.c:97
+msgid "Evaluation graph"
+msgstr "Auswertungsgraph"
+
+#: xevalgraph.c:199
+msgid "Eval"
+msgstr ""
+
+#: xhistory.c:154
 msgid "Move list"
 msgstr "Zugliste"
 
-#: xoptions.c:172 xoptions.c:1138
+#: xoptions.c:303 xoptions.c:835
 msgid "browse"
 msgstr ""
 
-#: xoptions.c:314
-msgid "First Engine"
-msgstr ""
-
-#: xoptions.c:314
-msgid "Second Engine"
-msgstr ""
-
-#: xoptions.c:380
-msgid "First you must specify an existing tourney file to clone"
-msgstr ""
-
-#: xoptions.c:384
-msgid "Tournament file:"
-msgstr ""
-
-#: xoptions.c:385
-msgid "Sync after round    (for concurrent playing of a single"
-msgstr ""
-
-#: xoptions.c:386
-msgid "Sync after cycle      tourney with multiple XBoards)"
-msgstr ""
-
-#: xoptions.c:387
-msgid "Tourney participants:"
-msgstr ""
-
-#: xoptions.c:389
-#, fuzzy
-msgid "Select Engine:"
-msgstr "Schachprogramm"
-
-#: xoptions.c:390
-msgid "Tourney type (0 = round-robin, 1 = gauntlet):"
-msgstr ""
-
-#: xoptions.c:391
-msgid "Number of tourney cycles (or Swiss rounds):"
-msgstr ""
-
-#: xoptions.c:392
-msgid "Default Number of Games in Match (or Pairing):"
-msgstr ""
-
-#: xoptions.c:393
-msgid "Pause between Match Games (msec):"
-msgstr ""
-
-#: xoptions.c:394
-#, fuzzy
-msgid "Save Tourney Games on:"
-msgstr "Partien speichern als Datei:"
-
-#: xoptions.c:395
-msgid "Game File with Opening Lines:"
-msgstr ""
-
-#: xoptions.c:396
-msgid "Game Number (-1 or -2 = Auto-Increment):"
-msgstr ""
-
-#: xoptions.c:397
-msgid "File with Start Positions:"
-msgstr ""
-
-#: xoptions.c:398
-msgid "Position Number (-1 or -2 = Auto-Increment):"
-msgstr ""
-
-#: xoptions.c:399
-msgid "Rewind Index after this many Games (0 = never):"
-msgstr ""
-
-#: xoptions.c:400
-msgid "Disable own engine books by default"
-msgstr ""
-
-#: xoptions.c:401
-#, fuzzy
-msgid "Replace Engine"
-msgstr "Schachprogramm"
-
-#: xoptions.c:402
-#, fuzzy
-msgid "Upgrade Engine"
-msgstr "Neues Schachprogramm laden ..."
-
-#: xoptions.c:403
-msgid "Clone Tourney"
-msgstr ""
-
-#: xoptions.c:417
-msgid "Absolute Analysis Scores"
-msgstr ""
-
-#: xoptions.c:418
-msgid "Almost Always Queen (Detour Under-Promote)"
-msgstr ""
-
-#: xoptions.c:420
-msgid "Animate Moving"
-msgstr "Ziehen animieren"
-
-#: xoptions.c:421
-msgid "Auto Flag"
-msgstr "Zeit automatisch reklamieren"
-
-#: xoptions.c:424
-msgid "Drop Menu"
-msgstr ""
-
-#: xoptions.c:425
-msgid "Hide Thinking from Human"
-msgstr ""
-
-#: xoptions.c:427
-msgid "Highlight with Arrow"
-msgstr ""
-
-#: xoptions.c:430
-msgid "Periodic Updates (in Analysis Mode)"
-msgstr ""
-
-#: xoptions.c:431 xoptions.c:541
-msgid "Ponder Next Move"
-msgstr "Nächsten Zug abwägen"
-
-#: xoptions.c:432
-msgid "Popup Exit Messages"
-msgstr ""
-
-#: xoptions.c:434
-#, fuzzy
-msgid "Scores in Move List"
-msgstr "Zugliste abholen"
-
-#: xoptions.c:435
-msgid "Show Coordinates"
-msgstr "Zeige Koordinaten"
-
-#: xoptions.c:436
-msgid "Show Target Squares"
-msgstr ""
-
-#: xoptions.c:437
-msgid "Sticky Windows"
-msgstr ""
-
-#: xoptions.c:438
-msgid "Test Legality"
-msgstr ""
-
-#: xoptions.c:439
-msgid "Flash Moves (0 = no flashing):"
-msgstr ""
-
-#: xoptions.c:440
-msgid "Flash Rate (high = fast):"
-msgstr ""
-
-#: xoptions.c:441
-msgid "Animation Speed (high = slow):"
-msgstr ""
-
-#: xoptions.c:442
-#, fuzzy
-msgid "Zoom factor in Evaluation Graph:"
-msgstr "Auswertungsgraph"
-
-#: xoptions.c:459
-#, c-format
-msgid "Warning: second engine (%s) does not support this!"
-msgstr ""
-
-#: xoptions.c:480
-msgid "normal"
-msgstr ""
-
-#: xoptions.c:481
-msgid "fairy"
-msgstr ""
-
-#: xoptions.c:482
-msgid "FRC"
-msgstr ""
-
-#: xoptions.c:483
-msgid "Seirawan"
-msgstr ""
-
-#: xoptions.c:484
-msgid "wild castle"
-msgstr ""
-
-#: xoptions.c:485
-msgid "Superchess"
-msgstr ""
-
-#: xoptions.c:486
-msgid "no castle"
-msgstr ""
-
-#: xoptions.c:487
-msgid "crazyhouse"
-msgstr ""
-
-#: xoptions.c:488
-msgid "knightmate"
-msgstr ""
-
-#: xoptions.c:489
-msgid "bughouse"
-msgstr ""
-
-#: xoptions.c:490
-msgid "berolina"
-msgstr ""
-
-#: xoptions.c:491
-msgid "shogi (9x9)"
-msgstr ""
-
-#: xoptions.c:492
-msgid "cylinder"
-msgstr ""
-
-#: xoptions.c:493
-msgid "xiangqi (9x10)"
-msgstr ""
-
-#: xoptions.c:494
-msgid "shatranj"
-msgstr ""
-
-#: xoptions.c:495
-msgid "courier (12x8)"
-msgstr ""
-
-#: xoptions.c:496
-msgid "makruk"
-msgstr ""
-
-#: xoptions.c:497
-msgid "Great Shatranj (10x8)"
-msgstr ""
-
-#: xoptions.c:498
-msgid "atomic"
-msgstr ""
-
-#: xoptions.c:499
-msgid "falcon (10x8)"
-msgstr ""
-
-#: xoptions.c:500
-msgid "two kings"
-msgstr ""
-
-#: xoptions.c:501
-msgid "Capablanca (10x8)"
-msgstr ""
-
-#: xoptions.c:502
-msgid "3-checks"
-msgstr ""
-
-#: xoptions.c:503
-msgid "Gothic (10x8)"
-msgstr ""
-
-#: xoptions.c:504
-msgid "suicide"
-msgstr ""
-
-#: xoptions.c:505
-msgid "janus (10x8)"
-msgstr ""
-
-#: xoptions.c:506
-msgid "give-away"
-msgstr ""
-
-#: xoptions.c:507
-msgid "CRC (10x8)"
-msgstr ""
-
-#: xoptions.c:508
-msgid "losers"
-msgstr ""
-
-#: xoptions.c:509
-msgid "grand (10x10)"
-msgstr ""
-
-#: xoptions.c:510
-msgid "Spartan"
-msgstr ""
-
-#: xoptions.c:511
-msgid "Board size ( -1 = default for selected variant):"
-msgstr ""
-
-#: xoptions.c:512
-msgid "Number of Board Ranks:"
-msgstr ""
-
-#: xoptions.c:513
-msgid "Number of Board Files:"
-msgstr ""
-
-#: xoptions.c:514
-msgid "Holdings Size:"
-msgstr ""
-
-#: xoptions.c:516
-msgid ""
-"WARNING: variants with un-orthodox\n"
-"pieces only have built-in bitmaps\n"
-"for -boardSize middling, bulky and\n"
-"petite, and substitute king or amazon\n"
-"for missing bitmaps. (See manual.)"
-msgstr ""
-
-#: xoptions.c:542
-msgid "Maximum Number of CPUs per Engine:"
-msgstr ""
-
-#: xoptions.c:543
-msgid "Polygot Directory:"
-msgstr ""
-
-#: xoptions.c:544
-msgid "Hash-Table Size (MB):"
-msgstr ""
-
-#: xoptions.c:545
-msgid "Nalimov EGTB Path:"
-msgstr ""
-
-#: xoptions.c:546
-msgid "EGTB Cache Size (MB):"
-msgstr ""
-
-#: xoptions.c:547
-msgid "Use GUI Book"
-msgstr ""
-
-#: xoptions.c:548
-msgid "Opening-Book Filename:"
-msgstr ""
-
-#: xoptions.c:549
-msgid "Book Depth (moves):"
-msgstr ""
-
-#: xoptions.c:550
-msgid "Book Variety (0) vs. Strength (100):"
-msgstr ""
-
-#: xoptions.c:551
-msgid "Engine #1 Has Own Book"
-msgstr ""
-
-#: xoptions.c:552
-msgid "Engine #2 Has Own Book          "
-msgstr ""
-
-#: xoptions.c:557
-msgid "Detect all Mates"
-msgstr ""
-
-#: xoptions.c:558
-msgid "Verify Engine Result Claims"
-msgstr ""
-
-#: xoptions.c:559
-msgid "Draw if Insufficient Mating Material"
-msgstr ""
-
-#: xoptions.c:560
-msgid "Adjudicate Trivial Draws (3-Move Delay)"
-msgstr ""
-
-#: xoptions.c:561
-msgid "N-Move Rule:"
-msgstr ""
-
-#: xoptions.c:562
-msgid "N-fold Repeats:"
-msgstr ""
-
-#: xoptions.c:563
-msgid "Draw after N Moves Total:"
-msgstr ""
-
-#: xoptions.c:564
-msgid "Win / Loss Threshold:"
-msgstr ""
-
-#: xoptions.c:565
-msgid "Negate Score of Engine #1"
-msgstr ""
-
-#: xoptions.c:566
-msgid "Negate Score of Engine #2"
-msgstr ""
-
-#: xoptions.c:578
-msgid "Auto-Kibitz"
-msgstr ""
-
-#: xoptions.c:579
-msgid "Auto-Comment"
-msgstr "Automatische Kommentare"
-
-#: xoptions.c:580
-msgid "Auto-Observe"
-msgstr ""
-
-#: xoptions.c:581
-msgid "Auto-Raise Board"
-msgstr "Automatisch das Brett in den Vordergrung bringen"
-
-#: xoptions.c:582
-msgid "Background Observe while Playing"
-msgstr ""
-
-#: xoptions.c:583
-msgid "Dual Board for Background-Observed Game"
-msgstr ""
-
-#: xoptions.c:584
-msgid "Get Move List"
-msgstr "Zugliste abholen"
-
-#: xoptions.c:585
-msgid "Quiet Play"
-msgstr ""
-
-#: xoptions.c:586
-msgid "Seek Graph"
-msgstr ""
-
-#: xoptions.c:587
-msgid "Auto-Refresh Seek Graph"
-msgstr ""
-
-#: xoptions.c:588
-msgid "Premove"
-msgstr ""
-
-#: xoptions.c:589
-msgid "Premove for White"
-msgstr ""
-
-#: xoptions.c:590
-msgid "First White Move:"
-msgstr ""
-
-#: xoptions.c:591
-msgid "Premove for Black"
-msgstr ""
-
-#: xoptions.c:592
-msgid "First Black Move:"
-msgstr ""
-
-#: xoptions.c:594
-msgid "Alarm"
-msgstr "Alarm"
-
-#: xoptions.c:595
-msgid "Alarm Time (msec):"
-msgstr ""
-
-#: xoptions.c:597
-msgid "Colorize Messages"
-msgstr ""
-
-#: xoptions.c:598
-msgid "Shout Text Colors:"
-msgstr ""
-
-#: xoptions.c:599
-msgid "S-Shout Text Colors:"
-msgstr ""
-
-#: xoptions.c:600
-msgid "Channel #1 Text Colors:"
-msgstr ""
-
-#: xoptions.c:601
-msgid "Other Channel Text Colors:"
-msgstr ""
-
-#: xoptions.c:602
-msgid "Kibitz Text Colors:"
-msgstr ""
-
-#: xoptions.c:603
-msgid "Tell Text Colors:"
-msgstr ""
-
-#: xoptions.c:604
-msgid "Challenge Text Colors:"
-msgstr ""
-
-#: xoptions.c:605
-msgid "Request Text Colors:"
-msgstr ""
-
-#: xoptions.c:606
-msgid "Seek Text Colors:"
-msgstr ""
-
-#: xoptions.c:610
-msgid "Exact position match"
-msgstr ""
-
-#: xoptions.c:610
-msgid "Shown position is subset"
-msgstr ""
-
-#: xoptions.c:610
-msgid "Same material with exactly same Pawn chain"
-msgstr ""
-
-#: xoptions.c:611
-msgid "Same material"
-msgstr ""
-
-#: xoptions.c:611
-msgid "Material range (top board half optional)"
-msgstr ""
-
-#: xoptions.c:611
-msgid "Material difference (optional stuff balanced)"
-msgstr ""
-
-#: xoptions.c:623
-msgid "Auto-Display Tags"
-msgstr ""
-
-#: xoptions.c:624
-msgid "Auto-Display Comment"
-msgstr ""
-
-#: xoptions.c:625
-msgid ""
-"Auto-Play speed of loaded games\n"
-"(0 = instant, -1 = off):"
-msgstr ""
-
-#: xoptions.c:626
-msgid "Seconds per Move:"
-msgstr ""
-
-#: xoptions.c:627
-msgid ""
-"\n"
-"options to use in game-viewer mode:"
-msgstr ""
-
-#: xoptions.c:629
-msgid ""
-"\n"
-"Thresholds for position filtering in game list:"
-msgstr ""
-
-#: xoptions.c:630
-msgid "Elo of strongest player at least:"
-msgstr ""
-
-#: xoptions.c:631
-msgid "Elo of weakest player at least:"
-msgstr ""
-
-#: xoptions.c:632
-#, fuzzy
-msgid "No games before year:"
-msgstr "Noch keine Partie geladen"
-
-#: xoptions.c:633
-msgid "Minimum nr consecutive positions:"
-msgstr ""
-
-#: xoptions.c:634
-msgid "Search mode:"
-msgstr ""
-
-#: xoptions.c:635
-msgid "Also match reversed colors"
-msgstr ""
-
-#: xoptions.c:636
-msgid "Also match left-right flipped position"
-msgstr ""
-
-#: xoptions.c:641
-msgid "Auto-Save Games"
-msgstr "Automatisch Partien speichern"
-
-#: xoptions.c:642
-msgid "Save Games on File:"
-msgstr "Partien speichern als Datei:"
-
-#: xoptions.c:643
-msgid "Save Final Positions on File:"
-msgstr ""
-
-#: xoptions.c:644
-msgid "PGN Event Header:"
-msgstr ""
-
-#: xoptions.c:645
-msgid "Old Save Style (as opposed to PGN)"
-msgstr ""
-
-#: xoptions.c:646
-msgid "Include Number Tag in tourney PGN"
-msgstr ""
-
-#: xoptions.c:647
-msgid "Save Score/Depth Info in PGN"
-msgstr ""
-
-#: xoptions.c:648
-msgid "Save Out-of-Book Info in PGN           "
-msgstr ""
-
-#: xoptions.c:653
-msgid "No Sound"
-msgstr ""
-
-#: xoptions.c:654
-msgid "Default Beep"
-msgstr ""
-
-#: xoptions.c:655
-msgid "Above WAV File"
-msgstr ""
-
-#: xoptions.c:656
-msgid "Car Horn"
-msgstr ""
-
-#: xoptions.c:657
-msgid "Cymbal"
-msgstr ""
-
-#: xoptions.c:658
-msgid "Ding"
-msgstr ""
-
-#: xoptions.c:659
-msgid "Gong"
-msgstr ""
-
-#: xoptions.c:660
-msgid "Laser"
-msgstr ""
-
-#: xoptions.c:661
-msgid "Penalty"
-msgstr ""
-
-#: xoptions.c:662
-msgid "Phone"
-msgstr ""
-
-#: xoptions.c:663
-msgid "Pop"
-msgstr ""
-
-#: xoptions.c:664
-msgid "Slap"
-msgstr ""
-
-#: xoptions.c:665
-msgid "Wood Thunk"
-msgstr ""
-
-#: xoptions.c:667
-msgid "User File"
-msgstr "Benutzerdatei"
-
-#: xoptions.c:696
-msgid "Sound Program:"
-msgstr ""
-
-#: xoptions.c:697
-msgid "Sounds Directory:"
-msgstr ""
-
-#: xoptions.c:698
-msgid "User WAV File:"
-msgstr ""
-
-#: xoptions.c:699
-msgid "Try-Out Sound:"
-msgstr ""
-
-#: xoptions.c:700
-msgid "Play"
-msgstr ""
-
-#: xoptions.c:701
-msgid "Move:"
-msgstr "Zug:"
-
-#: xoptions.c:702
-msgid "Win:"
-msgstr ""
-
-#: xoptions.c:703
-msgid "Lose:"
-msgstr ""
-
-#: xoptions.c:704
-msgid "Draw:"
-msgstr "Remi:"
-
-#: xoptions.c:705
-msgid "Unfinished:"
-msgstr ""
-
-#: xoptions.c:706
-msgid "Alarm:"
-msgstr "Alarm:"
-
-#: xoptions.c:707
-msgid "Shout:"
-msgstr ""
-
-#: xoptions.c:708
-msgid "S-Shout:"
-msgstr ""
-
-#: xoptions.c:709
-msgid "Channel:"
-msgstr "Kanal:"
-
-#: xoptions.c:710
-msgid "Channel 1:"
-msgstr "Kanal 1:"
-
-#: xoptions.c:711
-msgid "Tell:"
-msgstr ""
-
-#: xoptions.c:712
-msgid "Kibitz:"
-msgstr "Kibitz:"
-
-#: xoptions.c:713
-msgid "Challenge:"
-msgstr ""
-
-#: xoptions.c:714
-msgid "Request:"
-msgstr ""
-
-#: xoptions.c:715
-msgid "Seek:"
-msgstr ""
-
-#: xoptions.c:802
-msgid "White Piece Color:"
-msgstr ""
-
-#. TRANSLATORS: R = single letter for the color red
-#: xoptions.c:805 xoptions.c:814 xoptions.c:820 xoptions.c:826 xoptions.c:832
-#: xoptions.c:838
-msgid "R"
-msgstr ""
-
-#. TRANSLATORS: G = single letter for the color green
-#: xoptions.c:807 xoptions.c:815 xoptions.c:821 xoptions.c:827 xoptions.c:833
-#: xoptions.c:839
-msgid "G"
-msgstr ""
-
-#. TRANSLATORS: B = single letter for the color blue
-#: xoptions.c:809 xoptions.c:816 xoptions.c:822 xoptions.c:828 xoptions.c:834
-#: xoptions.c:840
-msgid "B"
-msgstr ""
-
-#. TRANSLATORS: D = single letter to make a color darker
-#: xoptions.c:811 xoptions.c:817 xoptions.c:823 xoptions.c:829 xoptions.c:835
-#: xoptions.c:841
-msgid "D"
-msgstr ""
-
-#: xoptions.c:812
-msgid "Black Piece Color:"
-msgstr ""
-
-#: xoptions.c:818
-msgid "Light Square Color:"
-msgstr "Weißes Feld:"
-
-#: xoptions.c:824
-msgid "Dark Square Color:"
-msgstr "Schwarzes Feld:"
-
-#: xoptions.c:830
-msgid "Highlight Color:"
-msgstr ""
-
-#: xoptions.c:836
-msgid "Premove Highlight Color:"
-msgstr ""
-
-#: xoptions.c:842
-msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr ""
-
-#: xoptions.c:844
-msgid "Mono Mode"
-msgstr ""
-
-#: xoptions.c:845
-msgid "Line Gap ( -1 = default for board size):"
-msgstr ""
-
-#: xoptions.c:846
-msgid "Use Board Textures"
-msgstr ""
-
-#: xoptions.c:847
-msgid "Light-Squares Texture File:"
-msgstr ""
-
-#: xoptions.c:848
-msgid "Dark-Squares Texture File:"
-msgstr ""
-
-#: xoptions.c:849
-msgid "Directory with Bitmap Pieces:"
-msgstr ""
-
-#: xoptions.c:850
-msgid "Directory with Pixmap Pieces:"
-msgstr ""
-
-#: xoptions.c:1044
+#: xoptions.c:747
 #, fuzzy
 msgid "Engine has no options"
 msgstr "Schachprogramm %s hat zuv viele Optionen\n"
 
-#: xoptions.c:1376
-msgid "ICS Options"
-msgstr "ICS Optionen"
+#: xoptions.c:1077
+msgid "OK"
+msgstr "OK"
 
-#: xoptions.c:1383
-msgid "Load Game Options"
-msgstr "Spieleinstellungen laden"
+#: xoptions.c:1081
+msgid "cancel"
+msgstr "abbrechen"
 
-#: xoptions.c:1389
-msgid "Save Game Options"
-msgstr "Spieleinstellungen speichern"
-
-#: xoptions.c:1397
-msgid "Sound Options"
-msgstr "Klangeinstellungen"
-
-#: xoptions.c:1403
-msgid "Board Options"
-msgstr "Bretteinstellungen"
-
-#: xoptions.c:1409
-#, fuzzy
-msgid "Adjudicate non-ICS Games"
-msgstr "Gewinn Weiß zuerkennen"
-
-#: xoptions.c:1417
-msgid "Common Engine Settings"
-msgstr ""
-
-#: xoptions.c:1423
-msgid "New Variant"
-msgstr ""
-
-#: xoptions.c:1430
-msgid "General Options"
-msgstr "Allgemeine Einstellungen"
-
-#: xoptions.c:1441
-msgid "Match Options"
-msgstr "Partieeinstellungen"
-
-#: xoptions.c:1544
-msgid "clear"
-msgstr ""
-
-#: xoptions.c:1545 xoptions.c:1602
-msgid "save changes"
-msgstr ""
-
-#: xoptions.c:1610
-#, fuzzy
-msgid "Edit book"
-msgstr "Bearbeiten"
-
-#: xoptions.c:1652
-msgid "ICS input box"
-msgstr "ICS Eingabefeld"
-
-#: xoptions.c:1677
-msgid "Type a move"
-msgstr "Geben Sie einen Zug ein"
-
-#: xoptions.c:1715
-msgid "Engine Settings"
-msgstr ""
-
-#: xoptions.c:1740
-msgid "Select engine from list:"
-msgstr ""
-
-#: xoptions.c:1741
-msgid "or specify one below:"
-msgstr ""
-
-#: xoptions.c:1742
-msgid "Nickname (optional):"
-msgstr ""
-
-#: xoptions.c:1743
-msgid "Use nickname in PGN player tags of engine-engine games"
-msgstr ""
-
-#: xoptions.c:1744
-msgid "Engine Directory:"
-msgstr ""
-
-#: xoptions.c:1745
-msgid "Engine Command:"
-msgstr ""
-
-#: xoptions.c:1746
-msgid "(Directory will be derived from engine path when empty)"
-msgstr ""
-
-#: xoptions.c:1747
-msgid "UCI"
-msgstr ""
-
-#: xoptions.c:1748
-msgid "WB protocol v1 (do not wait for engine features)"
-msgstr ""
-
-#: xoptions.c:1749
-msgid "Must not use GUI book"
-msgstr ""
-
-#: xoptions.c:1750
-msgid "Add this engine to the list"
-msgstr ""
-
-#: xoptions.c:1751
-msgid "Force current variant with this engine"
-msgstr ""
-
-#: xoptions.c:1752
-msgid "Load mentioned engine as"
-msgstr ""
-
-#: xoptions.c:1766
-msgid "Load engine"
-msgstr ""
-
-#: xoptions.c:1785
-#, fuzzy
-msgid "shuffle"
-msgstr "Shuffle"
-
-#: xoptions.c:1786
-msgid "Start-position number:"
-msgstr "Startposition-Nummer:"
-
-#: xoptions.c:1787
-#, fuzzy
-msgid "randomize"
-msgstr "zufällig"
-
-#: xoptions.c:1788
-msgid "pick fixed"
-msgstr ""
-
-#: xoptions.c:1805
-msgid "New Shuffle Game"
-msgstr "Neue Shuffle-Partie"
-
-#: xoptions.c:1855
-msgid "classical"
-msgstr "klassisch"
-
-#: xoptions.c:1856
-msgid "incremental"
-msgstr "Zuwachs"
-
-#: xoptions.c:1857
-msgid "fixed max"
-msgstr ""
-
-#: xoptions.c:1858
-msgid "Moves per session:"
-msgstr ""
-
-#: xoptions.c:1859
-msgid "Initial time (min):"
-msgstr ""
-
-#: xoptions.c:1860
-msgid "Increment or max (sec/move):"
-msgstr ""
-
-#: xoptions.c:1861
-msgid "Time-Odds factors:"
-msgstr ""
-
-#: xoptions.c:1862
-#, fuzzy
-msgid "Engine #1"
-msgstr "Schachprogramm"
-
-#: xoptions.c:1863
-msgid "Engine #2 / Human"
-msgstr ""
-
-#: xoptions.c:1874 xoptions.c:1877 xoptions.c:1882 xoptions.c:1883
-msgid "Unused"
-msgstr ""
-
-#: xoptions.c:1895
-msgid "Time Control"
-msgstr ""
-
-#: args.h:783
+#: args.h:784
 #, c-format
 msgid "%s in settings file\n"
 msgstr ""
 
-#: args.h:793
+#: args.h:794
 #, c-format
 msgid "Bad integer value %s"
 msgstr ""
 
-#: args.h:884 args.h:1102
+#: args.h:885 args.h:1103
 #, fuzzy, c-format
 msgid "Unrecognized argument %s"
 msgstr "%s: nicht erkanntes Argument %s\n"
 
-#: args.h:913
+#: args.h:914
 #, fuzzy, c-format
 msgid "No value provided for argument %s"
 msgstr "%s: nicht erkanntes Argument %s\n"
 
-#: args.h:973
+#: args.h:974
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
 msgstr ""
 
-#: args.h:1057
+#: args.h:1058
 #, fuzzy, c-format
 msgid "Failed to open indirection file %s"
 msgstr "Fehler beim Öffnen der Datei '%s'\n"
 
-#: args.h:1074
+#: args.h:1075
 #, fuzzy, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr "%s: nicht erkanntes Argument %s\n"
+
+#~ msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
+#~ msgstr "%s: titleWidget Geometriefehler %d %d %d %d %d\n"
+
+#~ msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
+#~ msgstr "%s: messageWidget Geometriefehler %d %d %d %d %d\n"
+
+#~ msgid "Drop"
+#~ msgstr "Absetzen"
+
+#, fuzzy
+#~ msgid "could not open: "
+#~ msgstr "Konnte Zug nicht parsen"
+
+#~ msgid "Can't open file"
+#~ msgstr "Datei kann nicht geöffnet werden"
+
+#~ msgid "Failed to open file"
+#~ msgstr "Fehler beim Öffnen der Datei"
+
+#~ msgid "Promotion"
+#~ msgstr "Umwandlung"
+
+#~ msgid "Promote to what?"
+#~ msgstr "In Was soll umgewandelt werden?"
+
+#~ msgid "ok"
+#~ msgstr "Ok"
+
+#~ msgid "AskQuestionProc needed 4 parameters, got %d\n"
+#~ msgstr "AskQuestionProc braucht 4 Parameter, habe %d erhlaten\n"
+
+#~ msgid "enter"
+#~ msgstr "Eingabe"
+
+#~ msgid "This feature is experimental"
+#~ msgstr "Dieses Feature is experimentell"
+
+#~ msgid "filtertext"
+#~ msgstr "Filtertext"
+
+#~ msgid "apply"
+#~ msgstr "anwenden"
+
+#~ msgid "load"
+#~ msgstr "lade"
+
+#~ msgid "prev"
+#~ msgstr "vorh."
 
 #~ msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 #~ msgstr "Animiere Züge: Figur %d hüpft von %d,%d zu %d,%d\n"
@@ -2978,9 +3037,6 @@ msgstr "%s: nicht erkanntes Argument %s\n"
 
 #~ msgid "minutes for each"
 #~ msgstr "Minuten pro"
-
-#~ msgid "moves"
-#~ msgstr "Züge"
 
 #~ msgid "             "
 #~ msgstr "             "
