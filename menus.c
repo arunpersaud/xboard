@@ -196,6 +196,17 @@ CopyFENToClipboard ()
 }
 
 void
+CopyPositionProc ()
+{
+    static char *selected_fen_position=NULL;
+    if(gameMode == EditPosition) EditPositionDone(TRUE);
+    if (selected_fen_position) free(selected_fen_position);
+    selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
+    if (!selected_fen_position) return;
+    CopySomething(selected_fen_position);
+}
+
+void
 CopyGameProc ()
 {
   int ret;
@@ -203,14 +214,14 @@ CopyGameProc ()
   ret = SaveGameToFile(gameCopyFilename, FALSE);
   if (!ret) return;
 
-  CopySomething();
+  CopySomething(NULL);
 }
 
 void
 CopyGameListProc ()
 {
   if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
-  CopySomething();
+  CopySomething(NULL);
 }
 
 void

@@ -225,8 +225,6 @@ extern char *getenv();
 #endif
 
 int main P((int argc, char **argv));
-FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
-		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
@@ -252,7 +250,6 @@ static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
 		   u_int wreq, u_int hreq));
 void CreateGrid P((void));
-int EventToSquare P((int x, int limit));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void DelayedDrag P((void));
 static void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
@@ -272,24 +269,13 @@ void BlackClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void DrawPositionProc P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
-void XDrawPosition P((Widget w, /*Boolean*/int repaint,
-		     Board board));
 void CommentClick P((Widget w, XEvent * event,
 		   String * params, Cardinal * nParams));
-void CommentPopUp P((char *title, char *label));
-void CommentPopDown P((void));
 void ICSInputBoxPopUp P((void));
 void ICSInputBoxPopDown P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
 		      FileProc proc, char *openMode));
-void FileNamePopDown P((void));
-void FileNameCallback P((Widget w, XtPointer client_data,
-			 XtPointer call_data));
-void FileNameAction P((Widget w, XEvent *event,
-		       String *prms, Cardinal *nprms));
 void AskQuestionReplyAction P((Widget w, XEvent *event,
-			  String *prms, Cardinal *nprms));
-void AskQuestionProc P((Widget w, XEvent *event,
 			  String *prms, Cardinal *nprms));
 void AskQuestionPopDown P((void));
 void PromotionPopDown P((void));
@@ -309,13 +295,9 @@ void DisplayMove P((int moveNumber));
 void ICSInitScript P((void));
 static char *ExpandPathName P((char *path));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
-void GameListOptionsPopDown P(());
-void GenericPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
 int CopyMemoProc P(());
-void DrawArrowHighlight P((int fromX, int fromY, int toX,int toY));
-Boolean IsDrawArrowEnabled P(());
 
 /*
 * XBoard depends on Xt R4 or higher
@@ -326,11 +308,11 @@ int xScreen;
 Display *xDisplay;
 Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
-  jailSquareColor, highlightSquareColor, premoveHighlightColor;
+  highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
-GC lightSquareGC, darkSquareGC, jailSquareGC, lineGC, wdPieceGC, wlPieceGC,
+GC lightSquareGC, darkSquareGC, lineGC, wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
-  wjPieceGC, bjPieceGC, prelineGC, countGC;
+  prelineGC, countGC;
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
@@ -340,7 +322,6 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
 Widget historyShell, evalGraphShell, gameListShell;
 XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
-XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
 #if ENABLE_NLS
 XFontSet fontSet, clockFontSet;
 #else
@@ -540,8 +521,6 @@ XtActionsRec boardActions[] = {
     { "HandlePV", HandlePV },
     { "SelectPV", SelectPV },
     { "StopPV", StopPV },
-    { "FileNameAction", FileNameAction },
-    { "AskQuestionProc", AskQuestionProc },
     { "AskQuestionReplyAction", AskQuestionReplyAction },
     { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
@@ -552,11 +531,8 @@ XtActionsRec boardActions[] = {
     { "TempBackwardProc", TempBackwardProc },
     { "TempForwardProc", TempForwardProc },
     { "CommentClick", (XtActionProc) CommentClick },
-    { "CommentPopDown", (XtActionProc) CommentPopDown },
-    { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
-    { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
@@ -679,7 +655,6 @@ char ICSInputTranslations[] =
 char commentTranslations[] = "<Btn3Down>: extend-end() select-start() CommentClick() \n";
 
 String xboardResources[] = {
-    "*fileName*value.translations: #override\\n <Key>Return: FileNameAction()",
     "*question*value.translations: #override\\n <Key>Return: AskQuestionReplyAction()",
     "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
     NULL
@@ -1640,21 +1615,8 @@ XBoard square size (hint): %d\n\
     /* [HR] height treated separately (hacked) */
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    if (appData.showJail == 1) {
-	/* Jail on top and bottom */
-	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
-	XtSetArg(boardArgs[2], XtNheight,
-		 boardHeight + 2*(lineGap + squareSize));
-    } else if (appData.showJail == 2) {
-	/* Jail on sides */
-	XtSetArg(boardArgs[1], XtNwidth,
-		 boardWidth + 2*(lineGap + squareSize));
-	XtSetArg(boardArgs[2], XtNheight, boardHeight);
-    } else {
-	/* No jail */
 	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
 	XtSetArg(boardArgs[2], XtNheight, boardHeight);
-    }
 
     /*
      * Determine what fonts to use.
@@ -2364,13 +2326,10 @@ DeleteGCs ()
 	}
     } else {
 	XtReleaseGC(shellWidget, prelineGC);
-	XtReleaseGC(shellWidget, jailSquareGC);
 	XtReleaseGC(shellWidget, wdPieceGC);
 	XtReleaseGC(shellWidget, wlPieceGC);
-	XtReleaseGC(shellWidget, wjPieceGC);
 	XtReleaseGC(shellWidget, bdPieceGC);
 	XtReleaseGC(shellWidget, blPieceGC);
-	XtReleaseGC(shellWidget, bjPieceGC);
     }
 }
 
@@ -2436,13 +2395,10 @@ CreateGCs (int redo)
 	prelineGC = CreateOneGC(&gc_values, premoveHighlightColor, premoveHighlightColor);
 	lightSquareGC = CreateOneGC(&gc_values, lightSquareColor, darkSquareColor);
 	darkSquareGC = CreateOneGC(&gc_values, darkSquareColor, lightSquareColor);
-	jailSquareGC = CreateOneGC(&gc_values, jailSquareColor, jailSquareColor);
 	wdPieceGC = CreateOneGC(&gc_values, whitePieceColor, darkSquareColor);
 	wlPieceGC = CreateOneGC(&gc_values, whitePieceColor, lightSquareColor);
-	wjPieceGC = CreateOneGC(&gc_values, whitePieceColor, jailSquareColor);
 	bdPieceGC = CreateOneGC(&gc_values, blackPieceColor, darkSquareColor);
 	blPieceGC = CreateOneGC(&gc_values, blackPieceColor, lightSquareColor);
-	bjPieceGC = CreateOneGC(&gc_values, blackPieceColor, jailSquareColor);
     }
 }
 
@@ -3340,7 +3296,7 @@ BlankSquare (int x, int y, int color, ChessSquare piece, Drawable dest, int fac)
 	    break;
 	  case 2: /* neutral */
 	  default:
-	    pm = xpmJailSquare;
+	    pm = xpmJailSquare; // [HGM] this is wrong, but apparently never used?
 	    break;
 	}
 	XCopyArea(xDisplay, pm, dest, wlPieceGC, 0, 0,
@@ -3356,7 +3312,7 @@ BlankSquare (int x, int y, int color, ChessSquare piece, Drawable dest, int fac)
 	    break;
 	  case 2: /* neutral */
 	  default:
-	    gc = jailSquareGC;
+	    gc = lineGC;
 	    break;
 	}
 	XFillRectangle(xDisplay, dest, gc, x*fac, y*fac, squareSize, squareSize);
@@ -3433,11 +3389,7 @@ colorDrawPiece (ChessSquare piece, int square_color, int x, int y, Drawable dest
 	break;
       case 2: /* neutral */
       default:
-	XCopyPlane(xDisplay, *pieceToSolid(piece),
-		   dest, (int) piece < (int) BlackPawn
-		   ? wjPieceGC : bjPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
+	break; // should never contain pieces
     }
 }
 
@@ -3794,7 +3746,6 @@ ICSInputBoxPopUp ()
     InputBoxPopup();
 }
 
-extern Option boxOptions[];
 
 void
 ICSInputBoxPopDown ()
@@ -3836,79 +3787,6 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
 	  // [HGM] delay to give expose event opportunity to redraw board after browser-dialog popdown before lengthy load starts
 	  ScheduleDelayedEvent(&DelayedLoad, 50);
     }
-}
-
-void
-FileNamePopDown ()
-{
-    if (!filenameUp) return;
-    XtPopdown(fileNameShell);
-    XtDestroyWidget(fileNameShell);
-    filenameUp = False;
-    ModeHighlight();
-}
-
-void
-FileNameCallback (Widget w, XtPointer client_data, XtPointer call_data)
-{
-    String name;
-    Arg args[16];
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("cancel")) == 0) {
-        FileNamePopDown();
-        return;
-    }
-
-    FileNameAction(w, NULL, NULL, NULL);
-}
-
-void
-FileNameAction (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    char buf[MSG_SIZ];
-    String name;
-    FILE *f;
-    char *p, *fullname;
-    int index;
-
-    name = XawDialogGetValueString(w = XtParent(w));
-
-    if ((name != NULL) && (*name != NULLCHAR)) {
-        safeStrCpy(buf, name, sizeof(buf)/sizeof(buf[0]) );
-	XtPopdown(w = XtParent(XtParent(w)));
-	XtDestroyWidget(w);
-	filenameUp = False;
-
-	p = strrchr(buf, ' ');
-	if (p == NULL) {
-	    index = 0;
-	} else {
-	    *p++ = NULLCHAR;
-	    index = atoi(p);
-	}
-	fullname = ExpandPathName(buf);
-	if (!fullname) {
-	    ErrorPopUp(_("Error"), _("Can't open file"), FALSE);
-	}
-	else {
-	    f = fopen(fullname, fileOpenMode);
-	    if (f == NULL) {
-		DisplayError(_("Failed to open file"), errno);
-	    } else {
-		(void) (*fileProc)(f, index, buf);
-	    }
-	}
-	ModeHighlight();
-	return;
-    }
-
-    XtPopdown(w = XtParent(XtParent(w)));
-    XtDestroyWidget(w);
-    filenameUp = False;
-    ModeHighlight();
 }
 
 void
@@ -4211,13 +4089,31 @@ SendPositionSelection (Widget w, Atom *selection, Atom *target,
 {
   char *selection_tmp;
 
-  if (!selected_fen_position) return False; /* should never happen */
+//  if (!selected_fen_position) return False; /* should never happen */
   if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
+   if (!selected_fen_position) { // since it never happens, we use it for indicating a game is being sent
+    FILE* f = fopen(gameCopyFilename, "r"); // This code, taken from SendGameSelection, now merges the two
+    long len;
+    size_t count;
+    if (f == NULL) return False;
+    fseek(f, 0, 2);
+    len = ftell(f);
+    rewind(f);
+    selection_tmp = XtMalloc(len + 1);
+    count = fread(selection_tmp, 1, len, f);
+    fclose(f);
+    if (len != count) {
+      XtFree(selection_tmp);
+      return False;
+    }
+    selection_tmp[len] = NULLCHAR;
+   } else {
     /* note: since no XtSelectionDoneProc was registered, Xt will
      * automatically call XtFree on the value returned.  So have to
      * make a copy of it allocated with XtMalloc */
     selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
     safeStrCpy(selection_tmp, selected_fen_position, strlen(selected_fen_position)+16 );
+   }
 
     *value_return=selection_tmp;
     *length_return=strlen(selection_tmp);
@@ -4254,17 +4150,14 @@ SendPositionSelection (Widget w, Atom *selection, Atom *target,
  * Widget which was clicked on was, or what the click event was
  */
 void
-CopyPositionProc ()
+CopySomething (char *src)
 {
+    selected_fen_position = src;
     /*
      * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
      * have a notion of a position that is selected but not copied.
      * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
      */
-    if(gameMode == EditPosition) EditPositionDone(TRUE);
-    if (selected_fen_position) free(selected_fen_position);
-    selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
-    if (!selected_fen_position) return;
     XtOwnSelection(menuBarWidget, XA_PRIMARY,
 		   CurrentTime,
 		   SendPositionSelection,
@@ -4305,80 +4198,6 @@ PastePositionProc ()
       CurrentTime
     );
     return;
-}
-
-static Boolean
-SendGameSelection (Widget w, Atom *selection, Atom *target,
-		   Atom *type_return, XtPointer *value_return,
-		   unsigned long *length_return, int *format_return)
-{
-  char *selection_tmp;
-
-  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
-    FILE* f = fopen(gameCopyFilename, "r");
-    long len;
-    size_t count;
-    if (f == NULL) return False;
-    fseek(f, 0, 2);
-    len = ftell(f);
-    rewind(f);
-    selection_tmp = XtMalloc(len + 1);
-    count = fread(selection_tmp, 1, len, f);
-    fclose(f);
-    if (len != count) {
-      XtFree(selection_tmp);
-      return False;
-    }
-    selection_tmp[len] = NULLCHAR;
-    *value_return = selection_tmp;
-    *length_return = len;
-    *type_return = *target;
-    *format_return = 8; /* bits per byte */
-    return True;
-  } else if (*target == XA_TARGETS(xDisplay)) {
-    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
-    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
-    targets_tmp[1] = XA_STRING;
-    *value_return = targets_tmp;
-    *type_return = XA_ATOM;
-    *length_return = 2;
-#if 0
-    // This code leads to a read of value_return out of bounds on 64-bit systems.
-    // Other code which I have seen always sets *format_return to 32 independent of
-    // sizeof(Atom) without adjusting *length_return. For instance see TextConvertSelection()
-    // at http://cgit.freedesktop.org/xorg/lib/libXaw/tree/src/Text.c -- BJ
-    *format_return = 8 * sizeof(Atom);
-    if (*format_return > 32) {
-      *length_return *= *format_return / 32;
-      *format_return = 32;
-    }
-#else
-    *format_return = 32;
-#endif
-    return True;
-  } else {
-    return False;
-  }
-}
-
-void
-CopySomething ()
-{
-  /*
-   * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
-   * have a notion of a game that is selected but not copied.
-   * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
-   */
-  XtOwnSelection(menuBarWidget, XA_PRIMARY,
-		 CurrentTime,
-		 SendGameSelection,
-		 NULL/* lose_ownership_proc */ ,
-		 NULL/* transfer_done_proc */);
-  XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		 CurrentTime,
-		 SendGameSelection,
-		 NULL/* lose_ownership_proc */ ,
-		 NULL/* transfer_done_proc */);
 }
 
 /* note: when called from menu all parameters are NULL, so no clue what the
@@ -4593,17 +4412,6 @@ DisplayIcsInteractionTitle (String message)
 
 char pendingReplyPrefix[MSG_SIZ];
 ProcRef pendingReplyPR;
-
-void
-AskQuestionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    if (*nprms != 4) {
-	fprintf(stderr, _("AskQuestionProc needed 4 parameters, got %d\n"),
-		*nprms);
-	return;
-    }
-    AskQuestionEvent(prms[0], prms[1], prms[2], prms[3]);
-}
 
 void
 AskQuestionPopDown ()

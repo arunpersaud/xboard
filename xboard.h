@@ -140,6 +140,7 @@ void GetWidgetText P((Option *opt, char **buf));
 void ClearTextWidget P((Option *opt));
 void InputBoxPopup P((void));
 void CatchDeleteWindow(Widget w, String procname);
+void GenericPopDown P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void PlaySound P((char *name));
 void ParseIcsTextColors P((void));
 void InitDrawingSizes P((int i, int j));

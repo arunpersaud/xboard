@@ -24,6 +24,7 @@
 #define _XGAMEL_H 1
 
 void ShowGameListProc P((void));
+void GameListOptionsPopDown P((void));
 void LoadSelectedProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void SetFilterProc P((Widget w, XEvent *event,
