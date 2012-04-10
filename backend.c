@@ -12148,7 +12148,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
       AnalyzeFileEvent();
     }
 
-    if (!matchMode && pos >= 0) {
+    if (!matchMode && pos > 0) {
 	ToNrEvent(pos); // [HGM] no autoplay if selected on position
     } else
     if (matchMode || appData.timeDelay == 0) {
