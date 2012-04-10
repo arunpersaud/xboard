@@ -70,16 +70,16 @@ int  windowMode = 1;
 char *mem1, *mem2; // dummies, as this dialog can never be OK'ed
 
 Option engoutOptions[] = {
-{  0,  LL|T2T,           17, NULL, NULL, "", NULL, Label, "" },
+{  0,  LL|T2T,           17, NULL, NULL, NULL, NULL, Label, " " },
 {  0, L2L|T2T|SAME_ROW, 163, NULL, NULL, NULL, NULL, Label, N_("engine name") },
-{  0,     T2T|SAME_ROW,  30, NULL, NULL, "", NULL, Label, "" },
+{  0,     T2T|SAME_ROW,  30, NULL, NULL, NULL, NULL, Label, " " },
 {  0, R2R|T2T|SAME_ROW, 188, NULL, NULL, NULL, NULL, Label, N_("move") },
 {  0,  RR|T2T|SAME_ROW,  80, NULL, NULL, NULL, NULL, Label, N_("NPS") },
 {200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem1, "", NULL, TextBox, "" },
 {  0,         0,         0, NULL, NULL, "", NULL, Break , "" },
-{  0,  LL|T2T,           17, NULL, NULL, "", NULL, Label, "" },
+{  0,  LL|T2T,           17, NULL, NULL, NULL, NULL, Label, " " },
 {  0, L2L|T2T|SAME_ROW, 163, NULL, NULL, NULL, NULL, Label, N_("engine name") },
-{  0,     T2T|SAME_ROW,  30, NULL, NULL, "", NULL, Label, "" },
+{  0,     T2T|SAME_ROW,  30, NULL, NULL, NULL, NULL, Label, " " },
 {  0, R2R|T2T|SAME_ROW, 188, NULL, NULL, NULL, NULL, Label, N_("move") },
 {  0,  RR|T2T|SAME_ROW,  80, NULL, NULL, NULL, NULL, Label, N_("NPS") },
 {200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem2, "", NULL, TextBox, "" },
