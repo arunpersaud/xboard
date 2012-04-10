@@ -1403,18 +1403,18 @@ XBoard square size (hint): %d\n\
 #else
 						&clockFonStruct);
 #endif
-    boardWidget      = optList[22].handle;
-    menuBarWidget    = optList[ 0].handle;
-    dropMenu         = optList[25].handle;
-    titleWidget = optList[optList[10].type != -1 ? 10 : 13].handle;
+    boardWidget      = optList[W_BOARD].handle;
+    menuBarWidget    = optList[W_MENU].handle;
+    dropMenu         = optList[W_DROP].handle;
+    titleWidget = optList[optList[W_TITLE].type != -1 ? W_TITLE : W_SMALL].handle;
     formWidget  = XtParent(boardWidget);
     XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
     XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
-    XtGetValues(optList[11].handle, args, 2);
+    XtGetValues(optList[W_WHITE].handle, args, 2);
     if (appData.showButtonBar) { // can't we use timer pixels for this? (Or better yet, just black & white?)
       XtSetArg(args[0], XtNbackground, &buttonBackgroundPixel);
       XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
-      XtGetValues(optList[18].handle, args, 2);
+      XtGetValues(optList[W_PAUSE].handle, args, 2);
     }
     AppendEnginesToMenu(appData.recentEngineList);
 
@@ -2298,7 +2298,7 @@ EnableMenuItem (char *menuRef, int state)
 void
 EnableButtonBar (int state)
 {
-    XtSetSensitive(optList[15].handle, state);
+    XtSetSensitive(optList[W_BUTTON].handle, state);
 }
 
 
@@ -2339,7 +2339,7 @@ MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
 void
 AppendMenuItem (char *msg, int n)
 {
-    CreateMenuItem((Widget) optList[6].textValue, msg, (XtCallbackProc) MenuEngineSelect, n);
+    CreateMenuItem((Widget) optList[W_ENGIN].textValue, msg, (XtCallbackProc) MenuEngineSelect, n);
 }
 
 void
@@ -2846,7 +2846,7 @@ FreezeUI ()
 {
   if (frozen) return;
   /* Grab by a widget that doesn't accept input */
-  XtAddGrab(optList[14].handle, TRUE, FALSE);
+  XtAddGrab(optList[W_MESSG].handle, TRUE, FALSE);
   frozen = 1;
 }
 
@@ -2855,7 +2855,7 @@ void
 ThawUI ()
 {
   if (!frozen) return;
-  XtRemoveGrab(optList[14].handle);
+  XtRemoveGrab(optList[W_MESSG].handle);
   frozen = 0;
 }
 
@@ -2881,12 +2881,12 @@ ModeHighlight ()
 	    Pixel oldbg, oldfg;
 	    XtSetArg(args[0], XtNbackground, &oldbg);
 	    XtSetArg(args[1], XtNforeground, &oldfg);
-	    XtGetValues(optList[18].handle,
+	    XtGetValues(optList[W_PAUSE].handle,
 			args, 2);
 	    XtSetArg(args[0], XtNbackground, oldfg);
 	    XtSetArg(args[1], XtNforeground, oldbg);
 	  }
-	  XtSetValues(optList[18].handle, args, 2);
+	  XtSetValues(optList[W_PAUSE].handle, args, 2);
 	}
     }
 

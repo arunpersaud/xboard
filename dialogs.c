@@ -1884,9 +1884,9 @@ SizeKludge (int n)
 {   // callback called by GenericPopUp immediately after sizing the menu bar
     int width = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
     int w = width - 44 - mainOptions[n].min;
-    mainOptions[10].max = w; // width left behind menu bar
+    mainOptions[W_TITLE].max = w; // width left behind menu bar
     if(w < 0.4*width) // if no reasonable amount of space for title, force small layout
-	mainOptions[13].type = mainOptions[10].type, mainOptions[10].type = -1; 
+	mainOptions[W_SMALL].type = mainOptions[W_TITLE].type, mainOptions[W_TITLE].type = -1; 
 }
 
 void
@@ -1926,8 +1926,8 @@ Exp (int n, int x, int y)
     }
 
     switch(menuNr) {
-      case 0: return &mainOptions[shiftKey ? 23: 24];
-      case 1: SetupDropMenu(); return &mainOptions[25];
+      case 0: return &mainOptions[shiftKey ? W_MENUW: W_MENUB];
+      case 1: SetupDropMenu(); return &mainOptions[W_DROP];
       case 2:
       case -1: ErrorPopDown();
       case -2:
@@ -1941,16 +1941,16 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
 {
     extern Option *dialogOptions[];
     int i, size = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
-    mainOptions[11].choice = (char**) clockFontThingy;
-    mainOptions[12].choice = (char**) clockFontThingy;
-    mainOptions[22].value = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
-    mainOptions[22].max = mainOptions[13].max = size; // board size
-    mainOptions[13].max = size - 2; // board title (subtract border!)
-    mainOptions[12].max = mainOptions[11].max = size/2-3; // clock width
-    mainOptions[14].max = appData.showButtonBar ? size-130 : size-2; // message
-    mainOptions[0].max = size-40; // menu bar
-    mainOptions[10].type = appData.titleInWindow ? Label : -1 ;
-    if(!appData.showButtonBar) for(i=15; i<22; i++) mainOptions[i].type = -1;
+    mainOptions[W_WHITE].choice = (char**) clockFontThingy;
+    mainOptions[W_BLACK].choice = (char**) clockFontThingy;
+    mainOptions[W_BOARD].value = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
+    mainOptions[W_BOARD].max = mainOptions[W_SMALL].max = size; // board size
+    mainOptions[W_SMALL].max = size - 2; // board title (subtract border!)
+    mainOptions[W_BLACK].max = mainOptions[W_WHITE].max = size/2-3; // clock width
+    mainOptions[W_MESSG].max = appData.showButtonBar ? size-130 : size-2; // message
+    mainOptions[W_MENU].max = size-40; // menu bar
+    mainOptions[W_TITLE].type = appData.titleInWindow ? Label : -1 ;
+    if(!appData.showButtonBar) for(i=W_BUTTON; i<W_BOARD; i++) mainOptions[i].type = -1;
     for(i=0; i<8; i++) mainOptions[i+1].choice = (char**) menuBar[i].mi;
     GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1);
     return mainOptions;
@@ -1979,11 +1979,11 @@ void
 SlavePopUp ()
 {
     // copy params from main board
-    dualOptions[0].choice = mainOptions[11].choice;
-    dualOptions[1].choice = mainOptions[12].choice;
-    dualOptions[3].value = mainOptions[22].value;
-    dualOptions[3].max = dualOptions[2].max = mainOptions[22].max; // board size
-    dualOptions[0].max = dualOptions[1].max = mainOptions[11].max; // clock width
+    dualOptions[0].choice = mainOptions[W_WHITE].choice;
+    dualOptions[1].choice = mainOptions[W_BLACK].choice;
+    dualOptions[3].value = mainOptions[W_BOARD].value;
+    dualOptions[3].max = dualOptions[2].max = mainOptions[W_BOARD].max; // board size
+    dualOptions[0].max = dualOptions[1].max = mainOptions[W_WHITE].max; // clock width
     GenericPopUp(dualOptions, "XBoard", DummyDlg, BoardWindow, NONMODAL, 1);
 }
 
@@ -1995,7 +1995,7 @@ DisplayWhiteClock (long timeRemaining, int highlight)
 	DisplayTimerLabel(&dualOptions[0], _("White"), timeRemaining, highlight);
 	return;
     }
-    DisplayTimerLabel(&mainOptions[11], _("White"), timeRemaining, highlight);
+    DisplayTimerLabel(&mainOptions[W_WHITE], _("White"), timeRemaining, highlight);
     if(highlight) SetClockIcon(0);
 }
 
@@ -2007,7 +2007,7 @@ DisplayBlackClock (long timeRemaining, int highlight)
 	DisplayTimerLabel(&dualOptions[1], _("Black"), timeRemaining, highlight);
 	return;
     }
-    DisplayTimerLabel(&mainOptions[12], _("Black"), timeRemaining, highlight);
+    DisplayTimerLabel(&mainOptions[W_BLACK], _("Black"), timeRemaining, highlight);
     if(highlight) SetClockIcon(1);
 }
 
@@ -2039,8 +2039,8 @@ DisplayMessage (char *message, char *extMessage)
   /* need to test if messageWidget already exists, since this function
      can also be called during the startup, if for example a Xresource
      is not set up correctly */
-  if(mainOptions[14].handle)
-    SetWidgetLabel(&mainOptions[14], message);
+  if(mainOptions[W_MESSG].handle)
+    SetWidgetLabel(&mainOptions[W_MESSG], message);
 
   return;
 }

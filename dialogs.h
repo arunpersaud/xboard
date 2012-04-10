@@ -79,6 +79,24 @@
 #define MODAL 1
 #define NONMODAL 0
 
+/* Board widget numbers, MUST correspond to mainOptions array */
+
+#define W_MENU   0  // main menu bar
+#define W_ENGIN  6  // engine menu
+#define W_TITLE 10
+#define W_WHITE 11
+#define W_BLACK 12
+#define W_SMALL 13  // title in small layout
+#define W_MESSG 14 
+#define W_BUTTON 15 // button bar
+#define W_PAUSE 18
+#define W_BOARD 22
+#define W_MENUW 23
+#define W_MENUB 24
+#define W_DROP  25  // drop (popup) menu
+ 
+
+
 typedef enum {  // identifier of dialogs done by GenericPopup
 TransientDlg=0, // transient: grabs mouse events and is destroyed at pop-down (so other dialog can use this ID next time)
 CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, NoDlg, DummyDlg, HistoryDlg, // persistent: no grab and reused
