@@ -1193,6 +1193,11 @@ main (int argc, char **argv)
       programName++;
 
 #ifdef ENABLE_NLS
+    XtSetLanguageProc(NULL, NULL, NULL);
+    if (appData.debugMode) {
+      fprintf(debugFP, "locale = %s\n", setlocale(LC_ALL, NULL));
+    }
+
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
 #endif
@@ -1256,12 +1261,6 @@ main (int argc, char **argv)
       XtAppInitialize(&appContext, "XBoard", shellOptions,
 		      XtNumber(shellOptions),
 		      &argc, argv, xboardResources, NULL, 0);
-#ifdef ENABLE_NLS
-    XtSetLanguageProc(NULL, NULL, NULL);
-    if (appData.debugMode) {
-      fprintf(debugFP, "locale = %s\n", setlocale(LC_ALL, NULL));
-    }
-#endif
 
     XtGetApplicationResources(shellWidget, (XtPointer) &appData,
 			      clientResources, XtNumber(clientResources),
