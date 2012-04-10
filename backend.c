@@ -7797,7 +7797,7 @@ HandleMachineMove (char *message, ChessProgramState *cps)
     ChessMove moveType;
     char promoChar;
     char *p, *pv=buf1;
-    int machineWhite;
+    int machineWhite, oldError;
     char *bookHit;
 
     if(cps == &pairing && sscanf(message, "%d-%d", &savedWhitePlayer, &savedBlackPlayer) == 2) {
@@ -7811,7 +7811,7 @@ HandleMachineMove (char *message, ChessProgramState *cps)
 	return; // Skim the pairing messages here.
     }
 
-    cps->userError = 0;
+    oldError = cps->userError; cps->userError = 0;
 
 FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book hit
     /*
@@ -8391,7 +8391,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	    }
 	    if(GetDelayedEvent()) CancelDelayedEvent(), ThawUI(); // [HGM] cancel remaining loading effort scheduled after feature timeout
 	    DisplayMessage("", ""); // erase waiting message
-	    DisplayError(buf1, 0);
+	    if(!oldError) DisplayError(buf1, 0); // if reason neatly announced, suppress general error popup
 	}
 	return;
     }
