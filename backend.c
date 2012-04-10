@@ -917,7 +917,7 @@ Load (ChessProgramState *cps, int i)
     while(q = strchr(p, SLASH)) p = q+1;
     if(*p== NULLCHAR) { DisplayError(_("You did not specify the engine executable"), 0); return; }
     if(engineDir[0] != NULLCHAR) {
-	ASSIGN(appData.directory[i], engineDir);
+	ASSIGN(appData.directory[i], engineDir); p = engineName;
     } else if(p != engineName) { // derive directory from engine path, when not given
 	p[-1] = 0;
 	ASSIGN(appData.directory[i], engineName);
