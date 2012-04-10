@@ -895,7 +895,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 		forelast = lastrow;
 	    } else chain = 0, shrink = FALSE;
 	    j = SetPositionAndSize(args, last, lastrow, 3 /* border */,
-				   option[i].max /* w */, shrink ? textHeight : 0 /* h */, chain /* chain */);
+				   option[i].max /* w */, shrink ? textHeight : 0 /* h */, option[i].min & 0xE | chain /* chain */);
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
 	    if(option[i].textValue) { // special for buttons of New Variant dialog
 		XtSetArg(args[j], XtNsensitive, appData.noChessProgram || option[i].value < 0
