@@ -2101,6 +2101,7 @@ void FileSelProc P((int n, int sel));
 void SetTypeFilter P((int n));
 int BrowseOK P((int n));
 void Switch P((int n));
+void CreateDir P((int n));
 
 Option browseOptions[] = {
 {   0,    LR|T2T,      500, NULL, NULL, NULL, NULL, Label, title },
@@ -2110,7 +2111,8 @@ Option browseOptions[] = {
 {   0, R2R|TT|SAME_ROW, 70, NULL, (void*) &Switch, NULL, NULL, Button, N_("by type") },
 { 300,    L2L|TB,      250, NULL, (void*) folderList, (char*) &DirSelProc, NULL, ListBox, "" },
 { 300, R2R|TB|SAME_ROW,250, NULL, (void*) fileList, (char*) &FileSelProc, NULL, ListBox, "" },
-{   0,       0,        350, NULL, (void*) &fileName, NULL, NULL, TextBox, N_("Filename:") },
+{   0,       0,        300, NULL, (void*) &fileName, NULL, NULL, TextBox, N_("Filename:") },
+{   0,    SAME_ROW,    120, NULL, (void*) &CreateDir, NULL, NULL, Button, N_("New directory") },
 {   0, COMBO_CALLBACK, 150, NULL, (void*) &SetTypeFilter, NULL, FileTypes, ComboBox, N_("File type:") },
 {   0,    SAME_ROW,      0, NULL, (void*) &BrowseOK, "", NULL, EndMark , "" }
 };
@@ -2228,6 +2230,21 @@ Refresh (int pathFlag)
     ListDir(pathFlag); // and make new one
     LoadListBox(&browseOptions[5], "");
     LoadListBox(&browseOptions[6], "");
+    SetWidgetLabel(&browseOptions[0], title);
+}
+
+void
+CreateDir (int n)
+{
+    char *name, *errmsg = "";
+    GetWidgetText(&browseOptions[n-1], &name);
+    if(!name[0]) errmsg = _("FIRST TYPE DIRECTORY NAME HERE"); else
+    if(mkdir(name, 0755)) errmsg = _("TRY ANOTHER NAME");
+    else {
+	chdir(name);
+	Refresh(-1);
+    }
+    SetWidgetText(&browseOptions[n-1], errmsg, BrowserDlg);
 }
 
 void
@@ -2256,7 +2273,6 @@ DirSelProc (int n, int sel)
 {
     if(!chdir(folderList[sel])) { // cd succeeded, so we are in new directory now
 	Refresh(-1);
-	SetWidgetLabel(&browseOptions[0], title);
     }
 }
 
@@ -2264,19 +2280,19 @@ FILE *
 Browse (DialogClass dlg, char *label, char *proposed, char *ext, Boolean pathFlag, char *mode, char **name, FILE **fp)
 {
     int j=0;
-    savFP = fp; savMode = mode, namePtr = name, savCps = currentCps, oldVal = values[8]; // save params, for use in callback
+    savFP = fp; savMode = mode, namePtr = name, savCps = currentCps, oldVal = values[9]; // save params, for use in callback
     ASSIGN(extFilter, ext);
     ASSIGN(fileName, proposed ? proposed : "");
     for(j=0; Extensions[j]; j++) // look up actual value in list of possible values, to get selection nr
 	if(extFilter && !strcmp(extFilter, Extensions[j])) break;
     if(Extensions[j] == NULL) { j++; ASSIGN(FileTypes[j], extFilter); }
-    browseOptions[8].value = j;
+    browseOptions[9].value = j;
     browseOptions[6].textValue = (char*) (pathFlag ? NULL : &FileSelProc); // disable file listbox during path browsing
     ListDir(pathFlag);
     currentCps = NULL;
     if(GenericPopUp(browseOptions, label, BrowserDlg, dlg, MODAL, 0)) {
     }
-    SetWidgetLabel(&browseOptions[8], FileTypes[j]);
+    SetWidgetLabel(&browseOptions[9], FileTypes[j]);
 }
 
 
