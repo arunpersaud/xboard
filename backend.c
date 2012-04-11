@@ -7775,6 +7775,25 @@ SendMoveToBookUser (int moveNr, ChessProgramState *cps, int initial)
     return bookHit; // notify caller of hit, so it can take action to send move to opponent
 }
 
+int
+LoadError (char *errmess, ChessProgramState *cps)
+{   // unloads engine and switches back to -ncp mode if it was first
+    if(cps->initDone) return FALSE;
+    cps->isr = NULL; // this should suppress further error popups from breaking pipes
+    DestroyChildProcess(cps->pr, 9 ); // just to be sure
+    cps->pr = NoProc; 
+    if(cps == &first) {
+	appData.noChessProgram = TRUE;
+	gameMode = MachinePlaysBlack; ModeHighlight(); // kludge to unmark Machine Black menu
+	gameMode = BeginningOfGame; ModeHighlight();
+	SetNCPMode();
+    }
+    if(GetDelayedEvent()) CancelDelayedEvent(), ThawUI(); // [HGM] cancel remaining loading effort scheduled after feature timeout
+    DisplayMessage("", ""); // erase waiting message
+    if(errmess) DisplayError(errmess, 0); // announce reason, if given
+    return TRUE;
+}
+
 char *savedMessage;
 ChessProgramState *savedState;
 void
@@ -8380,17 +8399,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		_(cps->which), cps->program, cps->host, message);
 	RemoveInputSource(cps->isr);
 	if(appData.icsActive) DisplayFatalError(buf1, 0, 1); else {
-	    cps->isr = NULL;
-	    DestroyChildProcess(cps->pr, 9 ); // just to be sure
-	    cps->pr = NoProc; 
-	    if(cps == &first) {
-		appData.noChessProgram = TRUE;
-		gameMode = MachinePlaysBlack; ModeHighlight(); // kludge to unmark Machine Black menu
-		gameMode = BeginningOfGame; ModeHighlight();
-		SetNCPMode();
-	    }
-	    if(GetDelayedEvent()) CancelDelayedEvent(), ThawUI(); // [HGM] cancel remaining loading effort scheduled after feature timeout
-	    DisplayMessage("", ""); // erase waiting message
+	    if(LoadError(oldError ? NULL : buf1, cps)) return; // error has then been handled by LoadError
 	    if(!oldError) DisplayError(buf1, 0); // if reason neatly announced, suppress general error popup
 	}
 	return;
@@ -15116,10 +15125,10 @@ ReceiveFromProgram (InputSourceRef isr, VOIDSTAR closure, char *message, int cou
     if (count <= 0) {
 	if (count == 0) {
 	    RemoveInputSource(cps->isr);
-	    if(!cps->initDone) return; // [HGM] should not generate fatal error during engine load
 	    snprintf(buf, MSG_SIZ, _("Error: %s chess program (%s) exited unexpectedly"),
 		    _(cps->which), cps->program);
-        if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
+	    if(LoadError(cps->userError ? NULL : buf, cps)) return; // [HGM] should not generate fatal error during engine load
+	    if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
                 if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
                     snprintf(buf, MSG_SIZ, _("%s program exits in draw position (%s)"), _(cps->which), cps->program);
 		    if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(GameIsDrawn, buf, GE_XBOARD); return; }
