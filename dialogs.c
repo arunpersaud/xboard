@@ -1454,13 +1454,13 @@ static int count;
 static void PromoPick P((int n));
 
 static Option promoOptions[] = {
-{   0,         0,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
-{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
-{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
-{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
-{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
-{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
-{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, "" },
+{   0,         0,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
 {   0, SAME_ROW | NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
@@ -1489,8 +1489,9 @@ PromoPick (int n)
 static void
 SetPromo (char *name, int nr, char promoChar)
 {
-    safeStrCpy(promoOptions[nr].name, name, MSG_SIZ);
+    ASSIGN(promoOptions[nr].name, name);
     promoOptions[nr].value = promoChar;
+    promoOptions[nr].min = SAME_ROW;
 }
 
 void
@@ -1526,6 +1527,7 @@ PromotionPopUp ()
       SetPromo(_("Defer"), --count, '=');
       SetPromo(_("Promote"), --count, '+');
   }
+  promoOptions[count].min = 0;
   GenericPopUp(promoOptions + count, "Promotion", PromoDlg, BoardWindow, NONMODAL, 0);
 }
 
