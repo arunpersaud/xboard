@@ -355,6 +355,7 @@ AnnotateProc ()
 void
 FlipViewProc ()
 {
+    if(twoBoards) { partnerUp = 1; DrawPosition(True, NULL); partnerUp = 0; }
     flipView = !flipView;
     DrawPosition(True, NULL);
 }
