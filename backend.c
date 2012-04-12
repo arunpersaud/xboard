@@ -7040,7 +7040,10 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	}
 	if(appData.sweepSelect && HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
 	    ChessSquare piece = boards[currentMove][fromY][fromX];
+	    ChessSquare victim = boards[currentMove][toY][toX];
+	    boards[currentMove][toY][toX] = piece; // kludge: make sure there is something to grab for drag
 	    DragPieceBegin(xPix, yPix, TRUE); dragging = 1;
+	    boards[currentMove][toY][toX] = victim;
 	    promoSweep = defaultPromoChoice;
 	    if(PieceToChar(PROMOTED piece) == '+') promoSweep = PROMOTED piece;
 	    selectFlag = 0; lastX = xPix; lastY = yPix;
