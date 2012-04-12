@@ -1838,15 +1838,15 @@ static void
 PMSelect (int n)
 {   // user callback for board context menus
     if (pmFromX < 0 || pmFromY < 0) return;
-    if(n == 25) DropMenuEvent(dropMenuTranslation[values[n]], pmFromX, pmFromY);
-    else EditPositionMenuEvent(pieceMenuTranslation[n-23][values[n]], pmFromX, pmFromY);
+    if(n == W_DROP) DropMenuEvent(dropMenuTranslation[values[n]], pmFromX, pmFromY);
+    else EditPositionMenuEvent(pieceMenuTranslation[n - W_MENUW][values[n]], pmFromX, pmFromY);
 }
 
 int
 CCB (int n)
 {
     shiftKey = (ShiftKeys() & 3) != 0;
-    ClockClick(n == 12);
+    ClockClick(n == W_BLACK);
 }
 
 Option mainOptions[] = { // description of main window in terms of generic dialog creator
