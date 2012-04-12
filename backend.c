@@ -7182,7 +7182,14 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    if(x >= BOARD_LEFT && x < BOARD_RGHT) clearFlag = 1; // and defer click-click move of empty-square to up-click
 	    return;
 	}
-	if(appData.sweepSelect && HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
+	/* Finish clickclick move */
+	if (appData.animate || appData.highlightLastMove) {
+	    SetHighlights(fromX, fromY, toX, toY);
+	} else {
+	    ClearHighlights();
+	}
+	if(HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
+	  if(appData.sweepSelect) {
 	    ChessSquare piece = boards[currentMove][fromY][fromX];
 	    DragPieceBegin(xPix, yPix, TRUE); dragging = 1;
 	    promoSweep = defaultPromoChoice;
@@ -7191,13 +7198,8 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    Sweep(0); // Pawn that is going to promote: preview promotion piece
 	    DisplayMessage("", _("Pull pawn backwards to under-promote"));
 	    DrawPosition(FALSE, boards[currentMove]);
-	    return;
-	}
-	/* Finish clickclick move */
-	if (appData.animate || appData.highlightLastMove) {
-	    SetHighlights(fromX, fromY, toX, toY);
-	} else {
-	    ClearHighlights();
+	  }
+	  return; // promo popup appears on up-click
 	}
     } else {
 	/* Finish drag move */
