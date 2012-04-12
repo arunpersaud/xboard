@@ -455,10 +455,10 @@ int shiftKey, controlKey; // [HGM] set by mouse handler
 int have_sent_ICS_logon = 0;
 int movesPerSession;
 int suddenDeath, whiteStartMove, blackStartMove; /* [HGM] for implementation of 'any per time' sessions, as in first part of byoyomi TC */
-long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement, lastWhite, lastBlack;
+long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement, lastWhite, lastBlack, activePartnerTime;
 Boolean adjustedClock;
 long timeControl_2; /* [AS] Allow separate time controls */
-char *fullTimeControlString = NULL, *nextSession, *whiteTC, *blackTC; /* [HGM] secondary TC: merge of MPS, TC and inc */
+char *fullTimeControlString = NULL, *nextSession, *whiteTC, *blackTC, activePartner; /* [HGM] secondary TC: merge of MPS, TC and inc */
 long timeRemaining[2][MAX_MOVES];
 int matchGame = 0, nextGame = 0, roundNr = 0;
 Boolean waitingForGame = FALSE;
@@ -4244,6 +4244,7 @@ ParseBoard12 (char *string)
     if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
 	 && newGameMode == IcsObserving && gamenum != ics_gamenum && appData.bgObserve) {
       // [HGM] bughouse: don't act on alien boards while we play. Just parse the board and save it */
+      int fac = strchr(elapsed_time, '.') ? 1 : 1000;
       char *toSqr;
       for (k = 0; k < ranks; k++) {
         for (j = 0; j < files; j++)
@@ -4266,11 +4267,13 @@ ParseBoard12 (char *string)
       if(twoBoards) { partnerUp = 1; flipView = !flipView; } // [HGM] dual
       if(partnerUp) DrawPosition(FALSE, partnerBoard);
       if(twoBoards) {
-	  DisplayWhiteClock(white_time, to_play == 'W');
-	  DisplayBlackClock(black_time, to_play != 'W');
+	  DisplayWhiteClock(white_time*fac, to_play == 'W');
+	  DisplayBlackClock(black_time*fac, to_play != 'W');
+	  activePartner = to_play;
+	  activePartnerTime = to_play == 'W' ? white_time*fac : black_time*fac;
 	              partnerUp = 0; flipView = !flipView; } // [HGM] dual
-      snprintf(partnerStatus, MSG_SIZ,"W: %d:%02d B: %d:%02d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
-		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
+      snprintf(partnerStatus, MSG_SIZ,"W: %d:%02d B: %d:%02d (%d-%d) %c", white_time*fac/60000, (white_time*fac%60000)/1000,
+		 (black_time*fac/60000), (black_time*fac%60000)/1000, white_stren, black_stren, to_play);
       DisplayMessage(partnerStatus, "");
 	partnerBoardValid = TRUE;
       return;
@@ -16212,6 +16215,16 @@ DecrementClocks ()
 			  !WhiteOnMove(currentMove < forwardMostMove ? currentMove : forwardMostMove));
     }
     if (CheckFlags()) return;
+
+    if(twoBoards) { // count down secondary board's clocks as well
+	activePartnerTime -= lastTickLength;
+	partnerUp = 1;
+	if(activePartner == 'W')
+	    DisplayWhiteClock(activePartnerTime, TRUE); // the counting clock is always the highlighted one!
+	else
+	    DisplayBlackClock(activePartnerTime, TRUE);
+	partnerUp = 0;
+    }
 
     tickStartTM = now;
     intendedTickLength = NextTickLength(timeRemaining - fudge) + fudge;
