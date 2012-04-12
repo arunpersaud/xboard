@@ -614,6 +614,8 @@ ArgDescriptor argDescriptors[] = {
   { "smpCores", ArgInt, (void *) &appData.smpCores, TRUE, (ArgIniType) 1 },
   { "egtFormats", ArgString, (void *) &appData.egtFormats, TRUE, (ArgIniType) "" },
   { "niceEngines", ArgInt, (void *) &appData.niceEngines, TRUE, INVALID },
+  { "logoSize", ArgInt, (void *) &appData.logoSize, XBOARD, INVALID },
+  { "logoDir", ArgFilename, (void *) &appData.logoDir, XBOARD, (ArgIniType) "." },
   { "firstLogo", ArgFilename, (void *) &appData.firstLogo, FALSE, (ArgIniType) "" },
   { "secondLogo", ArgFilename, (void *) &appData.secondLogo, FALSE, (ArgIniType) "" },
   { "autoLogo", ArgBoolean, (void *) &appData.autoLogo, TRUE, INVALID },

@@ -1831,8 +1831,49 @@ static ChessSquare dropMenuTranslation[DROP_MENU_SIZE] = {
 static Option *Exp P((int n, int x, int y));
 void MenuCallback P((int n));
 void SizeKludge P((int n));
+static Option *LogoW P((int n, int x, int y));
+static Option *LogoB P((int n, int x, int y));
 
 static int pmFromX = -1, pmFromY = -1;
+void *userLogo;
+
+void
+DisplayLogos (void *w1, void *w2)
+{
+	void *whiteLogo = first.programLogo, *blackLogo = second.programLogo;
+	if(appData.autoLogo) {
+	  
+	  switch(gameMode) { // pick logos based on game mode
+	    case IcsObserving:
+		whiteLogo = second.programLogo; // ICS logo
+		blackLogo = second.programLogo;
+	    default:
+		break;
+	    case IcsPlayingWhite:
+		if(!appData.zippyPlay) whiteLogo = userLogo;
+		blackLogo = second.programLogo; // ICS logo
+		break;
+	    case IcsPlayingBlack:
+		whiteLogo = second.programLogo; // ICS logo
+		blackLogo = appData.zippyPlay ? first.programLogo : userLogo;
+		break;
+	    case TwoMachinesPlay:
+	        if(first.twoMachinesColor[0] == 'b') {
+		    whiteLogo = second.programLogo;
+		    blackLogo = first.programLogo;
+		}
+		break;
+	    case MachinePlaysWhite:
+		blackLogo = userLogo;
+		break;
+	    case MachinePlaysBlack:
+		whiteLogo = userLogo;
+		blackLogo = first.programLogo;
+	  }
+	}
+	DrawLogo(w1, whiteLogo);
+	DrawLogo(w2, blackLogo);
+}
 
 static void
 PMSelect (int n)
@@ -1861,8 +1902,10 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Help") },
 { 0, 0, 0, NULL, (void*)&SizeKludge, "", NULL, BoxEnd, "" },
 { 0, LR|T2T|BORDER|SAME_ROW, 0, NULL, NULL, "", NULL, Label, "1" }, // optional title in window
-{ 0, L2L|T2T,              200, NULL, (void*) &CCB, NULL, NULL, Label, "White" }, // white clock
-{ 0, R2R|T2T|SAME_ROW,     200, NULL, (void*) &CCB, NULL, NULL, Label, "Black" }, // black clock
+{ 50,    LL|TT,            100, NULL, (void*) &LogoW, NULL, NULL, -1, "LogoW" }, // white logo
+{  0,   L2L|T2T,           200, NULL, (void*) &CCB, NULL, NULL, Label, "White" }, // white clock
+{  0,   R2R|T2T|SAME_ROW,  200, NULL, (void*) &CCB, NULL, NULL, Label, "Black" }, // black clock
+{ 50,    RR|TT|SAME_ROW,   100, NULL, (void*) &LogoB, NULL, NULL, -1, "LogoB" }, // black logo
 { 0, LR|T2T|BORDER,        401, NULL, NULL, "", NULL, -1, "2" }, // backup for title in window (if no room for other)
 { 0, LR|T2T|BORDER,        270, NULL, NULL, "", NULL, Label, "message" }, // message field
 { 0, RR|TT|SAME_ROW,       125, NULL, NULL, "", NULL, BoxBegin, "" }, // (optional) button bar
@@ -1872,12 +1915,26 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
   { 0, SAME_ROW, 0, NULL, (void*) &ForwardEvent, NULL, NULL, Button, N_(">") },
   { 0, SAME_ROW, 0, NULL, (void*) &ToEndEvent, NULL, NULL, Button, N_(">>") },
 { 0, 0, 0, NULL, NULL, "", NULL, BoxEnd, "" },
-{ 401, LR|TT, 401, NULL, (char*) &Exp, NULL, NULL, Graph, "shadow board" }, // board
+{ 401, LR|TB, 401, NULL, (char*) &Exp, NULL, NULL, Graph, "shadow board" }, // board
   { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[0], PopUp, "menuW" },
   { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[1], PopUp, "menuB" },
   { -1, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, dropMenuStrings, PopUp, "menuD" },
 { 0,  NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
+
+Option *
+LogoW (int n, int x, int y)
+{
+    if(n == 10) DisplayLogos(mainOptions[W_WHITE-1].handle, NULL);
+    return NULL;
+}
+
+Option *
+LogoB (int n, int x, int y)
+{
+    if(n == 10) DisplayLogos(NULL, mainOptions[W_BLACK+1].handle);
+    return NULL;
+}
 
 void
 SizeKludge (int n)
@@ -1940,7 +1997,7 @@ Exp (int n, int x, int y)
 Option *
 BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
 {
-    int i, size = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
+    int i, size = BOARD_WIDTH*(squareSize + lineGap) + lineGap, logo = appData.logoSize;
     mainOptions[W_WHITE].choice = (char**) clockFontThingy;
     mainOptions[W_BLACK].choice = (char**) clockFontThingy;
     mainOptions[W_BOARD].value = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
@@ -1950,6 +2007,14 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
     mainOptions[W_MESSG].max = appData.showButtonBar ? size-130 : size-2; // message
     mainOptions[W_MENU].max = size-40; // menu bar
     mainOptions[W_TITLE].type = appData.titleInWindow ? Label : -1 ;
+    if(logo && logo <= size/4) { // Activate logos
+	mainOptions[W_WHITE-1].type = mainOptions[W_BLACK+1].type = Graph;
+	mainOptions[W_WHITE-1].max  = mainOptions[W_BLACK+1].max  = logo;
+	mainOptions[W_WHITE-1].value= mainOptions[W_BLACK+1].value= logo/2;
+	mainOptions[W_WHITE].min  |= SAME_ROW;
+	mainOptions[W_WHITE].max  = mainOptions[W_BLACK].max  -= logo + 4;
+	mainOptions[W_WHITE].name = mainOptions[W_BLACK].name = "Double\nHeight";
+    }
     if(!appData.showButtonBar) for(i=W_BUTTON; i<W_BOARD; i++) mainOptions[i].type = -1;
     for(i=0; i<8; i++) mainOptions[i+1].choice = (char**) menuBar[i].mi;
     GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1);

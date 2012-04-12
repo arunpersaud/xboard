@@ -436,6 +436,8 @@ typedef struct {
     Boolean debugMode;
     Boolean clockMode;
     char *boardSize;
+    char *logoDir;
+    int logoSize;
     Boolean Iconic;
     char *searchTime;
     int searchDepth;

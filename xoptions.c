@@ -962,6 +962,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 		(last = XtCreateManagedWidget("graph", widgetClass, form, args, j));
 	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
 		      (XtEventHandler) GraphEventProc, option[i].target); // mandatory user-supplied expose handler
+	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
 	    break;
 	  case PopUp: // note: used only after Graph, so 'last' refers to the Graph widget
 	    option[i].handle = (void*) CreateComboPopup(last, option + i, i + 256*dlgNr, TRUE, option[i].value);

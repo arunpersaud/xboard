@@ -1458,6 +1458,13 @@ XBoard square size (hint): %d\n\
     CreateGrid();
     CreateAnyPieces();
 
+    if(appData.logoSize)
+    {   // locate and read user logo
+	char buf[MSG_SIZ];
+	snprintf(buf, MSG_SIZ, "%s/%s.xpm", appData.logoDir, UserName());
+	XpmReadFileToPixmap(xDisplay, xBoardWindow, buf, (Pixmap *) &userLogo, NULL, NULL);
+    }
+
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
@@ -1505,6 +1512,7 @@ XBoard square size (hint): %d\n\
 
     gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
     InitPosition(TRUE);
+    UpdateLogos(TRUE);
 //    XtSetKeyboardFocus(shellWidget, formWidget);
     XSetInputFocus(xDisplay, XtWindow(formWidget), RevertToPointerRoot, CurrentTime);
 
@@ -2382,6 +2390,14 @@ CutOutSquare (int x, int y, int *x0, int *y0, int  kind)
     return 1;
 }
 
+void
+DrawLogo (void *handle, void *logo)
+{
+    if(!logo || !handle) return;
+    XCopyArea(xDisplay, (Pixmap) logo, XtWindow((Widget) handle), wlPieceGC,
+				0, 0, appData.logoSize, appData.logoSize/2, 0, 0);
+}
+
 static void
 BlankSquare (int x, int y, int color, ChessSquare piece, Drawable dest, int fac)
 {   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
@@ -2862,6 +2878,8 @@ ModeHighlight ()
 
     /* Maybe all the enables should be handled here, not just this one */
     EnableNamedMenuItem("Mode.Training", gameMode == Training || gameMode == PlayFromGameFile);
+
+    DisplayLogos(optList[W_WHITE-1].handle, optList[W_BLACK+1].handle);
 }
 
 
@@ -3330,7 +3348,7 @@ DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
       foregroundOrWarningColor = lowTimeWarningColor;
 
     if (appData.clockMode) {
-      snprintf(buf, MSG_SIZ, "%s: %s", color, TimeString(timer));
+      snprintf(buf, MSG_SIZ, "%s:%s%s", color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
       XtSetArg(args[0], XtNlabel, buf);
     } else {
       snprintf(buf, MSG_SIZ, "%s  ", color);
@@ -3732,9 +3750,30 @@ DrawPolygon (Pnt arrow[], int nr)
     if(appData.monoMode) arrow[nr] = arrow[0], XDrawLines(xDisplay, xBoardWindow, darkSquareGC, pts, nr+1, CoordModeOrigin);
 }
 
+static void
+LoadLogo (ChessProgramState *cps, int n, Boolean ics)
+{
+    char buf[MSG_SIZ], *logoName = buf;
+    if(appData.logo[n][0]) {
+	logoName = appData.logo[n];
+    } else if(appData.autoLogo) {
+	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
+	    sprintf(buf, "%s/%s.xpm", appData.logoDir, appData.icsHost);
+	} else if(appData.directory[n] && appData.directory[n][0]) {
+	    sprintf(buf, "%s/%s.xpm", appData.logoDir, cps->tidy);
+	}
+    }
+    if(logoName[0])
+	XpmReadFileToPixmap(xDisplay, xBoardWindow, logoName, (Pixmap *) &(cps->programLogo), NULL, NULL);
+}
+
 void
 UpdateLogos (int displ)
 {
-    return; // no logos in XBoard yet
+    if(optList[W_WHITE-1].handle == NULL) return;
+    LoadLogo(&first, 0, 0);
+    LoadLogo(&second, 1, appData.icsActive);
+    if(displ) DisplayLogos(optList[W_WHITE-1].handle, optList[W_BLACK+1].handle);
+    return;
 }
 

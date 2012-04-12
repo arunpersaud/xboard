@@ -84,16 +84,16 @@
 #define W_MENU   0  // main menu bar
 #define W_ENGIN  6  // engine menu
 #define W_TITLE 10
-#define W_WHITE 11
-#define W_BLACK 12
-#define W_SMALL 13  // title in small layout
-#define W_MESSG 14 
-#define W_BUTTON 15 // button bar
-#define W_PAUSE 18
-#define W_BOARD 22
-#define W_MENUW 23
-#define W_MENUB 24
-#define W_DROP  25  // drop (popup) menu
+#define W_WHITE 12
+#define W_BLACK 13
+#define W_SMALL 15  // title in small layout
+#define W_MESSG 16 
+#define W_BUTTON 17 // button bar
+#define W_PAUSE 20
+#define W_BOARD 24
+#define W_MENUW 25
+#define W_MENUB 26
+#define W_DROP  27  // drop (popup) menu
  
 
 
@@ -124,6 +124,7 @@ extern int values[];
 extern ChessProgramState *currentCps;
 extern int dialogError;
 extern ButtonCallback *comboCallback;
+extern void *userLogo;
 
 extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain;
 extern char *marked[];
@@ -159,10 +160,13 @@ int  ReadScroll P((Option *opt, float *top, float *bottom));
 void SetScroll P((Option *opt, float f));
 void AddHandler  P((Option *opt, int nr));
 void SendText P((int n));
+void DisplayLogos P((void *left, void *right));
 void Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
 			Boolean pathFlag, char *mode, char **name, FILE **fp));
 
 void InitDrawingParams P(()); // in xboard.c
+void DrawLogo P((void *handle, void *logo));
+void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));
 void SetClockIcon P((int color));
 void DelayedLoad P((void));
