@@ -6919,11 +6919,11 @@ void
 MarkTargetSquares (int clear)
 {
   int x, y;
+  if(clear) // no reason to ever suppress clearing
+    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) marker[y][x] = 0;
   if(!appData.markers || !appData.highlightDragging || appData.icsActive && gameInfo.variant < VariantShogi ||
      !appData.testLegality || gameMode == EditPosition) return;
-  if(clear) {
-    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) marker[y][x] = 0;
-  } else {
+  if(!clear) {
     int capt = 0;
     GenLegal(boards[currentMove], PosFlags(currentMove), Mark, (void*) marker, EmptySquare);
     if(PosFlags(0) & F_MANDATORY_CAPTURE) {
