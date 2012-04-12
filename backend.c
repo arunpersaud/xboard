@@ -7174,7 +7174,6 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     toX = x;
     toY = y;
     saveAnimate = appData.animate;
-    MarkTargetSquares(1);
     if (clickType == Press) {
 	if(gameMode == EditPosition && boards[currentMove][fromY][fromX] == EmptySquare) {
 	    // must be Edit Position mode with empty-square selected
@@ -7212,6 +7211,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
     }
+    MarkTargetSquares(1);
 
     // moves into holding are invalid for now (except in EditPosition, adapting to-square)
     if(x >= 0 && x < BOARD_LEFT || x >= BOARD_RGHT) {
