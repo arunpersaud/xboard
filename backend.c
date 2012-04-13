@@ -5173,6 +5173,12 @@ Sweep (int step)
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
 	    appData.testLegality && (promoSweep == king ||
 	    gameInfo.variant == VariantShogi && promoSweep != PROMOTED last && last != PROMOTED promoSweep && last != promoSweep));
+    if(toX >= 0) {
+	int victim = boards[currentMove][toY][toX];
+	boards[currentMove][toY][toX] = promoSweep;
+	DrawPosition(FALSE, boards[currentMove]);
+	boards[currentMove][toY][toX] = victim;
+    } else
     ChangeDragPiece(promoSweep);
 }
 
@@ -6971,7 +6977,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 {
     int x, y;
     Boolean saveAnimate;
-    static int second = 0, promotionChoice = 0, clearFlag = 0;
+    static int second = 0, promotionChoice = 0, clearFlag = 0, sweepSelecting = 0;
     char promoChoice = NULLCHAR;
     ChessSquare piece;
     static TimeMark lastClickTime, prevClickTime;
@@ -6995,7 +7001,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	defaultPromoChoice = promoSweep;
 	promoSweep = EmptySquare;   // terminate sweep
 	promoDefaultAltered = TRUE;
-	if(!selectFlag && (x != toX || y != toY)) x = fromX, y = fromY; // and fake up-click on same square if we were still selecting
+	if(!selectFlag && !sweepSelecting && (x != toX || y != toY)) x = fromX, y = fromY; // and fake up-click on same square if we were still selecting
     }
 
     if(promotionChoice) { // we are waiting for a click to indicate promotion piece
@@ -7154,9 +7160,10 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    /* Undo animation damage if any */
 	    DrawPosition(FALSE, NULL);
 	}
-	if (second) {
+	if (second || sweepSelecting) {
 	    /* Second up/down in same square; just abort move */
-	    second = 0;
+	    if(sweepSelecting) DrawPosition(FALSE, boards[currentMove]);
+	    second = sweepSelecting = 0;
 	    fromX = fromY = -1;
 	    gatingPiece = EmptySquare;
 	    ClearHighlights();
@@ -7173,9 +7180,12 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 
     /* we now have a different from- and (possibly off-board) to-square */
     /* Completed move */
-    toX = x;
-    toY = y;
-    saveAnimate = appData.animate;
+    if(!sweepSelecting) {
+	toX = x;
+	toY = y;
+	saveAnimate = appData.animate;
+    } else sweepSelecting = 0; // this must be the up-click corresponding to the down-click that started the sweep
+
     if (clickType == Press) {
 	if(gameMode == EditPosition && boards[currentMove][fromY][fromX] == EmptySquare) {
 	    // must be Edit Position mode with empty-square selected
@@ -7186,16 +7196,13 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	if(HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
 	  if(appData.sweepSelect) {
 	    ChessSquare piece = boards[currentMove][fromY][fromX];
-	    ChessSquare victim = boards[currentMove][toY][toX];
-	    boards[currentMove][toY][toX] = piece; // kludge: make sure there is something to grab for drag
-	    DragPieceBegin(xPix, yPix, TRUE); dragging = 1;
-	    boards[currentMove][toY][toX] = victim;
 	    promoSweep = defaultPromoChoice;
 	    if(PieceToChar(PROMOTED piece) == '+') promoSweep = PROMOTED piece;
 	    selectFlag = 0; lastX = xPix; lastY = yPix;
 	    Sweep(0); // Pawn that is going to promote: preview promotion piece
+	    sweepSelecting = 1;
 	    DisplayMessage("", _("Pull pawn backwards to under-promote"));
-	    DrawPosition(FALSE, boards[currentMove]);
+	    MarkTargetSquares(1);
 	  }
 	  return; // promo popup appears on up-click
 	}
