@@ -90,8 +90,6 @@ void DrawBlank P((AnimNr anr, int x, int y, int startColor));
 void CopyRectangle P((AnimNr anr, int srcBuf, int destBuf, int srcX, int srcY, int width, int height, int destX, int destY));
 void SetDragPiece P((AnimNr anr, ChessSquare piece));
 void DragPieceMove P((int x, int y));
-void DrawArrowHighlight P((int fromX, int fromY, int toX,int toY));
-Boolean IsDrawArrowEnabled P((void));
 
 extern int damage[2][BOARD_RANKS][BOARD_FILES];
 

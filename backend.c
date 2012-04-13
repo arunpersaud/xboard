@@ -7073,6 +7073,8 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 		}
 		if (appData.highlightDragging) {
 		    SetHighlights(fromX, fromY, -1, -1);
+		} else {
+		    ClearHighlights();
 		}
 	    } else fromX = fromY = -1;
 	    return;
@@ -7181,12 +7183,6 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    if(x >= BOARD_LEFT && x < BOARD_RGHT) clearFlag = 1; // and defer click-click move of empty-square to up-click
 	    return;
 	}
-	/* Finish clickclick move */
-	if (appData.animate || appData.highlightLastMove) {
-	    SetHighlights(fromX, fromY, toX, toY);
-	} else {
-	    ClearHighlights();
-	}
 	if(HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
 	  if(appData.sweepSelect) {
 	    ChessSquare piece = boards[currentMove][fromY][fromX];
@@ -7202,6 +7198,12 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    DrawPosition(FALSE, boards[currentMove]);
 	  }
 	  return; // promo popup appears on up-click
+	}
+	/* Finish clickclick move */
+	if (appData.animate || appData.highlightLastMove) {
+	    SetHighlights(fromX, fromY, toX, toY);
+	} else {
+	    ClearHighlights();
 	}
     } else {
 	/* Finish drag move */

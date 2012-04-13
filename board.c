@@ -118,6 +118,9 @@ int damage[2][BOARD_RANKS][BOARD_FILES];
 AnimState anims[NrOfAnims];
 
 static void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
+static Boolean IsDrawArrowEnabled P((void));
+static void DrawArrowHighlight P((int fromX, int fromY, int toX,int toY));
+static void ArrowDamage P((int s_col, int s_row, int d_col, int d_row));
 
 static void
 drawHighlight (int file, int rank, int type)
@@ -145,6 +148,8 @@ int pm1X = -1, pm1Y = -1, pm2X = -1, pm2Y = -1;
 void
 SetHighlights (int fromX, int fromY, int toX, int toY)
 {
+    int arrow = hi2X > 0 && IsDrawArrowEnabled();
+
     if (hi1X != fromX || hi1Y != fromY) {
 	if (hi1X >= 0 && hi1Y >= 0) {
 	    drawHighlight(hi1X, hi1Y, 0);
@@ -156,6 +161,10 @@ SetHighlights (int fromX, int fromY, int toX, int toY)
 	    drawHighlight(hi2X, hi2Y, 0);
 	}
     }
+    
+    if(arrow) // there currently is an arrow displayed
+	ArrowDamage(hi1X, hi1Y, hi2X, hi2Y); // mark which squares it damaged
+
     if (hi1X != fromX || hi1Y != fromY) {
 	if (fromX >= 0 && fromY >= 0) {
 	    drawHighlight(fromX, fromY, 1);
@@ -167,13 +176,13 @@ SetHighlights (int fromX, int fromY, int toX, int toY)
 	}
     }
 
-    if(toX<0) // clearing the highlights must have damaged arrow
-	DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y); // for now, redraw it (should really be cleared!)
-
     hi1X = fromX;
     hi1Y = fromY;
     hi2X = toX;
     hi2Y = toY;
+
+    if(arrow || toX < 0 && IsDrawArrowEnabled())
+	DrawPosition(FALSE, NULL); // repair any arrow damage, or draw a new one
 }
 
 void
@@ -1016,7 +1025,7 @@ SquareToPos (int rank, int file, int *x, int *y)
 }
 
 /* Draw an arrow between two points using current settings */
-void
+static void
 DrawArrowBetweenPoints (int s_x, int s_y, int d_x, int d_y)
 {
     Pnt arrow[8];
@@ -1119,7 +1128,7 @@ DrawArrowBetweenPoints (int s_x, int s_y, int d_x, int d_y)
 //    Polygon( hdc, arrow, 7 );
 }
 
-void
+static void
 ArrowDamage (int s_col, int s_row, int d_col, int d_row)
 {
     int hor, vert, i, n = partnerUp * twoBoards;
@@ -1134,7 +1143,7 @@ ArrowDamage (int s_col, int s_row, int d_col, int d_row)
 }
 
 /* [AS] Draw an arrow between two squares */
-void
+static void
 DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
 {
     int s_x, s_y, d_x, d_y;
@@ -1177,13 +1186,13 @@ DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
     ArrowDamage(s_col, s_row, d_col, d_row);
 }
 
-Boolean
+static Boolean
 IsDrawArrowEnabled ()
 {
     return (appData.highlightMoveWithArrow || twoBoards && partnerUp) && squareSize >= 32;
 }
 
-void
+static void
 DrawArrowHighlight (int fromX, int fromY, int toX,int toY)
 {
     if( IsDrawArrowEnabled() && fromX >= 0 && fromY >= 0 && toX >= 0 && toY >= 0)
