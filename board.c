@@ -883,6 +883,7 @@ DrawPosition (int repaint, Board board)
     static int lastFlipView = 0;
     static int lastBoardValid[2] = {0, 0};
     static Board lastBoard[2];
+    static char lastMarker[BOARD_RANKS][BOARD_FILES];
     Arg args[16];
     int rrow, rcol;
     int nr = twoBoards*partnerUp;
@@ -928,7 +929,7 @@ DrawPosition (int repaint, Board board)
 	   is flashing on its new square */
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if ((board[i][j] != lastBoard[nr][i][j] && board[i][j] == EmptySquare)
+	    if (((board[i][j] != lastBoard[nr][i][j] || !nr && marker[i][j] != lastMarker[i][j]) && board[i][j] == EmptySquare)
 		|| damage[nr][i][j]) {
 		DrawSquare(i, j, board[i][j], 0);
 		damage[nr][i][j] = False;
@@ -937,7 +938,7 @@ DrawPosition (int repaint, Board board)
 	/* Second pass -- Draw piece(s) in new position and flash them */
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if (board[i][j] != lastBoard[nr][i][j]) {
+	    if (board[i][j] != lastBoard[nr][i][j] || !nr && marker[i][j] != lastMarker[i][j]) {
 		DrawSquare(i, j, board[i][j], do_flash);
 	    }
     } else {
@@ -955,6 +956,9 @@ DrawPosition (int repaint, Board board)
     lastBoardValid[nr] = 1;
   if(nr == 0) { // [HGM] dual: no highlights on second board yet
     lastFlipView = flipView;
+    for (i = 0; i < BOARD_HEIGHT; i++)
+	for (j = 0; j < BOARD_WIDTH; j++)
+	    lastMarker[i][j] = marker[i][j];
 
     /* Draw highlights */
     if (pm1X >= 0 && pm1Y >= 0) {

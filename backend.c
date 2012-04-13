@@ -6932,7 +6932,7 @@ MarkTargetSquares (int clear)
       for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) if(marker[y][x] == 1) marker[y][x] = 0;
     }
   }
-  DrawPosition(TRUE, NULL);
+  DrawPosition(FALSE, NULL);
 }
 
 int
