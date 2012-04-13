@@ -1911,6 +1911,7 @@ Exp (int n, int x, int y)
 	if(but3) MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 	return NULL;
     }
+    if(n != 10 && PopDown(PromoDlg)) fromX = fromY = -1; // user starts fiddling with board when promotion dialog is up
     shiftKey = ShiftKeys();
     controlKey = (shiftKey & 0xC) != 0;
     shiftKey = (shiftKey & 3) != 0;
