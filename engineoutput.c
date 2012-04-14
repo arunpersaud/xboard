@@ -238,7 +238,7 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
         }
     }
 
-    if(ParseOneMove(ed.pv, currentMove, &moveType, &ff, &rf, &ft, &rt, &pc))
+    if(ed.pv && ed.pv[0] && ParseOneMove(ed.pv, currentMove, &moveType, &ff, &rf, &ft, &rt, &pc))
 	ed.moveKey = (ff<<24 | rf << 16 | ft << 8 | rt) ^ pc*87161;
     else ed.moveKey = ed.nodes; // kludge to get unique key unlikely to match any move
 
