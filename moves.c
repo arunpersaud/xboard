@@ -1053,7 +1053,8 @@ LegalDrop (Board board, int flags, ChessSquare piece, int rt, int ft)
 if(appData.debugMode) fprintf(debugFP, "LegalDrop: %d @ %d,%d)\n", piece, ft, rt);
     if(board[rt][ft] != EmptySquare) return ImpossibleMove; // must drop to empty square
     n = PieceToNumber(piece);
-    if(gameInfo.holdingsWidth == 0 || (flags & F_WHITE_ON_MOVE ? board[n][BOARD_WIDTH-1] : board[BOARD_HEIGHT-1-n][0]) != piece)
+    if((gameInfo.holdingsWidth == 0 || (flags & F_WHITE_ON_MOVE ? board[n][BOARD_WIDTH-1] : board[BOARD_HEIGHT-1-n][0]) != piece)
+	&& gameInfo.variant != VariantBughouse) // in bughouse we don't check for availability, because ICS doesn't always tell us
         return ImpossibleMove; // piece not available
     if(gameInfo.variant == VariantShogi) { // in Shogi lots of drops are forbidden!
         if((piece == WhitePawn || piece == WhiteQueen) && rt == BOARD_HEIGHT-1 ||
