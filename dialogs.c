@@ -1844,7 +1844,7 @@ PMSelect (int n)
     else EditPositionMenuEvent(pieceMenuTranslation[n - W_MENUW][values[n]], pmFromX, pmFromY);
 }
 
-int
+static void
 CCB (int n)
 {
     shiftKey = (ShiftKeys() & 3) != 0;
@@ -2281,7 +2281,7 @@ DirSelProc (int n, int sel)
     }
 }
 
-FILE *
+void
 Browse (DialogClass dlg, char *label, char *proposed, char *ext, Boolean pathFlag, char *mode, char **name, FILE **fp)
 {
     int j=0;
@@ -2295,8 +2295,7 @@ Browse (DialogClass dlg, char *label, char *proposed, char *ext, Boolean pathFla
     browseOptions[6].textValue = (char*) (pathFlag ? NULL : &FileSelProc); // disable file listbox during path browsing
     ListDir(pathFlag);
     currentCps = NULL;
-    if(GenericPopUp(browseOptions, label, BrowserDlg, dlg, MODAL, 0)) {
-    }
+    GenericPopUp(browseOptions, label, BrowserDlg, dlg, MODAL, 0);
     SetWidgetLabel(&browseOptions[9], FileTypes[j]);
 }
 

@@ -158,7 +158,7 @@ int  ReadScroll P((Option *opt, float *top, float *bottom));
 void SetScroll P((Option *opt, float f));
 void AddHandler  P((Option *opt, int nr));
 void SendText P((int n));
-FILE *Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
+void Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
 			Boolean pathFlag, char *mode, char **name, FILE **fp));
 
 void InitDrawingParams P(()); // in xboard.c

@@ -287,11 +287,11 @@ GameListClicks (int direction)
 {
     int index;
 
-    if (glc == NULL || listLength == 0) return 0;
+    if (glc == NULL || listLength == 0) return 1;
     if(direction == 100) { FocusOnWidget(&gamesOptions[0], GameListDlg); return 1; }
     index = SelectedListBoxItem(&gamesOptions[0]);
 
-    if (index < 0) return;
+    if (index < 0) return 1;
     if(page && (index == 0 && direction < 1 || direction == -4)) {
         page -= 1000;
         if(page < 0) page = 0; // safety
@@ -310,7 +310,7 @@ GameListClicks (int direction)
 	index += direction;
 	if(direction < -1) index = 0;
 	if(direction >  1) index = listEnd-1;
-	if(index < 0 || index >= listEnd) return;
+	if(index < 0 || index >= listEnd) return 1;
 	HighlightWithScroll(&gamesOptions[0], index, listEnd);
 	if(!doLoad) return 1;
     }
