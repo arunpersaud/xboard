@@ -148,7 +148,7 @@ int pm1X = -1, pm1Y = -1, pm2X = -1, pm2Y = -1;
 void
 SetHighlights (int fromX, int fromY, int toX, int toY)
 {
-    int arrow = hi2X > 0 && IsDrawArrowEnabled();
+    int arrow = hi2X >= 0 && hi1Y >= 0 && IsDrawArrowEnabled();
 
     if (hi1X != fromX || hi1Y != fromY) {
 	if (hi1X >= 0 && hi1Y >= 0) {
@@ -181,7 +181,7 @@ SetHighlights (int fromX, int fromY, int toX, int toY)
     hi2X = toX;
     hi2Y = toY;
 
-    if(arrow || toX < 0 && IsDrawArrowEnabled())
+    if(arrow || toX >= 0 && fromY >= 0 && IsDrawArrowEnabled())
 	DrawPosition(FALSE, NULL); // repair any arrow damage, or draw a new one
 }
 
