@@ -839,23 +839,20 @@ int frameX, frameY;
 void
 GetActualPlacement (Widget wg, WindowPlacement *wp)
 {
-  Arg args[16];
-  Dimension w, h;
-  Position x, y;
   XWindowAttributes winAt;
   Window win, dummy;
-  int i, rx, ry;
+  int rx, ry;
 
   if(!wg) return;
 
-    win = XtWindow(wg);
-    XGetWindowAttributes(xDisplay, win, &winAt); // this works, where XtGetValues on XtNx, XtNy does not!
-    XTranslateCoordinates (xDisplay, win, winAt.root, -winAt.border_width, -winAt.border_width, &rx, &ry, &dummy);
-    wp->x = rx - winAt.x;
-    wp->y = ry - winAt.y;
-    wp->height = winAt.height;
-    wp->width = winAt.width;
-    frameX = winAt.x; frameY = winAt.y; // remember to decide if windows touch
+  win = XtWindow(wg);
+  XGetWindowAttributes(xDisplay, win, &winAt); // this works, where XtGetValues on XtNx, XtNy does not!
+  XTranslateCoordinates (xDisplay, win, winAt.root, -winAt.border_width, -winAt.border_width, &rx, &ry, &dummy);
+  wp->x = rx - winAt.x;
+  wp->y = ry - winAt.y;
+  wp->height = winAt.height;
+  wp->width = winAt.width;
+  frameX = winAt.x; frameY = winAt.y; // remember to decide if windows touch
 }
 
 void
@@ -930,9 +927,7 @@ ConvertToLine (int argc, char **argv)
 void
 InitDrawingSizes (BoardSize boardSize, int flags)
 {   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
-    Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
-    Arg args[16];
-    XtGeometryResult gres;
+    Dimension boardWidth, boardHeight, w, h;
     int i;
     static Dimension oldWidth, oldHeight;
     static VariantClass oldVariant;
@@ -1114,8 +1109,8 @@ InitDrawingParams ()
 
 void
 InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
-{   // determine what fonts to use, and create them
-    XrmValue vFrom, vTo;
+{   // detervtomine what fonts to use, and create them
+    XrmValue vTo;
     XrmDatabase xdb;
 
     if(!fontIsSet[CLOCK_FONT] && fontValid[CLOCK_FONT][squareSize])
@@ -1170,11 +1165,10 @@ InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
 int
 main (int argc, char **argv)
 {
-    int i, j, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
+    int i, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
     XSetWindowAttributes window_attributes;
     Arg args[16];
-    Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
-    XtGeometryResult gres;
+    Dimension boardWidth, boardHeight, w, h;
     char *p;
     int forceMono = False;
 
@@ -1751,8 +1745,6 @@ CreateOneGC (XGCValues *gc_values, Pixel foreground, Pixel background)
 static void
 CreateGCs (int redo)
 {
-    XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
-      | GCBackground | GCFunction | GCPlaneMask;
     XGCValues gc_values;
     GC copyInvertedGC;
     Pixel white = XWhitePixel(xDisplay, xScreen);
@@ -2316,8 +2308,6 @@ SetMenuEnables (Enables *enab)
 void
 KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] new method of key binding: specify MenuItem(FlipView) in stead of FlipViewProc in translation string
-    int i;
-    char *p;
     MenuItem *item;
     if(*nprms == 0) return;
     item = MenuNameToItem(prms[0]);
@@ -2834,7 +2824,7 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
     fileProc = proc;		/* I can't see a way not */
     fileOpenMode = openMode;	/*   to use globals here */
     {   // [HGM] use file-selector dialog stolen from Ghostview
-	int index; // this is not supported yet
+	// int index; // this is not supported yet
 	Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, &openName, &openFP);
     }
 }

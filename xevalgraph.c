@@ -235,9 +235,6 @@ static Option graphOptions[] = {
 void
 EvalGraphPopUp ()
 {
-    Arg args[16];
-    int j;
-
     if (GenericPopUp(graphOptions, _(title), EvalGraphDlg, BoardWindow, NONMODAL, 1)) {
 	InitializeEvalGraph(&graphOptions[0]); // first time: add callbacks and initialize pens
     } else {

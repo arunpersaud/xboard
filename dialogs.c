@@ -103,45 +103,47 @@ SetCurrentComboSelection (Option *opt)
 void
 GenericUpdate (Option *opts, int selected)
 {
-    int i, j;
+    int i;
     char buf[MSG_SIZ];
-    float x;
-	for(i=0; ; i++) {
-	    if(selected >= 0) { if(i < selected) continue; else if(i > selected) break; }
-	    switch(opts[i].type) {
-		case TextBox:
-		case FileName:
-		case PathName:
-		    SetWidgetText(&opts[i],  *(char**) opts[i].target, -1);
-		    break;
-		case Spin:
-		    sprintf(buf, "%d", *(int*) opts[i].target);
-		    SetWidgetText(&opts[i], buf, -1);
-		    break;
-		case Fractional:
-		    sprintf(buf, "%4.2f", *(float*) opts[i].target);
-		    SetWidgetText(&opts[i], buf, -1);
-		    break;
-		case CheckBox:
-		    SetWidgetState(&opts[i],  *(Boolean*) opts[i].target);
-		    break;
-		case ComboBox:
-		  if(opts[i].min & COMBO_CALLBACK) break;
-		  SetCurrentComboSelection(opts+i);
-		    // TODO: actually display this (but it is never used that way...)
-		    break;
-		case EndMark:
-		    return;
-	    default:
-		printf("GenericUpdate: unexpected case in switch.\n");
-		case ListBox:
-		case Button:
-		case SaveButton:
-		case Label:
-		case Break:
-	      break;
-	    }
-	}
+
+    for(i=0; ; i++)
+      {
+	if(selected >= 0) { if(i < selected) continue; else if(i > selected) break; }
+	switch(opts[i].type)
+	  {
+	  case TextBox:
+	  case FileName:
+	  case PathName:
+	    SetWidgetText(&opts[i],  *(char**) opts[i].target, -1);
+	    break;
+	  case Spin:
+	    sprintf(buf, "%d", *(int*) opts[i].target);
+	    SetWidgetText(&opts[i], buf, -1);
+	    break;
+	  case Fractional:
+	    sprintf(buf, "%4.2f", *(float*) opts[i].target);
+	    SetWidgetText(&opts[i], buf, -1);
+	    break;
+	  case CheckBox:
+	    SetWidgetState(&opts[i],  *(Boolean*) opts[i].target);
+	    break;
+	  case ComboBox:
+	    if(opts[i].min & COMBO_CALLBACK) break;
+	    SetCurrentComboSelection(opts+i);
+	    // TODO: actually display this (but it is never used that way...)
+	    break;
+	  case EndMark:
+	    return;
+	  default:
+	    printf("GenericUpdate: unexpected case in switch.\n");
+	  case ListBox:
+	  case Button:
+	  case SaveButton:
+	  case Label:
+	  case Break:
+	    break;
+	  }
+      }
 }
 
 //------------------------------------------- Read out dialog controls ------------------------------------
@@ -965,7 +967,6 @@ NewCommentPopup (char *title, char *text, int index)
 void
 EditCommentProc ()
 {
-    int j;
     if (PopDown(CommentDlg)) { // popdown succesful
 //	MarkMenuItem("Edit.EditComment", False);
 //	MarkMenuItem("View.Comments", False);
@@ -1944,7 +1945,6 @@ Exp (int n, int x, int y)
 Option *
 BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
 {
-    extern Option *dialogOptions[];
     int i, size = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
     mainOptions[W_WHITE].choice = (char**) clockFontThingy;
     mainOptions[W_BLACK].choice = (char**) clockFontThingy;
@@ -2064,7 +2064,7 @@ DisplayMessage (char *message, char *extMessage)
 
 static ChessProgramState *savCps;
 static FILE **savFP;
-static char *fileName, *extFilter, *dirListing, *savMode, **namePtr;
+static char *fileName, *extFilter, *savMode, **namePtr;
 static int folderPtr, filePtr, oldVal, byExtension, extFlag;
 static char curDir[MSG_SIZ], title[MSG_SIZ], *folderList[1000], *fileList[1000];
 
@@ -2196,7 +2196,6 @@ ListDir (int pathFlag)
 	struct dirent *dp;
 	struct stat statBuf;
 	static int lastFlag;
-	char buf[MSG_SIZ];
 
 	if(pathFlag < 0) pathFlag = lastFlag;
 	lastFlag = pathFlag;
@@ -2206,7 +2205,7 @@ ListDir (int pathFlag)
 	folderPtr = filePtr = 0; // clear listing
 
 	while (dp = readdir(dir)) { // pass 1: list foders
-	    char *s = dp->d_name, match;
+	    char *s = dp->d_name;
 	    if(!stat(s, &statBuf) && S_ISDIR(statBuf.st_mode)) { // stat succeeds and tells us it is directory
 		if(s[0] == '.' && strcmp(s, "..")) continue; // suppress hidden, except ".."
 		ASSIGN(folderList[folderPtr], s); folderPtr++;

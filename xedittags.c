@@ -117,7 +117,5 @@ TagsPopDown()
 void
 EditTagsProc ()
 {
-    Arg args[5];
-    int j;
-    if (bookUp || !PopDown(TagsDlg)) EditTagsEvent();
+  if (bookUp || !PopDown(TagsDlg)) EditTagsEvent();
 }

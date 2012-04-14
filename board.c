@@ -893,7 +893,6 @@ DrawPosition (int repaint, Board board)
     static int lastBoardValid[2] = {0, 0};
     static Board lastBoard[2];
     static char lastMarker[BOARD_RANKS][BOARD_FILES];
-    Arg args[16];
     int rrow, rcol;
     int nr = twoBoards*partnerUp;
 

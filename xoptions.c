@@ -359,7 +359,7 @@ CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
 static Widget
 CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 {   // fromList determines if the item texts are taken from a list of strings, or from a menu table
-    int i, j;
+    int i;
     Widget menu, entry;
     Arg arg;
     MenuItem *mb = (MenuItem *) opt->choice;
@@ -370,7 +370,7 @@ CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 
     for (i=0; 1; i++) 
       {
-	char *msg = fromList ? list[i] : mb[i].string, *msg2;
+	char *msg = fromList ? list[i] : mb[i].string;
 	if(!msg) break;
 	entry = CreateMenuItem(menu, opt->min & NO_GETTEXT ? msg : _(msg), (XtCallbackProc) ComboSelect, (n<<16)+i);
 	if(!fromList) mb[i].handle = (void*) entry; // save item ID, for enabling / checkmarking
@@ -628,7 +628,7 @@ WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     int j=0, n = atoi(prms[0]);
     static char *params[3] = { "", "Continuous", "Proportional" };
     Arg args[16];
-    float f, h, top;
+    float h, top;
     Widget v;
     if(!n) { // transient dialogs also use this for list-selection callback
 	n = prms[1][0]-'0';
@@ -660,7 +660,7 @@ static char scrollTranslations[] =
 static void
 SqueezeIntoBox (Option *opt, int nr, int width)
 {   // size buttons in bar to fit, clipping button names where necessary
-    int i, j, wtot = 0;
+    int i, wtot = 0;
     Dimension widths[20], oldWidths[20];
     Arg arg;
     for(i=1; i<nr; i++) {
@@ -728,7 +728,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     char def[MSG_SIZ], *msg, engineDlg = (currentCps != NULL && dlgNr != BrowserDlg);
     static char pane[6] = "paneX";
     Widget texts[100], forelast = NULL, anchor, widest, lastrow = NULL, browse = NULL;
-    Dimension bWidth = 50, m;
+    Dimension bWidth = 50;
 
     if(dlgNr < PromoDlg && shellUp[dlgNr]) return 0; // already up
     if(dlgNr && dlgNr < PromoDlg && shells[dlgNr]) { // reusable, and used before (but popped down)

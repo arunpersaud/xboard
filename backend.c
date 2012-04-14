@@ -11581,7 +11581,6 @@ QuickScan (Board board, Move *move)
 	    move++;
 	    continue;
 	  } else if(piece <= Q_BCASTL) { // castling, encoded as (Q_XCASTL, king-to) + (rook, rook-to)
-	    int rook;
 	    piece = pieceList[piece]; // first two elements of pieceList contain King numbers
 	    from  = pieceList[piece]; // so this must be King
 	    quickBoard[from] = 0;

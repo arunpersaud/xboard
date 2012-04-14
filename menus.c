@@ -363,17 +363,15 @@ FlipViewProc ()
 void
 SaveOnExitProc ()
 {
-    Arg args[16];
+  saveSettingsOnExit = !saveSettingsOnExit;
 
-    saveSettingsOnExit = !saveSettingsOnExit;
-
-    MarkMenuItem("Options.SaveSettingsonExit", saveSettingsOnExit);
+  MarkMenuItem("Options.SaveSettingsonExit", saveSettingsOnExit);
 }
 
 void
 SaveSettingsProc ()
 {
-     SaveSettings(settingsFileName);
+  SaveSettings(settingsFileName);
 }
 
 void
@@ -475,10 +473,8 @@ NothingProc ()
 void
 PonderNextMoveProc ()
 {
-    Arg args[16];
-
-    PonderNextMoveEvent(!appData.ponderNextMove);
-    MARK_MENU_ITEM("Options.PonderNextMove", appData.ponderNextMove);
+  PonderNextMoveEvent(!appData.ponderNextMove);
+  MARK_MENU_ITEM("Options.PonderNextMove", appData.ponderNextMove);
 }
 
 void
@@ -636,12 +632,10 @@ ShowThinkingProc ()
 void
 HideThinkingProc ()
 {
-    Arg args[16];
+  appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: taken out of ShowThinkingEvent
+  ShowThinkingEvent();
 
-    appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: taken out of ShowThinkingEvent
-    ShowThinkingEvent();
-
-    MARK_MENU_ITEM("Options.HideThinking", appData.hideThinkingFromHuman);
+  MARK_MENU_ITEM("Options.HideThinking", appData.hideThinkingFromHuman);
 }
 
 /*

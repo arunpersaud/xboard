@@ -96,7 +96,7 @@ static Option gamesOptions[] = {
 static void
 GL_Button (int n)
 {
-    int index, j;
+    int index;
     n = gamesOptions[n].value; // use marker in option rather than n itself, for more easy adding/deletng of buttons
     if (n == 6) { // close
 	PopDown(GameListDlg);
@@ -205,7 +205,7 @@ static void
 GameListReplace (int page)
 {
   // filter: put in separate routine, to make callable from call-back
-  char buf[MSG_SIZ], *p, **st=list;
+  char buf[MSG_SIZ], **st=list;
   int i;
 
   if(page) *st++ = _("previous page"); else if(listLength > 1000) *st++ = "";
@@ -223,8 +223,6 @@ GameListReplace (int page)
 void
 GameListPopUp (FILE *fp, char *filename)
 {
-    char **st;
-
     if (glc == NULL) {
 	glc = (GameListClosure *) calloc(1, sizeof(GameListClosure));
 	glc->x = glc->y = -1;
@@ -266,9 +264,6 @@ GameListDestroy ()
 void
 ShowGameListProc ()
 {
-    Arg args[16];
-    int j;
-
     if (glc == NULL) {
 	DisplayError(_("There is no game list"), 0);
 	return;
