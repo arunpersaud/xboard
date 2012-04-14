@@ -500,10 +500,10 @@ UpdateControls (EngineOutputData *ed)
         unsigned long nps_100 = ed->nodes / ed->time;
 
         if( nps_100 < 100000 ) {
-	  snprintf( s_label, sizeof(s_label)/sizeof(s_label[0]), "NPS: %lu", nps_100 * 100 );
+	  snprintf( s_label, sizeof(s_label)/sizeof(s_label[0]), "%s: %lu", _("NPS"), nps_100 * 100 );
         }
         else {
-	  snprintf( s_label, sizeof(s_label)/sizeof(s_label[0]), "NPS: %.1fk", nps_100 / 10.0 );
+	  snprintf( s_label, sizeof(s_label)/sizeof(s_label[0]), "%s: %.1fk", _("NPS"), nps_100 / 10.0 );
         }
     }
 
