@@ -4242,10 +4242,12 @@ ParseBoard12 (char *string)
 	break;
     }
 
-    if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
+    if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
+	gameMode == IcsObserving && appData.dualBoard) // also allow use of second board for observing two games
 	 && newGameMode == IcsObserving && gamenum != ics_gamenum && appData.bgObserve) {
       // [HGM] bughouse: don't act on alien boards while we play. Just parse the board and save it */
       int fac = strchr(elapsed_time, '.') ? 1 : 1000;
+      static int lastBgGame = -1;
       char *toSqr;
       for (k = 0; k < ranks; k++) {
         for (j = 0; j < files; j++)
@@ -4271,6 +4273,12 @@ ParseBoard12 (char *string)
 	  DisplayWhiteClock(white_time*fac, to_play == 'W');
 	  DisplayBlackClock(black_time*fac, to_play != 'W');
 	  activePartner = to_play;
+	  if(gamenum != lastBgGame) {
+	      char buf[MSG_SIZ];
+	      snprintf(buf, MSG_SIZ, "%s %s %s", white, _("vs."), black);
+	      DisplayTitle(buf);
+	  }
+	  lastBgGame = gamenum;
 	  activePartnerTime = to_play == 'W' ? white_time*fac : black_time*fac;
 	              partnerUp = 0; flipView = !flipView; } // [HGM] dual
       snprintf(partnerStatus, MSG_SIZ,"W: %d:%02d B: %d:%02d (%d-%d) %c", white_time*fac/60000, (white_time*fac%60000)/1000,
@@ -4278,6 +4286,16 @@ ParseBoard12 (char *string)
       DisplayMessage(partnerStatus, "");
 	partnerBoardValid = TRUE;
       return;
+    }
+
+    if(appData.dualBoard && appData.bgObserve) {
+	if((newGameMode == IcsPlayingWhite || newGameMode == IcsPlayingBlack) && moveNum == 1)
+	    SendToICS(ics_prefix), SendToICS("pobserve\n");
+	else if(newGameMode == IcsObserving && (gameMode == BeginningOfGame || gameMode == IcsIdle)) {
+	    char buf[MSG_SIZ];
+	    snprintf(buf, MSG_SIZ, "%spobserve %s\n", ics_prefix, white);
+	    SendToICS(buf);
+	}
     }
 
     /* Modify behavior for initial board display on move listing

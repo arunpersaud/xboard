@@ -1764,6 +1764,8 @@ DisplayTitle (char *text)
 
     if (text == NULL) text = "";
 
+    if(partnerUp) { SetDialogTitle(DummyDlg, text); return; }
+
     if (*text != NULLCHAR) {
       safeStrCpy(icon, text, sizeof(icon)/sizeof(icon[0]) );
       safeStrCpy(title, text, sizeof(title)/sizeof(title[0]) );
@@ -1981,12 +1983,13 @@ Option dualOptions[] = { // auxiliary board window
 void
 SlavePopUp ()
 {
+    int size = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
     // copy params from main board
     dualOptions[0].choice = mainOptions[W_WHITE].choice;
     dualOptions[1].choice = mainOptions[W_BLACK].choice;
-    dualOptions[3].value = mainOptions[W_BOARD].value;
-    dualOptions[3].max = dualOptions[2].max = mainOptions[W_BOARD].max; // board size
-    dualOptions[0].max = dualOptions[1].max = mainOptions[W_WHITE].max; // clock width
+    dualOptions[3].value = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
+    dualOptions[3].max = dualOptions[2].max = size; // board width
+    dualOptions[0].max = dualOptions[1].max = size/2 - 3; // clock width
     GenericPopUp(dualOptions, "XBoard", DummyDlg, BoardWindow, NONMODAL, 1);
 }
 

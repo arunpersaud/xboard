@@ -936,14 +936,17 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     int i;
     static Dimension oldWidth, oldHeight;
     static VariantClass oldVariant;
-    static int oldMono = -1;
+    static int oldMono = -1, oldTwoBoards = 0;
 
     if(!formWidget) return;
+
+    if(oldTwoBoards && !twoBoards) PopDown(DummyDlg);
+    oldTwoBoards = twoBoards;
 
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-
+fprintf(debugFP, "BOARD %d x %d\n",boardWidth, boardHeight);
   if(boardWidth != oldWidth || boardHeight != oldHeight) { // do resizing stuff only if size actually changed
 
     oldWidth = boardWidth; oldHeight = boardHeight;
