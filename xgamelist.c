@@ -428,7 +428,7 @@ GameListReplace (int page)
   // filter: put in separate routine, to make callable from call-back
   Widget listwidg;
   Arg arg;
-  char buf[MSG_SIZ], *p, **st=list;
+  char buf[MSG_SIZ], **st=list;
   int i;
 
   if(page) *st++ = _("previous page"); else if(listLength > 1000) *st++ = "";
@@ -442,7 +442,8 @@ GameListReplace (int page)
   XawListChange(listwidg, list, 0, 0, True);
   XtSetValues(listwidg, &arg, 1);
   HighlightWithScroll(listwidg, 0, listLength);
-  snprintf(buf, MSG_SIZ, _("%s - %d/%d games (%d-%d-%d)"), glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
+  snprintf(buf, MSG_SIZ, _("%s - %d/%d games (%d-%d-%d)"), glc->filename, listLength,
+	   ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
   XtSetArg(arg, XtNtitle, buf);
   XtSetValues(glc->shell, &arg, 1);
 }
@@ -520,7 +521,6 @@ GameListPopUp (FILE *fp, char *filename)
 {
     Arg args[16];
     int j;
-    char **st;
 
     if (glc == NULL) {
 	glc = (GameListClosure *) calloc(1, sizeof(GameListClosure));

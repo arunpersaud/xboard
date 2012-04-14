@@ -1570,23 +1570,20 @@ int frameX, frameY;
 void
 GetActualPlacement (Widget wg, WindowPlacement *wp)
 {
-  Arg args[16];
-  Dimension w, h;
-  Position x, y;
   XWindowAttributes winAt;
   Window win, dummy;
-  int i, rx, ry;
+  int rx, ry;
 
   if(!wg) return;
 
-    win = XtWindow(wg);
-    XGetWindowAttributes(xDisplay, win, &winAt); // this works, where XtGetValues on XtNx, XtNy does not!
-    XTranslateCoordinates (xDisplay, win, winAt.root, -winAt.border_width, -winAt.border_width, &rx, &ry, &dummy);
-    wp->x = rx - winAt.x;
-    wp->y = ry - winAt.y;
-    wp->height = winAt.height;
-    wp->width = winAt.width;
-    frameX = winAt.x; frameY = winAt.y; // remember to decide if windows touch
+  win = XtWindow(wg);
+  XGetWindowAttributes(xDisplay, win, &winAt); // this works, where XtGetValues on XtNx, XtNy does not!
+  XTranslateCoordinates (xDisplay, win, winAt.root, -winAt.border_width, -winAt.border_width, &rx, &ry, &dummy);
+  wp->x = rx - winAt.x;
+  wp->y = ry - winAt.y;
+  wp->height = winAt.height;
+  wp->width = winAt.width;
+  frameX = winAt.x; frameY = winAt.y; // remember to decide if windows touch
 }
 
 void
@@ -3922,7 +3919,6 @@ AppendEnginesToMenu (Widget menu, char *list)
 {
     int i=0, j;
     Widget entry;
-    MenuItem *mi;
     Arg args[16];
     char *p;
 
@@ -5119,7 +5115,7 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
     fileProc = proc;		/* I can't see a way not */
     fileOpenMode = openMode;	/*   to use globals here */
     {   // [HGM] use file-selector dialog stolen from Ghostview
-	int index; // this is not supported yet
+	// int index; // this is not supported yet
 	if(openFP = XsraSelFile(shellWidget, label, NULL, NULL, _("could not open: "),
 			   (def[0] ? def : NULL), filter, openMode, NULL, &openName))
 	  // [HGM] delay to give expose event opportunity to redraw board after browser-dialog popdown before lengthy load starts
@@ -6254,10 +6250,10 @@ FlipViewProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 PonderNextMoveProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    Arg args[16];
-
     PonderNextMoveEvent(!appData.ponderNextMove);
 #ifndef OPTIONSDIALOG
+    Arg args[16];
+
     if (appData.ponderNextMove) {
 	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
