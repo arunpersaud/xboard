@@ -2441,6 +2441,7 @@ VariantSwitch (Board board, VariantClass newVariant)
 	   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
 	     board[i][j];
      }
+     board[HOLDINGS_SET] = 0;
      gameInfo.boardWidth  = newWidth;
      gameInfo.boardHeight = newHeight;
      gameInfo.holdingsWidth = newHoldingsWidth;
@@ -4302,6 +4303,7 @@ ParseBoard12 (char *string)
     }
 
    if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files ||
+					move_str[1] == '@' && !gameInfo.holdingsWidth ||
 					weird && (int)gameInfo.variant < (int)VariantShogi) {
      /* [HGM] We seem to have switched variant unexpectedly
       * Try to guess new variant from board size
@@ -4311,7 +4313,8 @@ ParseBoard12 (char *string)
 	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
 	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
 	  if(ranks == 9 && files == 9)  newVariant = VariantShogi; else
-	  if(!weird) newVariant = VariantNormal;
+	  if(ranks == 10 && files == 10) newVariant = VariantGrand; else
+	  if(!weird) newVariant = move_str[1] == '@' ? VariantCrazyhouse : VariantNormal;
           VariantSwitch(boards[currentMove], newVariant); /* temp guess */
 	  /* Get a move list just to see the header, which
 	     will tell us whether this is really bug or zh */
