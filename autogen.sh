@@ -19,7 +19,7 @@
 # 
 #  See the file ChangeLog for a revision history. 
 
-aclocal \
+aclocal -I m4 \
 && autoheader \
 && automake --add-missing \
 && autoconf
