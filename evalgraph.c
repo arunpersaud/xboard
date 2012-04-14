@@ -120,8 +120,8 @@ GetValueY (int value)
 {
     if( value < -range*700 ) value = -range*700;
     if( value > +range*700 ) value = +range*700;
-    if(value > 100*range)  value += appData.zoom * 100 - 100*range; else
-    if(value < -100*range) value -= appData.zoom * 100 - 100*range; else
+    if(value > 100*range)  value += (appData.zoom - 1)*100*range; else
+    if(value < -100*range) value -= (appData.zoom - 1)*100*range; else
 	value *= appData.zoom;
     return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / ((1200. + 200.*appData.zoom)*range));
 }
