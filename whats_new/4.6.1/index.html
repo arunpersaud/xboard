@@ -1,0 +1,66 @@
+<!--#include virtual="/server/html5-header.html" -->
+<title>XBoard - GNU Project - Free Software Foundation - NEWS</title>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
+<h2>What is new in WinBoard / XBoard 4.6.1?</h2>
+
+ <table cellpadding="10"><tr><td>
+  <img src="../4.5.0/winboardF.png">
+ </td><td valign="top">
+  <p>
+    <a href="http://hgm.nubati.net/news.html">Experimental and future stuff</a>
+  </p>
+  <p>
+    <a href="../4.6.0/index.html">Preceding release (4.6.0)</a>
+  </p>
+ </td></tr></table>
+
+ <p> This version fixes some bugs found in 4.6.0. Here is a quick list of the changes: </p>
+
+   <ul>
+	<li>Fix bug loading a new engine through the menu (not loading it with the full game, but just upto the current move)</li>
+	<li>Prefix engine command with "./" when a pathname is split up during install, so the engine actually runs (XB)</li>
+	<li>Fix fall-back to -ncp mode when engine does not start (cutting short the feature timeout)</li>
+	<li>Fix bug in position search for FRC castlings (where a King could 'fall off' the board)</li>
+	<li>Add a message to inform the user how to clear the board, in sweep-select edit-position mode</li>
+	<li>Fix a bug that could stop the clock when the board window was dragged (XB)</li>
+	<li>Fix switching off highlighting during game (so last highlights do not remain for the rest of the game)</li>
+	<li>Allow user to enter the name of a non-existing file when browsing for a save file (WB)</li>
+	<li>Correctly handle parsing of Crazyhouse promotions with legality-testing off</li>
+	<li>Consistently make auxiliary windows top level-shells or not, with new -topLevel option (XB)</li>
+	<li>No longer fatal if second engine does not suport current variant</li>
+	<li>Scroll XBoard game list to keep selected item in view</li>
+   </ul>
+
+</div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
+<div id="footer">
+
+<p>Please send general FSF &amp; GNU inquiries to
+<a href="mailto:gnu@gnu.org">&lt;gnu@gnu.org&gt;</a>.
+There are also <a href="/contact/">other ways to contact</a>
+the FSF.<br />
+Please send broken links and other corrections or suggestions to
+<a href="mailto:bug-xboard@gnu.org">&lt;bug-xboard@gnu.org&gt;</a>.</p>
+
+<p>Please see the <a
+href="/server/standards/README.translations.html">Translations
+README</a> for information on coordinating and submitting translations
+of this article.</p>
+
+<p>Copyright &copy; 2009, 2010, 2011, 2012 Free Software Foundation, Inc.</p>
+
+<p>This page is licensed under a <a rel="license"
+href="http://creativecommons.org/licenses/by-nd/3.0/us/">Creative
+Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
+
+<p>Updated:
+<!-- timestamp start -->
+$Date: 2012/04/15 20:35:42 $
+<!-- timestamp end -->
+</p>
+</div>
+</div>
+</body>
+</html>
