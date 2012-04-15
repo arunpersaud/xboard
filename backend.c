@@ -2494,8 +2494,8 @@ PlotSeekAd (int i)
 	xList[i] = yList[i] = -100; // outside graph, so cannot be clicked
 	if(r < minRating+100 && r >=0 ) r = minRating+100;
 	if(r > maxRating) r = maxRating;
-	if(tc < 1.) tc = 1.;
-	if(tc > 95.) tc = 95.;
+	if(tc < 1.f) tc = 1.f;
+	if(tc > 95.f) tc = 95.f;
 	x = (w-hMargin-squareSize/8-7)* log(tc)/log(95.) + hMargin;
 	y = ((double)r - minRating)/(maxRating - minRating)
 	    * (h-vMargin-squareSize/8-1) + vMargin;
@@ -10928,7 +10928,7 @@ AutoPlayGameLoop ()
 	  continue;
 	if (appData.timeDelay < 0)
 	  return;
-	StartLoadGameTimer((long)(1000.0 * appData.timeDelay));
+	StartLoadGameTimer((long)(1000.0f * appData.timeDelay));
 	break;
     }
 }
@@ -13373,7 +13373,7 @@ AnalyzeFileEvent ()
     StartAnalysisClock();
     GetTimeMark(&lastNodeCountTime);
     lastNodeCount = 0;
-    if(appData.timeDelay > 0) StartLoadGameTimer((long)(1000.0 * appData.timeDelay));
+    if(appData.timeDelay > 0) StartLoadGameTimer((long)(1000.0f * appData.timeDelay));
 }
 
 void

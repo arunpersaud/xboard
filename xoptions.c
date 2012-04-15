@@ -239,12 +239,12 @@ HighlightWithScroll (Option *opt, int sel, int max)
     float top, bottom, f, g;
     HighlightListBoxItem(opt, sel);
     if(!ReadScroll(opt, &top, &bottom)) return; // no scroll bar
-    bottom = bottom*max - 1.;
+    bottom = bottom*max - 1.f;
     f = g = top;
     top *= max;
-    if(sel > (top + 3*bottom)/4) f = (sel - 0.75*(bottom-top))/max; else
-    if(sel < (3*top + bottom)/4) f = (sel - 0.25*(bottom-top))/max;
-    if(f < 0.) f = 0.; if(f + 1./max > 1.) f = 1. - 1./max;
+    if(sel > (top + 3*bottom)/4) f = (sel - 0.75f*(bottom-top))/max; else
+    if(sel < (3*top + bottom)/4) f = (sel - 0.25f*(bottom-top))/max;
+    if(f < 0.f) f = 0.; if(f + 1.f/max > 1.f) f = 1. - 1./max;
     if(f != g) SetScroll(opt, f);
 }
 
@@ -641,7 +641,7 @@ WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     XtSetArg(args[j], XtNshown, &h); j++;
     XtSetArg(args[j], XtNtopOfThumb, &top); j++;
     XtGetValues(v, args, j);
-    top += 0.1*h*n; if(top < 0.) top = 0.;
+    top += 0.1f*h*n; if(top < 0.f) top = 0.;
     XtCallActionProc(v, "StartScroll", event, params+1, 1);
     XawScrollbarSetThumb(v, top, -1.0);
     XtCallActionProc(v, "NotifyThumb", event, params, 0);
