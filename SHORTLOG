@@ -2,7 +2,18 @@
 
 (git shortlog --no-merges v4.6.0..HEAD)
 
-H.G. Muller (22):
+Arun Persaud (5):
+      updated Changelog, etc. for developer release
+      added m4 directory to search path for aclocal. As suggested by Michel Van den Bergh
+      removed unused variables (-Wunused-variable)
+      new version number for release of 4.6.1
+      updated Changelog, NEWS, etc.
+
+Byrial Jensen (2):
+      New Danish translation (fixes a minor error in one string)
+      Translate "NPS" also in engine output window
+
+H.G. Muller (30):
       Fix fall-back on -ncp mode
       Install engines as ./exefile in XBoard
       Inform user in EditPosition mode how to clear board
@@ -25,6 +36,15 @@ H.G. Muller (22):
       Swap all engine-related options during engine loading
       new version number for developer release
       updated po/pot files
+      Don't strip path from engine name if directory given
+      Updated Danish and Ukranian translations
+      Suppress popup for fatal error after tellusererror
+      Detect engine exit during startup
+      Fix click-click sweep promotions to empty square
+      Suppress testing for availability in bughouse drops
+      Fix crash due to empty PV
+      Fix Eval Graph scale in drop games
+
 
 ** Version 4.6.0 **
 

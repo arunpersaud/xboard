@@ -3,6 +3,76 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2012-04-15 13:43:49 -0700 Arun Persaud <arun@nubati.net>:
+new version number for release of 4.6.1
+
+2012-04-14 22:43:03 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Translate "NPS" also in engine output window
+
+2012-04-14 15:51:07 -0700 Arun Persaud <arun@nubati.net>:
+removed unused variables (-Wunused-variable)
+
+2012-04-14 15:37:05 -0700 Arun Persaud <arun@nubati.net>:
+added m4 directory to search path for aclocal. As suggested by Michel Van den Bergh
+
+
+2012-04-14 23:21:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Eval Graph scale in drop games
+
+
+2012-04-14 15:43:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash due to empty PV
+
+Reception of a stat01 command before the first PV could cause a crash,
+as apparently the parser cannot handle this.
+
+2012-04-14 13:27:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress testing for availability in bughouse drops
+
+Give up on testing legality of bughouse drop moves; this only causes problems,
+because the move list sent by the ICS is not accompanied by holdings updates.
+So XBoard parses it thinking the holdings are empty, making every drop move
+an ImpossibleMove. Bughouse can only be played on ICS, and we might as well
+trust the ICS that it will only pass us legal moves. A user should not be
+able to enter illegal drops; unavailable pieces cannot be grabbed from the
+holdings, and typing is diverted to the ICS directly (which would reject the
+illegal drop without XBoard even knowing about it).
+  Also improve switching to bh/zh, based on drop move in initial board.
+
+2012-04-13 16:39:42 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+New Danish translation (fixes a minor error in one string)
+
+
+2012-04-13 00:33:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix click-click sweep promotions to empty square
+
+These did not work, because DragPieceBegin would fail on an EmptySquare.
+
+2012-04-11 09:54:51 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Detect engine exit during startup
+
+The case where engine startup failure does not result in a fatal protocol
+message, like "No such file", but where it simply exits, is now also covered.
+
+2012-04-10 22:55:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress popup for fatal error after tellusererror
+
+For cooperating better with Polyglot, and allowing more to-the-point
+error messaging, the (awful) default message will be suppressed if the
+dying engine already provided an explanation for its demise to the user.
+
+2012-04-10 21:05:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Updated Danish and Ukranian translations
+
+
+2012-04-10 18:39:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Don't strip path from engine name if directory given
+
+
+2012-04-05 21:17:04 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, etc. for developer release
+
+
 2012-04-05 13:25:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 updated po/pot files
 

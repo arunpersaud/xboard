@@ -1,3 +1,31 @@
+** Version 4.6.1 **
+   (for a more detailed list with screenshots see http://www.gnu.org/software/xboard/whats_new/4.6.1/ )
+
+   bugfix release for 4.6.0
+
+   * Fix memory corruption bug on second-engine loading (through menu or in tournament),
+     which could destroy -firstInitString
+   * Fix bug loading a new engine through the menu (not loading it with the full game, 
+     but just upto the current move)
+   * Prefix engine command with "./" when a pathname is split up during install, so the engine actually runs (XB)
+   * Fix fall-back to -ncp mode when engine does not start (cutting short the feature timeout)
+   * Fix bug in position search for FRC castlings (where a King could 'fall off' the board)
+   * Add a message to inform the user how to clear the board, in sweep-select edit-position mode
+   * Fix a bug that could stop the clock when the board window was dragged (XB)
+   * Fix switching off highlighting during game (so last highlights do not remain for the rest of the game)
+   * Allow user to enter the name of a non-existing file when browsing for a save file (WB)
+   * Make sure rarely used engine-related options (such as -firstNPS) are also correctly loaded during session
+   * Correctly handle parsing of Crazyhouse promotions with legality-testing off
+   * Fix click-click detour under-promotions, which were not working for non-captures
+   * Don't strip path from engine command if directory is explicitly given in Load Engine dialog
+   * Consistently make auxiliary windows top level-shells or not, with new -topLevel option (XB)
+   * No longer fatal if second engine does not support current variant (just refuse Two Machines mode)
+   * Scroll XBoard game list to keep selected item in view (XB)
+   * Suppress spurious error popup when starting observing of bughouse games
+   * Fix vertical axis ticks in eval graph with drop games
+   * Put title on same line as menu bar only for -size 72 and larger (with -titleInWindow, XB)
+   * Properly open and close debug file when switching debug mode through key binding Ctrl-D (XB)
+
 ** Version 4.6.0 **
 
    (for a more detailed list with screenshots see http://www.gnu.org/software/xboard/whats_new/4.6.0/ )
