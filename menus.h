@@ -99,6 +99,7 @@ void MatchProc P((void));
 void MatchOptionsProc P((void));
 void EditCommentProc P((void));
 void IcsInputBoxProc P((void));
+void ChatProc P((void));
 void AdjuWhiteProc P((void));
 void AdjuBlackProc P((void));
 void AdjuDrawProc P((void));

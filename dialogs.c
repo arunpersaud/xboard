@@ -1113,6 +1113,7 @@ PutText (char *text, int pos)
     }
     SetWidgetText(&boxOptions[0], text, TextMenuDlg);
     SetInsertPos(&boxOptions[0], pos);
+    HardSetFocus(&boxOptions[0]);
 }
 
 void
@@ -1529,10 +1530,100 @@ PromotionPopUp ()
 
 //---------------------------- Chat Windows ----------------------------------------------
 
+static char *line, *memo, *partner, *texts[MAX_CHAT], dirty[MAX_CHAT];
+static int activePartner;
+
+void ChatSwitch P((int n));
+int  ChatOK P((int n));
+
+Option chatOptions[] = {
+{ 0,   T_TOP,    100, NULL, (void*) &partner, NULL, NULL, TextBox, N_("Chat partner:") },
+{ 1, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, "" },
+{ 2, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, "" },
+{ 3, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, "" },
+{ 4, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, "" },
+{ 100, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &memo, NULL, NULL, TextBox, "" },
+{  0,    0,  510, NULL, (void*) &line, NULL, NULL, TextBox, "" },
+{ 0, NO_OK|SAME_ROW, 0, NULL, (void*) &ChatOK, NULL, NULL, EndMark , "" }
+};
+
 void
 OutputChatMessage (int partner, char *mess)
 {
-    return; // dummy
+    char *p = texts[partner];
+    int len = strlen(mess) + 1;
+
+    if(p) len += strlen(p);
+    texts[partner] = (char*) malloc(len);
+    snprintf(texts[partner], len, "%s%s", p ? p : "", mess);
+    FREE(p);
+    if(partner == activePartner) {
+	AppendText(&chatOptions[5], mess);
+	SetInsertPos(&chatOptions[5], len-2);
+    } else {
+	SetColor("#FFC000", &chatOptions[partner + (partner < activePartner)]);
+	dirty[partner] = 1;
+    }
+}
+
+int
+ChatOK (int n)
+{   // can only be called through <Enter> in chat-partner text-edit, as there is no OK button
+    char buf[MSG_SIZ];
+    if(!partner || strcmp(partner, chatPartner[activePartner])) {
+	safeStrCpy(chatPartner[activePartner], partner, MSG_SIZ);
+	SetWidgetText(&chatOptions[5], "", -1); // clear text if we alter partner
+	SetWidgetText(&chatOptions[6], "", ChatDlg); // clear text if we alter partner
+	HardSetFocus(&chatOptions[6]);
+    }
+    if(line[0]) { // something was typed
+	SetWidgetText(&chatOptions[6], "", ChatDlg);
+	// from here on it could be back-end
+	if(line[strlen(line)-1] == '\n') line[strlen(line)-1] = NULLCHAR;
+	SaveInHistory(line);
+	if(!strcmp("whispers", chatPartner[activePartner]))
+	      snprintf(buf, MSG_SIZ, "whisper %s\n", line); // WHISPER box uses "whisper" to send
+	else if(!strcmp("shouts", chatPartner[activePartner]))
+	      snprintf(buf, MSG_SIZ, "shout %s\n", line); // SHOUT box uses "shout" to send
+	else {
+	    if(!atoi(chatPartner[activePartner])) {
+		snprintf(buf, MSG_SIZ, "> %s\n", line); // echo only tells to handle, not channel
+		OutputChatMessage(activePartner, buf);
+		snprintf(buf, MSG_SIZ, "xtell %s %s\n", chatPartner[activePartner], line);
+	    } else
+		snprintf(buf, MSG_SIZ, "tell %s %s\n", chatPartner[activePartner], line);
+	}
+	SendToICS(buf);
+    }
+    return FALSE; // never pop down
+}
+
+void
+ChatSwitch (int n)
+{
+    int i, j;
+    if(n <= activePartner) n--;
+    activePartner = n;
+    if(!texts[n]) texts[n] = strdup("");
+    dirty[n] = 0;
+    SetWidgetText(&chatOptions[5], texts[n], ChatDlg);
+    SetInsertPos(&chatOptions[5], strlen(texts[n]));
+    SetWidgetText(&chatOptions[0], chatPartner[n], ChatDlg);
+    for(i=j=0; i<MAX_CHAT; i++) {
+	if(i == activePartner) continue;
+	SetWidgetLabel(&chatOptions[++j], chatPartner[i]);
+	SetColor(dirty[i] ? "#FFC000" : "#FFFFFF", &chatOptions[j]);
+    }
+    SetWidgetText(&chatOptions[6], "", ChatDlg);
+    HardSetFocus(&chatOptions[6]);
+}
+
+void
+ChatProc ()
+{
+    if(GenericPopUp(chatOptions, _("Chat box"), ChatDlg, BoardWindow, NONMODAL, 0))
+	AddHandler(&chatOptions[0], 2), AddHandler(&chatOptions[6], 2); // treats return as OK
+    MarkMenu("View.OpenChatWindow", ChatDlg);
 }
 
 //--------------------------------- Game-List options dialog ------------------------------------------

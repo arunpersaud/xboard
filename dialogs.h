@@ -99,7 +99,7 @@
 
 typedef enum {  // identifier of dialogs done by GenericPopup
 TransientDlg=0, // transient: grabs mouse events and is destroyed at pop-down (so other dialog can use this ID next time)
-CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, NoDlg, DummyDlg, HistoryDlg, // persistent: no grab and reused
+CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, ChatDlg, DummyDlg, HistoryDlg, // persistent: no grab and reused
 GameListDlg,
 EngOutDlg,
 EvalGraphDlg,

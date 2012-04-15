@@ -1153,7 +1153,7 @@ SetInsertPos (Option *opt, int pos)
     XtSetArg(args[0], XtNinsertPosition, pos);
     XtSetValues(opt->handle, args, 1);
 //    SetFocus(opt->handle, shells[InputBoxDlg], NULL, False); // No idea why this does not work, and the following is needed:
-    XSetInputFocus(xDisplay, XtWindow(opt->handle), RevertToPointerRoot, CurrentTime);
+//    XSetInputFocus(xDisplay, XtWindow(opt->handle), RevertToPointerRoot, CurrentTime);
 }
 
 void
