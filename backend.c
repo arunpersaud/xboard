@@ -7202,9 +7202,9 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     if(!sweepSelecting) {
 	toX = x;
 	toY = y;
-	saveAnimate = appData.animate;
     } else sweepSelecting = 0; // this must be the up-click corresponding to the down-click that started the sweep
 
+    saveAnimate = appData.animate;
     if (clickType == Press) {
 	if(gameMode == EditPosition && boards[currentMove][fromY][fromX] == EmptySquare) {
 	    // must be Edit Position mode with empty-square selected
