@@ -315,7 +315,6 @@ Speak (char *how, char *whom)
     time_t now;
     char  *p;
     int c, speechlen;
-    Boolean done;
 
     if (strcmp(how, "shout") == 0) {
 	now = time((time_t *) NULL);
@@ -346,7 +345,6 @@ Speak (char *how, char *whom)
 	if (c == EOF) continue;
 	break;
     }
-    done = FALSE;
 
     /* Don't use ics_prefix; we need to let FICS expand the alias i -> it,
        but use the real command "i" on ICC */
@@ -659,7 +657,6 @@ ZippyConverse(char *buf, int *i)
     /* Channel tells */
     oldi = *i;
     if (looking_at(buf, i, "*(*: *")) {
-	char *player;
 	char *channel;
 	if (star_match[0][0] == NULLCHAR  ||
 	    strchr(star_match[0], ' ') ||
@@ -669,7 +666,6 @@ ZippyConverse(char *buf, int *i)
 	    return FALSE;
 	}
 	if (appData.zippyTalk) {
-	  player = StripHighlightAndTitle(star_match[0]);
 	  channel = strrchr(star_match[1], '(');
 	  if (channel == NULL) {
 	    channel = star_match[1];
@@ -774,16 +770,12 @@ void
 ZippyHandleChallenge (char *srated, char *swild, char *sbase, char *sincrement, char *opponent)
 {
     char buf[MSG_SIZ];
-    int base, increment, i=0;
-    char rated;
+    int i=0;
     VariantClass variant;
     char *varname;
 
-    rated = srated[0];
     variant = StringToVariant(swild);
     varname = VariantName(variant);
-    base = atoi(sbase);
-    increment = atoi(sincrement);
 
     /* [DM] If icsAnalyzeEngine active we don't accept automatic games */
     if (appData.icsActive && appData.icsEngineAnalyze) return;
