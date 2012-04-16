@@ -1320,11 +1320,6 @@ ShuffleMenuProc ()
 static int TcOK P((int n));
 int tmpMoves, tmpTc, tmpInc, tmpOdds1, tmpOdds2, tcType;
 
-static void
-ShowTC (int n)
-{
-}
-
 static void SetTcType P((int n));
 
 static char *
