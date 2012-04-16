@@ -1078,7 +1078,7 @@ ICSInputSendText ()
     GetWidgetText(&boxOptions[0], &val);
     SaveInHistory(val);
     SendMultiLineToICS(val);
-    SetWidgetText(&boxOptions[0], val, InputBoxDlg);
+    SetWidgetText(&boxOptions[0], "", InputBoxDlg);
 }
 
 void
