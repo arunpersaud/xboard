@@ -6563,9 +6563,8 @@ void
 UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 {
     ChessMove moveType;
-    ChessSquare pdown, pup;
+    ChessSquare pup;
     int ff=fromX, rf=fromY, ft=toX, rt=toY;
-
 
     /* Check if the user is playing in turn.  This is complicated because we
        let the user "pick up" a piece before it is his turn.  So the piece he
@@ -6702,7 +6701,6 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
     }
 
     if(toX < 0 || toY < 0) return;
-    pdown = boards[currentMove][fromY][fromX];
     pup = boards[currentMove][toY][toX];
 
     /* [HGM] If move started in holdings, it means a drop. Convert to standard form */
