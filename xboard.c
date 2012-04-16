@@ -2315,14 +2315,6 @@ KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 static void
-MenuBarSelect (Widget w, caddr_t addr, caddr_t index)
-{
-    MenuProc *proc = (MenuProc *) addr;
-
-    (proc)();
-}
-
-static void
 MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
 {
     RecentEngineEvent((int) (intptr_t) addr);
