@@ -892,6 +892,7 @@ IcsTextProc ()
    if((p = icsTextMenuString) == NULL) return;
    do {
 	q = r = p; while(*p && *p != ';') p++;
+	if(textOptions[i].name == NULL) textOptions[i].name = (char*) malloc(MSG_SIZ);
 	for(j=0; j<p-q; j++) textOptions[i].name[j] = *r++;
 	textOptions[i].name[j++] = 0;
 	if(!*p) break;
