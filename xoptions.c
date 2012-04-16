@@ -807,12 +807,16 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 	    j = SetPositionAndSize(args, dialog, last, 1 /* border */,
 				   w /* w */, option[i].type == TextBox ? option[i].value : 0 /* h */, 0x91 /* chain full width */);
-	    if(option[i].type == TextBox && option[i].value) { // decorations for multi-line text-edits
+	    if(option[i].type == TextBox) { // decorations for multi-line text-edits
 		if(option[i].min & T_VSCRL) { XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++; }
 		if(option[i].min & T_HSCRL) { XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollAlways);  j++; }
 		if(option[i].min & T_FILL)  { XtSetArg(args[j], XtNautoFill, True);  j++; }
 		if(option[i].min & T_WRAP)  { XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++; }
-		if(option[i].min & T_TOP)   { XtSetArg(args[j], XtNtop, XtChainTop); j++; }
+		if(option[i].min & T_TOP)   { XtSetArg(args[j], XtNtop, XtChainTop); j++;
+		    if(!option[i].value) {    XtSetArg(args[j], XtNbottom, XtChainTop); j++;
+					      XtSetValues(dialog, args+j-2, 2);
+		    }
+		}
 	    } else shrink = TRUE;
 	    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
 	    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;

@@ -1066,8 +1066,8 @@ NextInHistory ()
 // end of borrowed code
 
 Option boxOptions[] = {
-{  30,  0,  400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
-{  0,SAME_ROW | NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
+{  30, T_TOP, 400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
+{  0,  NO_OK,   0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
 void
@@ -1134,8 +1134,8 @@ IcsInputBoxProc ()
 static int TypeInOK P((int n));
 
 Option typeOptions[] = {
-{ 30,  0,            400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
-{ 0, SAME_ROW | NO_OK, 0, NULL, (void*) &TypeInOK, "", NULL, EndMark , "" }
+{ 30, T_TOP, 400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
+{ 0,  NO_OK,   0, NULL, (void*) &TypeInOK, "", NULL, EndMark , "" }
 };
 
 static int
