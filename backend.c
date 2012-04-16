@@ -11561,7 +11561,7 @@ QuickCompare (Board board, int *minCounts, int *maxCounts)
 int
 QuickScan (Board board, Move *move)
 {   // reconstruct game,and compare all positions in it
-    int cnt=0, stretch=0, total = MakePieceList(board, counts), delayedKing = -1;
+    int cnt=0, stretch=0, total = MakePieceList(board, counts);
     do {
 	int piece = move->piece;
 	int to = move->to, from = pieceList[piece];
@@ -11608,7 +11608,7 @@ QuickScan (Board board, Move *move)
 	    if(stretch++ == 0) for(i=0; i<EmptySquare; i++) lastCounts[i] = counts[i]; // remember actual material
 	} else stretch = 0;
 	if(stretch && (appData.searchMode == 1 || stretch >= appData.stretch)) return cnt + 1 - stretch;
-	move++; delayedKing = -1;
+	move++;
     } while(1);
 }
 
