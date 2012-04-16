@@ -12543,15 +12543,12 @@ int
 SaveGamePGN (FILE *f)
 {
     int i, offset, linelen, newblock;
-    time_t tm;
 //    char *movetext;
     char numtext[32];
     int movelen, numlen, blank;
     char move_buffer[100]; /* [AS] Buffer for move+PV info */
 
     offset = backwardMostMove & (~1L); /* output move numbers start at 1 */
-
-    tm = time((time_t *) NULL);
 
     PrintPGNTags(f, &gameInfo);
 
