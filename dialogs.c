@@ -204,7 +204,7 @@ GenericReadout (Option *opts, int selected)
 		    break;
 		case ComboBox:
 		    if(opts[i].min & COMBO_CALLBACK) break;
-		    if(!opts[i].textValue) { *(int*)opts[i].target == opts[i].value; break; } // numeric
+		    if(!opts[i].textValue) { *(int*)opts[i].target = values[i]; break; } // numeric
 		    val = ((char**)opts[i].textValue)[values[i]];
 		    if(currentCps) {
 			if(opts[i].value == values[i]) break; // not changed
