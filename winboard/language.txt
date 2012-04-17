@@ -961,6 +961,8 @@ backend.c
 "vs." === ""
 "%s (%d reversible plies)" === ""
 "Reading game file (%d)" === ""
+"Click clock to clear board" === ""
+"Pull pawn backwards to under-promote" === ""
 
 END-OF-GAME MESSAGES (should they be translated?)
 ## I think that only for visualization and not for PGN, as PGN files are shared all around the world

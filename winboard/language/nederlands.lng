@@ -920,6 +920,8 @@ backend.c
 "No response from ICS" === "Geen respons van Internet Schaakdienst"
 "You cannot do this while you are playing or observing" === "Dit kan niet als u aan het spelen of toeschouwen bent"
 "Click in holdings to choose piece" === "Klik in de voorraad om een stuk te kiezen"
+"Click clock to clear board" === "Klik op klok voor leeg bord"
+"Pull pawn backwards to under-promote" === "Trek pion terug voor minor promotie"
 
 END-OF-GAME MESSAGES (should they be translated?)
 ## I think that only for visualization and not for PGN, as PGN files are shared all around the world
