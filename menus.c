@@ -384,12 +384,6 @@ InfoProc ()
 }
 
 void
-ManProc ()
-{   // called from menu
-    ManInner(NULL, NULL, NULL, NULL);
-}
-
-void
 BugReportProc ()
 {
     char buf[MSG_SIZ];

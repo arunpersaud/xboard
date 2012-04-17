@@ -3121,6 +3121,12 @@ ManInner (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
+ManProc ()
+{   // called from menu
+    ManInner(NULL, NULL, NULL, NULL);
+}
+
+void
 SetWindowTitle (char *text, char *title, char *icon)
 {
     Arg args[16];
