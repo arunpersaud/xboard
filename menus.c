@@ -869,14 +869,14 @@ Menu menuBar[] = {
 MenuItem *
 MenuNameToItem (char *menuName)
 {
-    int i;
+    int i=0;
     char buf[MSG_SIZ], *p;
     MenuItem *menuTab;
     static MenuItem a = { NULL, NULL, NothingProc };
     extern Option mainOptions[];
     safeStrCpy(buf, menuName, MSG_SIZ);
     p = strchr(buf, '.');
-    if(!p) menuTab = noMenu; else {
+    if(!p) menuTab = noMenu, p = menuName; else {
 	*p++ = NULLCHAR;
 	for(i=0; menuBar[i].name; i++)
 	    if(!strcmp(buf, menuBar[i].name)) break;
