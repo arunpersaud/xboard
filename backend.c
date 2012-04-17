@@ -13954,6 +13954,7 @@ EditPositionDone (Boolean fakeRights)
         fprintf(debugFP, "EditPosDone\n");
     }
     DisplayTitle("");
+    DisplayMessage("", "");
     timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
     timeRemaining[1][forwardMostMove] = blackTimeRemaining;
     gameMode = EditGame;
