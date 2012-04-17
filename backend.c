@@ -16870,7 +16870,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
              (gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom) &&
              ( *p >= 'a' && *p < 'a' + gameInfo.boardWidth) ||
              ( *p >= 'A' && *p < 'A' + gameInfo.boardWidth)   ) {
-        char c = *p++; int whiteKingFile=NoRights, blackKingFile=NoRights;
+        int c = *p++, whiteKingFile=NoRights, blackKingFile=NoRights;
 
         for(i=BOARD_LEFT; i<BOARD_RGHT; i++) {
             if(board[BOARD_HEIGHT-1][i] == BlackKing) blackKingFile = i;
