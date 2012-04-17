@@ -3,7 +3,7 @@
 <!--#include virtual="/server/banner.html" -->
 <!--#set var="article_name" value="/server/standards/boilerplate" -->
 <!--#include virtual="/server/gnun/initial-translations-list.html" -->
-<h2>What is new in WinBoard / XBoard 4.6.1?</h2>
+<h2>What is new in WinBoard / XBoard 4.6.2?</h2>
 
  <table cellpadding="10"><tr><td>
   <img src="../4.5.0/winboardF.png">
@@ -16,6 +16,8 @@
   </p>
  </td></tr></table>
 
+ <h3>Note that version 4.6.1 was severely broken due to a faulty 'bugfix', and is now replaced by 4.6.2</h3>
+
  <p> This version fixes some bugs found in 4.6.0. Here is a quick list of the changes: </p>
 
    <ul>
@@ -24,7 +26,8 @@
 	<li>Prefix engine command with "./" when a pathname is split up during install, so the engine actually runs (XB)</li>
 	<li>Fix fall-back to -ncp mode when engine does not start (cutting short the feature timeout)</li>
 	<li>Fix bug in position search for FRC castlings (where a King could 'fall off' the board)</li>
-	<li>Add a message to inform the user how to clear the board, in sweep-select edit-position mode</li>
+	<li>Fix bug in deriving castling rights for games with holdings after Edit Position (where Qq were never granted)</li>
+	<li>Display a message informing the user how to clear the board, in sweep-select edit-position mode</li>
 	<li>Fix a bug that could stop the clock when the board window was dragged (XB)</li>
 	<li>Fix switching off highlighting during game (so last highlights do not remain for the rest of the game)</li>
 	<li>Allow user to enter the name of a non-existing file when browsing for a save file (WB)</li>
@@ -65,7 +68,7 @@ Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
 
 <p>Updated:
 <!-- timestamp start -->
-$Date: 2012/04/15 20:36:32 $
+$Date: 2012/02/29 05:44:12 $
 <!-- timestamp end -->
 </p>
 </div>
