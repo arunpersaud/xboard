@@ -6192,12 +6192,12 @@ UpdateExcludeHeader (int fromY, int fromX, int toY, int toX, char promoChar, cha
 }
 
 static int
-ExcludeOneMove (int fromY, int fromX, int toY, int toX, signed char promoChar, char state)
+ExcludeOneMove (int fromY, int fromX, int toY, int toX, char promoChar, char state)
 {   // include or exclude the given move, as specified by state ('+' or '-'), or toggle
     char buf[MSG_SIZ];
     int j, k;
     ChessMove moveType;
-    if(promoChar == -1) { // kludge to indicate best move
+    if((signed char)promoChar == -1) { // kludge to indicate best move
 	if(!ParseOneMove(lastPV[0], currentMove, &moveType, &fromX, &fromY, &toX, &toY, &promoChar)) // get current best move from last PV
 	    return 1; // if unparsable, abort
     }
