@@ -13763,11 +13763,11 @@ EditPositionDone (Boolean fakeRights)
       boards[0][EP_STATUS] = EP_NONE;
       boards[0][CASTLING][2] = boards[0][CASTLING][5] = BOARD_WIDTH>>1;
     if(boards[0][0][BOARD_WIDTH>>1] == king) {
-	boards[0][CASTLING][1] = boards[0][0][BOARD_LEFT] == WhiteRook ? 0 : NoRights;
+	boards[0][CASTLING][1] = boards[0][0][BOARD_LEFT] == WhiteRook ? BOARD_LEFT : NoRights;
 	boards[0][CASTLING][0] = boards[0][0][BOARD_RGHT-1] == WhiteRook ? BOARD_RGHT-1 : NoRights;
       } else boards[0][CASTLING][2] = NoRights;
     if(boards[0][BOARD_HEIGHT-1][BOARD_WIDTH>>1] == WHITE_TO_BLACK king) {
-	boards[0][CASTLING][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? 0 : NoRights;
+	boards[0][CASTLING][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? BOARD_LEFT : NoRights;
 	boards[0][CASTLING][3] = boards[0][BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook ? BOARD_RGHT-1 : NoRights;
       } else boards[0][CASTLING][5] = NoRights;
     }
