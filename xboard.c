@@ -272,9 +272,7 @@ void DisplayMove P((int moveNumber));
 void ICSInitScript P((void));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void update_ics_width P(());
-int get_term_width P(());
 int CopyMemoProc P(());
-void SetupDropMenu P((void));
 
 /*
 * XBoard depends on Xt R4 or higher
@@ -885,7 +883,8 @@ MainWindowUp ()
   return xBoardWindow != 0;
 }
 
-void SwitchWindow()
+void
+SwitchWindow ()
 {
     extern Option dualOptions[];
     static Window dual;

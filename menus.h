@@ -73,6 +73,7 @@ typedef struct {
 
 extern Menu menuBar[];
 
+void ErrorPopUp P((char *title, char *text, int modal));
 void AppendEnginesToMenu P((char *list));
 void LoadGameProc P((void));
 void LoadNextGameProc P((void));
@@ -154,6 +155,7 @@ void SoundOptionsProc P((void));
 void BoardOptionsProc P((void));
 void LoadOptionsProc P((void));
 void SaveOptionsProc P((void));
+void SaveSettings P((char *));
 void EditBookProc P((void));
 void InitMenuMarkers P((void));
 void ShowGameListProc P((void)); // in ngamelist.c
@@ -164,14 +166,15 @@ void ShowGameListProc P((void)); // in ngamelist.c
 void EngineOutputProc P((void));
 void EvalGraphProc P((void));
 
-void CreateMainMenus P((Menu *mb));
+int SaveGameListAsText P((FILE *f));
+
 void AppendMenuItem P((char *text, int n));
-void CreateMenuButton P((char *name, Menu *mb));
 MenuItem *MenuNameToItem P((char *menuName));
 void SetMenuEnables P((Enables *enab));
 void EnableButtonBar P((int state));
 char *ModeToWidgetName P((GameMode mode));
 void CreateAnimVars P((void));
+void CopySomething P((char *s));
 
 
 extern char  *gameCopyFilename, *gamePasteFilename;

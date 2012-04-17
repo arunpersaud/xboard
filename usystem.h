@@ -83,6 +83,7 @@ typedef struct {
 extern char *oldICSInteractionTitle;
 
 char *ExpandPathName P((char *path));
-int  MySearchPath(char *installDir, char *name, char *fullname);
-int  MyGetFullPathName(char *name, char *fullname);
+int  MySearchPath P((char *installDir, char *name, char *fullname));
+int  MyGetFullPathName P((char *name, char *fullname));
+void PlaySoundForColor P((ColorClass cc));
 

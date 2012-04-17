@@ -140,6 +140,7 @@ typedef enum { Press, Release } ClickType;
 void PromotionPopUp P((void));
 void DragPieceBegin P((int x, int y, Boolean instantly));
 void DragPieceEnd P((int x, int y));
+void DragPieceMove P((int x, int y));
 void LeftClick P((ClickType c, int x, int y));
 int  RightClick P((ClickType c, int x, int y, int *col, int *row));
 
@@ -240,6 +241,7 @@ int  EngineOutputDialogExists P((void));
 void EvalGraphPopUp P((void));
 Boolean EvalGraphIsUp P((void));
 int  EvalGraphDialogExists P((void));
+void SlavePopUp P((void));
 
 /* these are in xhistory.c  */
 Boolean MoveHistoryIsUp P((void));

@@ -152,7 +152,6 @@ void read_from_player P((InputSourceRef isr, VOIDSTAR closure,
 			 char *buf, int count, int error));
 void read_from_ics P((InputSourceRef isr, VOIDSTAR closure,
 		      char *buf, int count, int error));
-void ics_printf P((char *format, ...));
 void SendToICS P((char *s));
 void SendToICSDelayed P((char *s, long msdelay));
 void SendMoveToICS P((ChessMove moveType, int fromX, int fromY, int toX, int toY, char promoChar));

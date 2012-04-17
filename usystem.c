@@ -170,6 +170,8 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
+static int get_term_width P(());
+
 static char *cnames[9] = { "black", "red", "green", "yellow", "blue",
 			     "magenta", "cyan", "white" };
 TextColors textColors[(int)NColorClasses];
@@ -751,7 +753,7 @@ ResetFrontEnd ()
 }
 
 #include <sys/ioctl.h>
-int
+static int
 get_term_width ()
 {
     int fd, default_width;

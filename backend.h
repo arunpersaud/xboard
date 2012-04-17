@@ -243,6 +243,7 @@ int PackGame P((Board board));
 Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
 void ApplyMove P((int fromX, int fromY, int toX, int toY, int promoChar, Board board));
 void PackMove P((int fromX, int fromY, int toX, int toY, ChessSquare promoPiece));
+void ics_printf P((char *format, ...));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));

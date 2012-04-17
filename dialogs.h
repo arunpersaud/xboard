@@ -135,6 +135,7 @@ int DialogExists P((DialogClass n));
 int GenericPopUp P((Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int topLevel));
 int GenericReadout P((Option *currentOption, int selected));
 int PopDown P((DialogClass n));
+void MarkMenu P((char *item, int dlgNr));
 int AppendText P((Option *opt, char *s));
 void SetColor P((char *colorName, Option *box));
 void ColorChanged P((Widget w, XtPointer data, XEvent *event, Boolean *b));
@@ -162,11 +163,12 @@ void Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
 			Boolean pathFlag, char *mode, char **name, FILE **fp));
 
 void InitDrawingParams P(()); // in xboard.c
-void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));
 void SetClockIcon P((int color));
 void DelayedLoad P((void));
 void DisplayTimerLabel P((Option *opt, char *color, long timer, int highlight));
+void SetWindowTitle P((char *text, char *title, char *icon));
+void SetupDropMenu P((void));
 Option *BoardPopUp P((int squareSize, int lineGap, void *clockFontThingy));
 
 int  SetCurrentComboSelection P((Option *opt));
@@ -175,10 +177,11 @@ void IcsKey P((int n));
 void ICSInputBoxPopUp P((void));
 void LoadOptionsPopUp P((DialogClass parent));
 void GameListOptionsPopUp P((DialogClass parent));
+void RefreshColor P((int source, int n));
+void SendString P((char *p));
 
 // in ngamelist.c
 int GameListClicks P((int direction));
 void SetFilter P((void));
-int SaveGameListAsText P((FILE *f));
 
 
