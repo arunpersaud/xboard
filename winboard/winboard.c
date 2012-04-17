@@ -1194,6 +1194,7 @@ InitMenuChecks()
 
 #define OPTCHAR "/"
 #define SEPCHAR "="
+#define TOPLEVEL 0
 
 #include "args.h"
 
