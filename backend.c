@@ -13602,11 +13602,6 @@ TwoMachinesEvent P((void))
 
     if (appData.noChessProgram) return;
 
-    if(second.protocolVersion >= 2 && !strstr(second.variants, VariantName(gameInfo.variant))) {
-	DisplayError("second engine does not play this", 0);
-	return;
-    }
-
     switch (gameMode) {
       case TwoMachinesPlay:
 	return;
@@ -13645,6 +13640,12 @@ TwoMachinesEvent P((void))
       ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
       return;
     }
+
+    if(second.protocolVersion >= 2 && !strstr(second.variants, VariantName(gameInfo.variant))) {
+	DisplayError("second engine does not play this", 0);
+	return;
+    }
+
     if(!stalling) {
       InitChessProgram(&second, FALSE); // unbalances ping of second engine
       SendToProgram("force\n", &second);
