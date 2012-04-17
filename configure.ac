@@ -110,6 +110,15 @@ AC_CHECK_FUNC(setlocale, [],
 
 AC_CHECK_LIB(seq, getpseudotty)
 
+dnl | add compiler warnings only if compiler understands them
+AC_MSG_CHECKING(whether compiler understands -Wall -Wno-parentheses)
+SAVE_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -Wall -Wno-parentheses"
+AC_TRY_COMPILE([],[],
+  AC_MSG_RESULT(yes),
+  AC_MSG_RESULT(no)
+  CFLAGS="$SAVE_CFLAGS")
+
 
 dnl | check for X-libraries
 AC_PATH_XTRA
