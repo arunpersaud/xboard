@@ -52,6 +52,7 @@
 
 
 typedef void MenuProc P((void));
+typedef int (*FileProc) P((FILE *f, int n, char *title));
 
 typedef struct {
     String string;
@@ -167,6 +168,8 @@ void EngineOutputProc P((void));
 void EvalGraphProc P((void));
 
 int SaveGameListAsText P((FILE *f));
+void FileNamePopUp P((char *label, char *def, char *filter,
+		      FileProc proc, char *openMode));
 
 void AppendMenuItem P((char *text, int n));
 MenuItem *MenuNameToItem P((char *menuName));

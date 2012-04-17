@@ -256,8 +256,6 @@ void DrawPositionProc P((Widget w, XEvent *event,
 void CommentClick P((Widget w, XEvent * event,
 		   String * params, Cardinal * nParams));
 void ICSInputBoxPopUp P((void));
-void FileNamePopUp P((char *label, char *def, char *filter,
-		      FileProc proc, char *openMode));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
 void KeyBindingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void QuitWrapper P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -303,8 +301,6 @@ XFontStruct *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
 char *layoutName;
 
-FileProc fileProc;
-char *fileOpenMode;
 char installDir[] = "."; // [HGM] UCI: needed for UCI; probably needs run-time initializtion
 
 Position commentX = -1, commentY = -1;
@@ -2798,26 +2794,6 @@ void
 CommentPopDown ()
 {
     PopDown(CommentDlg);
-}
-
-static char *openName;
-FILE *openFP;
-
-void
-DelayedLoad ()
-{
-  (void) (*fileProc)(openFP, 0, openName);
-}
-
-void
-FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMode)
-{
-    fileProc = proc;		/* I can't see a way not */
-    fileOpenMode = openMode;	/*   to use globals here */
-    {   // [HGM] use file-selector dialog stolen from Ghostview
-	// int index; // this is not supported yet
-	Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, &openName, &openFP);
-    }
 }
 
 

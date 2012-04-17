@@ -2296,4 +2296,26 @@ Browse (DialogClass dlg, char *label, char *proposed, char *ext, Boolean pathFla
     SetWidgetLabel(&browseOptions[9], FileTypes[j]);
 }
 
+static char *openName;
+FileProc fileProc;
+char *fileOpenMode;
+FILE *openFP;
+
+void
+DelayedLoad ()
+{
+  (void) (*fileProc)(openFP, 0, openName);
+}
+
+void
+FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMode)
+{
+    fileProc = proc;		/* I can't see a way not */
+    fileOpenMode = openMode;	/*   to use globals here */
+    {   // [HGM] use file-selector dialog stolen from Ghostview
+	// int index; // this is not supported yet
+	Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, &openName, &openFP);
+    }
+}
+
 
