@@ -2057,11 +2057,13 @@ DisplayMessage (char *message, char *extMessage)
 
 #include <sys/stat.h>
 
+#define MAXFILES 1000
+
 static ChessProgramState *savCps;
 static FILE **savFP;
 static char *fileName, *extFilter, *savMode, **namePtr;
-static int folderPtr, filePtr, oldVal, byExtension, extFlag;
-static char curDir[MSG_SIZ], title[MSG_SIZ], *folderList[1000], *fileList[1000];
+static int folderPtr, filePtr, oldVal, byExtension, extFlag, pageStart, cnt;
+static char curDir[MSG_SIZ], title[MSG_SIZ], *folderList[MAXFILES], *fileList[MAXFILES];
 
 static char *FileTypes[] = {
 "Chess Games",
@@ -2149,14 +2151,6 @@ BrowseOK (int n)
 	return TRUE;
 }
 
-void
-FileSelProc (int n, int sel)
-{
-    if(sel<0) return;
-    ASSIGN(fileName, fileList[sel]);
-    if(BrowseOK(0)) PopDown(BrowserDlg);
-}
-
 int
 AlphaNumCompare (char *p, char *q)
 {
@@ -2199,15 +2193,16 @@ ListDir (int pathFlag)
 	dir = opendir(".");
 	getcwd(curDir, MSG_SIZ);
 	snprintf(title, MSG_SIZ, "%s   %s", _("Contents of"), curDir);
-	folderPtr = filePtr = 0; // clear listing
+	folderPtr = filePtr = cnt = 0; // clear listing
 
 	while (dp = readdir(dir)) { // pass 1: list foders
 	    char *s = dp->d_name;
 	    if(!stat(s, &statBuf) && S_ISDIR(statBuf.st_mode)) { // stat succeeds and tells us it is directory
 		if(s[0] == '.' && strcmp(s, "..")) continue; // suppress hidden, except ".."
-		ASSIGN(folderList[folderPtr], s); folderPtr++;
+		ASSIGN(folderList[folderPtr], s); if(folderPtr < MAXFILES-2) folderPtr++;
 	    } else if(!pathFlag) {
 		char *s = dp->d_name, match=0;
+//		if(cnt == pageStart) { ASSIGN }
 		if(s[0] == '.') continue; // suppress hidden files
 		if(extFilter[0]) { // [HGM] filter on extension
 		    char *p = extFilter, *q;
@@ -2218,9 +2213,12 @@ ListDir (int pathFlag)
 		    } while(q && (p = q+1));
 		    if(!match) continue;
 		}
+		if(filePtr == MAXFILES-2) continue;
+		if(cnt++ < pageStart) continue;
 		ASSIGN(fileList[filePtr], s); filePtr++;
 	    }
 	}
+	if(filePtr == MAXFILES-2) { ASSIGN(fileList[filePtr], _("\177 next page")); filePtr++; }
 	FREE(folderList[folderPtr]); folderList[folderPtr] = NULL;
 	FREE(fileList[filePtr]); fileList[filePtr] = NULL;
 	closedir(dir);
@@ -2268,8 +2266,18 @@ SetTypeFilter (int n)
     browseOptions[n].value = j;
     SetWidgetLabel(&browseOptions[n], FileTypes[j]);
     ASSIGN(extFilter, Extensions[j]);
+    pageStart = 0;
     Refresh(-1); // uses pathflag remembered by ListDir
     values[n] = oldVal; // do not disturb combo settings of underlying dialog
+}
+
+void
+FileSelProc (int n, int sel)
+{
+    if(sel<0) return;
+    if(sel == MAXFILES-2) { pageStart = cnt; Refresh(-1); return; }
+    ASSIGN(fileName, fileList[sel]);
+    if(BrowseOK(0)) PopDown(BrowserDlg);
 }
 
 void
@@ -2292,7 +2300,7 @@ Browse (DialogClass dlg, char *label, char *proposed, char *ext, Boolean pathFla
     if(Extensions[j] == NULL) { j++; ASSIGN(FileTypes[j], extFilter); }
     browseOptions[9].value = j;
     browseOptions[6].textValue = (char*) (pathFlag ? NULL : &FileSelProc); // disable file listbox during path browsing
-    ListDir(pathFlag);
+    pageStart = 0; ListDir(pathFlag);
     currentCps = NULL;
     GenericPopUp(browseOptions, label, BrowserDlg, dlg, MODAL, 0);
     SetWidgetLabel(&browseOptions[9], FileTypes[j]);
