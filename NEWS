@@ -1,3 +1,10 @@
+** Version 4.6.2 **
+   (for a more detailed list with screenshots see http://www.gnu.org/software/xboard/whats_new/4.6.2/ )
+   bugfix relase for 4.6.1
+   * Suppress clear-board message after pasting FEN
+   * Fix faking of castling rights after editing position with holdings
+   * Fix second-engine variant test
+
 ** Version 4.6.1 **
    (for a more detailed list with screenshots see http://www.gnu.org/software/xboard/whats_new/4.6.1/ )
 

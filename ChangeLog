@@ -2,6 +2,38 @@ ChangeLog for XBoard/WinBoard
 -----------------------------
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
+2012-04-17 19:27:49 -0700 Arun Persaud <arun@nubati.net>:
+new version number for release of 4.6.2
+
+2012-04-17 19:49:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress clear-board message after pasting FEN
+
+The message field is now always cleared when you leave EditPosition mode.
+
+2012-04-17 19:45:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix faking of castling rights after editing position with holdings
+
+The queen-side rook was always imagined at X=0, which is in the holdings
+when these exist, so that Q-side castling in such games was never allowed
+after EditPosition.
+
+2012-04-17 11:02:39 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Define TOPLEVEL in winboard.c
+
+2012-04-17 10:59:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add two new strings to WinBoard language file
+
+2012-04-17 10:51:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix second-engine variant test
+
+The test whether the second engine supports the selected variant took place
+before the second engine was loaded, thus always coming to the conclusion
+that the variant was not supported, and aborting the TwoMachines command.
+The test is now moved to after second-engine loading (but before its
+initialization, where non-supporting would become a fatal error).
+
+2012-04-15 13:48:51 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
 
 2012-04-15 13:43:49 -0700 Arun Persaud <arun@nubati.net>:
 new version number for release of 4.6.1

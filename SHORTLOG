@@ -1,3 +1,17 @@
+** Version 4.6.2 **
+
+(git shortlog --no-merges v4.6.1..HEAD)
+
+Arun Persaud (1):
+      new version number for release of 4.6.2
+
+H.G. Muller (5):
+      Fix second-engine variant test
+      Add two new strings to WinBoard language file
+      Define TOPLEVEL in winboard.c
+      Fix faking of castling rights after editing position with holdings
+      Suppress clear-board message after pasting FEN
+
 ** Version 4.6.1 **
 
 (git shortlog --no-merges v4.6.0..HEAD)

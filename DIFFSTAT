@@ -1,3 +1,15 @@
+** Version 4.6.2 **
+
+(git diff -b --stat --summary -M v4.6.1 HEAD)
+
+ backend.c                        |   16 +++++++++-------
+ configure.ac                     |    2 +-
+ winboard/config.h                |    6 +++---
+ winboard/language.txt            |    2 ++
+ winboard/language/nederlands.lng |    2 ++
+ winboard/winboard.c              |    1 +
+ 6 files changed, 18 insertions(+), 11 deletions(-)
+
 ** Version 4.6.1 **
 
 (git diff -b --stat --summary -M v4.6.0 HEAD)
