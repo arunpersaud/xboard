@@ -844,7 +844,7 @@ MenuItem noMenu[] = {
     { "", "TestLegality", TestLegalityProc },
 #endif
     { "", "AboutGame", AboutGameEvent },
-    { "", "Debug", DebugProc },
+    { "", "DebugProc", DebugProc },
     { "", "Nothing", NothingProc },
     {NULL, NULL, NULL}
 };
