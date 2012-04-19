@@ -1252,7 +1252,7 @@ GetTimeQuota (int movenr, int lastUsed, char *tcString)
     long time, increment;
     char *s = tcString;
 
-    if(!*s) return 0; // empty TC string means we ran out of the last sudden-death version
+    if(!s || !*s) return 0; // empty TC string means we ran out of the last sudden-death version
     do {
         if(moves) NextSessionFromString(&s, &moves, &time, &increment, &incType);
         nextSession = s; suddenDeath = moves == 0 && increment == 0;
