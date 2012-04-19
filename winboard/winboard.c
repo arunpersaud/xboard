@@ -102,6 +102,8 @@ Boolean flipClock = FALSE;
 extern HANDLE chatHandle[];
 extern int ics_type;
 
+int  MySearchPath P((char *installDir, char *name, char *fullname));
+int  MyGetFullPathName P((char *name, char *fullname));
 void DisplayHoldingsCount(HDC hdc, int x, int y, int align, int copyNumber);
 VOID NewVariantPopup(HWND hwnd);
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,

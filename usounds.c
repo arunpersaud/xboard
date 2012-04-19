@@ -77,7 +77,7 @@ extern char *getenv();
 
 
 void
-PlaySound (char *name)
+PlaySoundFile (char *name)
 {
   if (*name == NULLCHAR) {
     return;
@@ -96,43 +96,43 @@ PlaySound (char *name)
 void
 RingBell ()
 {
-  PlaySound(appData.soundMove);
+  PlaySoundFile(appData.soundMove);
 }
 
 void
 PlayIcsWinSound ()
 {
-  PlaySound(appData.soundIcsWin);
+  PlaySoundFile(appData.soundIcsWin);
 }
 
 void
 PlayIcsLossSound ()
 {
-  PlaySound(appData.soundIcsLoss);
+  PlaySoundFile(appData.soundIcsLoss);
 }
 
 void
 PlayIcsDrawSound ()
 {
-  PlaySound(appData.soundIcsDraw);
+  PlaySoundFile(appData.soundIcsDraw);
 }
 
 void
 PlayIcsUnfinishedSound ()
 {
-  PlaySound(appData.soundIcsUnfinished);
+  PlaySoundFile(appData.soundIcsUnfinished);
 }
 
 void
 PlayAlarmSound ()
 {
-  PlaySound(appData.soundIcsAlarm);
+  PlaySoundFile(appData.soundIcsAlarm);
 }
 
 void
 PlayTellSound ()
 {
-  PlaySound(appData.soundTell);
+  PlaySoundFile(appData.soundTell);
 }
 
 void
@@ -140,31 +140,31 @@ PlaySoundForColor (ColorClass cc)
 {
     switch (cc) {
     case ColorShout:
-      PlaySound(appData.soundShout);
+      PlaySoundFile(appData.soundShout);
       break;
     case ColorSShout:
-      PlaySound(appData.soundSShout);
+      PlaySoundFile(appData.soundSShout);
       break;
     case ColorChannel1:
-      PlaySound(appData.soundChannel1);
+      PlaySoundFile(appData.soundChannel1);
       break;
     case ColorChannel:
-      PlaySound(appData.soundChannel);
+      PlaySoundFile(appData.soundChannel);
       break;
     case ColorKibitz:
-      PlaySound(appData.soundKibitz);
+      PlaySoundFile(appData.soundKibitz);
       break;
     case ColorTell:
-      PlaySound(appData.soundTell);
+      PlaySoundFile(appData.soundTell);
       break;
     case ColorChallenge:
-      PlaySound(appData.soundChallenge);
+      PlaySoundFile(appData.soundChallenge);
       break;
     case ColorRequest:
-      PlaySound(appData.soundRequest);
+      PlaySoundFile(appData.soundRequest);
       break;
     case ColorSeek:
-      PlaySound(appData.soundSeek);
+      PlaySoundFile(appData.soundSeek);
       break;
     case ColorNormal:
     case ColorNone:

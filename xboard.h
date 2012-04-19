@@ -146,6 +146,9 @@ void TabProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GenericMenu P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 
 // from xengineoutput.c
+void SelectPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
+void StopPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
+
 extern char memoTranslations[];
 
 

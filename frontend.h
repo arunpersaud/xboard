@@ -106,7 +106,7 @@ void PlayIcsDrawSound P((void));
 void PlayIcsUnfinishedSound P((void));
 void PlayAlarmSound P((void));
 void PlayTellSound P((void));
-void PlaySound P((char *name));
+void PlaySoundFile P((char *name));
 void PlaySoundByColor P((void));
 void EchoOn P((void));
 void EchoOff P((void));
@@ -218,7 +218,7 @@ extern char *firstChessProgramNames;
 
 void GreyRevert P((Boolean grey));
 void MarkMenuItem P((char *menuRef, int state));
-void EnableMenuItem P((char *menuRef, int state));
+void EnableNamedMenuItem P((char *menuRef, int state));
 
 typedef struct FrontEndProgramStats_TAG {
     int which;

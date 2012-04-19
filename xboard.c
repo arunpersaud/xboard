@@ -2277,7 +2277,7 @@ MarkMenuItem (char *menuRef, int state)
 }
 
 void
-EnableMenuItem (char *menuRef, int state)
+EnableNamedMenuItem (char *menuRef, int state)
 {
     MenuItem *item = MenuNameToItem(menuRef);
 
@@ -2295,7 +2295,7 @@ void
 SetMenuEnables (Enables *enab)
 {
   while (enab->name != NULL) {
-    EnableMenuItem(enab->name, enab->value);
+    EnableNamedMenuItem(enab->name, enab->value);
     enab++;
   }
 }
@@ -2861,7 +2861,7 @@ ModeHighlight ()
     MarkMenuItem("Mode.MachineMatch", matchMode && matchGame < appData.matchGames);
 
     /* Maybe all the enables should be handled here, not just this one */
-    EnableMenuItem("Mode.Training", gameMode == Training || gameMode == PlayFromGameFile);
+    EnableNamedMenuItem("Mode.Training", gameMode == Training || gameMode == PlayFromGameFile);
 }
 
 

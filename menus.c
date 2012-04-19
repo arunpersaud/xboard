@@ -1080,8 +1080,8 @@ SetICSMode ()
 
 #if ZIPPY
   if (appData.zippyPlay && !appData.noChessProgram) { /* [DM] icsEngineAnalyze */
-     EnableMenuItem("Analysis Mode", True);
-     EnableMenuItem("Engine #1 Settings", True);
+     EnableNamedMenuItem("Mode.AnalysisMode", True);
+     EnableNamedMenuItem("Engine.Engine#1Settings", True);
   }
 #endif
 }
@@ -1139,7 +1139,7 @@ SetMachineThinkingEnables ()
   case MachinePlaysBlack:
   case MachinePlaysWhite:
   case TwoMachinesPlay:
-    EnableMenuItem(ModeToWidgetName(gameMode), True);
+    EnableNamedMenuItem(ModeToWidgetName(gameMode), True);
     break;
   default:
     break;

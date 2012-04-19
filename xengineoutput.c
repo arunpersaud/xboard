@@ -117,7 +117,7 @@ ReadIcon (char *pixData[], int iconNr, Widget w)
 }
 
 void
-InitializeEngineOutput (Option *opt, Option *memo2)
+InitEngineOutput (Option *opt, Option *memo2)
 {	// front-end, because it must have access to the pixmaps
 	Widget w = opt->handle;
 	memoWidget = memo2->handle;
@@ -133,7 +133,7 @@ InitializeEngineOutput (Option *opt, Option *memo2)
 }
 
 void
-DrawIcon (Option *opt, int nIcon)
+DrawWidgetIcon (Option *opt, int nIcon)
 {   // as we are already in X front-end, so do X-stuff here
     Arg arg;
     XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);

@@ -72,10 +72,6 @@ void DoClearMemo(int which);
 void ResizeWindowControls( int mode );
 int EngineOutputDialogExists();
 void SetEngineOutputTitle( char *title );
-void InitializeEngineOutput P((Option *opt, Option *memo2));
-void DrawIcon P((Option *opt, int nIcon));
-
-// front-end shared with xboard.c
-void SelectPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
-void StopPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
+void InitEngineOutput P((Option *opt, Option *memo2)); // XB only
+void DrawWidgetIcon P((Option *opt, int nIcon)); // XB only
 

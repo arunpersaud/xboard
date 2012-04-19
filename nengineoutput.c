@@ -89,7 +89,7 @@ Option engoutOptions[] = {
 void
 SetIcon (int which, int field, int nIcon)
 {   // first call into xengineoutput.c to pick up icon pixmap
-    if( nIcon ) DrawIcon(&engoutOptions[STRIDE*which + field - 1], nIcon);
+    if( nIcon ) DrawWidgetIcon(&engoutOptions[STRIDE*which + field - 1], nIcon);
 }
 
 void
@@ -123,7 +123,7 @@ EngineOutputPopUp ()
 	AddHandler(&engoutOptions[MEMO], 6);
 	AddHandler(&engoutOptions[MEMO+STRIDE], 6);
 	if( needInit ) {
-	    InitializeEngineOutput(&engoutOptions[0], &engoutOptions[MEMO]); // make icon bitmaps
+	    InitEngineOutput(&engoutOptions[0], &engoutOptions[MEMO]); // make icon bitmaps
 	    needInit = FALSE;
 	}
         SetEngineColorIcon( 0 );

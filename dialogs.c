@@ -736,7 +736,7 @@ static void
 Test (int n)
 {
     GenericReadout(soundOptions, 2);
-    if(soundFiles[values[3]]) PlaySound(soundFiles[values[3]]);
+    if(soundFiles[values[3]]) PlaySoundFile(soundFiles[values[3]]);
 }
 
 void
