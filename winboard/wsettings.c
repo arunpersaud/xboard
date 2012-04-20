@@ -602,7 +602,7 @@ void AddOption(int x, int y, Control type, int i)
 void
 CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 {
-    int i, ii, j, x=1, y=0, maxY=0, buttonRows, breakPoint = -1, k=0;
+    int i, ii, j, x=1, y=0, maxY=0, buttonRows, breakPoint = 1000, k=0;
 
     template.header.cdit = 0;
     template.header.cx = 307;
