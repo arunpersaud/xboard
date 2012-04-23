@@ -5866,6 +5866,7 @@ InitPosition (int redraw)
     case VariantSChess:
       SetCharTable(pieceToChar, "PNBRQ..HEKpnbrq..hek");
       gameInfo.holdingsSize = 7;
+      for(i=0; i<BOARD_FILES; i++) initialPosition[VIRGIN][i] = VIRGIN_W | VIRGIN_B;
       break;
     case VariantJanus:
       pieces = JanusArray;
@@ -9312,6 +9313,13 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
            if(board[CASTLING][i] == fromX && castlingRank[i] == fromY ||
               board[CASTLING][i] == toX   && castlingRank[i] == toY
              ) board[CASTLING][i] = NoRights; // revoke for moved or captured piece
+       }
+
+       if(gameInfo.variant == VariantSChess) { // update virginity
+	   if(fromY == 0)              board[VIRGIN][fromX] &= ~VIRGIN_W; // loss by moving
+	   if(fromY == BOARD_HEIGHT-1) board[VIRGIN][fromX] &= ~VIRGIN_B;
+	   if(toY == 0)                board[VIRGIN][toX]   &= ~VIRGIN_W; // loss by capture
+	   if(toY == BOARD_HEIGHT-1)   board[VIRGIN][toX]   &= ~VIRGIN_B;
        }
 
      if (fromX == toX && fromY == toY) return;
@@ -13931,14 +13939,22 @@ EditPositionDone (Boolean fakeRights)
     if(fakeRights) { // [HGM] suppress this if we just pasted a FEN.
       boards[0][EP_STATUS] = EP_NONE;
       boards[0][CASTLING][2] = boards[0][CASTLING][5] = BOARD_WIDTH>>1;
-    if(boards[0][0][BOARD_WIDTH>>1] == king) {
+      if(boards[0][0][BOARD_WIDTH>>1] == king) {
 	boards[0][CASTLING][1] = boards[0][0][BOARD_LEFT] == WhiteRook ? BOARD_LEFT : NoRights;
 	boards[0][CASTLING][0] = boards[0][0][BOARD_RGHT-1] == WhiteRook ? BOARD_RGHT-1 : NoRights;
       } else boards[0][CASTLING][2] = NoRights;
-    if(boards[0][BOARD_HEIGHT-1][BOARD_WIDTH>>1] == WHITE_TO_BLACK king) {
+      if(boards[0][BOARD_HEIGHT-1][BOARD_WIDTH>>1] == WHITE_TO_BLACK king) {
 	boards[0][CASTLING][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? BOARD_LEFT : NoRights;
 	boards[0][CASTLING][3] = boards[0][BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook ? BOARD_RGHT-1 : NoRights;
       } else boards[0][CASTLING][5] = NoRights;
+      if(gameInfo.variant = VariantSChess) {
+	int i;
+	for(i=BOARD_LEFT; i<BOARD_RGHT; i++) { // pieces in their original position are assumed virgin
+	  boards[0][VIRGIN][i] = 0;
+	  if(boards[0][0][i]              == FIDEArray[0][i-BOARD_LEFT]) boards[0][VIRGIN][i] |= VIRGIN_W;
+	  if(boards[0][BOARD_HEIGHT-1][i] == FIDEArray[1][i-BOARD_LEFT]) boards[0][VIRGIN][i] |= VIRGIN_B;
+	}
+      }
     }
     SendToProgram("force\n", &first);
     if (blackPlaysFirst) {
@@ -16659,14 +16675,30 @@ PositionToFEN (int move, char *overrideCastling)
 
         /* [HGM] write true castling rights */
         if( nrCastlingRights == 6 ) {
+            int q, k=0;
             if(boards[move][CASTLING][0] == BOARD_RGHT-1 &&
-               boards[move][CASTLING][2] != NoRights  ) *p++ = 'K';
-            if(boards[move][CASTLING][1] == BOARD_LEFT &&
-               boards[move][CASTLING][2] != NoRights  ) *p++ = 'Q';
+               boards[move][CASTLING][2] != NoRights  ) k = 1, *p++ = 'K';
+            q = (boards[move][CASTLING][1] == BOARD_LEFT &&
+                 boards[move][CASTLING][2] != NoRights  );
+            if(gameInfo.variant = VariantSChess) { // for S-Chess, indicate all vrgin backrank pieces
+		for(i=j=0; i<BOARD_HEIGHT; i++) j += boards[move][i][BOARD_RGHT]; // count white held pieces
+                for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
+                    if((boards[move][0][i] != WhiteKing || k+q == 0) &&
+                        boards[move][VIRGIN][i] & VIRGIN_W) *p++ = i + AAA + 'A' - 'a';
+            }
+	    if(q) *p++ = 'Q';
+            k = 0;
             if(boards[move][CASTLING][3] == BOARD_RGHT-1 &&
-               boards[move][CASTLING][5] != NoRights  ) *p++ = 'k';
-            if(boards[move][CASTLING][4] == BOARD_LEFT &&
-               boards[move][CASTLING][5] != NoRights  ) *p++ = 'q';
+               boards[move][CASTLING][5] != NoRights  ) k = 1, *p++ = 'k';
+            q = (boards[move][CASTLING][4] == BOARD_LEFT &&
+                 boards[move][CASTLING][5] != NoRights  );
+            if(gameInfo.variant = VariantSChess) {
+		for(i=j=0; i<BOARD_HEIGHT; i++) j += boards[move][i][BOARD_LEFT-1]; // count black held pieces
+                for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
+                    if((boards[move][BOARD_HEIGHT-1][i] != BlackKing || k+q == 0) &&
+                        boards[move][VIRGIN][i] & VIRGIN_B) *p++ = i + AAA;
+            }
+            if(q) *p++ = 'q';
         }
      }
      if (q == p) *p++ = '-'; /* No castling rights */
@@ -16732,7 +16764,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
 {
     int i, j;
     char *p, c;
-    int emptycount;
+    int emptycount, virgin[BOARD_FILES];
     ChessSquare piece;
 
     p = fen;
@@ -16861,14 +16893,15 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
 
     while(*p==' ') p++;
     if(nrCastlingRights) {
-      if(*p=='K' || *p=='Q' || *p=='k' || *p=='q' || *p=='-') {
+      if(gameInfo.variant == VariantSChess) for(i=0; i<BOARD_FILES; i++) virgin[i] = 0;
+      if(*p >= 'A' && *p <= 'Z' || *p >= 'a' && *p <= 'z' || *p=='-') {
           /* castling indicator present, so default becomes no castlings */
           for(i=0; i<nrCastlingRights; i++ ) {
                  board[CASTLING][i] = NoRights;
           }
       }
       while(*p=='K' || *p=='Q' || *p=='k' || *p=='q' || *p=='-' ||
-             (gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom) &&
+             (gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom || gameInfo.variant == VariantSChess) &&
              ( *p >= 'a' && *p < 'a' + gameInfo.boardWidth) ||
              ( *p >= 'A' && *p < 'A' + gameInfo.boardWidth)   ) {
         int c = *p++, whiteKingFile=NoRights, blackKingFile=NoRights;
@@ -16888,25 +16921,34 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
               for(i=BOARD_RGHT-1; board[0][i]!=WhiteRook && i>whiteKingFile; i--);
               board[CASTLING][0] = i != whiteKingFile ? i : NoRights;
               board[CASTLING][2] = whiteKingFile;
+	      if(board[CASTLING][0] != NoRights) virgin[board[CASTLING][0]] |= VIRGIN_W;
+	      if(board[CASTLING][2] != NoRights) virgin[board[CASTLING][2]] |= VIRGIN_W;
               break;
           case'Q':
               for(i=BOARD_LEFT;  i<BOARD_RGHT && board[0][i]!=WhiteRook && i<whiteKingFile; i++);
               board[CASTLING][1] = i != whiteKingFile ? i : NoRights;
               board[CASTLING][2] = whiteKingFile;
+	      if(board[CASTLING][1] != NoRights) virgin[board[CASTLING][1]] |= VIRGIN_W;
+	      if(board[CASTLING][2] != NoRights) virgin[board[CASTLING][2]] |= VIRGIN_W;
               break;
           case'k':
               for(i=BOARD_RGHT-1; board[BOARD_HEIGHT-1][i]!=BlackRook && i>blackKingFile; i--);
               board[CASTLING][3] = i != blackKingFile ? i : NoRights;
               board[CASTLING][5] = blackKingFile;
+	      if(board[CASTLING][3] != NoRights) virgin[board[CASTLING][3]] |= VIRGIN_B;
+	      if(board[CASTLING][5] != NoRights) virgin[board[CASTLING][5]] |= VIRGIN_B;
               break;
           case'q':
               for(i=BOARD_LEFT; i<BOARD_RGHT && board[BOARD_HEIGHT-1][i]!=BlackRook && i<blackKingFile; i++);
               board[CASTLING][4] = i != blackKingFile ? i : NoRights;
               board[CASTLING][5] = blackKingFile;
+	      if(board[CASTLING][4] != NoRights) virgin[board[CASTLING][4]] |= VIRGIN_B;
+	      if(board[CASTLING][5] != NoRights) virgin[board[CASTLING][5]] |= VIRGIN_B;
           case '-':
               break;
           default: /* FRC castlings */
               if(c >= 'a') { /* black rights */
+		  if(gameInfo.variant == VariantSChess) { virgin[c-AAA] |= VIRGIN_B; break; } // in S-Chess castlings are always kq, so just virginity
                   for(i=BOARD_LEFT; i<BOARD_RGHT; i++)
                     if(board[BOARD_HEIGHT-1][i] == BlackKing) break;
                   if(i == BOARD_RGHT) break;
@@ -16919,6 +16961,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
                   else
                       board[CASTLING][4] = c;
               } else { /* white rights */
+		  if(gameInfo.variant == VariantSChess) { virgin[c-AAA-'A'+'a'] |= VIRGIN_W; break; } // in S-Chess castlings are always KQ
                   for(i=BOARD_LEFT; i<BOARD_RGHT; i++)
                     if(board[0][i] == WhiteKing) break;
                   if(i == BOARD_RGHT) break;
@@ -16934,6 +16977,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
       }
       for(i=0; i<nrCastlingRights; i++)
         if(board[CASTLING][i] != NoRights) initialRights[i] = board[CASTLING][i];
+      if(gameInfo.variant == VariantSChess) for(i=0; i<BOARD_FILES; i++) board[VIRGIN][i] = virgin[i];
     if (appData.debugMode) {
         fprintf(debugFP, "FEN castling rights:");
         for(i=0; i<nrCastlingRights; i++)
