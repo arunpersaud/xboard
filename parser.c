@@ -153,8 +153,8 @@ PromoSuffix (char **p)
     if(**p == 'e' && (Match("ep", p) || Match("e.p.", p))) { *p = start; return NULLCHAR; } // non-compliant e.p. suffix is no promoChar!
     if(**p == '+' && gameInfo.variant == VariantShogi) { (*p)++; return '+'; } 
     if(**p == '=' || (gameInfo.variant == VariantSChess) && **p == '/') (*p)++; // optional = (or / for Seirawan gating)
-    if(**p == '(' && (*p)[2] == ')' && isalpha( (*p)[1] )) { (*p) += 3; return (*p)[-2]; }
-    if(isalpha(**p)) return *(*p)++;
+    if(**p == '(' && (*p)[2] == ')' && isalpha( (*p)[1] )) { (*p) += 3; return ToLower((*p)[-2]); }
+    if(isalpha(**p)) return ToLower(*(*p)++);
     if(*p != start) return '='; // must be the optional =
     return NULLCHAR; // no suffix detected
 }
