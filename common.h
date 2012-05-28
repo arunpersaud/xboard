@@ -2,7 +2,7 @@
  * common.h -- Common definitions for X and Windows NT versions of XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts. 
+ * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
  * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
@@ -51,8 +51,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _COMMON
-#define _COMMON
+#ifndef XB_COMMON
+#define XB_COMMON
 
 
 /* Begin compatibility grunge  */
@@ -128,7 +128,7 @@ int pclose(FILE *);
 #define BOARD_RANKS             11             /* [HGM] for in declarations  */
 #define BOARD_FILES             16             /* [HGM] for in declarations  */
 #define BOARD_HEIGHT (gameInfo.boardHeight)    /* [HGM] made user adjustable */
-#define BOARD_WIDTH  (gameInfo.boardWidth + 2*gameInfo.holdingsWidth)   
+#define BOARD_WIDTH  (gameInfo.boardWidth + 2*gameInfo.holdingsWidth)
 #define BOARD_LEFT   (gameInfo.holdingsWidth)  /* [HGM] play-board edges     */
 #define BOARD_RGHT   (gameInfo.boardWidth + gameInfo.holdingsWidth)
 #define CASTLING     (BOARD_RANKS-1)           /* [HGM] hide in upper rank   */
@@ -230,15 +230,15 @@ typedef enum {
     /* [HGM] the order here is crucial for Crazyhouse & Shogi: */
     /* only the first N pieces can go into the holdings, and   */
     /* promotions in those variants shift P-W to U-S           */
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
-    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan, 
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen,
+    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan,
     WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
     WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
     BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
-    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan, 
+    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan,
     BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
     BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
-    EmptySquare, 
+    EmptySquare,
     NoRights, // [HGM] gamestate: for castling rights hidden in board[CASTLING]
     ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
   } ChessSquare;
@@ -257,14 +257,14 @@ typedef enum {
     EndOfFile = 0,
     WhiteKingSideCastle, WhiteQueenSideCastle,
     WhiteKingSideCastleWild, WhiteQueenSideCastleWild,
-    WhiteHSideCastleFR, WhiteASideCastleFR, 
+    WhiteHSideCastleFR, WhiteASideCastleFR,
     BlackKingSideCastle, BlackQueenSideCastle,
     BlackKingSideCastleWild, BlackQueenSideCastleWild,
-    BlackHSideCastleFR, BlackASideCastleFR, 
+    BlackHSideCastleFR, BlackASideCastleFR,
     WhitePromotion, WhiteNonPromotion,
     BlackPromotion, BlackNonPromotion,
     WhiteCapturesEnPassant, BlackCapturesEnPassant,
-    WhiteDrop, BlackDrop, 
+    WhiteDrop, BlackDrop,
     NormalMove, AmbiguousMove, IllegalMove, ImpossibleMove,
     WhiteWins, BlackWins, GameIsDrawn, GameUnfinished,
     GNUChessGame, XBoardGame, MoveNumberOne, Open, Close, Nothing,
@@ -313,7 +313,7 @@ typedef enum {
     VariantGothic,
     VariantCapablanca,
     VariantKnightmate,
-    VariantFairy,        
+    VariantFairy,
     VariantCylinder,
     VariantFalcon,
     VariantCapaRandom,
@@ -518,12 +518,12 @@ typedef struct {
     Boolean highlightLastMove;
     Boolean highlightDragging;
     Boolean blindfold;          /* if true, no pieces are drawn */
-    Boolean premove;		/* true if premove feature enabled */ 
-    Boolean premoveWhite;	/* true if premoving White first move  */ 
-    char *premoveWhiteText;	/* text of White premove 1 */ 
-    Boolean premoveBlack;	/* true if premoving Black first move */ 
-    char *premoveBlackText;	/* text of Black premove 1 */ 
-    Boolean icsAlarm;		/* true if sounding alarm at a certain time */	
+    Boolean premove;		/* true if premove feature enabled */
+    Boolean premoveWhite;	/* true if premoving White first move  */
+    char *premoveWhiteText;	/* text of White premove 1 */
+    Boolean premoveBlack;	/* true if premoving Black first move */
+    char *premoveBlackText;	/* text of Black premove 1 */
+    Boolean icsAlarm;		/* true if sounding alarm at a certain time */
     int icsAlarmTime;		/* time to sound alarm, in milliseconds */
     Boolean autoRaiseBoard;
     int fontSizeTolerance; /* xboard only */
@@ -532,7 +532,7 @@ typedef struct {
     char *chatBoxes;
     int protocolVersion[ENGINES];
     Boolean showButtonBar;
-    Boolean icsEngineAnalyze; 
+    Boolean icsEngineAnalyze;
     Boolean variations;         /* [HGM] enable variation-tree walking */
 
     /* [AS] New properties (down to the "ZIPPY" part) */
@@ -770,7 +770,7 @@ extern WindowPlacement wpTags;
 
 #define MAXENGINES 2000
 
-// [HGM] chat	
+// [HGM] chat
 #define MAX_CHAT 5
 extern int chatCount;
 extern char chatPartner[MAX_CHAT][MSG_SIZ];

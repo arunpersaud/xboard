@@ -21,8 +21,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _XEVALGRAPH_H
-#define _XEVALGRAPH_H 1
+#ifndef XB_XEVALGRAPH
+#define XB_XEVALGRAPH
 
 void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 

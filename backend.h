@@ -51,8 +51,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _BACKEND
-#define _BACKEND
+#ifndef XB_BACKEND
+#define XB_BACKEND
 
 /* unsigned int 64 for engine nodes work and display */
 #ifdef WIN32
@@ -270,8 +270,6 @@ extern GameInfo gameInfo;
 #define ICS_CHESSNET 3 /* not really supported */
 int ics_type;
 
- 
-
 /* pgntags.c prototypes
  */
 char *PGNTags P((GameInfo *));
@@ -284,7 +282,7 @@ char *PGNResult P((ChessMove result));
  */
 /* A game node in the double linked list of games.
  */
-typedef struct _ListGame {
+typedef struct XB_ListGame {
     ListNode node;
     int number;
     int position;
@@ -292,7 +290,7 @@ typedef struct _ListGame {
     unsigned long offset;   /*  Byte offset of game within file.     */
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;
- 
+
 extern int storedGames;
 extern int opponentKibitzes;
 extern ChessSquare gatingPiece;
@@ -323,7 +321,7 @@ int Explode P((Board board, int fromX, int fromY, int toX, int toY));
 typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton, ListBox, Graph, PopUp,
 		 FileName, PathName, Slider, Message, Fractional, Label, BoxBegin, BoxEnd, DropDown, Break, EndMark } Control;
 
-typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
+typedef struct XB_OPT {   // [HGM] options: descriptor of UCI-style option
     int value;          // current setting, starts as default
     int min;		// Also used for flags
     int max;
@@ -335,7 +333,7 @@ typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
     char *name;         // holds both option name and text value (in allocated memory)
 } Option;
 
-typedef struct _CPS {
+typedef struct XB_CPS {
     char *which;
     int maybeThinking;
     ProcRef pr;
@@ -344,7 +342,7 @@ typedef struct _CPS {
     char *program;
     char *host;
     char *dir;
-    struct _CPS *other;
+    struct XB_CPS *other;
     char *initString;
     char *computerString;
     int sendTime; /* 0=don't, 1=do, 2=test */
@@ -451,4 +449,4 @@ typedef struct {
 void GetTimeMark P((TimeMark *));
 long SubtractTimeMarks P((TimeMark *, TimeMark *));
 
-#endif /* _BACKEND */
+#endif /* XB_BACKEND */

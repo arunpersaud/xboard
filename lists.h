@@ -28,15 +28,15 @@
  * way.
  */
 
-#ifndef _LISTS_H
-#define _LISTS_H
+#ifndef XB_LISTS
+#define XB_LISTS
 
 
 /* Type definition: Node of a double linked list.
  */
-typedef struct _ListNode {
-    struct _ListNode *succ;
-    struct _ListNode *pred;
+typedef struct XB_ListNode {
+    struct XB_ListNode *succ;
+    struct XB_ListNode *pred;
 } ListNode;
 
 
@@ -47,9 +47,9 @@ typedef struct _ListNode {
  * if and only if it consists of 2 nodes. :-)
  */
 typedef struct {
-    struct _ListNode *head;     /*  The list structure consists of two  */
-    struct _ListNode *tail;     /*  ListNode's: The pred entry of the   */
-    struct _ListNode *tailPred; /*  head being the succ entry of the    */
+    struct XB_ListNode *head;     /*  The list structure consists of two  */
+    struct XB_ListNode *tail;     /*  ListNode's: The pred entry of the   */
+    struct XB_ListNode *tailPred; /*  head being the succ entry of the    */
 } List;                         /*  tail.                               */
 
 

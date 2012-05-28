@@ -2,7 +2,7 @@
  * backendz.h -- Internal interface exported by XBoard backend.c to zippy.c
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts. 
+ * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
  * 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
@@ -51,8 +51,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _BACKENDZ
-#define _BACKENDZ
+#ifndef XB_BACKENDZ
+#define XB_BACKENDZ
 
 #include "common.h"
 #include "frontend.h"

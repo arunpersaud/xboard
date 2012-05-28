@@ -16,8 +16,8 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
    USA.  */
 
-#ifndef _LIBGETTEXT_H
-#define _LIBGETTEXT_H 1
+#ifndef XB_GETTEXT
+#define XB_GETTEXT
 
 /* NLS can be disabled through the configure --disable-nls option.  */
 #if ENABLE_NLS
@@ -277,4 +277,4 @@ dcnpgettext_expr (const char *domain,
   return (n == 1 ? msgid : msgid_plural);
 }
 
-#endif /* _LIBGETTEXT_H */
+#endif /* XB_GETTEXT */

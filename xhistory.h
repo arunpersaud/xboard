@@ -20,11 +20,10 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _XHISTL_H
-#define _XHISTL_H 1
+#ifndef XB_XHISTLIST
+#define XB_XHISTLIST
 
 void HistoryShowProc P((void));
 Boolean MoveHistoryIsUp P((void));
 
-#endif /* _XHISTL_H */
- 
+#endif /* XB_XHISTLIST */

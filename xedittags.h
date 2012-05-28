@@ -21,8 +21,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _XEDITTAGS_H
-#define _XEDITTAGS_H 1
+#ifndef XB_XEDITTAGS
+#define XB_XEDITTAGS
 
 void EditTagsProc P((void));
 

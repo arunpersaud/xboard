@@ -20,12 +20,12 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _XGAMEL_H
-#define _XGAMEL_H 1
+#ifndef XB_XGAMELIST
+#define XB_XGAMELIST
 
 void LoadSelectedProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void SetFilterProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 
-#endif /* _XGAMEL_H */
+#endif /* XB_XGAMELIST */

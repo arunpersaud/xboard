@@ -51,8 +51,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _FRONTEND
-#define _FRONTEND
+#ifndef XB_FRONTEND
+#define XB_FRONTEND
 
 #include <stdio.h>
 
@@ -247,4 +247,4 @@ void SlavePopUp P((void));
 Boolean MoveHistoryIsUp P((void));
 void HistoryPopUp P((void));
 
-#endif
+#endif /* XB_FRONTEND */
