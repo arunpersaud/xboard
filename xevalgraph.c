@@ -112,7 +112,7 @@ static GC hbrHist[3];
 
 // [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end)
 void
-DrawSegment (int x, int y, int *lastX, int *lastY, int penType)
+DrawSegment (int x, int y, int *lastX, int *lastY, enum PEN penType)
 {
   static int curX, curY;
 
@@ -181,8 +181,8 @@ InitializeEvalGraph (Option *opt)
   pens[PEN_BLACK]      = CreateGC(1, "black", "black", LineSolid);
   pens[PEN_DOTTED]     = CreateGC(1, "#A0A0A0", "#A0A0A0", LineOnOffDash);
   pens[PEN_BLUEDOTTED] = CreateGC(1, "#0000FF", "#0000FF", LineOnOffDash);
-  pens[PEN_BOLD]       = CreateGC(3, crWhite, crWhite, LineSolid);
-  pens[PEN_BOLD+1]     = CreateGC(3, crBlack, crBlack, LineSolid);
+  pens[PEN_BOLDWHITE]  = CreateGC(3, crWhite, crWhite, LineSolid);
+  pens[PEN_BOLDBLACK]  = CreateGC(3, crBlack, crBlack, LineSolid);
   hbrHist[0] = CreateGC(3, crWhite, crWhite, LineSolid);
   hbrHist[1] = CreateGC(3, crBlack, crBlack, LineSolid);
   hbrHist[2] = CreateGC(3, "#E0E0F0", "#E0E0F0", LineSolid);; // background (a bit blueish, for contrst with yellow curve)

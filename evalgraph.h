@@ -21,17 +21,13 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.  *
  *
  *------------------------------------------------------------------------
- ** See the file ChangeLog for a revision history.  
+ ** See the file ChangeLog for a revision history.
  */
 
 #define MIN_HIST_WIDTH  4
 #define MAX_HIST_WIDTH  10
 
-#define PEN_NONE	0
-#define PEN_BLACK	1
-#define PEN_DOTTED	2
-#define PEN_BLUEDOTTED	3
-#define PEN_BOLD	4 /* or 5 for black */
+enum PEN { PEN_NONE, PEN_BLACK, PEN_DOTTED, PEN_BLUEDOTTED, PEN_BOLDWHITE, PEN_BOLDBLACK };
 
 #define FILLED 1
 #define OPEN   0
@@ -50,7 +46,7 @@ extern int MarginW;
 extern int MarginH;
 
 // calls from back-end part into front-end part
-void DrawSegment( int x, int y, int *lastX, int *lastY, int penType );
+void DrawSegment( int x, int y, int *lastX, int *lastY, enum PEN );
 void DrawRectangle( int left, int top, int right, int bottom, int side, int style );
 void DrawEvalText(char *buf, int cbBuf, int y);
 

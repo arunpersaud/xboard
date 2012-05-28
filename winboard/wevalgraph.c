@@ -123,11 +123,11 @@ static VOID DisplayEvalGraph( HWND hWnd, HDC hDC )
     /* Create or recreate paint box if needed */
     if( hbmPB == NULL || width != nWidthPB || height != nHeightPB ) {
         if( pens[PEN_DOTTED] == NULL ) {
-	    pens[PEN_BLACK]     = GetStockObject(BLACK_PEN);
-            pens[PEN_DOTTED]    = CreatePen( PS_DOT, 0, RGB(0xA0,0xA0,0xA0) );
+	    pens[PEN_BLACK]      = GetStockObject(BLACK_PEN);
+            pens[PEN_DOTTED]     = CreatePen( PS_DOT, 0, RGB(0xA0,0xA0,0xA0) );
             pens[PEN_BLUEDOTTED] = CreatePen( PS_DOT, 0, RGB(0x00,0x00,0xFF) );
-            pens[PEN_BOLD]      = CreatePen( PS_SOLID, 2, crWhite );
-            pens[PEN_BOLD+1]    = CreatePen( PS_SOLID, 2, crBlack );
+            pens[PEN_BOLDWHITE]  = CreatePen( PS_SOLID, 2, crWhite );
+            pens[PEN_BOLDBLACK]  = CreatePen( PS_SOLID, 2, crBlack );
             hbrHist[0] = CreateBrush( BS_SOLID, crWhite );
             hbrHist[1] = CreateBrush( BS_SOLID, crBlack );
             hbrHist[2] = CreateBrush( BS_SOLID, GetSysColor( COLOR_3DFACE ) ); // background

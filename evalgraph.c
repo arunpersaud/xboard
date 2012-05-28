@@ -63,7 +63,7 @@ int MarginH = 4;
 
 // back-end
 static void
-DrawLine (int x1, int y1, int x2, int y2, int penType)
+DrawLine (int x1, int y1, int x2, int y2, enum PEN penType)
 {
     DrawSegment( x1, y1, NULL, NULL, PEN_NONE );
     DrawSegment( x2, y2, NULL, NULL, penType );
@@ -71,7 +71,7 @@ DrawLine (int x1, int y1, int x2, int y2, int penType)
 
 // back-end
 static void
-DrawLineEx (int x1, int y1, int x2, int y2, int penType)
+DrawLineEx (int x1, int y1, int x2, int y2, enum PEN penType)
 {
     int savX, savY;
     DrawSegment( x1, y1, &savX, &savY, PEN_NONE );
@@ -245,7 +245,7 @@ DrawHistogramAsDiagram (int cy, int paint_width, int hist_count)
 
             /* Extend line up to current point */
             if( currPvInfo[index].depth > 0 ) {
-                DrawSegment((int) x, GetValueY( GetPvScore(index) ), NULL, NULL, PEN_BOLD + side );
+	      DrawSegment((int) x, GetValueY( GetPvScore(index) ), NULL, NULL, (side==0 ? PEN_BOLDWHITE: PEN_BOLDBLACK) );
             }
 
             index += 2;
