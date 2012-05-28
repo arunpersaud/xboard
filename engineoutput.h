@@ -51,17 +51,13 @@
 
 #define ICON_SIZE           14
 
-#define STATE_UNKNOWN   -1
-#define STATE_THINKING   0
-#define STATE_IDLE       1
-#define STATE_PONDERING  2
-#define STATE_ANALYZING  3
+enum ENGINE_STATE { STATE_UNKNOWN, STATE_THINKING, STATE_IDLE, STATE_PONDERING, STATE_ANALYZING };
 
 extern int  windowMode;
 extern char exclusionHeader[];
 
 // back-end called by front-end
-void SetEngineState( int which, int state, char * state_data );
+void SetEngineState( int which, enum ENGINE_STATE state, char * state_data );
 
 // front-end called by back-end
 void SetEngineColorIcon( int which );
@@ -70,7 +66,7 @@ void DoSetWindowText(int which, int field, char *s_label);
 void InsertIntoMemo( int which, char * text, int where );
 void DoClearMemo(int which);
 void ResizeWindowControls( int mode );
-int EngineOutputDialogExists();
+int  EngineOutputDialogExists();
 void SetEngineOutputTitle( char *title );
 void InitEngineOutput P((Option *opt, Option *memo2)); // XB only
 void DrawWidgetIcon P((Option *opt, int nIcon)); // XB only

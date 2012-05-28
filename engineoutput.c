@@ -124,7 +124,7 @@ MakeEngineOutputTitle ()
 
 // back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
 void
-SetEngineState (int which, int state, char * state_data)
+SetEngineState (int which, enum ENGINE_STATE state, char * state_data)
 {
     int x_which = 1 - which;
 
