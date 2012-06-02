@@ -421,7 +421,7 @@ Boolean alarmSounded;
 /* end premove variables */
 
 char *ics_prefix = "$";
-int ics_type = ICS_GENERIC;
+enum ICS_TYPE ics_type = ICS_GENERIC;
 
 int currentMove = 0, forwardMostMove = 0, backwardMostMove = 0;
 int pauseExamForwardMostMove = 0;

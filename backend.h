@@ -264,11 +264,8 @@ int ToUpper P((int c));
 extern GameInfo gameInfo;
 
 /* ICS vars used with backend.c and zippy.c */
-#define ICS_GENERIC 0
-#define ICS_ICC 1
-#define ICS_FICS 2
-#define ICS_CHESSNET 3 /* not really supported */
-int ics_type;
+enum ICS_TYPE { ICS_GENERIC, ICS_ICC, ICS_FICS, ICS_CHESSNET /* not really supported */ };
+enum ICS_TYPE ics_type;
 
 /* pgntags.c prototypes
  */

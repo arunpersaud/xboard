@@ -100,7 +100,7 @@
 extern int whiteFlag, blackFlag;
 Boolean flipClock = FALSE;
 extern HANDLE chatHandle[];
-extern int ics_type;
+extern enum ICS_TYPE ics_type;
 
 int  MySearchPath P((char *installDir, char *name, char *fullname));
 int  MyGetFullPathName P((char *name, char *fullname));
