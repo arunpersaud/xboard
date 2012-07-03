@@ -13947,7 +13947,7 @@ EditPositionDone (Boolean fakeRights)
 	boards[0][CASTLING][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? BOARD_LEFT : NoRights;
 	boards[0][CASTLING][3] = boards[0][BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook ? BOARD_RGHT-1 : NoRights;
       } else boards[0][CASTLING][5] = NoRights;
-      if(gameInfo.variant = VariantSChess) {
+      if(gameInfo.variant == VariantSChess) {
 	int i;
 	for(i=BOARD_LEFT; i<BOARD_RGHT; i++) { // pieces in their original position are assumed virgin
 	  boards[0][VIRGIN][i] = 0;
@@ -16680,7 +16680,7 @@ PositionToFEN (int move, char *overrideCastling)
                boards[move][CASTLING][2] != NoRights  ) k = 1, *p++ = 'K';
             q = (boards[move][CASTLING][1] == BOARD_LEFT &&
                  boards[move][CASTLING][2] != NoRights  );
-            if(gameInfo.variant = VariantSChess) { // for S-Chess, indicate all vrgin backrank pieces
+            if(gameInfo.variant == VariantSChess) { // for S-Chess, indicate all vrgin backrank pieces
 		for(i=j=0; i<BOARD_HEIGHT; i++) j += boards[move][i][BOARD_RGHT]; // count white held pieces
                 for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
                     if((boards[move][0][i] != WhiteKing || k+q == 0) &&
@@ -16692,7 +16692,7 @@ PositionToFEN (int move, char *overrideCastling)
                boards[move][CASTLING][5] != NoRights  ) k = 1, *p++ = 'k';
             q = (boards[move][CASTLING][4] == BOARD_LEFT &&
                  boards[move][CASTLING][5] != NoRights  );
-            if(gameInfo.variant = VariantSChess) {
+            if(gameInfo.variant == VariantSChess) {
 		for(i=j=0; i<BOARD_HEIGHT; i++) j += boards[move][i][BOARD_LEFT-1]; // count black held pieces
                 for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
                     if((boards[move][BOARD_HEIGHT-1][i] != BlackKing || k+q == 0) &&
