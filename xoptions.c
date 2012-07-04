@@ -587,6 +587,7 @@ Option icsOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.quietPlay, "",   NULL, CheckBox, N_("Quiet Play") },
 { 0, 0, 0, NULL, (void*) &appData.seekGraph, "",   NULL, CheckBox, N_("Seek Graph") },
 { 0, 0, 0, NULL, (void*) &appData.autoRefresh, "", NULL, CheckBox, N_("Auto-Refresh Seek Graph") },
+{ 0, 0, 0, NULL, (void*) &appData.autoBox, "", NULL, CheckBox, N_("Auto-InputBox PopUp") },
 { 0, 0, 0, NULL, (void*) &appData.premove, "",     NULL, CheckBox, N_("Premove") },
 { 0, 0, 0, NULL, (void*) &appData.premoveWhite, "", NULL, CheckBox, N_("Premove for White") },
 { 0, 0, 0, NULL, (void*) &appData.premoveWhiteText, "", NULL, TextBox, N_("First White Move:") },
@@ -1703,6 +1704,7 @@ MoveTypeInProc (Widget widget, caddr_t unused, XEvent *event)
        )
       {
 	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
+	    if(!appData.autoBox) return;
 	    if(shells[4]) { // box already exists: append to current contents
 		char *p, newText[MSG_SIZ];
 		GetWidgetText(&boxOptions[0], &p);

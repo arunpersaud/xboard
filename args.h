@@ -194,6 +194,7 @@ ArgDescriptor argDescriptors[] = {
   { "internetChessServerInputBox", ArgBoolean, (void *) &appData.icsInputBox, XBOARD, (ArgIniType) FALSE },
   { "icsinput", ArgTrue, (void *) &appData.icsInputBox, FALSE, INVALID },
   { "xicsinput", ArgFalse, (void *) &appData.icsInputBox, FALSE, INVALID },
+  { "autoBox", ArgBoolean, (void *) &appData.autoBox, XBOARD, (ArgIniType) TRUE },
   { "cmail", ArgString, (void *) &appData.cmailGameName, FALSE, (ArgIniType) "" },
   { "soundProgram", ArgFilename, (void *) &appData.soundProgram, XBOARD, (ArgIniType) "play" },
   { "fontSizeTolerance", ArgInt, (void *) &appData.fontSizeTolerance, XBOARD, (ArgIniType) 4 },

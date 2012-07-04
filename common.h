@@ -410,6 +410,7 @@ typedef struct {
     float timeDelay;
     char *timeControl;
     Boolean icsActive;
+    Boolean autoBox;
     char *icsHost;
     char *icsPort;
     char *icsCommPort;  /* if set, use serial port instead of tcp host/port */
