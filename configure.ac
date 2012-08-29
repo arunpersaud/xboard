@@ -129,7 +129,13 @@ if test -n "$no_x" ; then
   exit 1
 fi
 
+save_cflags="$CFLAGS"
+save_cppflags="$CPPFLAGS"
+CFLAGS="$CFLAGS $X_CFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 AC_CHECK_HEADER(X11/Intrinsic.h,xt="yes",xt="no")
+CFLAGS="$save_cflags"
+CPPFLAGS="$save_cppflags"
 
 if test "$xt" = "no" ; then
    echo Xt headers not found
@@ -156,7 +162,13 @@ AS_IF([test x"$with_Xaw3d" != x"no"],
 			       [-lXaw])])
 dnl | no Xaw3d, check for Xaw
 if test x"$with_Xaw3d" = x"no" ; then
+   save_cflags="$CFLAGS"
+   save_cppflags="$CPPFLAGS"
+   CFLAGS="$CFLAGS $X_CFLAGS"
+   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
    AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes", xaw_headers="no")
+   CFLAGS="$save_cflags"
+   CPPFLAGS="$save_cppflags"
    if test x"$xaw_headers" = x"no" ; then
       AC_MSG_ERROR([Xaw headers not found. Please install the Xaw package and headers.])
    fi
@@ -353,10 +365,12 @@ AC_ARG_ENABLE(	[xpm],
 
 if test x"$enable_xpm" != "xno"; then
   save_cflags="$CFLAGS"
+  save_cppflags="$CPPFLAGS"
   CFLAGS="$CFLAGS $X_CFLAGS"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
   AC_CHECK_HEADERS(X11/xpm.h)
   CFLAGS="$save_cflags"
+  CPPFLAGS="$save_cppflags"
   if test "$ac_cv_header_X11_xpm_h" = "yes"; then
     save_ldflags="$LDFLAGS"
     LDFLAGS="$LDFLAGS $X_LIBS"
