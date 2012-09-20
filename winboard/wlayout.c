@@ -172,12 +172,20 @@ VOID ReattachAfterSize( LPRECT lprcOldPos, int new_w, int new_h, HWND hWndChild,
             int delta_y = new_h - (lprcOldPos->bottom - lprcOldPos->top);
 
             /* Adjust size & placement */
-            if(pwpChild->x + pwpChild->width  >= lprcOldPos->right  )
+            if(pwpChild->x + pwpChild->width  >= lprcOldPos->right &&
+              (pwpChild->x + pwpChild->width  < screenWidth - 5 || delta_x > 0) ) // keep right edge glued to display edge if touching
 		pwpChild->width += delta_x;
-            if(pwpChild->y + pwpChild->height >= lprcOldPos->bottom )
+            if(pwpChild->x + pwpChild->width  >= screenWidth  ) // don't move right edge off screen
+		pwpChild->width = screenWidth - pwpChild->x;
+            if(pwpChild->y + pwpChild->height >= lprcOldPos->bottom &&
+              (pwpChild->y + pwpChild->height < screenHeight - 35 || delta_y > 0) ) // keep bottom edge glued to display edge if touching
 		pwpChild->height += delta_y;
+            if(pwpChild->y + pwpChild->height >= screenHeight - 30 ) // don't move bottom edge off screen
+		pwpChild->height = screenHeight - 30 - pwpChild->y;
             if(pwpChild->x >= lprcOldPos->right)  pwpChild->width  -= delta_x, pwpChild->x += delta_x;
             if(pwpChild->y >= lprcOldPos->bottom) pwpChild->height -= delta_y, pwpChild->y += delta_y;
+            if(pwpChild->width  < 30) pwpChild->width = 30;  // force minimum width
+            if(pwpChild->height < 50) pwpChild->height = 50; // force minimum height
             /* Move window */
             if( hWndChild != NULL ) {
                 SetWindowPos( hWndChild, HWND_TOP,

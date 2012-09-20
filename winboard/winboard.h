@@ -215,3 +215,4 @@ extern HWND gameListDialog;
 
 VOID EditTagsProc(void);
 extern HWND editTagsDialog;
+extern int screenWidth, screenHeight;
