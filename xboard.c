@@ -4980,7 +4980,9 @@ XDrawPosition (Widget w, int repaint, Board board)
 void
 DrawPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
+if(appData.debugMode) fprintf(debugFP, "drawpositionproc\n");
     XDrawPosition(w, True, NULL);
+if(appData.debugMode) fprintf(debugFP, "drawn\n");
 }
 
 
@@ -7719,6 +7721,7 @@ DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
     int error;
     char *p, *q;
 
+if(appData.debugMode) fprintf(debugFP, "input callback\n");
     if (is->lineByLine) {
 	count = read(is->fd, is->unused,
 		     INPUT_SOURCE_BUF_SIZE - (is->unused - is->buf));
@@ -7740,6 +7743,7 @@ DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 	    *q++ = *p++;
 	}
 	is->unused = q;
+if(appData.debugMode) fprintf(debugFP, "line done\n");
     } else {
 	count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
 	if (count == -1)
@@ -7747,6 +7751,7 @@ DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 	else
 	  error = 0;
 	(is->func)(is, is->closure, is->buf, count, error);
+if(appData.debugMode) fprintf(debugFP, "block done\n");
     }
 }
 

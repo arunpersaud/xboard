@@ -1695,11 +1695,16 @@ HistorySet (char movelist[][2*MOVE_LEN], int first, int last, int current)
 {
     DisplayBook(current+1);
 
+if(appData.debugMode) fprintf(debugFP, "History");
     MoveHistorySet( movelist, first, last, current, pvInfoList );
 
+if(appData.debugMode) fprintf(debugFP, "EvalGraph");
     EvalGraphSet( first, last, current, pvInfoList );
 
+if(appData.debugMode) fprintf(debugFP, "EngineOut");
     MakeEngineOutputTitle();
+
+if(appData.debugMode) fprintf(debugFP, "done");
 }
 
 /*
@@ -2707,6 +2712,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
     char talker[MSG_SIZ]; // [HGM] chat
     int channel;
 
+if(appData.debugMode) fprintf(debugFP, "read from ICS\n");
     connectionAlive = TRUE; // [HGM] alive: I think, therefore I am...
 
     if (appData.debugMode) {
@@ -2807,6 +2813,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
                and we are talking to port 23, which might be a real
 	       telnet server that will try to keep WILL ECHO on permanently.
              */
+if(appData.debugMode) fprintf(debugFP, "next loop %d\n", i);
 	    if (buf_len - i >= 3 && (unsigned char) buf[i] == TN_IAC) {
 		static int remoteEchoOption = FALSE; /* telnet ECHO option */
 		unsigned char option;
@@ -3975,6 +3982,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		    started = STARTED_NONE;
 		    parse[parse_pos] = NULLCHAR;
 		    ParseBoard12(parse);
+if(appData.debugMode) fprintf(debugFP, "returned\n");
 		    ics_user_moved = 0;
 
 		    /* Send premove here */
@@ -4005,6 +4013,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		      }
 		    }
 
+if(appData.debugMode) fprintf(debugFP, "prompt suppress\n");
 		    /* Usually suppress following prompt */
 		    if (!(forwardMostMove == 0 && gameMode == IcsExamining)) {
 			while(looking_at(buf, &i, "\n")); // [HGM] skip empty lines
@@ -4014,6 +4023,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			}
 		    }
 		    next_out = i;
+if(appData.debugMode) fprintf(debugFP, "prompt killed\n");
 		} else if (started == STARTED_HOLDINGS) {
 		    int gamenum;
 		    char new_piece[MSG_SIZ];
@@ -4103,6 +4113,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 	    i++;		/* skip unparsed character and loop back */
 	}
 
+if(appData.debugMode) fprintf(debugFP, "exit loop: next_out=%d i=%d started=%d leftover=%d\n",next_out,i,started,leftover_start);
 	if (started != STARTED_MOVES && started != STARTED_BOARD && !suppressKibitz && // [HGM] kibitz
 //	    started != STARTED_HOLDINGS && i > next_out) { // [HGM] should we compare to leftover_start in stead of i?
 //	    SendToPlayer(&buf[next_out], i - next_out);
@@ -4121,6 +4132,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
     } else {
 	DisplayFatalError(_("Error reading from ICS"), error, 1);
     }
+if(appData.debugMode) fprintf(debugFP, "return\n");
 }
 
 
@@ -4841,7 +4853,9 @@ ParseBoard12 (char *string)
       }
     }
 
+if(appData.debugMode) fprintf(debugFP, "Set\n");
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
+if(appData.debugMode) fprintf(debugFP, "Set done\n");
 #if ZIPPY
     if(bookHit) { // [HGM] book: simulate book reply
 	static char bookMove[MSG_SIZ]; // a bit generous?
