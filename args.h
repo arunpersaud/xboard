@@ -138,6 +138,9 @@ char *defaultTextAttribs[] =
 
 ArgDescriptor argDescriptors[] = {
   /* positional arguments */
+  { "opt", ArgSettingsFilename, (void *) NULL, FALSE, INVALID },
+  { "loadPositionFile", ArgFilename, (void *) &appData.loadPositionFile, FALSE, INVALID },
+  { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, INVALID },
   { "loadGameFile", ArgFilename, (void *) &appData.loadGameFile, FALSE, INVALID },
   { "", ArgNone, NULL, FALSE, INVALID },
   /* keyword arguments */
@@ -651,6 +654,7 @@ ArgDescriptor argDescriptors[] = {
   { "findMirrorImage", ArgBoolean, (void *) &appData.findMirror, FALSE, FALSE },
   { "viewer", ArgTrue, (void *) &appData.viewer, FALSE, FALSE },
   { "viewerOptions", ArgString, (void *) &appData.viewerOptions, TRUE, (ArgIniType) "-ncp -engineOutputUp false -saveSettingsOnExit false" },
+  { "tourneyOptions", ArgString, (void *) &appData.tourneyOptions, TRUE, (ArgIniType) "-ncp -mm -saveSettingsOnExit false" },
   { "autoCopyPV", ArgBoolean, (void *) &appData.autoCopyPV, TRUE, FALSE },
   { "topLevel", ArgBoolean, (void *) &appData.topLevel, XBOARD, (ArgIniType) TOPLEVEL },
   { "dialogColor", ArgString, (void *) &appData.dialogColor, XBOARD, (ArgIniType) "" },
@@ -861,10 +865,11 @@ ParseArgs(GetFunc get, void *cl)
   char *q;
   int i, octval;
   char ch;
-  int posarg = 0;
+  int posarg = 3; // default is game file
 
   ch = get(cl);
   for (;;) {
+    int posflag = 0;
     while (ch == ' ' || ch == '\n' || ch == '\t') ch = get(cl);
     if (ch == NULLCHAR) break;
     if (ch == ';') {
@@ -895,6 +900,7 @@ ParseArgs(GetFunc get, void *cl)
     } else {
       /* Positional argument */
       ad = &argDescriptors[posarg++];
+      posflag++;
       strncpy(argName, ad->argName,sizeof(argName)/sizeof(argName[0]));
     }
 
@@ -1017,12 +1023,29 @@ ParseArgs(GetFunc get, void *cl)
 	}
       }
     } else {
-      while (ch != ' ' && ch != NULLCHAR && ch != '\t' && ch != '\n') {
+      while ((ch != ' ' || posflag) && ch != NULLCHAR && ch != '\t' && ch != '\n') { // space allowed in positional arg
 	*q++ = ch;
 	ch = get(cl);
       }
     }
     *q = NULLCHAR;
+
+    if(posflag) { // positional argument: the argName was implied, and per default set as -lgf
+      int len = strlen(argValue) - 4; // start of filename extension
+      if(len < 0) len = 0;
+      if(!strcasecmp(argValue + len, ".trn")) {
+        ad = &argDescriptors[2]; // correct implied type to -tf
+        appData.tourney = TRUE; // let it parse -tourneyOptions later
+      } else if(!strcasecmp(argValue + len, ".fen") || !strcasecmp(argValue + len, ".epd")) {
+        ad = &argDescriptors[1]; // correct implied type to -lpf
+        appData.viewer = TRUE;
+      } else if(!strcasecmp(argValue + len, ".ini") || !strcasecmp(argValue + len, ".xop")) {
+        ad = &argDescriptors[0]; // correct implied type to -opt
+      } else { // keep default -lgf, but let it imply viewer mode as well
+        appData.viewer = TRUE;
+      }
+      strncpy(argName, ad->argName,sizeof(argName)/sizeof(argName[0]));
+    }
 
     switch (ad->argType) {
     case ArgInt:
@@ -1260,6 +1283,7 @@ InitAppData(char *lpCmdLine)
   ParseArgs(StringGet, &lpCmdLine);
 
   if(appData.viewer && appData.viewerOptions[0]) ParseArgsFromString(appData.viewerOptions);
+  if(appData.tourney && appData.tourneyOptions[0]) ParseArgsFromString(appData.tourneyOptions);
 
   /* [HGM] make sure board size is acceptable */
   if(appData.NrFiles > BOARD_FILES ||

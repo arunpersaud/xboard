@@ -565,6 +565,8 @@ typedef struct {
     int evalHistColorWhite;
     int evalHistColorBlack;
     Boolean highlightMoveWithArrow;
+    Boolean tourney;
+    char * tourneyOptions;
     int highlightArrowColor;
     Boolean useStickyWindows;
     Boolean bgObserve;   /* [HGM] bughouse */
