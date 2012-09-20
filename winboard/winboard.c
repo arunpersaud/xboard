@@ -2236,12 +2236,28 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   RECT crect, wrect, oldRect;
   int offby;
   LOGBRUSH logbrush;
+  VariantClass v = gameInfo.variant;
 
   int suppressVisibleEffects = 0; // [HGM] kludge to request updating sizeInfo only
   if((int)boardSize >= 1000 ) { boardSize -= 1000; suppressVisibleEffects = 1; }
 
   /* [HGM] call with -2 uses old size (for if nr of files, ranks changes) */
   if(boardSize == (BoardSize)(-2) ) boardSize = oldBoardSize;
+  oldBoardSize = boardSize;
+
+  if(boardSize != SizeMiddling && boardSize != SizePetite && boardSize != SizeBulky && !appData.useFont)
+  { // correct board size to one where built-in pieces exist
+    if((v == VariantCapablanca || v == VariantGothic || v == VariantGrand || v == VariantCapaRandom || v == VariantJanus || v == VariantSuper)
+       && (boardSize < SizePetite || boardSize > SizeBulky) // Archbishop and Chancellor available in entire middle range
+      || (v == VariantShogi && boardSize != SizeModerate)   // Japanese-style Shogi
+      ||  v == VariantKnightmate || v == VariantSChess || v == VariantXiangqi || v == VariantSpartan
+      ||  v == VariantShatranj || v == VariantMakruk || v == VariantGreat || v == VariantFairy ) {
+      if(boardSize < SizeMediocre) boardSize = SizePetite; else
+      if(boardSize > SizeModerate) boardSize = SizeBulky;  else
+                                   boardSize = SizeMiddling;
+    }
+  }
+  if(!appData.useFont && boardSize == SizePetite && (v == VariantShogi || v == VariantKnightmate)) boardSize = SizeMiddling; // no Unicorn in Petite
 
   oldRect.left = wpMain.x; //[HGM] placement: remember previous window params
   oldRect.top = wpMain.y;
@@ -2350,7 +2366,6 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
   sizeInfo[boardSize].cliWidth = boardRect.right + OUTER_MARGIN;
   sizeInfo[boardSize].cliHeight = boardRect.bottom + OUTER_MARGIN;
-  oldBoardSize = boardSize;
   oldTinyLayout = tinyLayout;
   winW = 2 * GetSystemMetrics(SM_CXFRAME) + boardRect.right + OUTER_MARGIN;
   winH = 2 * GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYMENU) +
