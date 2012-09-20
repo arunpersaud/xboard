@@ -58,4 +58,10 @@
       <match value="-participants {" type="string" offset="0"/>
     </magic>
   </mime-type>
+  <mime-type type="application/x-xboard-opt">
+    <comment>XBoard options</comment>
+    <generic-icon name="application-x-xboard-opt"/>
+    <glob pattern="*.xop"/>
+    <sub-class-of type="text/plain"/>
+  </mime-type>
 </mime-info>
