@@ -9616,8 +9616,12 @@ MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
              && fromX != toX && fromY != toY)
                 fprintf(serverMoves, ":%c%c:%c%c", AAA+fromX, ONE+fromY, AAA+toX, ONE+fromY);
         // promotion suffix
-        if(promoChar != NULLCHAR)
-                fprintf(serverMoves, ":%c:%c%c", ToLower(promoChar), AAA+toX, ONE+toY);
+        if(promoChar != NULLCHAR) {
+            if(fromY == 0 || fromY == BOARD_HEIGHT-1)
+                 fprintf(serverMoves, ":%c%c:%c%c", WhiteOnMove(forwardMostMove) ? 'w' : 'b',
+						 ToLower(promoChar), AAA+fromX, ONE+fromY); // Seirawan gating
+            else fprintf(serverMoves, ":%c:%c%c", ToLower(promoChar), AAA+toX, ONE+toY);
+	}
         if(!loadFlag) {
 		char buf[MOVE_LEN*2], *p; int len;
             fprintf(serverMoves, "/%d/%d",
@@ -9626,6 +9630,7 @@ MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
             else                      timeLeft = blackTimeRemaining/1000;
             fprintf(serverMoves, "/%d", timeLeft);
 		strncpy(buf, parseList[forwardMostMove], MOVE_LEN*2);
+		if(p = strchr(buf, '/')) *p = NULLCHAR; else
 		if(p = strchr(buf, '=')) *p = NULLCHAR;
 		len = strlen(buf); if(len > 1 && buf[len-2] != '-') buf[len-2] = NULLCHAR; // strip to-square
             fprintf(serverMoves, "/%s", buf);
