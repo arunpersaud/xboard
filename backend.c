@@ -5135,6 +5135,11 @@ UploadGameEvent ()
     for(i = backwardMostMove; i<last; i++) {
 	char buf[20];
 	snprintf(buf, sizeof(buf)/sizeof(buf[0]),"%s\n", parseList[i]);
+	if((*buf == 'b' || *buf == 'B') && buf[1] == 'x') { // work-around for stupid FICS bug, which thinks bxc3 can be a Bishop move
+	    int len = strlen(moveList[i]);
+	    snprintf(buf, sizeof(buf)/sizeof(buf[0]),"%s", moveList[i]); // use long algebraic
+	    if(!isdigit(buf[len-2])) snprintf(buf+len-2, 20-len, "=%c\n", ToUpper(buf[len-2])); // promotion must have '=' in ICS format
+	}
 	SendToICS(buf);
     }
     SendToICS(ics_prefix);
