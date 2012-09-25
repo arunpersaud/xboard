@@ -1157,6 +1157,63 @@ InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
 #endif
 }
 
+char *
+PrintArg (ArgType t)
+{
+  char *p="";
+  switch(t) {
+    case ArgZ:
+    case ArgInt:      p = " N"; break;
+    case ArgString:   p = " STR"; break;
+    case ArgBoolean:  p = " TF"; break;
+    case ArgSettingsFilename:
+    case ArgFilename: p = " FILE"; break;
+    case ArgX:        p = " Nx"; break;
+    case ArgY:        p = " Ny"; break;
+    case ArgAttribs:  p = " TEXTCOL"; break;
+    case ArgColor:    p = " COL"; break;
+    case ArgFont:     p = " FONT"; break;
+    case ArgBoardSize: p = " SIZE"; break;
+    case ArgFloat: p = " FLOAT"; break;
+    case ArgTrue:
+    case ArgFalse:
+    case ArgTwo:
+    case ArgNone:
+    case ArgCommSettings:
+      break;
+  }
+  return p;
+}
+
+void
+PrintOptions ()
+{
+  char buf[MSG_SIZ];
+  int len=0;
+  ArgDescriptor *q, *p = argDescriptors+5;
+  printf("\nXBoard accepts the following options:\n"
+         "(N = integer, TF = true or false, STR = text string, FILE = filename,\n"
+         " Nx, Ny = relative coordinates, COL = color, FONT = X-font spec,\n"
+         " SIZE = board-size spec(s)\n"
+         " Within parentheses are short forms, or options to set to true or false.\n"
+         " Persistent options (saved in the settings file) are marked with *)\n\n");
+  while(p->argName) {
+    if(p->argType == ArgCommSettings) { p++; continue; } // XBoard has no comm port
+    snprintf(buf+len, MSG_SIZ, "-%s%s", p->argName, PrintArg(p->argType));
+    if(p->save) strcat(buf+len, "*");
+    for(q=p+1; q->argLoc == p->argLoc; q++) {
+      if(q->argName[0] == '-') continue;
+      strcat(buf+len, q == p+1 ? " (" : " ");
+      sprintf(buf+strlen(buf), "-%s%s", q->argName, PrintArg(q->argType));
+    }
+    if(q != p+1) strcat(buf+len, ")");
+    len = strlen(buf);
+    if(len > 39) len = 0, printf("%s\n", buf); else while(len < 39) buf[len++] = ' ';
+    p = q;
+  }
+  if(len) buf[len] = NULLCHAR, printf("%s\n", buf);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1175,6 +1232,11 @@ main (int argc, char **argv)
 
     if(argc > 1 && (!strcmp(argv[1], "-v" ) || !strcmp(argv[1], "--version" ))) {
 	printf("%s version %s\n", PACKAGE_NAME, PACKAGE_VERSION);
+	exit(0);
+    }
+
+    if(argc > 1 && !strcmp(argv[1], "--help" )) {
+	PrintOptions();
 	exit(0);
     }
 
