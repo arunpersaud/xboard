@@ -10180,6 +10180,27 @@ SwapEngines (int n)
 }
 
 int
+GetEngineLine (char *s, int n)
+{
+    int i;
+    char buf[MSG_SIZ];
+    extern char *icsNames;
+    if(!s || !*s) return 0;
+    NamesToList(n == 10 ? icsNames : firstChessProgramNames, command, mnemonic, "all");
+    for(i=1; mnemonic[i]; i++) if(!strcmp(s, mnemonic[i])) break;
+    if(!mnemonic[i]) return 0;
+    snprintf(buf, MSG_SIZ, "-%s %s", n == 10 ? "icshost" : "fcp", command[i]);
+    if(n == 1) SwapEngines(n);
+    ParseArgsFromString(buf);
+    if(n == 1) SwapEngines(n);
+    if(n == 0 && *appData.secondChessProgram == NULLCHAR) {
+	SwapEngines(1); // set second same as first if not yet set (to suppress WB startup dialog)
+	ParseArgsFromString(buf);
+    }
+    return 1;
+}
+
+int
 SetPlayer (int player, char *p)
 {   // [HGM] find the engine line of the partcipant given by number, and parse its options.
     int i;

@@ -104,6 +104,9 @@ IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
 int junk;
 Boolean singleList;
 char *homeDir;
+char *firstEngineLine;
+char *secondEngineLine;
+char *icsNick;
 
 void EnsureOnScreen(int *x, int *y, int minX, int minY);
 char StringGet(void *getClosure);
@@ -172,6 +175,8 @@ ArgDescriptor argDescriptors[] = {
   { "secondChessProgram", ArgFilename, (void *) &appData.secondChessProgram,
     FALSE, (ArgIniType) SECOND_CHESS_PROGRAM },
   { "scp", ArgFilename, (void *) &appData.secondChessProgram, FALSE, INVALID },
+  { "fe", ArgString, (void *) &firstEngineLine, FALSE, "" },
+  { "se", ArgString, (void *) &secondEngineLine, FALSE, "" },
   { "firstPlaysBlack", ArgBoolean, (void *) &appData.firstPlaysBlack, FALSE, FALSE },
   { "fb", ArgTrue, (void *) &appData.firstPlaysBlack, FALSE, FALSE },
   { "xfb", ArgFalse, (void *) &appData.firstPlaysBlack, FALSE, INVALID },
@@ -230,6 +235,7 @@ ArgDescriptor argDescriptors[] = {
   { "ics", ArgTrue, (void *) &appData.icsActive, FALSE, (ArgIniType) FALSE },
   { "xics", ArgFalse, (void *) &appData.icsActive, FALSE, INVALID },
   { "-ics", ArgFalse, (void *) &appData.icsActive, FALSE, INVALID },
+  { "is", ArgString, (void *) &icsNick, FALSE, "" },
   { "internetChessServerHost", ArgString, (void *) &appData.icsHost, FALSE, (ArgIniType) "" },
   { "icshost", ArgString, (void *) &appData.icsHost, FALSE, INVALID },
   { "internetChessServerPort", ArgString, (void *) &appData.icsPort, FALSE, (ArgIniType) ICS_PORT },
@@ -1280,6 +1286,8 @@ InitAppData(char *lpCmdLine)
 
   if(appData.viewer && appData.viewerOptions[0]) ParseArgsFromString(appData.viewerOptions);
   if(appData.tourney && appData.tourneyOptions[0]) ParseArgsFromString(appData.tourneyOptions);
+  chessProgram = GetEngineLine(firstEngineLine, 0) || GetEngineLine(secondEngineLine, 1);
+  appData.icsActive = GetEngineLine(icsNick, 10);
 
   /* [HGM] make sure board size is acceptable */
   if(appData.NrFiles > BOARD_FILES ||
