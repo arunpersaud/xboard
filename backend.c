@@ -222,6 +222,7 @@ int Pairing P((int nr, int nPlayers, int *w, int *b, int *sync));
 FILE *WriteTourneyFile P((char *results, FILE *f));
 void DisplayTwoMachinesTitle P(());
 static void ExcludeClick P((int index));
+void ToggleSecond P((void));
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -4905,6 +4906,7 @@ AnalysisPeriodicEvent (int force)
 
     /* Send . command to Crafty to collect stats */
     SendToProgram(".\n", &first);
+    if(second.analyzing) SendToProgram(".\n", &second);
 
     /* Don't send another until we get a response (this makes
        us stop sending to old Crafty's which don't understand
@@ -5447,10 +5449,11 @@ MultiPV (ChessProgramState *cps)
 }
 
 Boolean
-LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end)
+LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end, int pane)
 {
 	int startPV, multi, lineStart, origIndex = index;
 	char *p, buf2[MSG_SIZ];
+	ChessProgramState *cps = (pane ? &second : &first);
 
 	if(index < 0 || index >= strlen(buf)) return FALSE; // sanity
 	lastX = x; lastY = y;
@@ -5462,12 +5465,12 @@ LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end)
 	do{ while(buf[index] && buf[index] != '\n') index++;
 	} while(buf[index] == '\n' && buf[index+1] == '\\' && buf[index+2] == ' ' && index++); // join kibitzed PV continuation line
 	buf[index] = 0;
-	if(lineStart == 0 && gameMode == AnalyzeMode && (multi = MultiPV(&first)) >= 0) {
-		int n = first.option[multi].value;
+	if(lineStart == 0 && gameMode == AnalyzeMode && (multi = MultiPV(cps)) >= 0) {
+		int n = cps->option[multi].value;
 		if(origIndex > 17 && origIndex < 24) { if(n>1) n--; } else if(origIndex > index - 6) n++;
 		snprintf(buf2, MSG_SIZ, "option MultiPV=%d\n", n);
-		if(first.option[multi].value != n) SendToProgram(buf2, &first);
-		first.option[multi].value = n;
+		if(cps->option[multi].value != n) SendToProgram(buf2, cps);
+		cps->option[multi].value = n;
 		*start = *end = 0;
 		return FALSE;
 	} else if(strstr(buf+lineStart, "exclude:") == buf+lineStart) { // exclude moves clicked
@@ -6852,6 +6855,7 @@ FinishMove (ChessMove moveType, int fromX, int fromY, int toX, int toY, int prom
   }
 
   /* Relay move to ICS or chess engine */
+  if(second.analyzing) ToggleSecond(); // for now, we just stop second analyzing engine
   if (appData.icsActive) {
     if (gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
 	gameMode == IcsExamining) {
@@ -13377,8 +13381,25 @@ EditTagsEvent ()
 }
 
 void
+ToggleSecond ()
+{
+  if(second.analyzing) {
+    SendToProgram("exit\n", &second);
+    second.analyzing = FALSE;
+  } else {
+    if (second.pr == NoProc) StartChessProgram(&second);
+    InitChessProgram(&second, FALSE);
+    FeedMovesToProgram(&second, currentMove);
+
+    SendToProgram("analyze\n", &second);
+    second.analyzing = TRUE;
+  }
+}
+
+void
 AnalyzeModeEvent ()
 {
+    if (gameMode == AnalyzeMode) { ToggleSecond(); return; }
     if (appData.noChessProgram || gameMode == AnalyzeMode)
       return;
 
@@ -13979,6 +14000,10 @@ ExitAnalyzeMode ()
       SendToProgram("exit\n", &first);
       first.analyzing = FALSE;
     }
+    if (second.analyzing) {
+      SendToProgram("exit\n", &second);
+      second.analyzing = FALSE;
+    }
     thinkOutput[0] = NULLCHAR;
 }
 
@@ -14561,6 +14586,7 @@ ForwardInner (int target)
     if (gameMode == EditGame || gameMode == AnalyzeMode ||
 	gameMode == Training || gameMode == PlayFromGameFile ||
 	gameMode == AnalyzeFile) {
+      if(target != currentMove && second.analyzing) ToggleSecond(); // for now, we just stop second analyzing engine
 	while (currentMove < target) {
 	    SendMoveToProgram(currentMove++, &first);
 	}
@@ -14665,6 +14691,7 @@ BackwardInner (int target)
     }
     if (gameMode == EditGame || gameMode==AnalyzeMode ||
 	gameMode == PlayFromGameFile || gameMode == AnalyzeFile) {
+      if(target != currentMove && second.analyzing) ToggleSecond(); // for now, we just stop second analyzing engine
 	while (currentMove > target) {
 	    if(moveList[currentMove-1][1] == '@' && moveList[currentMove-1][0] == '@') {
 		// null move cannot be undone. Reload program with move history before it.

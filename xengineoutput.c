@@ -184,7 +184,7 @@ SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	XtSetArg(arg, XtNstring, &val);
 	XtGetValues(w, &arg, 1);
 	shiftKey = strcmp(params[0], "0");
-	if(LoadMultiPV(x, y, val, index, &start, &end)) {
+	if(LoadMultiPV(x, y, val, index, &start, &end, currentPV)) {
 	    XawTextSetSelection( w, start, end );
 	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
 	}

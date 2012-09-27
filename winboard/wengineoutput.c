@@ -239,7 +239,7 @@ GetMemoLine(HWND hDlg, int x, int y)
 	memo = currentPV ? IDC_EngineMemo2 : IDC_EngineMemo1;
 	index = SendDlgItemMessage( hDlg, memo, EM_CHARFROMPOS, 0, (LPARAM) &pt );
 	GetDlgItemText(hDlg, memo, buf, sizeof(buf));
-	if(LoadMultiPV(x, y, buf, index, &start, &end)) {
+	if(LoadMultiPV(x, y, buf, index, &start, &end, currentPV)) {
 	    SetCapture(hDlg);
 	    SendMessage( outputField[currentPV][nMemo], EM_SETSEL, (WPARAM)start, (LPARAM)end );
 	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;

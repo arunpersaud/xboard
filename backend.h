@@ -232,7 +232,7 @@ void OutputChatMessage P((int partner, char *mess));
 void EditPositionDone P((Boolean fakeRights));
 Boolean GetArgValue P((char *name));
 Boolean LoadPV P((int x, int y));
-Boolean LoadMultiPV P((int x, int y, char *buf, int index, int *start, int *end));
+Boolean LoadMultiPV P((int x, int y, char *buf, int index, int *start, int *end, int pane));
 void UnLoadPV P(());
 void MovePV P((int x, int y, int h));
 int PromoScroll P((int x, int y));

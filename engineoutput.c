@@ -89,7 +89,7 @@ static int  lastDepth[2] = { -1, -1 };
 static int  lastForwardMostMove[2] = { -1, -1 };
 static int  engineState[2] = { -1, -1 };
 static char lastLine[2][MSG_SIZ];
-static char header[MSG_SIZ];
+static char header[2][MSG_SIZ];
 
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], keys[MAX_VAR], curDepth[2], nrVariations[2];
@@ -223,14 +223,15 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
 
     if( clearMemo ) {
         DoClearMemo(which); nrVariations[which] = 0;
-        header[0] = NULLCHAR;
+        header[which][0] = NULLCHAR;
         if(gameMode == AnalyzeMode) {
-          if((multi = MultiPV(&first)) >= 0) {
-            snprintf(header, MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
-                                       appData.whitePOV || appData.scoreWhite ? "white" : "mover", first.option[multi].value);
+          ChessProgramState *cps = (which ? &second : &first);
+          if((multi = MultiPV(cps)) >= 0) {
+            snprintf(header[which], MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
+                                       appData.whitePOV || appData.scoreWhite ? "white" : "mover", cps->option[multi].value);
 	  }
-          snprintf(header+strlen(header), MSG_SIZ-strlen(header), "%s", exclusionHeader);
-          InsertIntoMemo( which, header, 0);
+          if(!which) snprintf(header[which]+strlen(header[which]), MSG_SIZ-strlen(header[which]), "%s", exclusionHeader);
+          InsertIntoMemo( which, header[which], 0);
         } else
         if(appData.ponderNextMove && lastLine[which][0]) {
             InsertIntoMemo( which, lastLine[which], 0 );
@@ -347,11 +348,13 @@ VerifyDisplayMode ()
     switch( gameMode ) {
     case IcsObserving:    // [HGM] ICS analyze
 	if(!appData.icsEngineAnalyze) return;
-    case AnalyzeMode:
     case AnalyzeFile:
     case MachinePlaysWhite:
     case MachinePlaysBlack:
         mode = 0;
+        break;
+    case AnalyzeMode:
+        mode = second.analyzing;
         break;
     case IcsPlayingWhite:
     case IcsPlayingBlack:
@@ -420,7 +423,7 @@ InsertionPoint (int len, EngineOutputData *ed)
 		scores[n] = newScore;
 	}
 	nrVariations[n] += 2;
-      return offs + (gameMode == AnalyzeMode)*strlen(header);
+      return offs + (gameMode == AnalyzeMode)*strlen(header[ed->which]);
 }
 
 
