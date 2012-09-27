@@ -10059,6 +10059,27 @@ Substitute (char *participants, int expunge)
 }
 
 int
+CheckPlayers (char *participants)
+{
+	int i;
+	char buf[MSG_SIZ], *p;
+	NamesToList(firstChessProgramNames, command, mnemonic, "all");
+	while(p = strchr(participants, '\n')) {
+	    *p = NULLCHAR;
+	    for(i=1; mnemonic[i]; i++) if(!strcmp(participants, mnemonic[i])) break;
+	    if(!mnemonic[i]) {
+		snprintf(buf, MSG_SIZ, _("No engine %s is installed"), participants);
+		*p = '\n';
+		DisplayError(buf, 0);
+		return 1;
+	    }
+	    *p = '\n';
+	    participants = p + 1;
+	}
+	return 0;
+}
+
+int
 CreateTourney (char *name)
 {
 	FILE *f;
@@ -10080,6 +10101,7 @@ CreateTourney (char *name)
 		DisplayError(_("Not enough participants"), 0);
 		return 0;
 	    }
+	    if(CheckPlayers(appData.participants)) return 0;
 	    ASSIGN(appData.tourneyFile, name);
 	    if(appData.tourneyType < 0) appData.defaultMatchGames = 1; // Swiss forces games/pairing = 1
 	    if((f = WriteTourneyFile("", NULL)) == NULL) return 0;
