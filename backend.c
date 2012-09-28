@@ -270,6 +270,7 @@ char lastMsg[MSG_SIZ];
 ChessSquare pieceSweep = EmptySquare;
 ChessSquare promoSweep = EmptySquare, defaultPromoChoice;
 int promoDefaultAltered;
+int keepInfo = 0; /* [HGM] to protect PGN tags in auto-step game analysis */
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -11007,6 +11008,11 @@ AutoPlayGameLoop ()
     }
 }
 
+void
+AnalyzeNextGame()
+{
+    ReloadGame(1); // next game
+}
 
 int
 AutoPlayOneMove ()
@@ -11028,7 +11034,14 @@ AutoPlayOneMove ()
     }
 
     if (currentMove >= forwardMostMove) {
-      if(gameMode == AnalyzeFile) { ExitAnalyzeMode(); SendToProgram("force\n", &first); }
+      if(gameMode == AnalyzeFile) {
+	  if(appData.loadGameIndex == -1) {
+	    GameEnds(EndOfFile, NULL, GE_FILE);
+          ScheduleDelayedEvent(AnalyzeNextGame, 10);
+	  } else {
+          ExitAnalyzeMode(); SendToProgram("force\n", &first);
+        }
+      }
 //      gameMode = EndOfGame;
 //      ModeHighlight();
 
@@ -11872,6 +11885,9 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	    gn = 1;
 	}
 	else {
+	    if(gameMode == AnalyzeFile && appData.loadGameIndex == -1)
+	      appData.loadGameIndex = 0; // [HGM] suppress error message if we reach file end after auto-stepping analysis
+	    else
 	    DisplayError(_("Game number out of range"), 0);
 	    return FALSE;
 	}
@@ -12265,7 +12281,10 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 
     if (oldGameMode == AnalyzeFile ||
 	oldGameMode == AnalyzeMode) {
+      appData.loadGameIndex = -1; // [HGM] order auto-stepping through games
+      keepInfo = 1;
       AnalyzeFileEvent();
+      keepInfo = 0;
     }
 
     if (!matchMode && pos > 0) {
@@ -15052,6 +15071,8 @@ SetGameInfo ()
     VariantClass v = gameInfo.variant;
     ChessMove r = GameUnfinished;
     char *p = NULL;
+
+    if(keepInfo) return;
 
     if(gameMode == EditGame) { // [HGM] vari: do not erase result on EditGame
 	r = gameInfo.result;
