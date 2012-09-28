@@ -4898,6 +4898,13 @@ GetMoveListEvent ()
 }
 
 void
+SendToBoth (char *msg)
+{   // to make it easy to keep two engines in step in dual analysis
+    SendToProgram(msg, &first);
+    if(second.analyzing) SendToProgram(msg, &second);
+}
+
+void
 AnalysisPeriodicEvent (int force)
 {
     if (((programStats.ok_to_send == 0 || programStats.line_is_book)
@@ -4905,8 +4912,7 @@ AnalysisPeriodicEvent (int force)
       return;
 
     /* Send . command to Crafty to collect stats */
-    SendToProgram(".\n", &first);
-    if(second.analyzing) SendToProgram(".\n", &second);
+    SendToBoth(".\n");
 
     /* Don't send another until we get a response (this makes
        us stop sending to old Crafty's which don't understand
@@ -6222,7 +6228,7 @@ ExcludeOneMove (int fromY, int fromX, int toY, int toX, char promoChar, char sta
     // inform engine
     snprintf(buf, MSG_SIZ, "%sclude ", state == '+' ? "in" : "ex");
     CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar, buf+8);
-    SendToProgram(buf, &first);
+    SendToBoth(buf);
     return (state == '+');
 }
 
@@ -6235,16 +6241,16 @@ ExcludeClick (int index)
 	if(index < 13) { // none: include all
 	    WriteMap(0); // clear map
 	    for(i=0; i<exCnt; i++) exclusionHeader[excluTab[i].mark] = '+'; // and moves
-	    SendToProgram("include all\n", &first); // and inform engine
+	    SendToBoth("include all\n"); // and inform engine
 	} else if(index > 18) { // tail
 	    if(exclusionHeader[19] == '-') { // tail was excluded
-		SendToProgram("include all\n", &first);
+		SendToBoth("include all\n");
 		WriteMap(0); // clear map completely
 		// now re-exclude selected moves
 		for(i=0; i<exCnt; i++) if(exclusionHeader[e[i].mark] == '-')
 		    ExcludeOneMove(e[i].fr, e[i].ff, e[i].tr, e[i].tf, e[i].pc, '-');
 	    } else { // tail was included or in mixed state
-		SendToProgram("exclude all\n", &first);
+		SendToBoth("exclude all\n");
 		WriteMap(0xFF); // fill map completely
 		// now re-include selected moves
 		j = 0; // count them
@@ -6855,7 +6861,6 @@ FinishMove (ChessMove moveType, int fromX, int fromY, int toX, int toY, int prom
   }
 
   /* Relay move to ICS or chess engine */
-  if(second.analyzing) ToggleSecond(); // for now, we just stop second analyzing engine
   if (appData.icsActive) {
     if (gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
 	gameMode == IcsExamining) {
@@ -6874,14 +6879,21 @@ FinishMove (ChessMove moveType, int fromX, int fromY, int toX, int toY, int prom
 			   gameMode == MachinePlaysBlack)) {
       SendTimeRemaining(&first, gameMode != MachinePlaysBlack);
     }
-    if (gameMode != EditGame && gameMode != PlayFromGameFile) {
+    if (gameMode != EditGame && gameMode != PlayFromGameFile && gameMode != AnalyzeMode) {
 	 // [HGM] book: if program might be playing, let it use book
 	bookHit = SendMoveToBookUser(forwardMostMove-1, &first, FALSE);
 	first.maybeThinking = TRUE;
     } else if(fromY == DROP_RANK && fromX == EmptySquare) {
 	if(!first.useSetboard) SendToProgram("undo\n", &first); // kludge to change stm in engines that do not support setboard
 	SendBoard(&first, currentMove+1);
-    } else SendMoveToProgram(forwardMostMove-1, &first);
+	if(second.analyzing) {
+	    if(!second.useSetboard) SendToProgram("undo\n", &second);
+	    SendBoard(&second, currentMove+1);
+	}
+    } else {
+	SendMoveToProgram(forwardMostMove-1, &first);
+	if(second.analyzing) SendMoveToProgram(forwardMostMove-1, &second);
+    }
     if (currentMove == cmailOldMove + 1) {
       cmailMoveType[lastLoadGameNumber - 1] = CMAIL_MOVE;
     }
@@ -13997,12 +14009,8 @@ ExitAnalyzeMode ()
         DisplayMessage("",_("Close ICS engine analyze..."));
     }
     if (first.analysisSupport && first.analyzing) {
-      SendToProgram("exit\n", &first);
-      first.analyzing = FALSE;
-    }
-    if (second.analyzing) {
-      SendToProgram("exit\n", &second);
-      second.analyzing = FALSE;
+      SendToBoth("exit\n");
+      first.analyzing = second.analyzing = FALSE;
     }
     thinkOutput[0] = NULLCHAR;
 }
@@ -14586,8 +14594,8 @@ ForwardInner (int target)
     if (gameMode == EditGame || gameMode == AnalyzeMode ||
 	gameMode == Training || gameMode == PlayFromGameFile ||
 	gameMode == AnalyzeFile) {
-      if(target != currentMove && second.analyzing) ToggleSecond(); // for now, we just stop second analyzing engine
 	while (currentMove < target) {
+	    if(second.analyzing) SendMoveToProgram(currentMove, &second);
 	    SendMoveToProgram(currentMove++, &first);
 	}
     } else {
@@ -14691,7 +14699,6 @@ BackwardInner (int target)
     }
     if (gameMode == EditGame || gameMode==AnalyzeMode ||
 	gameMode == PlayFromGameFile || gameMode == AnalyzeFile) {
-      if(target != currentMove && second.analyzing) ToggleSecond(); // for now, we just stop second analyzing engine
 	while (currentMove > target) {
 	    if(moveList[currentMove-1][1] == '@' && moveList[currentMove-1][0] == '@') {
 		// null move cannot be undone. Reload program with move history before it.
@@ -14700,10 +14707,14 @@ BackwardInner (int target)
 		    if(moveList[i-1][1] == '@' && moveList[i-1][0] == '@') break;
 		}
 		SendBoard(&first, i); 
-		for(currentMove=i; currentMove<target; currentMove++) SendMoveToProgram(currentMove, &first);
+	      if(second.analyzing) SendBoard(&second, i);
+		for(currentMove=i; currentMove<target; currentMove++) {
+		    SendMoveToProgram(currentMove, &first);
+		    if(second.analyzing) SendMoveToProgram(currentMove, &second);
+		}
 		break;
 	    }
-	    SendToProgram("undo\n", &first);
+	    SendToBoth("undo\n");
 	    currentMove--;
 	}
     } else {
