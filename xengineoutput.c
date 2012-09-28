@@ -165,9 +165,9 @@ InsertIntoMemo (int which, char * text, int where)
 char memoTranslations[] =
 ":Ctrl<Key>c: CopyMemoProc() \n \
 <Btn3Motion>: HandlePV() \n \
-Shift<Btn3Down>: select-start() SelectPV(1) \n \
-Any<Btn3Down>: select-start() SelectPV(0) \n \
-<Btn3Up>: extend-end() StopPV() \n";
+Shift<Btn3Down>: select-start() extend-end() SelectPV(1) \n \
+Any<Btn3Down>: select-start() extend-end() SelectPV(0) \n \
+<Btn3Up>: StopPV() \n";
 
 void
 SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
@@ -196,6 +196,7 @@ StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
         XawTextUnsetSelection( w );
         highTextStart[currentPV] = highTextEnd[currentPV] = 0;
         UnLoadPV();
+        XtCallActionProc(w, "beginning-of-file", event, NULL, 0);
 }
 
 //------------------------- Ctrl-C copying of memo texts ---------------------------
