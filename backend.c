@@ -10203,9 +10203,10 @@ GetEngineLine (char *s, int n)
     char buf[MSG_SIZ];
     extern char *icsNames;
     if(!s || !*s) return 0;
-    NamesToList(n == 10 ? icsNames : firstChessProgramNames, command, mnemonic, "all");
+    NamesToList(n >= 10 ? icsNames : firstChessProgramNames, command, mnemonic, "all");
     for(i=1; mnemonic[i]; i++) if(!strcmp(s, mnemonic[i])) break;
     if(!mnemonic[i]) return 0;
+    if(n == 11) return 1; // just testing if there was a match
     snprintf(buf, MSG_SIZ, "-%s %s", n == 10 ? "icshost" : "fcp", command[i]);
     if(n == 1) SwapEngines(n);
     ParseArgsFromString(buf);

@@ -144,6 +144,7 @@ ArgDescriptor argDescriptors[] = {
   { "opt", ArgSettingsFilename, (void *) NULL, FALSE, INVALID },
   { "loadPositionFile", ArgFilename, (void *) &appData.loadPositionFile, FALSE, INVALID },
   { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, INVALID },
+  { "is", ArgString, (void *) &icsNick, FALSE, INVALID },
   { "loadGameFile", ArgFilename, (void *) &appData.loadGameFile, FALSE, INVALID },
   { "", ArgNone, NULL, FALSE, INVALID },
   /* keyword arguments */
@@ -867,7 +868,7 @@ ParseArgs(GetFunc get, void *cl)
   char *q;
   int i, octval;
   char ch;
-  int posarg = 3; // default is game file
+  int posarg = 4; // default is game file
 
   ch = get(cl);
   for (;;) {
@@ -1043,6 +1044,8 @@ ParseArgs(GetFunc get, void *cl)
         appData.viewer = TRUE;
       } else if(!strcasecmp(argValue + len, ".ini") || !strcasecmp(argValue + len, ".xop")) {
         ad = &argDescriptors[0]; // correct implied type to -opt
+      } else if(GetEngineLine(argValue, 11)) {
+        ad = &argDescriptors[3]; // correct implied type to -is
       } else { // keep default -lgf, but let it imply viewer mode as well
         appData.viewer = TRUE;
       }
