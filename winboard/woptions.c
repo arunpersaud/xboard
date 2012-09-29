@@ -2707,7 +2707,8 @@ LRESULT CALLBACK
 TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   char buf[MSG_SIZ], *tc;
-  int mps, increment, odds1, odds2, st;
+  int mps, odds1, odds2, st;
+  float increment;
   BOOL ok, ok2;
 
   switch (message) {
@@ -2731,12 +2732,15 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	SetDlgItemText(hDlg, OPT_TCTime2, "");
 	SetDlgItemText(hDlg, OPT_TCInc, "");
       } else {
+	int i = appData.timeIncrement;
+	if(i == appData.timeIncrement) snprintf(buf, MSG_SIZ, "%d", i);
+	else snprintf(buf, MSG_SIZ, "%4.2f", appData.timeIncrement);
 	CheckRadioButton(hDlg, OPT_TCUseMoves, OPT_TCUseFixed,
 			 OPT_TCUseInc);
 	SetDlgItemText(hDlg, OPT_TCTime, "");
 	SetDlgItemText(hDlg, OPT_TCMoves, "");
 	SetDlgItemText(hDlg, OPT_TCTime2, appData.timeControl);
-	SetDlgItemInt(hDlg, OPT_TCInc, appData.timeIncrement, FALSE);
+	SetDlgItemText(hDlg, OPT_TCInc, buf);
       }
       SetDlgItemInt(hDlg, OPT_TCOdds1, 1, FALSE);
       SetDlgItemInt(hDlg, OPT_TCOdds2, 1, FALSE);
@@ -2776,7 +2780,8 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	}
       tc = buf;
       } else {
-	increment = GetDlgItemInt(hDlg, OPT_TCInc, &ok, FALSE);
+	GetDlgItemText(hDlg, OPT_TCInc, buf, MSG_SIZ);
+	ok = (sscanf(buf, "%f%c", &increment, buf) == 1);
 	if (!ok || increment < 0) {
 	  MessageBox(hDlg, _("Invalid increment"),
 		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
