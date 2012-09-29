@@ -84,6 +84,13 @@
 -materialDraws true
 -trivialDraws false
 ;
+; preconfigure some ICS nams, for use with -is option
+;
+-icsNames {"fics" -icshost freechess.org -icshelper timeseal
+"icc" -icshost chessclub.com -icshelper timestamp
+"kc" -icshost alanimus.com -icshelper timeseal
+}
+;
 ; Configure the ICS text menu
 ;
 -icsMenu {Give me;ptell Please give me $input;
