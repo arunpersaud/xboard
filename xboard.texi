@@ -683,9 +683,33 @@ and then step backward through this game to take the moves back.
 Note that you can also click on the clocks to set the opposite
 side to move (adding a so-called @samp{null move} to the game).
 
+You can also tell the engine to exclude some moves from analysis.
+(Engines that do not support the exclude-moves feature will
+ignore this, however.)
+The general way to do this is to play the move you want to exclude
+starting with a double click on the piece.
+When you use drag-drop moving, the piece you grab with a double click
+will also remain on its square, to show you that you are not really
+making the move, but just forbid it from the current position.
+Playing a thus excluded move a second time will include it again.
+Excluded moves will be listed as text in a header line in the
+Engine Output window, and you can also re-include them by
+right-clicking them there.
+This header line will also contain the words 'best' and 'tail';
+right-clicking those will exclude the currently best move,
+or all moves not explicitly listed in the header line.
+Once you leave the current position all memory of excluded
+moves will be lost when you return there.
+
+
+Selecting this menu item while already in @samp{Analysis Mode} will
+toggle the participation of the second engine in the analysis.
+The output of this engine will then be shown in the lower pane
+of the Engine Output window.
 The analysis function can also be used when observing games on an ICS
 with an engine loaded (zippy mode); the engine then will analyse
 the positions as they occur in the observed game.
+
 @item Analyze Game
 @cindex Analyze Game, Menu Item
 This option subjects the currently loaded game to automatic
@@ -696,8 +720,16 @@ while the engine is analyzing the current position.
 The game will be annotated with the results of these analyses.
 In particlar, the score and depth will be added as a comment,
 and the PV will be added as a variation.
+
+Normally the analysis would stop after reaching the end of the game.
+But when a game is loaded from a multi-game file
+while @samp{Analyze Game} was already switched on,
+the analysis will continue with the next game in the file
+until the end of the file is reached (or you switch to another mode).
+
 The time the engine spends on analyzing each move can be controlled
-through the command-line option @samp{-timeDelay}.
+through the command-line option @samp{-timeDelay},
+which can also be set from the @samp{Load Game Options} menu dialog.
 Note: Some chess engines do not support Analysis mode.
 @item Edit Game
 Duplicate of the item in the Edit menu.
