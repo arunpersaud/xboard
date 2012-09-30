@@ -125,8 +125,4 @@ Message (name);message $name $input;
 -saveSettingsOnExit true
 -saveSettingsFile "~/.xboardrc"
 -settingsFile "~/.xboardrc"
-;
-; Turn -inc into a volatile option, to prevent a persistent increment >= 0 dominating a command-line -mps
-;
--inc -1
 

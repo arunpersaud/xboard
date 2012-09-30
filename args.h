@@ -230,7 +230,7 @@ ArgDescriptor argDescriptors[] = {
   { "td", ArgFloat, (void *) &appData.timeDelay, FALSE, INVALID },
   { "timeControl", ArgString, (void *) &appData.timeControl, TRUE, (ArgIniType) TIME_CONTROL },
   { "tc", ArgString, (void *) &appData.timeControl, FALSE, INVALID },
-  { "timeIncrement", ArgFloat, (void *) &appData.timeIncrement, TRUE, INVALID },
+  { "timeIncrement", ArgFloat, (void *) &appData.timeIncrement, FALSE, INVALID },
   { "inc", ArgFloat, (void *) &appData.timeIncrement, FALSE, INVALID },
   { "internetChessServerMode", ArgBoolean, (void *) &appData.icsActive, FALSE, INVALID },
   { "ics", ArgTrue, (void *) &appData.icsActive, FALSE, (ArgIniType) FALSE },
@@ -1274,7 +1274,7 @@ InitAppData(char *lpCmdLine)
 
   // float: casting to int is not harmless, so default cannot be contained in table
   appData.timeDelay = TIME_DELAY;
-  appData.timeIncrement = TIME_INCREMENT;
+  appData.timeIncrement = -314159;
 
   // some complex, platform-dependent stuff that could not be handled from table
   SetDefaultTextAttribs();
@@ -1342,6 +1342,12 @@ InitAppData(char *lpCmdLine)
   if (appData.icsActive || appData.noChessProgram) {
      chessProgram = FALSE;  /* not local chess program mode */
   }
+  if(appData.timeIncrement == -314159) { // new storage mechanism of (mps,inc) in use and no -inc on command line
+    if(appData.movesPerSession <= 0) { // new encoding of incremental mode
+      appData.timeIncrement = -appData.movesPerSession/1000.;
+    } else appData.timeIncrement = -1;
+  }
+  if(appData.movesPerSession <= 0) appData.movesPerSession = MOVES_PER_SESSION; // mps <= 0 is invalid in any case
 
   /* Open startup dialog if needed */
   if ((!appData.noChessProgram && !chessProgram && !appData.icsActive) ||
@@ -1387,6 +1393,7 @@ SaveSettings(char* name)
   FILE *f;
   ArgDescriptor *ad;
   char dir[MSG_SIZ], buf[MSG_SIZ];
+  int mps = appData.movesPerSession;
 
   if (!MainWindowUp()) return;
 
@@ -1424,6 +1431,8 @@ SaveSettings(char* name)
 
   // [HGM] in WB we have to copy sound names to appData first
   ExportSounds();
+
+  if(appData.timeIncrement >= 0) appData.movesPerSession = -1000*appData.timeIncrement; // kludge to store mps & inc as one
 
   for (ad = argDescriptors; ad->argName != NULL; ad++) {
     if (!ad->save) continue;
@@ -1506,6 +1515,7 @@ SaveSettings(char* name)
     }
   }
   fclose(f);
+  appData.movesPerSession = mps;
 }
 
 Boolean
