@@ -1289,8 +1289,8 @@ InitAppData(char *lpCmdLine)
 
   if(appData.viewer && appData.viewerOptions[0]) ParseArgsFromString(appData.viewerOptions);
   if(appData.tourney && appData.tourneyOptions[0]) ParseArgsFromString(appData.tourneyOptions);
-  chessProgram = GetEngineLine(firstEngineLine, 0) || GetEngineLine(secondEngineLine, 1);
-  appData.icsActive = GetEngineLine(icsNick, 10);
+  chessProgram |= GetEngineLine(firstEngineLine, 0) || GetEngineLine(secondEngineLine, 1);
+  appData.icsActive |= GetEngineLine(icsNick, 10);
 
   /* [HGM] make sure board size is acceptable */
   if(appData.NrFiles > BOARD_FILES ||
