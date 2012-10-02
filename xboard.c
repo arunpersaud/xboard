@@ -1523,8 +1523,8 @@ XBoard square size (hint): %d\n\
     if(appData.logoSize)
     {   // locate and read user logo
 	char buf[MSG_SIZ];
-	snprintf(buf, MSG_SIZ, "%s/%s.xpm", appData.logoDir, UserName());
-	XpmReadFileToPixmap(xDisplay, xBoardWindow, buf, (Pixmap *) &userLogo, NULL, NULL);
+	snprintf(buf, MSG_SIZ, "%s/%s.png", appData.logoDir, UserName());
+	ASSIGN(userLogo, buf);
     }
 
     if (appData.animate || appData.animateDragging)
@@ -2452,12 +2452,28 @@ CutOutSquare (int x, int y, int *x0, int *y0, int  kind)
     return 1;
 }
 
+#include <cairo/cairo.h>
+#include <cairo/cairo-xlib.h>
+
 void
 DrawLogo (void *handle, void *logo)
 {
+    cairo_surface_t *img, *cs;
+    cairo_t *cr;
+    int w, h;
+
     if(!logo || !handle) return;
-    XCopyArea(xDisplay, (Pixmap) logo, XtWindow((Widget) handle), wlPieceGC,
-				0, 0, appData.logoSize, appData.logoSize/2, 0, 0);
+    cs = cairo_xlib_surface_create(xDisplay, XtWindow(handle), DefaultVisual(xDisplay, 0), appData.logoSize, appData.logoSize/2);
+    img = cairo_image_surface_create_from_png (logo);
+    w = cairo_image_surface_get_width (img);
+    h = cairo_image_surface_get_height (img);
+    cr = cairo_create(cs);
+    cairo_scale(cr, (float)appData.logoSize/w, appData.logoSize/(2.*h));
+    cairo_set_source_surface (cr, img, 0, 0);
+    cairo_paint (cr);
+    cairo_destroy (cr);
+    cairo_surface_destroy (img);
+    cairo_surface_destroy (cs);
 }
 
 static void
@@ -3820,13 +3836,13 @@ LoadLogo (ChessProgramState *cps, int n, Boolean ics)
 	logoName = appData.logo[n];
     } else if(appData.autoLogo) {
 	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
-	    sprintf(buf, "%s/%s.xpm", appData.logoDir, appData.icsHost);
+	    sprintf(buf, "%s/%s.png", appData.logoDir, appData.icsHost);
 	} else if(appData.directory[n] && appData.directory[n][0]) {
-	    sprintf(buf, "%s/%s.xpm", appData.logoDir, cps->tidy);
+	    sprintf(buf, "%s/%s.png", appData.logoDir, cps->tidy);
 	}
     }
     if(logoName[0])
-	XpmReadFileToPixmap(xDisplay, xBoardWindow, logoName, (Pixmap *) &(cps->programLogo), NULL, NULL);
+	{ ASSIGN(cps->programLogo, logoName); }
 }
 
 void
