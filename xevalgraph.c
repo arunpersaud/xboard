@@ -67,6 +67,9 @@ extern char *getenv();
 #include <X11/Xaw/AsciiText.h>
 #include <X11/Xaw/Viewport.h>
 
+#include <cairo/cairo.h>
+#include <cairo/cairo-xlib.h>
+
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
@@ -106,9 +109,52 @@ Dimension evalGraphW, evalGraphH;
 char *crWhite = "#FFFFB0";
 char *crBlack = "#AD5D3D";
 static Window eGraphWindow;
+static cairo_surface_t *cs;
 
-static GC pens[6]; // [HGM] put all pens in one array
-static GC hbrHist[3];
+static Option *EvalCallback P((int button, int x, int y));
+
+static float
+Color (char *col, int n)
+{
+  int c;
+  sscanf(col, "#%x", &c);
+  c = c >> 4*n & 255;
+  return c/255.;
+}
+
+static void
+SetPen(cairo_t *cr, float w, char *col, int dash) {
+  static const double dotted[] = {4.0, 4.0};
+  static int len  = sizeof(dotted) / sizeof(dotted[0]);
+  cairo_set_line_width (cr, w);
+  cairo_set_source_rgba (cr, Color(col, 4), Color(col, 2), Color(col, 0), 1.0);
+  if(dash) cairo_set_dash (cr, dotted, len, 0.0);
+}
+
+static void
+ChoosePen(cairo_t *cr, int i)
+{
+  switch(i) {
+    case PEN_BLACK:
+      SetPen(cr, 1.0, "#000000", 0);
+      break;
+    case PEN_DOTTED:
+      SetPen(cr, 1.0, "#A0A0A0", 1);
+      break;
+    case PEN_BLUEDOTTED:
+      SetPen(cr, 0.5, "#0000FF", 1);
+      break;
+    case PEN_BOLDWHITE:
+      SetPen(cr, 3.0, crWhite, 0);
+      break;
+    case PEN_BOLDBLACK:
+      SetPen(cr, 3.0, crBlack, 0);
+      break;
+    case PEN_BACKGD:
+      SetPen(cr, 3.0, "#E0E0F0", 0);
+      break;
+  }
+}
 
 // [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end)
 void
@@ -116,8 +162,16 @@ DrawSegment (int x, int y, int *lastX, int *lastY, enum PEN penType)
 {
   static int curX, curY;
 
-  if(penType != PEN_NONE)
-    XDrawLine(xDisplay, eGraphWindow, pens[penType], curX, curY, x, y);
+  if(penType != PEN_NONE) {
+    cairo_t *cr = cairo_create(cs);
+    cairo_move_to (cr, curX, curY);
+    cairo_line_to (cr, x,y);
+    cairo_close_path (cr);
+    ChoosePen(cr, penType);
+    cairo_stroke (cr);
+    cairo_destroy (cr);
+  }
+
   if(lastX != NULL) { *lastX = curX; *lastY = curY; }
   curX = x; curY = y;
 }
@@ -126,9 +180,26 @@ DrawSegment (int x, int y, int *lastX, int *lastY, enum PEN penType)
 void
 DrawRectangle (int left, int top, int right, int bottom, int side, int style)
 {
-    XFillRectangle(xDisplay, eGraphWindow, hbrHist[side], left, top, right-left, bottom-top);
-    if(style != FILLED)
-      XDrawRectangle(xDisplay, eGraphWindow, pens[PEN_BLACK], left, top, right-left-1, bottom-top-1);
+  cairo_t *cr;
+
+  cr = cairo_create (cs);
+  cairo_rectangle (cr, left, top, right-left, bottom-top);
+  switch(side)
+    {
+    case 0: ChoosePen(cr, PEN_BOLDWHITE); break;
+    case 1: ChoosePen(cr, PEN_BOLDBLACK); break;
+    case 2: ChoosePen(cr, PEN_BACKGD); break;
+    }
+  cairo_fill (cr);
+
+  if(style != FILLED)
+    {
+      cairo_rectangle (cr, left, top, right-left-1, bottom-top-1);
+      ChoosePen(cr, PEN_BLACK);
+      cairo_stroke (cr);
+    }
+
+  cairo_destroy(cr);
 }
 
 // front-end wrapper for putting text in graph
@@ -136,56 +207,47 @@ void
 DrawEvalText (char *buf, int cbBuf, int y)
 {
     // the magic constants 7 and 5 should really be derived from the font size somehow
-    XDrawString(xDisplay, eGraphWindow, coordGC, MarginX - 2 - 7*cbBuf, y+5, buf, cbBuf);
-}
+  cairo_text_extents_t extents;
+  cairo_t *cr = cairo_create(cs);
 
-// front-end
-static Pixel
-MakeColor (char *color)
-{
-    XrmValue vFrom, vTo;
+  /* GTK-TODO this has to go into the font-selection */
+  cairo_select_font_face (cr, "Sans",
+			  CAIRO_FONT_SLANT_NORMAL,
+			  CAIRO_FONT_WEIGHT_NORMAL);
+  cairo_set_font_size (cr, 12.0);
 
-    vFrom.addr = (caddr_t) color;
-    vFrom.size = strlen(color);
-    XtConvert(shells[EvalGraphDlg], XtRString, &vFrom, XtRPixel, &vTo);
-    // test for NULL?
 
-    return *(Pixel *) vTo.addr;
-}
+  cairo_text_extents (cr, buf, &extents);
 
-static GC
-CreateGC (int width, char *fg, char *bg, int style)
-{
-    XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
-      | GCBackground | GCFunction | GCPlaneMask;
-    XGCValues gc_values;
+  cairo_move_to (cr, MarginX - 2 - 7*cbBuf, y+5);
+  cairo_text_path (cr, buf);
+  cairo_set_source_rgb (cr, 0.0, 0.0, 0);
+  cairo_fill_preserve (cr);
+  cairo_set_source_rgb (cr, 0, 1.0, 0);
+  cairo_set_line_width (cr, 0.1);
+  cairo_stroke (cr);
 
-    gc_values.plane_mask = AllPlanes;
-    gc_values.line_width = width;
-    gc_values.line_style = style;
-    gc_values.function = GXcopy;
-
-    gc_values.foreground = MakeColor(fg);
-    gc_values.background = MakeColor(bg);
-
-    return XtGetGC(shells[EvalGraphDlg], value_mask, &gc_values);
+  /* free memory */
+  cairo_destroy (cr);
 }
 
 static int initDone = FALSE;
 
 static void
-InitializeEvalGraph (Option *opt)
+InitializeEvalGraph (Option *opt, int w, int h)
 {
   eGraphWindow = XtWindow(opt->handle);
 
-  pens[PEN_BLACK]      = CreateGC(1, "black", "black", LineSolid);
-  pens[PEN_DOTTED]     = CreateGC(1, "#A0A0A0", "#A0A0A0", LineOnOffDash);
-  pens[PEN_BLUEDOTTED] = CreateGC(1, "#0000FF", "#0000FF", LineOnOffDash);
-  pens[PEN_BOLDWHITE]  = CreateGC(3, crWhite, crWhite, LineSolid);
-  pens[PEN_BOLDBLACK]  = CreateGC(3, crBlack, crBlack, LineSolid);
-  hbrHist[0] = CreateGC(3, crWhite, crWhite, LineSolid);
-  hbrHist[1] = CreateGC(3, crBlack, crBlack, LineSolid);
-  hbrHist[2] = CreateGC(3, "#E0E0F0", "#E0E0F0", LineSolid);; // background (a bit blueish, for contrst with yellow curve)
+  if(w == 0) {
+    Arg args[10];
+    XtSetArg(args[0], XtNwidth, &evalGraphW);
+    XtSetArg(args[1], XtNheight, &evalGraphH);
+    XtGetValues(opt->handle, args, 2);
+    nWidthPB = evalGraphW; nHeightPB = evalGraphH;
+  } else nWidthPB = w, nHeightPB = h;
+
+  if(cs) cairo_surface_destroy(cs);
+  cs=cairo_xlib_surface_create(xDisplay, eGraphWindow, DefaultVisual(xDisplay, 0), nWidthPB, nHeightPB);
 
   initDone = TRUE;
 }
@@ -209,6 +271,11 @@ EvalClick (int x, int y)
     if( index >= 0 && index < currLast ) ToNrEvent( index + 1 );
 }
 
+static Option graphOptions[] = {
+{ 150, 0x9C, 300, NULL, (void*) &EvalCallback, NULL, NULL, Graph , "" },
+{ 0, 2, 0, NULL, NULL, "", NULL, EndMark , "" }
+};
+
 static Option *
 EvalCallback (int button, int x, int y)
 {
@@ -217,6 +284,9 @@ EvalCallback (int button, int x, int y)
     switch(button) {
 	case 10: // expose event
 	    /* Create or recreate paint box if needed */
+	    if(x != nWidthPB || y != nHeightPB) {
+		InitializeEvalGraph(&graphOptions[0], x, y);
+	    }
 	    nWidthPB = x;
 	    nHeightPB = y;
 	    DisplayEvalGraph();
@@ -227,16 +297,11 @@ EvalCallback (int button, int x, int y)
     return NULL; // no context menu!
 }
 
-static Option graphOptions[] = {
-{ 150, 0x9C, 300, NULL, (void*) &EvalCallback, NULL, NULL, Graph , "" },
-{ 0, 2, 0, NULL, NULL, "", NULL, EndMark , "" }
-};
-
 void
 EvalGraphPopUp ()
 {
     if (GenericPopUp(graphOptions, _(title), EvalGraphDlg, BoardWindow, NONMODAL, 1)) {
-	InitializeEvalGraph(&graphOptions[0]); // first time: add callbacks and initialize pens
+	InitializeEvalGraph(&graphOptions[0], 0, 0); // first time: add callbacks and initialize pens
     } else {
 	SetDialogTitle(EvalGraphDlg, _(title));
 	SetIconName(EvalGraphDlg, _(title));
