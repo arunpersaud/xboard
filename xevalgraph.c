@@ -142,7 +142,7 @@ ChoosePen(cairo_t *cr, int i)
       SetPen(cr, 1.0, "#A0A0A0", 1);
       break;
     case PEN_BLUEDOTTED:
-      SetPen(cr, 0.5, "#0000FF", 1);
+      SetPen(cr, 1.0, "#0000FF", 1);
       break;
     case PEN_BOLDWHITE:
       SetPen(cr, 3.0, crWhite, 0);
@@ -164,9 +164,9 @@ DrawSegment (int x, int y, int *lastX, int *lastY, enum PEN penType)
 
   if(penType != PEN_NONE) {
     cairo_t *cr = cairo_create(cs);
+    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
     cairo_move_to (cr, curX, curY);
     cairo_line_to (cr, x,y);
-    cairo_close_path (cr);
     ChoosePen(cr, penType);
     cairo_stroke (cr);
     cairo_destroy (cr);
@@ -183,6 +183,7 @@ DrawRectangle (int left, int top, int right, int bottom, int side, int style)
   cairo_t *cr;
 
   cr = cairo_create (cs);
+  cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
   cairo_rectangle (cr, left, top, right-left, bottom-top);
   switch(side)
     {
@@ -206,7 +207,7 @@ DrawRectangle (int left, int top, int right, int bottom, int side, int style)
 void
 DrawEvalText (char *buf, int cbBuf, int y)
 {
-    // the magic constants 7 and 5 should really be derived from the font size somehow
+    // the magic constants 8 and 5 should really be derived from the font size somehow
   cairo_text_extents_t extents;
   cairo_t *cr = cairo_create(cs);
 
@@ -219,7 +220,7 @@ DrawEvalText (char *buf, int cbBuf, int y)
 
   cairo_text_extents (cr, buf, &extents);
 
-  cairo_move_to (cr, MarginX - 2 - 7*cbBuf, y+5);
+  cairo_move_to (cr, MarginX - 2 - 8*cbBuf, y+5);
   cairo_text_path (cr, buf);
   cairo_set_source_rgb (cr, 0.0, 0.0, 0);
   cairo_fill_preserve (cr);
