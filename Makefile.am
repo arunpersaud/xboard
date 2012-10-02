@@ -31,6 +31,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xoptions.c dialogs.c dialogs.h \
 		 $(ZPY)
 SUBDIRS = po
+xboard_LDFLAGS = `pkg-config --libs cairo`
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@
 EXTRA_DIST = pixmaps bitmaps sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
@@ -40,7 +41,7 @@ EXTRA_DIST = pixmaps bitmaps sounds winboard \
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' `pkg-config --libs cairo` @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
 	    -DBITMAPDIR='"$(datadir)/games/xboard/bitmaps/default"' \
 	    -DLOCALEDIR='"$(localedir)"'
 
