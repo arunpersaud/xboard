@@ -3878,14 +3878,32 @@ SetDragPiece (AnimNr anr, ChessSquare piece)
 
 /* [AS] Arrow highlighting support */
 
-void
-DrawPolygon (Pnt arrow[], int nr)
-{
-    XPoint pts[10];
+void DrawPolygon(Pnt arrow[], int nr)
+{   // for now on own surface; eventually this should become a global that is only destroyed on resize
+    cairo_surface_t *boardSurface;
+    cairo_t *cr;
     int i;
-    for(i=0; i<10; i++) pts[i].x = arrow[i].x, pts[i].y = arrow[i].y;
-    XFillPolygon(xDisplay, xBoardWindow, highlineGC, pts, nr, Nonconvex, CoordModeOrigin);
-    if(appData.monoMode) arrow[nr] = arrow[0], XDrawLines(xDisplay, xBoardWindow, darkSquareGC, pts, nr+1, CoordModeOrigin);
+    int w = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    int h = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+    boardSurface = cairo_xlib_surface_create(xDisplay, xBoardWindow, DefaultVisual(xDisplay, 0), w, h);
+    cr = cairo_create (boardSurface);
+    cairo_move_to (cr, arrow[nr-1].x, arrow[nr-1].y);
+    for (i=0;i<nr;i++) {
+        cairo_line_to(cr, arrow[i].x, arrow[i].y);
+    }
+    if(appData.monoMode) { // should we always outline arrow?
+        cairo_line_to(cr, arrow[0].x, arrow[0].y);
+        cairo_set_line_width(cr, 2);
+        cairo_set_source_rgba(cr, 0, 0, 0, 1.0);
+        cairo_stroke_preserve(cr);
+    }
+    cairo_set_line_width(cr, 2);
+    cairo_set_source_rgba(cr, 1, 1, 0, 1.0);
+    cairo_fill(cr);
+
+    /* free memory */
+    cairo_destroy (cr);
+    cairo_surface_destroy (boardSurface);
 }
 
 static void
