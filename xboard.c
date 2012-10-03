@@ -2889,12 +2889,36 @@ DrawSeekClose ()
 }
 
 void
-DrawGrid ()
+DrawGrid()
 {
-	  XDrawSegments(xDisplay, xBoardWindow, lineGC,
-			gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
-}
+  /* draws a grid starting around Nx, Ny squares starting at x,y */
+  int i;
+  cairo_t *cr;
 
+  DrawSeekOpen();
+  /* get a cairo_t */
+  cr = cairo_create (cs);
+
+  cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+  cairo_set_line_width (cr, lineGap);
+
+  /* TODO: use appdata colors */
+  cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
+
+  /* lines in X */
+  for (i = 0; i < BOARD_WIDTH + BOARD_HEIGHT + 2; i++)
+    {
+      cairo_move_to (cr, gridSegments[i].x1, gridSegments[i].y1);
+      cairo_line_to (cr, gridSegments[i].x2, gridSegments[i].y2);
+      cairo_stroke (cr);
+    }
+
+  /* free memory */
+  cairo_destroy (cr);
+  DrawSeekClose();
+
+  return;
+}
 
 /*
  * event handler for redrawing the board
