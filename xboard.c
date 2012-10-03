@@ -2794,38 +2794,98 @@ EventProc (Widget widget, caddr_t unused, XEvent *event)
 	DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
 }
 
-// [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph
-void
-DrawSeekAxis (int x, int y, int xTo, int yTo)
+// [HGM] seekgraph: some low-level drawing routines (by JC, mostly)
+
+static cairo_surface_t *cs; // to keep out of back-end :-(
+
+void DrawSeekAxis( int x, int y, int xTo, int yTo )
 {
-      XDrawLine(xDisplay, xBoardWindow, lineGC, x, y, xTo, yTo);
+    cairo_t *cr;
+
+    /* get a cairo_t */
+    cr = cairo_create (cs);
+
+    cairo_move_to (cr, x, y);
+    cairo_line_to(cr, xTo, yTo );
+
+    cairo_set_line_width(cr, 2);
+    cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
+    cairo_stroke(cr);
+
+    /* free memory */
+    cairo_destroy (cr);
 }
 
-void
-DrawSeekBackground (int left, int top, int right, int bottom)
+void DrawSeekBackground( int left, int top, int right, int bottom )
 {
-    XFillRectangle(xDisplay, xBoardWindow, lightSquareGC, left, top, right-left, bottom-top);
+    cairo_t *cr = cairo_create (cs);
+
+    cairo_rectangle (cr, left, top, right-left, bottom-top);
+
+    cairo_set_source_rgba(cr, 0.8, 0.8, 0.4,1.0);
+    cairo_fill(cr);
+
+    /* free memory */
+    cairo_destroy (cr);
 }
 
-void
-DrawSeekText (char *buf, int x, int y)
+void DrawSeekText(char *buf, int x, int y)
 {
-    XDrawString(xDisplay, xBoardWindow, coordGC, x, y+4, buf, strlen(buf));
+    cairo_t *cr = cairo_create (cs);
+
+    cairo_select_font_face (cr, "Sans",
+			    CAIRO_FONT_SLANT_NORMAL,
+			    CAIRO_FONT_WEIGHT_NORMAL);
+
+    cairo_set_font_size (cr, 12.0);
+
+    cairo_move_to (cr, x, y+4);
+    cairo_show_text( cr, buf);
+
+    cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+    cairo_stroke(cr);
+
+    /* free memory */
+    cairo_destroy (cr);
 }
 
-void
-DrawSeekDot (int x, int y, int colorNr)
+void DrawSeekDot(int x, int y, int colorNr)
 {
+    cairo_t *cr = cairo_create (cs);
     int square = colorNr & 0x80;
-    GC color;
     colorNr &= 0x7F;
-    color = colorNr == 0 ? prelineGC : colorNr == 1 ? darkSquareGC : highlineGC;
+
     if(square)
-	XFillRectangle(xDisplay, xBoardWindow, color,
-		x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
+	cairo_rectangle (cr, x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
     else
-	XFillArc(xDisplay, xBoardWindow, color,
-		x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
+	cairo_arc(cr, x, y, squareSize/8, 0.0, 2*M_PI);
+
+    cairo_set_line_width(cr, 2);
+    cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+    cairo_stroke_preserve(cr);
+    switch (colorNr) {
+      case 0: cairo_set_source_rgba(cr, 1.0, 0, 0,1.0);	break;
+      case 1: cairo_set_source_rgba (cr, 0.0, 0.7, 0.2, 1.0); break;
+      default: cairo_set_source_rgba (cr, 1.0, 1.0, 0.0, 1.0); break;
+    }
+    cairo_fill(cr);
+
+    /* free memory */
+    cairo_destroy (cr);
+}
+
+void
+DrawSeekOpen ()
+{
+    int boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    int boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+    cs = cairo_xlib_surface_create(xDisplay, xBoardWindow, DefaultVisual(xDisplay, 0), boardWidth, boardHeight);
+}
+
+void
+DrawSeekClose ()
+{
+    cairo_surface_destroy(cs);
 }
 
 void
