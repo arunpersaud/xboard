@@ -2659,14 +2659,22 @@ ChooseDrawFunc ()
 void
 DrawDot (int marker, int x, int y, int r)
 {
+	cairo_t *cr;
+	DrawSeekOpen();
+	cr = cairo_create(cs);
+	cairo_arc(cr, x+r/2, y+r/2, r/2, 0.0, 2*M_PI);
 	if(appData.monoMode) {
-	    XFillArc(xDisplay, xBoardWindow, marker == 2 ? darkSquareGC : lightSquareGC,
-		    x, y, r, r, 0, 64*360);
-	    XDrawArc(xDisplay, xBoardWindow, marker == 2 ? lightSquareGC : darkSquareGC,
-		    x, y, r, r, 0, 64*360);
-	} else
-	XFillArc(xDisplay, xBoardWindow, marker == 2 ? prelineGC : highlineGC,
-		    x, y, r, r, 0, 64*360);
+	    SetPen(cr, 2, marker == 2 ? "#000000" : "#FFFFFF", 0);
+	    cairo_stroke_preserve(cr);
+	    SetPen(cr, 2, marker == 2 ? "#FFFFFF" : "#000000", 0);
+	} else {
+	    SetPen(cr, 2, marker == 2 ? "#FF0000" : "#FFFF00", 0);
+	}
+	cairo_fill(cr);
+	cairo_stroke(cr);
+
+	cairo_destroy(cr);
+	DrawSeekClose();
 }
 
 void
