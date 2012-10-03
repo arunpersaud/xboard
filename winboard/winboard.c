@@ -3555,6 +3555,14 @@ void DrawSeekDot(int x, int y, int color)
 	    SelectObject(hdcSeek, oldBrush);
 }
 
+void DrawSeekOpen()
+{
+}
+
+void DrawSeekClose()
+{
+}
+
 VOID
 HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 {

@@ -2511,6 +2511,14 @@ PlotSeekAd (int i)
 }
 
 void
+PlotSingleSeekAd (int i)
+{
+	DrawSeekOpen();
+	PlotSeekAd(i);
+	DrawSeekClose();
+}
+
+void
 AddAd (char *handle, char *rating, int base, int inc,  char rated, char *type, int nr, Boolean plot)
 {
 	char buf[MSG_SIZ], *ext = "";
@@ -2530,7 +2538,7 @@ AddAd (char *handle, char *rating, int base, int inc,  char rated, char *type, i
 	    seekNrList[nrOfSeekAds] = nr;
 	    zList[nrOfSeekAds] = 0;
 	    seekAdList[nrOfSeekAds++] = StrSave(buf);
-	    if(plot) PlotSeekAd(nrOfSeekAds-1);
+	    if(plot) PlotSingleSeekAd(nrOfSeekAds-1);
 	}
 }
 
@@ -2594,6 +2602,7 @@ DrawSeekGraph ()
     h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
     w = BOARD_WIDTH  * (squareSize + lineGap) + lineGap;
 
+    DrawSeekOpen();
     DrawSeekBackground(0, 0, w, h);
     DrawSeekAxis(hMargin, h-1-vMargin, w-5, h-1-vMargin);
     DrawSeekAxis(hMargin, h-1-vMargin, hMargin, 5);
@@ -2618,6 +2627,7 @@ DrawSeekGraph ()
 	}
     }
     for(i=0; i<nrOfSeekAds; i++) PlotSeekAd(i);
+    DrawSeekClose();
     return TRUE;
 }
 
