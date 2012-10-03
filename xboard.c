@@ -204,6 +204,7 @@ extern char *getenv();
 #include "childio.h"
 #include "xgamelist.h"
 #include "xhistory.h"
+#include "xevalgraph.h"
 #include "xedittags.h"
 #include "menus.h"
 #include "board.h"
@@ -2425,15 +2426,21 @@ do_flash_delay (unsigned long msec)
     TimeDelay(msec);
 }
 
+static cairo_surface_t *cs; // to keep out of back-end :-(
+
 void
 DrawBorder (int x, int y, int type)
 {
-    GC gc = lineGC;
+    cairo_t *cr;
+    DrawSeekOpen();
 
-    if(type == 1) gc = highlineGC; else if(type == 2) gc = prelineGC;
+    cr = cairo_create(cs);
+    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+    cairo_rectangle(cr, x, y, squareSize+lineGap, squareSize+lineGap);
+    SetPen(cr, lineGap, type == 1 ? appData.highlightSquareColor : appData.premoveHighlightColor, 0);
+    cairo_stroke(cr);
 
-    XDrawRectangle(xDisplay, xBoardWindow, gc, x, y,
-		   squareSize+lineGap, squareSize+lineGap);
+    DrawSeekClose();
 }
 
 static int
@@ -2794,8 +2801,6 @@ EventProc (Widget widget, caddr_t unused, XEvent *event)
 }
 
 // [HGM] seekgraph: some low-level drawing routines (by JC, mostly)
-
-static cairo_surface_t *cs; // to keep out of back-end :-(
 
 float
 Color (char *col, int n)
