@@ -77,6 +77,7 @@ extern char *getenv();
 #include "menus.h"
 #include "xboard.h"
 #include "evalgraph.h"
+#include "xevalgraph.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS
@@ -112,24 +113,6 @@ static Window eGraphWindow;
 static cairo_surface_t *cs;
 
 static Option *EvalCallback P((int button, int x, int y));
-
-static float
-Color (char *col, int n)
-{
-  int c;
-  sscanf(col, "#%x", &c);
-  c = c >> 4*n & 255;
-  return c/255.;
-}
-
-static void
-SetPen(cairo_t *cr, float w, char *col, int dash) {
-  static const double dotted[] = {4.0, 4.0};
-  static int len  = sizeof(dotted) / sizeof(dotted[0]);
-  cairo_set_line_width (cr, w);
-  cairo_set_source_rgba (cr, Color(col, 4), Color(col, 2), Color(col, 0), 1.0);
-  if(dash) cairo_set_dash (cr, dotted, len, 0.0);
-}
 
 static void
 ChoosePen(cairo_t *cr, int i)
