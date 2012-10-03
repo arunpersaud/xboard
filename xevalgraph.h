@@ -25,5 +25,7 @@
 #define XB_XEVALGRAPH
 
 void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
+float Color P((char *col, int n));
+void SetPen P((cairo_t *cr, float w, char *col, int dash));
 
 #endif

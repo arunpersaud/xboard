@@ -61,6 +61,8 @@
 #include <sys/stat.h>
 #include <pwd.h>
 #include <math.h>
+#include <cairo/cairo.h>
+#include <cairo/cairo-xlib.h>
 
 #if !OMIT_SOCKETS
 # if HAVE_SYS_SOCKET_H
@@ -2452,9 +2454,6 @@ CutOutSquare (int x, int y, int *x0, int *y0, int  kind)
     return 1;
 }
 
-#include <cairo/cairo.h>
-#include <cairo/cairo-xlib.h>
-
 void
 DrawLogo (void *handle, void *logo)
 {
@@ -2798,6 +2797,25 @@ EventProc (Widget widget, caddr_t unused, XEvent *event)
 
 static cairo_surface_t *cs; // to keep out of back-end :-(
 
+float
+Color (char *col, int n)
+{
+  int c;
+  sscanf(col, "#%x", &c);
+  c = c >> 4*n & 255;
+  return c/255.;
+}
+
+void
+SetPen (cairo_t *cr, float w, char *col, int dash)
+{
+  static const double dotted[] = {4.0, 4.0};
+  static int len  = sizeof(dotted) / sizeof(dotted[0]);
+  cairo_set_line_width (cr, w);
+  cairo_set_source_rgba (cr, Color(col, 4), Color(col, 2), Color(col, 0), 1.0);
+  if(dash) cairo_set_dash (cr, dotted, len, 0.0);
+}
+
 void DrawSeekAxis( int x, int y, int xTo, int yTo )
 {
     cairo_t *cr;
@@ -2808,8 +2826,7 @@ void DrawSeekAxis( int x, int y, int xTo, int yTo )
     cairo_move_to (cr, x, y);
     cairo_line_to(cr, xTo, yTo );
 
-    cairo_set_line_width(cr, 2);
-    cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
+    SetPen(cr, 2, "#000000", 0);
     cairo_stroke(cr);
 
     /* free memory */
@@ -2860,8 +2877,7 @@ void DrawSeekDot(int x, int y, int colorNr)
     else
 	cairo_arc(cr, x, y, squareSize/8, 0.0, 2*M_PI);
 
-    cairo_set_line_width(cr, 2);
-    cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+    SetPen(cr, 2, "#000000", 0);
     cairo_stroke_preserve(cr);
     switch (colorNr) {
       case 0: cairo_set_source_rgba(cr, 1.0, 0, 0,1.0);	break;
@@ -2900,10 +2916,7 @@ DrawGrid()
   cr = cairo_create (cs);
 
   cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-  cairo_set_line_width (cr, lineGap);
-
-  /* TODO: use appdata colors */
-  cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
+  SetPen(cr, lineGap, "#000000", 0);
 
   /* lines in X */
   for (i = 0; i < BOARD_WIDTH + BOARD_HEIGHT + 2; i++)
@@ -3917,12 +3930,10 @@ void DrawPolygon(Pnt arrow[], int nr)
     }
     if(appData.monoMode) { // should we always outline arrow?
         cairo_line_to(cr, arrow[0].x, arrow[0].y);
-        cairo_set_line_width(cr, 2);
-        cairo_set_source_rgba(cr, 0, 0, 0, 1.0);
+        SetPen(cr, 2, "#000000", 0);
         cairo_stroke_preserve(cr);
     }
-    cairo_set_line_width(cr, 2);
-    cairo_set_source_rgba(cr, 1, 1, 0, 1.0);
+    SetPen(cr, 2, appData.highlightSquareColor, 0);
     cairo_fill(cr);
 
     /* free memory */
