@@ -340,9 +340,11 @@ WindowPlacement wpTags;
 
 #define SOLID 0
 #define OUTLINE 1
-cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
-cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
-cairo_surface_t *pngBoardBitmap[2];
+Boolean cairoAnimate = True;
+static cairo_surface_t *csBoardWindow;
+static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
+static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
+static cairo_surface_t *pngBoardBitmap[2];
 Pixmap pieceBitmap[2][(int)BlackPawn];
 Pixmap pieceBitmap2[2][(int)BlackPawn+4];       /* [HGM] pieces */
 Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD actually used*/
@@ -2494,21 +2496,17 @@ do_flash_delay (unsigned long msec)
     TimeDelay(msec);
 }
 
-static cairo_surface_t *cs; // to keep out of back-end :-(
-
 void
 DrawBorder (int x, int y, int type)
 {
     cairo_t *cr;
     DrawSeekOpen();
 
-    cr = cairo_create(cs);
+    cr = cairo_create(csBoardWindow);
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
     cairo_rectangle(cr, x, y, squareSize+lineGap, squareSize+lineGap);
     SetPen(cr, lineGap, type == 1 ? appData.highlightSquareColor : appData.premoveHighlightColor, 0);
     cairo_stroke(cr);
-
-    DrawSeekClose();
 }
 
 static int
@@ -2557,15 +2555,14 @@ BlankSquare (int x, int y, int color, ChessSquare piece, Drawable dest, int fac)
     if (useImages && color != 2 && (useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
 	if(pngBoardBitmap[color]) {
 	    cairo_t *cr;
-	    if(!fac) return; // for now do not use on animate buffer, but ignore dest and draw always to board
+	    if(!fac && !cairoAnimate) return;
 	    DrawSeekOpen();
-	    cr = cairo_create (cs);
+	    cr = cairo_create (fac ? csBoardWindow : (cairo_surface_t *) dest);
 	    cairo_set_source_surface (cr, pngBoardBitmap[color], x*fac - x0, y*fac - y0);
 	    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	    cairo_rectangle (cr, x*fac, y*fac, squareSize, squareSize);
 	    cairo_fill (cr);
 	    cairo_destroy (cr);
-	    DrawSeekClose();
 	} else
 	XCopyArea(xDisplay, xpmBoardBitmap[color], dest, wlPieceGC, x0, y0,
 		  squareSize, squareSize, x*fac, y*fac);
@@ -2732,11 +2729,10 @@ pngDrawPiece (ChessSquare piece, int square_color, int x, int y, Drawable dest)
     if(appData.upsideDown && flipView) { p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
     BlankSquare(x, y, square_color, piece, dest, 1); // erase previous contents with background
     DrawSeekOpen();
-    cr = cairo_create (cs);
+    cr = cairo_create (csBoardWindow);
     cairo_set_source_surface (cr, pngPieceBitmaps[kind][piece], x, y);
     cairo_paint(cr);
     cairo_destroy (cr);
-    DrawSeekClose();
 }
 
 typedef void (*DrawFunc)();
@@ -2765,7 +2761,7 @@ DrawDot (int marker, int x, int y, int r)
 {
 	cairo_t *cr;
 	DrawSeekOpen();
-	cr = cairo_create(cs);
+	cr = cairo_create(csBoardWindow);
 	cairo_arc(cr, x+r/2, y+r/2, r/2, 0.0, 2*M_PI);
 	if(appData.monoMode) {
 	    SetPen(cr, 2, marker == 2 ? "#000000" : "#FFFFFF", 0);
@@ -2778,7 +2774,6 @@ DrawDot (int marker, int x, int y, int r)
 	cairo_stroke(cr);
 
 	cairo_destroy(cr);
-	DrawSeekClose();
 }
 
 void
@@ -2938,7 +2933,7 @@ void DrawSeekAxis( int x, int y, int xTo, int yTo )
     cairo_t *cr;
 
     /* get a cairo_t */
-    cr = cairo_create (cs);
+    cr = cairo_create (csBoardWindow);
 
     cairo_move_to (cr, x, y);
     cairo_line_to(cr, xTo, yTo );
@@ -2952,7 +2947,7 @@ void DrawSeekAxis( int x, int y, int xTo, int yTo )
 
 void DrawSeekBackground( int left, int top, int right, int bottom )
 {
-    cairo_t *cr = cairo_create (cs);
+    cairo_t *cr = cairo_create (csBoardWindow);
 
     cairo_rectangle (cr, left, top, right-left, bottom-top);
 
@@ -2965,7 +2960,7 @@ void DrawSeekBackground( int left, int top, int right, int bottom )
 
 void DrawSeekText(char *buf, int x, int y)
 {
-    cairo_t *cr = cairo_create (cs);
+    cairo_t *cr = cairo_create (csBoardWindow);
 
     cairo_select_font_face (cr, "Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
@@ -2985,7 +2980,7 @@ void DrawSeekText(char *buf, int x, int y)
 
 void DrawSeekDot(int x, int y, int colorNr)
 {
-    cairo_t *cr = cairo_create (cs);
+    cairo_t *cr = cairo_create (csBoardWindow);
     int square = colorNr & 0x80;
     colorNr &= 0x7F;
 
@@ -3012,13 +3007,12 @@ DrawSeekOpen ()
 {
     int boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     int boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    cs = cairo_xlib_surface_create(xDisplay, xBoardWindow, DefaultVisual(xDisplay, 0), boardWidth, boardHeight);
+    if(!csBoardWindow) csBoardWindow = cairo_xlib_surface_create(xDisplay, xBoardWindow, DefaultVisual(xDisplay, 0), boardWidth, boardHeight);
 }
 
 void
 DrawSeekClose ()
 {
-    cairo_surface_destroy(cs);
 }
 
 void
@@ -3030,7 +3024,7 @@ DrawGrid()
 
   DrawSeekOpen();
   /* get a cairo_t */
-  cr = cairo_create (cs);
+  cr = cairo_create (csBoardWindow);
 
   cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
   SetPen(cr, lineGap, "#000000", 0);
@@ -3045,7 +3039,6 @@ DrawGrid()
 
   /* free memory */
   cairo_destroy (cr);
-  DrawSeekClose();
 
   return;
 }
@@ -3761,6 +3754,7 @@ RemoveInputSource (InputSourceRef isr)
 static int xpmDone = 0;
 static Pixmap animBufs[3*NrOfAnims]; // newBuf, saveBuf
 static GC animGCs[3*NrOfAnims]; // blitGC, pieceGC, outlineGC;
+static cairo_surface_t *c_animBufs[3*NrOfAnims]; // newBuf, saveBuf
 
 static void
 CreateAnimMasks (int pieceDepth)
@@ -3845,6 +3839,13 @@ InitAnimState (AnimNr anr, XWindowAttributes *info)
 {
   XtGCMask  mask;
   XGCValues values;
+
+  if(cairoAnimate) {
+    DrawSeekOpen(); // set cs to board widget
+    c_animBufs[anr+4] = csBoardWindow;
+    c_animBufs[anr+2] = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
+    c_animBufs[anr] = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
+  }
 
   /* Each buffer is square size, same depth as window */
   animBufs[anr+4] = xBoardWindow;
@@ -4002,21 +4003,48 @@ OverlayPiece (ChessSquare piece, GC clip, GC outline,  Drawable dest)
   }
 }
 
+static void
+CairoOverlayPiece (ChessSquare piece, cairo_surface_t *dest)
+{
+  static ChessSquare oldPiece = -1;
+  static cairo_t *pieceSource;
+  if(piece != oldPiece) { // try make it faster by only changing cr if we need other piece
+    if(pieceSource) cairo_destroy (pieceSource);
+    pieceSource = cairo_create (dest);
+    cairo_set_source_surface (pieceSource, pngPieceBitmaps[!White(piece)][piece % BlackPawn], 0, 0);
+    oldPiece = piece;
+  }
+  cairo_paint(pieceSource);
+}
+
 void
 InsertPiece (AnimNr anr, ChessSquare piece)
 {
+  if(cairoAnimate) {
+    CairoOverlayPiece(piece, c_animBufs[anr]);
+  } else
   OverlayPiece(piece, animGCs[anr+2], animGCs[anr+4], animBufs[anr]);
 }
 
 void
 DrawBlank (AnimNr anr, int x, int y, int startColor)
 {
+    if(cairoAnimate)
+    BlankSquare(x, y, startColor, EmptySquare, (Drawable) c_animBufs[anr+2], 0);
+    else
     BlankSquare(x, y, startColor, EmptySquare, animBufs[anr+2], 0);
 }
 
 void CopyRectangle (AnimNr anr, int srcBuf, int destBuf,
 		 int srcX, int srcY, int width, int height, int destX, int destY)
 {
+    if(cairoAnimate) {
+	cairo_t *cr = cairo_create (c_animBufs[anr+destBuf]);
+	cairo_set_source_surface (cr, c_animBufs[anr+srcBuf], destX - srcX, destY - srcY);
+	cairo_rectangle (cr, destX, destY, width, height);
+	cairo_fill (cr);
+	cairo_destroy (cr);
+    } else
     XCopyArea(xDisplay, animBufs[anr+srcBuf], animBufs[anr+destBuf], animGCs[anr],
 		srcX, srcY, width, height, destX, destY);
 }
@@ -4025,6 +4053,7 @@ void
 SetDragPiece (AnimNr anr, ChessSquare piece)
 {
   Pixmap mask;
+  if(cairoAnimate) return;
   /* The piece will be drawn using its own bitmap as a matte	*/
   SelectGCMask(piece, &animGCs[anr+2], &animGCs[anr+4], &mask);
   XSetClipMask(xDisplay, animGCs[anr+2], mask);
