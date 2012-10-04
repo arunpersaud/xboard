@@ -342,6 +342,7 @@ WindowPlacement wpTags;
 #define OUTLINE 1
 cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
+cairo_surface_t *pngBoardBitmap[2];
 Pixmap pieceBitmap[2][(int)BlackPawn];
 Pixmap pieceBitmap2[2][(int)BlackPawn+4];       /* [HGM] pieces */
 Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD actually used*/
@@ -2058,6 +2059,14 @@ CreateXPMBoard (char *s, int kind)
     XpmAttributes attr;
     attr.valuemask = 0;
     if(!appData.useBitmaps || s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
+    if(strstr(s, ".png")) {
+	cairo_surface_t *img = cairo_image_surface_create_from_png (s);
+	if(img) {
+	    useTexture |= kind + 1; pngBoardBitmap[kind] = img;
+	    textureW[kind] = cairo_image_surface_get_width (img);
+	    textureH[kind] = cairo_image_surface_get_height (img);
+	}
+    } else
     if (XpmReadFileToPixmap(xDisplay, xBoardWindow, s, &(xpmBoardBitmap[kind]), NULL, &attr) == 0) {
 	useTexture |= kind + 1; textureW[kind] = attr.width; textureH[kind] = attr.height;
     }
@@ -2546,6 +2555,18 @@ BlankSquare (int x, int y, int color, ChessSquare piece, Drawable dest, int fac)
 {   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
     int x0, y0;
     if (useImages && color != 2 && (useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
+	if(pngBoardBitmap[color]) {
+	    cairo_t *cr;
+	    if(!fac) return; // for now do not use on animate buffer, but ignore dest and draw always to board
+	    DrawSeekOpen();
+	    cr = cairo_create (cs);
+	    cairo_set_source_surface (cr, pngBoardBitmap[color], x*fac - x0, y*fac - y0);
+	    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+	    cairo_rectangle (cr, x*fac, y*fac, squareSize, squareSize);
+	    cairo_fill (cr);
+	    cairo_destroy (cr);
+	    DrawSeekClose();
+	} else
 	XCopyArea(xDisplay, xpmBoardBitmap[color], dest, wlPieceGC, x0, y0,
 		  squareSize, squareSize, x*fac, y*fac);
     } else
