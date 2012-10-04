@@ -237,6 +237,7 @@ static void CreateGCs P((int redo));
 static void CreateAnyPieces P((void));
 void CreateXIMPieces P((void));
 void CreateXPMPieces P((void));
+void CreatePNGPieces P((void));
 void CreateXPMBoard P((char *s, int n));
 void CreatePieces P((void));
 Widget CreateMenuBar P((Menu *mb, int boardWidth));
@@ -339,6 +340,8 @@ WindowPlacement wpTags;
 
 #define SOLID 0
 #define OUTLINE 1
+cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
+cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
 Pixmap pieceBitmap[2][(int)BlackPawn];
 Pixmap pieceBitmap2[2][(int)BlackPawn+4];       /* [HGM] pieces */
 Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD actually used*/
@@ -1029,6 +1032,12 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 	}
       }
     }
+    for(i=0; i<2; i++) {
+	int p;
+printf("Copy pieces\n");
+	for(p=0; p<=(int)WhiteKing; p++)
+	   pngPieceBitmaps[i][p] = pngPieceBitmaps2[i][p]; // defaults
+    }
     oldMono = -10; // kludge to force recreation of animation masks
     oldVariant = gameInfo.variant;
   }
@@ -1090,6 +1099,9 @@ CreateAnyPieces ()
       CreateXPMPieces();
       CreateXPMBoard(appData.liteBackTextureFile, 1);
       CreateXPMBoard(appData.darkBackTextureFile, 0);
+    }
+    if (appData.pngDirectory[0] != NULLCHAR) { // for now do in parallel
+      CreatePNGPieces();
     }
 #else
     CreateXIMPieces();
@@ -2206,6 +2218,53 @@ CreateXPMPieces ()
 }
 #endif /* HAVE_LIBXPM */
 
+char *pngPieceNames[] = // must be in same order as internal piece encoding
+{ "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner", 
+  "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "King", 
+  "GoldKnight", "GoldLance", "GoldPawn", "GoldSilver", NULL
+};
+
+void
+ScaleOnePiece (char *name, int color, int piece)
+{
+  int w, h;
+  char buf[MSG_SIZ];
+  cairo_surface_t *img, *cs;
+  cairo_t *cr;
+  static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
+
+  if(pngPieceImages[color][piece] == NULL) { // if PNG file for this piece was not yet read, read it now and store it
+    snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
+    pngPieceImages[color][piece] = img = cairo_image_surface_create_from_png (buf);
+    w = cairo_image_surface_get_width (img);
+    h = cairo_image_surface_get_height (img);
+    if(w != 256 || h != 256) { printf("Bad png size %dx%d in %s\n", w, h, buf); exit(1); }
+  }
+
+  // create new bitmap to hold scaled piece image (and remove any old)
+  if(pngPieceBitmaps2[color][piece]) cairo_surface_destroy (pngPieceBitmaps2[color][piece]);
+  pngPieceBitmaps2[color][piece] = cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
+  if(piece <= WhiteKing) pngPieceBitmaps[color][piece] = cs;
+  // scaled copying of the raw png image
+  cr = cairo_create(cs);
+  cairo_scale(cr, squareSize/256., squareSize/256.);
+  cairo_set_source_surface (cr, img, 0, 0);
+  cairo_paint (cr);
+  cairo_destroy (cr);
+  cairo_surface_destroy (img);
+}
+
+void
+CreatePNGPieces ()
+{
+  int p;
+
+  for(p=0; pngPieceNames[p]; p++) {
+    ScaleOnePiece(pngPieceNames[p], 0, p);
+    ScaleOnePiece(pngPieceNames[p], 1, p);
+  }
+}
+
 #if HAVE_LIBXPM
 /* No built-in bitmaps */
 void CreatePieces()
@@ -2637,6 +2696,28 @@ colorDrawPieceImage (ChessSquare piece, int square_color, int x, int y, Drawable
 	      squareSize, squareSize, x, y);
 }
 
+static void
+pngDrawPiece (ChessSquare piece, int square_color, int x, int y, Drawable dest)
+{
+    int kind, p = piece;
+    cairo_t *cr;
+
+    if ((int)piece < (int) BlackPawn) {
+	kind = 0;
+    } else {
+	kind = 1;
+	piece -= BlackPawn;
+    }
+    if(appData.upsideDown && flipView) { p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
+    BlankSquare(x, y, square_color, piece, dest, 1); // erase previous contents with background
+    DrawSeekOpen();
+    cr = cairo_create (cs);
+    cairo_set_source_surface (cr, pngPieceBitmaps[kind][piece], x, y);
+    cairo_paint(cr);
+    cairo_destroy (cr);
+    DrawSeekClose();
+}
+
 typedef void (*DrawFunc)();
 
 DrawFunc
@@ -2648,6 +2729,8 @@ ChooseDrawFunc ()
 	} else {
 	    return monoDrawPiece;
 	}
+    } else if(appData.pngDirectory[0]) {
+	return pngDrawPiece;
     } else {
 	if (useImages)
 	  return colorDrawPieceImage;
