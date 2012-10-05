@@ -927,6 +927,15 @@ ConvertToLine (int argc, char **argv)
 
 //--------------------------------------------------------------------------------------------
 
+void
+NewSurfaces ()
+{
+    // delete surfaces after size becomes invalid, so they will be recreated
+    if(csBoardWindow) cairo_surface_destroy(csBoardWindow);
+    if(csBoardBackup) cairo_surface_destroy(csBoardBackup);
+    csBoardWindow = csBoardBackup = NULL;
+}
+
 #define BoardSize int
 void
 InitDrawingSizes (BoardSize boardSize, int flags)
@@ -950,15 +959,16 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 
     oldWidth = boardWidth; oldHeight = boardHeight;
     CreateGrid();
+    NewSurfaces();
 
     /*
      * Inhibit shell resizing.
      */
-    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW ;
+    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
-    XtSetValues(shellWidget, &shellArgs[0], 6);
+    XtSetValues(shellWidget, &shellArgs[0], cairoAnimate ? 2 : 6);
 
     XSync(xDisplay, False);
     DelayedDrag();
@@ -1045,7 +1055,7 @@ printf("Copy pieces\n");
     oldVariant = gameInfo.variant;
   }
 #if HAVE_LIBXPM
-  if(appData.monoMode != oldMono)
+  if(appData.monoMode != oldMono || cairoAnimate)
     CreateAnimVars();
 #endif
   oldMono = appData.monoMode;
@@ -1528,7 +1538,7 @@ XBoard square size (hint): %d\n\
     XtGetValues(shellWidget, shellArgs, 2);
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
-    XtSetValues(shellWidget, &shellArgs[2], 4);
+    if(!cairoAnimate) XtSetValues(shellWidget, &shellArgs[2], 4);
     marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
     marginH =  h - boardHeight;
 
@@ -2244,14 +2254,13 @@ ScaleOnePiece (char *name, int color, int piece)
   cairo_t *cr;
   static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 
-  if(pngPieceImages[color][piece] == NULL) { // if PNG file for this piece was not yet read, read it now and store it
+  if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
     snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
     pngPieceImages[color][piece] = img = cairo_image_surface_create_from_png (buf);
     w = cairo_image_surface_get_width (img);
     h = cairo_image_surface_get_height (img);
     if(w != 64 || h != 64) { printf("Bad png size %dx%d in %s\n", w, h, buf); exit(1); }
   }
-
   // create new bitmap to hold scaled piece image (and remove any old)
   if(pngPieceBitmaps2[color][piece]) cairo_surface_destroy (pngPieceBitmaps2[color][piece]);
   pngPieceBitmaps2[color][piece] = cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
@@ -2262,7 +2271,6 @@ ScaleOnePiece (char *name, int color, int piece)
   cairo_set_source_surface (cr, img, 0, 0);
   cairo_paint (cr);
   cairo_destroy (cr);
-  cairo_surface_destroy (img);
 }
 
 void
@@ -2899,15 +2907,37 @@ CoDrag (Widget sh, WindowPlacement *wp)
     XtSetValues(sh, args, j);
 }
 
+void
+ReSize (WindowPlacement *wp)
+{
+	int sqx, sqy;
+	if(wp->width == wpMain.width && wp->height == wpMain.height) return; // not sized
+	sqx = (wp->width  - lineGap - marginW) / BOARD_WIDTH - lineGap;
+	sqy = (wp->height - lineGap - marginH) / BOARD_HEIGHT - lineGap;
+	if(sqy < sqx) sqx = sqy;
+	if(sqx != squareSize) {
+	    squareSize = sqx; // adopt new square size
+	    NewSurfaces();
+	    CreatePNGPieces(); // make newly scaled pieces
+	    InitDrawingSizes(0, 0); // creates grid etc.
+	}
+}
+
 static XtIntervalId delayedDragID = 0;
 
 void
 DragProc ()
 {
+	static int busy;
+	if(busy) return;
+
+	busy = 1;
 	GetActualPlacement(shellWidget, &wpNew);
 	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
-	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) // not sized
-	    return; // false alarm
+	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) { // not sized
+	    busy = 0; return; // false alarm
+	}
+	ReSize(&wpNew);
 	if(shellUp[EngOutDlg]) CoDrag(shells[EngOutDlg], &wpEngineOutput);
 	if(shellUp[HistoryDlg]) CoDrag(shells[HistoryDlg], &wpMoveHistory);
 	if(shellUp[EvalGraphDlg]) CoDrag(shells[EvalGraphDlg], &wpEvalGraph);
@@ -2915,6 +2945,7 @@ DragProc ()
 	wpMain = wpNew;
 	DrawPosition(True, NULL);
 	delayedDragID = 0; // now drag executed, make sure next DelayedDrag will not cancel timer event (which could now be used by other)
+	busy = 0;
 }
 
 
@@ -2923,7 +2954,7 @@ DelayedDrag ()
 {
     if(delayedDragID) XtRemoveTimeOut(delayedDragID); // cancel pending
     delayedDragID =
-      XtAppAddTimeOut(appContext, 50, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
+      XtAppAddTimeOut(appContext, 100, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
 }
 
 void
@@ -3878,6 +3909,8 @@ InitAnimState (AnimNr anr, XWindowAttributes *info)
 
   if(cairoAnimate) {
     DrawSeekOpen(); // set cs to board widget
+    if(c_animBufs[anr]) cairo_surface_destroy (c_animBufs[anr]);
+    if(c_animBufs[anr+2]) cairo_surface_destroy (c_animBufs[anr+2]);
     c_animBufs[anr+4] = csBoardWindow;
     c_animBufs[anr+2] = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
     c_animBufs[anr] = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
@@ -3913,7 +3946,7 @@ CreateAnimVars ()
 {
   XWindowAttributes info;
 
-  if (xpmDone && gameInfo.variant == oldVariant) return;
+  if (!cairoAnimate && xpmDone && gameInfo.variant == oldVariant) return;
   if(xpmDone) oldVariant = gameInfo.variant; // first time pieces might not be created yet
   XGetWindowAttributes(xDisplay, xBoardWindow, &info);
 
@@ -3921,7 +3954,7 @@ CreateAnimVars ()
   InitAnimState(Player, &info);
 
   /* For XPM pieces, we need bitmaps to use as masks. */
-  if (useImages)
+  if (useImages & !xpmDone)
     CreateAnimMasks(info.depth), xpmDone = 1;
 }
 
@@ -4043,12 +4076,13 @@ static void
 CairoOverlayPiece (ChessSquare piece, cairo_surface_t *dest)
 {
   static ChessSquare oldPiece = -1;
+  static int oldSize;
   static cairo_t *pieceSource;
-  if(piece != oldPiece) { // try make it faster by only changing cr if we need other piece
+  if(piece != oldPiece || squareSize != oldSize) { // try make it faster by only changing cr if we need other piece
     if(pieceSource) cairo_destroy (pieceSource);
     pieceSource = cairo_create (dest);
     cairo_set_source_surface (pieceSource, pngPieceBitmaps[!White(piece)][piece % BlackPawn], 0, 0);
-    oldPiece = piece;
+    oldPiece = piece; oldSize = squareSize;
   }
   cairo_paint(pieceSource);
 }
