@@ -2858,6 +2858,22 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 	if (appData.monoMode) {
 	    XDrawImageString(xDisplay, xBoardWindow, hGC, xx, yy, string, 1);
 	} else {
+	    if(*appData.pngDirectory) {
+		cairo_t *cr = cairo_create (csBoardWindow);
+		cairo_select_font_face (cr, "Sans",
+			    CAIRO_FONT_SLANT_NORMAL,
+			    CAIRO_FONT_WEIGHT_BOLD);
+
+		cairo_set_font_size (cr, squareSize/4);
+
+		cairo_move_to (cr, xx-1, yy);
+		if(align < 3) cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+		else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+		cairo_show_text (cr, string);
+
+		/* free memory */
+		cairo_destroy (cr);
+	    } else
 	    XDrawString(xDisplay, xBoardWindow, hGC, xx, yy, string, 1);
 	}
     }
