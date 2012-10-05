@@ -2602,6 +2602,24 @@ BlankSquare (int x, int y, int color, ChessSquare piece, Drawable dest, int fac)
 	XCopyArea(xDisplay, xpmBoardBitmap[color], dest, wlPieceGC, x0, y0,
 		  squareSize, squareSize, x*fac, y*fac);
     } else
+    if(csBoardWindow) {
+	cairo_t *cr = cairo_create (csBoardWindow);
+	char *col;
+	switch (color) {
+	  case 0: col = appData.darkSquareColor; break;
+	  case 1: col = appData.lightSquareColor; break;
+	  case 2: col = "#000000"; break;
+	}
+	SetPen(cr, 2.0, col, 0);
+	cairo_rectangle (cr, x, y, squareSize, squareSize);
+	cairo_fill (cr);
+	cairo_destroy (cr);
+	cr = cairo_create (csBoardBackup);
+	SetPen(cr, 2.0, col, 0);
+	cairo_rectangle (cr, x, y, squareSize, squareSize);
+	cairo_fill (cr);
+	cairo_destroy (cr);
+    } else
     if (useImages && useImageSqs) {
 	Pixmap pm;
 	switch (color) {
