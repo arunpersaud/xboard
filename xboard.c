@@ -2249,7 +2249,7 @@ ScaleOnePiece (char *name, int color, int piece)
     pngPieceImages[color][piece] = img = cairo_image_surface_create_from_png (buf);
     w = cairo_image_surface_get_width (img);
     h = cairo_image_surface_get_height (img);
-    if(w != 256 || h != 256) { printf("Bad png size %dx%d in %s\n", w, h, buf); exit(1); }
+    if(w != 64 || h != 64) { printf("Bad png size %dx%d in %s\n", w, h, buf); exit(1); }
   }
 
   // create new bitmap to hold scaled piece image (and remove any old)
@@ -2258,7 +2258,7 @@ ScaleOnePiece (char *name, int color, int piece)
   if(piece <= WhiteKing) pngPieceBitmaps[color][piece] = cs;
   // scaled copying of the raw png image
   cr = cairo_create(cs);
-  cairo_scale(cr, squareSize/256., squareSize/256.);
+  cairo_scale(cr, squareSize/64., squareSize/64.);
   cairo_set_source_surface (cr, img, 0, 0);
   cairo_paint (cr);
   cairo_destroy (cr);
