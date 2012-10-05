@@ -341,7 +341,7 @@ WindowPlacement wpTags;
 #define SOLID 0
 #define OUTLINE 1
 Boolean cairoAnimate;
-static cairo_surface_t *csBoardWindow, *csBoardBackup;
+static cairo_surface_t *csBoardWindow, *csBoardBackup, *csDualBoard;
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
 static cairo_surface_t *pngBoardBitmap[2];
@@ -894,9 +894,16 @@ SwitchWindow ()
     extern Option dualOptions[];
     static Window dual;
     Window tmp = xBoardWindow;
+    cairo_surface_t *cstmp = csBoardWindow;
     if(!dual) dual = XtWindow(dualOptions[3].handle); // must be first call
     xBoardWindow = dual; // swap them
     dual = tmp;
+    csBoardWindow = csDualBoard;
+    if(!csDualBoard && cstmp) {
+	int boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+	int boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+	csBoardWindow = cairo_xlib_surface_create(xDisplay, xBoardWindow, DefaultVisual(xDisplay, 0), boardWidth, boardHeight);
+    }
 }
 
 void
@@ -933,7 +940,8 @@ NewSurfaces ()
     // delete surfaces after size becomes invalid, so they will be recreated
     if(csBoardWindow) cairo_surface_destroy(csBoardWindow);
     if(csBoardBackup) cairo_surface_destroy(csBoardBackup);
-    csBoardWindow = csBoardBackup = NULL;
+    if(csDualBoard) cairo_surface_destroy(csDualBoard);
+    csBoardWindow = csBoardBackup = csDualBoard = NULL;
 }
 
 #define BoardSize int
