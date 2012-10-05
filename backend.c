@@ -7267,17 +7267,19 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    ClearHighlights();
 	}
     } else {
+#if 0
+// [HGM] this must be done after the move is made, as with arrow it could lead to a board redraw with piece still on from square
 	/* Finish drag move */
 	if (appData.highlightLastMove) {
 	    SetHighlights(fromX, fromY, toX, toY);
 	} else {
 	    ClearHighlights();
 	}
+#endif
 	DragPieceEnd(xPix, yPix); dragging = 0;
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
     }
-    MarkTargetSquares(1);
 
     // moves into holding are invalid for now (except in EditPosition, adapting to-square)
     if(x >= 0 && x < BOARD_LEFT || x >= BOARD_RGHT) {
@@ -7302,6 +7304,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	}
 	ClearHighlights();
 	fromX = fromY = -1;
+        MarkTargetSquares(1);
 	DrawPosition(TRUE, boards[currentMove]);
 	return;
     }
@@ -7335,6 +7338,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	if(saveAnimate && !appData.animate && currentMove != oldMove && // drag-move was performed
 	   Explode(boards[currentMove-1], fromX, fromY, toX, toY))
 	    DrawPosition(TRUE, boards[currentMove]);
+        MarkTargetSquares(1);
 	fromX = fromY = -1;
     }
     appData.animate = saveAnimate;
@@ -9721,9 +9725,6 @@ ShowMove (int fromX, int fromY, int toX, int toY)
 		AnimateMove(boards[forwardMostMove - 1],
 			    fromX, fromY, toX, toY);
 	    }
-	    if (appData.highlightLastMove) {
-		SetHighlights(fromX, fromY, toX, toY);
-	    }
 	}
 	currentMove = forwardMostMove;
     }
@@ -9732,6 +9733,11 @@ ShowMove (int fromX, int fromY, int toX, int toY)
 
     DisplayMove(currentMove - 1);
     DrawPosition(FALSE, boards[currentMove]);
+    if (!pausing || gameMode == PlayFromGameFile || gameMode == AnalyzeFile) {
+	    if (appData.highlightLastMove) { // [HGM] moved to after DrawPosition, as with arrow it could redraw old board
+		SetHighlights(fromX, fromY, toX, toY);
+	    }
+    }
     DisplayBothClocks();
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
 }
