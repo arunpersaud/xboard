@@ -1055,7 +1055,6 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     }
     for(i=0; i<2; i++) {
 	int p;
-printf("Copy pieces\n");
 	for(p=0; p<=(int)WhiteKing; p++)
 	   pngPieceBitmaps[i][p] = pngPieceBitmaps2[i][p]; // defaults
     }
