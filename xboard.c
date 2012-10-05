@@ -2887,8 +2887,18 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 		if(align < 3) cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 		else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 		cairo_show_text (cr, string);
+		cairo_destroy (cr);
+		cr = cairo_create (csBoardBackup);
+		cairo_select_font_face (cr, "Sans",
+			    CAIRO_FONT_SLANT_NORMAL,
+			    CAIRO_FONT_WEIGHT_BOLD);
 
-		/* free memory */
+		cairo_set_font_size (cr, squareSize/4);
+
+		cairo_move_to (cr, xx-1, yy);
+		if(align < 3) cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+		else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+		cairo_show_text (cr, string);
 		cairo_destroy (cr);
 	    } else
 	    XDrawString(xDisplay, xBoardWindow, hGC, xx, yy, string, 1);
