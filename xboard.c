@@ -340,7 +340,7 @@ WindowPlacement wpTags;
 
 #define SOLID 0
 #define OUTLINE 1
-Boolean cairoAnimate = True;
+Boolean cairoAnimate;
 static cairo_surface_t *csBoardWindow, *csBoardBackup;
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
@@ -1533,6 +1533,11 @@ XBoard square size (hint): %d\n\
     /*
      * Inhibit shell resizing.
      */
+
+    CreateAnyPieces();
+    cairoAnimate = *appData.pngDirectory && useTexture == 3
+	&& strstr(appData.liteBackTextureFile, ".png") && strstr(appData.darkBackTextureFile, ".png");
+
     shellArgs[0].value = (XtArgVal) &w;
     shellArgs[1].value = (XtArgVal) &h;
     XtGetValues(shellWidget, shellArgs, 2);
@@ -1546,7 +1551,6 @@ XBoard square size (hint): %d\n\
 
     CreateGCs(False);
     CreateGrid();
-    CreateAnyPieces();
 
     if(appData.logoSize)
     {   // locate and read user logo
