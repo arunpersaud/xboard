@@ -4220,15 +4220,12 @@ SetDragPiece (AnimNr anr, ChessSquare piece)
 
 /* [AS] Arrow highlighting support */
 
-void DrawPolygon(Pnt arrow[], int nr)
-{   // for now on own surface; eventually this should become a global that is only destroyed on resize
-    cairo_surface_t *boardSurface;
+void
+DoDrawPolygon (cairo_surface_t *cs, Pnt arrow[], int nr)
+{
     cairo_t *cr;
     int i;
-    int w = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-    int h = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    boardSurface = cairo_xlib_surface_create(xDisplay, xBoardWindow, DefaultVisual(xDisplay, 0), w, h);
-    cr = cairo_create (boardSurface);
+    cr = cairo_create (cs);
     cairo_move_to (cr, arrow[nr-1].x, arrow[nr-1].y);
     for (i=0;i<nr;i++) {
         cairo_line_to(cr, arrow[i].x, arrow[i].y);
@@ -4243,7 +4240,13 @@ void DrawPolygon(Pnt arrow[], int nr)
 
     /* free memory */
     cairo_destroy (cr);
-    cairo_surface_destroy (boardSurface);
+}
+
+void
+DrawPolygon (Pnt arrow[], int nr)
+{
+    DoDrawPolygon(csBoardWindow, arrow, nr);
+    DoDrawPolygon(csBoardBackup, arrow, nr);
 }
 
 static void
