@@ -3115,9 +3115,9 @@ void DrawSeekDot(int x, int y, int colorNr)
     colorNr &= 0x7F;
 
     if(square)
-	cairo_rectangle (cr, x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
+	cairo_rectangle (cr, x-squareSize/9, y-squareSize/9, 2*(squareSize/9), 2*(squareSize/9));
     else
-	cairo_arc(cr, x, y, squareSize/8, 0.0, 2*M_PI);
+	cairo_arc(cr, x, y, squareSize/9, 0.0, 2*M_PI);
 
     SetPen(cr, 2, "#000000", 0);
     cairo_stroke_preserve(cr);
