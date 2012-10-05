@@ -2534,11 +2534,17 @@ DoDrawBorder (cairo_surface_t *cs, int x, int y, int type)
 {
     cairo_t *cr;
     DrawSeekOpen();
+    char *col;
 
+    switch(type) {
+	case 0: col = "#000000"; break;
+	case 1: col = appData.highlightSquareColor; break;
+	case 2: col = appData.premoveHighlightColor; break;
+    }
     cr = cairo_create(cs);
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
     cairo_rectangle(cr, x, y, squareSize+lineGap, squareSize+lineGap);
-    SetPen(cr, lineGap, type == 1 ? appData.highlightSquareColor : appData.premoveHighlightColor, 0);
+    SetPen(cr, lineGap, col, 0);
     cairo_stroke(cr);
 }
 

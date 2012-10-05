@@ -6755,7 +6755,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 	}
     }
 
-    if(doubleClick) { // [HGM] exclude: move entered with double-click on from square is for exclusion, not playing
+    if(doubleClick && gameMode == AnalyzeMode) { // [HGM] exclude: move entered with double-click on from square is for exclusion, not playing
         if(ExcludeOneMove(fromY, fromX, toY, toX, promoChar, '*')) // toggle
 	     ClearPremoveHighlights(); // was included
 	else ClearHighlights(), SetPremoveHighlights(ff, rf, ft, rt); // exclusion indicated  by premove highlights
