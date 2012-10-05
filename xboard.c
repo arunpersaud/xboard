@@ -3054,10 +3054,8 @@ void DrawSeekText(char *buf, int x, int y)
     cairo_set_font_size (cr, 12.0);
 
     cairo_move_to (cr, x, y+4);
-    cairo_show_text( cr, buf);
-
     cairo_set_source_rgba(cr, 0, 0, 0,1.0);
-    cairo_stroke(cr);
+    cairo_show_text( cr, buf);
 
     /* free memory */
     cairo_destroy (cr);
