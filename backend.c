@@ -7316,6 +7316,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 
     if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, appData.sweepSelect)) {
 	SetHighlights(fromX, fromY, toX, toY);
+        MarkTargetSquares(1);
 	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat || gameInfo.variant == VariantGrand) {
 	    // [HGM] super: promotion to captured piece selected from holdings
 	    ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
