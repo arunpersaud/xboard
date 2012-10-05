@@ -289,6 +289,7 @@ typedef struct XB_ListGame {
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;
 
+extern int doubleClick;
 extern int storedGames;
 extern int opponentKibitzes;
 extern ChessSquare gatingPiece;

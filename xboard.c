@@ -4148,16 +4148,7 @@ OverlayPiece (ChessSquare piece, GC clip, GC outline,  Drawable dest)
 static void
 CairoOverlayPiece (ChessSquare piece, cairo_surface_t *dest)
 {
-  static ChessSquare oldPiece = -1;
-  static int oldSize;
   static cairo_t *pieceSource;
-  extern int doubleClick; // in backend.c
-//  if(piece != oldPiece || squareSize != oldSize) { // try make it faster by only changing cr if we need other piece
-//    if(pieceSource) cairo_destroy (pieceSource);
-//    pieceSource = cairo_create (dest);
-//    cairo_set_source_surface (pieceSource, pngPieceBitmaps[!White(piece)][piece % BlackPawn], 0, 0);
-//    oldPiece = piece; oldSize = squareSize;
-//  }
   pieceSource = cairo_create (dest);
   cairo_set_source_surface (pieceSource, pngPieceBitmaps[!White(piece)][piece % BlackPawn], 0, 0);
   if(doubleClick) cairo_paint_with_alpha (pieceSource, 0.6);
