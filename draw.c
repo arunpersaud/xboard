@@ -237,29 +237,64 @@ char *pngPieceNames[] = // must be in same order as internal piece encoding
   "GoldKnight", "GoldLance", "GoldPawn", "GoldSilver", NULL
 };
 
+cairo_surface_t *
+ConvertPixmap (int color, int piece)
+{
+  int i, j, stride, f, colcode[10], w, b;
+  char ch[10];
+  cairo_surface_t *res;
+  XpmPieces *p = builtInXpms + 10;
+  char **pixels = p->xpm[piece % BlackPawn][2*color];
+  int *buf;
+  sscanf(pixels[0], "%*d %*d %d", &f);
+  sscanf(appData.whitePieceColor+1, "%x", &w);
+  sscanf(appData.blackPieceColor+1, "%x", &b);
+  for(i=0; i<f; i++) {
+    ch[i] = pixels[i+1][0];
+    colcode[i] = 0;
+    if(strstr(pixels[i+1], "black")) colcode[i] = 0xFF000000 + (color ? b : 0);
+    if(strstr(pixels[i+1], "white")) colcode[i] = 0xFF000000 + w;
+  }
+  stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, p->size);
+  buf = (int *) malloc(p->size*stride);
+  for(i=0; i<p->size; i++) {
+    for(j=0; j<p->size; j++) {
+      char c = pixels[i+f+1][j];
+      int k;
+      for(k=0; ch[k] != c && k < f; k++);
+      buf[i*p->size + j] = colcode[k];
+    }
+  }
+  res = cairo_image_surface_create_for_data((unsigned char *) buf, CAIRO_FORMAT_ARGB32, p->size, p->size, stride);
+  if(cairo_surface_status(res) != CAIRO_STATUS_SUCCESS) { printf("bad pixmap convert\n"); exit(1); }
+  return res;
+}
+
 static void
 ScaleOnePiece (char *name, int color, int piece)
 {
-  int w, h;
+  float w, h;
   char buf[MSG_SIZ];
   cairo_surface_t *img, *cs;
   cairo_t *cr;
   static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 
-  if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
+  if(!*appData.pngDirectory) img = ConvertPixmap(color, piece); else
+  if(pngPieceImages[color][piece] == NULL) { // if PNG file for this piece was not yet read, read it now and store it
     snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
-    pngPieceImages[color][piece] = img = cairo_image_surface_create_from_png (buf);
-    w = cairo_image_surface_get_width (img);
-    h = cairo_image_surface_get_height (img);
-    if(w != 64 || h != 64) { printf("Bad png size %dx%d in %s\n", w, h, buf); exit(1); }
+    img = cairo_image_surface_create_from_png (buf);
+    if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) img = ConvertPixmap(color, piece);
   }
+  pngPieceImages[color][piece] = img;
   // create new bitmap to hold scaled piece image (and remove any old)
   if(pngPieceBitmaps2[color][piece]) cairo_surface_destroy (pngPieceBitmaps2[color][piece]);
   pngPieceBitmaps2[color][piece] = cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
   if(piece <= WhiteKing) pngPieceBitmaps[color][piece] = cs;
   // scaled copying of the raw png image
   cr = cairo_create(cs);
-  cairo_scale(cr, squareSize/64., squareSize/64.);
+  w = cairo_image_surface_get_width (img);
+  h = cairo_image_surface_get_height (img);
+  cairo_scale(cr, squareSize/w, squareSize/h);
   cairo_set_source_surface (cr, img, 0, 0);
   cairo_paint (cr);
   cairo_destroy (cr);
@@ -279,9 +314,7 @@ CreatePNGPieces ()
 void
 CreateAnyPieces ()
 {   // [HGM] taken out of main
-    if (appData.pngDirectory[0] != NULLCHAR) {
-      CreatePNGPieces();
-    }
+    CreatePNGPieces();
     CreatePNGBoard(appData.liteBackTextureFile, 1);
     CreatePNGBoard(appData.darkBackTextureFile, 0);
 }
