@@ -408,7 +408,6 @@ typedef struct {
     Boolean firstPlaysBlack;
     Boolean noChessProgram;
     char *host[ENGINES];
-    char *bitmapDirectory;
     char *pngDirectory;
     char *soundDirectory;
     char *remoteShell;
@@ -476,7 +475,6 @@ typedef struct {
     Boolean zippyPlay;
     int flashCount; /* Number of times to flash (xboard only) */
     int flashRate; /* Flashes per second (xboard only)  */
-    char *pixmapDirectory; /* Path to XPM/XIM files to use (xboard only) */
     int msLoginDelay;  /* Delay per character (in msec) while sending
 			  ICS logon script (xboard only) */
     Boolean colorize;	/* If True, use the following colors to color text */
