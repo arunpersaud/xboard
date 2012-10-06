@@ -111,6 +111,7 @@ extern char *getenv();
 #define OUTLINE 1
 Boolean cairoAnimate;
 static cairo_surface_t *csBoardWindow, *csBoardBackup, *csDualBoard;
+static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
 static cairo_surface_t *pngBoardBitmap[2];
@@ -277,7 +278,6 @@ ScaleOnePiece (char *name, int color, int piece)
   char buf[MSG_SIZ];
   cairo_surface_t *img, *cs;
   cairo_t *cr;
-  static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 
   if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
     if(!*appData.pngDirectory) img = ConvertPixmap(color, piece); else {
@@ -339,9 +339,15 @@ CreateAnyPieces ()
 }
 
 void
-InitDrawingParams ()
+InitDrawingParams (int reloadPieces)
 {
+    int i, p;
     MakeColors();
+    if(reloadPieces)
+    for(i=0; i<2; i++) for(p=0; p<BlackPawn+4; p++) {
+	if(pngPieceImages[i][p]) cairo_surface_destroy(pngPieceImages[i][p]);
+	pngPieceImages[i][p] = NULL;
+    }
     CreateAnyPieces();
 }
 
