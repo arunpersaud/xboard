@@ -211,10 +211,6 @@ ArgDescriptor argDescriptors[] = {
   { "xtitle", ArgFalse, (void *) &appData.titleInWindow, FALSE, INVALID },
   { "flashCount", ArgInt, (void *) &appData.flashCount, XBOARD, INVALID }, // let X handle this
   { "flashRate", ArgInt, (void *) &appData.flashRate, XBOARD, (ArgIniType) FLASH_RATE },
-  { "pixmapDirectory", ArgFilename, (void *) &appData.pixmapDirectory, XBOARD, (ArgIniType) "" },
-  { "pixmap", ArgFilename, (void *) &appData.pixmapDirectory, FALSE, INVALID },
-  { "bitmapDirectory", ArgFilename, (void *) &appData.bitmapDirectory, XBOARD, (ArgIniType) "" },
-  { "bm", ArgFilename, (void *) &appData.bitmapDirectory, FALSE, INVALID },
   { "pngDirectory", ArgFilename, (void *) &appData.pngDirectory, XBOARD, (ArgIniType) "" },
   { "png", ArgFilename, (void *) &appData.pngDirectory, FALSE, INVALID },
   { "soundDirectory", ArgFilename, (void *) &appData.soundDirectory, XBOARD, (ArgIniType) "" },

@@ -1207,24 +1207,6 @@ main (int argc, char **argv)
 	// [HGM] font: use defaults from settings file if available and not overruled
     }
 
-    /* Now, using squareSize as a hint, find a good XPM/XIM set size */
-    if (strlen(appData.pixmapDirectory) > 0) {
-	p = ExpandPathName(appData.pixmapDirectory);
-	if (!p) {
-	    fprintf(stderr, _("Error expanding path name \"%s\"\n"),
-		   appData.pixmapDirectory);
-	    exit(1);
-	}
-	if (appData.debugMode) {
-          fprintf(stderr, _("\
-XBoard square size (hint): %d\n\
-%s fulldir:%s:\n"), squareSize, IMAGE_EXT, p);
-	}
-	squareSize = xpm_closest_to(p, squareSize, IMAGE_EXT);
-	if (appData.debugMode) {
-	    fprintf(stderr, _("Closest %s size: %d\n"), IMAGE_EXT, squareSize);
-	}
-    }
     defaultLineGap = lineGap;
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
 
@@ -1339,7 +1321,6 @@ XBoard square size (hint): %d\n\
 
     CatchDeleteWindow(shellWidget, "QuitProc");
 
-    CreateGCs(False);
     CreateGrid();
 
     if(appData.logoSize)
@@ -1599,45 +1580,6 @@ FindFont (char *pattern, int targetPxlSize)
 void
 ReadBitmap (Pixmap *pm, String name, unsigned char bits[], u_int wreq, u_int hreq)
 {
-    int x_hot, y_hot;
-    u_int w, h;
-    int errcode;
-    char msg[MSG_SIZ], fullname[MSG_SIZ];
-
-    if (*appData.bitmapDirectory != NULLCHAR) {
-      safeStrCpy(fullname, appData.bitmapDirectory, sizeof(fullname)/sizeof(fullname[0]) );
-      strncat(fullname, "/", MSG_SIZ - strlen(fullname) - 1);
-      strncat(fullname, name, MSG_SIZ - strlen(fullname) - 1);
-      errcode = XReadBitmapFile(xDisplay, xBoardWindow, fullname,
-				&w, &h, pm, &x_hot, &y_hot);
-      fprintf(stderr, "load %s\n", name);
-	if (errcode != BitmapSuccess) {
-	    switch (errcode) {
-	      case BitmapOpenFailed:
-		snprintf(msg, sizeof(msg), _("Can't open bitmap file %s"), fullname);
-		break;
-	      case BitmapFileInvalid:
-		snprintf(msg, sizeof(msg), _("Invalid bitmap in file %s"), fullname);
-		break;
-	      case BitmapNoMemory:
-		snprintf(msg, sizeof(msg), _("Ran out of memory reading bitmap file %s"),
-			fullname);
-		break;
-	      default:
-		snprintf(msg, sizeof(msg), _("Unknown XReadBitmapFile error %d on file %s"),
-			errcode, fullname);
-		break;
-	    }
-	    fprintf(stderr, _("%s: %s...using built-in\n"),
-		    programName, msg);
-	} else if (w != wreq || h != hreq) {
-	    fprintf(stderr,
-		    _("%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"),
-		    programName, fullname, w, h, wreq, hreq);
-	} else {
-	    return;
-	}
-    }
     if (bits != NULL) {
 	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
 				    wreq, hreq);
