@@ -179,7 +179,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     /*
      * Inhibit shell resizing.
      */
-    ResizeBoardWindow(boardWidth, boardHeight, !cairoAnimate);
+    ResizeBoardWindow(boardWidth, boardHeight, 0);
 
     DelayedDrag();
   }
@@ -606,8 +606,6 @@ static void
 DoDrawOneSquare (cairo_surface_t *dest, int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align)
 {   // basic front-end board-draw function: takes care of everything that can be in square:
     // piece, background, coordinate/count, marker dot
-    int direction, font_ascent, font_descent;
-    XCharStruct overall;
     cairo_t *cr;
 
     if (piece == EmptySquare) {
@@ -618,26 +616,28 @@ DoDrawOneSquare (cairo_surface_t *dest, int x, int y, ChessSquare piece, int squ
 
     if(align) { // square carries inscription (coord or piece count)
 	int xx = x, yy = y;
-	// first calculate where it goes
-	XTextExtents(countFontStruct, string, 1, &direction,
-			 &font_ascent, &font_descent, &overall);
-	if (align == 1) {
-	    xx += squareSize - overall.width - 2;
-	    yy += squareSize - font_descent - 1;
-	} else if (align == 2) {
-	    xx += 2, yy += font_ascent + 1;
-	} else if (align == 3) {
-	    xx += squareSize - overall.width - 2;
-	    yy += font_ascent + 1;
-	} else if (align == 4) {
-	    xx += 2, yy += font_ascent + 1;
-	}
+	cairo_text_extents_t te;
+
 	cr = cairo_create (dest);
 	cairo_select_font_face (cr, "Sans",
 		    CAIRO_FONT_SLANT_NORMAL,
 		    CAIRO_FONT_WEIGHT_BOLD);
 
 	cairo_set_font_size (cr, squareSize/4);
+	// calculate where it goes
+	cairo_text_extents (cr, string, &te);
+
+	if (align == 1) {
+	    xx += squareSize - te.width - te.x_bearing - 1;
+	    yy += squareSize - te.height - te.y_bearing - 1;
+	} else if (align == 2) {
+	    xx += te.x_bearing + 1, yy += -te.y_bearing + 1;
+	} else if (align == 3) {
+	    xx += squareSize - te.width -te.x_bearing - 1;
+	    yy += -te.y_bearing + 3;
+	} else if (align == 4) {
+	    xx += te.x_bearing + 1, yy += -te.y_bearing + 3;
+	}
 
 	cairo_move_to (cr, xx-1, yy);
 	if(align < 3) cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
