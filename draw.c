@@ -255,8 +255,8 @@ ConvertPixmap (int color, int piece)
   for(i=0; i<f; i++) {
     ch[i] = pixels[i+1][0];
     colcode[i] = 0;
-    if(strstr(pixels[i+1], "black")) colcode[i] = 0xFF000000 + (color ? b : 0);
-    if(strstr(pixels[i+1], "white")) colcode[i] = 0xFF000000 + w;
+    if(strstr(pixels[i+1], "black")) colcode[i] = 0xFF000000; // 0xFF000000 + (color ? b : 0);
+    if(strstr(pixels[i+1], "white")) colcode[i] = 0xFFFFFFCC; // 0xFF000000 + w;
   }
   for(i=0; i<p->size; i++) {
     for(j=0; j<p->size; j++) {
@@ -299,6 +299,24 @@ ScaleOnePiece (char *name, int color, int piece)
   cairo_set_source_surface (cr, img, 0, 0);
   cairo_paint (cr);
   cairo_destroy (cr);
+  { // operate on bitmap to color it (king-size hack...)
+    int stride = cairo_image_surface_get_stride(cs)/4;
+    int *buf = (int *) cairo_image_surface_get_data(cs);
+    int i, j, p;
+    sscanf(color ? appData.blackPieceColor+1 : appData.whitePieceColor+1, "%x", &p); // replacement color
+    cairo_surface_flush(cs);
+    for(i=0; i<squareSize; i++) for(j=0; j<squareSize; j++) {
+	int r, a;
+	float f;
+	unsigned int c = buf[i*stride + j];
+	a = c >> 24; r = c >> 16 & 255;     // alpha and red, where red is the 'white' weight, since white is #FFFFCC in the source images
+        f = (color ? a - r : r)/255.;       // fraction of black or white in the mix that has to be replaced
+	buf[i*stride + j] = c & 0xFF000000; // alpha channel is kept at same opacity
+	buf[i*stride + j] += ((int)(f*(p&0xFF0000)) & 0xFF0000) + ((int)(f*(p&0xFF00)) & 0xFF00) + (int)(f*(p&0xFF)); // add desired fraction of new color
+	if(color) buf[i*stride + j] += r | r << 8 | r << 16; // details on black pieces get their weight added in pure white
+    }
+    cairo_surface_mark_dirty(cs);
+  }
 }
 
 void
