@@ -529,13 +529,12 @@ DrawLogo (void *handle, void *logo)
 }
 
 static void
-BlankSquare (int x, int y, int color, ChessSquare piece, cairo_surface_t *dest, int fac)
+BlankSquare (cairo_surface_t *dest, int x, int y, int color, ChessSquare piece, int fac)
 {   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
     int x0, y0;
     cairo_t *cr;
 
-    DrawSeekOpen();
-    cr = cairo_create (fac ? csBoardWindow : dest);
+    cr = cairo_create (dest);
 
     if ((useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
 	    cairo_set_source_surface (cr, pngBoardBitmap[color], x*fac - x0, y*fac - y0);
@@ -543,14 +542,6 @@ BlankSquare (int x, int y, int color, ChessSquare piece, cairo_surface_t *dest, 
 	    cairo_rectangle (cr, x*fac, y*fac, squareSize, squareSize);
 	    cairo_fill (cr);
 	    cairo_destroy (cr);
-	   if(fac) {
-	    cr = cairo_create (csBoardBackup);
-	    cairo_set_source_surface (cr, pngBoardBitmap[color], x*fac - x0, y*fac - y0);
-	    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-	    cairo_rectangle (cr, x*fac, y*fac, squareSize, squareSize);
-	    cairo_fill (cr);
-	    cairo_destroy (cr);
-	   }
     } else { // evenly colored squares
 	char *col;
 	switch (color) {
@@ -562,18 +553,11 @@ BlankSquare (int x, int y, int color, ChessSquare piece, cairo_surface_t *dest, 
 	cairo_rectangle (cr, x, y, squareSize, squareSize);
 	cairo_fill (cr);
 	cairo_destroy (cr);
-	if(fac) {
-	cr = cairo_create (csBoardBackup);
-	SetPen(cr, 2.0, col, 0);
-	cairo_rectangle (cr, x, y, squareSize, squareSize);
-	cairo_fill (cr);
-	cairo_destroy (cr);
-	}
     }
 }
 
 static void
-pngDrawPiece (ChessSquare piece, int square_color, int x, int y, cairo_surface_t *dest)
+pngDrawPiece (cairo_surface_t *dest, ChessSquare piece, int square_color, int x, int y)
 {
     int kind, p = piece;
     cairo_t *cr;
@@ -585,23 +569,18 @@ pngDrawPiece (ChessSquare piece, int square_color, int x, int y, cairo_surface_t
 	piece -= BlackPawn;
     }
     if(appData.upsideDown && flipView) { p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
-    BlankSquare(x, y, square_color, piece, dest, 1); // erase previous contents with background
-    DrawSeekOpen();
-    cr = cairo_create (csBoardWindow);
-    cairo_set_source_surface (cr, pngPieceBitmaps[kind][piece], x, y);
-    cairo_paint(cr);
-    cairo_destroy (cr);
-    cr = cairo_create (csBoardBackup);
+    BlankSquare(dest, x, y, square_color, piece, 1); // erase previous contents with background
+    cr = cairo_create (dest);
     cairo_set_source_surface (cr, pngPieceBitmaps[kind][piece], x, y);
     cairo_paint(cr);
     cairo_destroy (cr);
 }
 
 void
-DoDrawDot (int marker, int x, int y, int r, cairo_surface_t *cs)
+DoDrawDot (cairo_surface_t *cs, int marker, int x, int y, int r)
 {
 	cairo_t *cr;
-	DrawSeekOpen();
+
 	cr = cairo_create(cs);
 	cairo_arc(cr, x+r/2, y+r/2, r/2, 0.0, 2*M_PI);
 	if(appData.monoMode) {
@@ -612,20 +591,19 @@ DoDrawDot (int marker, int x, int y, int r, cairo_surface_t *cs)
 	    SetPen(cr, 2, marker == 2 ? "#FF0000" : "#FFFF00", 0);
 	}
 	cairo_fill(cr);
-	cairo_stroke(cr);
 
 	cairo_destroy(cr);
 }
 
 void
 DrawDot (int marker, int x, int y, int r)
-{
-  DoDrawDot(marker, x, y, r, csBoardWindow);
-  DoDrawDot(marker, x, y, r, csBoardBackup);
+{ // used for atomic captures; no need to draw on backup
+  DrawSeekOpen();
+  DoDrawDot(csBoardWindow, marker, x, y, r);
 }
 
-void
-DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align)
+static void
+DoDrawOneSquare (cairo_surface_t *dest, int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align)
 {   // basic front-end board-draw function: takes care of everything that can be in square:
     // piece, background, coordinate/count, marker dot
     int direction, font_ascent, font_descent;
@@ -633,9 +611,9 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
     cairo_t *cr;
 
     if (piece == EmptySquare) {
-	BlankSquare(x, y, square_color, piece, csBoardWindow, 1);
+	BlankSquare(dest, x, y, square_color, piece, 1);
     } else {
-	pngDrawPiece(piece, square_color, x, y, csBoardWindow);
+	pngDrawPiece(dest, piece, square_color, x, y);
     }
 
     if(align) { // square carries inscription (coord or piece count)
@@ -654,7 +632,7 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 	} else if (align == 4) {
 	    xx += 2, yy += font_ascent + 1;
 	}
-	cr = cairo_create (csBoardWindow);
+	cr = cairo_create (dest);
 	cairo_select_font_face (cr, "Sans",
 		    CAIRO_FONT_SLANT_NORMAL,
 		    CAIRO_FONT_WEIGHT_BOLD);
@@ -666,24 +644,19 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 	else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 	cairo_show_text (cr, string);
 	cairo_destroy (cr);
-
-	cr = cairo_create (csBoardBackup);
-	cairo_select_font_face (cr, "Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_BOLD);
-
-	cairo_set_font_size (cr, squareSize/4);
-
-	cairo_move_to (cr, xx-1, yy);
-	if(align < 3) cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-	else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-	cairo_show_text (cr, string);
-	cairo_destroy (cr);
     }
 
     if(marker) { // print fat marker dot, if requested
-	DrawDot(marker, x + squareSize/4, y+squareSize/4, squareSize/2);
+	DoDrawDot(dest, marker, x + squareSize/4, y+squareSize/4, squareSize/2);
     }
+}
+
+void
+DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align)
+{
+  DrawSeekOpen();
+  DoDrawOneSquare (csBoardWindow, x, y, piece, square_color, marker, string, align);
+  DoDrawOneSquare (csBoardBackup, x, y, piece, square_color, marker, string, align);
 }
 
 /****	Animation code by Hugh Fisher, DCS, ANU. ****/
@@ -734,7 +707,7 @@ InsertPiece (AnimNr anr, ChessSquare piece)
 void
 DrawBlank (AnimNr anr, int x, int y, int startColor)
 {
-    BlankSquare(x, y, startColor, EmptySquare, c_animBufs[anr+2], 0);
+    BlankSquare(c_animBufs[anr+2], x, y, startColor, EmptySquare, 0);
 }
 
 void CopyRectangle (AnimNr anr, int srcBuf, int destBuf,
