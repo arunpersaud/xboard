@@ -1748,7 +1748,7 @@ ReSize (WindowPlacement *wp)
 	    NewSurfaces();
 	    CreatePNGPieces(); // make newly scaled pieces
 	    InitDrawingSizes(0, 0); // creates grid etc.
-	}
+	} else ResizeBoardWindow(BOARD_WIDTH * (squareSize + lineGap) + lineGap, BOARD_HEIGHT * (squareSize + lineGap) + lineGap, 0);
 }
 
 static XtIntervalId delayedDragID = 0;
