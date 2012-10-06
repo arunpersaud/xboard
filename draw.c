@@ -84,7 +84,6 @@ extern char *getenv();
 
 #include "frontend.h"
 #include "backend.h"
-#include "xboard.h"
 #include "xevalgraph.h"
 #include "board.h"
 #include "menus.h"
@@ -126,16 +125,19 @@ struct {
   int x1, x2, y1, y2;
 } gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 
+static int dual = 0;
+
 void
 SwitchWindow ()
 {
     cairo_surface_t *cstmp = csBoardWindow;
     csBoardWindow = csDualBoard;
-    if(!csDualBoard && cstmp) {
-	int boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-	int boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-	csBoardWindow = cairo_xlib_surface_create(xDisplay, xBoardWindow, DefaultVisual(xDisplay, 0), boardWidth, boardHeight);
+    dual = !dual;
+    if(!csDualBoard) {
+	csBoardWindow = GetOutputSurface(&dualOptions[3], 0, 0);
+	dual = 1;
     }
+    csDualBoard = cstmp;
 }
 
 void
@@ -154,9 +156,10 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 {   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
     int boardWidth, boardHeight;
     int i;
-    static Dimension oldWidth, oldHeight;
+    static int oldWidth, oldHeight;
     static VariantClass oldVariant;
     static int oldMono = -1, oldTwoBoards = 0;
+    extern Widget formWidget;
 
     if(!formWidget) return;
 
@@ -273,7 +276,7 @@ CreatePNGPieces ()
   }
 }
 
-int
+void
 CreateAnyPieces ()
 {   // [HGM] taken out of main
     if (appData.pngDirectory[0] != NULLCHAR) {
@@ -281,9 +284,6 @@ CreateAnyPieces ()
     }
     CreatePNGBoard(appData.liteBackTextureFile, 1);
     CreatePNGBoard(appData.darkBackTextureFile, 0);
-    cairoAnimate = *appData.pngDirectory && useTexture == 3
-	&& strstr(appData.liteBackTextureFile, ".png") && strstr(appData.darkBackTextureFile, ".png");
-    return cairoAnimate;
 }
 
 void
@@ -392,7 +392,7 @@ DrawSeekOpen ()
     int boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     int boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
     if(!csBoardWindow) {
-	csBoardWindow = cairo_xlib_surface_create(xDisplay, xBoardWindow, DefaultVisual(xDisplay, 0), boardWidth, boardHeight);
+	csBoardWindow = GetOutputSurface(&mainOptions[W_BOARD], 0, 0);
 	csBoardBackup = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, boardWidth, boardHeight);
     }
 }
@@ -460,7 +460,7 @@ void
 DrawGrid()
 {
   DoDrawGrid(csBoardWindow);
-  DoDrawGrid(csBoardBackup);
+  if(!dual) DoDrawGrid(csBoardBackup);
 }
 
 void
@@ -486,7 +486,7 @@ void
 DrawBorder (int x, int y, int type)
 {
   DoDrawBorder(csBoardWindow, x, y, type);
-  DoDrawBorder(csBoardBackup, x, y, type);
+  if(!dual) DoDrawBorder(csBoardBackup, x, y, type);
 }
 
 static int
@@ -515,7 +515,7 @@ DrawLogo (void *handle, void *logo)
     int w, h;
 
     if(!logo || !handle) return;
-    cs = cairo_xlib_surface_create(xDisplay, XtWindow(handle), DefaultVisual(xDisplay, 0), appData.logoSize, appData.logoSize/2);
+    cs = GetOutputSurface(handle, appData.logoSize, appData.logoSize/2);
     img = cairo_image_surface_create_from_png (logo);
     w = cairo_image_surface_get_width (img);
     h = cairo_image_surface_get_height (img);
@@ -656,6 +656,7 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 {
   DrawSeekOpen();
   DoDrawOneSquare (csBoardWindow, x, y, piece, square_color, marker, string, align);
+  if(!dual)
   DoDrawOneSquare (csBoardBackup, x, y, piece, square_color, marker, string, align);
 }
 
@@ -764,7 +765,7 @@ void
 DrawPolygon (Pnt arrow[], int nr)
 {
     DoDrawPolygon(csBoardWindow, arrow, nr);
-    DoDrawPolygon(csBoardBackup, arrow, nr);
+    if(!dual) DoDrawPolygon(csBoardBackup, arrow, nr);
 }
 
 
