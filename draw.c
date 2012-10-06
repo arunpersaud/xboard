@@ -249,14 +249,15 @@ ConvertPixmap (int color, int piece)
   sscanf(pixels[0], "%*d %*d %d", &f);
   sscanf(appData.whitePieceColor+1, "%x", &w);
   sscanf(appData.blackPieceColor+1, "%x", &b);
+  res = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, p->size, p->size);
+  stride = cairo_image_surface_get_stride(res);
+  buf = (int *) cairo_image_surface_get_data(res);
   for(i=0; i<f; i++) {
     ch[i] = pixels[i+1][0];
     colcode[i] = 0;
     if(strstr(pixels[i+1], "black")) colcode[i] = 0xFF000000 + (color ? b : 0);
     if(strstr(pixels[i+1], "white")) colcode[i] = 0xFF000000 + w;
   }
-  stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, p->size);
-  buf = (int *) malloc(p->size*stride);
   for(i=0; i<p->size; i++) {
     for(j=0; j<p->size; j++) {
       char c = pixels[i+f+1][j];
@@ -265,8 +266,7 @@ ConvertPixmap (int color, int piece)
       buf[i*p->size + j] = colcode[k];
     }
   }
-  res = cairo_image_surface_create_for_data((unsigned char *) buf, CAIRO_FORMAT_ARGB32, p->size, p->size, stride);
-  if(cairo_surface_status(res) != CAIRO_STATUS_SUCCESS) { printf("bad pixmap convert\n"); exit(1); }
+  cairo_surface_mark_dirty(res);
   return res;
 }
 
@@ -279,11 +279,12 @@ ScaleOnePiece (char *name, int color, int piece)
   cairo_t *cr;
   static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 
-  if(!*appData.pngDirectory) img = ConvertPixmap(color, piece); else
-  if(pngPieceImages[color][piece] == NULL) { // if PNG file for this piece was not yet read, read it now and store it
-    snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
-    img = cairo_image_surface_create_from_png (buf);
-    if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) img = ConvertPixmap(color, piece);
+  if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
+    if(!*appData.pngDirectory) img = ConvertPixmap(color, piece); else {
+      snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
+      img = cairo_image_surface_create_from_png (buf);
+      if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) img = ConvertPixmap(color, piece);
+    }
   }
   pngPieceImages[color][piece] = img;
   // create new bitmap to hold scaled piece image (and remove any old)
