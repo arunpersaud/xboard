@@ -129,7 +129,7 @@ extern void *userLogo;
 extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain;
 extern char *marked[];
 extern Boolean shellUp[];
-extern Option textOptions[], typeOptions[];
+extern Option textOptions[], typeOptions[], dualOptions[], mainOptions[];
 
 
 int DialogExists P((DialogClass n));

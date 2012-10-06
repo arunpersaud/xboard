@@ -57,17 +57,19 @@ void CreateGCs P((int redo));
 void DelayedDrag P((void));
 void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
 		   u_int wreq, u_int hreq));
+cairo_surface_t *GetOutputSurface P((Option *opt, int w, int h));
 
 extern XFontStruct *coordFontStruct, *countFontStruct;
 extern Font coordFontID, countFontID;
 extern int xScreen;
+extern int lineGap, squareSize;
 extern Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   highlightSquareColor, premoveHighlightColor;
 
 // defined in draw.c
 void CreateGCs P((int redo));
 void NewSurfaces P((void));
-int  CreateAnyPieces P((void));
+void CreateAnyPieces P((void));
 void CreatePNGPieces P((void));
 void CreateGrid P((void));
 

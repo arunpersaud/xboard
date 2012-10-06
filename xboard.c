@@ -1315,12 +1315,13 @@ main (int argc, char **argv)
     XtGetValues(shellWidget, shellArgs, 2);
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
-    if(!CreateAnyPieces()) XtSetValues(shellWidget, &shellArgs[2], 4);
+//    XtSetValues(shellWidget, &shellArgs[2], 4);
     marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
     marginH =  h - boardHeight;
 
     CatchDeleteWindow(shellWidget, "QuitProc");
 
+    CreateAnyPieces();
     CreateGrid();
 
     if(appData.logoSize)
@@ -1668,6 +1669,13 @@ SetupDropMenu ()
     }
 }
 
+cairo_surface_t *
+GetOutputSurface(Option *opt, int w, int h)
+{
+	if(w == 0) w = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+	if(h == 0) h = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+        return cairo_xlib_surface_create(xDisplay, XtWindow(opt->handle), DefaultVisual(xDisplay, 0), w, h);
+}
 
 static void
 do_flash_delay (unsigned long msec)
