@@ -2047,7 +2047,7 @@ MenuCallback (int n)
 static Option *
 Exp (int n, int x, int y)
 {
-    static int but1, but3;
+    static int but1, but3, oldSquareSize;
     int menuNr = -3;
 
     if(n == 0) { // motion
@@ -2068,7 +2068,9 @@ Exp (int n, int x, int y)
 	case -2: shiftKey = !shiftKey;
 	case -3: menuNr = RightClick(Release, x, y, &pmFromX, &pmFromY), but3 = 0; break;
 	case 10:
+	    if(squareSize != oldSquareSize) return NULL; // don't redraw while sizing
 	    DrawPosition(True, NULL);
+	    oldSquareSize = squareSize;
 	default:
 	    return NULL;
     }
