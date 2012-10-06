@@ -752,11 +752,13 @@ SoundOptionsProc ()
 static void DefColor P((int n));
 static void AdjustColor P((int i));
 
+static char oldPngDir[MSG_SIZ];
+
 static int
 BoardOptionsOK (int n)
 {
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
-    InitDrawingParams();
+    InitDrawingParams(strcmp(oldPngDir, appData.pngDirectory));
     InitDrawingSizes(-1, 0);
     DrawPosition(True, NULL);
     return 1;
@@ -859,6 +861,7 @@ AdjustColor (int i)
 void
 BoardOptionsProc ()
 {
+   strncpy(oldPngDir, appData.pngDirectory, MSG_SIZ-1); // to see if it changed
    GenericPopUp(boardOptions, _("Board Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
@@ -2047,8 +2050,8 @@ MenuCallback (int n)
 static Option *
 Exp (int n, int x, int y)
 {
-    static int but1, but3, oldSquareSize;
-    int menuNr = -3;
+    static int but1, but3, oldW, oldH;
+    int menuNr = -3, sizing;
 
     if(n == 0) { // motion
 	if(SeekGraphClick(Press, x, y, 1)) return NULL;
@@ -2068,9 +2071,10 @@ Exp (int n, int x, int y)
 	case -2: shiftKey = !shiftKey;
 	case -3: menuNr = RightClick(Release, x, y, &pmFromX, &pmFromY), but3 = 0; break;
 	case 10:
-	    if(squareSize != oldSquareSize) return NULL; // don't redraw while sizing
+	    sizing = (oldW != x || oldH != y);
+	    oldW = x; oldH = y;
+	    if(sizing) return NULL; // don't redraw while sizing
 	    DrawPosition(True, NULL);
-	    oldSquareSize = squareSize;
 	default:
 	    return NULL;
     }

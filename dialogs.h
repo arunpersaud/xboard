@@ -164,7 +164,7 @@ void DisplayLogos P((void *left, void *right));
 void Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
 			Boolean pathFlag, char *mode, char **name, FILE **fp));
 
-void InitDrawingParams P(()); // in xboard.c
+void InitDrawingParams P((int reload)); // in draw.c
 void DrawLogo P((void *handle, void *logo));
 void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));
