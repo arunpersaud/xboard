@@ -7112,6 +7112,9 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	return;
       }
       doubleClick = FALSE;
+      if(gameMode == AnalyzeMode && pausing && first.excludeMoves) { // use pause state to exclude moves
+	doubleClick = TRUE; gatingPiece = boards[currentMove][y][x];
+      }
       fromX = x; fromY = y; toX = toY = -1;
       if(!appData.oneClick || !OnlyMove(&x, &y, FALSE) ||
 	 // even if only move, we treat as normal when this would trigger a promotion popup, to allow sweep selection
@@ -13396,6 +13399,7 @@ PauseEvent ()
 		 WhiteOnMove(forwardMostMove))) {
 		StopClocks();
 	    }
+	  case AnalyzeMode:
 	    pausing = TRUE;
 	    ModeHighlight();
 	    break;
