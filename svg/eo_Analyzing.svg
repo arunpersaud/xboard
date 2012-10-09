@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"
+   width="14"
+   height="14"
+   id="svg3059">
+  <metadata
+     id="metadata3065">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3063">
+    <filter
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       color-interpolation-filters="sRGB"
+       id="filter2982">
+      <feColorMatrix
+         result="fbSourceGraphic"
+         values="0"
+         type="hueRotate"
+         id="feColorMatrix2984" />
+      <feColorMatrix
+         result="result91"
+         values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0 "
+         in="fbSourceGraphic"
+         id="feColorMatrix2986" />
+      <feBlend
+         in2="result91"
+         mode="darken"
+         in="fbSourceGraphic"
+         result="result92"
+         id="feBlend2988" />
+      <feBlend
+         in2="result92"
+         mode="screen"
+         result="result93"
+         id="feBlend2990" />
+      <feComposite
+         in2="SourceGraphic"
+         operator="in"
+         id="feComposite2992" />
+    </filter>
+  </defs>
+  <image
+     xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABHNCSVQICAgIfAhkiAAAAFFJREFU KJGtktsOABAMQ1X8/y/XE1nELg19klnXk4EWiCTXGQCi3m2wJq/mpkT3vYqaIlbQSHJ4Q7JlhKiS vixHTpPe0ZrOZhf/ZsoE+T++agK9rGutWI9RBAAAAABJRU5ErkJggg== "
+     x="0"
+     y="0"
+     width="14"
+     height="14"
+     id="image3067"
+     style="fill:#1a1a1a;stroke:#000000;filter:url(#filter2982)" />
+</svg>
