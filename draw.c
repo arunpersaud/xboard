@@ -316,7 +316,7 @@ ScaleOnePiece (char *name, int color, int piece)
   cairo_paint (cr);
   cairo_destroy (cr);
 
-  { // operate on bitmap to color it (king-size hack...)
+  if(!appData.trueColors || !*appData.pngDirectory && !appData.svgDirectory) { // operate on bitmap to color it (king-size hack...)
     int stride = cairo_image_surface_get_stride(cs)/4;
     int *buf = (int *) cairo_image_surface_get_data(cs);
     int i, j, p;

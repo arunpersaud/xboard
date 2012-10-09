@@ -415,6 +415,7 @@ typedef struct {
     char *remoteUser;
     float timeDelay;
     char *timeControl;
+    Boolean trueColors;
     Boolean icsActive;
     char *icsHost;
     char *icsPort;

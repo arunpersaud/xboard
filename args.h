@@ -215,6 +215,7 @@ ArgDescriptor argDescriptors[] = {
   { "png", ArgFilename, (void *) &appData.pngDirectory, FALSE, INVALID },
   { "svgDirectory", ArgFilename, (void *) &appData.svgDirectory, XBOARD, (ArgIniType) "" },
   { "svg", ArgFilename, (void *) &appData.svgDirectory, FALSE, INVALID },
+  { "trueColors", ArgBoolean, (void *) &appData.trueColors, TRUE, (ArgIniType) FALSE },
   { "soundDirectory", ArgFilename, (void *) &appData.soundDirectory, XBOARD, (ArgIniType) "" },
   { "msLoginDelay", ArgInt, (void *) &appData.msLoginDelay, XBOARD, (ArgIniType) MS_LOGIN_DELAY },
   { "pasteSelection", ArgBoolean, (void *) &appData.pasteSelection, XBOARD, (ArgIniType) FALSE },
