@@ -268,33 +268,35 @@ ScaleOnePiece (char *name, int color, int piece)
   GError **svgerror=NULL;
   cairo_surface_t *img, *cs;
   cairo_t *cr;
-  int stride = squareSize * 4;
-  double scale;
 
   g_type_init ();
 
-  if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
-    if(!*appData.pngDirectory) img = ConvertPixmap(color, piece); else {
-      snprintf(buf, MSG_SIZ, "%s/%s%s.svg", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
+  if(*appData.svgDirectory) { // try to freshly render svg pieces first, always from file, to supply the source bitmap
+    snprintf(buf, MSG_SIZ, "%s/%s%s.svg", appData.svgDirectory, color ? "Black" : "White", pngPieceNames[piece]);
 
-      svg = rsvg_handle_new ();
-      svg = rsvg_handle_new_from_file(buf,svgerror);
+    if(svg = rsvg_handle_new_from_file(buf,svgerror)) {
 
       rsvg_handle_get_dimensions(svg, &svg_dimensions);
+      img = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, squareSize,  squareSize);
 
-      unsigned char* cairo_data =(unsigned char *) calloc(stride * squareSize, 1);
-      img = cairo_image_surface_create_for_data(cairo_data, CAIRO_FORMAT_ARGB32, squareSize,  squareSize, stride);
-
-      cairo_t *cr_svg = cairo_create(img);
-
-      scale = (double) squareSize/(double) svg_dimensions.height;
-      cairo_scale(cr_svg, scale,scale);
-      cairo_set_antialias (cr_svg, CAIRO_ANTIALIAS_NONE);
-      rsvg_handle_render_cairo(svg, cr_svg);
-
-      if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) img = ConvertPixmap(color, piece);
+      cr = cairo_create(img);
+      cairo_scale(cr, squareSize/(double) svg_dimensions.width, squareSize/(double) svg_dimensions.height);
+      rsvg_handle_render_cairo(svg, cr);
+      if(cairo_surface_status(img) == CAIRO_STATUS_SUCCESS) {
+        if(pngPieceImages[color][piece]) cairo_surface_destroy(pngPieceImages[color][piece]);
+        pngPieceImages[color][piece] = img;
+      }
+      cairo_destroy(cr);
 
       rsvg_handle_close (svg,NULL);
+    }
+  }
+
+  if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
+    if(!*appData.pngDirectory) img = ConvertPixmap(color, piece); else {
+      snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
+      img = cairo_image_surface_create_from_png (buf);
+      if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) img = ConvertPixmap(color, piece);
     }
   }
   pngPieceImages[color][piece] = img;

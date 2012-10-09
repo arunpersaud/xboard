@@ -409,6 +409,7 @@ typedef struct {
     Boolean noChessProgram;
     char *host[ENGINES];
     char *pngDirectory;
+    char *svgDirectory;
     char *soundDirectory;
     char *remoteShell;
     char *remoteUser;
