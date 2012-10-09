@@ -144,6 +144,7 @@ SwitchWindow ()
 void
 NewSurfaces ()
 {
+return;
     // delete surfaces after size becomes invalid, so they will be recreated
     if(csBoardWindow) cairo_surface_destroy(csBoardWindow);
     if(csBoardBackup) cairo_surface_destroy(csBoardBackup);
@@ -447,12 +448,7 @@ void DrawSeekDot(int x, int y, int colorNr)
 void
 DrawSeekOpen ()
 {
-    int boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-    int boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    if(!csBoardWindow) {
-	csBoardWindow = GetOutputSurface(&mainOptions[W_BOARD], 0, 0);
-	csBoardBackup = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, boardWidth, boardHeight);
-    }
+    csBoardWindow = (cairo_surface_t *) mainOptions[W_BOARD].choice;
 }
 
 void
@@ -487,7 +483,7 @@ CreateGrid ()
 }
 
 void
-DoDrawGrid(cairo_surface_t *cs)
+DrawGrid()
 {
   /* draws a grid starting around Nx, Ny squares starting at x,y */
   int i;
@@ -495,7 +491,7 @@ DoDrawGrid(cairo_surface_t *cs)
 
   DrawSeekOpen();
   /* get a cairo_t */
-  cr = cairo_create (cs);
+  cr = cairo_create (csBoardWindow);
 
   cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
   SetPen(cr, lineGap, "#000000", 0);
@@ -515,14 +511,7 @@ DoDrawGrid(cairo_surface_t *cs)
 }
 
 void
-DrawGrid()
-{
-  DoDrawGrid(csBoardWindow);
-  if(!dual) DoDrawGrid(csBoardBackup);
-}
-
-void
-DoDrawBorder (cairo_surface_t *cs, int x, int y, int type)
+DrawBorder (int x, int y, int type)
 {
     cairo_t *cr;
     DrawSeekOpen();
@@ -533,18 +522,13 @@ DoDrawBorder (cairo_surface_t *cs, int x, int y, int type)
 	case 1: col = appData.highlightSquareColor; break;
 	case 2: col = appData.premoveHighlightColor; break;
     }
-    cr = cairo_create(cs);
+    cr = cairo_create(csBoardWindow);
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
     cairo_rectangle(cr, x, y, squareSize+lineGap, squareSize+lineGap);
     SetPen(cr, lineGap, col, 0);
     cairo_stroke(cr);
-}
-
-void
-DrawBorder (int x, int y, int type)
-{
-  DoDrawBorder(csBoardWindow, x, y, type);
-  if(!dual) DoDrawBorder(csBoardBackup, x, y, type);
+    cairo_destroy(cr);
+    DrawExpose(NULL, x, y, squareSize+2*lineGap, squareSize+2*lineGap);
 }
 
 static int
@@ -660,23 +644,25 @@ DrawDot (int marker, int x, int y, int r)
   DoDrawDot(csBoardWindow, marker, x, y, r);
 }
 
-static void
-DoDrawOneSquare (cairo_surface_t *dest, int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align)
+void
+DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align)
 {   // basic front-end board-draw function: takes care of everything that can be in square:
     // piece, background, coordinate/count, marker dot
     cairo_t *cr;
 
+    DrawSeekOpen();
+
     if (piece == EmptySquare) {
-	BlankSquare(dest, x, y, square_color, piece, 1);
+	BlankSquare(csBoardWindow, x, y, square_color, piece, 1);
     } else {
-	pngDrawPiece(dest, piece, square_color, x, y);
+	pngDrawPiece(csBoardWindow, piece, square_color, x, y);
     }
 
     if(align) { // square carries inscription (coord or piece count)
 	int xx = x, yy = y;
 	cairo_text_extents_t te;
 
-	cr = cairo_create (dest);
+	cr = cairo_create (csBoardWindow);
 	cairo_select_font_face (cr, "Sans",
 		    CAIRO_FONT_SLANT_NORMAL,
 		    CAIRO_FONT_WEIGHT_BOLD);
@@ -705,17 +691,8 @@ DoDrawOneSquare (cairo_surface_t *dest, int x, int y, ChessSquare piece, int squ
     }
 
     if(marker) { // print fat marker dot, if requested
-	DoDrawDot(dest, marker, x + squareSize/4, y+squareSize/4, squareSize/2);
+	DoDrawDot(csBoardWindow, marker, x + squareSize/4, y+squareSize/4, squareSize/2);
     }
-}
-
-void
-DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align)
-{
-  DrawSeekOpen();
-  DoDrawOneSquare (csBoardWindow, x, y, piece, square_color, marker, string, align);
-  if(!dual)
-  DoDrawOneSquare (csBoardBackup, x, y, piece, square_color, marker, string, align);
 }
 
 /****	Animation code by Hugh Fisher, DCS, ANU. ****/
@@ -772,22 +749,13 @@ DrawBlank (AnimNr anr, int x, int y, int startColor)
 void CopyRectangle (AnimNr anr, int srcBuf, int destBuf,
 		 int srcX, int srcY, int width, int height, int destX, int destY)
 {
-	cairo_t *cr;// = cairo_create (c_animBufs[anr+destBuf]);
-	cr = cairo_create (c_animBufs[anr+destBuf]);
-	if(c_animBufs[anr+srcBuf] == csBoardWindow)
-	cairo_set_source_surface (cr, csBoardBackup, destX - srcX, destY - srcY);
-	else
+	cairo_t *cr = cairo_create (c_animBufs[anr+destBuf]);
 	cairo_set_source_surface (cr, c_animBufs[anr+srcBuf], destX - srcX, destY - srcY);
 	cairo_rectangle (cr, destX, destY, width, height);
 	cairo_fill (cr);
 	cairo_destroy (cr);
-	if(c_animBufs[anr+destBuf] == csBoardWindow) {
-	cr = cairo_create (csBoardBackup); // also draw to backup
-	cairo_set_source_surface (cr, c_animBufs[anr+srcBuf], destX - srcX, destY - srcY);
-	cairo_rectangle (cr, destX, destY, width, height);
-	cairo_fill (cr);
-	cairo_destroy (cr);
-	}
+	if(c_animBufs[anr+destBuf] == csBoardWindow)
+	    DrawExpose(NULL, destX, destY, squareSize, squareSize);
 }
 
 void
@@ -823,7 +791,7 @@ void
 DrawPolygon (Pnt arrow[], int nr)
 {
     DoDrawPolygon(csBoardWindow, arrow, nr);
-    if(!dual) DoDrawPolygon(csBoardBackup, arrow, nr);
+//    if(!dual) DoDrawPolygon(csBoardBackup, arrow, nr);
 }
 
 

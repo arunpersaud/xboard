@@ -68,6 +68,9 @@ extern char *getenv();
 #include <X11/Xaw/Toggle.h>
 #include <X11/Xaw/Scrollbar.h>
 
+#include <cairo/cairo.h>
+#include <cairo/cairo-xlib.h>
+
 #include "common.h"
 #include "backend.h"
 #include "xboard.h"
@@ -535,19 +538,36 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 {   // handle expose and mouse events on Graph widget
     Dimension w, h;
     Arg args[16];
-    int j, button=10, f=1;
-    Option *opt;
+    int j, button=10, f=1, sizing=0;
+    Option *opt, *graph = (Option *) client_data;
+    PointerCallback *userHandler = graph->target;
+    cairo_t *cr;
+
     if (!XtIsRealized(widget)) return;
 
     switch(event->type) {
-	case Expose:
-	    if (((XExposeEvent*)event)->count > 0) return;  // don't bother if further exposure is pending
-	    /* Get client area */
+	case Expose: // make handling of expose events generic, just copying from memory buffer (->choice) to display (->textValue)
+	    /* Get window size */
 	    j = 0;
 	    XtSetArg(args[j], XtNwidth, &w); j++;
 	    XtSetArg(args[j], XtNheight, &h); j++;
 	    XtGetValues(widget, args, j);
-	    break;
+	    sizing = ((w != graph->max || h != graph->value) && ((XExposeEvent*)event)->count >= 0);
+	    graph->max = w; graph->value = h;
+	    if(sizing && ((XExposeEvent*)event)->count > 0) { graph->max = 0; return; } // don't bother if further exposure is pending during resize
+	    if(!graph->textValue || sizing) {
+		// create surfaces of new size for widget and buffer
+		if(graph->textValue) cairo_surface_destroy((cairo_surface_t *)graph->textValue);
+		graph->textValue = (char*) cairo_xlib_surface_create(xDisplay, XtWindow(widget), DefaultVisual(xDisplay, 0), w, h);
+		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
+		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
+	    }
+	    cr = cairo_create((cairo_surface_t *) graph->textValue);
+	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
+	    cairo_rectangle(cr, ((XExposeEvent*)event)->x, ((XExposeEvent*)event)->y, ((XExposeEvent*)event)->width, ((XExposeEvent*)event)->height);
+	    cairo_fill(cr);
+	    cairo_destroy(cr);
+	    return;
 	case MotionNotify:
 	    f = 0;
 	    w = ((XButtonEvent*)event)->x; h = ((XButtonEvent*)event)->y;
@@ -565,13 +585,23 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	    }
     }
     button *= f;
-    opt = ((PointerCallback*) client_data)(button, w, h);
+    opt = userHandler(button, w, h);
     if(opt) { // user callback specifies a context menu; pop it up
 	XUngrabPointer(xDisplay, CurrentTime);
 	XtCallActionProc(widget, "XawPositionSimpleMenu", event, &(opt->name), 1);
 	XtPopupSpringLoaded(opt->handle);
     }
     XSync(xDisplay, False);
+}
+
+void
+DrawExpose (Option *opt, int x, int y, int w, int h)
+{
+  XExposeEvent e;
+  opt = &mainOptions[W_BOARD];
+  if(!opt->handle) return;
+  e.x = x; e.y = y; e.width = w; e.height = h; e.count = -1; e.type = Expose; // count = -1: kludge to suppress sizing
+  GraphEventProc(opt->handle, (caddr_t) opt, (XEvent *) &e); // fake expose event
 }
 
 static void
@@ -965,7 +995,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    option[i].handle = (void*)
 		(last = XtCreateManagedWidget("graph", widgetClass, form, args, j));
 	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
-		      (XtEventHandler) GraphEventProc, option[i].target); // mandatory user-supplied expose handler
+		      (XtEventHandler) GraphEventProc, &option[i]); // mandatory user-supplied expose handler
 	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
 	    break;
 	  case PopUp: // note: used only after Graph, so 'last' refers to the Graph widget
