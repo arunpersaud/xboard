@@ -73,3 +73,7 @@ void CreateAnyPieces P((void));
 void CreatePNGPieces P((void));
 void CreateGrid P((void));
 
+// defined in xoptions.c
+void DrawExpose P((Option *opt, int x, int y, int w, int h));
+
+
