@@ -1,21 +1,21 @@
 dnl| configure.in
 dnl|
-dnl| Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006, 2007, 
+dnl| Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006, 2007,
 dnl| 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
 dnl|
 dnl| GNU XBoard is free software: you can redistribute it and/or modify
 dnl| it under the terms of the GNU General Public License as published by
 dnl| the Free Software Foundation, either version 3 of the License, or (at
 dnl| your option) any later version.
-dnl| 
+dnl|
 dnl| GNU XBoard is distributed in the hope that it will be useful, but
 dnl| WITHOUT ANY WARRANTY; without even the implied warranty of
 dnl| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 dnl| General Public License for more details.
-dnl| 
+dnl|
 dnl| You should have received a copy of the GNU General Public License
-dnl| along with this program. If not, see http://www.gnu.org/licenses/.  
-dnl| 
+dnl| along with this program. If not, see http://www.gnu.org/licenses/.
+dnl|
 dnl| --------------------------------------------------------------------
 dnl|
 dnl| You can process this file with autoconf to produce a configure script.
@@ -23,7 +23,7 @@ dnl| However, normally the supplied configure script will work fine.
 dnl|
 dnl| If you do need to change the configure script, instead of editing
 dnl| it directly, try to edit configure.in (in a way that will keep
-dnl| it portable to sites and systems other than your own), and run autoconf 
+dnl| it portable to sites and systems other than your own), and run autoconf
 dnl| to regenerate configure.  Then submit your changes to be folded into
 dnl| the standard version of xboard.
 
@@ -69,7 +69,7 @@ fi
 AC_PROG_CC
 
 dnl| need this to be able to compile files in a subdir
-AM_PROG_CC_C_O 
+AM_PROG_CC_C_O
 
 AC_PROG_CPP
 AC_ISC_POSIX
@@ -153,7 +153,7 @@ AC_ARG_WITH([Xaw3d],
 dnl | check availability of Xaw3d
 XAW_LIBS=
 AS_IF([test x"$with_Xaw3d" != x"no"],
-      [AC_CHECK_LIB([Xaw3d], 
+      [AC_CHECK_LIB([Xaw3d],
                     [XawTextReplace],
                     [AC_SUBST([XAW_LIBS],["-lXaw3d"])
                      AC_DEFINE([USE_XAW3D], [1],
@@ -178,6 +178,14 @@ AC_SUBST(XAW_LIBS)
 
 dnl | end Xaw/Xaw3d test
 
+dnl | check for cairo and librsvg
+CAIRO_REQUIRED=1.2.0
+LIBRSVG_REQUIRED=2.14.0
+
+
+PKG_CHECK_MODULES(CAIRO, cairo >= $CAIRO_REQUIRED librsvg-2.0 >= LIBRSVG_REQUIRED)
+AC_SUBST(CAIRO_CFLAGS)
+AC_SUBST(CAIRO_LIBS)
 
 AC_CANONICAL_HOST
 
@@ -214,7 +222,7 @@ dnl| know whether the X header files on HP-UX require it.
     fi
 
 dnl| HP doesn't supply a full set of X header files and libraries.  People
-dnl| often have some things installed in one place and some in another. 
+dnl| often have some things installed in one place and some in another.
 dnl| AC_PATH_XTRA will find only one place, so we try to add all the
 dnl| likely ones that might be missing here.  It might be better to
 dnl| change AC_PATH_XTRA to try to extract this information from imake,
@@ -330,7 +338,7 @@ dnl| code above.
     AC_DEFINE(PTY_TTY_NAME_SPRINTF, [sprintf (pty_name, "/dev/ttyp%d", i);])
 dnl| USE_PTYS=1
   ;;
-	
+
   *-*-dynix* | *-*-ptx* )
 dnl| USE_PTYS=1
   ;;
@@ -387,7 +395,7 @@ AC_SUBST(CONF_CFLAGS)
 AC_SUBST(CONF_LDFLAGS)
 
 AC_MSG_CHECKING(whether ptys or pipes should be used)
-AC_ARG_ENABLE( [ptys], 
+AC_ARG_ENABLE( [ptys],
 	       [AS_HELP_STRING([--enable-ptys],[force use of pseudo-ttys with child processes])],
 [if test "$enableval" = yes; then
   USE_PTYS=1
@@ -411,9 +419,9 @@ AC_DEFINE_UNQUOTED(USE_PTYS, $USE_PTYS)
 
 dnl | define not to build zippy as a default, so that autoheader is happy
 AC_DEFINE(ZIPPY, 0,[should zippy be enabled])
-AC_ARG_ENABLE( [zippy], 
+AC_ARG_ENABLE( [zippy],
 	       [AS_HELP_STRING([--enable-zippy],[support interfacing a chess program to ICS (default)])],
-	       [], 
+	       [],
 	       [enable_zippy="yes"])
 
 if test x"$enable_zippy" != xno; then
@@ -422,7 +430,7 @@ fi
 AM_CONDITIONAL([ZIPPY], [test x$enable_zippy != xno])
 
 
-AC_ARG_ENABLE(sigint, 
+AC_ARG_ENABLE(sigint,
 [AS_HELP_STRING([--enable-sigint],[sending SIGINT (^C) wakes up GNU Chess (default)])],
 [if test "$enableval" = yes; then
   AC_DEFINE(ATTENTION, 1)
@@ -435,7 +443,7 @@ AC_DEFINE(ATTENTION, 1)])
 
 dnl | save all information for X in X_LIBS, also add the libraries themself
 dnl | since AC_PATH_XTRA only adds the paths
-X_LIBS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS -lXmu -lX11 -lXt "    
+X_LIBS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS -lXmu -lX11 -lXt "
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_LIBS)
 
