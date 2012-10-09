@@ -32,8 +32,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xoptions.c dialogs.c dialogs.h \
 		 $(ZPY)
 SUBDIRS = po
-xboard_LDFLAGS = `pkg-config --libs cairo`
-xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@
+xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
 EXTRA_DIST = pixmaps bitmaps sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
@@ -42,14 +41,14 @@ EXTRA_DIST = pixmaps bitmaps sounds winboard \
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' `pkg-config --libs cairo` @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
 	    -DBITMAPDIR='"$(datadir)/games/xboard/bitmaps/default"' \
 	    -DLOCALEDIR='"$(localedir)"'
 
 ACLOCAL_AMFLAGS = -I m4
 
 info_TEXINFOS =  xboard.texi
-xboard_TEXINFOS =  copyright.texi 
+xboard_TEXINFOS =  copyright.texi
 man6_MANS = xboard.man
 
 
@@ -182,7 +181,7 @@ install-data-hook: install-mime-database
 uninstall-hook: uninstall-mime-database
 
 install-mime-database:
-if ENABLE_UPDATE_MIMEDB	
+if ENABLE_UPDATE_MIMEDB
 	-if test -z "$(DESTDIR)" -a -n "$(XDG_MIME)" -a -n "$(XDG_DESKTOP_MENU)" -a -n "$(XDG_ICON_RESOURCE)" ; then \
 		$(XDG_MIME) install --mode system --novendor xboard.xml ;\
 		$(XDG_DESKTOP_MENU) install --mode system --novendor xboard-pgn-viewer.desktop;\
@@ -199,7 +198,7 @@ if ENABLE_UPDATE_MIMEDB
 endif
 
 uninstall-mime-database:
-if ENABLE_UPDATE_MIMEDB	
+if ENABLE_UPDATE_MIMEDB
 	-if test -z "$(DESTDIR)" -a -n "$(XDG_MIME)" -a -n "$(XDG_DESKTOP_MENU)" -a -n "$(XDG_ICON_RESOURCE)" ; then \
 		$(XDG_MIME) uninstall --mode system --novendor xboard.xml;\
 		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-pgn-viewer.desktop;\
