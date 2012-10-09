@@ -55,6 +55,8 @@
 #include <math.h>
 #include <cairo/cairo.h>
 #include <cairo/cairo-xlib.h>
+#include <librsvg/rsvg.h>
+#include <librsvg/rsvg-cairo.h>
 
 #if STDC_HEADERS
 # include <stdlib.h>
@@ -261,21 +263,48 @@ ScaleOnePiece (char *name, int color, int piece)
 {
   float w, h;
   char buf[MSG_SIZ];
+  RsvgHandle *svg=NULL;
+  RsvgDimensionData svg_dimensions;
+  GError **svgerror=NULL;
   cairo_surface_t *img, *cs;
   cairo_t *cr;
+  int stride = squareSize * 4;
+  double scale;
+
+  g_type_init ();
 
   if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
     if(!*appData.pngDirectory) img = ConvertPixmap(color, piece); else {
-      snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
-      img = cairo_image_surface_create_from_png (buf);
+      snprintf(buf, MSG_SIZ, "%s/%s%s.svg", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
+
+      svg = rsvg_handle_new ();
+      svg = rsvg_handle_new_from_file(buf,svgerror);
+
+      rsvg_handle_get_dimensions(svg, &svg_dimensions);
+
+      unsigned char* cairo_data =(unsigned char *) calloc(stride * squareSize, 1);
+      img = cairo_image_surface_create_for_data(cairo_data, CAIRO_FORMAT_ARGB32, squareSize,  squareSize, stride);
+
+      cairo_t *cr_svg = cairo_create(img);
+
+      scale = (double) squareSize/(double) svg_dimensions.height;
+      cairo_scale(cr_svg, scale,scale);
+      cairo_set_antialias (cr_svg, CAIRO_ANTIALIAS_NONE);
+      rsvg_handle_render_cairo(svg, cr_svg);
+
       if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) img = ConvertPixmap(color, piece);
+
+      rsvg_handle_close (svg,NULL);
     }
   }
   pngPieceImages[color][piece] = img;
+
+
   // create new bitmap to hold scaled piece image (and remove any old)
   if(pngPieceBitmaps2[color][piece]) cairo_surface_destroy (pngPieceBitmaps2[color][piece]);
   pngPieceBitmaps2[color][piece] = cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
   if(piece <= WhiteKing) pngPieceBitmaps[color][piece] = cs;
+
   // scaled copying of the raw png image
   cr = cairo_create(cs);
   w = cairo_image_surface_get_width (img);
@@ -284,6 +313,7 @@ ScaleOnePiece (char *name, int color, int piece)
   cairo_set_source_surface (cr, img, 0, 0);
   cairo_paint (cr);
   cairo_destroy (cr);
+
   { // operate on bitmap to color it (king-size hack...)
     int stride = cairo_image_surface_get_stride(cs)/4;
     int *buf = (int *) cairo_image_surface_get_data(cs);
