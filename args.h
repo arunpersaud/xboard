@@ -213,6 +213,8 @@ ArgDescriptor argDescriptors[] = {
   { "flashRate", ArgInt, (void *) &appData.flashRate, XBOARD, (ArgIniType) FLASH_RATE },
   { "pngDirectory", ArgFilename, (void *) &appData.pngDirectory, XBOARD, (ArgIniType) "" },
   { "png", ArgFilename, (void *) &appData.pngDirectory, FALSE, INVALID },
+  { "svgDirectory", ArgFilename, (void *) &appData.svgDirectory, XBOARD, (ArgIniType) "" },
+  { "svg", ArgFilename, (void *) &appData.svgDirectory, FALSE, INVALID },
   { "soundDirectory", ArgFilename, (void *) &appData.soundDirectory, XBOARD, (ArgIniType) "" },
   { "msLoginDelay", ArgInt, (void *) &appData.msLoginDelay, XBOARD, (ArgIniType) MS_LOGIN_DELAY },
   { "pasteSelection", ArgBoolean, (void *) &appData.pasteSelection, XBOARD, (ArgIniType) FALSE },
