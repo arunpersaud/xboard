@@ -78,6 +78,7 @@ extern char *getenv();
 #include "xboard.h"
 #include "evalgraph.h"
 #include "xevalgraph.h"
+#include "draw.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS
@@ -109,8 +110,7 @@ Dimension evalGraphW, evalGraphH;
 
 char *crWhite = "#FFFFB0";
 char *crBlack = "#AD5D3D";
-static Window eGraphWindow;
-static cairo_surface_t *cs;
+Option *disp;
 
 static Option *EvalCallback P((int button, int x, int y));
 
@@ -146,7 +146,7 @@ DrawSegment (int x, int y, int *lastX, int *lastY, enum PEN penType)
   static int curX, curY;
 
   if(penType != PEN_NONE) {
-    cairo_t *cr = cairo_create(cs);
+    cairo_t *cr = cairo_create(DRAWABLE(disp));
     cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
     cairo_move_to (cr, curX, curY);
     cairo_line_to (cr, x,y);
@@ -165,7 +165,7 @@ DrawRectangle (int left, int top, int right, int bottom, int side, int style)
 {
   cairo_t *cr;
 
-  cr = cairo_create (cs);
+  cr = cairo_create (DRAWABLE(disp));
   cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
   cairo_rectangle (cr, left, top, right-left, bottom-top);
   switch(side)
@@ -192,7 +192,7 @@ DrawEvalText (char *buf, int cbBuf, int y)
 {
     // the magic constants 8 and 5 should really be derived from the font size somehow
   cairo_text_extents_t extents;
-  cairo_t *cr = cairo_create(cs);
+  cairo_t *cr = cairo_create(DRAWABLE(disp));
 
   /* GTK-TODO this has to go into the font-selection */
   cairo_select_font_face (cr, "Sans",
@@ -220,8 +220,6 @@ static int initDone = FALSE;
 static void
 InitializeEvalGraph (Option *opt, int w, int h)
 {
-  eGraphWindow = XtWindow(opt->handle);
-
   if(w == 0) {
     Arg args[10];
     XtSetArg(args[0], XtNwidth, &evalGraphW);
@@ -230,22 +228,10 @@ InitializeEvalGraph (Option *opt, int w, int h)
     nWidthPB = evalGraphW; nHeightPB = evalGraphH;
   } else nWidthPB = w, nHeightPB = h;
 
-  if(cs) cairo_surface_destroy(cs);
-  cs=cairo_xlib_surface_create(xDisplay, eGraphWindow, DefaultVisual(xDisplay, 0), nWidthPB, nHeightPB);
-
   initDone = TRUE;
 }
 
 // The following stuff is really back-end (but too little to bother with a separate file)
-
-static void
-DisplayEvalGraph ()
-{   // back-end painting; calls back front-end primitives for lines, rectangles and text
-    char *t = MakeEvalTitle(_(title));
-    if(t != title && nWidthPB < 340) t = MakeEvalTitle(nWidthPB < 240 ? "" : _("Eval"));
-    PaintEvalGraph();
-    SetDialogTitle(EvalGraphDlg, t);
-}
 
 static void
 EvalClick (int x, int y)
@@ -259,6 +245,17 @@ static Option graphOptions[] = {
 { 150, 0x9C, 300, NULL, (void*) &EvalCallback, NULL, NULL, Graph , "" },
 { 0, 2, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
+
+static void
+DisplayEvalGraph ()
+{   // back-end painting; calls back front-end primitives for lines, rectangles and text
+    char *t = MakeEvalTitle(_(title));
+    nWidthPB = disp->max; nHeightPB = disp->value;
+    if(t != title && nWidthPB < 340) t = MakeEvalTitle(nWidthPB < 240 ? "" : _("Eval"));
+    PaintEvalGraph();
+    GraphExpose(graphOptions, 0, 0, nWidthPB, nHeightPB);
+    SetDialogTitle(EvalGraphDlg, t);
+}
 
 static Option *
 EvalCallback (int button, int x, int y)
@@ -286,6 +283,7 @@ EvalGraphPopUp ()
 {
     if (GenericPopUp(graphOptions, _(title), EvalGraphDlg, BoardWindow, NONMODAL, 1)) {
 	InitializeEvalGraph(&graphOptions[0], 0, 0); // first time: add callbacks and initialize pens
+	disp = graphOptions;
     } else {
 	SetDialogTitle(EvalGraphDlg, _(title));
 	SetIconName(EvalGraphDlg, _(title));

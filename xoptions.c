@@ -565,6 +565,7 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 			 // so only change when size is no longer good
 		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
+		break;
 	    }
 	    cr = cairo_create((cairo_surface_t *) graph->textValue);
 	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
