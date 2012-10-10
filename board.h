@@ -95,4 +95,5 @@ void FlashDelay P((int flash_delay));
 void SwitchWindow P((void));
 
 extern int damage[2][BOARD_RANKS][BOARD_FILES];
+extern Option *currBoard;
 

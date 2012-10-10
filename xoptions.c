@@ -599,10 +599,9 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 }
 
 void
-DrawExpose (Option *opt, int x, int y, int w, int h)
+GraphExpose (Option *opt, int x, int y, int w, int h)
 {
   XExposeEvent e;
-  opt = &mainOptions[W_BOARD];
   if(!opt->handle) return;
   e.x = x; e.y = y; e.width = w; e.height = h; e.count = -1; e.type = Expose; // count = -1: kludge to suppress sizing
   GraphEventProc(opt->handle, (caddr_t) opt, (XEvent *) &e); // fake expose event

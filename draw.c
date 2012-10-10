@@ -110,7 +110,8 @@ extern char *getenv();
 #define SOLID 0
 #define OUTLINE 1
 Boolean cairoAnimate;
-static cairo_surface_t *csBoardWindow, *csDualBoard;
+Option *currBoard;
+static cairo_surface_t *csBoardWindow;
 static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
@@ -131,14 +132,9 @@ static int dual = 0;
 void
 SwitchWindow ()
 {
-    cairo_surface_t *cstmp = csBoardWindow;
-    csBoardWindow = csDualBoard;
     dual = !dual;
-    if(!csDualBoard) {
-	csBoardWindow = DRAWABLE(dualOptions+3);
-	dual = 1;
-    }
-    csDualBoard = cstmp;
+    currBoard = (dual ? &mainOptions[W_BOARD] : &dualOptions[3]);
+    csBoardWindow = DRAWABLE(currBoard);
 }
 
 #define BoardSize int
@@ -437,6 +433,7 @@ void
 DrawSeekOpen ()
 {
     csBoardWindow = (cairo_surface_t *) mainOptions[W_BOARD].choice;
+    currBoard = &mainOptions[W_BOARD];
 }
 
 void
@@ -516,7 +513,7 @@ DrawBorder (int x, int y, int type)
     SetPen(cr, lineGap, col, 0);
     cairo_stroke(cr);
     cairo_destroy(cr);
-    DrawExpose(NULL, x - lineGap/2, y - lineGap/2, squareSize+2*lineGap, squareSize+2*lineGap);
+    GraphExpose(currBoard, x - lineGap/2, y - lineGap/2, squareSize+2*lineGap, squareSize+2*lineGap);
 }
 
 static int
@@ -742,7 +739,7 @@ void CopyRectangle (AnimNr anr, int srcBuf, int destBuf,
 	cairo_fill (cr);
 	cairo_destroy (cr);
 	if(c_animBufs[anr+destBuf] == csBoardWindow)
-	    DrawExpose(NULL, destX, destY, squareSize, squareSize);
+	    GraphExpose(currBoard, destX, destY, squareSize, squareSize);
 }
 
 void
