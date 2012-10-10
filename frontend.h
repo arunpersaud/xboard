@@ -97,8 +97,6 @@ void DrawSeekAxis P(( int x, int y, int xTo, int yTo ));
 void DrawSeekBackground P(( int left, int top, int right, int bottom ));
 void DrawSeekText P((char *buf, int x, int y));
 void DrawSeekDot P((int x, int y, int color));
-void DrawSeekOpen P((void));
-void DrawSeekClose P((void));
 void PopUpMoveDialog P((char first));
 
 void RingBell P((void));

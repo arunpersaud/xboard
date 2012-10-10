@@ -372,6 +372,7 @@ void DrawSeekAxis( int x, int y, int xTo, int yTo )
 
     /* free memory */
     cairo_destroy (cr);
+    GraphExpose(currBoard, x-1, yTo-1, xTo-x+2, y-yTo+2);
 }
 
 void DrawSeekBackground( int left, int top, int right, int bottom )
@@ -385,6 +386,7 @@ void DrawSeekBackground( int left, int top, int right, int bottom )
 
     /* free memory */
     cairo_destroy (cr);
+    GraphExpose(currBoard, left, top, right-left, bottom-top);
 }
 
 void DrawSeekText(char *buf, int x, int y)
@@ -403,6 +405,7 @@ void DrawSeekText(char *buf, int x, int y)
 
     /* free memory */
     cairo_destroy (cr);
+    GraphExpose(currBoard, x-5, y-10, 60, 15);
 }
 
 void DrawSeekDot(int x, int y, int colorNr)
@@ -427,22 +430,13 @@ void DrawSeekDot(int x, int y, int colorNr)
 
     /* free memory */
     cairo_destroy (cr);
+    GraphExpose(currBoard, x-squareSize/8, y-squareSize/8, 2*(squareSize/8), 2*(squareSize/8));
 }
 
 void
 InitDrawingHandle (Option *opt)
 {
     csBoardWindow = DRAWABLE(opt);
-}
-
-void
-DrawSeekOpen ()
-{
-}
-
-void
-DrawSeekClose ()
-{
 }
 
 void
@@ -478,7 +472,6 @@ DrawGrid()
   int i;
   cairo_t *cr;
 
-  DrawSeekOpen();
   /* get a cairo_t */
   cr = cairo_create (csBoardWindow);
 
@@ -503,7 +496,6 @@ void
 DrawBorder (int x, int y, int type)
 {
     cairo_t *cr;
-    DrawSeekOpen();
     char *col;
 
     switch(type) {
@@ -628,7 +620,6 @@ DoDrawDot (cairo_surface_t *cs, int marker, int x, int y, int r)
 void
 DrawDot (int marker, int x, int y, int r)
 { // used for atomic captures; no need to draw on backup
-  DrawSeekOpen();
   DoDrawDot(csBoardWindow, marker, x, y, r);
 }
 
@@ -637,8 +628,6 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 {   // basic front-end board-draw function: takes care of everything that can be in square:
     // piece, background, coordinate/count, marker dot
     cairo_t *cr;
-
-    DrawSeekOpen();
 
     if (piece == EmptySquare) {
 	BlankSquare(csBoardWindow, x, y, square_color, piece, 1);
@@ -696,7 +685,6 @@ static cairo_surface_t *c_animBufs[3*NrOfAnims]; // newBuf, saveBuf
 static void
 InitAnimState (AnimNr anr)
 {
-    DrawSeekOpen(); // set cs to board widget
     if(c_animBufs[anr]) cairo_surface_destroy (c_animBufs[anr]);
     if(c_animBufs[anr+2]) cairo_surface_destroy (c_animBufs[anr+2]);
     c_animBufs[anr+4] = csBoardWindow;
