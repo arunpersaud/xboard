@@ -49,6 +49,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
+#define DRAWABLE(X) ((cairo_surface_t *) ((X)->choice))
+
 // defined in xboard.c
 int MakeColors P((void));
 void ResizeBoardWindow P((int w, int h, int inhibit));

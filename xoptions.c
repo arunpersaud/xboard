@@ -555,10 +555,14 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	    sizing = ((w != graph->max || h != graph->value) && ((XExposeEvent*)event)->count >= 0);
 	    graph->max = w; graph->value = h;
 	    if(sizing && ((XExposeEvent*)event)->count > 0) { graph->max = 0; return; } // don't bother if further exposure is pending during resize
-	    if(!graph->textValue || sizing) {
-		// create surfaces of new size for widget and buffer
+	    if(!graph->textValue || sizing) { // create surfaces of new size for display widget
 		if(graph->textValue) cairo_surface_destroy((cairo_surface_t *)graph->textValue);
 		graph->textValue = (char*) cairo_xlib_surface_create(xDisplay, XtWindow(widget), DefaultVisual(xDisplay, 0), w, h);
+	    }
+	    if(sizing) { // the memory buffer was already created in GenericPopup(),
+			 // to give drawing routines opportunity to use it befor first expose event
+			 // (which are only processed when main gets to the event loop, so after all init!)
+			 // so only change when size is no longer good
 		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 	    }
@@ -997,6 +1001,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
 		      (XtEventHandler) GraphEventProc, &option[i]); // mandatory user-supplied expose handler
 	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
+	    option[i].choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, option[i].max, option[i].value); // image buffer
 	    break;
 	  case PopUp: // note: used only after Graph, so 'last' refers to the Graph widget
 	    option[i].handle = (void*) CreateComboPopup(last, option + i, i + 256*dlgNr, TRUE, option[i].value);

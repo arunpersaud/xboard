@@ -110,7 +110,7 @@ extern char *getenv();
 #define SOLID 0
 #define OUTLINE 1
 Boolean cairoAnimate;
-static cairo_surface_t *csBoardWindow, *csBoardBackup, *csDualBoard;
+static cairo_surface_t *csBoardWindow, *csDualBoard;
 static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
@@ -135,7 +135,7 @@ SwitchWindow ()
     csBoardWindow = csDualBoard;
     dual = !dual;
     if(!csDualBoard) {
-	csBoardWindow = GetOutputSurface(&dualOptions[3], 0, 0);
+	csBoardWindow = DRAWABLE(dualOptions+3);
 	dual = 1;
     }
     csDualBoard = cstmp;
@@ -538,24 +538,23 @@ CutOutSquare (int x, int y, int *x0, int *y0, int  kind)
 }
 
 void
-DrawLogo (void *handle, void *logo)
+DrawLogo (Option *opt, void *logo)
 {
-    cairo_surface_t *img, *cs;
+    cairo_surface_t *img;
     cairo_t *cr;
     int w, h;
 
-    if(!logo || !handle) return;
-    cs = GetOutputSurface(handle, appData.logoSize, appData.logoSize/2);
+    if(!logo || !opt) return;
     img = cairo_image_surface_create_from_png (logo);
     w = cairo_image_surface_get_width (img);
     h = cairo_image_surface_get_height (img);
-    cr = cairo_create(cs);
+    cr = cairo_create(DRAWABLE(opt));
     cairo_scale(cr, (float)appData.logoSize/w, appData.logoSize/(2.*h));
     cairo_set_source_surface (cr, img, 0, 0);
     cairo_paint (cr);
     cairo_destroy (cr);
     cairo_surface_destroy (img);
-    cairo_surface_destroy (cs);
+    GraphExpose(opt, 0, 0, appData.logoSize, appData.logoSize/2);
 }
 
 static void

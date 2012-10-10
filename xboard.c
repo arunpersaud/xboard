@@ -1669,14 +1669,6 @@ SetupDropMenu ()
     }
 }
 
-cairo_surface_t *
-GetOutputSurface(Option *opt, int w, int h)
-{
-	if(w == 0) w = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-	if(h == 0) h = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-        return cairo_xlib_surface_create(xDisplay, XtWindow(opt->handle), DefaultVisual(xDisplay, 0), w, h);
-}
-
 static void
 do_flash_delay (unsigned long msec)
 {
@@ -1912,7 +1904,7 @@ ModeHighlight ()
     /* Maybe all the enables should be handled here, not just this one */
     EnableNamedMenuItem("Mode.Training", gameMode == Training || gameMode == PlayFromGameFile);
 
-    DisplayLogos(optList[W_WHITE-1].handle, optList[W_BLACK+1].handle);
+    DisplayLogos(&optList[W_WHITE-1], &optList[W_BLACK+1]);
 }
 
 
@@ -2560,7 +2552,7 @@ UpdateLogos (int displ)
     if(optList[W_WHITE-1].handle == NULL) return;
     LoadLogo(&first, 0, 0);
     LoadLogo(&second, 1, appData.icsActive);
-    if(displ) DisplayLogos(optList[W_WHITE-1].handle, optList[W_BLACK+1].handle);
+    if(displ) DisplayLogos(&optList[W_WHITE-1], &optList[W_BLACK+1]);
     return;
 }
 

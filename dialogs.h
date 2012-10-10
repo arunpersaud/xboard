@@ -160,12 +160,12 @@ int  ReadScroll P((Option *opt, float *top, float *bottom));
 void SetScroll P((Option *opt, float f));
 void AddHandler  P((Option *opt, int nr));
 void SendText P((int n));
-void DisplayLogos P((void *left, void *right));
+void DisplayLogos P((Option *left, Option *right));
 void Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
 			Boolean pathFlag, char *mode, char **name, FILE **fp));
 
 void InitDrawingParams P((int reload)); // in draw.c
-void DrawLogo P((void *handle, void *logo));
+void DrawLogo P((Option *opt, void *logo));
 void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));
 void SetClockIcon P((int color));
