@@ -1931,7 +1931,7 @@ static int pmFromX = -1, pmFromY = -1;
 void *userLogo;
 
 void
-DisplayLogos (void *w1, void *w2)
+DisplayLogos (Option *w1, Option *w2)
 {
 	void *whiteLogo = first.programLogo, *blackLogo = second.programLogo;
 	if(appData.autoLogo) {
@@ -2018,14 +2018,14 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
 Option *
 LogoW (int n, int x, int y)
 {
-    if(n == 10) DisplayLogos(mainOptions[W_WHITE-1].handle, NULL);
+    if(n == 10) DisplayLogos(&mainOptions[W_WHITE-1], NULL);
     return NULL;
 }
 
 Option *
 LogoB (int n, int x, int y)
 {
-    if(n == 10) DisplayLogos(NULL, mainOptions[W_BLACK+1].handle);
+    if(n == 10) DisplayLogos(NULL, &mainOptions[W_BLACK+1]);
     return NULL;
 }
 
