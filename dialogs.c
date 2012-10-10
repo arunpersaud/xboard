@@ -2073,6 +2073,7 @@ Exp (int n, int x, int y)
 	case 10:
 	    sizing = (oldW != x || oldH != y);
 	    oldW = x; oldH = y;
+	    InitDrawingHandle(mainOptions + W_BOARD);
 	    if(sizing) return NULL; // don't redraw while sizing
 	    DrawPosition(True, NULL);
 	default:
