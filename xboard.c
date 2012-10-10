@@ -1261,6 +1261,8 @@ main (int argc, char **argv)
 #else
 						&clockFonStruct);
 #endif
+    InitDrawingHandle(optList + W_BOARD);
+    currBoard        = &optList[W_BOARD];
     boardWidget      = optList[W_BOARD].handle;
     menuBarWidget    = optList[W_MENU].handle;
     dropMenu         = optList[W_DROP].handle;
