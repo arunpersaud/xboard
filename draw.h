@@ -59,7 +59,6 @@ void CreateGCs P((int redo));
 void DelayedDrag P((void));
 void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
 		   u_int wreq, u_int hreq));
-cairo_surface_t *GetOutputSurface P((Option *opt, int w, int h));
 
 extern XFontStruct *coordFontStruct, *countFontStruct;
 extern Font coordFontID, countFontID;
@@ -76,6 +75,5 @@ void CreatePNGPieces P((void));
 void CreateGrid P((void));
 
 // defined in xoptions.c
-void DrawExpose P((Option *opt, int x, int y, int w, int h));
-
+void GraphExpose P((Option *opt, int x, int y, int w, int h));
 

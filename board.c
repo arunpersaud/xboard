@@ -98,6 +98,7 @@ extern char *getenv();
 #include "backend.h"
 #include "moves.h"
 #include "board.h"
+#include "draw.h"
 
 
 #ifdef __EMX__
@@ -812,10 +813,10 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
     if (do_flash && piece != EmptySquare && appData.flashCount > 0) {
 	for (i=0; i<appData.flashCount; ++i) {
 	    DrawOneSquare(x, y, piece, square_color, 0, string, 0);
-	    DrawExpose(NULL, x, y, squareSize, squareSize);
+	    GraphExpose(currBoard, x, y, squareSize, squareSize);
 	    FlashDelay(flash_delay);
 	    DrawOneSquare(x, y, EmptySquare, square_color, 0, string, 0);
-	    DrawExpose(NULL, x, y, squareSize, squareSize);
+	    GraphExpose(currBoard, x, y, squareSize, squareSize);
 	    FlashDelay(flash_delay);
 	}
     }
@@ -1000,7 +1001,7 @@ DrawPosition (int repaint, Board board)
     DrawDragPiece();
 
     if(exposeAll)
-	DrawExpose(NULL, 0, 0, BOARD_WIDTH*(squareSize + lineGap) + lineGap, BOARD_HEIGHT*(squareSize + lineGap) + lineGap);
+	GraphExpose(currBoard, 0, 0, BOARD_WIDTH*(squareSize + lineGap) + lineGap, BOARD_HEIGHT*(squareSize + lineGap) + lineGap);
     else {
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	    for (j = 0; j < BOARD_WIDTH; j++)
@@ -1016,9 +1017,9 @@ DrawPosition (int repaint, Board board)
 			  (squareSize + lineGap);
 		    }
 		    if(damage[nr][i][j] & 2) // damage by old or new arrow
-			DrawExpose(NULL, x - lineGap, y - lineGap, squareSize + 2*lineGap, squareSize  + 2*lineGap);
+			GraphExpose(currBoard, x - lineGap, y - lineGap, squareSize + 2*lineGap, squareSize  + 2*lineGap);
 		    else
-			DrawExpose(NULL, x, y, squareSize, squareSize);
+			GraphExpose(currBoard, x, y, squareSize, squareSize);
 		    damage[nr][i][j] &= ~2; // remember damage by newly drawn error in '2' bit, to schedule it for erasure next draw
 		}
     }
