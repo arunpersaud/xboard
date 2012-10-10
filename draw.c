@@ -111,7 +111,7 @@ extern char *getenv();
 #define OUTLINE 1
 Boolean cairoAnimate;
 Option *currBoard;
-static cairo_surface_t *csBoardWindow;
+cairo_surface_t *csBoardWindow;
 static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
@@ -430,10 +430,14 @@ void DrawSeekDot(int x, int y, int colorNr)
 }
 
 void
+InitDrawingHandle (Option *opt)
+{
+    csBoardWindow = DRAWABLE(opt);
+}
+
+void
 DrawSeekOpen ()
 {
-    csBoardWindow = (cairo_surface_t *) mainOptions[W_BOARD].choice;
-    currBoard = &mainOptions[W_BOARD];
 }
 
 void
