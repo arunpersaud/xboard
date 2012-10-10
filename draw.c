@@ -516,7 +516,7 @@ DrawBorder (int x, int y, int type)
     SetPen(cr, lineGap, col, 0);
     cairo_stroke(cr);
     cairo_destroy(cr);
-    DrawExpose(NULL, x, y, squareSize+2*lineGap, squareSize+2*lineGap);
+    DrawExpose(NULL, x - lineGap/2, y - lineGap/2, squareSize+2*lineGap, squareSize+2*lineGap);
 }
 
 static int
