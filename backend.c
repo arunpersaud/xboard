@@ -2513,9 +2513,7 @@ PlotSeekAd (int i)
 void
 PlotSingleSeekAd (int i)
 {
-	DrawSeekOpen();
 	PlotSeekAd(i);
-	DrawSeekClose();
 }
 
 void
@@ -2602,14 +2600,13 @@ DrawSeekGraph ()
     h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
     w = BOARD_WIDTH  * (squareSize + lineGap) + lineGap;
 
-    DrawSeekOpen();
     DrawSeekBackground(0, 0, w, h);
     DrawSeekAxis(hMargin, h-1-vMargin, w-5, h-1-vMargin);
     DrawSeekAxis(hMargin, h-1-vMargin, hMargin, 5);
     for(i=0; i<4000; i+= 100) if(i>=minRating && i<maxRating) {
 	int yy =((double)i - minRating)/(maxRating - minRating)*(h-vMargin-squareSize/8-1) + vMargin;
 	yy = h-1-yy;
-	DrawSeekAxis(hMargin+5*(i%500==0), yy, hMargin-5, yy); // rating ticks
+	DrawSeekAxis(hMargin-5, yy, hMargin+5*(i%500==0), yy); // rating ticks
 	if(i%500 == 0) {
 	    char buf[MSG_SIZ];
 	    snprintf(buf, MSG_SIZ, "%d", i);
@@ -2627,7 +2624,6 @@ DrawSeekGraph ()
 	}
     }
     for(i=0; i<nrOfSeekAds; i++) PlotSeekAd(i);
-    DrawSeekClose();
     return TRUE;
 }
 
