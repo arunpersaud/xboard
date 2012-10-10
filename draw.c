@@ -141,17 +141,6 @@ SwitchWindow ()
     csDualBoard = cstmp;
 }
 
-void
-NewSurfaces ()
-{
-return;
-    // delete surfaces after size becomes invalid, so they will be recreated
-    if(csBoardWindow) cairo_surface_destroy(csBoardWindow);
-    if(csBoardBackup) cairo_surface_destroy(csBoardBackup);
-    if(csDualBoard) cairo_surface_destroy(csDualBoard);
-    csBoardWindow = csBoardBackup = csDualBoard = NULL;
-}
-
 #define BoardSize int
 void
 InitDrawingSizes (BoardSize boardSize, int flags)
@@ -176,7 +165,6 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 
     oldWidth = boardWidth; oldHeight = boardHeight;
     CreateGrid();
-    NewSurfaces();
 
     /*
      * Inhibit shell resizing.
