@@ -502,6 +502,7 @@ DrawGrid()
 {
   /* draws a grid starting around Nx, Ny squares starting at x,y */
   int i;
+  float odd = (lineGap & 1)/2.;
   cairo_t *cr;
 
   /* get a cairo_t */
@@ -513,8 +514,8 @@ DrawGrid()
   /* lines in X */
   for (i = 0; i < BOARD_WIDTH + BOARD_HEIGHT + 2; i++)
     {
-      cairo_move_to (cr, gridSegments[i].x1, gridSegments[i].y1);
-      cairo_line_to (cr, gridSegments[i].x2, gridSegments[i].y2);
+      cairo_move_to (cr, gridSegments[i].x1 + odd, gridSegments[i].y1 + odd);
+      cairo_line_to (cr, gridSegments[i].x2 + odd, gridSegments[i].y2 + odd);
       cairo_stroke (cr);
     }
 
@@ -541,7 +542,7 @@ DrawBorder (int x, int y, int type, int odd)
     SetPen(cr, lineGap, col, 0);
     cairo_stroke(cr);
     cairo_destroy(cr);
-    GraphExpose(currBoard, x - lineGap/2, y - lineGap/2, squareSize+lineGap+odd, squareSize+lineGap+odd);
+    GraphExpose(currBoard, x - lineGap/2, y - lineGap/2, squareSize+2*lineGap+odd, squareSize+2*lineGap+odd);
 }
 
 static int
