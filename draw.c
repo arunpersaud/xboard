@@ -655,6 +655,7 @@ void
 DrawDot (int marker, int x, int y, int r)
 { // used for atomic captures; no need to draw on backup
   DoDrawDot(csBoardWindow, marker, x, y, r);
+  GraphExpose(currBoard, x-r, y-r, 2*r, 2*r);
 }
 
 void
