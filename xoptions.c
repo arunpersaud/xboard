@@ -569,6 +569,7 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	    }
 	    cr = cairo_create((cairo_surface_t *) graph->textValue);
 	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
+	    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 	    cairo_rectangle(cr, ((XExposeEvent*)event)->x, ((XExposeEvent*)event)->y, ((XExposeEvent*)event)->width, ((XExposeEvent*)event)->height);
 	    cairo_fill(cr);
 	    cairo_destroy(cr);
