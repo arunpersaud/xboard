@@ -140,7 +140,7 @@ drawHighlight (int file, int rank, int type)
 	  (squareSize + lineGap);
     }
 
-    DrawBorder(x,y, type);
+    DrawBorder(x,y, type, lineGap & 1); // pass whether lineGap is odd
 }
 
 int hi1X = -1, hi1Y = -1, hi2X = -1, hi2Y = -1;

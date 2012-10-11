@@ -525,7 +525,7 @@ DrawGrid()
 }
 
 void
-DrawBorder (int x, int y, int type)
+DrawBorder (int x, int y, int type, int odd)
 {
     cairo_t *cr;
     char *col;
@@ -537,11 +537,11 @@ DrawBorder (int x, int y, int type)
     }
     cr = cairo_create(csBoardWindow);
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
-    cairo_rectangle(cr, x, y, squareSize+lineGap, squareSize+lineGap);
+    cairo_rectangle(cr, x+odd/2., y+odd/2., squareSize+lineGap, squareSize+lineGap);
     SetPen(cr, lineGap, col, 0);
     cairo_stroke(cr);
     cairo_destroy(cr);
-    GraphExpose(currBoard, x - lineGap/2, y - lineGap/2, squareSize+2*lineGap, squareSize+2*lineGap);
+    GraphExpose(currBoard, x - lineGap/2, y - lineGap/2, squareSize+lineGap+odd, squareSize+lineGap+odd);
 }
 
 static int

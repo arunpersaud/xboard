@@ -90,7 +90,7 @@ void DrawBlank P((AnimNr anr, int x, int y, int startColor));
 void CopyRectangle P((AnimNr anr, int srcBuf, int destBuf, int srcX, int srcY, int width, int height, int destX, int destY));
 void SetDragPiece P((AnimNr anr, ChessSquare piece));
 void DragPieceMove P((int x, int y));
-void DrawBorder P((int x, int y, int type));
+void DrawBorder P((int x, int y, int type, int odd));
 void FlashDelay P((int flash_delay));
 void SwitchWindow P((void));
 
