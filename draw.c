@@ -605,7 +605,8 @@ BlankSquare (cairo_surface_t *dest, int x, int y, int color, ChessSquare piece, 
 	  case 2: col = "#000000"; break;
 	}
 	SetPen(cr, 2.0, col, 0);
-	cairo_rectangle (cr, x, y, squareSize, squareSize);
+	cairo_rectangle (cr, fac*x, fac*y, squareSize, squareSize);
+	cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	cairo_fill (cr);
 	cairo_destroy (cr);
     }
