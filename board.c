@@ -582,6 +582,7 @@ AnimateAtomicCapture (Board board, int fromX, int fromY, int toX, int toY)
 	FrameDelay(appData.animSpeed);
     }
     board[fromY][toY] = piece;
+    DrawGrid();
 }
 
 /* Main control logic for deciding what to animate and how */
@@ -639,11 +640,11 @@ AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
   if(Explode(board, fromX, fromY, toX, toY)) { // mark as damaged
     int i,j;
     for(i=0; i<BOARD_WIDTH; i++) for(j=0; j<BOARD_HEIGHT; j++)
-      if((i-toX)*(i-toX) + (j-toY)*(j-toY) < 6) damage[0][j][i] = True;
+      if((i-toX)*(i-toX) + (j-toY)*(j-toY) < 6) damage[0][j][i] |=  1 + ((i-toX ^ j-toY) & 1);
   }
 
   /* Be sure end square is redrawn */
-  damage[0][toY][toX] = True;
+  damage[0][toY][toX] |= True;
 }
 
 void
