@@ -80,8 +80,6 @@ extern char *getenv();
 
 #if HAVE_LIBXPM
 #include "pixmaps/pixmaps.h"
-#else
-#include "bitmaps/bitmaps.h"
 #endif
 
 #include "frontend.h"
