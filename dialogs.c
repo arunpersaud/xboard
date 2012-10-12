@@ -752,14 +752,13 @@ SoundOptionsProc ()
 static void DefColor P((int n));
 static void AdjustColor P((int i));
 
-static char oldPngDir[MSG_SIZ];
-static char oldSvgDir[MSG_SIZ];
+static char oldPieceDir[MSG_SIZ];
 
 static int
 BoardOptionsOK (int n)
 {
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
-    InitDrawingParams(strcmp(oldPngDir, appData.pngDirectory) || strcmp(oldSvgDir, appData.svgDirectory));
+    InitDrawingParams(strcmp(oldPieceDir, appData.pieceDirectory));
     InitDrawingSizes(-1, 0);
     DrawPosition(True, NULL);
     return 1;
@@ -814,8 +813,7 @@ static Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, ".xpm", NULL, FileName, N_("Light-Squares Texture File:") },
 { 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, ".xpm", NULL, FileName, N_("Dark-Squares Texture File:") },
 { 0, 0, 0, NULL, (void*) &appData.trueColors, "", NULL, CheckBox, N_("Use external piece bitmaps with their own colors") },
-{ 0, 0, 0, NULL, (void*) &appData.pngDirectory, "", NULL, PathName, N_("Directory with PNG Pieces:") },
-{ 0, 0, 0, NULL, (void*) &appData.svgDirectory, "", NULL, PathName, N_("Directory with SVG Pieces:") },
+{ 0, 0, 0, NULL, (void*) &appData.pieceDirectory, "", NULL, PathName, N_("Directory with Pieces Images:") },
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 
@@ -864,8 +862,7 @@ AdjustColor (int i)
 void
 BoardOptionsProc ()
 {
-   strncpy(oldPngDir, appData.pngDirectory, MSG_SIZ-1); // to see if it changed
-   strncpy(oldSvgDir, appData.svgDirectory, MSG_SIZ-1); // to see if it changed
+   strncpy(oldPieceDir, appData.pieceDirectory, MSG_SIZ-1); // to see if it changed
    GenericPopUp(boardOptions, _("Board Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
