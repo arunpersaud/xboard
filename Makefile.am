@@ -143,6 +143,50 @@ dist_bitmaps_DATA = \
   bitmaps/c40s.bm    bitmaps/m33o.bm        bitmaps/p40o.bm          bitmaps/r25o.bm   bitmaps/ws72o.bm \
   bitmaps/c45o.bm    bitmaps/icon_black.bm  bitmaps/m33s.bm          bitmaps/p40s.bm   bitmaps/r25s.bm   bitmaps/ws72s.bm
 
+### directory and files for svgs
+
+svgdir = $(datadir)/games/xboard/svg
+dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
+           svg/DarkSquare.svg         svg/LightSquare.svg svg/NeutralSquare.svg \
+           svg/BlackAdvisor.svg       svg/WhiteAdvisor.svg    \
+           svg/BlackArchbishop.svg    svg/WhiteArchbishop.svg  \
+           svg/BlackBishop.svg	      svg/WhiteBishop.svg      \
+           svg/BlackCanon.svg	      svg/WhiteCanon.svg       \
+           svg/BlackChancellor.svg    svg/WhiteChancellor.svg  \
+           svg/BlackCobra.svg         svg/WhiteCobra.svg       \
+           svg/BlackCommoner.svg      svg/WhiteCommoner.svg    \
+           svg/BlackCrownedBishop.svg svg/WhiteCrownedBishop.svg  \
+           svg/BlackCrownedRook.svg   svg/WhiteCrownedRook.svg \
+           svg/BlackElephant.svg      svg/WhiteElephant.svg    \
+           svg/BlackGoldKnight.svg    svg/WhiteGoldKnight.svg  \
+           svg/BlackGoldLance.svg   svg/WhiteGoldLance.svg    \
+           svg/BlackGoldPawn.svg    svg/WhiteGoldPawn.svg     \
+           svg/BlackGoldSilver.svg  svg/WhiteGoldSilver.svg   \
+           svg/BlackGold.svg	    svg/WhiteGold.svg	      \
+           svg/BlackHawk.svg        svg/WhiteHawk.svg         \
+           svg/BlackKing.svg	    svg/WhiteKing.svg	      \
+           svg/BlackKnight.svg	    svg/WhiteKnight.svg	      \
+           svg/BlackLance.svg	    svg/WhiteLance.svg	      \
+           svg/BlackMarshall.svg    svg/WhiteMarshall.svg     \
+           svg/BlackNightrider.svg  svg/WhiteNightrider.svg   \
+           svg/BlackPawn.svg	    svg/WhitePawn.svg	      \
+           svg/BlackPrincess.svg    svg/WhitePrincess.svg     \
+           svg/BlackQueen.svg	    svg/WhiteQueen.svg	      \
+           svg/BlackRook.svg	    svg/WhiteRook.svg	      \
+           svg/BlackUnicorn.svg	    svg/WhiteUnicorn.svg      \
+           svg/eo_Analyzing.svg     svg/eo_Black.svg          \
+           svg/eo_Clear.svg         svg/eo_Ponder.svg         \
+           svg/eo_Thinking.svg      svg/eo_Unknown.svg        \
+           svg/eo_White.svg                                   \
+           svg/shogi_bishop.svg     svg/shogi_bishop_promoted.svg \
+           svg/shogi_gold.svg\
+           svg/shogi_king.svg\
+           svg/shogi_knight.svg     svg/shogi_knight_promoted.svg\
+           svg/shogi_lance.svg      svg/shogi_lance_promoted.svg\
+           svg/shogi_pawn.svg       svg/shogi_pawn_promoted.svg\
+           svg/shogi_rook.svg       svg/shogi_rook_promoted.svg\
+           svg/shogi_silver.svg     svg/shogi_silver_promoted.svg
+
 ### directory and files for pixmaps
 
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
