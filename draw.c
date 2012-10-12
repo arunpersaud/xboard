@@ -311,6 +311,11 @@ ScaleOnePiece (int color, int piece)
 	buf[i*stride + j] = c & 0xFF000000; // alpha channel is kept at same opacity
 	buf[i*stride + j] += ((int)(f*(p&0xFF0000)) & 0xFF0000) + ((int)(f*(p&0xFF00)) & 0xFF00) + (int)(f*(p&0xFF)); // add desired fraction of new color
 	if(color) buf[i*stride + j] += r | r << 8 | r << 16; // details on black pieces get their weight added in pure white
+	if(appData.monoMode) {
+	    if(a < 64) buf[i*stride + j] = 0; // if not opaque enough, totally transparent
+	    else if(2*r < a) buf[i*stride + j] = 0xFF000000; // if not light enough, totally black
+            else buf[i*stride + j] = 0xFFFFFFFF; // otherwise white
+	}
     }
     cairo_surface_mark_dirty(cs);
   }
