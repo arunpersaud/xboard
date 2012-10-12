@@ -2301,7 +2301,10 @@ BrowseOK (int n)
 	}
 	if(!fileName[0]) return FALSE; // refuse OK when no file
 	if(!savMode[0]) { // browsing for name only (dialog Browse button)
-		snprintf(title, MSG_SIZ, "%s/%s", curDir, fileName);
+		if(fileName[0] == '/') // We already had a path name
+		    snprintf(title, MSG_SIZ, "%s", fileName);
+		else
+		    snprintf(title, MSG_SIZ, "%s/%s", curDir, fileName);
 		SetWidgetText((Option*) savFP, title, TransientDlg);
 		currentCps = savCps; // could return to Engine Settings dialog!
 		return TRUE;
