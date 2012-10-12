@@ -78,10 +78,6 @@ extern char *getenv();
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
 
-#if HAVE_LIBXPM
-#include "pixmaps/pixmaps.h"
-#endif
-
 #include "frontend.h"
 #include "backend.h"
 #include "xevalgraph.h"
@@ -223,39 +219,6 @@ char *pngPieceNames[] = // must be in same order as internal piece encoding
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "King", 
   "GoldKnight", "GoldLance", "GoldPawn", "GoldSilver", NULL
 };
-
-cairo_surface_t *
-ConvertPixmap (int color, int piece)
-{
-  int i, j, stride, f, colcode[10], w, b;
-  char ch[10];
-  cairo_surface_t *res;
-  XpmPieces *p = builtInXpms + 10;
-  char **pixels = p->xpm[piece % BlackPawn][2*color];
-  int *buf;
-  sscanf(pixels[0], "%*d %*d %d", &f);
-  sscanf(appData.whitePieceColor+1, "%x", &w);
-  sscanf(appData.blackPieceColor+1, "%x", &b);
-  res = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, p->size, p->size);
-  stride = cairo_image_surface_get_stride(res);
-  buf = (int *) cairo_image_surface_get_data(res);
-  for(i=0; i<f; i++) {
-    ch[i] = pixels[i+1][0];
-    colcode[i] = 0;
-    if(strstr(pixels[i+1], "black")) colcode[i] = 0xFF000000; // 0xFF000000 + (color ? b : 0);
-    if(strstr(pixels[i+1], "white")) colcode[i] = 0xFFFFFFCC; // 0xFF000000 + w;
-  }
-  for(i=0; i<p->size; i++) {
-    for(j=0; j<p->size; j++) {
-      char c = pixels[i+f+1][j];
-      int k;
-      for(k=0; ch[k] != c && k < f; k++);
-      buf[i*p->size + j] = colcode[k];
-    }
-  }
-  cairo_surface_mark_dirty(res);
-  return res;
-}
 
 RsvgHandle *
 LoadSVG (char *dir, int color, int piece)

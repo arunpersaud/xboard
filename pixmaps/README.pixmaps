@@ -1,8 +1,0 @@
-See ../bitmaps/README.  These pixmaps were converted from the bitmaps there,
-and the same notices apply.
-
-[HGM] The non-orthodox pieces were converted from ../winboard/bitmaps/*.bmp,
-by the program 'convert.c' in this folder. If you like the WinBoard pieces
-better than the traditional xboard bitmaps, you could run that program again
-to convert the orthodox pieces from their WinBoard bitmaps, and overwrite
-the xboard pixmaps with them.
