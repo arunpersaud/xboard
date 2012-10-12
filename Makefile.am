@@ -192,6 +192,11 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
 dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm pixmaps/board48.xpm
 
+### directory and files for pngs
+
+pngdir = $(datadir)/games/xboard/themes/textures
+dist_png_DATA = png/hatch.png
+
 ### directory and files for sound files
 
 soundsdir = $(datadir)/games/xboard/sounds
