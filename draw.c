@@ -261,7 +261,7 @@ RsvgHandle *
 LoadSVG (char *dir, int color, int piece)
 {
     char buf[MSG_SIZ];
-  RsvgHandle *svg=NULL;
+  RsvgHandle *svg=svgPieces[color][piece];
   RsvgDimensionData svg_dimensions;
   GError **svgerror=NULL;
   cairo_surface_t *img;
@@ -269,7 +269,7 @@ LoadSVG (char *dir, int color, int piece)
 
     snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White", pngPieceNames[piece]);
 
-    if(svg = rsvg_handle_new_from_file(buf,svgerror)) {
+    if(svg || *dir && (svg = rsvg_handle_new_from_file(buf,svgerror))) {
 
       rsvg_handle_get_dimensions(svg, &svg_dimensions);
       img = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, squareSize,  squareSize);
@@ -298,19 +298,26 @@ ScaleOnePiece (int color, int piece)
 
   g_type_init ();
 
-  if(!svgPieces[color][piece] && *appData.svgDirectory) { // try to freshly render svg pieces first, always from file, to supply the source bitmap
-    svgPieces[color][piece] = LoadSVG(appData.svgDirectory, color, piece);
+  if(!svgPieces[color][piece]) { // try to freshly render cached svg pieces first, to supply the source bitmap
+    svgPieces[color][piece] = LoadSVG("", color, piece); // this fills pngPieceImages if we had cached svg with bitmap of wanted size
   }
 
-  if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
-    if(!*appData.pieceDirectory) img = ConvertPixmap(color, piece); else {
+  if(!pngPieceImages[color][piece]) { // we don't have cached bitmap (implying we did not have cached svg)
+    if(*appData.pieceDirectory) { // user specified piece directory
       snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pieceDirectory, color ? "Black" : "White", pngPieceNames[piece]);
-      img = cairo_image_surface_create_from_png (buf);
-      if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) img = ConvertPixmap(color, piece);
+      pngPieceImages[color][piece] = img = cairo_image_surface_create_from_png (buf); // try if there are png pieces there
+      if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) { // there were not
+	svgPieces[color][piece] = LoadSVG(appData.pieceDirectory, color, piece); // so try if he has svg there
+      }
     }
   }
-  pngPieceImages[color][piece] = img;
 
+  if(!pngPieceImages[color][piece]) { // we still did not manage to acquire a piece bitmap
+    if(!(svgPieces[color][piece] = LoadSVG(appData.svgDirectory, color, piece))) // try to fall back on installed svg
+      DisplayError(_("No default pieces installed\nSelect your own -pieceImageDirectory"), 0); // give up
+  }
+
+  img = pngPieceImages[color][piece];
 
   // create new bitmap to hold scaled piece image (and remove any old)
   if(pngPieceBitmaps2[color][piece]) cairo_surface_destroy (pngPieceBitmaps2[color][piece]);
