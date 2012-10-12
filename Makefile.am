@@ -190,12 +190,12 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
 ### directory and files for pixmaps
 
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
-dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm pixmaps/board48.xpm
+dist_pixmaps_DATA = pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm pixmaps/board48.xpm
 
 ### directory and files for pngs
 
 pngdir = $(datadir)/games/xboard/themes/textures
-dist_png_DATA = png/hatch.png
+dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png
 
 ### directory and files for sound files
 
@@ -207,7 +207,7 @@ dist_sounds_DATA = \
 
 ### set correct dir in xboard.conf
 
-edit = sed -e 's|@pixmapsdir[@]|$(pixmapsdir)|g' \
+edit = sed -e 's|@pngdir[@]|$(pngdir)|g' \
            -e 's|@soundsdir[@]|$(soundsdir)|g'
 
 xboard.conf: Makefile $(srcdir)/xboard.conf.in

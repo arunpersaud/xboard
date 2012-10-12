@@ -23,8 +23,8 @@
 -flashRate 5
 -fontSizeTolerance 4
 -useBoardTexture true
--liteBackTextureFile  "@pixmapsdir@/wood_l.xpm"
--darkBackTextureFile  "@pixmapsdir@/wood_d.xpm"
+-liteBackTextureFile  "@pngdir@/wood_l.png"
+-darkBackTextureFile  "@pngdir@/wood_d.png"
 -overrideLineGap 1
 -highlightMoveWithArrow true
 -recentEngines 4
