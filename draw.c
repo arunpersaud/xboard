@@ -115,6 +115,7 @@ cairo_surface_t *csBoardWindow;
 static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
+static RsvgHandle *svgPieces[2][(int)BlackPawn+4]; // vector pieces in store
 static cairo_surface_t *pngBoardBitmap[2];
 int useTexture, textureW[2], textureH[2];
 
@@ -256,8 +257,8 @@ ConvertPixmap (int color, int piece)
   return res;
 }
 
-int
-LoadSVG(char *dir, int color, int piece)
+RsvgHandle *
+LoadSVG (char *dir, int color, int piece)
 {
     char buf[MSG_SIZ];
   RsvgHandle *svg=NULL;
@@ -281,11 +282,10 @@ LoadSVG(char *dir, int color, int piece)
         pngPieceImages[color][piece] = img;
       }
       cairo_destroy(cr);
-      rsvg_handle_close (svg,NULL);
 
-      return 1;
+      return svg;
     }
-    return 0;
+    return NULL;
 }
 
 static void
@@ -298,8 +298,8 @@ ScaleOnePiece (int color, int piece)
 
   g_type_init ();
 
-  if(*appData.svgDirectory) { // try to freshly render svg pieces first, always from file, to supply the source bitmap
-    LoadSVG(appData.svgDirectory, color, piece);
+  if(!svgPieces[color][piece] && *appData.svgDirectory) { // try to freshly render svg pieces first, always from file, to supply the source bitmap
+    svgPieces[color][piece] = LoadSVG(appData.svgDirectory, color, piece);
   }
 
   if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
@@ -374,6 +374,8 @@ InitDrawingParams (int reloadPieces)
     for(i=0; i<2; i++) for(p=0; p<BlackPawn+4; p++) {
 	if(pngPieceImages[i][p]) cairo_surface_destroy(pngPieceImages[i][p]);
 	pngPieceImages[i][p] = NULL;
+	if(svgPieces[i][p]) rsvg_handle_close(svgPieces[i][p], NULL);
+	svgPieces[i][p] = NULL;
     }
     CreateAnyPieces();
 }
