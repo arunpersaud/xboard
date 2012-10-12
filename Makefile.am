@@ -75,7 +75,7 @@ mime_DATA = xboard.xml
 
 ### directory and files for svgs
 
-svgdir = $(datadir)/games/xboard/svg
+svgdir = $(datadir)/games/xboard/themes/default
 dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/DarkSquare.svg         svg/LightSquare.svg svg/NeutralSquare.svg \
            svg/BlackAdvisor.svg       svg/WhiteAdvisor.svg    \
@@ -138,6 +138,7 @@ dist_sounds_DATA = \
 ### set correct dir in xboard.conf
 
 edit = sed -e 's|@pngdir[@]|$(pngdir)|g' \
+           -e 's|@svgdir[@]|$(svgdir)|g' \
            -e 's|@soundsdir[@]|$(soundsdir)|g'
 
 xboard.conf: Makefile $(srcdir)/xboard.conf.in

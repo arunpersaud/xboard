@@ -211,10 +211,9 @@ ArgDescriptor argDescriptors[] = {
   { "xtitle", ArgFalse, (void *) &appData.titleInWindow, FALSE, INVALID },
   { "flashCount", ArgInt, (void *) &appData.flashCount, XBOARD, INVALID }, // let X handle this
   { "flashRate", ArgInt, (void *) &appData.flashRate, XBOARD, (ArgIniType) FLASH_RATE },
-  { "pngDirectory", ArgFilename, (void *) &appData.pngDirectory, XBOARD, (ArgIniType) "" },
-  { "png", ArgFilename, (void *) &appData.pngDirectory, FALSE, INVALID },
-  { "svgDirectory", ArgFilename, (void *) &appData.svgDirectory, XBOARD, (ArgIniType) "" },
-  { "svg", ArgFilename, (void *) &appData.svgDirectory, FALSE, INVALID },
+  { "pieceImageDirectory", ArgFilename, (void *) &appData.pieceDirectory, XBOARD, (ArgIniType) "" },
+  { "pid", ArgFilename, (void *) &appData.pieceDirectory, FALSE, INVALID },
+  { "fallbackPieceImageDirectory", ArgFilename, (void *) &appData.svgDirectory, FALSE, (ArgIniType) "" },
   { "trueColors", ArgBoolean, (void *) &appData.trueColors, TRUE, (ArgIniType) FALSE },
   { "soundDirectory", ArgFilename, (void *) &appData.soundDirectory, XBOARD, (ArgIniType) "" },
   { "msLoginDelay", ArgInt, (void *) &appData.msLoginDelay, XBOARD, (ArgIniType) MS_LOGIN_DELAY },

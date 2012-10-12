@@ -256,21 +256,17 @@ ConvertPixmap (int color, int piece)
   return res;
 }
 
-static void
-ScaleOnePiece (char *name, int color, int piece)
+int
+LoadSVG(char *dir, int color, int piece)
 {
-  float w, h;
-  char buf[MSG_SIZ];
+    char buf[MSG_SIZ];
   RsvgHandle *svg=NULL;
   RsvgDimensionData svg_dimensions;
   GError **svgerror=NULL;
-  cairo_surface_t *img, *cs;
+  cairo_surface_t *img;
   cairo_t *cr;
 
-  g_type_init ();
-
-  if(*appData.svgDirectory) { // try to freshly render svg pieces first, always from file, to supply the source bitmap
-    snprintf(buf, MSG_SIZ, "%s/%s%s.svg", appData.svgDirectory, color ? "Black" : "White", pngPieceNames[piece]);
+    snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White", pngPieceNames[piece]);
 
     if(svg = rsvg_handle_new_from_file(buf,svgerror)) {
 
@@ -285,14 +281,30 @@ ScaleOnePiece (char *name, int color, int piece)
         pngPieceImages[color][piece] = img;
       }
       cairo_destroy(cr);
-
       rsvg_handle_close (svg,NULL);
+
+      return 1;
     }
+    return 0;
+}
+
+static void
+ScaleOnePiece (int color, int piece)
+{
+  float w, h;
+  char buf[MSG_SIZ];
+  cairo_surface_t *img, *cs;
+  cairo_t *cr;
+
+  g_type_init ();
+
+  if(*appData.svgDirectory) { // try to freshly render svg pieces first, always from file, to supply the source bitmap
+    LoadSVG(appData.svgDirectory, color, piece);
   }
 
   if((img = pngPieceImages[color][piece]) == NULL) { // if PNG file for this piece was not yet read, read it now and store it
-    if(!*appData.pngDirectory) img = ConvertPixmap(color, piece); else {
-      snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pngDirectory, color ? "Black" : "White", pngPieceNames[piece]);
+    if(!*appData.pieceDirectory) img = ConvertPixmap(color, piece); else {
+      snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pieceDirectory, color ? "Black" : "White", pngPieceNames[piece]);
       img = cairo_image_surface_create_from_png (buf);
       if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) img = ConvertPixmap(color, piece);
     }
@@ -314,7 +326,7 @@ ScaleOnePiece (char *name, int color, int piece)
   cairo_paint (cr);
   cairo_destroy (cr);
 
-  if(!appData.trueColors || !*appData.pngDirectory && !appData.svgDirectory) { // operate on bitmap to color it (king-size hack...)
+  if(!appData.trueColors || !*appData.pieceDirectory && !appData.svgDirectory) { // operate on bitmap to color it (king-size hack...)
     int stride = cairo_image_surface_get_stride(cs)/4;
     int *buf = (int *) cairo_image_surface_get_data(cs);
     int i, j, p;
@@ -340,8 +352,8 @@ CreatePNGPieces ()
   int p;
 
   for(p=0; pngPieceNames[p]; p++) {
-    ScaleOnePiece(pngPieceNames[p], 0, p);
-    ScaleOnePiece(pngPieceNames[p], 1, p);
+    ScaleOnePiece(0, p);
+    ScaleOnePiece(1, p);
   }
 }
 

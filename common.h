@@ -408,7 +408,7 @@ typedef struct {
     Boolean firstPlaysBlack;
     Boolean noChessProgram;
     char *host[ENGINES];
-    char *pngDirectory;
+    char *pieceDirectory;
     char *svgDirectory;
     char *soundDirectory;
     char *remoteShell;
