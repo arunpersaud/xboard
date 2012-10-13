@@ -628,13 +628,13 @@ some editing on your input, because output from ICS doesn't get mixed
 in with your typing as it would in the main terminal window.
 @item Board
 @cindex Board, Menu Item
-Summons a dialog where you can customaize the look of the chess board.
+Summons a dialog where you can customize the look of the chess board.
 Here you can specify the directory from which piece images should be taken,
 when you don't want to use the built-in piece images
-(see @code{pixmapDirectory} and @code{bitmapDirectory} options),
-an external pixmap to be used for the board squares
+(see @code{pieceImageDirectory} option),
+external images to be used for the board squares
 (@code{liteBackTextureFile} and @code{darkBackTextureFile} options),
-and square and piece colors for the built-ins.
+and square and piece colors for the default pieces.
 @item Game List Tags
 @cindex Game List Tags, Menu Item
 a duplicate of the Game List dialog in the Options menu.
@@ -2835,15 +2835,12 @@ Colossal 116x116, Giant 108x108, Huge 95x95, Big 87x87, Large 80x80, Bulky 72x72
 Medium 64x64, Moderate 58x58, Average 54x54, Middling 49x49, Mediocre
 45x45, Small 40x40, Slim 37x37, Petite 33x33, Dinky 29x29, Teeny 25x25,
 or Tiny 21x21.
-Orthodox pieces of all these sizes are built into XBoard.
-Other sizes can
-be used if you have them; see the pixmapDirectory and bitmapDirectory
-options.
-Complete sets of un-orthodox pieces are only provided in sizes
-Bulky, Middling and (to a lesser extent) Petite;
-Archbishop, Marshall and Amazon are also available in all sizes between
-Bulky and Petite.
-When no bitmap is available, the piece will be displayed as Amazon or King.
+Xboard installs with a set of scalable (svg) piece images,
+which it scales to any of the requested sizes.
+The square size can further be continuously scaled by sizing the board window,
+but this only adapts the size of the pieces,
+and has no effect on the width of the grid lines or the font choice
+(both of which would depend on he selected boardSize).
 The default depends on the size of your screen; it is approximately the
 largest size that will fit without clipping.
 
@@ -3015,55 +3012,19 @@ a scalable font to always be used if available; a value of 0 will
 use a nonscalable font only if it is exactly the right size; 
 a large value (say 1000) will force a nonscalable font to always be
 used if available.  Default: 4.
-@item -bm or -bitmapDirectory dir
-@itemx -pixmap or -pixmapDirectory dir
-@cindex bm, option
-@cindex bitmapDirectory, option
-@cindex pixmap, option
-@cindex pixmapDirectory, option
-These options control what piece images xboard uses.  The XBoard
-distribution includes one set of pixmap pieces in xpm format, in the
-directory @file{pixmaps}, and one set of bitmap pieces in xbm format,
-in the directory @file{bitmaps}.  Pixmap
-pieces give a better appearance on the screen: the white pieces have
-dark borders, and the black pieces have opaque internal details.  With
-bitmaps, neither piece color has a border, and the internal details
-are transparent; you see the square color or other background color
-through them.
+@item -pid or -pieceImageDirectory dir
+@cindex pid, option
+@cindex pieceImageDirectory, option
+This options control what piece images xboard uses.
+XBoard will look in the specified directory for an image in png
+or svg format for every piece type, with names like BlackQueen.svg,
+WhiteKnight.svg etc.
+When neither of these is found (or no valid directory is specified)
+XBoard will use the svg piece that was installed with it
+(from the source-tree directory @samp{svg}).
+Both svg and png images will be scaled by XBoard to the required size,
+but the png pieces lose much in quality when scaled too much.
 
-If XBoard is configured and compiled on a system that includes libXpm,
-the X pixmap library, the xpm pixmap pieces are compiled in as the
-default.  A different xpm piece set can be selected at runtime with
-the @code{pixmapDirectory} option, or a bitmap piece set can be selected
-with the @code{bitmapDirectory} option.
-
-If XBoard is configured and compiled on a system that does not include
-libXpm (or the @code{--disable-xpm} option is given to the configure
-program), the bitmap pieces are compiled in as the default.  It is not
-possible to use xpm pieces in this case, but pixmap pieces in another
-format called "xim" can be used by giving the @code{pixmapDirectory} option.
-Or again, a different bitmap piece set can be selected with the
-@code{bitmapDirectory} option.
-
-Files in the @code{bitmapDirectory} must be named as follows:
-The first character of a piece bitmap name gives the piece it 
-represents (@samp{p}, @samp{n}, @samp{b}, @samp{r}, @samp{q}, or @samp{k}),
-the next characters give the size in pixels, the
-following character indicates whether the piece is
-solid or outline (@samp{s} or @samp{o}),
-and the extension is @samp{.bm}.
-For example, a solid 80x80 knight would be named @file{n80s.bm}.
-The outline bitmaps are used only in monochrome mode.
-If bitmap pieces are compiled in and the bitmapDirectory is missing
-some files, the compiled in pieces are used instead.
-
-If the bitmapDirectory option is given,
-it is also possible to replace xboard's icons and menu checkmark,
-by supplying files named @file{icon_white.bm}, @file{icon_black.bm}, and
-@file{checkmark.bm}.
-
-For more information about pixmap pieces and how to get additional
-sets, see @ref{zic2xpm} below.
 @item -whitePieceColor color
 @itemx -blackPieceColor color
 @itemx -lightSquareColor color
@@ -3103,13 +3064,27 @@ On a grayscale monitor you might prefer:
 -premoveHighlightColor gray70
 -lowTimeWarningColor   gray70
 @end example
+
+The PieceColor options only work properly if the image files
+defining the pieces were pure black & white
+(possibly anti-aliased to produce gray scales
+and semi-transparancy),
+like the pieces images that come with the install.
+Their effect on colored pieces is undefined.
+The SquareColor option only have an effect
+when no board textures are used.
+@item -trueColors true/false
+@cindex trueColors, option
+When set, this option suppresses the effect  of the
+PieceColor options mentioned above.
+This is recommended for images that are already colored.
 @item -useBoardTexture true/false
 @itemx -liteBackTextureFile filename
 @itemx -darkBackTextureFile filename
 @cindex useBoardTexture, option
 @cindex liteBackTextureFile, option
 @cindex darkBackTextureFile, option
-Indicate the pixmap files to be used for drawing the board squares, 
+Indicate the png image files to be used for drawing the board squares, 
 and if they should be used rather than using simple colors.
 The algorithm for cutting squares out of a given bitmap is such that
 the picture is perfectly reproduced when a bitmap the size of
