@@ -355,7 +355,6 @@ void
 InitDrawingParams (int reloadPieces)
 {
     int i, p;
-    MakeColors();
     if(reloadPieces)
     for(i=0; i<2; i++) for(p=0; p<BlackPawn+4; p++) {
 	if(pngPieceImages[i][p]) cairo_surface_destroy(pngPieceImages[i][p]);
