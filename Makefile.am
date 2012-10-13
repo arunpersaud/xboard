@@ -33,7 +33,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 $(ZPY)
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
-EXTRA_DIST = pixmaps sounds winboard \
+EXTRA_DIST = pixmaps shogi sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
@@ -107,15 +107,16 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/eo_Analyzing.svg     svg/eo_Black.svg          \
            svg/eo_Clear.svg         svg/eo_Ponder.svg         \
            svg/eo_Thinking.svg      svg/eo_Unknown.svg        \
-           svg/eo_White.svg                                   \
-           svg/shogi_bishop.svg     svg/shogi_bishop_promoted.svg \
-           svg/shogi_gold.svg\
-           svg/shogi_king.svg\
-           svg/shogi_knight.svg     svg/shogi_knight_promoted.svg\
-           svg/shogi_lance.svg      svg/shogi_lance_promoted.svg\
-           svg/shogi_pawn.svg       svg/shogi_pawn_promoted.svg\
-           svg/shogi_rook.svg       svg/shogi_rook_promoted.svg\
-           svg/shogi_silver.svg     svg/shogi_silver_promoted.svg
+           svg/eo_White.svg
+
+shogidir = $(datadir)/games/xboard/themes/shogi
+dist_shogi_DATA = shogi/shogi_gold.svg shogi/shogi_bishop_promoted.svg\
+           shogi/shogi_bishop.svg      shogi/shogi_king.svg\
+           shogi/shogi_knight.svg      shogi/shogi_knight_promoted.svg\
+           shogi/shogi_lance.svg       shogi/shogi_lance_promoted.svg\
+           shogi/shogi_pawn.svg        shogi/shogi_pawn_promoted.svg\
+           shogi/shogi_rook.svg        shogi/shogi_rook_promoted.svg\
+           shogi/shogi_silver.svg      shogi/shogi_silver_promoted.svg
 
 ### directory and files for pixmaps
 
