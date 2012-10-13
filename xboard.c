@@ -1454,7 +1454,7 @@ XBoard square size (hint): %d\n\
 #if ENABLE_NLS
 						&clockFontSet);
 #else
-						&clockFonStruct);
+						clockFontStruct);
 #endif
     boardWidget      = optList[W_BOARD].handle;
     menuBarWidget    = optList[W_MENU].handle;

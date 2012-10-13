@@ -883,7 +883,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 #if ENABLE_NLS
 	    if(option[i].choice) XtSetArg(args[j], XtNfontSet, *(XFontSet*)option[i].choice), j++;
 #else
-	    if(option[i].choice) XtSetArg(args[j], XtNfont, *(XFontStruct*)option[i].choice), j++;
+	    if(option[i].choice) XtSetArg(args[j], XtNfont, (XFontStruct*)option[i].choice), j++;
 #endif
 	    XtSetArg(args[j], XtNresizable, False);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
