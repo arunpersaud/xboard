@@ -276,7 +276,7 @@ ScaleOnePiece (int color, int piece)
   }
 
   if(!pngPieceImages[color][piece]) { // we still did not manage to acquire a piece bitmap
-    if(!(svgPieces[color][piece] = LoadSVG(appData.svgDirectory, color, piece))) // try to fall back on installed svg
+    if(!(svgPieces[color][piece] = LoadSVG(SVGDIR, color, piece))) // try to fall back on installed svg
       DisplayError(_("No default pieces installed\nSelect your own -pieceImageDirectory"), 0); // give up
   }
 
@@ -296,7 +296,7 @@ ScaleOnePiece (int color, int piece)
   cairo_paint (cr);
   cairo_destroy (cr);
 
-  if(!appData.trueColors || !*appData.pieceDirectory && !appData.svgDirectory) { // operate on bitmap to color it (king-size hack...)
+  if(!appData.trueColors || !*appData.pieceDirectory) { // operate on bitmap to color it (king-size hack...)
     int stride = cairo_image_surface_get_stride(cs)/4;
     int *buf = (int *) cairo_image_surface_get_data(cs);
     int i, j, p;
