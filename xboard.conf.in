@@ -23,7 +23,6 @@
 -flashRate 5
 -fontSizeTolerance 4
 -useBoardTexture true
--fallbackPieceImageDirectory "@svgdir@"
 -liteBackTextureFile  "@pngdir@/wood_l.png"
 -darkBackTextureFile  "@pngdir@/wood_d.png"
 -overrideLineGap 1

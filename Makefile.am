@@ -42,7 +42,7 @@ EXTRA_DIST = pixmaps sounds winboard \
 DISTCLEANFILES = stamp-h
 
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DLOCALEDIR='"$(localedir)"'
+	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"'
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -138,7 +138,6 @@ dist_sounds_DATA = \
 ### set correct dir in xboard.conf
 
 edit = sed -e 's|@pngdir[@]|$(pngdir)|g' \
-           -e 's|@svgdir[@]|$(svgdir)|g' \
            -e 's|@soundsdir[@]|$(soundsdir)|g'
 
 xboard.conf: Makefile $(srcdir)/xboard.conf.in
