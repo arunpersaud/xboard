@@ -69,7 +69,6 @@ extern Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor
 
 // defined in draw.c
 void CreateGCs P((int redo));
-void NewSurfaces P((void));
 void CreateAnyPieces P((void));
 void CreatePNGPieces P((void));
 void CreateGrid P((void));
