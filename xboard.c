@@ -1251,7 +1251,7 @@ main (int argc, char **argv)
 #if ENABLE_NLS
 						&clockFontSet);
 #else
-						clockFonStruct);
+						clockFontStruct);
 #endif
     InitDrawingHandle(optList + W_BOARD);
     currBoard        = &optList[W_BOARD];
