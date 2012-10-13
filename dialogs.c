@@ -1825,10 +1825,12 @@ DisplayFatalError (String message, int error, int status)
 	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
 	message = buf;
     }
-    if (appData.popupExitMessage && boardWidget && XtIsRealized(boardWidget)) {
-      ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
-    } else {
-      ExitEvent(status);
+    if(mainOptions[W_BOARD].handle) {
+	if (appData.popupExitMessage) {
+	    ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
+	} else {
+	    ExitEvent(status);
+	}
     }
 }
 
