@@ -165,6 +165,7 @@ void Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
 			Boolean pathFlag, char *mode, char **name, FILE **fp));
 
 void InitDrawingParams P((int reload)); // in draw.c
+void InitDrawingHandle P((Option *opt));
 void DrawLogo P((Option *opt, void *logo));
 void ErrorPopUp P((char *title, char *text, int modal));
 int  ShiftKeys P((void));

@@ -68,7 +68,6 @@ extern Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor
   highlightSquareColor, premoveHighlightColor;
 
 // defined in draw.c
-void InitDrawingHandle P((Option *opt));
 void CreateGCs P((int redo));
 void NewSurfaces P((void));
 void CreateAnyPieces P((void));
