@@ -275,8 +275,6 @@ int xtVersion = XtSpecificationRelease;
 int xScreen;
 Display *xDisplay;
 Window xBoardWindow;
-Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
-  highlightSquareColor, premoveHighlightColor;       // used in graphics
 Pixel lowTimeWarningColor, dialogColor, buttonColor; // used in widgets
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, formWidget, boardWidget, titleWidget, dropMenu, menuBarWidget;
@@ -911,12 +909,6 @@ MakeColors ()
 {   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
     int forceMono = False;
 
-    forceMono |= MakeOneColor(appData.lightSquareColor, &lightSquareColor);
-    forceMono |= MakeOneColor(appData.darkSquareColor, &darkSquareColor);
-    forceMono |= MakeOneColor(appData.whitePieceColor, &whitePieceColor);
-    forceMono |= MakeOneColor(appData.blackPieceColor, &blackPieceColor);
-    forceMono |= MakeOneColor(appData.highlightSquareColor, &highlightSquareColor);
-    forceMono |= MakeOneColor(appData.premoveHighlightColor, &premoveHighlightColor);
     if (appData.lowTimeWarning)
 	forceMono |= MakeOneColor(appData.lowTimeWarningColor, &lowTimeWarningColor);
     if(appData.dialogColor[0]) MakeOneColor(appData.dialogColor, &dialogColor);
