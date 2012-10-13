@@ -1775,7 +1775,7 @@ DelayedDrag ()
 {
     if(delayedDragID) XtRemoveTimeOut(delayedDragID); // cancel pending
     delayedDragID =
-      XtAppAddTimeOut(appContext, 100, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
+      XtAppAddTimeOut(appContext, 200, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
 }
 
 void
