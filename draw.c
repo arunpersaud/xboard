@@ -200,6 +200,17 @@ InitDrawingSizes (BoardSize boardSize, int flags)
   oldMono = appData.monoMode;
 }
 
+void
+ExposeRedraw (Option *graph, int x, int y, int w, int h)
+{   // copy a selected part of the buffer bitmap to the display
+    cairo_t *cr = cairo_create((cairo_surface_t *) graph->textValue);
+    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
+    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+    cairo_rectangle(cr, x, y, w, h);
+    cairo_fill(cr);
+    cairo_destroy(cr);
+}
+
 static void
 CreatePNGBoard (char *s, int kind)
 {

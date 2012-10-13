@@ -541,7 +541,6 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
     int j, button=10, f=1, sizing=0;
     Option *opt, *graph = (Option *) client_data;
     PointerCallback *userHandler = graph->target;
-    cairo_t *cr;
 
     if (!XtIsRealized(widget)) return;
 
@@ -567,12 +566,8 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 		break;
 	    }
-	    cr = cairo_create((cairo_surface_t *) graph->textValue);
-	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
-	    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
-	    cairo_rectangle(cr, ((XExposeEvent*)event)->x, ((XExposeEvent*)event)->y, ((XExposeEvent*)event)->width, ((XExposeEvent*)event)->height);
-	    cairo_fill(cr);
-	    cairo_destroy(cr);
+	    ExposeRedraw(graph,	((XExposeEvent*)event)->x, ((XExposeEvent*)event)->y,
+				((XExposeEvent*)event)->width, ((XExposeEvent*)event)->height);
 	    return;
 	case MotionNotify:
 	    f = 0;
