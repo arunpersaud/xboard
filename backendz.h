@@ -54,9 +54,6 @@
 #ifndef XB_BACKENDZ
 #define XB_BACKENDZ
 
-#include "common.h"
-#include "frontend.h"
-
 extern long whiteTimeRemaining, blackTimeRemaining;
 extern int forwardMostMove;
 extern char star_match[STAR_MATCH_N][MSG_SIZ];
