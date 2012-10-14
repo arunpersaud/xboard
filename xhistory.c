@@ -46,10 +46,8 @@
 #include <X11/Xmu/Atoms.h>
 
 #include "common.h"
-#include "frontend.h"
 #include "backend.h"
 #include "xhistory.h"
-#include "xboard.h"
 #include "dialogs.h"
 #include "gettext.h"
 
@@ -62,11 +60,9 @@
 #endif
 
 // templates for calls into back-end (= history.c; should be moved to history.h header shared with it!)
-void RefreshMemoContent P((void));
-void MemoContentUpdated P((void));
 void FindMoveByCharIndex P(( int char_index ));
 
-// variables in xoptions.c
+// variables in nhistory.c
 extern Option historyOptions[];
 
 // ------------- low-level front-end actions called by MoveHistory back-end -----------------
@@ -76,20 +72,6 @@ HighlightMove (int from, int to, Boolean highlight)
 {
     if(highlight)
 	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
-}
-
-void
-ClearHistoryMemo ()
-{
-    SetWidgetText(&historyOptions[0], "", HistoryDlg);
-}
-
-// the bold argument says 0 = normal, 1 = bold typeface
-// the colorNr argument says 0 = font-default, 1 = gray
-int
-AppendToHistoryMemo (char * text, int bold, int colorNr)
-{
-    return AppendText(&historyOptions[0], text); // for now ignore bold & color stuff, as Xaw cannot handle that
 }
 
 void
@@ -115,7 +97,6 @@ ScrollToCurrent (int caretPos)
 
 // ------------------------------ callbacks --------------------------
 
-char *historyText;
 char historyTranslations[] =
 "<Btn3Down>: select-start() \n \
 <Btn3Up>: extend-end() SelectMove() \n";
@@ -129,41 +110,3 @@ SelectMove (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	FindMoveByCharIndex( index ); // [HGM] also does the actual moving to it, now
 }
 
-Option historyOptions[] = {
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 400, NULL, (void*) &historyText, "", NULL, TextBox, "" },
-{   0,           NO_OK,             0, NULL, (void*) NULL, "", NULL, EndMark , "" }
-};
-
-// ------------ standard entry points into MoveHistory code -----------
-
-Boolean
-MoveHistoryIsUp ()
-{
-    return shellUp[HistoryDlg];
-}
-
-Boolean
-MoveHistoryDialogExists ()
-{
-    return DialogExists(HistoryDlg);
-}
-
-void
-HistoryPopUp ()
-{
-    if(GenericPopUp(historyOptions, _("Move list"), HistoryDlg, BoardWindow, NONMODAL, 1))
-	AddHandler(&historyOptions[0], 0);
-    MarkMenu("View.MoveHistory", HistoryDlg);
-}
-
-void
-HistoryShowProc ()
-{
-  if (!shellUp[HistoryDlg]) {
-    ASSIGN(historyText, "");
-    HistoryPopUp();
-    RefreshMemoContent();
-    MemoContentUpdated();
-  } else PopDown(HistoryDlg);
-  ToNrEvent(currentMove);
-}

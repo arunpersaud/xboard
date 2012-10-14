@@ -11,6 +11,7 @@ endif
 ### define sources for the front-end and backend
 
 GTKsources = xboard.c  xevalgraph.c  xgamelist.c \
+             xedittags.c xedittags.h \
              xhistory.c  xoptions.c  xboard.h  \
              xengineoutput.c  xevalgraph.h  xgamelist.h \
              xhistory.h
@@ -42,7 +43,7 @@ backendsources = backend.c backend.h backendz.h \
 		 dialogs.c dialogs.h \
 		 engineoutput.c nengineoutput.c engineoutput.h \
 		 evalgraph.c evalgraph.h \
-		 history.c \
+		 history.c nhistory.c \
 	 	 menus.c menus.h \
 	 	 usounds.c usystem.c usystem.h \
 		 $(ZPY)

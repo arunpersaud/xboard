@@ -25,5 +25,6 @@
 
 void HistoryShowProc P((void));
 Boolean MoveHistoryIsUp P((void));
+void SelectMoveX P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 
 #endif /* XB_XHISTLIST */

@@ -263,7 +263,6 @@ Boolean TempBackwardActive = False;
 void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
 void ICSInitScript P((void));
-void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void update_ics_width P(());
 int CopyMemoProc P(());
 
@@ -378,7 +377,7 @@ XtActionsRec boardActions[] = {
     { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
-    { "SelectMove", (XtActionProc) SelectMove },
+    { "SelectMove", (XtActionProc) SelectMoveX },
     { "LoadSelectedProc", LoadSelectedProc },
     { "SetFilterProc", SetFilterProc },
     { "TypeInProc", TypeInProc },

@@ -78,20 +78,8 @@ HighlightMove (int from, int to, Boolean highlight)
 	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
 }
 
-void
-ClearHistoryMemo ()
-{
-    SetWidgetText(&historyOptions[0], "", HistoryDlg);
-}
-
 // the bold argument says 0 = normal, 1 = bold typeface
 // the colorNr argument says 0 = font-default, 1 = gray
-int
-AppendToHistoryMemo (char * text, int bold, int colorNr)
-{
-    return AppendText(&historyOptions[0], text); // for now ignore bold & color stuff, as Xaw cannot handle that
-}
-
 void
 ScrollToCurrent (int caretPos)
 {
@@ -121,7 +109,7 @@ char historyTranslations[] =
 <Btn3Up>: extend-end() SelectMove() \n";
 
 void
-SelectMove (Widget w, XEvent * event, String * params, Cardinal * nParams)
+SelectMoveX (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {
 	XawTextPosition index, dummy;
 
@@ -129,41 +117,3 @@ SelectMove (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	FindMoveByCharIndex( index ); // [HGM] also does the actual moving to it, now
 }
 
-Option historyOptions[] = {
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 400, NULL, (void*) &historyText, "", NULL, TextBox, "" },
-{   0,           NO_OK,             0, NULL, (void*) NULL, "", NULL, EndMark , "" }
-};
-
-// ------------ standard entry points into MoveHistory code -----------
-
-Boolean
-MoveHistoryIsUp ()
-{
-    return shellUp[HistoryDlg];
-}
-
-Boolean
-MoveHistoryDialogExists ()
-{
-    return DialogExists(HistoryDlg);
-}
-
-void
-HistoryPopUp ()
-{
-    if(GenericPopUp(historyOptions, _("Move list"), HistoryDlg, BoardWindow, NONMODAL, 1))
-	AddHandler(&historyOptions[0], 0);
-    MarkMenu("View.MoveHistory", HistoryDlg);
-}
-
-void
-HistoryShowProc ()
-{
-  if (!shellUp[HistoryDlg]) {
-    ASSIGN(historyText, "");
-    HistoryPopUp();
-    RefreshMemoContent();
-    MemoContentUpdated();
-  } else PopDown(HistoryDlg);
-  ToNrEvent(currentMove);
-}
