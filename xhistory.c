@@ -25,26 +25,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#include <X11/Xatom.h>
-#include <X11/Xmu/Atoms.h>
-
 #include "common.h"
 #include "backend.h"
 #include "xhistory.h"
@@ -70,13 +50,16 @@ extern Option historyOptions[];
 void
 HighlightMove (int from, int to, Boolean highlight)
 {
+#ifdef TODO_GTK
     if(highlight)
 	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
+#endif
 }
 
 void
 ScrollToCurrent (int caretPos)
 {
+#ifdef TODO_GTK
     Arg args[10];
     char *s;
     int len;
@@ -92,6 +75,7 @@ ScrollToCurrent (int caretPos)
     XtSetArg(args[0], XtNinsertPosition, caretPos); // this triggers scrolling in Xaw
     XtSetArg(args[1], XtNdisplayCaret, False);
     XtSetValues(historyOptions[0].handle, args, 2);
+#endif
 }
 
 
@@ -104,9 +88,11 @@ char historyTranslations[] =
 void
 SelectMove (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {
+#ifdef TODO_GTK
 	XawTextPosition index, dummy;
 
 	XawTextGetSelectionPos(w, &index, &dummy);
 	FindMoveByCharIndex( index ); // [HGM] also does the actual moving to it, now
+#endif
 }
 

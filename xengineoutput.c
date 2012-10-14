@@ -48,26 +48,6 @@ extern char *getenv();
 # include <unistd.h>
 #endif
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#include <X11/Xatom.h>
-#include <X11/Xmu/Atoms.h>
-
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
@@ -84,8 +64,6 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-#include <X11/xpm.h>
-
 // [HGM] pixmaps of some ICONS used in the engine-outut window
 #include "pixmaps/WHITE_14.xpm"
 #include "pixmaps/BLACK_14.xpm"
@@ -97,16 +75,18 @@ extern char *getenv();
 
 
 /* Module variables */
+#ifdef TODO_GTK
 static int currentPV, highTextStart[2], highTextEnd[2];
 static Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 static Widget memoWidget;
-
+#endif
 
 static void
 ReadIcon (char *pixData[], int iconNr, Widget w)
 {
     int r;
 
+#ifdef TODO_GTK
 	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(w),
 				       pixData,
 				       &(icons[iconNr]),
@@ -114,11 +94,13 @@ ReadIcon (char *pixData[], int iconNr, Widget w)
 	  fprintf(stderr, _("Error %d loading icon image\n"), r);
 	  exit(1);
 	}
+#endif
 }
 
 void
 InitEngineOutput (Option *opt, Option *memo2)
 {	// front-end, because it must have access to the pixmaps
+#ifdef TODO_GTK
 	Widget w = opt->handle;
 	memoWidget = memo2->handle;
 
@@ -130,19 +112,23 @@ InitEngineOutput (Option *opt, Option *memo2)
         ReadIcon(PONDER_14,  nPondering, w);
         ReadIcon(THINK_14,   nThinking, w);
         ReadIcon(ANALYZE_14, nAnalyzing, w);
+#endif
 }
 
 void
 DrawWidgetIcon (Option *opt, int nIcon)
 {   // as we are already in X front-end, so do X-stuff here
+#ifdef TODO_GTK
     Arg arg;
     XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);
     XtSetValues(opt->handle, &arg, 1);
+#endif
 }
 
 void
 InsertIntoMemo (int which, char * text, int where)
 {
+#ifdef TODO_GTK
 	XawTextBlock t;
 	Widget edit;
 
@@ -158,6 +144,7 @@ InsertIntoMemo (int which, char * text, int where)
 	    highTextStart[which] += len; highTextEnd[which] += len;
 	    XawTextSetSelection( edit, highTextStart[which], highTextEnd[which] );
 	}
+#endif
 }
 
 //--------------------------------- PV walking ---------------------------------------
@@ -172,6 +159,7 @@ Any<Btn3Down>: select-start() extend-end() SelectPV(0) \n \
 void
 SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {	// [HGM] pv: translate click to PV line, and load it for display
+#ifdef TODO_GTK
 	String val;
 	int start, end;
 	XawTextPosition index, dummy;
@@ -188,15 +176,18 @@ SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	    XawTextSetSelection( w, start, end );
 	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
 	}
+#endif
 }
 
 void
 StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {	// [HGM] pv: on right-button release, stop displaying PV
+#ifdef TODO_GTK
         XawTextUnsetSelection( w );
         highTextStart[currentPV] = highTextEnd[currentPV] = 0;
         UnLoadPV();
         XtCallActionProc(w, "beginning-of-file", event, NULL, 0);
+#endif
 }
 
 //------------------------- Ctrl-C copying of memo texts ---------------------------
@@ -209,6 +200,7 @@ StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 
 // cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
 
+#ifdef TODO_GTK
 Boolean SendPositionSelection(Widget w, Atom *selection, Atom *target,
 		 Atom *type_return, XtPointer *value_return,
 		 unsigned long *length_return, int *format_return); // from xboard.c
@@ -243,6 +235,7 @@ CopyMemoProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
       CurrentTime
     );
 }
+#endif
 
 //------------------------------- pane switching -----------------------------------
 
@@ -250,6 +243,7 @@ void
 ResizeWindowControls (int mode)
 {   // another hideous kludge: to have only a single pane, we resize the
     // second to 5 pixels (which makes it too small to display anything)
+#ifdef TODO_GTK
     Widget form1, form2;
     Arg args[16];
     int j;
@@ -282,5 +276,6 @@ ResizeWindowControls (int mode)
 	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height/2)); j++;
 	XtSetValues(form2, args, j);
     }
+#endif
 }
 

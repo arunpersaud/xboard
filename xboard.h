@@ -148,22 +148,25 @@ void StopPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 
 extern char memoTranslations[];
 
-
+#if TODO_GTK
 extern Widget shells[];
-extern int dialogError;
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
 extern Window xBoardWindow;
-extern int squareSize;
 extern Pixmap xMarkPixmap, wIconPixmap, bIconPixmap;
-extern char *layoutName;
 extern Pixel timerForegroundPixel, timerBackgroundPixel, dialogColor, buttonColor;
 extern Atom wm_delete_window;
+extern GC coordGC;
+extern Dimension textHeight; // of message widget in board window
+#else
+extern void *shells[];
+#endif
+extern int dialogError;
+extern int squareSize;
+extern char *layoutName;
 extern int useImages, useImageSqs;
 extern char ICSInputTranslations[];
 extern char *selected_fen_position;
-extern GC coordGC;
-extern Dimension textHeight; // of message widget in board window
 
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */

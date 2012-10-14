@@ -271,13 +271,13 @@ int CopyMemoProc P(());
 */
 int xtVersion = XtSpecificationRelease;
 
+#ifdef TODO_GTK
 int xScreen;
 Display *xDisplay;
 Window xBoardWindow;
 Pixel lowTimeWarningColor, dialogColor, buttonColor; // used in widgets
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, formWidget, boardWidget, titleWidget, dropMenu, menuBarWidget;
-Option *optList; // contains all widgets of main window
 #if ENABLE_NLS
 XFontSet fontSet, clockFontSet;
 #else
@@ -287,6 +287,11 @@ XFontStruct *clockFontStruct;
 Font coordFontID, countFontID;
 XFontStruct *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
+#else
+void *shellWidget, *formWidget, *boardWidget, *titleWidget, *dropMenu, *menuBarWidget;
+void *appContext;
+#endif
+Option *optList; // contains all widgets of main window
 char *layoutName;
 
 char installDir[] = "."; // [HGM] UCI: needed for UCI; probably needs run-time initializtion
@@ -355,6 +360,7 @@ DropMenuEnables dmEnables[] = {
     { 'Q', "Queen" }
 };
 
+#ifdef TODO_GTK
 Arg shellArgs[] = {
     { XtNwidth, 0 },
     { XtNheight, 0 },
@@ -400,6 +406,7 @@ XtActionsRec boardActions[] = {
     { "WheelProc", WheelProc },
     { "TabProc", TabProc },
 };
+#endif
 
 char globalTranslations[] =
   ":<Key>F9: MenuItem(Actions.Resign) \n \
@@ -480,11 +487,12 @@ char ICSInputTranslations[] =
 //             as the widget is destroyed before the up-click can call extend-end
 char commentTranslations[] = "<Btn3Down>: extend-end() select-start() CommentClick() \n";
 
+#ifdef TODO_GTK
 String xboardResources[] = {
     "*Error*translations: #override\\n <Key>Return: ErrorPopDown()",
     NULL
   };
-
+#endif
 
 /* Max possible square size */
 #define MAXSQSIZE 256
@@ -611,6 +619,7 @@ Warning: No DIR structure found on this system --\n\
 #endif /* HAVE_DIR_STRUCT */
 
 
+#ifdef TODO_GTK
 /* Arrange to catch delete-window events */
 Atom wm_delete_window;
 void
@@ -621,15 +630,18 @@ CatchDeleteWindow (Widget w, String procname)
   snprintf(buf, sizeof(buf), "<Message>WM_PROTOCOLS: %s() \n", procname);
   XtAugmentTranslations(w, XtParseTranslationTable(buf));
 }
+#endif
 
 void
 BoardToTop ()
 {
+#ifdef TODO_GTK
   Arg args[16];
   XtSetArg(args[0], XtNiconic, False);
   XtSetValues(shellWidget, args, 1);
 
   XtPopup(shellWidget, XtGrabNone); /* Raise if lowered  */
+#endif
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -807,6 +819,7 @@ ParseCommPortSettings (char *s)
 
 int frameX, frameY;
 
+#ifdef TODO_GTK
 void
 GetActualPlacement (Widget wg, WindowPlacement *wp)
 {
@@ -825,11 +838,13 @@ GetActualPlacement (Widget wg, WindowPlacement *wp)
   wp->width = winAt.width;
   frameX = winAt.x; frameY = winAt.y; // remember to decide if windows touch
 }
+#endif
 
 void
 GetWindowCoords ()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
+#ifdef TODO_GTK
   GetActualPlacement(shellWidget, &wpMain);
   if(shellUp[EngOutDlg]) GetActualPlacement(shells[EngOutDlg], &wpEngineOutput);
   if(shellUp[HistoryDlg]) GetActualPlacement(shells[HistoryDlg], &wpMoveHistory);
@@ -837,6 +852,7 @@ GetWindowCoords ()
   if(shellUp[GameListDlg]) GetActualPlacement(shells[GameListDlg], &wpGameList);
   if(shellUp[CommentDlg]) GetActualPlacement(shells[CommentDlg], &wpComment);
   if(shellUp[TagsDlg]) GetActualPlacement(shells[TagsDlg], &wpTags);
+#endif
 }
 
 void
@@ -853,7 +869,11 @@ EnsureOnScreen (int *x, int *y, int minX, int minY)
 int
 MainWindowUp ()
 { // [HGM] args: allows testing if main window is realized from back-end
+#ifdef TODO_GTK
   return xBoardWindow != 0;
+#else
+  return 0;
+#endif
 }
 
 void
@@ -887,6 +907,7 @@ ConvertToLine (int argc, char **argv)
 void
 ResizeBoardWindow (int w, int h, int inhibit)
 {
+#ifdef TODO_GTK
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH;
     shellArgs[0].value = w;
@@ -896,8 +917,10 @@ ResizeBoardWindow (int w, int h, int inhibit)
     XtSetValues(shellWidget, &shellArgs[0], inhibit ? 6 : 2);
 
     XSync(xDisplay, False);
+#endif
 }
 
+#ifdef TODO_GTK
 static int
 MakeOneColor (char *name, Pixel *color)
 {
@@ -915,16 +938,19 @@ MakeOneColor (char *name, Pixel *color)
     }
     return False;
 }
+#endif
 
 int
 MakeColors ()
 {   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
     int forceMono = False;
 
+#ifdef TODO_GTK
     if (appData.lowTimeWarning)
 	forceMono |= MakeOneColor(appData.lowTimeWarningColor, &lowTimeWarningColor);
     if(appData.dialogColor[0]) MakeOneColor(appData.dialogColor, &dialogColor);
     if(appData.buttonColor[0]) MakeOneColor(appData.buttonColor, &buttonColor);
+#endif
 
     return forceMono;
 }
@@ -932,6 +958,7 @@ MakeColors ()
 void
 InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
 {   // detervtomine what fonts to use, and create them
+#ifdef TODO_GTK
     XrmValue vTo;
     XrmDatabase xdb;
 
@@ -981,6 +1008,7 @@ InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
     XrmPutResource(&xdb, "*fontSet", XtRFontSet, &vTo);
 #else
     XrmPutStringResource(&xdb, "*font", appData.font);
+#endif
 #endif
 }
 
@@ -1045,9 +1073,13 @@ int
 main (int argc, char **argv)
 {
     int i, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
+#ifdef TODO_GTK
     XSetWindowAttributes window_attributes;
     Arg args[16];
     Dimension boardWidth, boardHeight, w, h;
+#else
+    int boardWidth, boardHeight, w, h;
+#endif
     char *p;
     int forceMono = False;
 
@@ -1138,6 +1170,7 @@ main (int argc, char **argv)
 	gameInfo.variant = StringToVariant(appData.variant);
 	InitPosition(FALSE);
 
+#ifdef TODO_GTK
     shellWidget =
       XtAppInitialize(&appContext, "XBoard", shellOptions,
 		      XtNumber(shellOptions),
@@ -1150,6 +1183,7 @@ main (int argc, char **argv)
     xDisplay = XtDisplay(shellWidget);
     xScreen = DefaultScreen(xDisplay);
     wm_delete_window = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
+#endif
 
     /*
      * determine size, based on supplied or remembered -size, or screen size
@@ -1186,10 +1220,12 @@ main (int argc, char **argv)
     } else {
         SizeDefaults *szd = sizeDefaults;
         if (*appData.boardSize == NULLCHAR) {
+#ifdef TODO_GTK
 	    while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize ||
 		   DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) {
 	      szd++;
 	    }
+#endif
 	    if (szd->name == NULL) szd--;
 	    appData.boardSize = strdup(szd->name); // [HGM] settings: remember name for saving settings
 	} else {
@@ -1221,14 +1257,18 @@ main (int argc, char **argv)
     /*
      * Determine what fonts to use.
      */
+#ifdef TODO_GTK
     InitializeFonts(clockFontPxlSize, coordFontPxlSize, fontPxlSize);
+#endif
 
     /*
      * Detect if there are not enough colors available and adapt.
      */
+#ifdef TODO_GTK
     if (DefaultDepth(xDisplay, xScreen) <= 2) {
       appData.monoMode = True;
     }
+#endif
 
     forceMono = MakeColors();
 
@@ -1239,14 +1279,18 @@ main (int argc, char **argv)
     }
 
     if (appData.monoMode && appData.debugMode) {
+#ifdef TODO_GTK
 	fprintf(stderr, _("white pixel = 0x%lx, black pixel = 0x%lx\n"),
 		(unsigned long) XWhitePixel(xDisplay, xScreen),
 		(unsigned long) XBlackPixel(xDisplay, xScreen));
+#endif
     }
 
     ParseIcsTextColors();
 
+#ifdef TODO_GTK
     XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
+#endif
 
     /*
      * widget hierarchy
@@ -1260,10 +1304,14 @@ main (int argc, char **argv)
     }
 
     optList = BoardPopUp(squareSize, lineGap, (void*)
+#ifdef TODO_GTK
 #if ENABLE_NLS
 						&clockFontSet);
 #else
 						clockFontStruct);
+#endif
+#else
+0);
 #endif
     InitDrawingHandle(optList + W_BOARD);
     currBoard        = &optList[W_BOARD];
@@ -1272,6 +1320,7 @@ main (int argc, char **argv)
     dropMenu         = optList[W_DROP].handle;
     titleWidget = optList[optList[W_TITLE].type != -1 ? W_TITLE : W_SMALL].handle;
     formWidget  = XtParent(boardWidget);
+#ifdef TODO_GTK
     XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
     XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
     XtGetValues(optList[W_WHITE].handle, args, 2);
@@ -1280,9 +1329,12 @@ main (int argc, char **argv)
       XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
       XtGetValues(optList[W_PAUSE].handle, args, 2);
     }
+#endif
     AppendEnginesToMenu(appData.recentEngineList);
 
+#ifdef TODO_GTK
     xBoardWindow = XtWindow(boardWidget);
+#endif
 
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
     //       not need to go into InitDrawingSizes().
@@ -1290,13 +1342,16 @@ main (int argc, char **argv)
     /*
      * Create X checkmark bitmap and initialize option menu checks.
      */
+#ifdef TODO_GTK
     ReadBitmap(&xMarkPixmap, "checkmark.bm",
 	       checkmark_bits, checkmark_width, checkmark_height);
+#endif
     InitMenuMarkers();
 
     /*
      * Create an icon.
      */
+#ifdef TODO_GTK
     ReadBitmap(&wIconPixmap, "icon_white.bm",
 	       icon_white_bits, icon_white_width, icon_white_height);
     ReadBitmap(&bIconPixmap, "icon_black.bm",
@@ -1305,27 +1360,34 @@ main (int argc, char **argv)
     i = 0;
     XtSetArg(args[i], XtNiconPixmap, iconPixmap);  i++;
     XtSetValues(shellWidget, args, i);
+#endif
 
     /*
      * Create a cursor for the board widget.
      */
+#ifdef TODO_GTK
     window_attributes.cursor = XCreateFontCursor(xDisplay, XC_hand2);
     XChangeWindowAttributes(xDisplay, xBoardWindow,
 			    CWCursor, &window_attributes);
+#endif
 
     /*
      * Inhibit shell resizing.
      */
+#ifdef TODO_GTK
     shellArgs[0].value = (XtArgVal) &w;
     shellArgs[1].value = (XtArgVal) &h;
     XtGetValues(shellWidget, shellArgs, 2);
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
 //    XtSetValues(shellWidget, &shellArgs[2], 4);
+#endif
     marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
     marginH =  h - boardHeight;
 
+#ifdef TODO_GTK
     CatchDeleteWindow(shellWidget, "QuitProc");
+#endif
 
     CreateAnyPieces();
     CreateGrid();
@@ -1340,6 +1402,7 @@ main (int argc, char **argv)
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
+#ifdef TODO_GTK
     XtAugmentTranslations(formWidget,
 			  XtParseTranslationTable(globalTranslations));
 
@@ -1347,6 +1410,7 @@ main (int argc, char **argv)
 		      (XtEventHandler) MoveTypeInProc, NULL);
     XtAddEventHandler(shellWidget, StructureNotifyMask, False,
 		      (XtEventHandler) EventProc, NULL);
+#endif
 
     /* [AS] Restore layout */
     if( wpMoveHistory.visible ) {
@@ -1386,9 +1450,11 @@ main (int argc, char **argv)
     InitPosition(TRUE);
     UpdateLogos(TRUE);
 //    XtSetKeyboardFocus(shellWidget, formWidget);
+#ifdef TODO_GTK
     XSetInputFocus(xDisplay, XtWindow(formWidget), RevertToPointerRoot, CurrentTime);
 
     XtAppMainLoop(appContext);
+#endif
     if (appData.debugMode) fclose(debugFP); // [DM] debug
     return 0;
 }
@@ -1482,6 +1548,7 @@ InsertPxlSize (char *pattern, int targetPxlSize)
     return base_fnt_lst;
 }
 
+#ifdef TODO_GTK
 XFontSet
 CreateFontSet (char *base_fnt_lst)
 {
@@ -1516,6 +1583,7 @@ CreateFontSet (char *base_fnt_lst)
     }
     return fntSet;
 }
+#endif
 #else // not ENABLE_NLS
 /*
  * Find a font that matches "pattern" that is as close as
@@ -1532,6 +1600,7 @@ FindFont (char *pattern, int targetPxlSize)
     char **fonts, *p, *best, *scalable, *scalableTail;
     int i, j, nfonts, minerr, err, pxlSize;
 
+#ifdef TODO_GTK
     fonts = XListFonts(xDisplay, pattern, 999999, &nfonts);
     if (nfonts < 1) {
 	fprintf(stderr, _("%s: no fonts match pattern %s\n"),
@@ -1580,6 +1649,7 @@ FindFont (char *pattern, int targetPxlSize)
 		pattern, targetPxlSize, p);
     }
     XFreeFontNames(fonts);
+#endif
     return p;
 }
 #endif
@@ -1588,8 +1658,10 @@ void
 ReadBitmap (Pixmap *pm, String name, unsigned char bits[], u_int wreq, u_int hreq)
 {
     if (bits != NULL) {
+#ifdef TODO_GTK
 	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
 				    wreq, hreq);
+#endif
     }
 }
 
@@ -1598,13 +1670,17 @@ EnableNamedMenuItem (char *menuRef, int state)
 {
     MenuItem *item = MenuNameToItem(menuRef);
 
+#ifdef TODO_GTK
     if(item) XtSetSensitive(item->handle, state);
+#endif
 }
 
 void
 EnableButtonBar (int state)
 {
+#ifdef TODO_GTK
     XtSetSensitive(optList[W_BUTTON].handle, state);
+#endif
 }
 
 
@@ -1617,6 +1693,7 @@ SetMenuEnables (Enables *enab)
   }
 }
 
+#ifdef TODO_GTK
 void
 KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] new method of key binding: specify MenuItem(FlipView) in stead of FlipViewProc in translation string
@@ -1625,22 +1702,28 @@ KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     item = MenuNameToItem(prms[0]);
     if(item) ((MenuProc *) item->proc) ();
 }
+#endif
 
+#ifdef TODO_GTK
 static void
 MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
 {
     RecentEngineEvent((int) (intptr_t) addr);
 }
+#endif
 
 void
 AppendMenuItem (char *msg, int n)
 {
+#ifdef TODO_GTK
     CreateMenuItem((Widget) optList[W_ENGIN].textValue, msg, (XtCallbackProc) MenuEngineSelect, n);
+#endif
 }
 
 void
 SetupDropMenu ()
 {
+#ifdef TODO_GTK
     int i, j, count;
     char label[32];
     Arg args[16];
@@ -1661,6 +1744,7 @@ SetupDropMenu ()
 	XtSetArg(args[j], XtNlabel, label); j++;
 	XtSetValues(entry, args, j);
     }
+#endif
 }
 
 static void
@@ -1672,8 +1756,10 @@ do_flash_delay (unsigned long msec)
 void
 FlashDelay (int flash_delay)
 {
+#ifdef TODO_GTK
 	XSync(xDisplay, False);
 	if(flash_delay) do_flash_delay(flash_delay);
+#endif
 }
 
 double
@@ -1686,6 +1772,7 @@ Fraction (int x, int start, int stop)
 
 static WindowPlacement wpNew;
 
+#ifdef TODO_GTK
 void
 CoDrag (Widget sh, WindowPlacement *wp)
 {
@@ -1716,9 +1803,11 @@ CoDrag (Widget sh, WindowPlacement *wp)
     wp->y += wpNew.y - wpMain.y;
     if(touch == 1) wp->x += wpNew.width - wpMain.width; else
     if(touch == 3) wp->y += wpNew.height - wpMain.height;
+#ifdef TODO_GTK
     XtSetArg(args[j], XtNx, wp->x); j++;
     XtSetArg(args[j], XtNy, wp->y); j++;
     XtSetValues(sh, args, j);
+#endif
 }
 
 void
@@ -1740,7 +1829,11 @@ ReSize (WindowPlacement *wp)
 	if(optList[W_BOARD].value > h) optList[W_BOARD].value = h;
 }
 
+#ifdef TODO_GTK
 static XtIntervalId delayedDragID = 0;
+#else
+static int delayedDragID = 0;
+#endif
 
 void
 DragProc ()
@@ -1764,21 +1857,25 @@ DragProc ()
 	delayedDragID = 0; // now drag executed, make sure next DelayedDrag will not cancel timer event (which could now be used by other)
 	busy = 0;
 }
-
+#endif
 
 void
 DelayedDrag ()
 {
+#ifdef TODO_GTK
     if(delayedDragID) XtRemoveTimeOut(delayedDragID); // cancel pending
     delayedDragID =
       XtAppAddTimeOut(appContext, 200, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
+#endif
 }
 
 void
 EventProc (Widget widget, caddr_t unused, XEvent *event)
 {
+#ifdef TODO_GTK
     if(XtIsRealized(widget) && event->type == ConfigureNotify || appData.useStickyWindows)
 	DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
+#endif
 }
 
 /*
@@ -1791,17 +1888,20 @@ DrawPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 
+#ifdef TODO_GTK
 void
 HandlePV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {   // [HGM] pv: walk PV
     MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 }
+#endif
 
 static int savedIndex;  /* gross that this is global */
 
 void
 CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {
+#ifdef TODO_GTK
 	String val;
 	XawTextPosition index, dummy;
 	Arg arg;
@@ -1812,6 +1912,7 @@ CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	ReplaceComment(savedIndex, val);
 	if(savedIndex != currentMove) ToNrEvent(savedIndex);
 	LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
+#endif
 }
 
 void
@@ -1853,17 +1954,20 @@ void
 ThawUI ()
 {
   if (!frozen) return;
+#ifdef TODO_GTK
   XtRemoveGrab(optList[W_MESSG].handle);
+#endif
   frozen = 0;
 }
 
 void
 ModeHighlight ()
 {
-    Arg args[16];
     static int oldPausing = FALSE;
     static GameMode oldmode = (GameMode) -1;
     char *wname;
+#ifdef TODO_GTK
+    Arg args[16];
 
     if (!boardWidget || !XtIsRealized(boardWidget)) return;
 
@@ -1887,6 +1991,7 @@ ModeHighlight ()
 	  XtSetValues(optList[W_PAUSE].handle, args, 2);
 	}
     }
+#endif
 
     wname = ModeToWidgetName(oldmode);
     if (wname != NULL) {
@@ -1910,6 +2015,7 @@ ModeHighlight ()
  * Button/menu procedures
  */
 
+#ifdef TODO_GTK
 /* this variable is shared between CopyPositionProc and SendPositionSelection */
 char *selected_fen_position=NULL;
 
@@ -1976,6 +2082,7 @@ SendPositionSelection (Widget w, Atom *selection, Atom *target,
     return False;
   }
 }
+#endif
 
 /* note: when called from menu all parameters are NULL, so no clue what the
  * Widget which was clicked on was, or what the click event was
@@ -1983,6 +2090,7 @@ SendPositionSelection (Widget w, Atom *selection, Atom *target,
 void
 CopySomething (char *src)
 {
+#ifdef TODO_GTK
     selected_fen_position = src;
     /*
      * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
@@ -1999,8 +2107,10 @@ CopySomething (char *src)
 		   SendPositionSelection,
 		   NULL/* lose_ownership_proc */ ,
 		   NULL/* transfer_done_proc */);
+#endif
 }
 
+#ifdef TODO_GTK
 /* function called when the data to Paste is ready */
 static void
 PastePositionCB (Widget w, XtPointer client_data, Atom *selection,
@@ -2012,12 +2122,14 @@ PastePositionCB (Widget w, XtPointer client_data, Atom *selection,
   EditPositionPasteFEN(fenstr);
   XtFree(value);
 }
+#endif
 
 /* called when Paste Position button is pressed,
  * all parameters will be NULL */
 void
 PastePositionProc ()
 {
+#ifdef TODO_GTK
     XtGetSelectionValue(menuBarWidget,
       appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
       /* (XtSelectionCallbackProc) */ PastePositionCB,
@@ -2029,8 +2141,10 @@ PastePositionProc ()
       CurrentTime
     );
     return;
+#endif
 }
 
+#ifdef TODO_GTK
 /* note: when called from menu all parameters are NULL, so no clue what the
  * Widget which was clicked on was, or what the click event was
  */
@@ -2053,12 +2167,14 @@ PasteGameCB (Widget w, XtPointer client_data, Atom *selection,
   XtFree(value);
   LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
 }
+#endif
 
 /* called when Paste Game button is pressed,
  * all parameters will be NULL */
 void
 PasteGameProc ()
 {
+#ifdef TODO_GTK
     XtGetSelectionValue(menuBarWidget,
       appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
       /* (XtSelectionCallbackProc) */ PasteGameCB,
@@ -2070,6 +2186,7 @@ PasteGameProc ()
       CurrentTime
     );
     return;
+#endif
 }
 
 
@@ -2082,29 +2199,34 @@ QuitWrapper (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 int
 ShiftKeys ()
 {   // bassic primitive for determining if modifier keys are pressed
+    int i,j,  k=0;
+#ifdef TODO_GTK
     long int codes[] = { XK_Meta_L, XK_Meta_R, XK_Control_L, XK_Control_R, XK_Shift_L, XK_Shift_R };
     char keys[32];
-    int i,j,  k=0;
     XQueryKeymap(xDisplay,keys);
     for(i=0; i<6; i++) {
 	k <<= 1;
 	j = XKeysymToKeycode(xDisplay, codes[i]);
 	k += ( (keys[j>>3]&1<<(j&7)) != 0 );
     }
+#endif
     return k;
 }
 
 static void
 MoveTypeInProc (Widget widget, caddr_t unused, XEvent *event)
 {
+#ifdef TODO_GTK
     char buf[10];
     KeySym sym;
     int n = XLookupString(&(event->xkey), buf, 10, &sym, NULL);
     if ( n == 1 && *buf >= 32 // printable
 	 && !(ShiftKeys() & 0x3C) // no Alt, Ctrl
 	) BoxAutoPopUp (buf);
+#endif
 }
 
+#ifdef TODO_GTK
 static void
 UpKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] input: let up-arrow recall previous line from history
@@ -2122,6 +2244,7 @@ EnterKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     IcsKey(0);
 }
+
 
 void
 TempBackwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
@@ -2160,16 +2283,20 @@ ManInner (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     snprintf(buf, sizeof(buf), "xterm -e man %s &", name);
     system(buf);
 }
+#endif
 
 void
 ManProc ()
 {   // called from menu
+#ifdef TODO_GTK
     ManInner(NULL, NULL, NULL, NULL);
+#endif
 }
 
 void
 SetWindowTitle (char *text, char *title, char *icon)
 {
+#ifdef TODO_GTK
     Arg args[16];
     int i;
     if (appData.titleInWindow) {
@@ -2182,6 +2309,7 @@ SetWindowTitle (char *text, char *title, char *icon)
     XtSetArg(args[i], XtNtitle, (XtArgVal) title);      i++;
     XtSetValues(shellWidget, args, i);
     XSync(xDisplay, False);
+#endif
 }
 
 
@@ -2194,6 +2322,7 @@ NullXErrorCheck (Display *dpy, XErrorEvent *error_event)
 void
 DisplayIcsInteractionTitle (String message)
 {
+#ifdef TODO_GTK
   if (oldICSInteractionTitle == NULL) {
     /* Magic to find the old window title, adapted from vim */
     char *wina = getenv("WINDOWID");
@@ -2218,12 +2347,14 @@ DisplayIcsInteractionTitle (String message)
   }
   printf("\033]0;%s\007", message);
   fflush(stdout);
+#endif
 }
 
 
 void
 DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
 {
+#ifdef TODO_GTK
     char buf[MSG_SIZ];
     Arg args[16];
     Widget w = (Widget) opt->handle;
@@ -2254,13 +2385,17 @@ DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
     }
 
     XtSetValues(w, args, 3);
+#endif
 }
 
+#ifdef TODO_GTK
 static Pixmap *clockIcons[] = { &wIconPixmap, &bIconPixmap };
+#endif
 
 void
 SetClockIcon (int color)
 {
+#ifdef TODO_GTK
     Arg args[16];
     Pixmap pm = *clockIcons[color];
     if (iconPixmap != pm) {
@@ -2268,8 +2403,10 @@ SetClockIcon (int color)
 	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
 	XtSetValues(shellWidget, args, 1);
     }
+#endif
 }
 
+#ifdef TODO_GTK
 void
 DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 {
@@ -2308,10 +2445,12 @@ DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 	(is->func)(is, is->closure, is->buf, count, error);
     }
 }
+#endif
 
 InputSourceRef
 AddInputSource (ProcRef pr, int lineByLine, InputCallback func, VOIDSTAR closure)
 {
+#ifdef TODO_GTK
     InputSource *is;
     ChildProc *cp = (ChildProc *) pr;
 
@@ -2335,16 +2474,21 @@ AddInputSource (ProcRef pr, int lineByLine, InputCallback func, VOIDSTAR closure
 			    (XtPointer) is);
     is->closure = closure;
     return (InputSourceRef) is;
+#else
+    return (InputSourceRef) 0;
+#endif
 }
 
 void
 RemoveInputSource (InputSourceRef isr)
 {
+#ifdef TODO_GTK
     InputSource *is = (InputSource *) isr;
 
     if (is->xid == 0) return;
     XtRemoveInput(is->xid);
     is->xid = 0;
+#endif
 }
 
 #ifndef HAVE_USLEEP
@@ -2362,6 +2506,7 @@ FrameAlarm (int sig)
 void
 FrameDelay (int time)
 {
+#ifdef TODO_GTK
   struct itimerval delay;
 
   XSync(xDisplay, False);
@@ -2379,6 +2524,7 @@ FrameDelay (int time)
     delay.it_interval.tv_usec = delay.it_value.tv_usec = 0;
     setitimer(ITIMER_REAL, &delay, NULL);
   }
+#endif
 }
 
 #else
@@ -2386,7 +2532,9 @@ FrameDelay (int time)
 void
 FrameDelay (int time)
 {
+#ifdef TODO_GTK
   XSync(xDisplay, False);
+#endif
   if (time > 0)
     usleep(time * 1000);
 }
