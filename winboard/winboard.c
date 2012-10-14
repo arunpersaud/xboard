@@ -4468,14 +4468,6 @@ PromotionPopUp()
   PromotionPopup(hwndMain);
 }
 
-/* Toggle ShowThinking */
-VOID
-ToggleShowThinking()
-{
-  appData.showThinking = !appData.showThinking;
-  ShowThinkingEvent();
-}
-
 VOID
 LoadGameDialog(HWND hwnd, char* title)
 {
@@ -4947,38 +4939,8 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_AnalysisMode:
-      if (!first.analysisSupport) {
-        snprintf(buf, MSG_SIZ, _("%s does not support analysis"), first.tidy);
-        DisplayError(buf, 0);
-      } else {
+      if(AnalyzeModeEvent()) {
 	SAY("analyzing current position");
-        /* [DM] icsEngineAnlyze [HGM] Why is this front-end??? */
-        if (appData.icsActive) {
-               if (gameMode != IcsObserving) {
-		 snprintf(buf, MSG_SIZ, "You are not observing a game");
-                       DisplayError(buf, 0);
-                       /* secure check */
-                       if (appData.icsEngineAnalyze) {
-                               if (appData.debugMode) 
-                                       fprintf(debugFP, "Found unexpected active ICS engine analyze \n");
-                               ExitAnalyzeMode();
-                               ModeHighlight();
-                               break;
-                       }
-                       break;
-               } else {
-                       /* if enable, user want disable icsEngineAnalyze */
-                       if (appData.icsEngineAnalyze) {
-                               ExitAnalyzeMode();
-                               ModeHighlight();
-                               break;
-                       }
-                       appData.icsEngineAnalyze = TRUE;
-                       if (appData.debugMode) fprintf(debugFP, "ICS engine analyze starting...\n");
-               }
-        } 
-	if (!appData.showThinking) ToggleShowThinking();
-	AnalyzeModeEvent();
       }
       break;
 
