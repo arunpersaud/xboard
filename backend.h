@@ -207,7 +207,7 @@ void MailMoveEvent P((void));
 void EditTagsEvent P((void));
 void GetMoveListEvent P((void));
 void ExitAnalyzeMode P((void));
-void AnalyzeModeEvent P((void));
+int  AnalyzeModeEvent P((void));
 void AnalyzeFileEvent P((void));
 void MatchEvent P((int mode));
 void RecentEngineEvent P((int nr));

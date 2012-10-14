@@ -13445,18 +13445,59 @@ ToggleSecond ()
   }
 }
 
+/* Toggle ShowThinking */
 void
+ToggleShowThinking()
+{
+  appData.showThinking = !appData.showThinking;
+  ShowThinkingEvent();
+}
+
+int
 AnalyzeModeEvent ()
 {
-    if (gameMode == AnalyzeMode) { ToggleSecond(); return; }
+    char buf[MSG_SIZ];
+
+    if (!first.analysisSupport) {
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
+      DisplayError(buf, 0);
+      return 0;
+    }
+    /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
+    if (appData.icsActive) {
+        if (gameMode != IcsObserving) {
+	  snprintf(buf, MSG_SIZ, _("You are not observing a game"));
+            DisplayError(buf, 0);
+            /* secure check */
+            if (appData.icsEngineAnalyze) {
+                if (appData.debugMode)
+                    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
+                ExitAnalyzeMode();
+                ModeHighlight();
+            }
+            return 0;
+        }
+        /* if enable, user wants to disable icsEngineAnalyze */
+        if (appData.icsEngineAnalyze) {
+                ExitAnalyzeMode();
+                ModeHighlight();
+                return 0;
+        }
+        appData.icsEngineAnalyze = TRUE;
+        if (appData.debugMode)
+            fprintf(debugFP, _("ICS engine analyze starting... \n"));
+    }
+
+    if (gameMode == AnalyzeMode) { ToggleSecond(); return 0; }
     if (appData.noChessProgram || gameMode == AnalyzeMode)
-      return;
+      return 0;
 
     if (gameMode != AnalyzeFile) {
         if (!appData.icsEngineAnalyze) {
                EditGameEvent();
-               if (gameMode != EditGame) return;
+               if (gameMode != EditGame) return 0;
         }
+	if (!appData.showThinking) ToggleShowThinking();
 	ResurrectChessProgram();
 	SendToProgram("analyze\n", &first);
 	first.analyzing = TRUE;
@@ -13472,6 +13513,7 @@ AnalyzeModeEvent ()
     StartAnalysisClock();
     GetTimeMark(&lastNodeCountTime);
     lastNodeCount = 0;
+    return 1;
 }
 
 void
@@ -13480,9 +13522,17 @@ AnalyzeFileEvent ()
     if (appData.noChessProgram || gameMode == AnalyzeFile)
       return;
 
+    if (!first.analysisSupport) {
+      char buf[MSG_SIZ];
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
+      DisplayError(buf, 0);
+      return;
+    }
+
     if (gameMode != AnalyzeMode) {
 	EditGameEvent();
 	if (gameMode != EditGame) return;
+	if (!appData.showThinking) ToggleShowThinking();
 	ResurrectChessProgram();
 	SendToProgram("analyze\n", &first);
 	first.analyzing = TRUE;
@@ -13499,6 +13549,7 @@ AnalyzeFileEvent ()
     GetTimeMark(&lastNodeCountTime);
     lastNodeCount = 0;
     if(appData.timeDelay > 0) StartLoadGameTimer((long)(1000.0f * appData.timeDelay));
+    AnalysisPeriodicEvent(1);
 }
 
 void

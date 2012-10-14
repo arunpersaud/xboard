@@ -256,67 +256,6 @@ QuitProc ()
 }
 
 void
-AnalyzeModeProc ()
-{
-    char buf[MSG_SIZ];
-
-    if (!first.analysisSupport) {
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-    /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
-    if (appData.icsActive) {
-        if (gameMode != IcsObserving) {
-	  snprintf(buf, MSG_SIZ, _("You are not observing a game"));
-            DisplayError(buf, 0);
-            /* secure check */
-            if (appData.icsEngineAnalyze) {
-                if (appData.debugMode)
-                    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
-                ExitAnalyzeMode();
-                ModeHighlight();
-            }
-            return;
-        }
-        /* if enable, use want disable icsEngineAnalyze */
-        if (appData.icsEngineAnalyze) {
-                ExitAnalyzeMode();
-                ModeHighlight();
-                return;
-        }
-        appData.icsEngineAnalyze = TRUE;
-        if (appData.debugMode)
-            fprintf(debugFP, _("ICS engine analyze starting... \n"));
-    }
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc();
-#endif
-
-    AnalyzeModeEvent();
-}
-
-void
-AnalyzeFileProc ()
-{
-    if (!first.analysisSupport) {
-      char buf[MSG_SIZ];
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-//    Reset(FALSE, TRUE);
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc();
-#endif
-    AnalyzeFileEvent();
-//    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
-    AnalysisPeriodicEvent(1);
-}
-
-void
 MatchProc ()
 {
     MatchEvent(2);
@@ -708,8 +647,8 @@ MenuItem modeMenu[] = {
     {N_("Machine White  Ctrl+W"), "MachineWhite", MachineWhiteEvent},
     {N_("Machine Black  Ctrl+B"), "MachineBlack", MachineBlackEvent},
     {N_("Two Machines   Ctrl+T"), "TwoMachines", TwoMachinesEvent},
-    {N_("Analysis Mode  Ctrl+A"), "AnalysisMode", AnalyzeModeProc},
-    {N_("Analyze Game   Ctrl+G"), "AnalyzeFile", AnalyzeFileProc },
+    {N_("Analysis Mode  Ctrl+A"), "AnalysisMode", (MenuProc*) AnalyzeModeEvent},
+    {N_("Analyze Game   Ctrl+G"), "AnalyzeFile", AnalyzeFileEvent },
     {N_("Edit Game         Ctrl+E"), "EditGame", EditGameEvent},
     {N_("Edit Position      Ctrl+Shift+E"), "EditPosition", EditPositionEvent},
     {N_("Training"),      "Training", TrainingEvent},
