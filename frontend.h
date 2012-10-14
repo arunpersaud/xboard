@@ -56,10 +56,6 @@
 
 #include <stdio.h>
 
-typedef VOIDSTAR ProcRef;
-#define NoProc ((ProcRef) 0)
-typedef VOIDSTAR InputSourceRef;
-
 char *T_ P((char *s));
 void ModeHighlight P((void));
 void SetICSMode P((void));
@@ -72,14 +68,11 @@ void SetUserThinkingEnables P((void));
 void SetMachineThinkingEnables P((void));
 void DisplayTitle P((String title));
 void DisplayMessage P((String message, String extMessage));
-void DisplayError P((String message, int error));
 void DisplayMoveError P((String message));
 
-/* If status == 0, we are exiting with a benign message, not an error */
-void DisplayFatalError P((String message, int error, int status));
+void DisplayNote P((String message));
 
 void DisplayInformation P((String message));
-void DisplayNote P((String message));
 void AskQuestion P((String title, String question, String replyPrefix,
 		    ProcRef pr));
 void DisplayIcsInteractionTitle P((String title));
@@ -130,13 +123,11 @@ int StopLoadGameTimer P((void));
 void StartLoadGameTimer P((long millisec));
 void AutoSaveGame P((void));
 
-typedef void (*DelayedEventCallback) P((void));
 void ScheduleDelayedEvent P((DelayedEventCallback cb, long millisec));
 DelayedEventCallback GetDelayedEvent P((void));
 void CancelDelayedEvent P((void));
 // [HGM] mouse: next six used by mouse handler, which was moved to backend
 extern int fromX, fromY, toX, toY;
-typedef enum { Press, Release } ClickType;
 void PromotionPopUp P((void));
 void DragPieceBegin P((int x, int y, Boolean instantly));
 void DragPieceEnd P((int x, int y));
@@ -218,7 +209,6 @@ extern int commentUp;
 extern char *firstChessProgramNames;
 
 void GreyRevert P((Boolean grey));
-void MarkMenuItem P((char *menuRef, int state));
 void EnableNamedMenuItem P((char *menuRef, int state));
 
 typedef struct FrontEndProgramStats_TAG {

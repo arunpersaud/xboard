@@ -218,6 +218,14 @@ int pclose(FILE *);
 #define ZIPPY_MAX_GAMES 0
 #define ZIPPY_REPLAY_TIMEOUT 120
 
+typedef VOIDSTAR ProcRef;
+#define NoProc ((ProcRef) 0)
+typedef VOIDSTAR InputSourceRef;
+
+typedef void (*DelayedEventCallback) P((void));
+
+typedef enum { Press, Release } ClickType;
+
 typedef enum {
     BeginningOfGame, MachinePlaysWhite, MachinePlaysBlack,
     AnalyzeMode, AnalyzeFile, TwoMachinesPlay,
@@ -776,6 +784,11 @@ extern WindowPlacement wpTags;
 #define MAX_CHAT 5
 extern int chatCount;
 extern char chatPartner[MAX_CHAT][MSG_SIZ];
+
+// Some prototypes of routines so general they should be available everywhere
+/* If status == 0, we are exiting with a benign message, not an error */
+void DisplayFatalError P((String message, int error, int status));
+void DisplayError P((String message, int error));
 
 // [HGM] generally useful macros; there are way too many memory leaks...
 #define FREE(x) if(x) free(x)
