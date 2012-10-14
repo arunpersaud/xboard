@@ -133,6 +133,7 @@ typedef struct {
 void NewTagsPopup P((char *text, char *msg));
 int AppendText P((Option *opt, char *s));
 void NewCommentPopup P((char *title, char *text, int index));
+#ifdef TODO_GTK
 void CatchDeleteWindow(Widget w, String procname);
 void GenericPopDown P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b); // from xoptions.c
@@ -145,6 +146,7 @@ void GenericMenu P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 // from xengineoutput.c
 void SelectPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void StopPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
+#endif
 
 extern char memoTranslations[];
 
@@ -159,7 +161,7 @@ extern Atom wm_delete_window;
 extern GC coordGC;
 extern Dimension textHeight; // of message widget in board window
 #else
-extern void *shells[];
+extern GtkWidget *shells[];
 #endif
 extern int dialogError;
 extern int squareSize;

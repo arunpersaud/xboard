@@ -52,7 +52,7 @@ if withGTK
 endif
 if withXaw
   xboard_SOURCES = $(backendsources) $(Xsources)
-  headers = -I xaw
+  headers = -I xaw -DX11
 endif
 
 ###

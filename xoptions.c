@@ -49,6 +49,7 @@ extern char *getenv();
 
 #include <cairo/cairo.h>
 #include <cairo/cairo-xlib.h>
+#include <gtk/gtk.h>
 
 #include "common.h"
 #include "backend.h"
@@ -68,8 +69,11 @@ extern char *getenv();
 
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
+#ifdef TODO_GTK
 static Widget previous = NULL;
+#endif
 static Option *currentOption;
+static Boolean browserUp;
 
 void
 UnCaret ()
@@ -85,10 +89,10 @@ UnCaret ()
 #endif
 }
 
+#ifdef TODO_GTK
 void
 SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
 {
-#ifdef TODO_GTK
     Arg args[2];
     char *s;
     int j;
@@ -102,8 +106,8 @@ SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
     XtSetValues(w, args, j);
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
-#endif
 }
+#endif
 
 void
 BoardFocus ()
@@ -144,23 +148,81 @@ MarkMenuItem (char *menuRef, int state)
 #endif
 }
 
+void GetWidgetTextGTK(GtkWidget *w, char **buf)
+{        
+    GtkTextIter start;
+    GtkTextIter end;    
+
+    if (GTK_IS_TEXT_BUFFER(w)) {
+        gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(w), &start);
+        gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(w), &end);
+        *buf = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(w), &start, &end, FALSE);
+    }
+    else {
+        printf("error in GetWidgetText, invalid widget\n");
+        *buf = NULL; 
+    }
+}
+
 void
 GetWidgetText (Option *opt, char **buf)
 {
-#ifdef TODO_GTK
-    Arg arg;
-    XtSetArg(arg, XtNstring, buf);
-    XtGetValues(opt->handle, &arg, 1);
-#endif
+    int x;
+    static char val[12];
+    switch(opt->type) {
+      case Fractional:
+      case FileName:
+      case PathName:
+      case TextBox: GetWidgetTextGTK((GtkWidget *) opt->handle, buf); break;
+      case Spin:
+	x = gtk_spin_button_get_value (GTK_SPIN_BUTTON(opt->handle));                   
+	snprintf(val, 12, "%d", x); *buf = val;
+	break;
+      default:
+	printf("unexpected case (%d) in GetWidgetText\n", opt->type);
+	*buf = NULL;
+    }
+}
+
+void SetSpinValue(Option *opt, int val, int n)
+{    
+    if (opt->type == Spin)
+      {
+        if (val == -1)
+           gtk_widget_set_sensitive(opt->handle, FALSE);
+        else
+          {
+            gtk_widget_set_sensitive(opt->handle, TRUE);      
+            gtk_spin_button_set_value(opt->handle, val);
+          }
+      }
+    else
+      printf("error in SetSpinValue, unknown type %d\n", opt->type);    
+}
+
+void SetWidgetTextGTK(GtkWidget *w, char *text)
+{
+    if (!GTK_IS_TEXT_BUFFER(w)) {
+        printf("error: SetWidgetTextGTK arg is not a GtkTextBuffer\n");
+        return;
+    }    
+    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(w), text, -1);
 }
 
 void
 SetWidgetText (Option *opt, char *buf, int n)
 {
+    switch(opt->type) {
+      case Fractional:
+      case FileName:
+      case PathName:
+      case TextBox: SetWidgetTextGTK((GtkWidget *) opt->handle, buf); break;
+      case Spin: SetSpinValue(opt, atoi(buf), n); break;
+      default:
+	printf("unexpected case (%d) in GetWidgetText\n", opt->type);
+    }
 #ifdef TODO_GTK
-    Arg arg;
-    XtSetArg(arg, XtNstring, buf);
-    XtSetValues(opt->handle, &arg, 1);
+// focus is automatic in GTK?
     if(n >= 0) SetFocus(opt->handle, shells[n], NULL, False);
 #endif
 }
@@ -308,6 +370,7 @@ SetIconName (DialogClass dlg, char *name)
 #endif
 }
 
+#ifdef TODO_GTK
 static void
 CheckCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
 {
@@ -319,11 +382,12 @@ CheckCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
     GetWidgetState(opt, &s);
     SetWidgetState(opt, !s);
 }
+#endif
 
+#ifdef TODO_GTK
 static void
 SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
-#ifdef TODO_GTK
     String name, val;
     Arg args[16];
     char buf[MSG_SIZ], *p;
@@ -352,38 +416,32 @@ SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
     } else return;
     snprintf(buf, MSG_SIZ,  "%d", j);
     SetWidgetText(opt, buf, TransientDlg);
-#endif
 }
+#endif
 
-static void
-ComboSelect (Widget w, caddr_t addr, caddr_t index) // callback for all combo items
+void ComboSelect(GtkWidget *widget, gpointer addr)
 {
-#ifdef TODO_GTK
-    Arg args[16];
-    Option *opt = dialogOptions[((intptr_t)addr)>>24]; // applicable option list
-    int i = ((intptr_t)addr)>>16 & 255; // option number
-    int j = 0xFFFF & (intptr_t) addr;
+    Option *opt = dialogOptions[((intptr_t)addr)>>8]; // applicable option list
+    gint i = ((intptr_t)addr) & 255; // option number
+    gint g;
 
-    values[i] = j; // store selected value in Option struct, for retrieval at OK
+    g = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));    
+    values[i] = g; // store in temporary, for transfer at OK
 
+#if TODO_GTK
+// Note: setting text on button is probably automatic
+// Is this still needed? Could be all comboboxes that needed a callbak are now listboxes!
+#endif
     if(opt[i].type == Graph || opt[i].min & COMBO_CALLBACK && (!currentCps || shellUp[BrowserDlg])) {
 	((ButtonCallback*) opt[i].target)(i);
 	return;
     }
-
-    if(opt[i].min & NO_GETTEXT)
-      XtSetArg(args[0], XtNlabel, ((char**)opt[i].choice)[j]);
-    else
-      XtSetArg(args[0], XtNlabel, _(((char**)opt[i].choice)[j]));
-
-    XtSetValues(opt[i].handle, args, 1);
-#endif
 }
 
+#ifdef TODO_GTK
 Widget
 CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
 {
-#ifdef TODO_GTK
     int j=0;
     Widget entry;
     Arg args[16];
@@ -394,15 +452,13 @@ CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
     entry = XtCreateManagedWidget("item", smeBSBObjectClass, menu, args, j+1);
     XtAddCallback(entry, XtNcallback, CB, (caddr_t)(intptr_t) n);
     return entry;
-#else
-    return NULL;
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 static Widget
 CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 {   // fromList determines if the item texts are taken from a list of strings, or from a menu table
-#ifdef TODO_GTK
     int i;
     Widget menu, entry;
     Arg arg;
@@ -424,10 +480,53 @@ CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 	}
       }
       return menu;
-#else
-    return NULL;
-#endif
 }
+#else
+static void
+MenuSelect (gpointer addr) // callback for all combo items
+{
+    Option *opt = dialogOptions[((intptr_t)addr)>>24]; // applicable option list
+    int i = ((intptr_t)addr)>>16 & 255; // option number
+    int j = 0xFFFF & (intptr_t) addr;
+
+    values[i] = j; // store selected value in Option struct, for retrieval at OK
+    ((ButtonCallback*) opt[i].target)(i);
+}
+
+static GtkWidget *
+CreateMenuPopup (Option *opt, int n, int def)
+{   // fromList determines if the item texts are taken from a list of strings, or from a menu table
+    int i;
+    GtkWidget *menu, *entry;
+    MenuItem *mb = (MenuItem *) opt->choice;
+
+    menu = gtk_menu_new();
+//    menu = XtCreatePopupShell(opt->name, simpleMenuWidgetClass, parent, NULL, 0);
+    for (i=0; 1; i++) 
+      {
+	char *msg = mb[i].string;
+	if(!msg) break;
+	if(strcmp(msg, "----")) { // 
+	  if(!(opt->min & NO_GETTEXT)) msg = _(msg);
+	  if(mb[i].handle) {
+	    entry = gtk_check_menu_item_new_with_label(msg); // should be used for items that can be checkmarked
+	    if(mb[i].handle == RADIO) gtk_check_menu_item_set_draw_as_radio(entry, True);
+	  } else
+	    entry = gtk_menu_item_new_with_label(msg);
+	  gtk_signal_connect_object (GTK_OBJECT (entry), "activate", GTK_SIGNAL_FUNC(MenuSelect), (gpointer) (n<<16)+i);
+	  gtk_widget_show(entry);
+	} else entry = gtk_separator_menu_item_new();
+	gtk_menu_append(GTK_MENU (menu), entry);
+//CreateMenuItem(menu, opt->min & NO_GETTEXT ? msg : _(msg), (XtCallbackProc) ComboSelect, (n<<16)+i);
+	mb[i].handle = (void*) entry; // save item ID, for enabling / checkmarking
+//	if(i==def) {
+//	    XtSetArg(arg, XtNpopupOnEntry, entry);
+//	    XtSetValues(menu, &arg, 1);
+//	}
+      }
+      return menu;
+}
+#endif
 
 char moveTypeInTranslations[] =
     "<Key>Return: TypeInProc(1) \n"
@@ -442,8 +541,7 @@ char *translationTable[] = { // beware: order is essential!
    filterTranslations, gameListTranslations, memoTranslations
 };
 
-void * shells[NrOfDialogs];
-
+void
 AddHandler (Option *opt, int nr)
 {
 #ifdef TODO_GTK
@@ -455,11 +553,7 @@ AddHandler (Option *opt, int nr)
 
 // cloned from Engine Settings dialog (and later merged with it)
 
-#ifdef TODO_GTK
-Widget shells[NrOfDialogs];
-#else
-void *shells[NrOfDialogs];
-#endif
+GtkWidget *shells[NrOfDialogs];
 DialogClass parents[NrOfDialogs];
 WindowPlacement *wp[NrOfDialogs] = { // Beware! Order must correspond to DialogClass enum
     NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
@@ -500,14 +594,38 @@ RaiseWindow (DialogClass dlg)
 #endif
 }
 
+/* Sets a check box on (True) or off (False) in the menu */
+void SetCheckMenuItemActive(gchar *name, int menuDlgNr, gboolean active)
+{
+#ifdef TODO_GTK
+// This doesn't work anymore, as we don't use builder
+    gchar menuItemName[50];
+
+    if (name != NULL)
+        strcpy(menuItemName, name);
+    else
+        GetMenuItemName(menuDlgNr, menuItemName);
+    
+    if (strcmp(menuItemName, "") == 0) return;
+
+    GtkCheckMenuItem *chk;
+    chk = GTK_CHECK_MENU_ITEM(gtk_builder_get_object(GTK_BUILDER(builder), menuItemName));
+    if (chk == NULL) {
+        printf("Error: failed to get check menu item %s from builder\n", menuItemName);
+        return;        
+    }
+    chk->active = active;   // set the check box without emitting any signals
+#endif
+}
+
 int
 PopDown (DialogClass n)
-{   // pops down any dialog created by GenericPopUp (or returns False if it wasn't up), unmarks any associated marked menu
+{
+    //Arg args[10];    
+    
+    if (!shellUp[n] || !shells[n]) return 0;    
 #ifdef TODO_GTK
-    int j;
-    Arg args[10];
-    Dimension windowH, windowW; Position windowX, windowY;
-    if (!shellUp[n] || !shells[n]) return 0;
+// Not sure this is still used
     if(n && wp[n]) { // remember position
 	j = 0;
 	XtSetArg(args[j], XtNx, &windowX); j++;
@@ -520,47 +638,66 @@ PopDown (DialogClass n)
 	wp[n]->width  = windowW;
 	wp[n]->height = windowH;
     }
-    previous = NULL;
-    XtPopdown(shells[n]);
+#endif
+    
+    gtk_widget_hide(shells[n]);
     shellUp[n]--; // count rather than clear
-    if(n == 0 || n >= PromoDlg) XtDestroyWidget(shells[n]), shells[n] = NULL;
+    if(n == 0 || n >= PromoDlg) {
+        gtk_widget_destroy(shells[n]);
+        shells[n] = NULL;
+    }    
+#ifdef TODO_GTK
     if(marked[n]) {
 	MarkMenuItem(marked[n], False);
 	marked[n] = NULL;
     }
-    if(!n && n != BrowserDlg) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
+#else
+    // when popping down uncheck the check box of the menu item
+    SetCheckMenuItemActive(NULL, n, False);    
+#endif
+    if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
     currentOption = dialogOptions[TransientDlg]; // just in case a transient dialog was up (to allow its check and combo callbacks to work)
-    RaiseWindow(parents[n]);
-    if(parents[n] == BoardWindow) XtSetKeyboardFocus(shellWidget, formWidget);
+#ifdef TODO_GTK
+    RaiseWindow(parents[n]); // automatic in GTK?
+    if(parents[n] == BoardWindow) XtSetKeyboardFocus(shellWidget, formWidget); // also automatic???
 #endif
     return 1;
 }
 
+gboolean GenericPopDown(w, event, gdata)
+     GtkWidget *w;
+     GdkEvent  *event;
+     gpointer  gdata; 
+{
+    int dlg = (intptr_t) gdata; /* dialog number dlgnr */
+    
 #ifdef TODO_GTK
-void
-GenericPopDown (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{   // to cause popdown through a translation (Delete Window button!)
-    int dlg = atoi(prms[0]);
-    Widget sh = shells[dlg];
+// I guess BrowserDlg will be abandoned, as GTK has a better browser of its own
     if(shellUp[BrowserDlg] && dlg != BrowserDlg || dialogError) return; // prevent closing dialog when it has an open file-browse daughter
-    shells[dlg] = w;
+#else
+    if(browserUp || dialogError) return True; // prevent closing dialog when it has an open file-browse daughter
+#endif
+    GtkWidget *sh = shells[dlg];
+printf("popdown %d\n", dlg);
+    shells[dlg] = w; // make sure we pop down the right one in case of multiple instances
     PopDown(dlg);
     shells[dlg] = sh; // restore
+    if(dlg == BoardWindow) ExitEvent(0);
+    return True; /* don't propagate to default handler */
 }
-#endif
 
-int
-AppendText (Option *opt, char *s)
-{
-    int len;
-#ifdef TODO_GTK
-    XawTextBlock t;
+int AppendText(Option *opt, char *s)
+{    
     char *v;
-    GetWidgetText(opt, &v);
+    int len;
+    GtkTextIter end;    
+  
+    GetWidgetTextGTK(opt->handle, &v);
     len = strlen(v);
-    t.ptr = s; t.firstPos = 0; t.length = strlen(s); t.format = XawFmt8Bit;
-    XawTextReplace(opt->handle, len, len, &t);
-#endif
+    g_free(v);
+    gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(opt->handle), &end);
+    gtk_text_buffer_insert(opt->handle, &end, s, -1);
+
     return len;
 }
 
@@ -586,20 +723,20 @@ SetColor (char *colorName, Option *box)
 #endif
 }
 
+#ifdef TODO_GTK
 void
 ColorChanged (Widget w, XtPointer data, XEvent *event, Boolean *b)
 {   // for detecting a typed change in color
     char buf[10];
-#ifdef TODO_GTK
     if ( (XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1) && *buf == '\r' )
 	RefreshColor((int)(intptr_t) data, 0);
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 static void
 GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 {   // handle expose and mouse events on Graph widget
-#ifdef TODO_GTK
     Dimension w, h;
     Arg args[16];
     int j, button=10, f=1, sizing=0;
@@ -664,8 +801,8 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	XtPopupSpringLoaded(opt->handle);
     }
     XSync(xDisplay, False);
-#endif
 }
+#endif
 
 void
 GraphExpose (Option *opt, int x, int y, int w, int h)
@@ -678,42 +815,68 @@ GraphExpose (Option *opt, int x, int y, int w, int h)
 #endif
 }
 
-static void
-GenericCallback (Widget w, XtPointer client_data, XtPointer call_data)
-{   // all Buttons in a dialog (including OK, cancel) invoke this
-#ifdef TODO_GTK
-    String name;
-    Arg args[16];
-    char buf[MSG_SIZ];
-    int data = (intptr_t) client_data;
+/* GTK callback used when OK/cancel clicked in genericpopup for non-modal dialog */
+void GenericPopUpCallback(w, resptype, gdata)
+     GtkWidget *w;
+     GtkResponseType  resptype;
+     gpointer  gdata;
+{
+    int data = (intptr_t) gdata; /* dialog number dlgnr */
     DialogClass dlg;
-    Widget sh = XtParent(XtParent(XtParent(w))), oldSh;
 
     currentOption = dialogOptions[dlg=data>>16]; data &= 0xFFFF;
+
+    /* OK pressed */    
+    if (resptype == GTK_RESPONSE_ACCEPT) {
+        if (GenericReadout(currentOption, -1)) PopDown(data);
+        return;
+    }
+
+    /* cancel pressed */
+    PopDown(dlg);    
+}
+
+void GenericCallback(GtkWidget *widget, gpointer gdata)
+{
+    const gchar *name;
+    char buf[MSG_SIZ];    
+    int data = (intptr_t) gdata;   
+    DialogClass dlg;
+#ifdef TODO_GTK
+    GtkWidget *sh = XtParent(XtParent(XtParent(w))), *oldSh;
+#else
+    GtkWidget *sh, *oldSh;
+#endif
+
+    currentOption = dialogOptions[dlg=data>>16]; data &= 0xFFFF;
+#ifndef TODO_GTK
+    sh = shells[dlg]; // make following line a no-op, as we haven't found out what the real shell is yet (breaks multiple popups of same type!)
+#endif
     oldSh = shells[dlg]; shells[dlg] = sh; // bow to reality
+    
+#ifdef TODO_GTK
     if (data == 30000) { // cancel
         PopDown(dlg); 
     } else
     if (data == 30001) { // save buttons imply OK
         if(GenericReadout(currentOption, -1)) PopDown(dlg); // calls OK-proc after full readout, but no popdown if it returns false
     } else
+#endif
 
-    if(currentCps && dlg != BrowserDlg) {
-	XtSetArg(args[0], XtNlabel, &name);
-	XtGetValues(w, args, 1);
+    if(currentCps) {
+        name = gtk_button_get_label (GTK_BUTTON(widget));         
 	if(currentOption[data].type == SaveButton) GenericReadout(currentOption, -1);
-	snprintf(buf, MSG_SIZ,  "option %s\n", name);
-	SendToProgram(buf, currentCps);
-    } else ((ButtonCallback*) currentOption[data].target)(data);
+        snprintf(buf, MSG_SIZ,  "option %s\n", name);
+        SendToProgram(buf, currentCps);
+    } else ((ButtonCallback*) currentOption[data].target)(data);   
 
     shells[dlg] = oldSh; // in case of multiple instances, restore previous (as this one could be popped down now)
-#endif
 }
 
+#ifdef TODO_GTK
 void
 TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // for transfering focus to the next text-edit
-#ifdef TODO_GTK
     Option *opt;
     for(opt = currentOption; opt->type != EndMark; opt++) {
 	if(opt->handle == w) {
@@ -727,13 +890,13 @@ TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 	    }
 	}
     }
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 void
 WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // for scrolling a widget seen through a viewport with the mouse wheel (ListBox!)
-#ifdef TODO_GTK
     int j=0, n = atoi(prms[0]);
     static char *params[3] = { "", "Continuous", "Proportional" };
     Arg args[16];
@@ -756,8 +919,8 @@ WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     XtCallActionProc(v, "NotifyThumb", event, params, 0);
 //    XtCallActionProc(w, "NotifyScroll", event, params+2, 1);
     XtCallActionProc(v, "EndScroll", event, params, 0);
-#endif
 }
+#endif
 
 static char *oneLiner  =
    "<Key>Return: redraw-display() \n \
@@ -795,11 +958,11 @@ SqueezeIntoBox (Option *opt, int nr, int width)
 #endif
 }
 
+#ifdef TODO_GTK
 int
 SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int w, int h, int chaining)
 {   // sizing and positioning most widgets have in common
     int j = 0;
-#ifdef TODO_GTK
     // first position the widget w.r.t. earlier ones
     if(chaining & 1) { // same row: position w.r.t. last (on current row) and lastrow
 	XtSetArg(args[j], XtNfromVert, topNeigbor); j++;
@@ -826,13 +989,393 @@ SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int
     if(b == 3) b = 1;
     // border
     XtSetArg(args[j], XtNborderWidth, b);  j++;
-#endif
     return j;
 }
+#endif
 
 int
-GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int top)
-{
+GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int topLevel)
+{    
+    GtkWidget *dialog = NULL;
+    gint       w;
+    GtkWidget *label;
+    GtkWidget *box;
+    GtkWidget *checkbutton;
+    GtkWidget *entry;
+    GtkWidget *hbox;    
+    GtkWidget *button;
+    GtkWidget *table;
+    GtkWidget *spinner;    
+    GtkAdjustment *spinner_adj;
+    GtkWidget *combobox;
+    GtkWidget *textview;
+    GtkTextBuffer *textbuffer;           
+    GdkColor color;     
+    GtkWidget *actionarea;
+    GtkWidget *sw;    
+    GtkWidget *list;    
+    GtkWidget *graph;    
+    GtkWidget *menuButton;    
+    GtkWidget *menuBar;    
+    GtkWidget *menu;    
+
+    int i, j, arraysize, left, top, height=999, width=1, boxStart;    
+    char def[MSG_SIZ], *msg, engineDlg = (currentCps != NULL && dlgNr != BrowserDlg);
+    
+    if(dlgNr < PromoDlg && shellUp[dlgNr]) return 0; // already up
+
+    if(dlgNr && dlgNr < PromoDlg && shells[dlgNr]) { // reusable, and used before (but popped down)
+        gtk_widget_show(shells[dlgNr]);
+        shellUp[dlgNr] = True;
+        return 0;
+    }
+
+    dialogOptions[dlgNr] = option; // make available to callback
+    // post currentOption globally, so Spin and Combo callbacks can already use it
+    // WARNING: this kludge does not work for persistent dialogs, so that these cannot have spin or combo controls!
+    currentOption = option;
+
+    if(engineDlg) { // Settings popup for engine: format through heuristic
+        int n = currentCps->nrOptions;
+        if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
+        height = n / width + 1;
+//	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = SAME_ROW; // OK on same line
+        currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
+    }    
+
+#ifdef TODO_GTK
+     i = 0;
+    XtSetArg(args[i], XtNresizable, True); i++;
+    shells[BoardWindow] = shellWidget; parents[dlgNr] = parent;
+
+    if(dlgNr == BoardWindow) dialog = shellWidget; else
+    dialog =
+      XtCreatePopupShell(title, !top || !appData.topLevel ? transientShellWidgetClass : topLevelShellWidgetClass,
+                                                           shells[parent], args, i);
+#endif
+    dialog = gtk_dialog_new_with_buttons( title,
+                                      NULL,
+				      GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR |
+                                          (modal ? GTK_DIALOG_MODAL : 0),
+                                      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+                                      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+                                      NULL );      
+
+    shells[dlgNr] = dialog;
+    box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
+    gtk_box_set_spacing(GTK_BOX(box), 5);    
+
+    arraysize = 0;
+    for (i=0;option[i].type != EndMark;i++) {
+        arraysize++;   
+    }
+
+    table = gtk_table_new(arraysize, 3, FALSE);
+    gtk_table_set_col_spacings(GTK_TABLE(table), 20);
+    left = 0;
+    top = -1;    
+
+    for (i=0;option[i].type != EndMark;i++) {
+	if(option[i].type == -1) continue;
+        top++;
+        if (top >= height) {
+            top = 0;
+            left = left + 3;
+            gtk_table_resize(GTK_TABLE(table), height, left + 3);   
+        }                
+        switch(option[i].type) {
+          case Fractional:           
+	    snprintf(def, MSG_SIZ,  "%.2f", *(float*)option[i].target);
+	    option[i].value = *(float*)option[i].target;
+            goto tBox;
+          case Spin:
+            if(!currentCps) option[i].value = *(int*)option[i].target;
+            snprintf(def, MSG_SIZ,  "%d", option[i].value);
+          case TextBox:
+	  case FileName:            
+     	  case PathName:
+          tBox:
+            label = gtk_label_new(option[i].name);
+            /* Left Justify */
+            gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+
+            /* width */
+            w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
+	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
+
+            if (option[i].type==TextBox && option[i].min > 80){                
+                textview = gtk_text_view_new();                
+                gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_WORD);                                
+                /* add textview to scrolled window so we have vertical scroll bar */
+                sw = gtk_scrolled_window_new(NULL, NULL);
+                gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+                gtk_container_add(GTK_CONTAINER(sw), textview);
+                gtk_widget_set_size_request(GTK_WIDGET(sw), w, -1);
+ 
+                textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));                
+                gtk_widget_set_size_request(textview, -1, option[i].min);
+                /* check if label is empty */ 
+                if (strcmp(option[i].name,"") != 0) {
+                    gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
+                    gtk_table_attach_defaults(GTK_TABLE(table), sw, left+1, left+3, top, top+1);
+                }
+                else {
+                    /* no label so let textview occupy all columns */
+                    gtk_table_attach_defaults(GTK_TABLE(table), sw, left, left+3, top, top+1);
+                } 
+                if ( *(char**)option[i].target != NULL )
+                    gtk_text_buffer_set_text (textbuffer, *(char**)option[i].target, -1);
+                else
+                    gtk_text_buffer_set_text (textbuffer, "", -1); 
+                option[i].handle = (void*)textbuffer;
+                break; 
+            }
+
+            entry = gtk_entry_new();
+
+            if (option[i].type==Spin || option[i].type==Fractional)
+                gtk_entry_set_text (GTK_ENTRY (entry), def);
+            else if (currentCps)
+                gtk_entry_set_text (GTK_ENTRY (entry), option[i].textValue);
+            else if ( *(char**)option[i].target != NULL )
+                gtk_entry_set_text (GTK_ENTRY (entry), *(char**)option[i].target);            
+
+            //gtk_entry_set_width_chars (GTK_ENTRY (entry), 18);
+            gtk_entry_set_max_length (GTK_ENTRY (entry), w);
+
+            // left, right, top, bottom
+            if (strcmp(option[i].name, "") != 0) gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
+            //gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);            
+
+            if (option[i].type == Spin) {                
+                spinner_adj = (GtkAdjustment *) gtk_adjustment_new (option[i].value, option[i].min, option[i].max, 1.0, 0.0, 0.0);
+                spinner = gtk_spin_button_new (spinner_adj, 1.0, 0);
+                gtk_table_attach_defaults(GTK_TABLE(table), spinner, left+1, left+3, top, top+1);
+                option[i].handle = (void*)spinner;
+            }
+            else if (option[i].type == FileName || option[i].type == PathName) {
+                gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+2, top, top+1);
+                button = gtk_button_new_with_label ("Browse");
+                gtk_table_attach_defaults(GTK_TABLE(table), button, left+2, left+3, top, top+1);
+                g_signal_connect (button, "clicked", G_CALLBACK (Browse), (gpointer)(intptr_t) i);
+                option[i].handle = (void*)entry;                 
+            }
+            else {
+                hbox = gtk_hbox_new (FALSE, 0);
+                if (strcmp(option[i].name, "") == 0)
+                    gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+3, top, top+1);
+                else
+                    gtk_table_attach_defaults(GTK_TABLE(table), hbox, left+1, left+3, top, top+1);
+                gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
+                //gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+3, top, top+1); 
+                option[i].handle = (void*)entry;
+            }                        		
+            break;
+          case CheckBox:
+            checkbutton = gtk_check_button_new_with_label(option[i].name);            
+            if(!currentCps) option[i].value = *(Boolean*)option[i].target;
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);
+            gtk_table_attach_defaults(GTK_TABLE(table), checkbutton, left, left+3, top, top+1);                            
+            option[i].handle = (void *)checkbutton;            
+            break; 
+	  case Label:            
+            label = gtk_label_new(option[i].name);
+            /* Left Justify */
+            gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+            gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+3, top, top+1);                       
+	    break;
+          case SaveButton:
+          case Button:
+            button = gtk_button_new_with_label (option[i].name);
+
+            /* set button color on view board dialog */
+            if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) {
+                gdk_color_parse( *(char**) option[i-1].target, &color );
+                gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
+	    }
+
+            /* set button color on new variant dialog */
+            if(option[i].textValue) {
+                gdk_color_parse( option[i].textValue, &color );
+                gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
+                gtk_widget_set_sensitive(button, appData.noChessProgram || option[i].value < 0
+					 || strstr(first.variants, VariantName(option[i].value)));                 
+            }
+            
+            if (!(option[i].min & 1)) {
+               if(option[i].textValue) // for new variant dialog give buttons equal space so they line up nicely
+                   hbox = gtk_hbox_new (TRUE, 0);
+               else
+                   hbox = gtk_hbox_new (FALSE, 0);
+               // if only 1 button then put it in 1st column of table only
+               if ( (arraysize >= (i+1)) && option[i+1].type != Button )
+                   gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+1, top, top+1);
+               else
+                   gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+3, top, top+1);
+            }            
+            gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);           
+            g_signal_connect (button, "clicked", G_CALLBACK (GenericCallback), (gpointer)(intptr_t) i + (dlgNr<<16));           
+            option[i].handle = (void*)button;            
+            break;  
+	  case ComboBox:
+            label = gtk_label_new(option[i].name);
+            /* Left Justify */
+            gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+            gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
+
+            combobox = gtk_combo_box_new_text();            
+
+            for(j=0;;j++) {
+               if (  ((char **) option[i].textValue)[j] == NULL) break;
+               gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), ((char **) option[i].textValue)[j]);                          
+            }
+
+            if(currentCps)
+                option[i].choice = (char**) option[i].textValue;
+            else {            
+                for(j=0; option[i].choice[j]; j++) {                
+                    if(*(char**)option[i].target && !strcmp(*(char**)option[i].target, option[i].choice[j])) break;
+                }
+                /* If choice is NULL set to first */
+                if (option[i].choice[j] == NULL)
+                   option[i].value = 0;
+                else 
+                   option[i].value = j;
+            }
+
+            //option[i].value = j + (option[i].choice[j] == NULL);            
+            gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), option[i].value); 
+            
+
+            hbox = gtk_hbox_new (FALSE, 0);
+            gtk_table_attach_defaults(GTK_TABLE(table), hbox, left+1, left+3, top, top+1);
+            gtk_box_pack_start (GTK_BOX (hbox), combobox, TRUE, TRUE, 0);
+            //gtk_table_attach_defaults(GTK_TABLE(table), combobox, 1, 2, i, i+1);
+
+            g_signal_connect(G_OBJECT(combobox), "changed", G_CALLBACK(ComboSelect), (gpointer) (intptr_t) (i + 256*dlgNr));
+
+            option[i].handle = (void*)combobox;
+            values[i] = option[i].value;            
+            break;
+	  case ListBox:
+            {
+                GtkCellRenderer *renderer;
+                GtkTreeViewColumn *column;
+                GtkListStore *store;
+
+                option[i].handle = (void *) (list = gtk_tree_view_new());
+                gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(list), FALSE);
+                renderer = gtk_cell_renderer_text_new();
+                column = gtk_tree_view_column_new_with_attributes("List Items", renderer, "text", 0, NULL);
+                gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+                store = gtk_list_store_new(1, G_TYPE_STRING); // 1 column of text
+                gtk_tree_view_set_model(GTK_TREE_VIEW(list), GTK_TREE_MODEL(store));
+                g_object_unref(store);
+                LoadListBox(&option[i], "?", -1, -1);
+		HighlightListBoxItem(&option[i], 0);
+
+                /* add listbox to scrolled window so we have vertical scroll bar */
+                sw = gtk_scrolled_window_new(NULL, NULL);
+                gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+                gtk_container_add(GTK_CONTAINER(sw), list);
+                gtk_widget_set_size_request(GTK_WIDGET(sw), w, 300);
+ 
+                /* never has label, so let listbox occupy all columns */
+                gtk_table_attach_defaults(GTK_TABLE(table), sw, left, left+3, top, top+1);
+            }
+	    break;
+	  case Graph:
+	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
+            gtk_widget_set_size_request(graph, option[i].max, option[i].value);
+            gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+3, top, top+1);
+
+#ifdef TODO_GTK
+	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
+		      (XtEventHandler) GraphEventProc, &option[i]); // mandatory user-supplied expose handler
+	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
+#endif
+	    option[i].choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, option[i].max, option[i].value); // image buffer
+	    break;
+#ifdef TODO_GTK
+	  case Graph:
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   option[i].max /* w */, option[i].value /* h */, option[i].min /* chain */);
+	    option[i].handle = (void*)
+		(last = XtCreateManagedWidget("graph", widgetClass, form, args, j));
+	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
+		      (XtEventHandler) GraphEventProc, &option[i]); // mandatory user-supplied expose handler
+	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
+	    option[i].choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, option[i].max, option[i].value); // image buffer
+	    break;
+	  case PopUp: // note: used only after Graph, so 'last' refers to the Graph widget
+	    option[i].handle = (void*) CreateComboPopup(last, option + i, i + 256*dlgNr, TRUE, option[i].value);
+	    break;
+	  case BoxBegin:
+	    if(option[i].min & SAME_ROW) forelast = lastrow;
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   0 /* w */, 0 /* h */, option[i].min /* chain */);
+	    XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
+	    XtSetArg(args[j], XtNvSpace, 0);                        j++;
+	    option[box=i].handle = (void*)
+		(last = XtCreateWidget("box", boxWidgetClass, form, args, j));
+	    oldForm = form; form = last; oldLastRow = lastrow; oldForeLast = forelast;
+	    lastrow = NULL; last = NULL;
+	    break;
+#endif
+	  case DropDown:
+	    msg = _(option[i].name); // write name on the menu button
+//	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
+//	    XtSetArg(args[j], XtNlabel, msg);  j++;
+	    option[i].handle = (void*)
+		(menuButton = gtk_menu_item_new_with_label(msg));
+	    gtk_widget_show(menuButton);
+	    option[i].textValue = (char*) (menu = CreateMenuPopup(option + i, i + 256*dlgNr, -1));
+	    gtk_menu_item_set_submenu(GTK_MENU_ITEM (menuButton), menu);
+	    gtk_menu_bar_append (GTK_MENU_BAR (menuBar), menuButton);
+
+	    break;
+	  case BarBegin:
+	    menuBar = gtk_menu_bar_new ();
+	    gtk_widget_show (menuBar);
+	  case BoxBegin:
+	    boxStart = i;
+	    break;
+	  case BarEnd:
+            gtk_table_attach_defaults(GTK_TABLE(table), menuBar, left, left+1, top, top+1);
+	  case BoxEnd:
+//	    XtManageChildren(&form, 1);
+//	    SqueezeIntoBox(&option[boxStart], i-boxStart, option[boxStart].max);
+	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
+	    break;
+	  case Break:
+            top = height; // force next option to start in a new column
+            break; 
+	default:
+	    printf("GenericPopUp: unexpected case in switch. i=%d type=%d name=%s.\n", i, option[i].type, option[i].name);
+	    break;
+	}        
+    }
+
+    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+                        table, TRUE, TRUE, 0);    
+
+    /* Show dialog */
+    gtk_widget_show_all( dialog );    
+
+    /* hide OK/cancel buttons */
+    if((option[i].min & 2)) {
+        actionarea = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
+        gtk_widget_hide(actionarea);
+    }
+
+    g_signal_connect (dialog, "response",
+                      G_CALLBACK (GenericPopUpCallback),
+                      (gpointer)(intptr_t) (dlgNr<<16 | i));
+    g_signal_connect (dialog, "delete-event",
+                      G_CALLBACK (GenericPopDown),
+                      (gpointer)(intptr_t) dlgNr);
+    shellUp[dlgNr]++;
+
 #ifdef TODO_GTK
     Arg args[24];
     Widget popup, layout, dialog=NULL, edit=NULL, form,  last, b_ok, b_cancel, previousPane = NULL, textField = NULL, oldForm, oldLastRow, oldForeLast;
@@ -1231,7 +1774,6 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 #endif
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
 }
-
 
 /* function called when the data to Paste is ready */
 #ifdef TODO_GTK

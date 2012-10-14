@@ -23,9 +23,11 @@
 #ifndef XB_XGAMELIST
 #define XB_XGAMELIST
 
+#ifdef TODO_GTK
 void LoadSelectedProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void SetFilterProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
+#endif
 
 #endif /* XB_XGAMELIST */

@@ -85,14 +85,14 @@ char historyTranslations[] =
 "<Btn3Down>: select-start() \n \
 <Btn3Up>: extend-end() SelectMove() \n";
 
+#ifdef TODO_GTK
 void
 SelectMove (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {
-#ifdef TODO_GTK
 	XawTextPosition index, dummy;
 
 	XawTextGetSelectionPos(w, &index, &dummy);
 	FindMoveByCharIndex( index ); // [HGM] also does the actual moving to it, now
-#endif
 }
+#endif
 

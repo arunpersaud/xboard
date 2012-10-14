@@ -43,6 +43,8 @@ extern char *getenv();
 # include <unistd.h>
 #endif
 
+#include <gtk/gtk.h>
+
 #include "common.h"
 #include "backend.h"
 #include "xboard.h"

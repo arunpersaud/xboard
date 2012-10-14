@@ -81,7 +81,14 @@ int pclose(FILE *);
 #endif
 
 #else
+#ifdef X11
 #include <X11/Intrinsic.h>
+#else
+typedef char Boolean;
+typedef char *String;
+#define True 1
+#define False 0
+#endif
 #endif
 #endif
 

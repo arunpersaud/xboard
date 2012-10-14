@@ -95,7 +95,8 @@
 #define W_MENUB 26
 #define W_DROP  27  // drop (popup) menu
  
-
+#define CHECK (void *) 1
+#define RADIO (void *) 2
 
 typedef enum {  // identifier of dialogs done by GenericPopup
 TransientDlg=0, // transient: grabs mouse events and is destroyed at pop-down (so other dialog can use this ID next time)
