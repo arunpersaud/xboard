@@ -143,6 +143,18 @@ static Arg formArgs[] = {
 };
 
 void
+MarkMenuItem (char *menuRef, int state)
+{
+    MenuItem *item = MenuNameToItem(menuRef);
+
+    if(item) {
+	Arg args[2];
+	XtSetArg(args[0], XtNleftBitmap, state ? xMarkPixmap : None);
+	XtSetValues(item->handle, args, 1);
+    }
+}
+
+void
 GetWidgetText (Option *opt, char **buf)
 {
     Arg arg;
