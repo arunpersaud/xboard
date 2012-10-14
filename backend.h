@@ -434,7 +434,6 @@ int WaitForEngine P((ChessProgramState *cps, DelayedEventCallback x));
 void Load P((ChessProgramState *cps, int n));
 int MultiPV P((ChessProgramState *cps));
 void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
-void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 void MakeEngineOutputTitle P((void));
 
 /* A point in time */

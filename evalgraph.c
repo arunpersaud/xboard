@@ -63,7 +63,7 @@ int MarginH = 4;
 
 // back-end
 static void
-DrawLine (int x1, int y1, int x2, int y2, enum PEN penType)
+DrawLine (int x1, int y1, int x2, int y2, int penType)
 {
     DrawSegment( x1, y1, NULL, NULL, PEN_NONE );
     DrawSegment( x2, y2, NULL, NULL, penType );
@@ -71,7 +71,7 @@ DrawLine (int x1, int y1, int x2, int y2, enum PEN penType)
 
 // back-end
 static void
-DrawLineEx (int x1, int y1, int x2, int y2, enum PEN penType)
+DrawLineEx (int x1, int y1, int x2, int y2, int penType)
 {
     int savX, savY;
     DrawSegment( x1, y1, &savX, &savY, PEN_NONE );

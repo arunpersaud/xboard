@@ -27,7 +27,7 @@
 #define MIN_HIST_WIDTH  4
 #define MAX_HIST_WIDTH  10
 
-enum PEN { PEN_NONE, PEN_BLACK, PEN_DOTTED, PEN_BLUEDOTTED, PEN_BOLDWHITE, PEN_BOLDBLACK, PEN_BACKGD };
+typedef enum { PEN_NONE, PEN_BLACK, PEN_DOTTED, PEN_BLUEDOTTED, PEN_BOLDWHITE, PEN_BOLDBLACK, PEN_BACKGD } PenType;
 
 #define FILLED 1
 #define OPEN   0
@@ -46,9 +46,10 @@ extern int MarginW;
 extern int MarginH;
 
 // calls from back-end part into front-end part
-void DrawSegment( int x, int y, int *lastX, int *lastY, enum PEN );
+void DrawSegment( int x, int y, int *lastX, int *lastY, int p );
 void DrawRectangle( int left, int top, int right, int bottom, int side, int style );
 void DrawEvalText(char *buf, int cbBuf, int y);
+void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 
 // calls of front-end part into back-end part
 extern int GetMoveIndexFromPoint( int x, int y );

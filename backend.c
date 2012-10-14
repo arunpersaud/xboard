@@ -129,6 +129,7 @@ extern int gettimeofday(struct timeval *, struct timezone *);
 # include "zippy.h"
 #endif
 #include "backendz.h"
+#include "evalgraph.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS

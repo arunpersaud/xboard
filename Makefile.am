@@ -25,7 +25,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 board.c board.h \
 		 engineoutput.c engineoutput.h \
 		 nengineoutput.c xengineoutput.c \
-		 evalgraph.c evalgraph.h xevalgraph.c xevalgraph.h\
+		 evalgraph.c evalgraph.h nevalgraph.c \
 	 	 xgamelist.c xgamelist.h\
 		 history.c nhistory.c xhistory.c xhistory.h \
 		 xoptions.c dialogs.c dialogs.h \
