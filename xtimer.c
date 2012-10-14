@@ -92,16 +92,9 @@ extern char *getenv();
 # include <sys/wait.h>
 #endif
 
-#include <X11/Intrinsic.h>
+#include <gtk/gtk.h>
 
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
-#include "common.h"
-#include "frontend.h"
-#include "backend.h"
-#include "backendz.h"
-#include "moves.h"
-#include "xboard.h"
-#include "xboard2.h"
 
 
 #ifdef __EMX__
@@ -114,13 +107,14 @@ extern char *getenv();
 // in xboard.c (should go to xtimer.h ?)
 extern XtAppContext appContext;
 
-XtIntervalId delayedEventTimerXID = 0;
+guint delayedEventTimerTag = 0;
 DelayedEventCallback delayedEventCallback = 0;
 
 void
-FireDelayedEvent ()
+FireDelayedEvent(gpointer data)
 {
-    delayedEventTimerXID = 0;
+    g_source_remove(delayedEventTimerTag);
+    delayedEventTimerTag = 0;
     delayedEventCallback();
 }
 
@@ -129,17 +123,16 @@ ScheduleDelayedEvent (DelayedEventCallback cb, long millisec)
 {
     if(delayedEventTimerXID && delayedEventCallback == cb)
 	// [HGM] alive: replace, rather than add or flush identical event
-	XtRemoveTimeOut(delayedEventTimerXID);
+        g_source_remove(delayedEventTimerTag);
     delayedEventCallback = cb;
-    delayedEventTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) FireDelayedEvent, (XtPointer) 0);
+    delayedEventCallback = cb;
+    delayedEventTimerTag = g_timeout_add(millisec,(GSourceFunc) FireDelayedEvent, NULL);
 }
 
 DelayedEventCallback
 GetDelayedEvent ()
 {
-  if (delayedEventTimerXID) {
+  if (delayedEventTimerTag) {
     return delayedEventCallback;
   } else {
     return NULL;
@@ -149,26 +142,26 @@ GetDelayedEvent ()
 void
 CancelDelayedEvent ()
 {
-  if (delayedEventTimerXID) {
-    XtRemoveTimeOut(delayedEventTimerXID);
-    delayedEventTimerXID = 0;
+  if (delayedEventTimerTag) {
+    g_source_remove(delayedEventTimerTag);
+    delayedEventTimerTag = 0;
   }
 }
 
-XtIntervalId loadGameTimerXID = 0;
 
-int
-LoadGameTimerRunning ()
+guint loadGameTimerTag = 0;
+
+int LoadGameTimerRunning()
 {
-    return loadGameTimerXID != 0;
+    return loadGameTimerTag != 0;
 }
 
 int
 StopLoadGameTimer ()
 {
-    if (loadGameTimerXID != 0) {
-	XtRemoveTimeOut(loadGameTimerXID);
-	loadGameTimerXID = 0;
+    if (loadGameTimerTag != 0) {
+	g_source_remove(loadGameTimerTag);
+	loadGameTimerTag = 0;
 	return TRUE;
     } else {
 	return FALSE;
@@ -176,25 +169,24 @@ StopLoadGameTimer ()
 }
 
 void
-LoadGameTimerCallback (XtPointer arg, XtIntervalId *id)
+LoadGameTimerCallback(gpointer data)
 {
-    loadGameTimerXID = 0;
+    g_source_remove(loadGameTimerTag);
+    loadGameTimerTag = 0;
     AutoPlayGameLoop();
 }
 
 void
 StartLoadGameTimer (long millisec)
 {
-    loadGameTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) LoadGameTimerCallback,
-		      (XtPointer) 0);
+    loadGameTimerTag =
+	g_timeout_add( millisec, (GSourceFunc) LoadGameTimerCallback, NULL);
 }
 
-XtIntervalId analysisClockXID = 0;
+guint analysisClockTag = 0;
 
-void
-AnalysisClockCallback (XtPointer arg, XtIntervalId *id)
+gboolean
+AnalysisClockCallback(gpointer data)
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile
          || appData.icsEngineAnalyze) { // [DM]
@@ -206,26 +198,25 @@ AnalysisClockCallback (XtPointer arg, XtIntervalId *id)
 void
 StartAnalysisClock ()
 {
-    analysisClockXID =
-      XtAppAddTimeOut(appContext, 2000,
-		      (XtTimerCallbackProc) AnalysisClockCallback,
-		      (XtPointer) 0);
+    analysisClockTag =
+	g_timeout_add( 2000,(GSourceFunc) AnalysisClockCallback, NULL);
 }
 
-XtIntervalId clockTimerXID = 0;
+guint clockTimerTag = 0;
 
 int
 ClockTimerRunning ()
 {
-    return clockTimerXID != 0;
+    return clockTimerTag != 0;
 }
 
 int
 StopClockTimer ()
 {
-    if (clockTimerXID != 0) {
-	XtRemoveTimeOut(clockTimerXID);
-	clockTimerXID = 0;
+    if (clockTimerTag != 0)
+    {
+	g_source_remove(clockTimerTag);
+	clockTimerTag = 0;
 	return TRUE;
     } else {
 	return FALSE;
@@ -233,19 +224,19 @@ StopClockTimer ()
 }
 
 void
-ClockTimerCallback (XtPointer arg, XtIntervalId *id)
+ClockTimerCallback(gpointer data)
 {
-    clockTimerXID = 0;
+    /* remove timer */
+    g_source_remove(clockTimerTag);
+    clockTimerTag = 0;
+
     DecrementClocks();
 }
 
 void
 StartClockTimer (long millisec)
 {
-    clockTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) ClockTimerCallback,
-		      (XtPointer) 0);
+    clockTimerTag = g_timeout_add(millisec,(GSourceFunc) ClockTimerCallback,NULL);
 }
 
 

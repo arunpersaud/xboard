@@ -81,7 +81,14 @@ int pclose(FILE *);
 #endif
 
 #else
+#if TODO_GTK
 #include <X11/Intrinsic.h>
+#else
+typedef char Boolean;
+typedef char *String;
+#define True 1
+#define False 0
+#endif
 #endif
 #endif
 
