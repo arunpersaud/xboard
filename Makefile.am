@@ -20,10 +20,9 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 pgntags.c \
 	  	 uci.c \
 	 	 xboard.c xboard.h args.h menus.c menus.h \
-	 	 draw.c draw.h \
+	 	 draw.c draw.h xboard2.h \
 	 	 usounds.c usystem.c usystem.h \
 	 	 board.c board.h \
-		 xedittags.c xedittags.h \
 		 engineoutput.c engineoutput.h \
 		 nengineoutput.c xengineoutput.c \
 		 evalgraph.c evalgraph.h xevalgraph.c xevalgraph.h\

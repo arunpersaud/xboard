@@ -96,6 +96,7 @@ extern char *getenv();
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
+#include "xboard2.h"
 #include "moves.h"
 #include "board.h"
 #include "draw.h"

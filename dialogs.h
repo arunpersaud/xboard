@@ -119,7 +119,7 @@ typedef int OKCallback(int n);
 
 extern char commentTranslations[];
 extern char historyTranslations[];
-extern Pixel timerBackgroundPixel;
+//extern Pixel timerBackgroundPixel;
 extern int values[];
 extern ChessProgramState *currentCps;
 extern int dialogError;
@@ -139,7 +139,7 @@ int PopDown P((DialogClass n));
 void MarkMenu P((char *item, int dlgNr));
 int AppendText P((Option *opt, char *s));
 void SetColor P((char *colorName, Option *box));
-void ColorChanged P((Widget w, XtPointer data, XEvent *event, Boolean *b));
+//void ColorChanged P((Widget w, XtPointer data, XEvent *event, Boolean *b));
 void SetInsertPos P((Option *opt, int pos));
 void HardSetFocus P((Option *opt));
 void GetWidgetText  P((Option *opt, char **buf));

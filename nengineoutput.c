@@ -52,6 +52,7 @@ extern char *getenv();
 #include "frontend.h"
 #include "backend.h"
 #include "dialogs.h"
+#include "menus.h"
 #include "engineoutput.h"
 #include "gettext.h"
 
@@ -153,7 +154,7 @@ EngineOutputDialogExists ()
 }
 
 void
-EngineOutputProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
+EngineOutputProc ()
 {
   if (!PopDown(EngOutDlg)) EngineOutputPopUp();
 }

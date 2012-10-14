@@ -88,7 +88,6 @@ extern char *getenv();
 #include "frontend.h"
 #include "backend.h"
 #include "xhistory.h"
-#include "xedittags.h"
 #include "menus.h"
 #include "gettext.h"
 

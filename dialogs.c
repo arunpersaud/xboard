@@ -50,7 +50,7 @@ extern char *getenv();
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
-#include "xboard.h"
+#include "xboard2.h"
 #include "menus.h"
 #include "dialogs.h"
 #include "gettext.h"
@@ -1018,6 +1018,31 @@ NewTagsPopup (char *text, char *msg)
     tagsOptions[0].name = msg;
     MarkMenu("View.Tags", TagsDlg);
     GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL, 1);
+}
+
+void
+TagsPopUp (char *tags, char *msg)
+{
+    NewTagsPopup(tags, cmailMsgLoaded ? msg : NULL);
+}
+
+void
+EditTagsPopUp (char *tags, char **dest)
+{   // wrapper to preserve old name used in back-end
+    NewTagsPopup(tags, NULL);
+}
+
+void
+TagsPopDown()
+{
+    PopDown(TagsDlg);
+    bookUp = False;
+}
+
+void
+EditTagsProc ()
+{
+  if (bookUp || !PopDown(TagsDlg)) EditTagsEvent();
 }
 
 //---------------------------------------------- ICS Input Box ----------------------------------

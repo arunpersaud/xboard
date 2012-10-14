@@ -67,19 +67,6 @@ typedef struct {
     int fdTo, fdFrom;
 } ChildProc;
 
-#define INPUT_SOURCE_BUF_SIZE 8192
-
-typedef struct {
-    CPKind kind;
-    int fd;
-    int lineByLine;
-    char *unused;
-    InputCallback func;
-    XtInputId xid;
-    char buf[INPUT_SOURCE_BUF_SIZE];
-    VOIDSTAR closure;
-} InputSource;
-
 extern char *oldICSInteractionTitle;
 
 char *ExpandPathName P((char *path));
