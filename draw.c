@@ -77,10 +77,10 @@ extern char *getenv();
 #include "common.h"
 
 #include "backend.h"
-#include "xevalgraph.h"
 #include "board.h"
 #include "menus.h"
 #include "dialogs.h"
+#include "evalgraph.h"
 #include "gettext.h"
 #include "draw.h"
 
@@ -116,6 +116,9 @@ int useTexture, textureW[2], textureH[2];
 #define pieceToOutline(piece) &pieceBitmap[OUTLINE][(piece) % (int)BlackPawn]
 
 #define White(piece) ((int)(piece) < (int)BlackPawn)
+
+char *crWhite = "#FFFFB0";
+char *crBlack = "#AD5D3D";
 
 struct {
   int x1, x2, y1, y2;
@@ -813,6 +816,109 @@ DrawPolygon (Pnt arrow[], int nr)
 {
     DoDrawPolygon(csBoardWindow, arrow, nr);
 //    if(!dual) DoDrawPolygon(csBoardBackup, arrow, nr);
+}
+
+//-------------------- Eval Graph drawing routines (formerly in xevalgraph.h) --------------------
+
+static void
+ChoosePen(cairo_t *cr, int i)
+{
+  switch(i) {
+    case PEN_BLACK:
+      SetPen(cr, 1.0, "#000000", 0);
+      break;
+    case PEN_DOTTED:
+      SetPen(cr, 1.0, "#A0A0A0", 1);
+      break;
+    case PEN_BLUEDOTTED:
+      SetPen(cr, 1.0, "#0000FF", 1);
+      break;
+    case PEN_BOLDWHITE:
+      SetPen(cr, 3.0, crWhite, 0);
+      break;
+    case PEN_BOLDBLACK:
+      SetPen(cr, 3.0, crBlack, 0);
+      break;
+    case PEN_BACKGD:
+      SetPen(cr, 3.0, "#E0E0F0", 0);
+      break;
+  }
+}
+
+// [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end)
+void
+DrawSegment (int x, int y, int *lastX, int *lastY, int penType)
+{
+  static int curX, curY;
+
+  if(penType != PEN_NONE) {
+    cairo_t *cr = cairo_create(DRAWABLE(disp));
+    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    cairo_move_to (cr, curX, curY);
+    cairo_line_to (cr, x,y);
+    ChoosePen(cr, penType);
+    cairo_stroke (cr);
+    cairo_destroy (cr);
+  }
+
+  if(lastX != NULL) { *lastX = curX; *lastY = curY; }
+  curX = x; curY = y;
+}
+
+// front-end wrapper for drawing functions to do rectangles
+void
+DrawRectangle (int left, int top, int right, int bottom, int side, int style)
+{
+  cairo_t *cr;
+
+  cr = cairo_create (DRAWABLE(disp));
+  cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+  cairo_rectangle (cr, left, top, right-left, bottom-top);
+  switch(side)
+    {
+    case 0: ChoosePen(cr, PEN_BOLDWHITE); break;
+    case 1: ChoosePen(cr, PEN_BOLDBLACK); break;
+    case 2: ChoosePen(cr, PEN_BACKGD); break;
+    }
+  cairo_fill (cr);
+
+  if(style != FILLED)
+    {
+      cairo_rectangle (cr, left, top, right-left-1, bottom-top-1);
+      ChoosePen(cr, PEN_BLACK);
+      cairo_stroke (cr);
+    }
+
+  cairo_destroy(cr);
+}
+
+// front-end wrapper for putting text in graph
+void
+DrawEvalText (char *buf, int cbBuf, int y)
+{
+    // the magic constants 8 and 5 should really be derived from the font size somehow
+  cairo_text_extents_t extents;
+  cairo_t *cr = cairo_create(DRAWABLE(disp));
+
+  /* GTK-TODO this has to go into the font-selection */
+  cairo_select_font_face (cr, "Sans",
+			  CAIRO_FONT_SLANT_NORMAL,
+			  CAIRO_FONT_WEIGHT_NORMAL);
+  cairo_set_font_size (cr, 12.0);
+
+
+  cairo_text_extents (cr, buf, &extents);
+
+  cairo_move_to (cr, MarginX - 2 - 8*cbBuf, y+5);
+  cairo_text_path (cr, buf);
+  cairo_set_source_rgb (cr, 0.0, 0.0, 0);
+  cairo_fill_preserve (cr);
+  cairo_set_source_rgb (cr, 0, 1.0, 0);
+  cairo_set_line_width (cr, 0.1);
+  cairo_stroke (cr);
+
+  /* free memory */
+  cairo_destroy (cr);
 }
 
 

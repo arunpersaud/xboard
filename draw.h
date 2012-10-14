@@ -64,6 +64,13 @@ void CreateGCs P((int redo));
 void CreateAnyPieces P((void));
 void CreatePNGPieces P((void));
 void CreateGrid P((void));
+void DrawSegment P((int x, int y, int *lastX, int *lastY, int p));
+void DrawRectangle P((int left, int top, int right, int bottom, int side, int style));
+void DrawEvalText P((char *buf, int cbBuf, int y));
+extern Option *disp;
+
+// defined in evaldraw.c
+float Color P((char *col, int n));
 
 // defined in xoptions.c
 void GraphExpose P((Option *opt, int x, int y, int w, int h));

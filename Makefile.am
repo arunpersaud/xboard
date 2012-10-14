@@ -10,14 +10,13 @@ endif
 
 ### define sources for the front-end and backend
 
-GTKsources = xboard.c  xevalgraph.c  xgamelist.c \
+GTKsources = xboard.c  xgamelist.c \
              xhistory.c  xoptions.c  xboard.h  \
-             xengineoutput.c  xevalgraph.h  xgamelist.h \
+             xengineoutput.c  xgamelist.h \
              xhistory.h
 
 Xsources   = xaw/xboard.c xaw/xboard.h \
              xaw/xengineoutput.c \
-             xaw/xevalgraph.c xaw/xevalgraph.h \
              xaw/xgamelist.c xaw/xgamelist.h \
              xaw/xhistory.c xaw/xhistory.h \
              xaw/xoptions.c
@@ -40,7 +39,7 @@ backendsources = backend.c backend.h backendz.h \
 	 	 draw.c draw.h \
 		 dialogs.c dialogs.h \
 		 engineoutput.c nengineoutput.c engineoutput.h \
-		 evalgraph.c evalgraph.h \
+		 evalgraph.c nevalgraph.c evalgraph.h \
 		 history.c nhistory.c \
 	 	 menus.c menus.h \
 	 	 usounds.c usystem.c usystem.h \
