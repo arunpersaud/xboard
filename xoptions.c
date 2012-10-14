@@ -47,27 +47,6 @@ extern char *getenv();
 #endif
 #include <stdint.h>
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xatom.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#include <X11/Xaw/Toggle.h>
-#include <X11/Xaw/Scrollbar.h>
-
 #include <cairo/cairo.h>
 #include <cairo/cairo-xlib.h>
 
@@ -95,6 +74,7 @@ static Option *currentOption;
 void
 UnCaret ()
 {
+#ifdef TODO_GTK
     Arg args[2];
 
     if(previous) {
@@ -102,11 +82,13 @@ UnCaret ()
 	XtSetValues(previous, args, 1);
     }
     previous = NULL;
+#endif
 }
 
 void
 SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
 {
+#ifdef TODO_GTK
     Arg args[2];
     char *s;
     int j;
@@ -120,12 +102,15 @@ SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
     XtSetValues(w, args, j);
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
+#endif
 }
 
 void
 BoardFocus ()
 {
+#ifdef TODO_GTK
     XtSetKeyboardFocus(shellWidget, formWidget);
+#endif
 }
 
 //--------------------------- Engine-specific options menu ----------------------------------
@@ -133,6 +118,7 @@ BoardFocus ()
 int dialogError;
 Option *dialogOptions[NrOfDialogs];
 
+#ifdef TODO_GTK
 static Arg layoutArgs[] = {
     { XtNborderWidth, 0 },
     { XtNdefaultDistance, 0 },
@@ -142,79 +128,97 @@ static Arg formArgs[] = {
     { XtNborderWidth, 0 },
     { XtNresizable, (XtArgVal) True },
 };
+#endif
 
 void
 MarkMenuItem (char *menuRef, int state)
 {
     MenuItem *item = MenuNameToItem(menuRef);
 
+#ifdef TODO_GTK
     if(item) {
 	Arg args[2];
 	XtSetArg(args[0], XtNleftBitmap, state ? xMarkPixmap : None);
 	XtSetValues(item->handle, args, 1);
     }
+#endif
 }
 
 void
 GetWidgetText (Option *opt, char **buf)
 {
+#ifdef TODO_GTK
     Arg arg;
     XtSetArg(arg, XtNstring, buf);
     XtGetValues(opt->handle, &arg, 1);
+#endif
 }
 
 void
 SetWidgetText (Option *opt, char *buf, int n)
 {
+#ifdef TODO_GTK
     Arg arg;
     XtSetArg(arg, XtNstring, buf);
     XtSetValues(opt->handle, &arg, 1);
     if(n >= 0) SetFocus(opt->handle, shells[n], NULL, False);
+#endif
 }
 
 void
 GetWidgetState (Option *opt, int *state)
 {
+#ifdef TODO_GTK
     Arg arg;
     XtSetArg(arg, XtNstate, state);
     XtGetValues(opt->handle, &arg, 1);
+#endif
 }
 
 void
 SetWidgetState (Option *opt, int state)
 {
+#ifdef TODO_GTK
     Arg arg;
     XtSetArg(arg, XtNstate, state);
     XtSetValues(opt->handle, &arg, 1);
+#endif
 }
 
 void
 SetWidgetLabel (Option *opt, char *buf)
 {
+#ifdef TODO_GTK
     Arg arg;
     XtSetArg(arg, XtNlabel, (XtArgVal) buf);
     XtSetValues(opt->handle, &arg, 1);
+#endif
 }
 
 void
 SetDialogTitle (DialogClass dlg, char *title)
 {
+#ifdef TODO_GTK
     Arg args[16];
     XtSetArg(args[0], XtNtitle, title);
     XtSetValues(shells[dlg], args, 1);
+#endif
 }
 
 void
 LoadListBox (Option *opt, char *emptyText)
 {
+#ifdef TODO_GTK
     static char *dummyList[2];
     dummyList[0] = emptyText; // empty listboxes tend to crash X, so display user-supplied warning string instead
     XawListChange(opt->handle, *(char*)opt->target ? opt->target : dummyList, 0, 0, True);
+#endif
 }
 
 int
 ReadScroll (Option *opt, float *top, float *bottom)
 {   // retreives fractions of top and bottom of thumb
+#ifdef TODO_GTK
     Arg args[16];
     Widget w = XtParent(opt->handle); // viewport
     Widget v = XtNameToWidget(w, "vertical");
@@ -225,12 +229,14 @@ ReadScroll (Option *opt, float *top, float *bottom)
     XtSetArg(args[j], XtNtopOfThumb, top); j++;
     XtGetValues(v, args, j);
     *bottom = *top + h;
+#endif
     return TRUE;
 }
 
 void
 SetScroll (Option *opt, float f)
 {   // sets top of thumb to given fraction
+#ifdef TODO_GTK
     static char *params[3] = { "", "Continuous", "Proportional" };
     static XEvent event;
     Widget w = XtParent(opt->handle); // viewport
@@ -241,17 +247,21 @@ SetScroll (Option *opt, float f)
     XtCallActionProc(v, "NotifyThumb", &event, params, 0);
 //    XtCallActionProc(v, "NotifyScroll", &event, params+2, 1);
     XtCallActionProc(v, "EndScroll", &event, params, 0);
+#endif
 }
 
 void
 HighlightListBoxItem (Option *opt, int nr)
 {
+#ifdef TODO_GTK
     XawListHighlight(opt->handle, nr);
+#endif
 }
 
 void
 HighlightWithScroll (Option *opt, int sel, int max)
 {
+#ifdef TODO_GTK
     float top, bottom, f, g;
     HighlightListBoxItem(opt, sel);
     if(!ReadScroll(opt, &top, &bottom)) return; // no scroll bar
@@ -262,31 +272,40 @@ HighlightWithScroll (Option *opt, int sel, int max)
     if(sel < (3*top + bottom)/4) f = (sel - 0.25f*(bottom-top))/max;
     if(f < 0.f) f = 0.; if(f + 1.f/max > 1.f) f = 1. - 1./max;
     if(f != g) SetScroll(opt, f);
+#endif
 }
 
 int
 SelectedListBoxItem (Option *opt)
 {
+#ifdef TODO_GTK
     XawListReturnStruct *rs;
     rs = XawListShowCurrent(opt->handle);
     return rs->list_index;
+#else
+    return 0;
+#endif
 }
 
 void
 FocusOnWidget (Option *opt, DialogClass dlg)
 {
     UnCaret();
+#ifdef TODO_GTK
     XtSetKeyboardFocus(shells[dlg], opt->handle);
+#endif
 }
 
 void
 SetIconName (DialogClass dlg, char *name)
 {
+#ifdef TODO_GTK
 	Arg args[16];
 	int j = 0;
 	XtSetArg(args[j], XtNiconName, (XtArgVal) name);  j++;
 //	XtSetArg(args[j], XtNtitle, (XtArgVal) name);  j++;
 	XtSetValues(shells[dlg], args, j);
+#endif
 }
 
 static void
@@ -304,6 +323,7 @@ CheckCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
 static void
 SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
+#ifdef TODO_GTK
     String name, val;
     Arg args[16];
     char buf[MSG_SIZ], *p;
@@ -332,11 +352,13 @@ SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
     } else return;
     snprintf(buf, MSG_SIZ,  "%d", j);
     SetWidgetText(opt, buf, TransientDlg);
+#endif
 }
 
 static void
 ComboSelect (Widget w, caddr_t addr, caddr_t index) // callback for all combo items
 {
+#ifdef TODO_GTK
     Arg args[16];
     Option *opt = dialogOptions[((intptr_t)addr)>>24]; // applicable option list
     int i = ((intptr_t)addr)>>16 & 255; // option number
@@ -355,11 +377,13 @@ ComboSelect (Widget w, caddr_t addr, caddr_t index) // callback for all combo it
       XtSetArg(args[0], XtNlabel, _(((char**)opt[i].choice)[j]));
 
     XtSetValues(opt[i].handle, args, 1);
+#endif
 }
 
 Widget
 CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
 {
+#ifdef TODO_GTK
     int j=0;
     Widget entry;
     Arg args[16];
@@ -370,11 +394,15 @@ CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
     entry = XtCreateManagedWidget("item", smeBSBObjectClass, menu, args, j+1);
     XtAddCallback(entry, XtNcallback, CB, (caddr_t)(intptr_t) n);
     return entry;
+#else
+    return NULL;
+#endif
 }
 
 static Widget
 CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 {   // fromList determines if the item texts are taken from a list of strings, or from a menu table
+#ifdef TODO_GTK
     int i;
     Widget menu, entry;
     Arg arg;
@@ -396,6 +424,9 @@ CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 	}
       }
       return menu;
+#else
+    return NULL;
+#endif
 }
 
 char moveTypeInTranslations[] =
@@ -411,17 +442,24 @@ char *translationTable[] = { // beware: order is essential!
    filterTranslations, gameListTranslations, memoTranslations
 };
 
-void
+void * shells[NrOfDialogs];
+
 AddHandler (Option *opt, int nr)
 {
+#ifdef TODO_GTK
     XtOverrideTranslations(opt->handle, XtParseTranslationTable(translationTable[nr]));
+#endif
 }
 
 //----------------------------Generic dialog --------------------------------------------
 
 // cloned from Engine Settings dialog (and later merged with it)
 
+#ifdef TODO_GTK
 Widget shells[NrOfDialogs];
+#else
+void *shells[NrOfDialogs];
+#endif
 DialogClass parents[NrOfDialogs];
 WindowPlacement *wp[NrOfDialogs] = { // Beware! Order must correspond to DialogClass enum
     NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
@@ -437,6 +475,7 @@ DialogExists (DialogClass n)
 void
 RaiseWindow (DialogClass dlg)
 {
+#ifdef TODO_GTK
     static XEvent xev;
     Window root = RootWindow(xDisplay, DefaultScreen(xDisplay));
     Atom atom = XInternAtom (xDisplay, "_NET_ACTIVE_WINDOW", False);
@@ -458,11 +497,13 @@ RaiseWindow (DialogClass dlg)
 
     XFlush(xDisplay); 
     XSync(xDisplay, False);
+#endif
 }
 
 int
 PopDown (DialogClass n)
 {   // pops down any dialog created by GenericPopUp (or returns False if it wasn't up), unmarks any associated marked menu
+#ifdef TODO_GTK
     int j;
     Arg args[10];
     Dimension windowH, windowW; Position windowX, windowY;
@@ -491,9 +532,11 @@ PopDown (DialogClass n)
     currentOption = dialogOptions[TransientDlg]; // just in case a transient dialog was up (to allow its check and combo callbacks to work)
     RaiseWindow(parents[n]);
     if(parents[n] == BoardWindow) XtSetKeyboardFocus(shellWidget, formWidget);
+#endif
     return 1;
 }
 
+#ifdef TODO_GTK
 void
 GenericPopDown (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // to cause popdown through a translation (Delete Window button!)
@@ -504,23 +547,27 @@ GenericPopDown (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     PopDown(dlg);
     shells[dlg] = sh; // restore
 }
+#endif
 
 int
 AppendText (Option *opt, char *s)
 {
+    int len;
+#ifdef TODO_GTK
     XawTextBlock t;
     char *v;
-    int len;
     GetWidgetText(opt, &v);
     len = strlen(v);
     t.ptr = s; t.firstPos = 0; t.length = strlen(s); t.format = XawFmt8Bit;
     XawTextReplace(opt->handle, len, len, &t);
+#endif
     return len;
 }
 
 void
 SetColor (char *colorName, Option *box)
 {       // sets the color of a widget
+#ifdef TODO_GTK
 	Arg args[5];
 	Pixel buttonColor;
 	XrmValue vFrom, vTo;
@@ -536,19 +583,23 @@ SetColor (char *colorName, Option *box)
 	} else buttonColor = timerBackgroundPixel;
 	XtSetArg(args[0], XtNbackground, buttonColor);;
 	XtSetValues(box->handle, args, 1);
+#endif
 }
 
 void
 ColorChanged (Widget w, XtPointer data, XEvent *event, Boolean *b)
 {   // for detecting a typed change in color
     char buf[10];
+#ifdef TODO_GTK
     if ( (XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1) && *buf == '\r' )
 	RefreshColor((int)(intptr_t) data, 0);
+#endif
 }
 
 static void
 GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 {   // handle expose and mouse events on Graph widget
+#ifdef TODO_GTK
     Dimension w, h;
     Arg args[16];
     int j, button=10, f=1, sizing=0;
@@ -606,20 +657,24 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	XtPopupSpringLoaded(opt->handle);
     }
     XSync(xDisplay, False);
+#endif
 }
 
 void
 GraphExpose (Option *opt, int x, int y, int w, int h)
 {
+#ifdef TODO_GTK
   XExposeEvent e;
   if(!opt->handle) return;
   e.x = x; e.y = y; e.width = w; e.height = h; e.count = -1; e.type = Expose; // count = -1: kludge to suppress sizing
   GraphEventProc(opt->handle, (caddr_t) opt, (XEvent *) &e); // fake expose event
+#endif
 }
 
 static void
 GenericCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {   // all Buttons in a dialog (including OK, cancel) invoke this
+#ifdef TODO_GTK
     String name;
     Arg args[16];
     char buf[MSG_SIZ];
@@ -645,11 +700,13 @@ GenericCallback (Widget w, XtPointer client_data, XtPointer call_data)
     } else ((ButtonCallback*) currentOption[data].target)(data);
 
     shells[dlg] = oldSh; // in case of multiple instances, restore previous (as this one could be popped down now)
+#endif
 }
 
 void
 TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // for transfering focus to the next text-edit
+#ifdef TODO_GTK
     Option *opt;
     for(opt = currentOption; opt->type != EndMark; opt++) {
 	if(opt->handle == w) {
@@ -663,11 +720,13 @@ TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 	    }
 	}
     }
+#endif
 }
 
 void
 WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // for scrolling a widget seen through a viewport with the mouse wheel (ListBox!)
+#ifdef TODO_GTK
     int j=0, n = atoi(prms[0]);
     static char *params[3] = { "", "Continuous", "Proportional" };
     Arg args[16];
@@ -690,6 +749,7 @@ WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     XtCallActionProc(v, "NotifyThumb", event, params, 0);
 //    XtCallActionProc(w, "NotifyScroll", event, params+2, 1);
     XtCallActionProc(v, "EndScroll", event, params, 0);
+#endif
 }
 
 static char *oneLiner  =
@@ -703,6 +763,7 @@ static char scrollTranslations[] =
 static void
 SqueezeIntoBox (Option *opt, int nr, int width)
 {   // size buttons in bar to fit, clipping button names where necessary
+#ifdef TODO_GTK
     int i, wtot = 0;
     Dimension widths[20], oldWidths[20];
     Arg arg;
@@ -724,12 +785,14 @@ SqueezeIntoBox (Option *opt, int nr, int width)
 	XtSetValues(opt[i].handle, &arg, 1);
     }
     opt->min = wtot;
+#endif
 }
 
 int
 SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int w, int h, int chaining)
 {   // sizing and positioning most widgets have in common
     int j = 0;
+#ifdef TODO_GTK
     // first position the widget w.r.t. earlier ones
     if(chaining & 1) { // same row: position w.r.t. last (on current row) and lastrow
 	XtSetArg(args[j], XtNfromVert, topNeigbor); j++;
@@ -756,12 +819,14 @@ SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int
     }
     // border
     XtSetArg(args[j], XtNborderWidth, b);  j++;
+#endif
     return j;
 }
 
 int
 GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int top)
 {
+#ifdef TODO_GTK
     Arg args[24];
     Widget popup, layout, dialog=NULL, edit=NULL, form,  last, b_ok, b_cancel, previousPane = NULL, textField = NULL, oldForm, oldLastRow, oldForeLast;
     Window root, child;
@@ -1156,11 +1221,13 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	XtSetValues(popup, args, j);
     }
     RaiseWindow(dlgNr);
+#endif
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
 }
 
 
 /* function called when the data to Paste is ready */
+#ifdef TODO_GTK
 static void
 SendTextCB (Widget w, XtPointer client_data, Atom *selection,
 	    Atom *type, XtPointer value, unsigned long *len, int *format)
@@ -1174,10 +1241,12 @@ SendTextCB (Widget w, XtPointer client_data, Atom *selection,
   SendString(buf);
   XtFree(value);
 }
+#endif
 
 void
 SendText (int n)
 {
+#ifdef TODO_GTK
     char *p = (char*) textOptions[n].choice;
     if(strstr(p, "$name")) {
 	XtGetSelectionValue(menuBarWidget,
@@ -1187,18 +1256,22 @@ SendText (int n)
 	  CurrentTime
 	);
     } else SendString(p);
+#endif
 }
 
 void
 SetInsertPos (Option *opt, int pos)
 {
+#ifdef TODO_GTK
     Arg args[16];
     XtSetArg(args[0], XtNinsertPosition, pos);
     XtSetValues(opt->handle, args, 1);
 //    SetFocus(opt->handle, shells[InputBoxDlg], NULL, False); // No idea why this does not work, and the following is needed:
 //    XSetInputFocus(xDisplay, XtWindow(opt->handle), RevertToPointerRoot, CurrentTime);
+#endif
 }
 
+#ifdef TODO_GTK
 void
 TypeInProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // can be used as handler for any text edit in any dialog (from GenericPopUp, that is)
@@ -1211,11 +1284,14 @@ TypeInProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 	    GenericCallback (w, (XtPointer)(intptr_t) (30000 + n + (dlgNr<<16)), NULL);
     }
 }
+#endif
 
 void
 HardSetFocus (Option *opt)
 {
+#ifdef TODO_GTK
     XSetInputFocus(xDisplay, XtWindow(opt->handle), RevertToPointerRoot, CurrentTime);
+#endif
 }
 
 
