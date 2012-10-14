@@ -35,6 +35,7 @@
 #include <math.h>
 
 #include "common.h"
+#include "frontend.h"
 #include "backend.h"
 #include "moves.h"
 #include "gettext.h"

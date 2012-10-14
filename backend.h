@@ -95,7 +95,6 @@
 #endif
 
 #include "lists.h"
-#include "frontend.h"
 
 extern char *wbOptions;
 extern int gotPremove;
@@ -108,7 +107,6 @@ extern int currentMove, backwardMostMove, forwardMostMove;
 extern int blackPlaysFirst;
 extern FILE *debugFP;
 extern char* programVersion;
-extern ProcRef firstProgramPR, secondProgramPR;
 extern Board boards[];
 extern char marker[BOARD_RANKS][BOARD_FILES];
 extern char lastMsg[MSG_SIZ];

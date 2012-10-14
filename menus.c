@@ -85,6 +85,7 @@ extern char *getenv();
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
 
+#include "frontend.h"
 #include "backend.h"
 #include "xhistory.h"
 #include "xedittags.h"
