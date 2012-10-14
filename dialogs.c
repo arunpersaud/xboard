@@ -48,6 +48,7 @@ extern char *getenv();
 #include <stdint.h>
 
 #include "common.h"
+#include "frontend.h"
 #include "backend.h"
 #include "xboard.h"
 #include "menus.h"
@@ -1178,6 +1179,7 @@ BoxAutoPopUp (char *buf)
 void
 SettingsPopUp (ChessProgramState *cps)
 {
+   if(!cps->nrOptions) { DisplayNote(_("Engine has no options")); return; }
    currentCps = cps;
    GenericPopUp(cps->option, _("Engine Settings"), TransientDlg, BoardWindow, MODAL, 0);
 }
