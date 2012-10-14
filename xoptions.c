@@ -781,7 +781,6 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 
     if(engineDlg) { // Settings popup for engine: format through heuristic
 	int n = currentCps->nrOptions;
-	if(!n) { DisplayNote(_("Engine has no options")); currentCps = NULL; return 0; }
 	if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
 	height = n / width + 1;
 	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = SAME_ROW; // OK on same line
