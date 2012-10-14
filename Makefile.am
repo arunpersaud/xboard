@@ -10,7 +10,7 @@ endif
 
 ### define sources for the front-end and backend
 
-GTKsources = xboard.c  xgamelist.c \
+GTKsources = xboard.c  xtimer.c xgamelist.c \
              xhistory.c  xoptions.c  xboard.h  \
              xengineoutput.c  xgamelist.h \
              xhistory.h
