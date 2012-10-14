@@ -199,11 +199,11 @@ extern char *getenv();
 #include "backendz.h"
 #include "moves.h"
 #include "xboard.h"
+#include "xboard2.h"
 #include "childio.h"
 #include "xgamelist.h"
 #include "xhistory.h"
 #include "xevalgraph.h"
-#include "xedittags.h"
 #include "menus.h"
 #include "board.h"
 #include "dialogs.h"
@@ -321,6 +321,19 @@ WindowPlacement wpEvalGraph;
 WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
 WindowPlacement wpTags;
+
+#define INPUT_SOURCE_BUF_SIZE 8192
+
+typedef struct {
+    CPKind kind;
+    int fd;
+    int lineByLine;
+    char *unused;
+    InputCallback func;
+    XtInputId xid;
+    char buf[INPUT_SOURCE_BUF_SIZE];
+    VOIDSTAR closure;
+} InputSource;
 
 
 /* This magic number is the number of intermediate frames used

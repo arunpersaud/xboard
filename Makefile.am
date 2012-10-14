@@ -35,7 +35,7 @@ backendsources = backend.c backend.h backendz.h \
 		 parser.c parser.h \
 		 pgntags.c \
 	  	 uci.c \
-	 	 args.h \
+	 	 args.h xboard2.h \
 	 	 board.c board.h \
 	 	 draw.c draw.h \
 		 dialogs.c dialogs.h \

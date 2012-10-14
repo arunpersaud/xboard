@@ -74,8 +74,6 @@ extern char *getenv();
 #include <locale.h>
 #endif
 
-
-// [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
 
 #include "backend.h"
@@ -168,9 +166,8 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     static int oldWidth, oldHeight;
     static VariantClass oldVariant;
     static int oldMono = -1, oldTwoBoards = 0;
-    extern Widget formWidget;
 
-    if(!formWidget) return;
+    if(!mainOptions[W_BOARD].handle) return;
 
     if(oldTwoBoards && !twoBoards) PopDown(DummyDlg);
     oldTwoBoards = twoBoards;

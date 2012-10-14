@@ -28,7 +28,6 @@
 #include "common.h"
 #include "backend.h"
 #include "xhistory.h"
-#include "xboard.h"
 #include "dialogs.h"
 #include "gettext.h"
 

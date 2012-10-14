@@ -74,6 +74,7 @@ extern char *getenv();
 #include "common.h"
 #include "backend.h"
 #include "xboard.h"
+#include "xboard2.h"
 #include "dialogs.h"
 #include "menus.h"
 #include "gettext.h"

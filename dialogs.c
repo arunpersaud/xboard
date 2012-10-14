@@ -50,7 +50,7 @@ extern char *getenv();
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
-#include "xboard.h"
+#include "xboard2.h"
 #include "menus.h"
 #include "dialogs.h"
 #include "gettext.h"

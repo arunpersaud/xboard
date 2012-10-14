@@ -2402,6 +2402,19 @@ SetClockIcon (int color)
     }
 }
 
+#define INPUT_SOURCE_BUF_SIZE 8192
+
+typedef struct {
+    CPKind kind;
+    int fd;
+    int lineByLine;
+    char *unused;
+    InputCallback func;
+    XtInputId xid;
+    char buf[INPUT_SOURCE_BUF_SIZE];
+    VOIDSTAR closure;
+} InputSource;
+
 void
 DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 {
