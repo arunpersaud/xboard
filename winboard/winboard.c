@@ -4945,16 +4945,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_AnalyzeFile:
-      if (!first.analysisSupport) {
-        char buf[MSG_SIZ];
-	  snprintf(buf, MSG_SIZ, _("%s does not support analysis"), first.tidy);
-        DisplayError(buf, 0);
-      } else {
-	if (!appData.showThinking) ToggleShowThinking();
-	AnalyzeFileEvent();
-//	LoadGameDialog(hwnd, _("Analyze Game from File"));
-	AnalysisPeriodicEvent(1);
-      }
+      AnalyzeFileEvent();
       break;
 
     case IDM_IcsClient:

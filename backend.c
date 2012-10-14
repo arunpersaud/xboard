@@ -13522,9 +13522,17 @@ AnalyzeFileEvent ()
     if (appData.noChessProgram || gameMode == AnalyzeFile)
       return;
 
+    if (!first.analysisSupport) {
+      char buf[MSG_SIZ];
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
+      DisplayError(buf, 0);
+      return;
+    }
+
     if (gameMode != AnalyzeMode) {
 	EditGameEvent();
 	if (gameMode != EditGame) return;
+	if (!appData.showThinking) ToggleShowThinking();
 	ResurrectChessProgram();
 	SendToProgram("analyze\n", &first);
 	first.analyzing = TRUE;
@@ -13541,6 +13549,7 @@ AnalyzeFileEvent ()
     GetTimeMark(&lastNodeCountTime);
     lastNodeCount = 0;
     if(appData.timeDelay > 0) StartLoadGameTimer((long)(1000.0f * appData.timeDelay));
+    AnalysisPeriodicEvent(1);
 }
 
 void

@@ -256,25 +256,6 @@ QuitProc ()
 }
 
 void
-AnalyzeFileProc ()
-{
-    if (!first.analysisSupport) {
-      char buf[MSG_SIZ];
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-//    Reset(FALSE, TRUE);
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc();
-#endif
-    AnalyzeFileEvent();
-//    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
-    AnalysisPeriodicEvent(1);
-}
-
-void
 MatchProc ()
 {
     MatchEvent(2);
@@ -666,8 +647,8 @@ MenuItem modeMenu[] = {
     {N_("Machine White  Ctrl+W"), "MachineWhite", MachineWhiteEvent},
     {N_("Machine Black  Ctrl+B"), "MachineBlack", MachineBlackEvent},
     {N_("Two Machines   Ctrl+T"), "TwoMachines", TwoMachinesEvent},
-    {N_("Analysis Mode  Ctrl+A"), "AnalysisMode", AnalyzeModeEvent},
-    {N_("Analyze Game   Ctrl+G"), "AnalyzeFile", AnalyzeFileProc },
+    {N_("Analysis Mode  Ctrl+A"), "AnalysisMode", (MenuProc*) AnalyzeModeEvent},
+    {N_("Analyze Game   Ctrl+G"), "AnalyzeFile", AnalyzeFileEvent },
     {N_("Edit Game         Ctrl+E"), "EditGame", EditGameEvent},
     {N_("Edit Position      Ctrl+Shift+E"), "EditPosition", EditPositionEvent},
     {N_("Training"),      "Training", TrainingEvent},
