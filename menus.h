@@ -98,6 +98,7 @@ void AnalyzeModeProc P((void));
 void AnalyzeFileProc P((void));
 void MatchProc P((void));
 void MatchOptionsProc P((void));
+void EditTagsProc P((void));
 void EditCommentProc P((void));
 void IcsInputBoxProc P((void));
 void ChatProc P((void));
