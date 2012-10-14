@@ -203,7 +203,6 @@ extern char *getenv();
 #include "xgamelist.h"
 #include "xhistory.h"
 #include "xevalgraph.h"
-#include "xedittags.h"
 #include "menus.h"
 #include "board.h"
 #include "dialogs.h"

@@ -11,13 +11,11 @@ endif
 ### define sources for the front-end and backend
 
 GTKsources = xboard.c  xevalgraph.c  xgamelist.c \
-             xedittags.c xedittags.h \
              xhistory.c  xoptions.c  xboard.h  \
              xengineoutput.c  xevalgraph.h  xgamelist.h \
              xhistory.h
 
 Xsources   = xaw/xboard.c xaw/xboard.h \
-             xaw/xedittags.c xaw/xedittags.h \
              xaw/xengineoutput.c \
              xaw/xevalgraph.c xaw/xevalgraph.h \
              xaw/xgamelist.c xaw/xgamelist.h \
