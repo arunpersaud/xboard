@@ -244,11 +244,7 @@ SetWidgetState (Option *opt, int state)
 void
 SetWidgetLabel (Option *opt, char *buf)
 {
-#ifdef TODO_GTK
-    Arg arg;
-    XtSetArg(arg, XtNlabel, (XtArgVal) buf);
-    XtSetValues(opt->handle, &arg, 1);
-#endif
+    gtk_label_set_text(opt->handle, buf);
 }
 
 void
@@ -1192,7 +1188,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             option[i].handle = (void *)checkbutton;            
             break; 
 	  case Label:            
-            label = gtk_label_new(option[i].name);
+            option[i].handle = (void *) (label = gtk_label_new(option[i].name));
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
             gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+3, top, top+1);                       
