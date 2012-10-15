@@ -81,12 +81,12 @@ static Pixmap icons[8]; // [HGM] this front-end array translates back-end icon i
 static Widget memoWidget;
 #endif
 
+#ifdef TODO_GTK
 static void
 ReadIcon (char *pixData[], int iconNr, Widget w)
 {
     int r;
 
-#ifdef TODO_GTK
 	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(w),
 				       pixData,
 				       &(icons[iconNr]),
@@ -94,8 +94,8 @@ ReadIcon (char *pixData[], int iconNr, Widget w)
 	  fprintf(stderr, _("Error %d loading icon image\n"), r);
 	  exit(1);
 	}
-#endif
 }
+#endif
 
 void
 InitEngineOutput (Option *opt, Option *memo2)
@@ -156,10 +156,10 @@ Shift<Btn3Down>: select-start() extend-end() SelectPV(1) \n \
 Any<Btn3Down>: select-start() extend-end() SelectPV(0) \n \
 <Btn3Up>: StopPV() \n";
 
+#ifdef TODO_GTK
 void
 SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {	// [HGM] pv: translate click to PV line, and load it for display
-#ifdef TODO_GTK
 	String val;
 	int start, end;
 	XawTextPosition index, dummy;
@@ -176,19 +176,19 @@ SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	    XawTextSetSelection( w, start, end );
 	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
 	}
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 void
 StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {	// [HGM] pv: on right-button release, stop displaying PV
-#ifdef TODO_GTK
         XawTextUnsetSelection( w );
         highTextStart[currentPV] = highTextEnd[currentPV] = 0;
         UnLoadPV();
         XtCallActionProc(w, "beginning-of-file", event, NULL, 0);
-#endif
 }
+#endif
 
 //------------------------- Ctrl-C copying of memo texts ---------------------------
 

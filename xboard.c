@@ -63,6 +63,7 @@
 #include <math.h>
 #include <cairo/cairo.h>
 #include <cairo/cairo-xlib.h>
+#include <gtk/gtk.h>
 
 #if !OMIT_SOCKETS
 # if HAVE_SYS_SOCKET_H
@@ -290,6 +291,7 @@ XtAppContext appContext;
 #else
 void *shellWidget, *formWidget, *boardWidget, *titleWidget, *dropMenu, *menuBarWidget;
 void *appContext;
+GtkWidget       *mainwindow;
 #endif
 Option *optList; // contains all widgets of main window
 char *layoutName;
@@ -1076,12 +1078,12 @@ main (int argc, char **argv)
 #ifdef TODO_GTK
     XSetWindowAttributes window_attributes;
     Arg args[16];
-    Dimension boardWidth, boardHeight, w, h;
 #else
-    int boardWidth, boardHeight, w, h;
 #endif
+    Dimension boardWidth, boardHeight, w, h;
     char *p;
     int forceMono = False;
+    GError *gtkerror=NULL;
 
     srandom(time(0)); // [HGM] book: make random truly random
 
@@ -1099,6 +1101,9 @@ main (int argc, char **argv)
 	exit(0);
     }
 
+    /* set up GTK */
+    gtk_init (&argc, &argv);
+
     programName = strrchr(argv[0], '/');
     if (programName == NULL)
       programName = argv[0];
@@ -1106,10 +1111,9 @@ main (int argc, char **argv)
       programName++;
 
 #ifdef ENABLE_NLS
-    XtSetLanguageProc(NULL, NULL, NULL);
-    if (appData.debugMode) {
-      fprintf(debugFP, "locale = %s\n", setlocale(LC_ALL, NULL));
-    }
+//    if (appData.debugMode) {
+//      fprintf(debugFP, "locale = %s\n", setlocale(LC_ALL, NULL));
+//    }
 
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
@@ -1156,6 +1160,12 @@ main (int argc, char **argv)
         setbuf(debugFP, NULL);
     }
 
+#if ENABLE_NLS
+    if (appData.debugMode) {
+      fprintf(debugFP, "locale = %s\n", setlocale(LC_ALL, NULL));
+    }
+#endif
+
     /* [HGM,HR] make sure board size is acceptable */
     if(appData.NrFiles > BOARD_FILES ||
        appData.NrRanks > BOARD_RANKS   )
@@ -1171,6 +1181,16 @@ main (int argc, char **argv)
 	InitPosition(FALSE);
 
 #ifdef TODO_GTK
+    /* GTK */
+    builder = gtk_builder_new();
+    filename = get_glade_filename ("mainboard.glade");
+    if(! gtk_builder_add_from_file (builder, filename, &gtkerror) )
+      {
+      if(gtkerror)
+        printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
+      }
+    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));
+
     shellWidget =
       XtAppInitialize(&appContext, "XBoard", shellOptions,
 		      XtNumber(shellOptions),
@@ -1223,6 +1243,14 @@ main (int argc, char **argv)
 #ifdef TODO_GTK
 	    while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize ||
 		   DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) {
+	      szd++;
+	    }
+#else
+            GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(mainwindow));
+            guint screenwidth = gdk_screen_get_width(screen);
+            guint screenheight = gdk_screen_get_height(screen);
+	    while (screenwidth < szd->minScreenSize ||
+		   screenheight < szd->minScreenSize) {
 	      szd++;
 	    }
 #endif
@@ -1452,9 +1480,11 @@ main (int argc, char **argv)
 //    XtSetKeyboardFocus(shellWidget, formWidget);
 #ifdef TODO_GTK
     XSetInputFocus(xDisplay, XtWindow(formWidget), RevertToPointerRoot, CurrentTime);
-
-    XtAppMainLoop(appContext);
 #endif
+
+    /* check for GTK events and process them */
+    gtk_main();
+
     if (appData.debugMode) fclose(debugFP); // [DM] debug
     return 0;
 }

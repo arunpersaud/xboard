@@ -57,6 +57,8 @@
 #include <signal.h>
 #include <sys/types.h>
 
+#include <gtk/gtk.h>
+
 #if STDC_HEADERS
 # include <stdlib.h>
 # include <string.h>
@@ -92,10 +94,9 @@ extern char *getenv();
 # include <sys/wait.h>
 #endif
 
-#include <gtk/gtk.h>
-
-// [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
-
+#include "common.h"
+#include "backend.h"
+#include "frontend.h"
 
 #ifdef __EMX__
 #ifndef HAVE_USLEEP
@@ -103,9 +104,6 @@ extern char *getenv();
 #endif
 #define usleep(t)   _sleep2(((t)+500)/1000)
 #endif
-
-// in xboard.c (should go to xtimer.h ?)
-extern XtAppContext appContext;
 
 guint delayedEventTimerTag = 0;
 DelayedEventCallback delayedEventCallback = 0;
@@ -121,7 +119,7 @@ FireDelayedEvent(gpointer data)
 void
 ScheduleDelayedEvent (DelayedEventCallback cb, long millisec)
 {
-    if(delayedEventTimerXID && delayedEventCallback == cb)
+    if(delayedEventTimerTag && delayedEventCallback == cb)
 	// [HGM] alive: replace, rather than add or flush identical event
         g_source_remove(delayedEventTimerTag);
     delayedEventCallback = cb;
@@ -185,7 +183,7 @@ StartLoadGameTimer (long millisec)
 
 guint analysisClockTag = 0;
 
-gboolean
+void
 AnalysisClockCallback(gpointer data)
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile

@@ -68,7 +68,9 @@ extern char *getenv();
 
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
+#ifdef TODO_GTK
 static Widget previous = NULL;
+#endif
 static Option *currentOption;
 
 void
@@ -85,10 +87,10 @@ UnCaret ()
 #endif
 }
 
+#ifdef TODO_GTK
 void
 SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
 {
-#ifdef TODO_GTK
     Arg args[2];
     char *s;
     int j;
@@ -102,8 +104,8 @@ SetFocus (Widget w, XtPointer data, XEvent *event, Boolean *b)
     XtSetValues(w, args, j);
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
-#endif
 }
+#endif
 
 void
 BoardFocus ()
@@ -308,6 +310,7 @@ SetIconName (DialogClass dlg, char *name)
 #endif
 }
 
+#ifdef TODO_GTK
 static void
 CheckCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
 {
@@ -319,11 +322,12 @@ CheckCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
     GetWidgetState(opt, &s);
     SetWidgetState(opt, !s);
 }
+#endif
 
+#ifdef TODO_GTK
 static void
 SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
-#ifdef TODO_GTK
     String name, val;
     Arg args[16];
     char buf[MSG_SIZ], *p;
@@ -352,13 +356,13 @@ SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
     } else return;
     snprintf(buf, MSG_SIZ,  "%d", j);
     SetWidgetText(opt, buf, TransientDlg);
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 static void
 ComboSelect (Widget w, caddr_t addr, caddr_t index) // callback for all combo items
 {
-#ifdef TODO_GTK
     Arg args[16];
     Option *opt = dialogOptions[((intptr_t)addr)>>24]; // applicable option list
     int i = ((intptr_t)addr)>>16 & 255; // option number
@@ -377,13 +381,13 @@ ComboSelect (Widget w, caddr_t addr, caddr_t index) // callback for all combo it
       XtSetArg(args[0], XtNlabel, _(((char**)opt[i].choice)[j]));
 
     XtSetValues(opt[i].handle, args, 1);
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 Widget
 CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
 {
-#ifdef TODO_GTK
     int j=0;
     Widget entry;
     Arg args[16];
@@ -394,15 +398,13 @@ CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
     entry = XtCreateManagedWidget("item", smeBSBObjectClass, menu, args, j+1);
     XtAddCallback(entry, XtNcallback, CB, (caddr_t)(intptr_t) n);
     return entry;
-#else
-    return NULL;
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 static Widget
 CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 {   // fromList determines if the item texts are taken from a list of strings, or from a menu table
-#ifdef TODO_GTK
     int i;
     Widget menu, entry;
     Arg arg;
@@ -424,10 +426,8 @@ CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 	}
       }
       return menu;
-#else
-    return NULL;
-#endif
 }
+#endif
 
 char moveTypeInTranslations[] =
     "<Key>Return: TypeInProc(1) \n"
@@ -586,20 +586,20 @@ SetColor (char *colorName, Option *box)
 #endif
 }
 
+#ifdef TODO_GTK
 void
 ColorChanged (Widget w, XtPointer data, XEvent *event, Boolean *b)
 {   // for detecting a typed change in color
     char buf[10];
-#ifdef TODO_GTK
     if ( (XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1) && *buf == '\r' )
 	RefreshColor((int)(intptr_t) data, 0);
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 static void
 GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 {   // handle expose and mouse events on Graph widget
-#ifdef TODO_GTK
     Dimension w, h;
     Arg args[16];
     int j, button=10, f=1, sizing=0;
@@ -657,8 +657,8 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	XtPopupSpringLoaded(opt->handle);
     }
     XSync(xDisplay, False);
-#endif
 }
+#endif
 
 void
 GraphExpose (Option *opt, int x, int y, int w, int h)
@@ -671,10 +671,10 @@ GraphExpose (Option *opt, int x, int y, int w, int h)
 #endif
 }
 
+#ifdef TODO_GTK
 static void
 GenericCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {   // all Buttons in a dialog (including OK, cancel) invoke this
-#ifdef TODO_GTK
     String name;
     Arg args[16];
     char buf[MSG_SIZ];
@@ -700,13 +700,13 @@ GenericCallback (Widget w, XtPointer client_data, XtPointer call_data)
     } else ((ButtonCallback*) currentOption[data].target)(data);
 
     shells[dlg] = oldSh; // in case of multiple instances, restore previous (as this one could be popped down now)
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 void
 TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // for transfering focus to the next text-edit
-#ifdef TODO_GTK
     Option *opt;
     for(opt = currentOption; opt->type != EndMark; opt++) {
 	if(opt->handle == w) {
@@ -720,13 +720,13 @@ TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 	    }
 	}
     }
-#endif
 }
+#endif
 
+#ifdef TODO_GTK
 void
 WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // for scrolling a widget seen through a viewport with the mouse wheel (ListBox!)
-#ifdef TODO_GTK
     int j=0, n = atoi(prms[0]);
     static char *params[3] = { "", "Continuous", "Proportional" };
     Arg args[16];
@@ -749,8 +749,8 @@ WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     XtCallActionProc(v, "NotifyThumb", event, params, 0);
 //    XtCallActionProc(w, "NotifyScroll", event, params+2, 1);
     XtCallActionProc(v, "EndScroll", event, params, 0);
-#endif
 }
+#endif
 
 static char *oneLiner  =
    "<Key>Return: redraw-display() \n \
@@ -788,11 +788,11 @@ SqueezeIntoBox (Option *opt, int nr, int width)
 #endif
 }
 
+#ifdef TODO_GTK
 int
 SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int w, int h, int chaining)
 {   // sizing and positioning most widgets have in common
     int j = 0;
-#ifdef TODO_GTK
     // first position the widget w.r.t. earlier ones
     if(chaining & 1) { // same row: position w.r.t. last (on current row) and lastrow
 	XtSetArg(args[j], XtNfromVert, topNeigbor); j++;
@@ -819,9 +819,9 @@ SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int
     }
     // border
     XtSetArg(args[j], XtNborderWidth, b);  j++;
-#endif
     return j;
 }
+#endif
 
 int
 GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int top)

@@ -31,7 +31,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xoptions.c dialogs.c dialogs.h \
 		 $(ZPY)
 SUBDIRS = po
-xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
+xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@ @CAIRO_LIBS@
 EXTRA_DIST = pixmaps shogi sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
@@ -40,7 +40,7 @@ EXTRA_DIST = pixmaps shogi sounds winboard \
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @GTK_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
 	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"'
 
 ACLOCAL_AMFLAGS = -I m4
