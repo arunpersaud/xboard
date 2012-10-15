@@ -328,20 +328,6 @@ WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
 WindowPlacement wpTags;
 
-#define INPUT_SOURCE_BUF_SIZE 8192
-
-typedef struct {
-    CPKind kind;
-    int fd;
-    int lineByLine;
-    char *unused;
-    InputCallback func;
-    XtInputId xid;
-    char buf[INPUT_SOURCE_BUF_SIZE];
-    VOIDSTAR closure;
-} InputSource;
-
-
 /* This magic number is the number of intermediate frames used
    in each half of the animation. For short moves it's reduced
    by 1. The total number of frames will be factor * 2 + 1.  */
@@ -2430,24 +2416,50 @@ SetClockIcon (int color)
 #endif
 }
 
-#ifdef TODO_GTK
-void
-DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
+#define INPUT_SOURCE_BUF_SIZE 8192
+
+typedef struct {
+    CPKind kind;
+    int fd;
+    int lineByLine;
+    char *unused;
+    InputCallback func;
+    guint sid;
+    char buf[INPUT_SOURCE_BUF_SIZE];
+    VOIDSTAR closure;
+} InputSource;
+
+gboolean
+DoInputCallback(io, cond, data)
+     GIOChannel  *io;
+     GIOCondition cond;
+     gpointer    *data;
 {
-    InputSource *is = (InputSource *) closure;
+  /* read input from one of the input source (for example a chess program, ICS, etc).
+   * and call a function that will handle the input
+   */
+
     int count;
     int error;
     char *p, *q;
+
+    /* All information (callback function, file descriptor, etc) is
+     * saved in an InputSource structure
+     */
+    InputSource *is = (InputSource *) data;
 
     if (is->lineByLine) {
 	count = read(is->fd, is->unused,
 		     INPUT_SOURCE_BUF_SIZE - (is->unused - is->buf));
 	if (count <= 0) {
 	    (is->func)(is, is->closure, is->buf, count, count ? errno : 0);
-	    return;
+	    return True;
 	}
 	is->unused += count;
 	p = is->buf;
+	/* break input into lines and call the callback function on each
+	 * line
+	 */
 	while (p < is->unused) {
 	    q = memchr(p, '\n', is->unused - p);
 	    if (q == NULL) break;
@@ -2455,12 +2467,16 @@ DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 	    (is->func)(is, is->closure, p, q - p, 0);
 	    p = q;
 	}
+	/* remember not yet used part of the buffer */
 	q = is->buf;
 	while (p < is->unused) {
 	    *q++ = *p++;
 	}
 	is->unused = q;
     } else {
+      /* read maximum length of input buffer and send the whole buffer
+       * to the callback function
+       */
 	count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
 	if (count == -1)
 	  error = errno;
@@ -2468,14 +2484,17 @@ DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 	  error = 0;
 	(is->func)(is, is->closure, is->buf, count, error);
     }
+    return True; // Must return true or the watch will be removed
 }
-#endif
 
-InputSourceRef
-AddInputSource (ProcRef pr, int lineByLine, InputCallback func, VOIDSTAR closure)
+InputSourceRef AddInputSource(pr, lineByLine, func, closure)
+     ProcRef pr;
+     int lineByLine;
+     InputCallback func;
+     VOIDSTAR closure;
 {
-#ifdef TODO_GTK
     InputSource *is;
+    GIOChannel *channel;
     ChildProc *cp = (ChildProc *) pr;
 
     is = (InputSource *) calloc(1, sizeof(InputSource));
@@ -2488,31 +2507,32 @@ AddInputSource (ProcRef pr, int lineByLine, InputCallback func, VOIDSTAR closure
 	is->kind = cp->kind;
 	is->fd = cp->fdFrom;
     }
-    if (lineByLine) {
-	is->unused = is->buf;
-    }
+    if (lineByLine)
+      is->unused = is->buf;
+    else
+      is->unused = NULL;
 
-    is->xid = XtAppAddInput(appContext, is->fd,
-			    (XtPointer) (XtInputReadMask),
-			    (XtInputCallbackProc) DoInputCallback,
-			    (XtPointer) is);
+   /* GTK-TODO: will this work on windows?*/
+
+    channel = g_io_channel_unix_new(is->fd);
+    g_io_channel_set_close_on_unref (channel, TRUE);
+    is->sid = g_io_add_watch(channel, G_IO_IN,(GIOFunc) DoInputCallback, is);
+
     is->closure = closure;
     return (InputSourceRef) is;
-#else
-    return (InputSourceRef) 0;
-#endif
 }
 
+
 void
-RemoveInputSource (InputSourceRef isr)
+RemoveInputSource(isr)
+     InputSourceRef isr;
 {
-#ifdef TODO_GTK
     InputSource *is = (InputSource *) isr;
 
-    if (is->xid == 0) return;
-    XtRemoveInput(is->xid);
-    is->xid = 0;
-#endif
+    if (is->sid == 0) return;
+    g_source_remove(is->sid);
+    is->sid = 0;
+    return;
 }
 
 #ifndef HAVE_USLEEP

@@ -1063,9 +1063,8 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
         currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }    
 
+    parents[dlgNr] = parent;
 #ifdef TODO_GTK
-     i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
     shells[BoardWindow] = shellWidget; parents[dlgNr] = parent;
 
     if(dlgNr == BoardWindow) dialog = shellWidget; else
@@ -1074,7 +1073,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                                                            shells[parent], args, i);
 #endif
     dialog = gtk_dialog_new_with_buttons( title,
-                                      NULL,
+                                      shells[parent],
                                       modal ?
 					      GTK_DIALOG_DESTROY_WITH_PARENT |GTK_DIALOG_MODAL
 				            : GTK_DIALOG_DESTROY_WITH_PARENT,                                             
