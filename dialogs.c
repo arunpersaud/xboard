@@ -328,7 +328,7 @@ AddToTourney (int n, int sel)
     }
     nr = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
     ASSIGN(engineMnemonic[0], buf);
-    LoadListBox(&matchOptions[8], _("# no engines are installed"));
+    LoadListBox(&matchOptions[8], _("# no engines are installed"), -1, -1);
     HighlightWithScroll(&matchOptions[8], 0, nr);
 }
 
@@ -1273,7 +1273,7 @@ EngSel (int n, int sel)
     }
     nr = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
     ASSIGN(engineMnemonic[0], buf);
-    LoadListBox(&installOptions[1], _("# no engines are installed"));
+    LoadListBox(&installOptions[1], _("# no engines are installed"), -1, -1);
     HighlightWithScroll(&installOptions[1], 0, nr);
 }
 
@@ -1720,17 +1720,19 @@ GLT_Button (int n)
         if(index >= strlen(GLT_ALL_TAGS)) return;
 	strings[index] = strings[index+1];
 	strings[++index] = p;
+      LoadListBox(&listOptions[0], "?", index, index-1); // only change the two specified entries
     } else
     if (n == 2) {
         if(index == 0) return;
 	strings[index] = strings[index-1];
 	strings[--index] = p;
+      LoadListBox(&listOptions[0], "?", index, index+1);
     } else
     if (n == 1) {
       safeStrCpy(lpUserGLT, GLT_DEFAULT_TAGS, LPUSERGLT_SIZE);
       GLT_TagsToList(lpUserGLT);
       index = 0;
-      LoadListBox(&listOptions[0], "?"); // Note: the others don't need this, as the highlight switching redraws the change items
+      LoadListBox(&listOptions[0], "?", -1, -1);
     }
     HighlightListBoxItem(&listOptions[0], index);
 }
@@ -2014,7 +2016,7 @@ CCB (int n)
 }
 
 Option mainOptions[] = { // description of main window in terms of generic dialog creator
-{ 0, 0xCA, 0, NULL, NULL, "", NULL, BoxBegin, "" }, // menu bar
+{ 0, 0xCA, 0, NULL, NULL, "", NULL, BarBegin, "" }, // menu bar
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("File") },
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Edit") },
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("View") },
@@ -2023,7 +2025,7 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Engine") },
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Options") },
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Help") },
-{ 0, 0, 0, NULL, (void*)&SizeKludge, "", NULL, BoxEnd, "" },
+{ 0, 0, 0, NULL, (void*)&SizeKludge, "", NULL, BarEnd, "" },
 { 0, LR|T2T|BORDER|SAME_ROW, 0, NULL, NULL, "", NULL, Label, "1" }, // optional title in window
 { 50,    LL|TT,            100, NULL, (void*) &LogoW, NULL, NULL, -1, "LogoW" }, // white logo
 {  0,   L2L|T2T,           200, NULL, (void*) &CCB, NULL, NULL, Label, "White" }, // white clock
@@ -2425,8 +2427,8 @@ void
 Refresh (int pathFlag)
 {
     ListDir(pathFlag); // and make new one
-    LoadListBox(&browseOptions[5], "");
-    LoadListBox(&browseOptions[6], "");
+    LoadListBox(&browseOptions[5], "", -1, -1);
+    LoadListBox(&browseOptions[6], "", -1, -1);
     SetWidgetLabel(&browseOptions[0], title);
 }
 
@@ -2450,7 +2452,7 @@ Switch (int n)
     if(byExtension == (n == 4)) return;
     extFlag = byExtension = (n == 4);
     qsort((void*)fileList, filePtr, sizeof(char*), &Comp);
-    LoadListBox(&browseOptions[6], "");
+    LoadListBox(&browseOptions[6], "", -1, -1);
 }
 
 void

@@ -148,7 +148,7 @@ void GetWidgetState  P((Option *opt, int *state));
 void SetWidgetState  P((Option *opt, int state));
 void SetWidgetLabel P((Option *opt, char *buf));
 void SetDialogTitle  P((DialogClass dlg, char *title));
-void LoadListBox P((Option *opt, char *emptyText));
+void LoadListBox P((Option *opt, char *emptyText, int n1, int n2));
 void HighlightListBoxItem P((Option *opt, int nr));
 void HighlightWithScroll P((Option *opt, int sel, int max));
 int  SelectedListBoxItem P((Option *opt));
