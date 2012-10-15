@@ -835,6 +835,64 @@ void GenericCallback(GtkWidget *widget, gpointer gdata)
     shells[dlg] = oldSh; // in case of multiple instances, restore previous (as this one could be popped down now)
 }
 
+void BrowseGTK(GtkWidget *widget, gpointer gdata)
+{
+    GtkWidget *entry;
+    GtkWidget *dialog;
+    GtkFileFilter *gtkfilter;
+    GtkFileFilter *gtkfilter_all;
+    int opt_i = (intptr_t) gdata;
+    GtkFileChooserAction fc_action;
+  
+    gtkfilter     = gtk_file_filter_new();
+    gtkfilter_all = gtk_file_filter_new();
+
+    char fileext[10] = "*";
+
+    /* select file or folder depending on option_type */
+    if (currentOption[opt_i].type == PathName)
+        fc_action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+    else
+        fc_action = GTK_FILE_CHOOSER_ACTION_OPEN;
+
+    dialog = gtk_file_chooser_dialog_new ("Open File",
+                      NULL,
+                      fc_action,
+                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                      NULL);
+
+    /* one filter to show everything */
+    gtk_file_filter_add_pattern(gtkfilter_all, "*");
+    gtk_file_filter_set_name   (gtkfilter_all, "All Files");
+    gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),gtkfilter_all);
+    
+    /* filter for specific filetypes e.g. pgn or fen */
+    if (currentOption[opt_i].textValue != NULL && (strcmp(currentOption[opt_i].textValue, "") != 0) )    
+      {          
+        strcat(fileext, currentOption[opt_i].textValue);    
+        gtk_file_filter_add_pattern(gtkfilter, fileext);
+        gtk_file_filter_set_name (gtkfilter, currentOption[opt_i].textValue);
+        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+        /* activate filter */
+        gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+      }
+    else
+      gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter_all);       
+
+    if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+      {
+        char *filename;
+        filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));             
+        entry = currentOption[opt_i].handle;
+        gtk_entry_set_text (GTK_ENTRY (entry), filename);        
+        g_free (filename);
+
+      }
+    gtk_widget_destroy (dialog);
+    dialog = NULL;
+}
+
 #ifdef TODO_GTK
 void
 TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
@@ -1120,7 +1178,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+2, top, top+1);
                 button = gtk_button_new_with_label ("Browse");
                 gtk_table_attach_defaults(GTK_TABLE(table), button, left+2, left+3, top, top+1);
-                g_signal_connect (button, "clicked", G_CALLBACK (Browse), (gpointer)(intptr_t) i);
+                g_signal_connect (button, "clicked", G_CALLBACK (BrowseGTK), (gpointer)(intptr_t) i);
                 option[i].handle = (void*)entry;                 
             }
             else {
