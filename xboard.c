@@ -1724,7 +1724,7 @@ CoDrag (Widget sh, WindowPlacement *wp)
 void
 ReSize (WindowPlacement *wp)
 {
-	int sqx, sqy;
+	int sqx, sqy, w, h;
 	if(wp->width == wpMain.width && wp->height == wpMain.height) return; // not sized
 	sqx = (wp->width  - lineGap - marginW) / BOARD_WIDTH - lineGap;
 	sqy = (wp->height - lineGap - marginH) / BOARD_HEIGHT - lineGap;
@@ -1734,6 +1734,10 @@ ReSize (WindowPlacement *wp)
 	    CreatePNGPieces(); // make newly scaled pieces
 	    InitDrawingSizes(0, 0); // creates grid etc.
 	} else ResizeBoardWindow(BOARD_WIDTH * (squareSize + lineGap) + lineGap, BOARD_HEIGHT * (squareSize + lineGap) + lineGap, 0);
+	w = BOARD_WIDTH * (squareSize + lineGap) + lineGap;
+	h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
+	if(optList->max   > w) optList->max = w;
+	if(optList->value > h) optList->value = h;
 }
 
 static XtIntervalId delayedDragID = 0;
