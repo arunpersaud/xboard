@@ -726,21 +726,24 @@ ColorChanged (Widget w, XtPointer data, XEvent *event, Boolean *b)
 }
 #endif
 
-#ifdef TODO_GTK
 static void
-GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
+GraphEventProc(GtkWidget *widget, GdkEventExpose *event, gpointer gdata)
 {   // handle expose and mouse events on Graph widget
-    Dimension w, h;
-    Arg args[16];
+    int w, h;
     int j, button=10, f=1, sizing=0;
-    Option *opt, *graph = (Option *) client_data;
+    Option *opt, *graph = (Option *) gdata;
     PointerCallback *userHandler = graph->target;
+    GdkEventExpose *eevent = (GdkEventExpose *) event;
+    GdkEventButton *bevent = (GdkEventButton *) event;
+    GdkEventMotion *mevent = (GdkEventButton *) event;
+    cairo_t *cr;
 
-    if (!XtIsRealized(widget)) return;
+//    if (!XtIsRealized(widget)) return;
 
     switch(event->type) {
-	case Expose: // make handling of expose events generic, just copying from memory buffer (->choice) to display (->textValue)
+	case GDK_EXPOSE: // make handling of expose events generic, just copying from memory buffer (->choice) to display (->textValue)
 	    /* Get window size */
+#ifdef TODO_GTK
 	    j = 0;
 	    XtSetArg(args[j], XtNwidth, &w); j++;
 	    XtSetArg(args[j], XtNheight, &h); j++;
@@ -760,16 +763,26 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 		break;
 	    }
+#endif
+	    cr = gdk_cairo_create(((GtkWidget *) (graph->handle))->window);
+	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
+	    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+	    cairo_rectangle(cr, eevent->area.x, eevent->area.y, eevent->area.width, eevent->area.height);
+	    cairo_fill(cr);
+	    cairo_destroy(cr);
+	    return;
+	}
+#ifdef TODO_GTK
 	    ExposeRedraw(graph,	((XExposeEvent*)event)->x, ((XExposeEvent*)event)->y,
 				((XExposeEvent*)event)->width, ((XExposeEvent*)event)->height);
 	    return;
-	case MotionNotify:
+	case GDK_MOTION_NOTIFY:
 	    f = 0;
 	    w = ((XButtonEvent*)event)->x; h = ((XButtonEvent*)event)->y;
 	    break;
-	case ButtonRelease:
+	case GDK_BUTTON_RELEASE:
 	    f = -1; // release indicated by negative button numbers
-	case ButtonPress:
+	case GDK_BUTTON_PRESS:
 	    w = ((XButtonEvent*)event)->x; h = ((XButtonEvent*)event)->y;
 	    switch(((XButtonEvent*)event)->button) {
 		case Button1: button = 1; break;
@@ -787,8 +800,8 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	XtPopupSpringLoaded(opt->handle);
     }
     XSync(xDisplay, False);
-}
 #endif
+}
 
 void
 GraphExpose (Option *opt, int x, int y, int w, int h)
@@ -1274,7 +1287,9 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
             gtk_widget_set_size_request(graph, option[i].max, option[i].value);
+//	    gtk_drawing_area_size(graph, option[i].max, option[i].value);
             gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+3, top, top+1);
+            g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 
 #ifdef TODO_GTK
 	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
