@@ -1700,9 +1700,7 @@ EnableNamedMenuItem (char *menuRef, int state)
 {
     MenuItem *item = MenuNameToItem(menuRef);
 
-#ifdef TODO_GTK
-    if(item) XtSetSensitive(item->handle, state);
-#endif
+    if(item) gtk_widget_set_sensitive(item->handle, state);
 }
 
 void

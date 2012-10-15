@@ -577,7 +577,7 @@ MenuItem fileMenu[] = {
     {N_("New Shuffle Game ..."),          "NewShuffleGame", ShuffleMenuProc},
     {N_("New Variant ...   Alt+Shift+V"), "NewVariant", NewVariantProc},      // [HGM] variant: not functional yet
     {"----", NULL, NothingProc},
-    {N_("Load Game       Ctrl+O"),        "LoadGame", LoadGameProc},
+    {N_("Load Game       Ctrl+O"),        "LoadGame", LoadGameProc, CHECK},
     {N_("Load Position    Ctrl+Shift+O"), "LoadPosition", LoadPositionProc},
 //    {N_("Load Next Game"), "LoadNextGame", LoadNextGameProc},
 //    {N_("Load Previous Game"), "LoadPreviousGame", LoadPrevGameProc},
@@ -622,13 +622,13 @@ MenuItem editMenu[] = {
 };
 
 MenuItem viewMenu[] = {
-    {N_("Flip View             F2"),         "FlipView", FlipViewProc},
+    {N_("Flip View             F2"),         "FlipView", FlipViewProc, CHECK},
     {"----", NULL, NothingProc},
-    {N_("Engine Output      Alt+Shift+O"),   "EngineOutput", EngineOutputProc},
-    {N_("Move History       Alt+Shift+H"),   "MoveHistory", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
-    {N_("Evaluation Graph  Alt+Shift+E"),    "EvaluationGraph", EvalGraphProc},
-    {N_("Game List            Alt+Shift+G"), "GameList", ShowGameListProc},
-    {N_("ICS text menu"), "ICStextmenu", IcsTextProc},
+    {N_("Engine Output      Alt+Shift+O"),   "EngineOutput", EngineOutputProc, CHECK},
+    {N_("Move History       Alt+Shift+H"),   "MoveHistory", HistoryShowProc, CHECK}, // [HGM] hist: activate 4.2.7 code
+    {N_("Evaluation Graph  Alt+Shift+E"),    "EvaluationGraph", EvalGraphProc, CHECK},
+    {N_("Game List            Alt+Shift+G"), "GameList", ShowGameListProc, CHECK},
+    {N_("ICS text menu"), "ICStextmenu", IcsTextProc, CHECK},
     {"----", NULL, NothingProc},
     {N_("Tags"),             "Tags", EditTagsProc},
     {N_("Comments"),         "Comments", EditCommentProc},
@@ -641,18 +641,18 @@ MenuItem viewMenu[] = {
 };
 
 MenuItem modeMenu[] = {
-    {N_("Machine White  Ctrl+W"), "MachineWhite", MachineWhiteEvent},
-    {N_("Machine Black  Ctrl+B"), "MachineBlack", MachineBlackEvent},
-    {N_("Two Machines   Ctrl+T"), "TwoMachines", TwoMachinesEvent},
-    {N_("Analysis Mode  Ctrl+A"), "AnalysisMode", (MenuProc*) AnalyzeModeEvent},
-    {N_("Analyze Game   Ctrl+G"), "AnalyzeFile", AnalyzeFileEvent },
-    {N_("Edit Game         Ctrl+E"), "EditGame", EditGameEvent},
-    {N_("Edit Position      Ctrl+Shift+E"), "EditPosition", EditPositionEvent},
-    {N_("Training"),      "Training", TrainingEvent},
-    {N_("ICS Client"),    "ICSClient", IcsClientEvent},
+    {N_("Machine White  Ctrl+W"), "MachineWhite", MachineWhiteEvent, RADIO },
+    {N_("Machine Black  Ctrl+B"), "MachineBlack", MachineBlackEvent, RADIO },
+    {N_("Two Machines   Ctrl+T"), "TwoMachines", TwoMachinesEvent, RADIO },
+    {N_("Analysis Mode  Ctrl+A"), "AnalysisMode", (MenuProc*) AnalyzeModeEvent, RADIO},
+    {N_("Analyze Game   Ctrl+G"), "AnalyzeFile", AnalyzeFileEvent, RADIO },
+    {N_("Edit Game         Ctrl+E"), "EditGame", EditGameEvent, RADIO },
+    {N_("Edit Position      Ctrl+Shift+E"), "EditPosition", EditPositionEvent, RADIO },
+    {N_("Training"),      "Training", TrainingEvent, RADIO },
+    {N_("ICS Client"),    "ICSClient", IcsClientEvent, RADIO },
     {"----", NULL, NothingProc},
-    {N_("Machine Match"),         "MachineMatch", MatchProc},
-    {N_("Pause               Pause"),         "Pause", PauseEvent},
+    {N_("Machine Match"),         "MachineMatch", MatchProc, CHECK },
+    {N_("Pause               Pause"),         "Pause", PauseEvent, CHECK },
     {NULL, NULL, NULL}
 };
 
@@ -734,7 +734,7 @@ MenuItem optionsMenu[] = {
     {"----", NULL, NothingProc},
 #endif
     {N_("Save Settings Now"),     "SaveSettingsNow", SaveSettingsProc},
-    {N_("Save Settings on Exit"), "SaveSettingsonExit", SaveOnExitProc},
+    {N_("Save Settings on Exit"), "SaveSettingsonExit", SaveOnExitProc, CHECK },
     {NULL, NULL, NULL}
 };
 
