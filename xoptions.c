@@ -149,6 +149,9 @@ void GetWidgetTextGTK(GtkWidget *w, char **buf)
     GtkTextIter start;
     GtkTextIter end;    
 
+    if (GTK_IS_ENTRY(w)) {
+	*buf = gtk_entry_get_text(GTK_ENTRY (w));
+    } else
     if (GTK_IS_TEXT_BUFFER(w)) {
         gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(w), &start);
         gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(w), &end);
@@ -180,16 +183,16 @@ GetWidgetText (Option *opt, char **buf)
     }
 }
 
-void SetSpinValue(Option *opt, int val, int n)
+void SetSpinValue(Option *opt, char *val, int n)
 {    
     if (opt->type == Spin)
       {
-        if (val == -1)
+        if (!strcmp(val, _("Unused")))
            gtk_widget_set_sensitive(opt->handle, FALSE);
         else
           {
             gtk_widget_set_sensitive(opt->handle, TRUE);      
-            gtk_spin_button_set_value(opt->handle, val);
+            gtk_spin_button_set_value(opt->handle, atoi(val));
           }
       }
     else
@@ -198,11 +201,13 @@ void SetSpinValue(Option *opt, int val, int n)
 
 void SetWidgetTextGTK(GtkWidget *w, char *text)
 {
-    if (!GTK_IS_TEXT_BUFFER(w)) {
-        printf("error: SetWidgetTextGTK arg is not a GtkTextBuffer\n");
-        return;
-    }    
-    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(w), text, -1);
+    if (GTK_IS_ENTRY(w)) {
+	gtk_entry_set_text (GTK_ENTRY (w), text);
+    } else
+    if (GTK_IS_TEXT_BUFFER(w)) {
+	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(w), text, -1);
+    } else
+	printf("error: SetWidgetTextGTK arg is neitherGtkEntry nor GtkTextBuffer\n");
 }
 
 void
@@ -213,7 +218,7 @@ SetWidgetText (Option *opt, char *buf, int n)
       case FileName:
       case PathName:
       case TextBox: SetWidgetTextGTK((GtkWidget *) opt->handle, buf); break;
-      case Spin: SetSpinValue(opt, atoi(buf), n); break;
+      case Spin: SetSpinValue(opt, buf, n); break;
       default:
 	printf("unexpected case (%d) in GetWidgetText\n", opt->type);
     }
@@ -246,21 +251,13 @@ SetWidgetState (Option *opt, int state)
 void
 SetWidgetLabel (Option *opt, char *buf)
 {
-#ifdef TODO_GTK
-    Arg arg;
-    XtSetArg(arg, XtNlabel, (XtArgVal) buf);
-    XtSetValues(opt->handle, &arg, 1);
-#endif
+    gtk_label_set_text(opt->handle, buf);
 }
 
 void
 SetDialogTitle (DialogClass dlg, char *title)
 {
-#ifdef TODO_GTK
-    Arg args[16];
-    XtSetArg(args[0], XtNtitle, title);
-    XtSetValues(shells[dlg], args, 1);
-#endif
+    gtk_window_set_title(GTK_WINDOW(shells[dlg]), title);
 }
 
 void
@@ -647,7 +644,7 @@ gboolean GenericPopDown(w, event, gdata)
 // I guess BrowserDlg will be abandoned, as GTK has a better browser of its own
     if(shellUp[BrowserDlg] && dlg != BrowserDlg || dialogError) return; // prevent closing dialog when it has an open file-browse daughter
 #else
-    if(browserUp || dialogError) return True; // prevent closing dialog when it has an open file-browse daughter
+    if(browserUp || dialogError && dlg != FatalDlg) return True; // prevent closing dialog when it has an open file-browse daughter
 #endif
     GtkWidget *sh = shells[dlg];
 printf("popdown %d\n", dlg);
@@ -676,23 +673,11 @@ int AppendText(Option *opt, char *s)
 void
 SetColor (char *colorName, Option *box)
 {       // sets the color of a widget
-#ifdef TODO_GTK
-	Arg args[5];
-	Pixel buttonColor;
-	XrmValue vFrom, vTo;
-	if (!appData.monoMode) {
-	    vFrom.addr = (caddr_t) colorName;
-	    vFrom.size = strlen(colorName);
-	    XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	    if (vTo.addr == NULL) {
-	  	buttonColor = (Pixel) -1;
-	    } else {
-		buttonColor = *(Pixel *) vTo.addr;
-	    }
-	} else buttonColor = timerBackgroundPixel;
-	XtSetArg(args[0], XtNbackground, buttonColor);;
-	XtSetValues(box->handle, args, 1);
-#endif
+    GdkColor color;
+
+    /* set the colour of the colour button to the colour that will be used */
+    gdk_color_parse( colorName, &color );
+    gtk_widget_modify_bg ( GTK_WIDGET(box->handle), GTK_STATE_NORMAL, &color );
 }
 
 #ifdef TODO_GTK
@@ -1078,9 +1063,8 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
         currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }    
 
+    parents[dlgNr] = parent;
 #ifdef TODO_GTK
-     i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
     shells[BoardWindow] = shellWidget; parents[dlgNr] = parent;
 
     if(dlgNr == BoardWindow) dialog = shellWidget; else
@@ -1089,7 +1073,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                                                            shells[parent], args, i);
 #endif
     dialog = gtk_dialog_new_with_buttons( title,
-                                      NULL,
+                                      GTK_WINDOW(shells[parent]),
 				      GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR |
                                           (modal ? GTK_DIALOG_MODAL : 0),
                                       GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
@@ -1138,12 +1122,18 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 
-            if (option[i].type==TextBox && option[i].min > 80){                
+            if (option[i].type==TextBox && option[i].value > 80){                
                 textview = gtk_text_view_new();                
-                gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_WORD);                                
+                gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), option[i].min & T_WRAP ? GTK_WRAP_WORD : GTK_WRAP_NONE);
+#ifdef TODO_GTK
+		if(option[i].min & T_FILL)  { XtSetArg(args[j], XtNautoFill, True);  j++; }
+		if(option[i].min & T_TOP)   { XtSetArg(args[j], XtNtop, XtChainTop); j++;
+#endif
                 /* add textview to scrolled window so we have vertical scroll bar */
                 sw = gtk_scrolled_window_new(NULL, NULL);
-                gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+                gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw),
+                                               option[i].min & T_HSCRL ? GTK_POLICY_ALWAYS : GTK_POLICY_AUTOMATIC,
+                                               option[i].min & T_VSCRL ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER);
                 gtk_container_add(GTK_CONTAINER(sw), textview);
                 gtk_widget_set_size_request(GTK_WIDGET(sw), w, -1);
  
@@ -1214,9 +1204,14 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             option[i].handle = (void *)checkbutton;            
             break; 
 	  case Label:            
-            label = gtk_label_new(option[i].name);
+            option[i].handle = (void *) (label = gtk_label_new(option[i].name));
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+	    if(option[i].min & BORDER) {
+		GtkWidget *frame = gtk_frame_new(NULL);
+                gtk_container_add(GTK_CONTAINER(frame), label);
+		label = frame;
+	    }
             gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+3, top, top+1);                       
 	    break;
           case SaveButton:
@@ -1262,14 +1257,14 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 
             for(j=0;;j++) {
                if (  ((char **) option[i].textValue)[j] == NULL) break;
-               gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), ((char **) option[i].textValue)[j]);                          
+               gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), ((char **) option[i].choice)[j]);                          
             }
 
             if(currentCps)
                 option[i].choice = (char**) option[i].textValue;
-            else {            
+            else {
                 for(j=0; option[i].choice[j]; j++) {                
-                    if(*(char**)option[i].target && !strcmp(*(char**)option[i].target, option[i].choice[j])) break;
+                    if(*(char**)option[i].target && !strcmp(*(char**)option[i].target, ((char**)(option[i].textValue))[j])) break;
                 }
                 /* If choice is NULL set to first */
                 if (option[i].choice[j] == NULL)
@@ -1389,7 +1384,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
 	    break;
 	  case Break:
-            top = height; // force next option to start in a new column
+            if(option[i].min & SAME_ROW) top = height; // force next option to start in a new column
             break; 
 	default:
 	    printf("GenericPopUp: unexpected case in switch. i=%d type=%d name=%s.\n", i, option[i].type, option[i].name);
@@ -1413,6 +1408,9 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                       G_CALLBACK (GenericPopUpCallback),
                       (gpointer)(intptr_t) (dlgNr<<16 | i));
     g_signal_connect (dialog, "delete-event",
+                      G_CALLBACK (GenericPopDown),
+                      (gpointer)(intptr_t) dlgNr);
+    g_signal_connect (dialog, "destroy-event",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr]++;

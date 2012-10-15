@@ -184,17 +184,6 @@ extern char *getenv();
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
 
-#if HAVE_LIBXPM
-#include <X11/xpm.h>
-#define IMAGE_EXT "xpm"
-#else
-#define IMAGE_EXT "xim"
-#endif
-
-#include "bitmaps/icon_white.bm"
-#include "bitmaps/icon_black.bm"
-#include "bitmaps/checkmark.bm"
-
 #include "frontend.h"
 #include "backend.h"
 #include "backendz.h"
@@ -239,8 +228,6 @@ XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
 #endif
-void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
-		   u_int wreq, u_int hreq));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void DelayedDrag P((void));
 static void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
@@ -327,20 +314,6 @@ WindowPlacement wpEvalGraph;
 WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
 WindowPlacement wpTags;
-
-#define INPUT_SOURCE_BUF_SIZE 8192
-
-typedef struct {
-    CPKind kind;
-    int fd;
-    int lineByLine;
-    char *unused;
-    InputCallback func;
-    XtInputId xid;
-    char buf[INPUT_SOURCE_BUF_SIZE];
-    VOIDSTAR closure;
-} InputSource;
-
 
 /* This magic number is the number of intermediate frames used
    in each half of the animation. For short moves it's reduced
@@ -1341,8 +1314,8 @@ main (int argc, char **argv)
     menuBarWidget    = optList[W_MENU].handle;
     dropMenu         = optList[W_DROP].handle;
     titleWidget = optList[optList[W_TITLE].type != -1 ? W_TITLE : W_SMALL].handle;
-    formWidget  = XtParent(boardWidget);
 #ifdef TODO_GTK
+    formWidget  = XtParent(boardWidget);
     XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
     XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
     XtGetValues(optList[W_WHITE].handle, args, 2);
@@ -1361,13 +1334,6 @@ main (int argc, char **argv)
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
     //       not need to go into InitDrawingSizes().
 
-    /*
-     * Create X checkmark bitmap and initialize option menu checks.
-     */
-#ifdef TODO_GTK
-    ReadBitmap(&xMarkPixmap, "checkmark.bm",
-	       checkmark_bits, checkmark_width, checkmark_height);
-#endif
     InitMenuMarkers();
 
     /*
@@ -1477,7 +1443,10 @@ main (int argc, char **argv)
 #endif
 
     /* check for GTK events and process them */
-    gtk_main();
+//    gtk_main();
+while(1) {
+gtk_main_iteration();
+}
 
     if (appData.debugMode) fclose(debugFP); // [DM] debug
     return 0;
@@ -1677,17 +1646,6 @@ FindFont (char *pattern, int targetPxlSize)
     return p;
 }
 #endif
-
-void
-ReadBitmap (Pixmap *pm, String name, unsigned char bits[], u_int wreq, u_int hreq)
-{
-    if (bits != NULL) {
-#ifdef TODO_GTK
-	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
-				    wreq, hreq);
-#endif
-    }
-}
 
 void
 EnableNamedMenuItem (char *menuRef, int state)
@@ -1967,7 +1925,7 @@ FreezeUI ()
 {
   if (frozen) return;
   /* Grab by a widget that doesn't accept input */
-  XtAddGrab(optList[W_MESSG].handle, TRUE, FALSE);
+  gtk_grab_add(optList[W_MESSG].handle);
   frozen = 1;
 }
 
@@ -1976,9 +1934,7 @@ void
 ThawUI ()
 {
   if (!frozen) return;
-#ifdef TODO_GTK
-  XtRemoveGrab(optList[W_MESSG].handle);
-#endif
+  gtk_grab_remove(optList[W_MESSG].handle);
   frozen = 0;
 }
 
@@ -2332,6 +2288,10 @@ SetWindowTitle (char *text, char *title, char *icon)
     XtSetValues(shellWidget, args, i);
     XSync(xDisplay, False);
 #endif
+    if (appData.titleInWindow) {
+	SetWidgetLabel(titleWidget, text);
+    }
+    gtk_window_set_title (GTK_WINDOW(shells[BoardWindow]), title);
 }
 
 
@@ -2376,38 +2336,33 @@ DisplayIcsInteractionTitle (String message)
 void
 DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
 {
-#ifdef TODO_GTK
-    char buf[MSG_SIZ];
-    Arg args[16];
-    Widget w = (Widget) opt->handle;
-
-    /* check for low time warning */
-    Pixel foregroundOrWarningColor = timerForegroundPixel;
-
-    if (timer > 0 &&
-        appData.lowTimeWarning &&
-        (timer / 1000) < appData.icsAlarmTime)
-      foregroundOrWarningColor = lowTimeWarningColor;
-
-    if (appData.clockMode) {
-      snprintf(buf, MSG_SIZ, "%s:%s%s", color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
-      XtSetArg(args[0], XtNlabel, buf);
-    } else {
-      snprintf(buf, MSG_SIZ, "%s  ", color);
-      XtSetArg(args[0], XtNlabel, buf);
-    }
+    GtkWidget *w = (GtkWidget *) opt->handle;
+    char *markup;
+    char bgcolor[10];
+    char fgcolor[10];
 
     if (highlight) {
-
-	XtSetArg(args[1], XtNbackground, foregroundOrWarningColor);
-	XtSetArg(args[2], XtNforeground, timerBackgroundPixel);
+	strcpy(bgcolor, "black");
+        strcpy(fgcolor, "white");
     } else {
-	XtSetArg(args[1], XtNbackground, timerBackgroundPixel);
-	XtSetArg(args[2], XtNforeground, foregroundOrWarningColor);
+        strcpy(bgcolor, "white");
+        strcpy(fgcolor, "black");
+    }
+    if (timer > 0 &&
+        appData.lowTimeWarning &&
+        (timer / 1000) < appData.icsAlarmTime) {
+        strcpy(fgcolor, appData.lowTimeWarningColor);
     }
 
-    XtSetValues(w, args, 3);
-#endif
+    if (appData.clockMode) {
+        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s:%s%s</span>",
+					 bgcolor, fgcolor, color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
+    } else {
+        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s  </span>",
+					 bgcolor, fgcolor, color);
+    }
+    gtk_label_set_markup(GTK_LABEL(w), markup);
+    g_free(markup);
 }
 
 #ifdef TODO_GTK
@@ -2428,24 +2383,50 @@ SetClockIcon (int color)
 #endif
 }
 
-#ifdef TODO_GTK
-void
-DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
+#define INPUT_SOURCE_BUF_SIZE 8192
+
+typedef struct {
+    CPKind kind;
+    int fd;
+    int lineByLine;
+    char *unused;
+    InputCallback func;
+    guint sid;
+    char buf[INPUT_SOURCE_BUF_SIZE];
+    VOIDSTAR closure;
+} InputSource;
+
+gboolean
+DoInputCallback(io, cond, data)
+     GIOChannel  *io;
+     GIOCondition cond;
+     gpointer    *data;
 {
-    InputSource *is = (InputSource *) closure;
+  /* read input from one of the input source (for example a chess program, ICS, etc).
+   * and call a function that will handle the input
+   */
+
     int count;
     int error;
     char *p, *q;
+
+    /* All information (callback function, file descriptor, etc) is
+     * saved in an InputSource structure
+     */
+    InputSource *is = (InputSource *) data;
 
     if (is->lineByLine) {
 	count = read(is->fd, is->unused,
 		     INPUT_SOURCE_BUF_SIZE - (is->unused - is->buf));
 	if (count <= 0) {
 	    (is->func)(is, is->closure, is->buf, count, count ? errno : 0);
-	    return;
+	    return True;
 	}
 	is->unused += count;
 	p = is->buf;
+	/* break input into lines and call the callback function on each
+	 * line
+	 */
 	while (p < is->unused) {
 	    q = memchr(p, '\n', is->unused - p);
 	    if (q == NULL) break;
@@ -2453,12 +2434,16 @@ DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 	    (is->func)(is, is->closure, p, q - p, 0);
 	    p = q;
 	}
+	/* remember not yet used part of the buffer */
 	q = is->buf;
 	while (p < is->unused) {
 	    *q++ = *p++;
 	}
 	is->unused = q;
     } else {
+      /* read maximum length of input buffer and send the whole buffer
+       * to the callback function
+       */
 	count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
 	if (count == -1)
 	  error = errno;
@@ -2466,14 +2451,17 @@ DoInputCallback (caddr_t closure, int *source, XtInputId *xid)
 	  error = 0;
 	(is->func)(is, is->closure, is->buf, count, error);
     }
+    return True; // Must return true or the watch will be removed
 }
-#endif
 
-InputSourceRef
-AddInputSource (ProcRef pr, int lineByLine, InputCallback func, VOIDSTAR closure)
+InputSourceRef AddInputSource(pr, lineByLine, func, closure)
+     ProcRef pr;
+     int lineByLine;
+     InputCallback func;
+     VOIDSTAR closure;
 {
-#ifdef TODO_GTK
     InputSource *is;
+    GIOChannel *channel;
     ChildProc *cp = (ChildProc *) pr;
 
     is = (InputSource *) calloc(1, sizeof(InputSource));
@@ -2486,31 +2474,32 @@ AddInputSource (ProcRef pr, int lineByLine, InputCallback func, VOIDSTAR closure
 	is->kind = cp->kind;
 	is->fd = cp->fdFrom;
     }
-    if (lineByLine) {
-	is->unused = is->buf;
-    }
+    if (lineByLine)
+      is->unused = is->buf;
+    else
+      is->unused = NULL;
 
-    is->xid = XtAppAddInput(appContext, is->fd,
-			    (XtPointer) (XtInputReadMask),
-			    (XtInputCallbackProc) DoInputCallback,
-			    (XtPointer) is);
+   /* GTK-TODO: will this work on windows?*/
+
+    channel = g_io_channel_unix_new(is->fd);
+    g_io_channel_set_close_on_unref (channel, TRUE);
+    is->sid = g_io_add_watch(channel, G_IO_IN,(GIOFunc) DoInputCallback, is);
+
     is->closure = closure;
     return (InputSourceRef) is;
-#else
-    return (InputSourceRef) 0;
-#endif
 }
 
+
 void
-RemoveInputSource (InputSourceRef isr)
+RemoveInputSource(isr)
+     InputSourceRef isr;
 {
-#ifdef TODO_GTK
     InputSource *is = (InputSource *) isr;
 
-    if (is->xid == 0) return;
-    XtRemoveInput(is->xid);
-    is->xid = 0;
-#endif
+    if (is->sid == 0) return;
+    g_source_remove(is->sid);
+    is->sid = 0;
+    return;
 }
 
 #ifndef HAVE_USLEEP
