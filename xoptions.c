@@ -671,9 +671,11 @@ gboolean GenericPopDown(w, event, gdata)
     if(browserUp || dialogError) return True; // prevent closing dialog when it has an open file-browse daughter
 #endif
     GtkWidget *sh = shells[dlg];
+printf("popdown %d\n", dlg);
     shells[dlg] = w; // make sure we pop down the right one in case of multiple instances
     PopDown(dlg);
     shells[dlg] = sh; // restore
+    if(dlg == BoardWindow) ExitEvent(0);
     return True; /* don't propagate to default handler */
 }
 
@@ -978,7 +980,7 @@ SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int
 #endif
 
 int
-GenericPopUpGTK(Option *option, char *title, int dlgNr)
+GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int topLevel)
 {    
     GtkWidget *dialog = NULL;
     gint       w;
@@ -998,16 +1000,17 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkWidget *actionarea;
     GtkWidget *sw;    
     GtkWidget *list;    
+    GtkWidget *graph;    
     GtkWidget *menuButton;    
     GtkWidget *menuBar;    
     GtkWidget *menu;    
 
     int i, j, arraysize, left, top, height=999, width=1, boxStart;    
-    char def[MSG_SIZ], *msg;
+    char def[MSG_SIZ], *msg, engineDlg = (currentCps != NULL && dlgNr != BrowserDlg);
     
-    if(shellUp[dlgNr]) return 0; // already up   
+    if(dlgNr < PromoDlg && shellUp[dlgNr]) return 0; // already up
 
-    if(dlgNr && shells[dlgNr]) {
+    if(dlgNr && dlgNr < PromoDlg && shells[dlgNr]) { // reusable, and used before (but popped down)
         gtk_widget_show(shells[dlgNr]);
         shellUp[dlgNr] = True;
         return 0;
@@ -1018,17 +1021,29 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     // WARNING: this kludge does not work for persistent dialogs, so that these cannot have spin or combo controls!
     currentOption = option;
 
-    if(currentCps) { // Settings popup for engine: format through heuristic
+    if(engineDlg) { // Settings popup for engine: format through heuristic
         int n = currentCps->nrOptions;
         if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
         height = n / width + 1;
-        /*if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = 1; // OK on same line */
+//	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = SAME_ROW; // OK on same line
         currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }    
 
+#ifdef TODO_GTK
+     i = 0;
+    XtSetArg(args[i], XtNresizable, True); i++;
+    shells[BoardWindow] = shellWidget; parents[dlgNr] = parent;
+
+    if(dlgNr == BoardWindow) dialog = shellWidget; else
+    dialog =
+      XtCreatePopupShell(title, !top || !appData.topLevel ? transientShellWidgetClass : topLevelShellWidgetClass,
+                                                           shells[parent], args, i);
+#endif
     dialog = gtk_dialog_new_with_buttons( title,
                                       NULL,
-                                      dlgNr ? GTK_DIALOG_DESTROY_WITH_PARENT : GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,                                             
+                                      modal ?
+					      GTK_DIALOG_DESTROY_WITH_PARENT |GTK_DIALOG_MODAL
+				            : GTK_DIALOG_DESTROY_WITH_PARENT,                                             
                                       GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
                                       GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
                                       NULL );      
@@ -1048,6 +1063,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     top = -1;    
 
     for (i=0;option[i].type != EndMark;i++) {
+	if(option[i].type == -1) continue;
         top++;
         if (top >= height) {
             top = 0;
@@ -1255,6 +1271,44 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 gtk_table_attach_defaults(GTK_TABLE(table), sw, left, left+3, top, top+1);
             }
 	    break;
+	  case Graph:
+	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
+            gtk_widget_set_size_request(graph, option[i].max, option[i].value);
+            gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+3, top, top+1);
+
+#ifdef TODO_GTK
+	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
+		      (XtEventHandler) GraphEventProc, &option[i]); // mandatory user-supplied expose handler
+	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
+#endif
+	    option[i].choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, option[i].max, option[i].value); // image buffer
+	    break;
+#ifdef TODO_GTK
+	  case Graph:
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   option[i].max /* w */, option[i].value /* h */, option[i].min /* chain */);
+	    option[i].handle = (void*)
+		(last = XtCreateManagedWidget("graph", widgetClass, form, args, j));
+	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
+		      (XtEventHandler) GraphEventProc, &option[i]); // mandatory user-supplied expose handler
+	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
+	    option[i].choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, option[i].max, option[i].value); // image buffer
+	    break;
+	  case PopUp: // note: used only after Graph, so 'last' refers to the Graph widget
+	    option[i].handle = (void*) CreateComboPopup(last, option + i, i + 256*dlgNr, TRUE, option[i].value);
+	    break;
+	  case BoxBegin:
+	    if(option[i].min & SAME_ROW) forelast = lastrow;
+	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
+				   0 /* w */, 0 /* h */, option[i].min /* chain */);
+	    XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
+	    XtSetArg(args[j], XtNvSpace, 0);                        j++;
+	    option[box=i].handle = (void*)
+		(last = XtCreateWidget("box", boxWidgetClass, form, args, j));
+	    oldForm = form; form = last; oldLastRow = lastrow; oldForeLast = forelast;
+	    lastrow = NULL; last = NULL;
+	    break;
+#endif
 	  case DropDown:
 	    msg = _(option[i].name); // write name on the menu button
 //	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
@@ -1306,7 +1360,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                       (gpointer)(intptr_t) (dlgNr<<16 | i));
     g_signal_connect (dialog, "delete-event",
                       G_CALLBACK (GenericPopDown),
-                      (gpointer)(intptr_t) (dlgNr<<16 | i));
+                      (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr] = True;
 
 #ifdef TODO_GTK
@@ -1706,12 +1760,6 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     RaiseWindow(dlgNr);
 #endif
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
-}
-
-int
-GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int top)
-{   // temporary wrapper, for untill parent, modal and top arguments are implemented
-    return GenericPopUpGTK(option, title, dlgNr);
 }
 
 /* function called when the data to Paste is ready */
