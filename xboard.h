@@ -161,7 +161,7 @@ extern Atom wm_delete_window;
 extern GC coordGC;
 extern Dimension textHeight; // of message widget in board window
 #else
-extern void *shells[];
+extern GtkWidget *shells[];
 #endif
 extern int dialogError;
 extern int squareSize;
