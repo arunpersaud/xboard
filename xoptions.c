@@ -1283,9 +1283,10 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 //	    gtk_drawing_area_size(graph, option[i].max, option[i].value);
             gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+3, top, top+1);
             g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
-	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "button-release-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
+            g_signal_connect (graph, "motion-notify-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 //            g_signal_connect (graph, "motion-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 
 #ifdef TODO_GTK
