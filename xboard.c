@@ -1333,8 +1333,8 @@ main (int argc, char **argv)
     menuBarWidget    = optList[W_MENU].handle;
     dropMenu         = optList[W_DROP].handle;
     titleWidget = optList[optList[W_TITLE].type != -1 ? W_TITLE : W_SMALL].handle;
-    formWidget  = XtParent(boardWidget);
 #ifdef TODO_GTK
+    formWidget  = XtParent(boardWidget);
     XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
     XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
     XtGetValues(optList[W_WHITE].handle, args, 2);
@@ -2320,6 +2320,10 @@ SetWindowTitle (char *text, char *title, char *icon)
     XtSetValues(shellWidget, args, i);
     XSync(xDisplay, False);
 #endif
+    if (appData.titleInWindow) {
+	SetWidgetLabel(titleWidget, text);
+    }
+    gtk_window_set_title (GTK_WINDOW(shells[BoardWindow]), title);
 }
 
 
