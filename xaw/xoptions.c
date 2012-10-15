@@ -197,7 +197,7 @@ SetDialogTitle (DialogClass dlg, char *title)
 }
 
 void
-LoadListBox (Option *opt, char *emptyText)
+LoadListBox (Option *opt, char *emptyText, int n1, int n2)
 {
     static char *dummyList[2];
     dummyList[0] = emptyText; // empty listboxes tend to crash X, so display user-supplied warning string instead

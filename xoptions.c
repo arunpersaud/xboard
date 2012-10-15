@@ -206,7 +206,7 @@ SetDialogTitle (DialogClass dlg, char *title)
 }
 
 void
-LoadListBox (Option *opt, char *emptyText)
+LoadListBox (Option *opt, char *emptyText, int n1, int n2)
 {
 #ifdef TODO_GTK
     static char *dummyList[2];

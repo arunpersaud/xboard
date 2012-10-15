@@ -214,7 +214,7 @@ GameListReplace (int page)
   if(page + 1000 <= listLength) *st++ = _("next page");
   *st = NULL;
 
-  LoadListBox(&gamesOptions[0], _("no games matched your request"));
+  LoadListBox(&gamesOptions[0], _("no games matched your request"), -1, -1);
   HighlightWithScroll(&gamesOptions[0], listEnd > 1000, listEnd);
   snprintf(buf, MSG_SIZ, _("%s - %d/%d games (%d-%d-%d)"), glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
   SetDialogTitle(GameListDlg, buf);
