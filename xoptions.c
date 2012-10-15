@@ -545,6 +545,9 @@ void
 AddHandler (Option *opt, int nr)
 {
 #ifdef TODO_GTK
+    switch(nr) {
+      case 
+    }
     XtOverrideTranslations(opt->handle, XtParseTranslationTable(translationTable[nr]));
 #endif
 }
@@ -733,21 +736,24 @@ ColorChanged (Widget w, XtPointer data, XEvent *event, Boolean *b)
 }
 #endif
 
-#ifdef TODO_GTK
 static void
-GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
+GraphEventProc(GtkWidget *widget, GdkEventExpose *event, gpointer gdata)
 {   // handle expose and mouse events on Graph widget
-    Dimension w, h;
-    Arg args[16];
+    int w, h;
     int j, button=10, f=1, sizing=0;
-    Option *opt, *graph = (Option *) client_data;
+    Option *opt, *graph = (Option *) gdata;
     PointerCallback *userHandler = graph->target;
+    GdkEventExpose *eevent = (GdkEventExpose *) event;
+    GdkEventButton *bevent = (GdkEventButton *) event;
+    GdkEventMotion *mevent = (GdkEventButton *) event;
+    cairo_t *cr;
 
-    if (!XtIsRealized(widget)) return;
+//    if (!XtIsRealized(widget)) return;
 
     switch(event->type) {
-	case Expose: // make handling of expose events generic, just copying from memory buffer (->choice) to display (->textValue)
+	case GDK_EXPOSE: // make handling of expose events generic, just copying from memory buffer (->choice) to display (->textValue)
 	    /* Get window size */
+#ifdef TODO_GTK
 	    j = 0;
 	    XtSetArg(args[j], XtNwidth, &w); j++;
 	    XtSetArg(args[j], XtNheight, &h); j++;
@@ -773,46 +779,47 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 		break;
 	    }
-	    w = ((XExposeEvent*)event)->width;
-	    if(((XExposeEvent*)event)->x + w > graph->max) w--; // cut off fudge pixel
-	    if(w) ExposeRedraw(graph, ((XExposeEvent*)event)->x, ((XExposeEvent*)event)->y, w, ((XExposeEvent*)event)->height);
+#endif
+	    w = eevent->area.width;
+	    if(eevent->area.x + w > graph->max) w--; // cut off fudge pixel
+	    cr = gdk_cairo_create(((GtkWidget *) (graph->handle))->window);
+	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
+	    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+	    cairo_rectangle(cr, eevent->area.x, eevent->area.y, w, eevent->area.height);
+	    cairo_fill(cr);
+	    cairo_destroy(cr);
+	default:
 	    return;
-	case MotionNotify:
+	case GDK_MOTION_NOTIFY:
 	    f = 0;
-	    w = ((XButtonEvent*)event)->x; h = ((XButtonEvent*)event)->y;
+	    w = mevent->x; h = mevent->y;
 	    break;
-	case ButtonRelease:
+	case GDK_BUTTON_RELEASE:
 	    f = -1; // release indicated by negative button numbers
-	case ButtonPress:
-	    w = ((XButtonEvent*)event)->x; h = ((XButtonEvent*)event)->y;
-	    switch(((XButtonEvent*)event)->button) {
-		case Button1: button = 1; break;
-		case Button2: button = 2; break;
-		case Button3: button = 3; break;
-		case Button4: button = 4; break;
-		case Button5: button = 5; break;
-	    }
+	case GDK_BUTTON_PRESS:
+	    w = bevent->x; h = bevent->y;
+	    button = bevent->button;
     }
     button *= f;
+
     opt = userHandler(button, w, h);
+#ifdef TODO_GTK
     if(opt) { // user callback specifies a context menu; pop it up
 	XUngrabPointer(xDisplay, CurrentTime);
 	XtCallActionProc(widget, "XawPositionSimpleMenu", event, &(opt->name), 1);
 	XtPopupSpringLoaded(opt->handle);
     }
     XSync(xDisplay, False);
-}
 #endif
+}
 
 void
 GraphExpose (Option *opt, int x, int y, int w, int h)
 {
-#ifdef TODO_GTK
-  XExposeEvent e;
+  GdkEventExpose e;
   if(!opt->handle) return;
-  e.x = x; e.y = y; e.width = w; e.height = h; e.count = -1; e.type = Expose; // count = -1: kludge to suppress sizing
-  GraphEventProc(opt->handle, (caddr_t) opt, (XEvent *) &e); // fake expose event
-#endif
+  e.area.x = x; e.area.y = y; e.area.width = w; e.area.height = h; e.count = -1; e.type = GDK_EXPOSE; // count = -1: kludge to suppress sizing
+  GraphEventProc(opt->handle, (GdkEvent *) &e, (gpointer) opt); // fake expose event
 }
 
 /* GTK callback used when OK/cancel clicked in genericpopup for non-modal dialog */
@@ -1287,7 +1294,14 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
             gtk_widget_set_size_request(graph, option[i].max, option[i].value);
+//	    gtk_drawing_area_size(graph, option[i].max, option[i].value);
             gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+3, top, top+1);
+            g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
+	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
+            g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
+            g_signal_connect (graph, "button-release-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
+            g_signal_connect (graph, "motion-notify-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
+//            g_signal_connect (graph, "motion-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 
 #ifdef TODO_GTK
 	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,
