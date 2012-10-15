@@ -139,13 +139,9 @@ MarkMenuItem (char *menuRef, int state)
 {
     MenuItem *item = MenuNameToItem(menuRef);
 
-#ifdef TODO_GTK
     if(item) {
-	Arg args[2];
-	XtSetArg(args[0], XtNleftBitmap, state ? xMarkPixmap : None);
-	XtSetValues(item->handle, args, 1);
+        ((GtkCheckMenuItem *) (item->handle))->active = state;
     }
-#endif
 }
 
 void GetWidgetTextGTK(GtkWidget *w, char **buf)
@@ -597,30 +593,6 @@ RaiseWindow (DialogClass dlg)
 #endif
 }
 
-/* Sets a check box on (True) or off (False) in the menu */
-void SetCheckMenuItemActive(gchar *name, int menuDlgNr, gboolean active)
-{
-#ifdef TODO_GTK
-// This doesn't work anymore, as we don't use builder
-    gchar menuItemName[50];
-
-    if (name != NULL)
-        strcpy(menuItemName, name);
-    else
-        GetMenuItemName(menuDlgNr, menuItemName);
-    
-    if (strcmp(menuItemName, "") == 0) return;
-
-    GtkCheckMenuItem *chk;
-    chk = GTK_CHECK_MENU_ITEM(gtk_builder_get_object(GTK_BUILDER(builder), menuItemName));
-    if (chk == NULL) {
-        printf("Error: failed to get check menu item %s from builder\n", menuItemName);
-        return;        
-    }
-    chk->active = active;   // set the check box without emitting any signals
-#endif
-}
-
 int
 PopDown (DialogClass n)
 {
@@ -649,15 +621,12 @@ PopDown (DialogClass n)
         gtk_widget_destroy(shells[n]);
         shells[n] = NULL;
     }    
-#ifdef TODO_GTK
+
     if(marked[n]) {
 	MarkMenuItem(marked[n], False);
 	marked[n] = NULL;
     }
-#else
-    // when popping down uncheck the check box of the menu item
-    SetCheckMenuItemActive(NULL, n, False);    
-#endif
+
     if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
     currentOption = dialogOptions[TransientDlg]; // just in case a transient dialog was up (to allow its check and combo callbacks to work)
 #ifdef TODO_GTK
@@ -737,7 +706,7 @@ ColorChanged (Widget w, XtPointer data, XEvent *event, Boolean *b)
 #endif
 
 static void
-GraphEventProc(GtkWidget *widget, GdkEventExpose *event, gpointer gdata)
+GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 {   // handle expose and mouse events on Graph widget
     int w, h;
     int j, button=10, f=1, sizing=0;
@@ -745,7 +714,7 @@ GraphEventProc(GtkWidget *widget, GdkEventExpose *event, gpointer gdata)
     PointerCallback *userHandler = graph->target;
     GdkEventExpose *eevent = (GdkEventExpose *) event;
     GdkEventButton *bevent = (GdkEventButton *) event;
-    GdkEventMotion *mevent = (GdkEventButton *) event;
+    GdkEventMotion *mevent = (GdkEventMotion *) event;
     cairo_t *cr;
 
 //    if (!XtIsRealized(widget)) return;
@@ -819,7 +788,8 @@ GraphExpose (Option *opt, int x, int y, int w, int h)
   GdkEventExpose e;
   if(!opt->handle) return;
   e.area.x = x; e.area.y = y; e.area.width = w; e.area.height = h; e.count = -1; e.type = GDK_EXPOSE; // count = -1: kludge to suppress sizing
-  GraphEventProc(opt->handle, (GdkEvent *) &e, (gpointer) opt); // fake expose event
+  GraphEventProc(opt->handle, (GdkEvent//        gtk_check_menu_item_set_active((GtkCheckMenuItem *) item->handle, state);
+ *) &e, (gpointer) opt); // fake expose event
 }
 
 /* GTK callback used when OK/cancel clicked in genericpopup for non-modal dialog */
@@ -1301,7 +1271,6 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "button-release-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "motion-notify-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
-//            g_signal_connect (graph, "motion-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 
 #ifdef TODO_GTK
 	    XtAddEventHandler(last, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask, False,

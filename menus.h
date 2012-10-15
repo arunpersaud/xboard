@@ -189,6 +189,9 @@ extern char *settingsFileName;
 
 
 
+#define CHECK (void *) 1
+#define RADIO (void *) 2
+
 #define OPTIONSDIALOG
 #define INFOFILE     "xboard.info"
 
