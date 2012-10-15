@@ -2364,38 +2364,33 @@ DisplayIcsInteractionTitle (String message)
 void
 DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
 {
-#ifdef TODO_GTK
-    char buf[MSG_SIZ];
-    Arg args[16];
-    Widget w = (Widget) opt->handle;
-
-    /* check for low time warning */
-    Pixel foregroundOrWarningColor = timerForegroundPixel;
-
-    if (timer > 0 &&
-        appData.lowTimeWarning &&
-        (timer / 1000) < appData.icsAlarmTime)
-      foregroundOrWarningColor = lowTimeWarningColor;
-
-    if (appData.clockMode) {
-      snprintf(buf, MSG_SIZ, "%s:%s%s", color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
-      XtSetArg(args[0], XtNlabel, buf);
-    } else {
-      snprintf(buf, MSG_SIZ, "%s  ", color);
-      XtSetArg(args[0], XtNlabel, buf);
-    }
+    GtkWidget *w = (GtkWidget *) opt->handle;
+    char *markup;
+    char bgcolor[10];
+    char fgcolor[10];
 
     if (highlight) {
-
-	XtSetArg(args[1], XtNbackground, foregroundOrWarningColor);
-	XtSetArg(args[2], XtNforeground, timerBackgroundPixel);
+	strcpy(bgcolor, "black");
+        strcpy(fgcolor, "white");
     } else {
-	XtSetArg(args[1], XtNbackground, timerBackgroundPixel);
-	XtSetArg(args[2], XtNforeground, foregroundOrWarningColor);
+        strcpy(bgcolor, "white");
+        strcpy(fgcolor, "black");
+    }
+    if (timer > 0 &&
+        appData.lowTimeWarning &&
+        (timer / 1000) < appData.icsAlarmTime) {
+        strcpy(fgcolor, appData.lowTimeWarningColor);
     }
 
-    XtSetValues(w, args, 3);
-#endif
+    if (appData.clockMode) {
+        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s:%s%s</span>",
+					 bgcolor, fgcolor, color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
+    } else {
+        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s  </span>",
+					 bgcolor, fgcolor, color);
+    }
+    gtk_label_set_markup(GTK_LABEL(w), markup);
+    g_free(markup);
 }
 
 #ifdef TODO_GTK
