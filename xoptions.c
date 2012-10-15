@@ -149,6 +149,9 @@ void GetWidgetTextGTK(GtkWidget *w, char **buf)
     GtkTextIter start;
     GtkTextIter end;    
 
+    if (GTK_IS_ENTRY(w)) {
+	*buf = gtk_entry_get_text(GTK_ENTRY (w));
+    } else
     if (GTK_IS_TEXT_BUFFER(w)) {
         gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(w), &start);
         gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(w), &end);
@@ -191,11 +194,13 @@ void SetSpinValue(Option *opt, int val, int n)
 
 void SetWidgetTextGTK(GtkWidget *w, char *text)
 {
-    if (!GTK_IS_TEXT_BUFFER(w)) {
-        printf("error: SetWidgetTextGTK arg is not a GtkTextBuffer\n");
-        return;
-    }    
-    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(w), text, -1);
+    if (GTK_IS_ENTRY(w)) {
+	gtk_entry_set_text (GTK_ENTRY (w), text);
+    } else
+    if (GTK_IS_TEXT_BUFFER(w)) {
+	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(w), text, -1);
+    } else
+	printf("error: SetWidgetTextGTK arg is neitherGtkEntry nor GtkTextBuffer\n");
 }
 
 void
@@ -669,23 +674,11 @@ int AppendText(Option *opt, char *s)
 void
 SetColor (char *colorName, Option *box)
 {       // sets the color of a widget
-#ifdef TODO_GTK
-	Arg args[5];
-	Pixel buttonColor;
-	XrmValue vFrom, vTo;
-	if (!appData.monoMode) {
-	    vFrom.addr = (caddr_t) colorName;
-	    vFrom.size = strlen(colorName);
-	    XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	    if (vTo.addr == NULL) {
-	  	buttonColor = (Pixel) -1;
-	    } else {
-		buttonColor = *(Pixel *) vTo.addr;
-	    }
-	} else buttonColor = timerBackgroundPixel;
-	XtSetArg(args[0], XtNbackground, buttonColor);;
-	XtSetValues(box->handle, args, 1);
-#endif
+    GdkColor color;
+
+    /* set the colour of the colour button to the colour that will be used */
+    gdk_color_parse( colorName, &color );
+    gtk_widget_modify_bg ( GTK_WIDGET(box->handle), GTK_STATE_NORMAL, &color );
 }
 
 #ifdef TODO_GTK
