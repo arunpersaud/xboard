@@ -439,12 +439,6 @@ static Option variantDescriptors[] = {
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.NrRanks, "", NULL, Spin, N_("Number of Board Ranks:") },
 { 0, -1, BOARD_FILES, NULL, (void*) &appData.NrFiles, "", NULL, Spin, N_("Number of Board Files:") },
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.holdingsSize, "", NULL, Spin, N_("Holdings Size:") },
-{ 0, 0, 0, NULL, NULL, NULL, NULL, Label,
-				N_("WARNING: variants with un-orthodox\n"
-				  "pieces only have built-in bitmaps\n"
-				  "for -boardSize middling, bulky and\n"
-				  "petite, and substitute king or amazon\n"
-				  "for missing bitmaps. (See manual.)")},
 { 0, NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
