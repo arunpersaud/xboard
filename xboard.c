@@ -149,38 +149,6 @@ extern char *getenv();
 #include <locale.h>
 #endif
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/cursorfont.h>
-#include <X11/Xatom.h>
-#include <X11/Xmu/Atoms.h>
-#if USE_XAW3D
-#include <X11/Xaw3d/Dialog.h>
-#include <X11/Xaw3d/Form.h>
-#include <X11/Xaw3d/List.h>
-#include <X11/Xaw3d/Label.h>
-#include <X11/Xaw3d/SimpleMenu.h>
-#include <X11/Xaw3d/SmeBSB.h>
-#include <X11/Xaw3d/SmeLine.h>
-#include <X11/Xaw3d/Box.h>
-#include <X11/Xaw3d/MenuButton.h>
-#include <X11/Xaw3d/Text.h>
-#include <X11/Xaw3d/AsciiText.h>
-#else
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#endif
-
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
 
@@ -221,15 +189,15 @@ int main P((int argc, char **argv));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
-Widget CreateMenuBar P((Menu *mb, int boardWidth));
 #if ENABLE_NLS
 char *InsertPxlSize P((char *pattern, int targetPxlSize));
 XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
 #endif
-void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void DelayedDrag P((void));
+void ICSInputBoxPopUp P((void));
+#ifdef TODO_GTK
 static void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 void HandlePV P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
@@ -237,7 +205,6 @@ void DrawPositionProc P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void CommentClick P((Widget w, XEvent * event,
 		   String * params, Cardinal * nParams));
-void ICSInputBoxPopUp P((void));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
 void KeyBindingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void QuitWrapper P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -246,20 +213,21 @@ static void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms)
 static void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TempBackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TempForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-Boolean TempBackwardActive = False;
 void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
+#endif
+Boolean TempBackwardActive = False;
 void DisplayMove P((int moveNumber));
 void ICSInitScript P((void));
-void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void update_ics_width P(());
 int CopyMemoProc P(());
 
+#ifdef TODO_GTK
 /*
 * XBoard depends on Xt R4 or higher
 */
 int xtVersion = XtSpecificationRelease;
 
-#ifdef TODO_GTK
 int xScreen;
 Display *xDisplay;
 Window xBoardWindow;
@@ -285,8 +253,6 @@ char *layoutName;
 
 char installDir[] = "."; // [HGM] UCI: needed for UCI; probably needs run-time initializtion
 
-Position commentX = -1, commentY = -1;
-Dimension commentW, commentH;
 typedef unsigned int BoardSize;
 BoardSize boardSize;
 Boolean chessProgram;
@@ -296,9 +262,11 @@ int smallLayout = 0, tinyLayout = 0,
   marginW, marginH, // [HGM] for run-time resizing
   fromX = -1, fromY = -1, toX, toY, commentUp = False,
   errorExitStatus = -1, defaultLineGap;
+#ifdef TODO_GTK
 Dimension textHeight;
 Pixel timerForegroundPixel, timerBackgroundPixel;
 Pixel buttonForegroundPixel, buttonBackgroundPixel;
+#endif
 char *chessDir, *programName, *programVersion;
 Boolean alwaysOnTop = False;
 char *icsTextMenuString;
@@ -1045,9 +1013,10 @@ main (int argc, char **argv)
 #ifdef TODO_GTK
     XSetWindowAttributes window_attributes;
     Arg args[16];
+    Dimension boardWidth, boardHeight, w, h;
 #else
 #endif
-    Dimension boardWidth, boardHeight, w, h;
+    int boardWidth, boardHeight, w, h;
     char *p;
     int forceMono = False;
     GError *gtkerror=NULL;
@@ -1832,23 +1801,25 @@ DelayedDrag ()
 #endif
 }
 
+#ifdef TODO_GTK
 void
 EventProc (Widget widget, caddr_t unused, XEvent *event)
 {
-#ifdef TODO_GTK
     if(XtIsRealized(widget) && event->type == ConfigureNotify || appData.useStickyWindows)
 	DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
-#endif
 }
+#endif
 
 /*
  * event handler for redrawing the board
  */
+#ifdef TODO_GTK
 void
 DrawPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     DrawPosition(True, NULL);
 }
+#endif
 
 
 #ifdef TODO_GTK
@@ -1861,10 +1832,10 @@ HandlePV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 
 static int savedIndex;  /* gross that this is global */
 
+#ifdef TODO_GTK
 void
 CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {
-#ifdef TODO_GTK
 	String val;
 	XawTextPosition index, dummy;
 	Arg arg;
@@ -1875,8 +1846,8 @@ CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	ReplaceComment(savedIndex, val);
 	if(savedIndex != currentMove) ToNrEvent(savedIndex);
 	LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
-#endif
 }
+#endif
 
 void
 EditCommentPopUp (int index, char *title, char *text)
@@ -2151,11 +2122,13 @@ PasteGameProc ()
 }
 
 
+#ifdef TODO_GTK
 void
 QuitWrapper (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     QuitProc();
 }
+#endif
 
 int
 ShiftKeys ()
@@ -2174,18 +2147,18 @@ ShiftKeys ()
     return k;
 }
 
+#ifdef TODO_GTK
 static void
 MoveTypeInProc (Widget widget, caddr_t unused, XEvent *event)
 {
-#ifdef TODO_GTK
     char buf[10];
     KeySym sym;
     int n = XLookupString(&(event->xkey), buf, 10, &sym, NULL);
     if ( n == 1 && *buf >= 32 // printable
 	 && !(ShiftKeys() & 0x3C) // no Alt, Ctrl
 	) BoxAutoPopUp (buf);
-#endif
 }
+#endif
 
 #ifdef TODO_GTK
 static void
@@ -2500,10 +2473,7 @@ FrameAlarm (int sig)
 void
 FrameDelay (int time)
 {
-#ifdef TODO_GTK
   struct itimerval delay;
-
-  XSync(xDisplay, False);
 
   if (time > 0) {
     frameWaiting = True;
@@ -2518,7 +2488,6 @@ FrameDelay (int time)
     delay.it_interval.tv_usec = delay.it_value.tv_usec = 0;
     setitimer(ITIMER_REAL, &delay, NULL);
   }
-#endif
 }
 
 #else
