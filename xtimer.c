@@ -119,7 +119,6 @@ FireDelayedEvent(gpointer data)
 void
 ScheduleDelayedEvent (DelayedEventCallback cb, long millisec)
 {
-printf("delayed event %d\n", millisec);
     if(delayedEventTimerTag && delayedEventCallback == cb)
 	// [HGM] alive: replace, rather than add or flush identical event
         g_source_remove(delayedEventTimerTag);
