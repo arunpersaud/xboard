@@ -239,8 +239,6 @@ XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
 #endif
-void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
-		   u_int wreq, u_int hreq));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void DelayedDrag P((void));
 static void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
@@ -1353,13 +1351,6 @@ main (int argc, char **argv)
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
     //       not need to go into InitDrawingSizes().
 
-    /*
-     * Create X checkmark bitmap and initialize option menu checks.
-     */
-#ifdef TODO_GTK
-    ReadBitmap(&xMarkPixmap, "checkmark.bm",
-	       checkmark_bits, checkmark_width, checkmark_height);
-#endif
     InitMenuMarkers();
 
     /*
@@ -1672,17 +1663,6 @@ FindFont (char *pattern, int targetPxlSize)
     return p;
 }
 #endif
-
-void
-ReadBitmap (Pixmap *pm, String name, unsigned char bits[], u_int wreq, u_int hreq)
-{
-    if (bits != NULL) {
-#ifdef TODO_GTK
-	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
-				    wreq, hreq);
-#endif
-    }
-}
 
 void
 EnableNamedMenuItem (char *menuRef, int state)
