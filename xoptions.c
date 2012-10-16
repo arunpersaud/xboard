@@ -1376,7 +1376,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
 	    break;
 	  case Break:
-            top = height; // force next option to start in a new column
+            if(option[i].min & SAME_ROW) top = height; // force next option to start in a new column
             break; 
 	default:
 	    printf("GenericPopUp: unexpected case in switch. i=%d type=%d name=%s.\n", i, option[i].type, option[i].name);
