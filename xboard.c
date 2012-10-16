@@ -1634,6 +1634,43 @@ SetMenuEnables (Enables *enab)
 }
 
 #ifdef TODO_GTK
+gboolean KeyPressProc(window, eventkey, data)
+     GtkWindow *window;
+     GdkEventKey  *eventkey;
+     gpointer data;
+{
+
+    MoveTypeInProc(eventkey); // pop up for typed in moves
+
+    // handle shift+<number> cases
+    if (eventkey->state & GDK_SHIFT_MASK) {
+        guint keyval;
+
+        gdk_keymap_translate_keyboard_state(NULL, eventkey->hardware_keycode,
+					    0, eventkey->group,
+					    &keyval, NULL, NULL, NULL);
+        switch(keyval) {
+            case GDK_1:
+                AskQuestionEvent("Direct command", "Send to chess program:", "", "1");
+                break;
+            case GDK_2:
+                AskQuestionEvent("Direct command", "Send to second chess program:", "", "2");
+                break;
+            default:
+                break;
+        }
+    }
+
+    /* check for other key values */
+    switch(eventkey->keyval) {
+        case GDK_question:
+	  AboutGameEvent();
+	  break;
+        default:
+	  break;
+    }
+    return False;
+}
 void
 KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] new method of key binding: specify MenuItem(FlipView) in stead of FlipViewProc in translation string
@@ -2128,39 +2165,23 @@ ShiftKeys ()
     return k;
 }
 
-#ifdef TODO_GTK
-static void
-MoveTypeInProc (Widget widget, caddr_t unused, XEvent *event)
+void MoveTypeInProc(eventkey)
+    GdkEventKey  *eventkey;
 {
     char buf[10];
-    KeySym sym;
-    int n = XLookupString(&(event->xkey), buf, 10, &sym, NULL);
-    if ( n == 1 && *buf >= 32 // printable
-	 && !(ShiftKeys() & 0x3C) // no Alt, Ctrl
-	) BoxAutoPopUp (buf);
+
+    // ingnore if ctrl or alt is pressed
+    if (eventkey->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) {
+        return;
+    }
+
+    buf[0]=eventkey->keyval;
+    buf[1]='\0';
+    if (*buf >= 32)        
+	BoxAutoPopUp (buf);
 }
-#endif
 
 #ifdef TODO_GTK
-static void
-UpKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{   // [HGM] input: let up-arrow recall previous line from history
-    IcsKey(1);
-}
-
-static void
-DownKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{   // [HGM] input: let down-arrow recall next line from history
-    IcsKey(-1);
-}
-
-static void
-EnterKeyProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    IcsKey(0);
-}
-
-
 void
 TempBackwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
