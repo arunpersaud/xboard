@@ -83,6 +83,7 @@ static int currentPV, highTextStart[2], highTextEnd[2];
 static Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 static Widget memoWidget;
 #endif
+static void *memoWidget;
 
 #ifdef TODO_GTK
 static void
@@ -162,39 +163,37 @@ Shift<Btn3Down>: select-start() extend-end() SelectPV(1) \n \
 Any<Btn3Down>: select-start() extend-end() SelectPV(0) \n \
 <Btn3Up>: StopPV() \n";
 
-#ifdef TODO_GTK
 void
-SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
+SelectPV (Option *opt, int x, int y)
 {	// [HGM] pv: translate click to PV line, and load it for display
-	String val;
-	int start, end;
-	XawTextPosition index, dummy;
-	int x, y;
-	Arg arg;
-
-	x = event->xmotion.x; y = event->xmotion.y;
-	currentPV = (w != memoWidget);
+	int start, end, index;
+	char *val;
+	int currentPV = (opt->handle != memoWidget);
+#ifdef TODO_GTK
 	XawTextGetSelectionPos(w, &index, &dummy);
 	XtSetArg(arg, XtNstring, &val);
 	XtGetValues(w, &arg, 1);
-	shiftKey = strcmp(params[0], "0");
+#endif
 	if(LoadMultiPV(x, y, val, index, &start, &end, currentPV)) {
+#ifdef TODO_GTK
 	    XawTextSetSelection( w, start, end );
+#endif
 	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
 	}
 }
-#endif
 
-#ifdef TODO_GTK
 void
-StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
+StopPV (Option *opt)
 {	// [HGM] pv: on right-button release, stop displaying PV
-        XawTextUnsetSelection( w );
+#ifdef TODO_GTK
+        XawTextUnsetSelection( opt->handle );
+#endif
         highTextStart[currentPV] = highTextEnd[currentPV] = 0;
         UnLoadPV();
-        XtCallActionProc(w, "beginning-of-file", event, NULL, 0);
-}
+#ifdef TODO_GTK
+        XtCallActionProc(opt->handle, "beginning-of-file", event, NULL, 0);
 #endif
+}
 
 //------------------------------- pane switching -----------------------------------
 

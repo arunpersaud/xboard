@@ -110,6 +110,7 @@ BrowserDlg,
 NrOfDialogs     // dummy for total
 } DialogClass;
 
+typedef int MemoCallback (Option *opt, int n, int x, int y, char *text, int index);
 typedef Option *PointerCallback(int n, int x, int y);
 typedef void ListBoxCallback(int n, int selected);
 typedef void ButtonCallback(int n);

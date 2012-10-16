@@ -1851,14 +1851,6 @@ DrawPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 #endif
 
 
-#ifdef TODO_GTK
-void
-HandlePV (Widget w, XEvent * event, String * params, Cardinal * nParams)
-{   // [HGM] pv: walk PV
-    MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
-}
-#endif
-
 static int savedIndex;  /* gross that this is global */
 
 #ifdef TODO_GTK

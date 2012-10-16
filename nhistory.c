@@ -64,8 +64,16 @@ AppendToHistoryMemo (char * text, int bold, int colorNr)
 
 char *historyText;
 
+int
+SelectMove (Option *opt, int n, int x, int y, char *text, int index)
+{
+	if(n != 3 && n != 1) return FALSE; // only on button-1 and 3 press
+	FindMoveByCharIndex( index ); // [HGM] also does the actual moving to it, now
+	return (n == 3);  // suppress context menu for button 3, but allow selection with button 1
+}
+
 Option historyOptions[] = {
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 400, NULL, (void*) &historyText, "", NULL, TextBox, "" },
+{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 400, NULL, (void*) &historyText, NULL, (char**) &SelectMove, TextBox, "" },
 {   0,           NO_OK,             0, NULL, (void*) NULL, "", NULL, EndMark , "" }
 };
 
