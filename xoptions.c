@@ -1215,7 +1215,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             option[i].handle = (void *) (label = gtk_label_new(option[i].name));
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-	    if(option[i].min && BORDER) {
+	    if(option[i].min & BORDER) {
 		GtkWidget *frame = gtk_frame_new(NULL);
                 gtk_container_add(GTK_CONTAINER(frame), label);
 		label = frame;
