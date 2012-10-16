@@ -1242,14 +1242,6 @@ main (int argc, char **argv)
 	appData.monoMode = True;
     }
 
-    if (appData.monoMode && appData.debugMode) {
-#ifdef TODO_GTK
-	fprintf(stderr, _("white pixel = 0x%lx, black pixel = 0x%lx\n"),
-		(unsigned long) XWhitePixel(xDisplay, xScreen),
-		(unsigned long) XBlackPixel(xDisplay, xScreen));
-#endif
-    }
-
     ParseIcsTextColors();
 
 #ifdef TODO_GTK
@@ -1898,10 +1890,7 @@ ModeHighlight ()
     static int oldPausing = FALSE;
     static GameMode oldmode = (GameMode) -1;
     char *wname;
-#ifdef TODO_GTK
-    Arg args[16];
-
-    if (!boardWidget || !XtIsRealized(boardWidget)) return;
+    if (!boardWidget) return;
 
     if (pausing != oldPausing) {
 	oldPausing = pausing;
@@ -1911,19 +1900,11 @@ ModeHighlight ()
 	  /* Always toggle, don't set.  Previous code messes up when
 	     invoked while the button is pressed, as releasing it
 	     toggles the state again. */
-	  {
-	    Pixel oldbg, oldfg;
-	    XtSetArg(args[0], XtNbackground, &oldbg);
-	    XtSetArg(args[1], XtNforeground, &oldfg);
-	    XtGetValues(optList[W_PAUSE].handle,
-			args, 2);
-	    XtSetArg(args[0], XtNbackground, oldfg);
-	    XtSetArg(args[1], XtNforeground, oldbg);
-	  }
-	  XtSetValues(optList[W_PAUSE].handle, args, 2);
+	    GdkColor color;     
+            gdk_color_parse( pausing ? "#808080" : "#F0F0F0", &color );
+            gtk_widget_modify_bg ( GTK_WIDGET(optList[W_PAUSE].handle), GTK_STATE_NORMAL, &color );
 	}
     }
-#endif
 
     wname = ModeToWidgetName(oldmode);
     if (wname != NULL) {
