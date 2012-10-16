@@ -1394,6 +1394,9 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     g_signal_connect (dialog, "delete-event",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
+    g_signal_connect (dialog, "destroy-event",
+                      G_CALLBACK (GenericPopDown),
+                      (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr] = True;
 
 #ifdef TODO_GTK

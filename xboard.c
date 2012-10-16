@@ -1469,7 +1469,10 @@ main (int argc, char **argv)
 #endif
 
     /* check for GTK events and process them */
-    gtk_main();
+//    gtk_main();
+while(1) {
+gtk_main_iteration();
+}
 
     if (appData.debugMode) fclose(debugFP); // [DM] debug
     return 0;
@@ -1955,7 +1958,7 @@ FreezeUI ()
 {
   if (frozen) return;
   /* Grab by a widget that doesn't accept input */
-  XtAddGrab(optList[W_MESSG].handle, TRUE, FALSE);
+  gtk_grab_add(optList[W_MESSG].handle);
   frozen = 1;
 }
 
@@ -1964,9 +1967,7 @@ void
 ThawUI ()
 {
   if (!frozen) return;
-#ifdef TODO_GTK
-  XtRemoveGrab(optList[W_MESSG].handle);
-#endif
+  gtk_grab_remove(optList[W_MESSG].handle);
   frozen = 0;
 }
 
