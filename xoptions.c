@@ -1146,7 +1146,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 /* add textview to scrolled window so we have vertical scroll bar */
                 sw = gtk_scrolled_window_new(NULL, NULL);
                 gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw),
-                                               option[i].min & T_HSCRL ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER,
+                                               option[i].min & T_HSCRL ? GTK_POLICY_ALWAYS : GTK_POLICY_AUTOMATIC,
                                                option[i].min & T_VSCRL ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER);
                 gtk_container_add(GTK_CONTAINER(sw), textview);
                 gtk_widget_set_size_request(GTK_WIDGET(sw), w, -1);
