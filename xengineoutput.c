@@ -75,10 +75,11 @@ extern char *getenv();
 #include "pixmaps/PONDER_14.xpm"
 #include "pixmaps/ANALYZING_14.xpm"
 
+extern Option engoutOptions[]; // must go in header, but which?
 
 /* Module variables */
-#ifdef TODO_GTK
 static int currentPV, highTextStart[2], highTextEnd[2];
+#ifdef TODO_GTK
 static Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 static Widget memoWidget;
 #endif
@@ -121,32 +122,35 @@ void
 DrawWidgetIcon (Option *opt, int nIcon)
 {   // as we are already in X front-end, so do X-stuff here
 #ifdef TODO_GTK
-    Arg arg;
-    XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);
-    XtSetValues(opt->handle, &arg, 1);
+    gchar widgetname[50];
+
+    if( nIcon != 0 ) {
+        gtk_image_set_from_pixbuf(GTK_IMAGE(opt->handle), GDK_PIXBUF(iconsGTK[nIcon]));
+    }
 #endif
 }
 
 void
 InsertIntoMemo (int which, char * text, int where)
 {
+    char *p;
+    GtkTextIter start;
+ 
+    /* the backend adds \r\n, which is needed for winboard,
+     * for xboard we delete them again over here */
+    if(p = strchr(text, '\r')) *p = ' ';
+
+    GtkTextBuffer *tb = (GtkTextBuffer *) (engoutOptions[which ? 12 : 5].handle);
+//    gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(tb), &start);
+    gtk_text_buffer_get_iter_at_offset(tb, &start, where);
+    gtk_text_buffer_insert(tb, &start, text, -1);
+    if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
+	int len = strlen(text);
+	highTextStart[which] += len; highTextEnd[which] += len;
 #ifdef TODO_GTK
-	XawTextBlock t;
-	Widget edit;
-
-	/* the backend adds \r\n, which is needed for winboard,
-	 * for xboard we delete them again over here */
-	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
-
-	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
-	edit = XtNameToWidget(shells[EngOutDlg], which ? "*paneB.text" : "*paneA.text");
-	XawTextReplace(edit, where, where, &t);
-	if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
-	    int len = strlen(text);
-	    highTextStart[which] += len; highTextEnd[which] += len;
-	    XawTextSetSelection( edit, highTextStart[which], highTextEnd[which] );
-	}
+	XawTextSetSelection( edit, highTextStart[which], highTextEnd[which] );
 #endif
+    }
 }
 
 //--------------------------------- PV walking ---------------------------------------
@@ -189,53 +193,6 @@ StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
         highTextStart[currentPV] = highTextEnd[currentPV] = 0;
         UnLoadPV();
         XtCallActionProc(w, "beginning-of-file", event, NULL, 0);
-}
-#endif
-
-//------------------------- Ctrl-C copying of memo texts ---------------------------
-
-// Awfull code: first read our own primary selection into selected_fen_position,
-//              and then transfer ownership of this to the clipboard, so that the
-//              copy-position callback can fetch it there when somebody pastes it
-// Worst of all is that I only added it because I did not know how to copy primary:
-// my laptop has no middle button. Ctrl-C might not be needed at all... [HGM]
-
-// cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
-
-#ifdef TODO_GTK
-Boolean SendPositionSelection(Widget w, Atom *selection, Atom *target,
-		 Atom *type_return, XtPointer *value_return,
-		 unsigned long *length_return, int *format_return); // from xboard.c
-
-static void
-MemoCB (Widget w, XtPointer client_data, Atom *selection,
-	Atom *type, XtPointer value, unsigned long *len, int *format)
-{
-  if (value==NULL || *len==0) return; /* nothing had been selected to copy */
-  selected_fen_position = value;
-  selected_fen_position[*len]='\0'; /* normally this string is terminated, but be safe */
-    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
-}
-
-void
-CopyMemoProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    if(appData.pasteSelection) return;
-    if (selected_fen_position) free(selected_fen_position);
-    XtGetSelectionValue(menuBarWidget,
-      XA_PRIMARY, XA_STRING,
-      /* (XtSelectionCallbackProc) */ MemoCB,
-      NULL, /* client_data passed to PastePositionCB */
-
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
 }
 #endif
 
