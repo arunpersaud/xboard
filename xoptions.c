@@ -531,13 +531,30 @@ char *translationTable[] = { // beware: order is essential!
    filterTranslations, gameListTranslations, memoTranslations
 };
 
+static gboolean
+ICSKeyEvent(GtkWidget *widget, GdkEventKey *event)
+{
+    switch(event->keyval) {
+      case 0xFF0D: IcsKey(0); return TRUE;
+      case 0xFF52: IcsKey(1); return TRUE;
+      case 0xFF54: IcsKey(-1); return TRUE;
+      default: return FALSE;
+    }
+}
+
 void
 AddHandler (Option *opt, int nr)
 {
-#ifdef TODO_GTK
     switch(nr) {
-      case 
+      case 0: 
+      case 1: 
+      case 2: break;
+      case 3: g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), NULL); break;
+      case 4: 
+      case 5: 
+      case 6: break;
     }
+#ifdef TODO_GTK
     XtOverrideTranslations(opt->handle, XtParseTranslationTable(translationTable[nr]));
 #endif
 }
