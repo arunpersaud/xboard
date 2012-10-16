@@ -55,15 +55,15 @@ typedef void MenuProc P((void));
 typedef int (*FileProc) P((FILE *f, int n, char *title));
 
 typedef struct {
-    String string;
-    String ref;
+    char *string;
+    char *ref;
     MenuProc *proc;
     void *handle;
 } MenuItem;
 
 typedef struct {
-    String name;
-    String ref;
+    char *name;
+    char *ref;
     MenuItem *mi;
 } Menu;
 
@@ -186,6 +186,7 @@ void CopySomething P((char *s));
 extern char  *gameCopyFilename, *gamePasteFilename;
 extern Boolean saveSettingsOnExit;
 extern char *settingsFileName;
+extern int firstEngineItem;
 
 
 
