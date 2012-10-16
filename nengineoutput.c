@@ -70,20 +70,40 @@ int  windowMode = 1;
 
 char *mem1, *mem2; // dummies, as this dialog can never be OK'ed
 
+void
+MemoProc (Option *opt, int n, int x, int y)
+{
+    static int pressed; // keep track of button 3 state
+    switch(n) {
+      case 0: // pointer motion
+	if(!pressed) return;
+//	MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
+	break;
+      case 3: // press button 3
+	pressed = 1;
+	SelectPV(opt, x, y);
+	break;
+      case -3: // release button 3
+	pressed = 0;
+	StopPV(opt);
+	break;
+    }
+}
+
 Option engoutOptions[] = {
 {  0,  LL|T2T,           17, NULL, NULL, NULL, NULL, Label, " " },
 {  0, L2L|T2T|SAME_ROW, 163, NULL, NULL, NULL, NULL, Label, N_("engine name") },
 {  0,     T2T|SAME_ROW,  30, NULL, NULL, NULL, NULL, Label, " " },
 {  0, R2R|T2T|SAME_ROW, 188, NULL, NULL, NULL, NULL, Label, N_("move") },
 {  0,  RR|T2T|SAME_ROW,  80, NULL, NULL, NULL, NULL, Label, N_("NPS") },
-{200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem1, "", NULL, TextBox, "" },
+{200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem1, "", (char**) MemoProc, TextBox, "" },
 {  0,         0,         0, NULL, NULL, "", NULL, Break , "" },
 {  0,  LL|T2T,           17, NULL, NULL, NULL, NULL, Label, " " },
 {  0, L2L|T2T|SAME_ROW, 163, NULL, NULL, NULL, NULL, Label, N_("engine name") },
 {  0,     T2T|SAME_ROW,  30, NULL, NULL, NULL, NULL, Label, " " },
 {  0, R2R|T2T|SAME_ROW, 188, NULL, NULL, NULL, NULL, Label, N_("move") },
 {  0,  RR|T2T|SAME_ROW,  80, NULL, NULL, NULL, NULL, Label, N_("NPS") },
-{200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem2, "", NULL, TextBox, "" },
+{200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem2, "", (char**) MemoProc, TextBox, "" },
 {   0,      NO_OK,       0, NULL, NULL, "", NULL, EndMark , "" }
 };
 

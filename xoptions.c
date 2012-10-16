@@ -542,6 +542,18 @@ ICSKeyEvent(GtkWidget *widget, GdkEventKey *event)
     }
 }
 
+static void
+MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
+{   // handle expose and mouse events on Graph widget
+    int w, h;
+    int j, button=10, f=1, sizing=0;
+    Option *opt, *memo = (Option *) gdata;
+    PointerCallback *userHandler = memo->choice;
+    GdkEventButton *bevent = (GdkEventButton *) event;
+    GdkEventMotion *mevent = (GdkEventMotion *) event;
+    (userHandler) (memo, bevent->x, bevent->y);
+}
+
 void
 AddHandler (Option *opt, int nr)
 {
@@ -549,7 +561,7 @@ AddHandler (Option *opt, int nr)
       case 0: 
       case 1: 
       case 2: break;
-      case 3: g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), NULL); break;
+      case 3: g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), NULL); break; // Input Box
       case 4: 
       case 5: 
       case 6: break;
@@ -1184,6 +1196,11 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 else
                     gtk_text_buffer_set_text (textbuffer, "", -1); 
                 option[i].handle = (void*)textbuffer;
+		if(option[i].choice) {
+		    g_signal_connect(textbuffer, "button-press-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
+		    g_signal_connect(textbuffer, "button-release-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
+		    g_signal_connect(textbuffer, "motion-notify-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
+		}
                 break; 
             }
 
