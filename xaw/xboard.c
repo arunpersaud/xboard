@@ -1265,7 +1265,6 @@ main (int argc, char **argv)
       XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
       XtGetValues(optList[W_PAUSE].handle, args, 2);
     }
-    AppendEnginesToMenu(appData.recentEngineList);
 
     xBoardWindow = XtWindow(boardWidget);
 
@@ -1621,18 +1620,6 @@ KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     if(*nprms == 0) return;
     item = MenuNameToItem(prms[0]);
     if(item) ((MenuProc *) item->proc) ();
-}
-
-static void
-MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
-{
-    RecentEngineEvent((int) (intptr_t) addr);
-}
-
-void
-AppendMenuItem (char *msg, int n)
-{
-    CreateMenuItem((Widget) optList[W_ENGIN].textValue, msg, (XtCallbackProc) MenuEngineSelect, n);
 }
 
 void

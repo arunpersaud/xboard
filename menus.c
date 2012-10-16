@@ -677,7 +677,7 @@ MenuItem actionMenu[] = {
     {NULL, NULL, NULL}
 };
 
-MenuItem engineMenu[] = {
+MenuItem engineMenu[100] = {
     {N_("Load New 1st Engine ..."), "LoadNew1stEngine", LoadEngine1Proc},
     {N_("Load New 2nd Engine ..."), "LoadNew2ndEngine", LoadEngine2Proc},
     {"----", NULL, NothingProc},
@@ -820,18 +820,22 @@ MenuNameToItem (char *menuName)
     return NULL; // item not found
 }
 
+int firstEngineItem;
+
 void
 AppendEnginesToMenu (char *list)
 {
     int i=0;
     char *p;
     if(appData.icsActive || appData.recentEngines <= 0) return;
+    for(firstEngineItem=0; engineMenu[firstEngineItem].string; firstEngineItem++);
     recentEngines = strdup(list);
     while (*list) {
 	p = strchr(list, '\n'); if(p == NULL) break;
-	if(i == 0) AppendMenuItem("----", 0); // at least one valid item to add
+	if(i == 0) engineMenu[firstEngineItem++].string = "----"; // at least one valid item to add
 	*p = 0;
-	AppendMenuItem(list, i);
+	if(firstEngineItem + i < 99)
+	    engineMenu[firstEngineItem+i].string = strdup(list); // just set name; MenuProc stays NULL
 	i++; *p = '\n'; list = p + 1;
     }
 }

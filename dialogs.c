@@ -2073,7 +2073,7 @@ MenuCallback (int n)
 {
     MenuProc *proc = (MenuProc *) (((MenuItem*)(mainOptions[n].choice))[values[n]].proc);
 
-    (proc)();
+    if(!proc) RecentEngineEvent(values[n] - firstEngineItem); else (proc)();
 }
 
 static Option *
@@ -2143,6 +2143,7 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
     }
     if(!appData.showButtonBar) for(i=W_BUTTON; i<W_BOARD; i++) mainOptions[i].type = -1;
     for(i=0; i<8; i++) mainOptions[i+1].choice = (char**) menuBar[i].mi;
+    AppendEnginesToMenu(appData.recentEngineList);
     GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1);
     return mainOptions;
 }

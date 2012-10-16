@@ -1325,7 +1325,6 @@ main (int argc, char **argv)
       XtGetValues(optList[W_PAUSE].handle, args, 2);
     }
 #endif
-    AppendEnginesToMenu(appData.recentEngineList);
 
 #ifdef TODO_GTK
     xBoardWindow = XtWindow(boardWidget);
@@ -1683,22 +1682,6 @@ KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     if(item) ((MenuProc *) item->proc) ();
 }
 #endif
-
-#ifdef TODO_GTK
-static void
-MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
-{
-    RecentEngineEvent((int) (intptr_t) addr);
-}
-#endif
-
-void
-AppendMenuItem (char *msg, int n)
-{
-#ifdef TODO_GTK
-    CreateMenuItem((Widget) optList[W_ENGIN].textValue, msg, (XtCallbackProc) MenuEngineSelect, n);
-#endif
-}
 
 void
 SetupDropMenu ()
