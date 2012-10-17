@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <gtk/gtk.h>
 
 #include "common.h"
 #include "backend.h"
@@ -50,10 +51,17 @@ extern Option historyOptions[];
 void
 HighlightMove (int from, int to, Boolean highlight)
 {
-#ifdef TODO_GTK
-    if(highlight)
-	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
-#endif
+    static int init = 0;
+    GtkTextIter start, end;
+
+    if(!init) {
+	init = 1;
+	gtk_text_buffer_create_tag(historyOptions[0].handle, "highlight", "background", "yellow", NULL);
+	gtk_text_buffer_create_tag(historyOptions[0].handle, "normal", "background", "white", NULL);
+    }
+    gtk_text_buffer_get_iter_at_offset(historyOptions[0].handle, &start, from);
+    gtk_text_buffer_get_iter_at_offset(historyOptions[0].handle, &end, to);
+    gtk_text_buffer_apply_tag_by_name(historyOptions[0].handle, highlight ? "highlight" : "normal", &start, &end);
 }
 
 void
