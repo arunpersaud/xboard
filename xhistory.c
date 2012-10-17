@@ -52,7 +52,7 @@ void
 HighlightMove (int from, int to, Boolean highlight)
 {
     static int init = 0;
-    GtkTextIter start, end;
+    static GtkTextIter start, end;
 
     if(!init) {
 	init = 1;
@@ -67,23 +67,9 @@ HighlightMove (int from, int to, Boolean highlight)
 void
 ScrollToCurrent (int caretPos)
 {
-#ifdef TODO_GTK
-    Arg args[10];
-    char *s;
-    int len;
-    GetWidgetText(&historyOptions[0], &s);
-    len = strlen(s);
-    if(caretPos < 0 || caretPos > len) caretPos = len;
-    if(caretPos > len-30) { // scroll to end, which causes no flicker
-      static XEvent event;
-      XtCallActionProc(historyOptions[0].handle, "end-of-file", &event, NULL, 0);
-      return;
-    }
-    // the following leads to a very annoying flicker, even when no scrolling is done at all.
-    XtSetArg(args[0], XtNinsertPosition, caretPos); // this triggers scrolling in Xaw
-    XtSetArg(args[1], XtNdisplayCaret, False);
-    XtSetValues(historyOptions[0].handle, args, 2);
-#endif
+    static GtkTextIter iter;
+    gtk_text_buffer_get_iter_at_offset((GtkTextBuffer *) historyOptions[0].handle, &iter, caretPos);
+    gtk_text_view_scroll_to_iter((GtkTextView *) historyOptions[0].textValue, &iter, 0.0, 0, 0.5, 0.5);
 }
 
 

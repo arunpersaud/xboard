@@ -1231,6 +1231,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 else
                     gtk_text_buffer_set_text (textbuffer, "", -1); 
                 option[i].handle = (void*)textbuffer;
+                option[i].textValue = (char*)textview;
 		if(option[i].choice) { // textviews can request a handler for mouse events in the choice field
 		    g_signal_connect(textview, "button-press-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
 		    g_signal_connect(textview, "button-release-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
