@@ -640,10 +640,11 @@ PopDown (DialogClass n)
     
     gtk_widget_hide(shells[n]);
     shellUp[n]--; // count rather than clear
+
     if(n == 0 || n >= PromoDlg) {
         gtk_widget_destroy(shells[n]);
         shells[n] = NULL;
-    }    
+    }
 
     if(marked[n]) {
 	MarkMenuItem(marked[n], False);
@@ -659,26 +660,37 @@ PopDown (DialogClass n)
     return 1;
 }
 
-gboolean GenericPopDown(w, event, gdata)
+/* GTK callback used when OK/cancel clicked in genericpopup for non-modal dialog */
+gboolean GenericPopDown(w, resptype, gdata)
      GtkWidget *w;
-     GdkEvent  *event;
-     gpointer  gdata; 
+     GtkResponseType  resptype;
+     gpointer  gdata;
 {
-    int dlg = (intptr_t) gdata; /* dialog number dlgnr */
-    
+    DialogClass dlg = (intptr_t) gdata; /* dialog number dlgnr */
+    GtkWidget *sh = shells[dlg];
+
+    currentOption = dialogOptions[dlg];
+
 #ifdef TODO_GTK
 // I guess BrowserDlg will be abandoned, as GTK has a better browser of its own
-    if(shellUp[BrowserDlg] && dlg != BrowserDlg || dialogError) return; // prevent closing dialog when it has an open file-browse daughter
+    if(shellUp[BrowserDlg] && dlg != BrowserDlg || dialogError) return True; // prevent closing dialog when it has an open file-browse daughter
 #else
-    if(browserUp || dialogError) return True; // prevent closing dialog when it has an open file-browse daughter
+    if(browserUp || dialogError) return True; // prevent closing dialog when it has an open file-browse or error-popup daughter
 #endif
-    GtkWidget *sh = shells[dlg];
-printf("popdown %d\n", dlg);
     shells[dlg] = w; // make sure we pop down the right one in case of multiple instances
-    PopDown(dlg);
+
+    /* OK pressed */    
+    if (resptype == GTK_RESPONSE_ACCEPT) {
+        if (GenericReadout(currentOption, -1)) PopDown(dlg);
+        return TRUE;
+    } else
+    /* cancel pressed */
+    {
+	if(dlg == BoardWindow) ExitEvent(0);
+	PopDown(dlg);
+    }
     shells[dlg] = sh; // restore
-    if(dlg == BoardWindow) ExitEvent(0);
-    return True; /* don't propagate to default handler */
+    return TRUE;
 }
 
 int AppendText(Option *opt, char *s)
@@ -795,27 +807,6 @@ GraphExpose (Option *opt, int x, int y, int w, int h)
  *) &e, (gpointer) opt); // fake expose event
 }
 
-/* GTK callback used when OK/cancel clicked in genericpopup for non-modal dialog */
-void GenericPopUpCallback(w, resptype, gdata)
-     GtkWidget *w;
-     GtkResponseType  resptype;
-     gpointer  gdata;
-{
-    int data = (intptr_t) gdata; /* dialog number dlgnr */
-    DialogClass dlg;
-
-    currentOption = dialogOptions[dlg=data>>16]; data &= 0xFFFF;
-
-    /* OK pressed */    
-    if (resptype == GTK_RESPONSE_ACCEPT) {
-        if (GenericReadout(currentOption, -1)) PopDown(data);
-        return;
-    }
-
-    /* cancel pressed */
-    PopDown(dlg);    
-}
-
 void GenericCallback(GtkWidget *widget, gpointer gdata)
 {
     const gchar *name;
@@ -833,15 +824,13 @@ void GenericCallback(GtkWidget *widget, gpointer gdata)
     sh = shells[dlg]; // make following line a no-op, as we haven't found out what the real shell is yet (breaks multiple popups of same type!)
 #endif
     oldSh = shells[dlg]; shells[dlg] = sh; // bow to reality
-    
-#ifdef TODO_GTK
+
     if (data == 30000) { // cancel
         PopDown(dlg); 
     } else
     if (data == 30001) { // save buttons imply OK
         if(GenericReadout(currentOption, -1)) PopDown(dlg); // calls OK-proc after full readout, but no popdown if it returns false
     } else
-#endif
 
     if(currentCps) {
         name = gtk_button_get_label (GTK_BUTTON(widget));         
@@ -1072,7 +1061,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 
     int i, j, arraysize, left, top, height=999, width=1, boxStart;    
     char def[MSG_SIZ], *msg, engineDlg = (currentCps != NULL && dlgNr != BrowserDlg);
-    
+
     if(dlgNr < PromoDlg && shellUp[dlgNr]) return 0; // already up
 
     if(dlgNr && dlgNr < PromoDlg && shells[dlgNr]) { // reusable, and used before (but popped down)
@@ -1431,8 +1420,8 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     }
 
     g_signal_connect (dialog, "response",
-                      G_CALLBACK (GenericPopUpCallback),
-                      (gpointer)(intptr_t) (dlgNr<<16 | i));
+                      G_CALLBACK (GenericPopDown),
+                      (gpointer)(intptr_t) dlgNr);
     g_signal_connect (dialog, "delete-event",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
