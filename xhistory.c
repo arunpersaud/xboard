@@ -62,10 +62,6 @@ HighlightMove (int from, int to, Boolean highlight)
     gtk_text_buffer_get_iter_at_offset(historyOptions[0].handle, &start, from);
     gtk_text_buffer_get_iter_at_offset(historyOptions[0].handle, &end, to);
     gtk_text_buffer_apply_tag_by_name(historyOptions[0].handle, highlight ? "highlight" : "normal", &start, &end);
-#ifdef TODO_GTK
-    if(highlight)
-	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
-#endif
 }
 
 void
