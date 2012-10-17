@@ -479,12 +479,12 @@ AnimationFrame (AnimNr anr, Pnt *frame, ChessSquare piece)
   MyRectangle updates[4];
   MyRectangle overlap;
   Pnt     pt;
-  int	     count, i;
   AnimState *anim = &anims[anr];
+  int     count, i, x, y, w, h;
 
   /* Save what we are about to draw into the new buffer */
   CopyRectangle(anr, DISP, 0,
-	    frame->x, frame->y, squareSize, squareSize,
+	    x = frame->x, y = frame->y, w = squareSize, h = squareSize,
 	    0, 0);
 
   /* Erase bits of the previous frame */
@@ -503,11 +503,17 @@ AnimationFrame (AnimNr anr, Pnt *frame, ChessSquare piece)
 		updates[i].y - anim->prevFrame.y,
 		updates[i].width, updates[i].height,
 		updates[i].x, updates[i].y);
+    /* [HGM] correct expose rectangle to encompass both overlapping squares */
+    if(x > anim->prevFrame.x) w += x - anim->prevFrame.x, x = anim->prevFrame.x;
+    else  w += anim->prevFrame.x - x;
+    if(y > anim->prevFrame.y) h += y - anim->prevFrame.y, y = anim->prevFrame.y;
+    else  h += anim->prevFrame.y - y;
   } else {
     /* Easy when no overlap */
     CopyRectangle(anr, 2, DISP,
 		  0, 0, squareSize, squareSize,
 		  anim->prevFrame.x, anim->prevFrame.y);
+    GraphExpose(currBoard, anim->prevFrame.x, anim->prevFrame.y, squareSize, squareSize);
   }
 
   /* Save this frame for next time round */
@@ -522,6 +528,7 @@ AnimationFrame (AnimNr anr, Pnt *frame, ChessSquare piece)
   CopyRectangle(anr, 0, DISP,
 		0, 0, squareSize, squareSize,
 		frame->x, frame->y);
+  GraphExpose(currBoard, x, y, w, h);
 }
 
 static void

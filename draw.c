@@ -778,8 +778,8 @@ void CopyRectangle (AnimNr anr, int srcBuf, int destBuf,
 	cairo_rectangle (cr, destX, destY, width, height);
 	cairo_fill (cr);
 	cairo_destroy (cr);
-	if(c_animBufs[anr+destBuf] == csBoardWindow)
-	    GraphExpose(currBoard, destX, destY, squareSize, squareSize);
+	if(c_animBufs[anr+destBuf] == csBoardWindow) // suspect that GTK needs this!
+	    GraphExpose(currBoard, destX, destY, width, height);
 }
 
 void
