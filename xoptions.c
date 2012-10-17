@@ -859,11 +859,15 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 void
 GraphExpose (Option *opt, int x, int y, int w, int h)
 {
+#if 0
+  GdkRectangle r;
+  r.x = x; r.y = y; r.width = w; r.height = h;
+  gdk_window_invalidate_rect(((GtkWidget *)(opt->handle))->window, &r, FALSE);
+#endif
   GdkEventExpose e;
   if(!opt->handle) return;
   e.area.x = x; e.area.y = y; e.area.width = w; e.area.height = h; e.count = -1; e.type = GDK_EXPOSE; // count = -1: kludge to suppress sizing
-  GraphEventProc(opt->handle, (GdkEvent//        gtk_check_menu_item_set_active((GtkCheckMenuItem *) item->handle, state);
- *) &e, (gpointer) opt); // fake expose event
+  GraphEventProc(opt->handle, (GdkEvent *) &e, (gpointer) opt); // fake expose event
 }
 
 void GenericCallback(GtkWidget *widget, gpointer gdata)

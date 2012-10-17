@@ -2505,6 +2505,8 @@ FrameDelay (int time)
 #ifdef TODO_GTK
   XSync(xDisplay, False);
 #endif
+//  gtk_main_iteration_do(False);
+
   if (time > 0)
     usleep(time * 1000);
 }
