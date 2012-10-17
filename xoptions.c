@@ -1220,6 +1220,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 else
                     gtk_text_buffer_set_text (textbuffer, "", -1); 
                 option[i].handle = (void*)textbuffer;
+                option[i].textValue = (char*)textview;
 		if(option[i].choice) { // textviews can request a handler for mouse events in the choice field
 //		    gtk_widget_add_events(GTK_WIDGET(textview), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
 printf("connect tv=%x tb=%x\n",textview,textbuffer);
