@@ -1781,7 +1781,7 @@ HandlePV (Widget w, XEvent * event, String * params, Cardinal * nParams)
     MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 }
 
-static int savedIndex;  /* gross that this is global */
+extern int savedIndex;  /* gross that this is global */
 
 void
 CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
@@ -1796,27 +1796,6 @@ CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	ReplaceComment(savedIndex, val);
 	if(savedIndex != currentMove) ToNrEvent(savedIndex);
 	LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
-}
-
-void
-EditCommentPopUp (int index, char *title, char *text)
-{
-    savedIndex = index;
-    if (text == NULL) text = "";
-    NewCommentPopup(title, text, index);
-}
-
-void
-CommentPopUp (char *title, char *text)
-{
-    savedIndex = currentMove; // [HGM] vari
-    NewCommentPopup(title, text, currentMove);
-}
-
-void
-CommentPopDown ()
-{
-    PopDown(CommentDlg);
 }
 
 

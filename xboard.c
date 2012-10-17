@@ -1848,46 +1848,6 @@ DrawPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 #endif
 
 
-static int savedIndex;  /* gross that this is global */
-
-#ifdef TODO_GTK
-void
-CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
-{
-	String val;
-	XawTextPosition index, dummy;
-	Arg arg;
-
-	XawTextGetSelectionPos(w, &index, &dummy);
-	XtSetArg(arg, XtNstring, &val);
-	XtGetValues(w, &arg, 1);
-	ReplaceComment(savedIndex, val);
-	if(savedIndex != currentMove) ToNrEvent(savedIndex);
-	LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
-}
-#endif
-
-void
-EditCommentPopUp (int index, char *title, char *text)
-{
-    savedIndex = index;
-    if (text == NULL) text = "";
-    NewCommentPopup(title, text, index);
-}
-
-void
-CommentPopUp (char *title, char *text)
-{
-    savedIndex = currentMove; // [HGM] vari
-    NewCommentPopup(title, text, currentMove);
-}
-
-void
-CommentPopDown ()
-{
-    PopDown(CommentDlg);
-}
-
 
 /* Disable all user input other than deleting the window */
 static int frozen = 0;

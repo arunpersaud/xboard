@@ -921,6 +921,9 @@ static char *commentText;
 static int commentIndex;
 static void ClearComment P((int n));
 static void SaveChanges P((int n));
+int savedIndex;  /* gross that this is global (and even across files...) */
+
+static int CommentClick P((Option *opt, int n, int x, int y, char *val, int index));
 
 static int
 NewComCallback (int n)
@@ -930,11 +933,21 @@ NewComCallback (int n)
 }
 
 Option commentOptions[] = {
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 250, NULL, (void*) &commentText, "", NULL, TextBox, "" },
+{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 250, NULL, (void*) &commentText, "", (MemoCallback *) &CommentClick, TextBox, "" },
 { 0,     0,     50, NULL, (void*) &ClearComment, NULL, NULL, Button, N_("clear") },
 { 0, SAME_ROW, 100, NULL, (void*) &SaveChanges, NULL, NULL, Button, N_("save changes") },
 { 0, SAME_ROW,  0,  NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
 };
+
+static int
+CommentClick (Option *opt, int n, int x, int y, char *val, int index)
+{
+	if(n != 3) return FALSE; // only button-3 press is of interest
+	ReplaceComment(savedIndex, val);
+	if(savedIndex != currentMove) ToNrEvent(savedIndex);
+	LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
+	return TRUE;
+}
 
 static void
 SaveChanges (int n)
@@ -962,6 +975,28 @@ NewCommentPopup (char *title, char *text, int index)
     if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL, 1))
 	AddHandler(&commentOptions[0], 1);
 }
+
+void
+EditCommentPopUp (int index, char *title, char *text)
+{
+    savedIndex = index;
+    if (text == NULL) text = "";
+    NewCommentPopup(title, text, index);
+}
+
+void
+CommentPopUp (char *title, char *text)
+{
+    savedIndex = currentMove; // [HGM] vari
+    NewCommentPopup(title, text, currentMove);
+}
+
+void
+CommentPopDown ()
+{
+    PopDown(CommentDlg);
+}
+
 
 void
 EditCommentProc ()
