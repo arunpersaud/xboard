@@ -49,22 +49,6 @@ extern Option historyOptions[];
 // ------------- low-level front-end actions called by MoveHistory back-end -----------------
 
 void
-HighlightMove (int from, int to, Boolean highlight)
-{
-    static int init = 0;
-    static GtkTextIter start, end;
-
-    if(!init) {
-	init = 1;
-	gtk_text_buffer_create_tag(historyOptions[0].handle, "highlight", "background", "yellow", NULL);
-	gtk_text_buffer_create_tag(historyOptions[0].handle, "normal", "background", "white", NULL);
-    }
-    gtk_text_buffer_get_iter_at_offset(historyOptions[0].handle, &start, from);
-    gtk_text_buffer_get_iter_at_offset(historyOptions[0].handle, &end, to);
-    gtk_text_buffer_apply_tag_by_name(historyOptions[0].handle, highlight ? "highlight" : "normal", &start, &end);
-}
-
-void
 ScrollToCurrent (int caretPos)
 {
     static GtkTextIter iter;

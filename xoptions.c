@@ -542,6 +542,22 @@ ICSKeyEvent(GtkWidget *widget, GdkEventKey *event)
     }
 }
 
+void
+HighlightText (Option *opt, int from, int to, Boolean highlight)
+{
+    static int init = 0;
+    static GtkTextIter start, end;
+
+    if(!init) {
+	init = 1;
+	gtk_text_buffer_create_tag(opt->handle, "highlight", "background", "yellow", NULL);
+	gtk_text_buffer_create_tag(opt->handle, "normal", "background", "white", NULL);
+    }
+    gtk_text_buffer_get_iter_at_offset(opt->handle, &start, from);
+    gtk_text_buffer_get_iter_at_offset(opt->handle, &end, to);
+    gtk_text_buffer_apply_tag_by_name(opt->handle, highlight ? "highlight" : "normal", &start, &end);
+}
+
 static gboolean
 MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 {   // handle mouse clicks on text widgets that need it

@@ -62,6 +62,12 @@ AppendToHistoryMemo (char * text, int bold, int colorNr)
     return AppendText(&historyOptions[0], text); // for now ignore bold & color stuff, as Xaw cannot handle that
 }
 
+void
+HighlightMove (int from, int to, Boolean highlight)
+{
+    HighlightText (&historyOptions[0], from, to, highlight);
+}
+
 char *historyText;
 
 int
