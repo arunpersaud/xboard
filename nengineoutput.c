@@ -69,26 +69,9 @@ extern char *getenv();
 int  windowMode = 1;
 
 char *mem1, *mem2; // dummies, as this dialog can never be OK'ed
+static int currentPV, highTextStart[2], highTextEnd[2];
 
-void
-MemoProc (Option *opt, int n, int x, int y)
-{
-    static int pressed; // keep track of button 3 state
-    switch(n) {
-      case 0: // pointer motion
-	if(!pressed) return;
-//	MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
-	break;
-      case 3: // press button 3
-	pressed = 1;
-	SelectPV(opt, x, y);
-	break;
-      case -3: // release button 3
-	pressed = 0;
-	StopPV(opt);
-	break;
-    }
-}
+int MemoProc P((Option *opt, int n, int x, int y, char *text, int index));
 
 Option engoutOptions[] = {
 {  0,  LL|T2T,           17, NULL, NULL, NULL, NULL, Label, " " },
@@ -106,6 +89,37 @@ Option engoutOptions[] = {
 {200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem2, "", (char**) MemoProc, TextBox, "" },
 {   0,      NO_OK,       0, NULL, NULL, "", NULL, EndMark , "" }
 };
+
+int
+MemoProc (Option *opt, int n, int x, int y, char *text, int index)
+{   // user callback for mouse events in memo
+    static int pressed; // keep track of button 3 state
+    int start, end, currentPV = (opt != &engoutOptions[5]);
+
+    switch(n) {
+      case 0: // pointer motion
+	if(!pressed) return FALSE; // only motion with button 3 down is of interest
+	MovePV(x, y, 500/*lineGap + BOARD_HEIGHT * (squareSize + lineGap)*/);
+	break;
+      case 3: // press button 3
+	pressed = 1;
+	if(LoadMultiPV(x, y, text, index, &start, &end, currentPV)) {
+#ifdef TODO_GTK
+	    XawTextSetSelection( w, start, end );
+#endif
+	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
+	}
+	break;
+      case -3: // release button 3
+	pressed = 0;
+        highTextStart[currentPV] = highTextEnd[currentPV] = 0;
+        UnLoadPV();
+	break;
+      default:
+	return FALSE; // not meant for us; do regular event handler
+    }
+    return TRUE;
+}
 
 void
 SetIcon (int which, int field, int nIcon)

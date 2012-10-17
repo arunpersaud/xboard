@@ -564,6 +564,7 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	case GDK_BUTTON_RELEASE:
 	    f = -1; // release indicated by negative button numbers
 	    w = bevent->x; h = bevent->y;
+	    button = bevent->button;
 	    break;
 	case GDK_BUTTON_PRESS:
 	    w = bevent->x; h = bevent->y;

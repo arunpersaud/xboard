@@ -163,38 +163,6 @@ Shift<Btn3Down>: select-start() extend-end() SelectPV(1) \n \
 Any<Btn3Down>: select-start() extend-end() SelectPV(0) \n \
 <Btn3Up>: StopPV() \n";
 
-void
-SelectPV (Option *opt, int x, int y)
-{	// [HGM] pv: translate click to PV line, and load it for display
-	int start, end, index;
-	char *val;
-	int currentPV = (opt->handle != memoWidget);
-#ifdef TODO_GTK
-	XawTextGetSelectionPos(w, &index, &dummy);
-	XtSetArg(arg, XtNstring, &val);
-	XtGetValues(w, &arg, 1);
-#endif
-	if(LoadMultiPV(x, y, val, index, &start, &end, currentPV)) {
-#ifdef TODO_GTK
-	    XawTextSetSelection( w, start, end );
-#endif
-	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
-	}
-}
-
-void
-StopPV (Option *opt)
-{	// [HGM] pv: on right-button release, stop displaying PV
-#ifdef TODO_GTK
-        XawTextUnsetSelection( opt->handle );
-#endif
-        highTextStart[currentPV] = highTextEnd[currentPV] = 0;
-        UnLoadPV();
-#ifdef TODO_GTK
-        XtCallActionProc(opt->handle, "beginning-of-file", event, NULL, 0);
-#endif
-}
-
 //------------------------------- pane switching -----------------------------------
 
 void
