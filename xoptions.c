@@ -159,20 +159,27 @@ void GetWidgetTextGTK(GtkWidget *w, char **buf)
     }
     else {
         printf("error in GetWidgetText, invalid widget\n");
-        buf = NULL; 
+        *buf = NULL; 
     }
 }
 
 void
 GetWidgetText (Option *opt, char **buf)
 {
+    int x;
+    static char val[12];
     switch(opt->type) {
       case Fractional:
       case FileName:
       case PathName:
       case TextBox: GetWidgetTextGTK((GtkWidget *) opt->handle, buf); break;
+      case Spin:
+	x = gtk_spin_button_get_value (GTK_SPIN_BUTTON(opt->handle));                   
+	snprintf(val, 12, "%d", x); *buf = val;
+	break;
       default:
 	printf("unexpected case (%d) in GetWidgetText\n", opt->type);
+	*buf = NULL;
     }
 }
 
