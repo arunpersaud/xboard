@@ -542,16 +542,51 @@ ICSKeyEvent(GtkWidget *widget, GdkEventKey *event)
     }
 }
 
-static void
+static gboolean
 MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
-{   // handle expose and mouse events on Graph widget
+{   // handle mouse clicks on text widgets that need it
     int w, h;
-    int j, button=10, f=1, sizing=0;
+    int button=10, f=1;
     Option *opt, *memo = (Option *) gdata;
-    PointerCallback *userHandler = memo->choice;
+    MemoCallback *userHandler = (MemoCallback *) memo->choice;
     GdkEventButton *bevent = (GdkEventButton *) event;
     GdkEventMotion *mevent = (GdkEventMotion *) event;
-    (userHandler) (memo, bevent->x, bevent->y);
+    GtkTextIter start, end;
+    String val = NULL;
+    gboolean res;
+    gint index, x, y;
+
+    switch(event->type) { // figure out what's up
+	case GDK_MOTION_NOTIFY:
+	    f = 0;
+	    w = mevent->x; h = mevent->y;
+	    break;
+	case GDK_BUTTON_RELEASE:
+	    f = -1; // release indicated by negative button numbers
+	    w = bevent->x; h = bevent->y;
+	    break;
+	case GDK_BUTTON_PRESS:
+	    w = bevent->x; h = bevent->y;
+	    button = bevent->button;
+// GTK_TODO: is this really the most efficient way to get the character at the mouse cursor???
+	    gtk_text_view_window_to_buffer_coords(widget, GTK_TEXT_WINDOW_WIDGET, w, h, &x, &y);
+	    gtk_text_view_get_iter_at_location(widget, &start, x, y);
+	    gtk_text_buffer_place_cursor(memo->handle, &start);
+	    /* get cursor position into index */
+	    g_object_get(memo->handle, "cursor-position", &index, NULL);
+	    /* get text from textbuffer */
+	    gtk_text_buffer_get_start_iter (memo->handle, &start);
+	    gtk_text_buffer_get_end_iter (memo->handle, &end);
+	    val = gtk_text_buffer_get_text (memo->handle, &start, &end, FALSE); 
+	    break;
+	default:
+	    return FALSE; // should not happen
+    }
+    button *= f;
+    // hand click parameters as well as text & location to user
+    res = (userHandler) (memo, button, w, h, val, index);
+    if(val) g_free(val);
+    return res;
 }
 
 void
@@ -1185,10 +1220,12 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 else
                     gtk_text_buffer_set_text (textbuffer, "", -1); 
                 option[i].handle = (void*)textbuffer;
-		if(option[i].choice) {
-		    g_signal_connect(textbuffer, "button-press-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
-		    g_signal_connect(textbuffer, "button-release-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
-		    g_signal_connect(textbuffer, "motion-notify-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
+		if(option[i].choice) { // textviews can request a handler for mouse events in the choice field
+//		    gtk_widget_add_events(GTK_WIDGET(textview), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
+printf("connect tv=%x tb=%x\n",textview,textbuffer);
+		    g_signal_connect(textview, "button-press-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
+		    g_signal_connect(textview, "button-release-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
+		    g_signal_connect(textview, "motion-notify-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
 		}
                 break; 
             }
