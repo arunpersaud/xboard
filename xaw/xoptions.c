@@ -267,6 +267,10 @@ SelectedListBoxItem (Option *opt)
 void
 HighlightText (Option *opt, int start, int end, Boolean on)
 {
+    if(on)
+	XawTextSetSelection( opt->handle, start, end ); // for lack of a better method, use selection for highighting
+    else
+	XawTextSetSelection( opt->handle, 0, 0 );
 }
 
 void

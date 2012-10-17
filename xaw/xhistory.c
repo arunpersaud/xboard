@@ -71,13 +71,6 @@ extern Option historyOptions[];
 
 // ------------- low-level front-end actions called by MoveHistory back-end -----------------
 
-void
-HighlightMove (int from, int to, Boolean highlight)
-{
-    if(highlight)
-	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
-}
-
 // the bold argument says 0 = normal, 1 = bold typeface
 // the colorNr argument says 0 = font-default, 1 = gray
 void

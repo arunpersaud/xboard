@@ -104,14 +104,14 @@ MemoProc (Option *opt, int n, int x, int y, char *text, int index)
       case 3: // press button 3
 	pressed = 1;
 	if(LoadMultiPV(x, y, text, index, &start, &end, currentPV)) {
-#ifdef TODO_GTK
-	    XawTextSetSelection( w, start, end );
-#endif
 	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
+	    HighlightText(&engoutOptions[currentPV ? 12 : 5], start, end, TRUE);
 	}
 	break;
       case -3: // release button 3
 	pressed = 0;
+        if(highTextStart[currentPV] != highTextEnd[currentPV])
+            HighlightText(&engoutOptions[currentPV ? 12 : 5], highTextStart[currentPV], highTextEnd[currentPV], FALSE);
         highTextStart[currentPV] = highTextEnd[currentPV] = 0;
         UnLoadPV();
 	break;

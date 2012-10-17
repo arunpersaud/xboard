@@ -137,6 +137,7 @@ int GenericReadout P((Option *currentOption, int selected));
 int PopDown P((DialogClass n));
 void MarkMenu P((char *item, int dlgNr));
 int AppendText P((Option *opt, char *s));
+void HighlightText P((Option *opt, int from, int to, Boolean highlight));
 void SetColor P((char *colorName, Option *box));
 //void ColorChanged P((Widget w, XtPointer data, XEvent *event, Boolean *b));
 void SetInsertPos P((Option *opt, int pos));

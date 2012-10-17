@@ -148,9 +148,6 @@ InsertIntoMemo (int which, char * text, int where)
     if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
 	int len = strlen(text);
 	highTextStart[which] += len; highTextEnd[which] += len;
-#ifdef TODO_GTK
-	XawTextSetSelection( edit, highTextStart[which], highTextEnd[which] );
-#endif
     }
 }
 
