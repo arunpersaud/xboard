@@ -50,6 +50,7 @@ extern char *getenv();
 #include <cairo/cairo.h>
 #include <cairo/cairo-xlib.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>  
 
 #include "common.h"
 #include "backend.h"
@@ -542,9 +543,9 @@ static gboolean
 ICSKeyEvent(GtkWidget *widget, GdkEventKey *event)
 {
     switch(event->keyval) {
-      case 0xFF0D: IcsKey(0); return TRUE;
-      case 0xFF52: IcsKey(1); return TRUE;
-      case 0xFF54: IcsKey(-1); return TRUE;
+      case GDK_Return: IcsKey(0); return TRUE;
+      case GDK_Up:     IcsKey(1); return TRUE;
+      case GDK_Down:  IcsKey(-1); return TRUE;
       default: return FALSE;
     }
 }
