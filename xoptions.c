@@ -459,6 +459,36 @@ ICSKeyEvent(GtkWidget *widget, GdkEventKey *event)
     }
 }
 
+int shiftState, controlState;
+
+static gboolean
+TypeInProc (GtkWidget *widget, GdkEventKey *event, gpointer gdata)
+{   // This callback catches key presses on text-entries, and uses <Enter> and <Esc> as synonyms for dialog OK or Cancel
+    // *** kludge alert *** If a dialog does want some other action, like sending the line typed in the text-entry to an ICS,
+    // it should define an OK handler that does so, and returns FALSE to suppress the popdown.
+    int n = (intptr_t) gdata;
+    int dlg = n >> 16;
+    Option *opt;
+    n &= 0xFFFF;
+    opt = &dialogOptions[dlg][n];
+
+    if(opt == icsBox) return ICSKeyEvent(event->keyval); // Intercept ICS Input Box, which needs special treatment
+
+    shiftState = event->state & GDK_SHIFT_MASK;
+    controlState = event->state & GDK_CONTROL_MASK;
+    switch(event->keyval) {
+      case GDK_Return:
+	if(GenericReadout(dialogOptions[dlg], -1)) PopDown(dlg);
+	break;
+      case GDK_Escape:
+	PopDown(dlg);
+	break;
+      default:
+	return FALSE;
+    }
+    return TRUE;
+}
+
 void
 HighlightText (Option *opt, int from, int to, Boolean highlight)
 {
@@ -473,6 +503,12 @@ HighlightText (Option *opt, int from, int to, Boolean highlight)
     gtk_text_buffer_get_iter_at_offset(opt->handle, &start, from);
     gtk_text_buffer_get_iter_at_offset(opt->handle, &end, to);
     gtk_text_buffer_apply_tag_by_name(opt->handle, highlight ? "highlight" : "normal", &start, &end);
+}
+
+int
+ShiftKeys ()
+{   // bassic primitive for determining if modifier keys are pressed
+    return 3*(shiftState != 0) + 0xC*(controlState != 0); // rely on what last mouse button press left us
 }
 
 static gboolean
@@ -502,6 +538,8 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	case GDK_BUTTON_PRESS:
 	    w = bevent->x; h = bevent->y;
 	    button = bevent->button;
+	    shiftState = bevent->state & GDK_SHIFT_MASK;
+	    controlState = bevent->state & GDK_CONTROL_MASK;
 // GTK_TODO: is this really the most efficient way to get the character at the mouse cursor???
 	    gtk_text_view_window_to_buffer_coords(widget, GTK_TEXT_WINDOW_WIDGET, w, h, &x, &y);
 	    gtk_text_view_get_iter_at_location(widget, &start, x, y);
@@ -760,6 +798,8 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	case GDK_BUTTON_PRESS:
 	    w = bevent->x; h = bevent->y;
 	    button = bevent->button;
+	    shiftState = bevent->state & GDK_SHIFT_MASK;
+	    controlState = bevent->state & GDK_CONTROL_MASK;
     }
     button *= f;
 

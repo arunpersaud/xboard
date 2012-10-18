@@ -2097,23 +2097,6 @@ QuitWrapper (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 #endif
 
-int
-ShiftKeys ()
-{   // bassic primitive for determining if modifier keys are pressed
-    int i,j,  k=0;
-#ifdef TODO_GTK
-    long int codes[] = { XK_Meta_L, XK_Meta_R, XK_Control_L, XK_Control_R, XK_Shift_L, XK_Shift_R };
-    char keys[32];
-    XQueryKeymap(xDisplay,keys);
-    for(i=0; i<6; i++) {
-	k <<= 1;
-	j = XKeysymToKeycode(xDisplay, codes[i]);
-	k += ( (keys[j>>3]&1<<(j&7)) != 0 );
-    }
-#endif
-    return k;
-}
-
 void MoveTypeInProc(eventkey)
     GdkEventKey  *eventkey;
 {
