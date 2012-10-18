@@ -352,18 +352,7 @@ HighlightListBoxItem (Option *opt, int index)
 void
 HighlightWithScroll (Option *opt, int sel, int max)
 {
-#ifdef TODO_GTK
-    float top, bottom, f, g;
-    HighlightListBoxItem(opt, sel);
-    if(!ReadScroll(opt, &top, &bottom)) return; // no scroll bar
-    bottom = bottom*max - 1.f;
-    f = g = top;
-    top *= max;
-    if(sel > (top + 3*bottom)/4) f = (sel - 0.75f*(bottom-top))/max; else
-    if(sel < (3*top + bottom)/4) f = (sel - 0.25f*(bottom-top))/max;
-    if(f < 0.f) f = 0.; if(f + 1.f/max > 1.f) f = 1. - 1./max;
-    if(f != g) SetScroll(opt, f);
-#endif
+    HighlightListBoxItem (opt, index); // just highlight, as GTK scrolls by itself
 }
 
 int
