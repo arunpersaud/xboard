@@ -299,41 +299,6 @@ LoadListBox (Option *opt, char *emptyText, int n1, int n2)
     }
 }
 
-int
-ReadScroll (Option *opt, float *top, float *bottom)
-{   // retreives fractions of top and bottom of thumb
-#ifdef TODO_GTK
-    Arg args[16];
-    Widget w = XtParent(opt->handle); // viewport
-    Widget v = XtNameToWidget(w, "vertical");
-    int j=0;
-    float h;
-    if(!v) return FALSE; // no scroll bar
-    XtSetArg(args[j], XtNshown, &h); j++;
-    XtSetArg(args[j], XtNtopOfThumb, top); j++;
-    XtGetValues(v, args, j);
-    *bottom = *top + h;
-#endif
-    return TRUE;
-}
-
-void
-SetScroll (Option *opt, float f)
-{   // sets top of thumb to given fraction
-#ifdef TODO_GTK
-    static char *params[3] = { "", "Continuous", "Proportional" };
-    static XEvent event;
-    Widget w = XtParent(opt->handle); // viewport
-    Widget v = XtNameToWidget(w, "vertical");
-    if(!v) return; // no scroll bar
-    XtCallActionProc(v, "StartScroll", &event, params+1, 1);
-    XawScrollbarSetThumb(v, f, -1.0);
-    XtCallActionProc(v, "NotifyThumb", &event, params, 0);
-//    XtCallActionProc(v, "NotifyScroll", &event, params+2, 1);
-    XtCallActionProc(v, "EndScroll", &event, params, 0);
-#endif
-}
-
 void
 HighlightListBoxItem (Option *opt, int index)
 {
@@ -393,55 +358,6 @@ SetIconName (DialogClass dlg, char *name)
 #endif
 }
 
-#ifdef TODO_GTK
-static void
-CheckCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
-{
-    int s, data = (intptr_t) client_data;
-    Option *opt = dialogOptions[data >> 8] + (data & 255);
-
-    if(opt->type == Label) { ((ButtonCallback*) opt->target)(data&255); return; }
-
-    GetWidgetState(opt, &s);
-    SetWidgetState(opt, !s);
-}
-#endif
-
-#ifdef TODO_GTK
-static void
-SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
-{
-    String name, val;
-    Arg args[16];
-    char buf[MSG_SIZ], *p;
-    int j = 0; // Initialisation is necessary because the text value may be non-numeric causing the scanf conversion to fail
-    int data = (intptr_t) client_data;
-    Option *opt = dialogOptions[data >> 8] + (data & 255);
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    GetWidgetText(opt, &val);
-    sscanf(val, "%d", &j);
-    if (strcmp(name, _("browse")) == 0) {
-	char *q=val, *r;
-	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
-	if(!strcmp(r, "") && !currentCps && opt->type == FileName && opt->textValue)
-		r = opt->textValue;
-	Browse(data>>8, opt->name, NULL, r, opt->type == PathName, "", &p, (FILE**) opt);
-	return;
-    } else
-    if (strcmp(name, "+") == 0) {
-	if(++j > opt->max) return;
-    } else
-    if (strcmp(name, "-") == 0) {
-	if(--j < opt->min) return;
-    } else return;
-    snprintf(buf, MSG_SIZ,  "%d", j);
-    SetWidgetText(opt, buf, TransientDlg);
-}
-#endif
-
 void ComboSelect(GtkWidget *widget, gpointer addr)
 {
     Option *opt = dialogOptions[((intptr_t)addr)>>8]; // applicable option list
@@ -478,33 +394,6 @@ CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
 }
 #endif
 
-#ifdef TODO_GTK
-static Widget
-CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
-{   // fromList determines if the item texts are taken from a list of strings, or from a menu table
-    int i;
-    Widget menu, entry;
-    Arg arg;
-    MenuItem *mb = (MenuItem *) opt->choice;
-    char **list = (char **) opt->choice;
-
-    if(list[0] == NULL) return NULL; // avoid empty menus, as they cause crash
-    menu = XtCreatePopupShell(opt->name, simpleMenuWidgetClass, parent, NULL, 0);
-
-    for (i=0; 1; i++) 
-      {
-	char *msg = fromList ? list[i] : mb[i].string;
-	if(!msg) break;
-	entry = CreateMenuItem(menu, opt->min & NO_GETTEXT ? msg : _(msg), (XtCallbackProc) ComboSelect, (n<<16)+i);
-	if(!fromList) mb[i].handle = (void*) entry; // save item ID, for enabling / checkmarking
-	if(i==def) {
-	    XtSetArg(arg, XtNpopupOnEntry, entry);
-	    XtSetValues(menu, &arg, 1);
-	}
-      }
-      return menu;
-}
-#else
 static void
 MenuSelect (gpointer addr) // callback for all combo items
 {
@@ -549,7 +438,6 @@ CreateMenuPopup (Option *opt, int n, int def)
       }
       return menu;
 }
-#endif
 
 char moveTypeInTranslations[] =
     "<Key>Return: TypeInProc(1) \n"
@@ -988,55 +876,6 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     gtk_widget_destroy (dialog);
     dialog = NULL;
 }
-
-#ifdef TODO_GTK
-void
-TabProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{   // for transfering focus to the next text-edit
-    Option *opt;
-    for(opt = currentOption; opt->type != EndMark; opt++) {
-	if(opt->handle == w) {
-	    while(++opt) {
-		if(opt->type == EndMark) opt = currentOption; // wrap
-		if(opt->handle == w) return; // full circle
-		if(opt->type == TextBox || opt->type == Spin || opt->type == Fractional || opt->type == FileName || opt->type == PathName) {
-		    SetFocus(opt->handle, XtParent(XtParent(XtParent(w))), NULL, 0);
-		    return;
-	        }
-	    }
-	}
-    }
-}
-#endif
-
-#ifdef TODO_GTK
-void
-WheelProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{   // for scrolling a widget seen through a viewport with the mouse wheel (ListBox!)
-    int j=0, n = atoi(prms[0]);
-    static char *params[3] = { "", "Continuous", "Proportional" };
-    Arg args[16];
-    float h, top;
-    Widget v;
-    if(!n) { // transient dialogs also use this for list-selection callback
-	n = prms[1][0]-'0';
-	Option *opt=dialogOptions[prms[2][0]-'A'] + n;
-	if(opt->textValue) ((ListBoxCallback*) opt->textValue)(n, SelectedListBoxItem(opt));
-	return;
-    }
-    v = XtNameToWidget(XtParent(w), "vertical");
-    if(!v) return;
-    XtSetArg(args[j], XtNshown, &h); j++;
-    XtSetArg(args[j], XtNtopOfThumb, &top); j++;
-    XtGetValues(v, args, j);
-    top += 0.1f*h*n; if(top < 0.f) top = 0.;
-    XtCallActionProc(v, "StartScroll", event, params+1, 1);
-    XawScrollbarSetThumb(v, top, -1.0);
-    XtCallActionProc(v, "NotifyThumb", event, params, 0);
-//    XtCallActionProc(w, "NotifyScroll", event, params+2, 1);
-    XtCallActionProc(v, "EndScroll", event, params, 0);
-}
-#endif
 
 static char *oneLiner  =
    "<Key>Return: redraw-display() \n \
