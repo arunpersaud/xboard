@@ -262,13 +262,37 @@ SetDialogTitle (DialogClass dlg, char *title)
 }
 
 void
+SetListBoxItem (GtkListStore *store, int n, char *msg)
+{
+    GtkTreeIter iter;
+    GtkTreePath *path = gtk_tree_path_new_from_indices(n, -1);
+    gtk_tree_model_get_iter(GTK_TREE_MODEL (store), &iter, path);
+    gtk_tree_path_free(path);
+    gtk_list_store_set(store, &iter, 0, msg, -1);
+}
+
+void
 LoadListBox (Option *opt, char *emptyText, int n1, int n2)
 {
-#ifdef TODO_GTK
-    static char *dummyList[2];
-    dummyList[0] = emptyText; // empty listboxes tend to crash X, so display user-supplied warning string instead
-    XawListChange(opt->handle, *(char*)opt->target ? opt->target : dummyList, 0, 0, True);
-#endif
+    char **data = (char **) (opt->target);
+    GtkWidget *list = (GtkWidget *) (opt->handle);
+    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(list));
+    GtkListStore *store = GTK_LIST_STORE(model);
+    GtkTreeIter iter;
+ 
+    if(n1 >= 0 && n2 >= 0) {
+	SetListBoxItem(store, n1, data[n1]);
+	SetListBoxItem(store, n2, data[n2]);
+	return;
+    }
+
+    if (gtk_tree_model_get_iter_first(model, &iter)) 
+	gtk_list_store_clear(store);
+
+    while(*data) { // add elements to listbox one by one
+        gtk_list_store_append(store, &iter);
+        gtk_list_store_set(store, &iter, 0, *data++, -1); // 0 = first column
+    }
 }
 
 int
@@ -307,40 +331,41 @@ SetScroll (Option *opt, float f)
 }
 
 void
-HighlightListBoxItem (Option *opt, int nr)
+HighlightListBoxItem (Option *opt, int index)
 {
-#ifdef TODO_GTK
-    XawListHighlight(opt->handle, nr);
-#endif
+    char *value, **data = (char **) (opt->target);
+    GtkWidget *list = (GtkWidget *) (opt->handle);
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
+    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(list));
+    GtkListStore *store = GTK_LIST_STORE(model);
+    GtkTreePath *path = gtk_tree_path_new_from_indices(index, -1);
+    GtkTreeIter iter;
+    gtk_tree_model_get_iter(GTK_TREE_MODEL (store), &iter, path);
+    gtk_tree_path_free(path);
+    gtk_tree_selection_select_iter(selection, &iter);
 }
 
 void
 HighlightWithScroll (Option *opt, int sel, int max)
 {
-#ifdef TODO_GTK
-    float top, bottom, f, g;
-    HighlightListBoxItem(opt, sel);
-    if(!ReadScroll(opt, &top, &bottom)) return; // no scroll bar
-    bottom = bottom*max - 1.f;
-    f = g = top;
-    top *= max;
-    if(sel > (top + 3*bottom)/4) f = (sel - 0.75f*(bottom-top))/max; else
-    if(sel < (3*top + bottom)/4) f = (sel - 0.25f*(bottom-top))/max;
-    if(f < 0.f) f = 0.; if(f + 1.f/max > 1.f) f = 1. - 1./max;
-    if(f != g) SetScroll(opt, f);
-#endif
+    HighlightListBoxItem (opt, index); // just highlight, as GTK scrolls by itself
 }
 
 int
 SelectedListBoxItem (Option *opt)
 {
-#ifdef TODO_GTK
-    XawListReturnStruct *rs;
-    rs = XawListShowCurrent(opt->handle);
-    return rs->list_index;
-#else
-    return 0;
-#endif
+    int i;
+    char *value, **data = (char **) (opt->target);
+    GtkWidget *list = (GtkWidget *) (opt->handle);
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
+
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    if (!gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) return -1;
+    gtk_tree_model_get(model, &iter, 0, &value,  -1);
+    for(i=0; data[i]; i++) if(!strcmp(data[i], value)) return i;
+    g_free(value);
+    return -1;
 }
 
 void
@@ -1391,7 +1416,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 sw = gtk_scrolled_window_new(NULL, NULL);
                 gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
                 gtk_container_add(GTK_CONTAINER(sw), list);
-                gtk_widget_set_size_request(GTK_WIDGET(sw), w, 300);
+                gtk_widget_set_size_request(GTK_WIDGET(sw), option[i].max ? option[i].max : -1, option[i].value ? option[i].value : -1);
  
                 /* never has label, so let listbox occupy all columns */
                 Pack(hbox, table, sw, left, left+3, top);

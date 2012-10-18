@@ -1723,7 +1723,7 @@ static void GLT_Button P((int n));
 static int GLT_OK P((int n));
 
 static Option listOptions[] = {
-{ 0, LR|TB,  200, NULL, (void*) strings, "", NULL, ListBox, "" },
+{300, LR|TB, 200, NULL, (void*) strings, "", NULL, ListBox, "" },
 { 0,    0,     0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("factory") },
 { 0, SAME_ROW, 0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("up") },
 { 0, SAME_ROW, 0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("down") },
