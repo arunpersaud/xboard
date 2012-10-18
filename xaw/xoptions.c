@@ -413,7 +413,7 @@ char *translationTable[] = { // beware: order is essential!
 };
 
 void
-AddHandler (Option *opt, int nr)
+AddHandler (Option *opt, DialogClass dlg, int nr)
 {
     XtOverrideTranslations(opt->handle, XtParseTranslationTable(translationTable[nr]));
 }

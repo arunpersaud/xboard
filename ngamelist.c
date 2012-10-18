@@ -82,7 +82,7 @@ static void GameListReplace P((int page));
 static void GL_Button P((int n));
 
 static Option gamesOptions[] = {
-{ 200,  LR|TB,     400, NULL, (void*) list,       "", NULL, ListBox, "" },
+{ 200,  LR|TB,     400, NULL, (void*) list,       NULL, NULL, ListBox, "" },
 {   0,  0,         100, NULL, (void*) &filterPtr, "", NULL, TextBox, "" },
 {   4,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("find position") },
 {   2,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("narrow") }, // buttons referred to by ID in value (=first) field!
@@ -152,8 +152,8 @@ GameListCreate (char *name)
 {
     int new;
     if(new = GenericPopUp(gamesOptions, name, GameListDlg, BoardWindow, NONMODAL, 1))
-	AddHandler(&gamesOptions[1], 4),
-	AddHandler(&gamesOptions[0], 5);
+	AddHandler(&gamesOptions[1], GameListDlg, 4),
+	AddHandler(&gamesOptions[0], GameListDlg, 5);
     FocusOnWidget(&gamesOptions[0], GameListDlg);
     return new;
 }
