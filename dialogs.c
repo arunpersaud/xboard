@@ -2057,8 +2057,8 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
 { 0, 0, 0, NULL, (void*)&SizeKludge, "", NULL, BarEnd, "" },
 { 0, LR|T2T|BORDER|SAME_ROW, 0, NULL, NULL, "", NULL, Label, "1" }, // optional title in window
 { 50,    LL|TT,            100, NULL, (void*) &LogoW, NULL, NULL, -1, "LogoW" }, // white logo
-{  0,   L2L|T2T,           200, NULL, (void*) &CCB, NULL, NULL, Label, "White" }, // white clock
-{  0,   R2R|T2T|SAME_ROW,  200, NULL, (void*) &CCB, NULL, NULL, Label, "Black" }, // black clock
+{ 12,   L2L|T2T,           200, NULL, (void*) &CCB, NULL, NULL, Label, "White" }, // white clock
+{ 13,   R2R|T2T|SAME_ROW,  200, NULL, (void*) &CCB, NULL, NULL, Label, "Black" }, // black clock
 { 50,    RR|TT|SAME_ROW,   100, NULL, (void*) &LogoB, NULL, NULL, -1, "LogoB" }, // black logo
 { 0, LR|T2T|BORDER,        401, NULL, NULL, "", NULL, -1, "2" }, // backup for title in window (if no room for other)
 { 0, LR|T2T|BORDER,        270, NULL, NULL, "", NULL, Label, "message" }, // message field

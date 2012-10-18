@@ -501,6 +501,8 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     gboolean res;
     gint index, x, y;
 
+    if(opt->type == Label) { ((ButtonCallback*) opt->target)(opt->value); return TRUE; } // only clock widgets use this
+
     switch(event->type) { // figure out what's up
 	case GDK_MOTION_NOTIFY:
 	    f = 0;
@@ -1184,7 +1186,11 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 gtk_container_add(GTK_CONTAINER(frame), label);
 		label = frame;
 	    }
-            Pack(hbox, table, label, left, left+3, top);                       
+            Pack(hbox, table, label, left, left+3, top);
+	    if(option[i].target) { // allow user to specify event handler for button presses
+		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
+		g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
+	    }
 	    break;
           case SaveButton:
           case Button:
