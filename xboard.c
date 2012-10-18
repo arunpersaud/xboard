@@ -208,6 +208,7 @@ char *FindFont P((char *pattern, int targetPxlSize));
 #endif
 void DelayedDrag P((void));
 void ICSInputBoxPopUp P((void));
+gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
 #ifdef TODO_GTK
 static void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 void HandlePV P((Widget w, XEvent * event,
@@ -1376,6 +1377,7 @@ main (int argc, char **argv)
     XtAddEventHandler(shellWidget, StructureNotifyMask, False,
 		      (XtEventHandler) EventProc, NULL);
 #endif
+    g_signal_connect(shells[BoardWindow], "key-press-event", G_CALLBACK(KeyPressProc), NULL);
 
     /* [AS] Restore layout */
     if( wpMoveHistory.visible ) {
@@ -1650,7 +1652,6 @@ SetMenuEnables (Enables *enab)
   }
 }
 
-#ifdef TODO_GTK
 gboolean KeyPressProc(window, eventkey, data)
      GtkWindow *window;
      GdkEventKey  *eventkey;
@@ -1659,25 +1660,7 @@ gboolean KeyPressProc(window, eventkey, data)
 
     MoveTypeInProc(eventkey); // pop up for typed in moves
 
-    // handle shift+<number> cases
-    if (eventkey->state & GDK_SHIFT_MASK) {
-        guint keyval;
-
-        gdk_keymap_translate_keyboard_state(NULL, eventkey->hardware_keycode,
-					    0, eventkey->group,
-					    &keyval, NULL, NULL, NULL);
-        switch(keyval) {
-            case GDK_1:
-                AskQuestionEvent("Direct command", "Send to chess program:", "", "1");
-                break;
-            case GDK_2:
-                AskQuestionEvent("Direct command", "Send to second chess program:", "", "2");
-                break;
-            default:
-                break;
-        }
-    }
-
+#ifdef TODO_GTK
     /* check for other key values */
     switch(eventkey->keyval) {
         case GDK_question:
@@ -1686,8 +1669,10 @@ gboolean KeyPressProc(window, eventkey, data)
         default:
 	  break;
     }
+#endif
     return False;
 }
+#ifdef TODO_GTK
 void
 KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // [HGM] new method of key binding: specify MenuItem(FlipView) in stead of FlipViewProc in translation string
