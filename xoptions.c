@@ -300,7 +300,7 @@ LoadListBox (Option *opt, char *emptyText, int n1, int n2)
 }
 
 void
-HighlightListBoxItem (Option *opt, int index)
+HighlightItem (Option *opt, int index, int scroll)
 {
     char *value, **data = (char **) (opt->target);
     GtkWidget *list = (GtkWidget *) (opt->handle);
@@ -309,15 +309,21 @@ HighlightListBoxItem (Option *opt, int index)
     GtkListStore *store = GTK_LIST_STORE(model);
     GtkTreePath *path = gtk_tree_path_new_from_indices(index, -1);
     GtkTreeIter iter;
-    gtk_tree_model_get_iter(GTK_TREE_MODEL (store), &iter, path);
+    gtk_tree_selection_select_path(selection, path);
+    if(scroll) gtk_tree_view_scroll_to_cell(list, path, NULL, 0, 0, 0);
     gtk_tree_path_free(path);
-    gtk_tree_selection_select_iter(selection, &iter);
 }
 
 void
-HighlightWithScroll (Option *opt, int sel, int max)
+HighlightListBoxItem (Option *opt, int index)
 {
-    HighlightListBoxItem (opt, index); // just highlight, as GTK scrolls by itself
+    HighlightItem (opt, index, FALSE);
+}
+
+void
+HighlightWithScroll (Option *opt, int index, int max)
+{
+    HighlightItem (opt, index, TRUE); // ignore max
 }
 
 int
@@ -488,6 +494,37 @@ ShiftKeys ()
 }
 
 static gboolean
+GameListEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
+{
+    int n = (int) gdata;
+
+    if(n == 4) {
+	if(((GdkEventKey *) event)->keyval != GDK_Return) return FALSE;
+	SetFilter();
+	return TRUE;
+    }
+
+    if(event->type == GDK_KEY_PRESS) {
+	int ctrl = (((GdkEventKey *) event)->state & GDK_CONTROL_MASK) != 0;
+	switch(((GdkEventKey *) event)->keyval) {
+	  case GDK_Up: GameListClicks(-1 - 2*ctrl); return TRUE;
+	  case GDK_Left: GameListClicks(-1); return TRUE;
+	  case GDK_Down: GameListClicks(1 + 2*ctrl); return TRUE;
+	  case GDK_Right: GameListClicks(1); return TRUE;
+	  case GDK_Prior: GameListClicks(-4); return TRUE;
+	  case GDK_Next: GameListClicks(4); return TRUE;
+	  case GDK_Home: GameListClicks(-2); return TRUE;
+	  case GDK_End: GameListClicks(2); return TRUE;
+	  case GDK_Return: GameListClicks(0); return TRUE;
+	  default: return FALSE;
+	}
+    }
+    if(event->type != GDK_2BUTTON_PRESS || ((GdkEventButton *) event)->button != 1) return FALSE;
+    GameListClicks(0);
+    return TRUE;
+}
+
+static gboolean
 MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 {   // handle mouse clicks on text widgets that need it
     int w, h;
@@ -540,16 +577,21 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 }
 
 void
-AddHandler (Option *opt, int nr)
+AddHandler (Option *opt, DialogClass dlg, int nr)
 {
     switch(nr) {
       case 0: 
       case 1: 
       case 2: break;
-      case 3: g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), NULL); break; // Input Box
-      case 4: 
-      case 5: 
-      case 6: break;
+      case 3: // input box
+	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), NULL); break; // Input Box
+      case 4: // game list
+	g_signal_connect(opt->handle, "button-press-event", G_CALLBACK (GameListEvent), (gpointer) 0 );
+      case 5: // game-list filter
+	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (GameListEvent), (gpointer) nr );
+	break;
+      case 6:
+	break;
     }
 #ifdef TODO_GTK
     XtOverrideTranslations(opt->handle, XtParseTranslationTable(translationTable[nr]));
@@ -592,7 +634,9 @@ RaiseWindow (DialogClass dlg)
     xev.xclient.data.l[1] = CurrentTime;
 
     XSendEvent (xDisplay,
-          root, False,
+          root, False,static gboolean
+MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
+
           SubstructureRedirectMask | SubstructureNotifyMask,
           &xev);
 

@@ -152,8 +152,8 @@ GameListCreate (char *name)
 {
     int new;
     if(new = GenericPopUp(gamesOptions, name, GameListDlg, BoardWindow, NONMODAL, 1))
-	AddHandler(&gamesOptions[1], 4),
-	AddHandler(&gamesOptions[0], 5);
+	AddHandler(&gamesOptions[1], GameListDlg, 4),
+	AddHandler(&gamesOptions[0], GameListDlg, 5);
     FocusOnWidget(&gamesOptions[0], GameListDlg);
     return new;
 }

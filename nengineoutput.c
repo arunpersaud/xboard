@@ -155,8 +155,8 @@ EngineOutputPopUp ()
     if (GenericPopUp(engoutOptions, _(title), EngOutDlg, BoardWindow, NONMODAL, 1)) {
 	if(engoutOptions[STRIDE-1].type != Break)
 	    DisplayFatalError(_("Mismatch of STRIDE in nengineoutput.c\nChange and recompile!"), 0, 2);
-	AddHandler(&engoutOptions[MEMO], 6);
-	AddHandler(&engoutOptions[MEMO+STRIDE], 6);
+	AddHandler(&engoutOptions[MEMO], EngOutDlg, 6);
+	AddHandler(&engoutOptions[MEMO+STRIDE], EngOutDlg, 6);
 	if( needInit ) {
 	    InitEngineOutput(&engoutOptions[0], &engoutOptions[MEMO]); // make icon bitmaps
 	    needInit = FALSE;

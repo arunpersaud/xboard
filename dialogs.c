@@ -972,7 +972,7 @@ NewCommentPopup (char *title, char *text, int index)
     commentIndex = index;
     MarkMenu("View.Comments", CommentDlg);
     if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL, 1))
-	AddHandler(&commentOptions[0], 1);
+	AddHandler(&commentOptions[0], CommentDlg, 1);
 }
 
 void
@@ -1179,7 +1179,7 @@ ICSInputBoxPopUp ()
 {
     MarkMenu("View.ICSInputBox", InputBoxDlg);
     if(GenericPopUp(boxOptions, _("ICS input box"), InputBoxDlg, BoardWindow, NONMODAL, 0))
-	AddHandler(&boxOptions[0], 3);
+	AddHandler(&boxOptions[0], InputBoxDlg, 3);
 }
 
 void
@@ -1210,7 +1210,7 @@ PopUpMoveDialog (char firstchar)
     static char buf[2];
     buf[0] = firstchar; ASSIGN(icsText, buf);
     if(GenericPopUp(typeOptions, _("Type a move"), TransientDlg, BoardWindow, MODAL, 0))
-	AddHandler(&typeOptions[0], 2);
+	AddHandler(&typeOptions[0], TransientDlg, 2);
 }
 
 void
@@ -1500,7 +1500,7 @@ AskQuestion (char *title, char *question, char *replyPrefix, ProcRef pr)
     ASSIGN(answer, "");
     askOptions[0].name = question;
     if(GenericPopUp(askOptions, title, AskDlg, BoardWindow, MODAL, 0))
-	AddHandler(&askOptions[1], 2);
+	AddHandler(&askOptions[1], AskDlg, 2);
 }
 
 //---------------------------- Promotion Popup --------------------------------------
@@ -1681,7 +1681,7 @@ void
 ChatProc ()
 {
     if(GenericPopUp(chatOptions, _("Chat box"), ChatDlg, BoardWindow, NONMODAL, 0))
-	AddHandler(&chatOptions[0], 2), AddHandler(&chatOptions[6], 2); // treats return as OK
+	AddHandler(&chatOptions[0], ChatDlg, 2), AddHandler(&chatOptions[6], ChatDlg, 2); // treats return as OK
     MarkMenu("View.OpenChatWindow", ChatDlg);
 }
 
