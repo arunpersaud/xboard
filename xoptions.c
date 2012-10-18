@@ -538,7 +538,7 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     gboolean res;
     gint index, x, y;
 
-    if(opt->type == Label) { ((ButtonCallback*) opt->target)(opt->value); return TRUE; } // only clock widgets use this
+    if(memo->type == Label) { ((ButtonCallback*) memo->target)(memo->value); return TRUE; } // only clock widgets use this
 
     switch(event->type) { // figure out what's up
 	case GDK_MOTION_NOTIFY:
