@@ -232,21 +232,13 @@ SetWidgetText (Option *opt, char *buf, int n)
 void
 GetWidgetState (Option *opt, int *state)
 {
-#ifdef TODO_GTK
-    Arg arg;
-    XtSetArg(arg, XtNstate, state);
-    XtGetValues(opt->handle, &arg, 1);
-#endif
+    *state = gtk_toggle_button_get_active(opt->handle);
 }
 
 void
 SetWidgetState (Option *opt, int state)
 {
-#ifdef TODO_GTK
-    Arg arg;
-    XtSetArg(arg, XtNstate, state);
-    XtSetValues(opt->handle, &arg, 1);
-#endif
+    gtk_toggle_button_set_active(opt->handle, state);
 }
 
 void
@@ -346,6 +338,7 @@ FocusOnWidget (Option *opt, DialogClass dlg)
 #ifdef TODO_GTK
     XtSetKeyboardFocus(shells[dlg], opt->handle);
 #endif
+    gtk_widget_grab_focus(opt->handle);
 }
 
 void
@@ -604,8 +597,8 @@ void
 AddHandler (Option *opt, DialogClass dlg, int nr)
 {
     switch(nr) {
-      case 0: 
-      case 1: 
+      case 0: // history (now uses generic textview callback)
+      case 1: // comment (likewise)
       case 2: break;
       case 3: // input box
 	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), NULL); break; // Input Box
