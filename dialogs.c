@@ -1720,7 +1720,7 @@ static void GLT_Button P((int n));
 static int GLT_OK P((int n));
 
 static Option listOptions[] = {
-{300, LR|TB, 200, NULL, (void*) strings, "", NULL, ListBox, "" },
+{300, LR|TB, 200, NULL, (void*) strings, "", NULL, ListBox, "" }, // For GTK we need to specify a height, as default would just show 3 lines
 { 0,    0,     0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("factory") },
 { 0, SAME_ROW, 0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("up") },
 { 0, SAME_ROW, 0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("down") },
@@ -1749,13 +1749,13 @@ GLT_Button (int n)
         if(index >= strlen(GLT_ALL_TAGS)) return;
 	strings[index] = strings[index+1];
 	strings[++index] = p;
-      LoadListBox(&listOptions[0], "?", index, index-1); // only change the two specified entries
+        LoadListBox(&listOptions[0], "?", index, index-1); // only change the two specified entries
     } else
     if (n == 2) {
         if(index == 0) return;
 	strings[index] = strings[index-1];
 	strings[--index] = p;
-      LoadListBox(&listOptions[0], "?", index, index+1);
+        LoadListBox(&listOptions[0], "?", index, index+1);
     } else
     if (n == 1) {
       safeStrCpy(lpUserGLT, GLT_DEFAULT_TAGS, LPUSERGLT_SIZE);
@@ -2547,12 +2547,16 @@ DelayedLoad ()
 void
 FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMode)
 {
+#ifdef TODO_GTK
     fileProc = proc;		/* I can't see a way not */
     fileOpenMode = openMode;	/*   to use globals here */
     {   // [HGM] use file-selector dialog stolen from Ghostview
 	// int index; // this is not supported yet
 	Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, &openName, &openFP);
     }
+#else
+    FileNamePopUpGTK(label, def, filter, proc, openMode);
+#endif
 }
 
 

@@ -2500,3 +2500,99 @@ UpdateLogos (int displ)
     return;
 }
 
+void FileNamePopUpGTK(label, def, filter, proc, openMode)
+     char *label;
+     char *def;
+     char *filter;
+     FileProc proc;
+     char *openMode;
+{
+  GtkWidget     *dialog;
+  GtkFileFilter *gtkfilter;
+  GtkFileFilter *gtkfilter_all;
+  char space[]     = " ";
+  char fileext[10] = "";
+  char *result     = NULL;
+  char *cp;
+
+  /* make a copy of the filter string, so that strtok can work with it*/
+  cp = strndup(filter,strlen(filter));
+
+  /* add filters for file extensions */
+  gtkfilter     = gtk_file_filter_new();
+  gtkfilter_all = gtk_file_filter_new();
+
+  /* one filter to show everything */
+  gtk_file_filter_add_pattern(gtkfilter_all, "*.*");
+  gtk_file_filter_set_name   (gtkfilter_all, "All Files");
+
+  /* add filter if present */
+  result = strtok(cp, space);
+  while( result != NULL  ) {
+    snprintf(fileext,10,"*%s",result);
+    result = strtok( NULL, space );
+    gtk_file_filter_add_pattern(gtkfilter, fileext);
+  };
+
+  /* second filter to only show what's useful */
+  gtk_file_filter_set_name (gtkfilter,filter);
+
+  if (openMode[0] == 'r')
+    {
+      dialog = gtk_file_chooser_dialog_new (label,
+					    NULL,
+					    GTK_FILE_CHOOSER_ACTION_OPEN,
+					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					    NULL);
+    }
+  else
+    {
+      dialog = gtk_file_chooser_dialog_new (label,
+					    NULL,
+					    GTK_FILE_CHOOSER_ACTION_SAVE,
+					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					    GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+					    NULL);
+      /* add filename suggestions */
+      if (strlen(def) > 0 )
+	gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), def);
+
+      //gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER (dialog),TRUE);
+    }
+
+  /* add filters */
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter_all);
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+  /* activate filter */
+  gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+
+  if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+      FILE *f;
+
+      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+
+      //see loadgamepopup
+      f = fopen(filename, openMode);
+      if (f == NULL)
+        {
+          DisplayError(_("Failed to open file"), errno);
+        }
+      else
+        {
+          /* TODO add indec */
+          (*proc)(f, 0, filename);
+        }
+      g_free (filename);
+    };
+
+  gtk_widget_destroy (dialog);
+  ModeHighlight();
+
+  free(cp);
+  return;
+
+}
+
