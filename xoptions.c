@@ -449,6 +449,12 @@ char *translationTable[] = { // beware: order is essential!
 
 Option *typeIn; // kludge to distinguish type-in callback from input-box callback
 
+void
+CursorAtEnd (Option *opt)
+{
+    gtk_editable_set_position(opt->handle, -1);
+}
+
 static gboolean
 ICSKeyEvent(GtkWidget *widget, GdkEventKey *event, gpointer g)
 {

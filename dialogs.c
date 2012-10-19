@@ -1181,6 +1181,7 @@ ICSInputBoxPopUp ()
     MarkMenu("View.ICSInputBox", InputBoxDlg);
     if(GenericPopUp(boxOptions, _("ICS input box"), InputBoxDlg, BoardWindow, NONMODAL, 0))
 	AddHandler(&boxOptions[0], InputBoxDlg, 3);
+    CursorAtEnd(&boxOptions[0]);
 }
 
 void
@@ -1212,6 +1213,7 @@ PopUpMoveDialog (char firstchar)
     buf[0] = firstchar; ASSIGN(icsText, buf);
     if(GenericPopUp(typeOptions, _("Type a move"), TransientDlg, BoardWindow, MODAL, 0))
 	AddHandler(&typeOptions[0], TransientDlg, 2);
+    CursorAtEnd(&typeOptions[0]);
 }
 
 void
