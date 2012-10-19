@@ -166,39 +166,7 @@ void
 ResizeWindowControls (int mode)
 {   // another hideous kludge: to have only a single pane, we resize the
     // second to 5 pixels (which makes it too small to display anything)
-#ifdef TODO_GTK
-    Widget form1, form2;
-    Arg args[16];
-    int j;
-    Dimension ew_height, tmp;
-    Widget shell = shells[EngOutDlg];
-
-    form1 = XtNameToWidget(shell, "*paneA");
-    form2 = XtNameToWidget(shell, "*paneB");
-
-    j = 0;
-    XtSetArg(args[j], XtNheight, (XtArgVal) &ew_height); j++;
-    XtGetValues(form1, args, j);
-    j = 0;
-    XtSetArg(args[j], XtNheight, (XtArgVal) &tmp); j++;
-    XtGetValues(form2, args, j);
-    ew_height += tmp; // total height
-
-    if(mode==0) {
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) 5); j++;
-	XtSetValues(form2, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height-5)); j++;
-	XtSetValues(form1, args, j);
-    } else {
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height/2)); j++;
-	XtSetValues(form1, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height/2)); j++;
-	XtSetValues(form2, args, j);
-    }
-#endif
+    if(mode) gtk_widget_show(engoutOptions[13].handle);
+    else     gtk_widget_hide(engoutOptions[13].handle);
 }
 
