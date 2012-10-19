@@ -1431,6 +1431,8 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     else
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), table, TRUE, TRUE, 0);
 
+    option[i].handle = (void *) table; // remember last table in EndMark handle (for hiding Engine-Output pane).
+
     /* Show dialog */
     gtk_widget_show_all( dialog );    
 
