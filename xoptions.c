@@ -447,9 +447,23 @@ char *translationTable[] = { // beware: order is essential!
    filterTranslations, gameListTranslations, memoTranslations
 };
 
+Option *typeIn; // kludge to distinguish type-in callback from input-box callback
+
 static gboolean
-ICSKeyEvent(GtkWidget *widget, GdkEventKey *event)
+ICSKeyEvent(GtkWidget *widget, GdkEventKey *event, gpointer g)
 {
+    Option *opt = (Option *) g;
+    if(opt == typeIn) {
+	if(event->keyval == GDK_Return) {
+	    char *val;
+	    GetWidgetText(opt, &val);
+	    TypeInDoneEvent(val);
+	    PopDown(TransientDlg);
+	    return TRUE;
+	}
+	return FALSE;
+    }
+
     switch(event->keyval) {
       case GDK_Return: IcsKey(0); return TRUE;
       case GDK_Up:     IcsKey(1); return TRUE;
@@ -599,15 +613,18 @@ AddHandler (Option *opt, DialogClass dlg, int nr)
     switch(nr) {
       case 0: // history (now uses generic textview callback)
       case 1: // comment (likewise)
-      case 2: break;
+	break;
+      case 2: // move type-in
+	typeIn = opt;
       case 3: // input box
-	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), NULL); break; // Input Box
+	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), (gpointer) opt);
+	break;
       case 5: // game list
 	g_signal_connect(opt->handle, "button-press-event", G_CALLBACK (GameListEvent), (gpointer) 0 );
       case 4: // game-list filter
 	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (GameListEvent), (gpointer) nr );
 	break;
-      case 6:
+      case 6: // engine output (uses generic textview callback)
 	break;
     }
 }
