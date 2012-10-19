@@ -1211,6 +1211,7 @@ PopUpMoveDialog (char firstchar)
     buf[0] = firstchar; ASSIGN(icsText, buf);
     if(GenericPopUp(typeOptions, _("Type a move"), TransientDlg, BoardWindow, MODAL, 0))
 	AddHandler(&typeOptions[0], TransientDlg, 2);
+    CursorAtEnd(&typeOptions[0]);
 }
 
 void
