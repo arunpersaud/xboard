@@ -342,6 +342,7 @@ FocusOnWidget (Option *opt, DialogClass dlg)
 #ifdef TODO_GTK
     XtSetKeyboardFocus(shells[dlg], opt->handle);
 #endif
+    gtk_widget_grab_focus(opt->handle);
 }
 
 void
