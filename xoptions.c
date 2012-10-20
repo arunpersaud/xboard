@@ -1035,16 +1035,25 @@ SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int
 #endif
 
 static int
+TableWidth (Option *opt)
+{   // Hideous work-around! If the table is 3 columns, but 2 & 3 are always occupied together, the fixing of the width of column 1 does not work
+    while(opt->type != EndMark && opt->type != Break)
+	if(opt->type == FileName || opt++->type == PathName) return 3; // This table needs browse button
+    return 2; // no browse button;
+}
+
+static int
 SameRow (Option *opt)
 {
     return (opt->min & SAME_ROW && (opt->type == Button || opt->type == SaveButton || opt->type == Label || opt->type == ListBox));
 }
 
 static void
-Pack (GtkWidget *hbox, GtkWidget *table, GtkWidget *entry, int left, int right, int top)
+Pack (GtkWidget *hbox, GtkWidget *table, GtkWidget *entry, int left, int right, int top, GtkAttachOptions vExpand)
 {
     if(hbox) gtk_box_pack_start(GTK_BOX (hbox), entry, TRUE, TRUE, 0);
-    else     gtk_table_attach_defaults(GTK_TABLE(table), entry, left, right, top, top+1);
+    else     gtk_table_attach(GTK_TABLE(table), entry, left, right, top, top+1,
+				GTK_FILL | GTK_EXPAND, GTK_FILL | vExpand, 2, 1);
 }
 
 int
@@ -1074,7 +1083,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     GtkWidget *menuBar;    
     GtkWidget *menu;    
 
-    int i, j, arraysize, left, top, height=999, width=1, boxStart, breakType = 0;    
+    int i, j, arraysize, left, top, height=999, width=1, boxStart, breakType = 0, r;    
     char def[MSG_SIZ], *msg, engineDlg = (currentCps != NULL && dlgNr != BrowserDlg);
 
     if(dlgNr < PromoDlg && shellUp[dlgNr]) return 0; // already up
@@ -1125,7 +1134,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
         arraysize++;   
     }
 
-    table = gtk_table_new(arraysize, 3, FALSE);
+    table = gtk_table_new(arraysize, r=TableWidth(option), FALSE);
     gtk_table_set_col_spacings(GTK_TABLE(table), 20);
     left = 0;
     top = -1;    
@@ -1134,7 +1143,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	if(option[i].type == -1) continue;
         top++;
         if (top >= height) {
-            gtk_table_resize(GTK_TABLE(table), height, 3);
+            gtk_table_resize(GTK_TABLE(table), height, r);
 	    if(!pane) { // multi-column: put tables in intermediate hbox
 		if(breakType)
 		    pane =  gtk_hbox_new (FALSE, 0);
@@ -1144,19 +1153,21 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), pane, TRUE, TRUE, 0);
 	    }
 	    gtk_box_pack_start (GTK_BOX (pane), table, TRUE, TRUE, 0);
-	    table = gtk_table_new(arraysize - i, 3, FALSE);
-	    gtk_table_set_col_spacings(GTK_TABLE(table), 20);
+	    table = gtk_table_new(arraysize - i, r=TableWidth(option + i), FALSE);
+//	    gtk_table_set_col_spacings(GTK_TABLE(table), 20);
             top = 0;
         }                
         if(!SameRow(&option[i])) {
 	    if(SameRow(&option[i+1])) {
+		GtkAttachOptions x = GTK_FILL;
 		// make sure hbox is always available when we have more options on same row
                 hbox = gtk_hbox_new (option[i].type == Button && option[i].textValue, 0);
+		if(!currentCps && option[i].value > 80) x |= GTK_EXPAND; // only vertically extended widgets should size vertically
                 if (strcmp(option[i].name, "") == 0 || option[i].type == Label || option[i].type == Button)
                     // for Label and Button name is contained inside option
-                    gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+3, top, top+1);
+                    gtk_table_attach(GTK_TABLE(table), hbox, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, x, 2, 1);
                 else
-                    gtk_table_attach_defaults(GTK_TABLE(table), hbox, left+1, left+3, top, top+1);
+                    gtk_table_attach(GTK_TABLE(table), hbox, left+1, left+r, top, top+1, GTK_FILL | GTK_EXPAND, x, 2, 1);
 	    } else hbox = NULL; //and also make sure no hbox exists if only singl option on row
         } else top--;
         switch(option[i].type) {
@@ -1180,7 +1191,6 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 
             if (option[i].type==TextBox && option[i].value > 80){                
-		GtkRequisition r;
                 textview = gtk_text_view_new();                
                 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), option[i].min & T_WRAP ? GTK_WRAP_WORD : GTK_WRAP_NONE);
 #ifdef TODO_GTK
@@ -1196,17 +1206,14 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 gtk_widget_set_size_request(GTK_WIDGET(sw), w, -1);
  
                 textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));                
-                r.width = option[i].max; r.height = option[i].value;
-                gtk_widget_size_request(textview, &r );
-//                gtk_widget_set_size_request(textview, -1, option[i].value);
                 /* check if label is empty */ 
                 if (strcmp(option[i].name,"") != 0) {
-                    gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
-                    Pack(hbox, table, sw, left+1, left+3, top);
+                    gtk_table_attach(GTK_TABLE(table), label, left, left+1, top, top+1, GTK_FILL, GTK_FILL, 2, 1);
+                    Pack(hbox, table, sw, left+1, left+r, top, 0);
                 }
                 else {
                     /* no label so let textview occupy all columns */
-                    Pack(hbox, table, sw, left, left+3, top);
+                    Pack(hbox, table, sw, left, left+r, top, GTK_EXPAND);
                 } 
                 if ( *(char**)option[i].target != NULL )
                     gtk_text_buffer_set_text (textbuffer, *(char**)option[i].target, -1);
@@ -1235,24 +1242,24 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             gtk_entry_set_max_length (GTK_ENTRY (entry), w);
 
             // left, right, top, bottom
-            if (strcmp(option[i].name, "") != 0) gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
-            //gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);            
+            if (strcmp(option[i].name, "") != 0)
+                gtk_table_attach(GTK_TABLE(table), label, left, left+1, top, top+1, GTK_FILL, GTK_FILL, 2, 1); // leading names do not expand
 
             if (option[i].type == Spin) {                
                 spinner_adj = (GtkAdjustment *) gtk_adjustment_new (option[i].value, option[i].min, option[i].max, 1.0, 0.0, 0.0);
                 spinner = gtk_spin_button_new (spinner_adj, 1.0, 0);
-                gtk_table_attach_defaults(GTK_TABLE(table), spinner, left+1, left+3, top, top+1);
+                gtk_table_attach(GTK_TABLE(table), spinner, left+1, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
                 option[i].handle = (void*)spinner;
             }
             else if (option[i].type == FileName || option[i].type == PathName) {
-                gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+2, top, top+1);
+                gtk_table_attach(GTK_TABLE(table), entry, left+1, left+2, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
                 button = gtk_button_new_with_label ("Browse");
-                gtk_table_attach_defaults(GTK_TABLE(table), button, left+2, left+3, top, top+1);
+                gtk_table_attach(GTK_TABLE(table), button, left+2, left+r, top, top+1, GTK_FILL, GTK_FILL, 2, 1); // Browse button does not expand
                 g_signal_connect (button, "clicked", G_CALLBACK (BrowseGTK), (gpointer)(intptr_t) i);
                 option[i].handle = (void*)entry;                 
             }
             else {
-                Pack(hbox, table, entry, left + (strcmp(option[i].name, "") != 0), left+3, top);
+                Pack(hbox, table, entry, left + (strcmp(option[i].name, "") != 0), left+r, top, 0);
                 option[i].handle = (void*)entry;
             }                        		
             break;
@@ -1260,7 +1267,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             checkbutton = gtk_check_button_new_with_label(option[i].name);            
             if(!currentCps) option[i].value = *(Boolean*)option[i].target;
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);
-            gtk_table_attach_defaults(GTK_TABLE(table), checkbutton, left, left+3, top, top+1);                            
+            gtk_table_attach(GTK_TABLE(table), checkbutton, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 0);
             option[i].handle = (void *)checkbutton;            
             break; 
 	  case Label:            
@@ -1272,8 +1279,8 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 gtk_container_add(GTK_CONTAINER(frame), label);
 		label = frame;
 	    }
-            gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, 10);
-            Pack(hbox, table, label, left, left+3, top);
+            gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
+            Pack(hbox, table, label, left, left+r, top, 0);
 	    if(option[i].target) { // allow user to specify event handler for button presses
 		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
 		g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
@@ -1297,7 +1304,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 					 || strstr(first.variants, VariantName(option[i].value)));                 
             }
             
-            Pack(hbox, table, button, left, left+1, top);
+            Pack(hbox, table, button, left, left+1, top, 0);
             g_signal_connect (button, "clicked", G_CALLBACK (GenericCallback), (gpointer)(intptr_t) i + (dlgNr<<16));           
             option[i].handle = (void*)button;            
             break;  
@@ -1305,7 +1312,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             label = gtk_label_new(option[i].name);
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-            gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
+            gtk_table_attach(GTK_TABLE(table), label, left, left+1, top, top+1, GTK_FILL, GTK_FILL, 2, 1);
 
             combobox = gtk_combo_box_new_text();            
 
@@ -1330,7 +1337,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
             //option[i].value = j + (option[i].choice[j] == NULL);            
             gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), option[i].value); 
             
-            Pack(hbox, table, combobox, left+1, left+3, top);
+            Pack(hbox, table, combobox, left+1, left+r, top, 0);
             g_signal_connect(G_OBJECT(combobox), "changed", G_CALLBACK(ComboSelect), (gpointer) (intptr_t) (i + 256*dlgNr));
 
             option[i].handle = (void*)combobox;
@@ -1363,14 +1370,14 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                     g_signal_connect(list, "button-press-event", G_CALLBACK(ListCallback), (gpointer) (dlgNr<<16 | i) );
 
                 /* never has label, so let listbox occupy all columns */
-                Pack(hbox, table, sw, left, left+3, top);
+                Pack(hbox, table, sw, left, left+r, top, GTK_EXPAND);
             }
 	    break;
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
             gtk_widget_set_size_request(graph, option[i].max, option[i].value);
 //	    gtk_drawing_area_size(graph, option[i].max, option[i].value);
-            gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+3, top, top+1);
+            gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+r, top, top+1);
             g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
@@ -1429,7 +1436,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    boxStart = i;
 	    break;
 	  case BarEnd:
-            gtk_table_attach_defaults(GTK_TABLE(table), menuBar, left, left+1, top, top+1);
+            gtk_table_attach_defaults(GTK_TABLE(table), menuBar, left, left+r, top, top+1);
 	  case BoxEnd:
 //	    XtManageChildren(&form, 1);
 //	    SqueezeIntoBox(&option[boxStart], i-boxStart, option[boxStart].max);
