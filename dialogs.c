@@ -256,7 +256,7 @@ MatchOK (int n)
 }
 
 static Option matchOptions[] = {
-{ 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:") },
+{ 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:          ") },
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round") },
 { 0, SAME_ROW|LL, 0, NULL, NULL, "", NULL, Label, N_("    (for concurrent playing of a single") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
@@ -267,6 +267,7 @@ static Option matchOptions[] = {
                 175, NULL, (void*) &engineName, "", NULL, TextBox, "" },
 { 150, SAME_ROW|RR,
                 175, NULL, (void*) engineMnemonic, (char*) &AddToTourney, NULL, ListBox, "" },
+{ 0, 0, 0, NULL, NULL, NULL, NULL, Break, "" }, // to decouple alignment above and below boxes
 //{ 0,  COMBO_CALLBACK | NO_GETTEXT,
 //		  0, NULL, (void*) &AddToTourney, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
 { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
@@ -373,6 +374,7 @@ static Option generalOptions[] = {
 { 0,  0, 0, NULL, (void*) &appData.ringBellAfterMoves, "", NULL, CheckBox, N_("Move Sound") },
 { 0,  0, 0, NULL, (void*) &appData.oneClick, "", NULL, CheckBox, N_("One-Click Moving") },
 { 0,  0, 0, NULL, (void*) &appData.periodicUpdates, "", NULL, CheckBox, N_("Periodic Updates (in Analysis Mode)") },
+{ 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, "" },
 { 0,  0, 0, NULL, (void*) &appData.ponderNextMove, "", NULL, CheckBox, N_("Ponder Next Move") },
 { 0,  0, 0, NULL, (void*) &appData.popupExitMessage, "", NULL, CheckBox, N_("Popup Exit Messages") },
 { 0,  0, 0, NULL, (void*) &appData.popupMoveErrors, "", NULL, CheckBox, N_("Popup Move Errors") },
@@ -404,42 +406,45 @@ static void Pick P((int n));
 static char warning[MSG_SIZ];
 
 static Option variantDescriptors[] = {
-{ 0, 0, 275, NULL, NULL, NULL, NULL, Label, warning },
 { VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("normal")},
-{ VariantFairy,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
+{ VariantMakruk, SAME_ROW, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("makruk")},
 { VariantFischeRandom,  0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("FRC")},
-{ VariantSChess, SAME_ROW, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("Seirawan")},
+{ VariantShatranj,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("shatranj")},
 { VariantWildCastle,    0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("wild castle")},
-{ VariantSuper,  SAME_ROW, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("Superchess")},
+{ VariantKnightmate,SAME_ROW,135,NULL,(void*) &Pick, "#FFFFFF", NULL, Button, N_("knightmate")},
 { VariantNoCastle,      0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("no castle")},
-{ VariantCrazyhouse,SAME_ROW,135,NULL,(void*) &Pick, "#FFBFBF", NULL, Button, N_("crazyhouse")},
-{ VariantKnightmate,    0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("knightmate")},
-{ VariantBughouse,SAME_ROW,135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("bughouse")},
-{ VariantBerolina,      0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("berolina")},
-{ VariantShogi,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("shogi (9x9)")},
-{ VariantCylinder,      0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("cylinder")},
-{ VariantXiangqi, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("xiangqi (9x10)")},
-{ VariantShatranj,      0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("shatranj")},
-{ VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
-{ VariantMakruk,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("makruk")},
-{ VariantGreat,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Great Shatranj (10x8)")},
-{ VariantAtomic,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("atomic")},
-{ VariantFalcon, SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("falcon (10x8)")},
-{ VariantTwoKings,      0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("two kings")},
-{ VariantCapablanca,SAME_ROW,135,NULL,(void*) &Pick, "#BFBFFF", NULL, Button, N_("Capablanca (10x8)")},
+{ VariantCylinder,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("cylinder *")},
 { Variant3Check,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("3-checks")},
-{ VariantGothic, SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Gothic (10x8)")},
-{ VariantSuicide,       0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("suicide")},
-{ VariantJanus,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("janus (10x8)")},
-{ VariantGiveaway,      0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("give-away")},
-{ VariantCapaRandom,SAME_ROW,135,NULL,(void*) &Pick, "#BFBFFF", NULL, Button, N_("CRC (10x8)")},
-{ VariantLosers,        0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("losers")},
-{ VariantGrand,  SAME_ROW, 135, NULL, (void*) &Pick, "#5070FF", NULL, Button, N_("grand (10x10)")},
-{ VariantSpartan,       0, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
+{ VariantBerolina,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("berolina *")},
+{ VariantAtomic,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("atomic")},
+{ VariantTwoKings,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("two kings")},
 { 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size ( -1 = default for selected variant):")},
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.NrRanks, "", NULL, Spin, N_("Number of Board Ranks:") },
 { 0, -1, BOARD_FILES, NULL, (void*) &appData.NrFiles, "", NULL, Spin, N_("Number of Board Files:") },
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.holdingsSize, "", NULL, Spin, N_("Holdings Size:") },
+{ 0, 0, 275, NULL, NULL, NULL, NULL, Label, warning },
+{ 0, 0, 275, NULL, NULL, NULL, NULL, Label, "Variants marked with * can only be played\nwith legality testing off"},
+{ 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, ""},
+{ VariantFairy,         0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
+{ VariantGreat,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Great Shatranj (10x8)")},
+{ VariantSChess,        0, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("Seirawan")},
+{ VariantFalcon, SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("falcon (10x8)")},
+{ VariantSuper,         0, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("Superchess")},
+{ VariantCapablanca,SAME_ROW,135,NULL,(void*) &Pick, "#BFBFFF", NULL, Button, N_("Capablanca (10x8)")},
+{ VariantCrazyhouse,    0, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("crazyhouse")},
+{ VariantGothic, SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Gothic (10x8)")},
+{ VariantBughouse,      0, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("bughouse")},
+{ VariantJanus,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("janus (10x8)")},
+{ VariantSuicide,       0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("suicide")},
+{ VariantCapaRandom,SAME_ROW,135,NULL,(void*) &Pick, "#BFBFFF", NULL, Button, N_("CRC (10x8)")},
+{ VariantGiveaway,      0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("give-away")},
+{ VariantGrand,  SAME_ROW, 135, NULL, (void*) &Pick, "#5070FF", NULL, Button, N_("grand (10x10)")},
+{ VariantLosers,        0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("losers")},
+{ VariantShogi,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("shogi (9x9)")},
+{ VariantSpartan,       0, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
+{ VariantXiangqi, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("xiangqi (9x10)")},
+{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
+{ VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
 { 0, NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
@@ -705,9 +710,8 @@ static char *soundFiles[] = { // sound files corresponding to above names
 };
 
 static Option soundOptions[] = {
-{ 0, 0, 0, NULL, (void*) &appData.soundProgram, "", NULL, TextBox, N_("Sound Program:") },
-{ 0, 0, 0, NULL, (void*) &appData.soundDirectory, "", NULL, PathName, N_("Sounds Directory:") },
 { 0, 0, 0, NULL, (void*) (soundFiles+2) /* kludge! */, ".wav", NULL, FileName, N_("User WAV File:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundProgram, "", NULL, TextBox, N_("Sound Program:") },
 { 0, 0, 0, NULL, (void*) &trialSound, (char*) soundFiles, soundNames, ComboBox, N_("Try-Out Sound:") },
 { 0, SAME_ROW, 0, NULL, (void*) &Test, NULL, NULL, Button, N_("Play") },
 { 0, 0, 0, NULL, (void*) &appData.soundMove, (char*) soundFiles, soundNames, ComboBox, N_("Move:") },
@@ -716,13 +720,15 @@ static Option soundOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.soundIcsDraw, (char*) soundFiles, soundNames, ComboBox, N_("Draw:") },
 { 0, 0, 0, NULL, (void*) &appData.soundIcsUnfinished, (char*) soundFiles, soundNames, ComboBox, N_("Unfinished:") },
 { 0, 0, 0, NULL, (void*) &appData.soundIcsAlarm, (char*) soundFiles, soundNames, ComboBox, N_("Alarm:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundChallenge, (char*) soundFiles, soundNames, ComboBox, N_("Challenge:") },
+{ 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, "" },
+{ 0, 0, 0, NULL, (void*) &appData.soundDirectory, "", NULL, PathName, N_("Sounds Directory:") },
 { 0, 0, 0, NULL, (void*) &appData.soundShout, (char*) soundFiles, soundNames, ComboBox, N_("Shout:") },
 { 0, 0, 0, NULL, (void*) &appData.soundSShout, (char*) soundFiles, soundNames, ComboBox, N_("S-Shout:") },
 { 0, 0, 0, NULL, (void*) &appData.soundChannel, (char*) soundFiles, soundNames, ComboBox, N_("Channel:") },
 { 0, 0, 0, NULL, (void*) &appData.soundChannel1, (char*) soundFiles, soundNames, ComboBox, N_("Channel 1:") },
 { 0, 0, 0, NULL, (void*) &appData.soundTell, (char*) soundFiles, soundNames, ComboBox, N_("Tell:") },
 { 0, 0, 0, NULL, (void*) &appData.soundKibitz, (char*) soundFiles, soundNames, ComboBox, N_("Kibitz:") },
-{ 0, 0, 0, NULL, (void*) &appData.soundChallenge, (char*) soundFiles, soundNames, ComboBox, N_("Challenge:") },
 { 0, 0, 0, NULL, (void*) &appData.soundRequest, (char*) soundFiles, soundNames, ComboBox, N_("Request:") },
 { 0, 0, 0, NULL, (void*) &appData.soundSeek, (char*) soundFiles, soundNames, ComboBox, N_("Seek:") },
 { 0, SAME_ROW, 0, NULL, NULL, "", NULL, EndMark , "" }
@@ -731,8 +737,8 @@ static Option soundOptions[] = {
 static void
 Test (int n)
 {
-    GenericReadout(soundOptions, 2);
-    if(soundFiles[values[3]]) PlaySoundFile(soundFiles[values[3]]);
+    GenericReadout(soundOptions, 1);
+    if(soundFiles[values[2]]) PlaySoundFile(soundFiles[values[2]]);
 }
 
 void
