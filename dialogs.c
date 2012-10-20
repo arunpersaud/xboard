@@ -1181,6 +1181,7 @@ ICSInputBoxPopUp ()
     MarkMenu("View.ICSInputBox", InputBoxDlg);
     if(GenericPopUp(boxOptions, _("ICS input box"), InputBoxDlg, BoardWindow, NONMODAL, 0))
 	AddHandler(&boxOptions[0], InputBoxDlg, 3);
+    CursorAtEnd(&boxOptions[0]);
 }
 
 void
