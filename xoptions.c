@@ -1140,7 +1140,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 		    pane =  gtk_hbox_new (FALSE, 0);
 		else
 		    pane =  gtk_vbox_new (FALSE, 0);
-		gtk_box_set_spacing(GTK_BOX(pane), 10);
+		gtk_box_set_spacing(GTK_BOX(pane), 5 + 5*breakType);
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), pane, TRUE, TRUE, 0);
 	    }
 	    gtk_box_pack_start (GTK_BOX (pane), table, TRUE, TRUE, 0);
@@ -1158,7 +1158,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 else
                     gtk_table_attach_defaults(GTK_TABLE(table), hbox, left+1, left+3, top, top+1);
 	    } else hbox = NULL; //and also make sure no hbox exists if only singl option on row
-        }
+        } else top--;
         switch(option[i].type) {
           case Fractional:           
 	    snprintf(def, MSG_SIZ,  "%.2f", *(float*)option[i].target);
@@ -1180,6 +1180,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 
             if (option[i].type==TextBox && option[i].value > 80){                
+		GtkRequisition r;
                 textview = gtk_text_view_new();                
                 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), option[i].min & T_WRAP ? GTK_WRAP_WORD : GTK_WRAP_NONE);
 #ifdef TODO_GTK
@@ -1195,7 +1196,9 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 gtk_widget_set_size_request(GTK_WIDGET(sw), w, -1);
  
                 textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));                
-                gtk_widget_set_size_request(textview, -1, option[i].min);
+                r.width = option[i].max; r.height = option[i].value;
+                gtk_widget_size_request(textview, &r );
+//                gtk_widget_set_size_request(textview, -1, option[i].value);
                 /* check if label is empty */ 
                 if (strcmp(option[i].name,"") != 0) {
                     gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
@@ -1269,6 +1272,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 gtk_container_add(GTK_CONTAINER(frame), label);
 		label = frame;
 	    }
+            gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, 10);
             Pack(hbox, table, label, left, left+3, top);
 	    if(option[i].target) { // allow user to specify event handler for button presses
 		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
