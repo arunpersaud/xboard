@@ -1067,14 +1067,15 @@ static int
 TableWidth (Option *opt)
 {   // Hideous work-around! If the table is 3 columns, but 2 & 3 are always occupied together, the fixing of the width of column 1 does not work
     while(opt->type != EndMark && opt->type != Break)
-	if(opt->type == FileName || opt++->type == PathName) return 3; // This table needs browse button
+	if(opt->type == FileName || opt->type == PathName || opt++->type == BarBegin) return 3; // This table needs browse button
     return 2; // no browse button;
 }
 
 static int
 SameRow (Option *opt)
 {
-    return (opt->min & SAME_ROW && (opt->type == Button || opt->type == SaveButton || opt->type == Label || opt->type == ListBox));
+    return (opt->min & SAME_ROW && (opt->type == Button || opt->type == SaveButton || opt->type == Label
+							|| opt->type == ListBox || opt->type == BoxBegin));
 }
 
 static void
@@ -1094,7 +1095,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     GtkWidget *box;
     GtkWidget *checkbutton;
     GtkWidget *entry;
-    GtkWidget *hbox = NULL;    
+    GtkWidget *oldHbox, *hbox = NULL;    
     GtkWidget *pane = NULL;
     GtkWidget *button;
     GtkWidget *table;
@@ -1308,7 +1309,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 		label = frame;
 	    }
             gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
-            Pack(hbox, table, label, left, left+r, top, 0);
+            Pack(hbox, table, label, left, left+2, top, 0);
 	    if(option[i].target) { // allow user to specify event handler for button presses
 		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
 		g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
@@ -1330,7 +1331,8 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
                 gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
                 gtk_widget_set_sensitive(button, appData.noChessProgram || option[i].value < 0
 					 || strstr(first.variants, VariantName(option[i].value)));                 
-            }
+            } else
+            if(strlen(option[i].name) < 3) gtk_widget_set_size_request(button, 10, -1);
             
             Pack(hbox, table, button, left, left+1, top, 0);
             g_signal_connect (button, "clicked", G_CALLBACK (GenericCallback), (gpointer)(intptr_t) i + (dlgNr<<16));           
@@ -1460,14 +1462,23 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  case BarBegin:
 	    menuBar = gtk_menu_bar_new ();
 	    gtk_widget_show (menuBar);
+	    boxStart = i;
+	    break;
 	  case BoxBegin:
+	    option[i+1].min |= SAME_ROW; // kludge to suppress allocation of new hbox
+	    oldHbox = hbox;
+	    option[i].handle = (void*) (hbox = gtk_hbox_new(FALSE, 0)); // hbox to collect buttons
+            gtk_table_attach(GTK_TABLE(table), hbox, left+2, left+3, top, top+1, GTK_FILL | GTK_SHRINK, GTK_FILL, 2, 1);
 	    boxStart = i;
 	    break;
 	  case BarEnd:
-            gtk_table_attach_defaults(GTK_TABLE(table), menuBar, left, left+r, top, top+1);
+            gtk_table_attach(GTK_TABLE(table), menuBar, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
+	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
+	    break;
 	  case BoxEnd:
 //	    XtManageChildren(&form, 1);
 //	    SqueezeIntoBox(&option[boxStart], i-boxStart, option[boxStart].max);
+	    hbox = oldHbox;
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
 	    break;
 	  case Break:
