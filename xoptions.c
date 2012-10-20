@@ -1444,7 +1444,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    boxStart = i;
 	    break;
 	  case BarEnd:
-            gtk_table_attach_defaults(GTK_TABLE(table), menuBar, left, left+r, top, top+1);
+            gtk_table_attach(GTK_TABLE(table), menuBar, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
 	    break;
 	  case BoxEnd:
