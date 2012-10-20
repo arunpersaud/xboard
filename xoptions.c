@@ -1303,8 +1303,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
                 gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
                 gtk_widget_set_sensitive(button, appData.noChessProgram || option[i].value < 0
 					 || strstr(first.variants, VariantName(option[i].value)));                 
-            } else
-            if(strlen(option[i].name) < 3) gtk_widget_set_size_request(button, 10, -1);
+            }
             
             Pack(hbox, table, button, left, left+1, top, 0);
             g_signal_connect (button, "clicked", G_CALLBACK (GenericCallback), (gpointer)(intptr_t) i + (dlgNr<<16));           
@@ -1440,11 +1439,13 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    option[i+1].min |= SAME_ROW; // kludge to suppress allocation of new hbox
 	    oldHbox = hbox;
 	    option[i].handle = (void*) (hbox = gtk_hbox_new(FALSE, 0)); // hbox to collect buttons
-            gtk_table_attach(GTK_TABLE(table), hbox, left+2, left+3, top, top+1, GTK_FILL | GTK_SHRINK, GTK_FILL, 2, 1);
+	    gtk_box_pack_start(GTK_BOX (oldHbox), hbox, FALSE, TRUE, 0); // *** Beware! Assumes button bar always on same row with other! ***
+//            gtk_table_attach(GTK_TABLE(table), hbox, left+2, left+3, top, top+1, GTK_FILL | GTK_SHRINK, GTK_FILL, 2, 1);
 	    boxStart = i;
 	    break;
 	  case BarEnd:
             gtk_table_attach(GTK_TABLE(table), menuBar, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
+	    
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
 	    break;
 	  case BoxEnd:
