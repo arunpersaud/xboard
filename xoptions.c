@@ -1075,7 +1075,7 @@ static int
 SameRow (Option *opt)
 {
     return (opt->min & SAME_ROW && (opt->type == Button || opt->type == SaveButton || opt->type == Label
-							|| opt->type == ListBox || opt->type == BoxBegin));
+				 || opt->type == ListBox || opt->type == BoxBegin || opt->type == Icon));
 }
 
 static void
@@ -1298,6 +1298,11 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);
             gtk_table_attach(GTK_TABLE(table), checkbutton, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 0);
             option[i].handle = (void *)checkbutton;            
+            break; 
+	  case Icon:            
+            option[i].handle = (void *) (label = gtk_image_new_from_pixbuf(NULL));
+            gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
+            Pack(hbox, table, label, left, left+2, top, 0);
             break; 
 	  case Label:            
             option[i].handle = (void *) (label = gtk_label_new(option[i].name));

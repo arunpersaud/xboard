@@ -66,40 +66,24 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-// [HGM] pixmaps of some ICONS used in the engine-outut window
-#include "pixmaps/WHITE_14.xpm"
-#include "pixmaps/BLACK_14.xpm"
-#include "pixmaps/CLEAR_14.xpm"
-#include "pixmaps/UNKNOWN_14.xpm"
-#include "pixmaps/THINKING_14.xpm"
-#include "pixmaps/PONDER_14.xpm"
-#include "pixmaps/ANALYZING_14.xpm"
-
 extern Option engoutOptions[]; // must go in header, but which?
 
 /* Module variables */
 static int currentPV, highTextStart[2], highTextEnd[2];
 #ifdef TODO_GTK
-static Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 static Widget memoWidget;
 #endif
-static void *memoWidget;
+static GdkPixbuf *iconsGTK[8];
+static GtkWidget *outputFieldGTK[2][7]; // [HGM] front-end array to translate output field to window handlestatic void *memoWidget;
 
-#ifdef TODO_GTK
 static void
-ReadIcon (char *pixData[], int iconNr, Widget w)
+ReadIcon (gchar *svgFilename, int iconNr)
 {
-    int r;
+    char buf[MSG_SIZ];
 
-	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(w),
-				       pixData,
-				       &(icons[iconNr]),
-				       NULL, NULL /*&attr*/)) != 0) {
-	  fprintf(stderr, _("Error %d loading icon image\n"), r);
-	  exit(1);
-	}
+    snprintf(buf, MSG_SIZ, "%s/%s", SVGDIR, svgFilename);
+    iconsGTK[iconNr] = gdk_pixbuf_new_from_file(buf, NULL);
 }
-#endif
 
 void
 InitEngineOutput (Option *opt, Option *memo2)
@@ -107,28 +91,21 @@ InitEngineOutput (Option *opt, Option *memo2)
 #ifdef TODO_GTK
 	Widget w = opt->handle;
 	memoWidget = memo2->handle;
-
-        ReadIcon(WHITE_14,   nColorWhite, w);
-        ReadIcon(BLACK_14,   nColorBlack, w);
-        ReadIcon(UNKNOWN_14, nColorUnknown, w);
-
-        ReadIcon(CLEAR_14,   nClear, w);
-        ReadIcon(PONDER_14,  nPondering, w);
-        ReadIcon(THINK_14,   nThinking, w);
-        ReadIcon(ANALYZE_14, nAnalyzing, w);
 #endif
+    ReadIcon("eo_White.svg", nColorWhite);
+    ReadIcon("eo_Black.svg", nColorBlack);
+    ReadIcon("eo_Unknown.svg", nColorUnknown);
+
+    ReadIcon("eo_Clear.svg", nClear);
+    ReadIcon("eo_Ponder.svg", nPondering);
+    ReadIcon("eo_Thinking.svg", nThinking);
+    ReadIcon("eo_Analyzing.svg", nAnalyzing);
 }
 
 void
 DrawWidgetIcon (Option *opt, int nIcon)
-{   // as we are already in X front-end, so do X-stuff here
-#ifdef TODO_GTK
-    gchar widgetname[50];
-
-    if( nIcon != 0 ) {
-        gtk_image_set_from_pixbuf(GTK_IMAGE(opt->handle), GDK_PIXBUF(iconsGTK[nIcon]));
-    }
-#endif
+{   // as we are already in GTK front-end, so do GTK-stuff here
+    if( nIcon != 0 ) gtk_image_set_from_pixbuf(GTK_IMAGE(opt->handle), GDK_PIXBUF(iconsGTK[nIcon]));
 }
 
 void
