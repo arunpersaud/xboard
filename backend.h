@@ -316,7 +316,7 @@ extern int wrap P((char *dest, char *src, int count, int width, int *lp));
 int Explode P((Board board, int fromX, int fromY, int toX, int toY));
 
 typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton, ListBox, Graph, PopUp,
-		 FileName, PathName, Slider, Message, Fractional, Label,
+		 FileName, PathName, Slider, Message, Fractional, Label, Icon,
 		 BoxBegin, BoxEnd, BarBegin, BarEnd, DropDown, Break, EndMark } Control;
 
 typedef struct XB_OPT {   // [HGM] options: descriptor of UCI-style option
