@@ -980,6 +980,18 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     dialog = NULL;
 }
 
+gboolean
+ListCallback (GtkWidget *widget, GdkEventButton *event, gpointer gdata)
+{
+    int n = (intptr_t) gdata & 0xFFFF;
+    int dlg = (intptr_t) gdata >> 16;
+    Option *opt = dialogOptions[dlg] + n;
+
+    if(event->type != GDK_2BUTTON_PRESS || event->button != 1) return FALSE;
+    ((ListBoxCallback*) opt->textValue)(n, SelectedListBoxItem(opt));
+    return TRUE;
+}
+
 static char *oneLiner  =
    "<Key>Return: redraw-display() \n \
     <Key>Tab: TabProc() \n ";
@@ -1382,6 +1394,9 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
                 gtk_container_add(GTK_CONTAINER(sw), list);
                 gtk_widget_set_size_request(GTK_WIDGET(sw), option[i].max ? option[i].max : -1, option[i].value ? option[i].value : -1);
  
+                if(option[i].textValue) // generic callback for double-clicking listbox item
+                    g_signal_connect(list, "button-press-event", G_CALLBACK(ListCallback), (gpointer) (dlgNr<<16 | i) );
+
                 /* never has label, so let listbox occupy all columns */
                 Pack(hbox, table, sw, left, left+r, top, GTK_EXPAND);
             }
