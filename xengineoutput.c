@@ -66,25 +66,15 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-// [HGM] pixmaps of some ICONS used in the engine-outut window
-#include "pixmaps/WHITE_14.xpm"
-#include "pixmaps/BLACK_14.xpm"
-#include "pixmaps/CLEAR_14.xpm"
-#include "pixmaps/UNKNOWN_14.xpm"
-#include "pixmaps/THINKING_14.xpm"
-#include "pixmaps/PONDER_14.xpm"
-#include "pixmaps/ANALYZING_14.xpm"
-
 extern Option engoutOptions[]; // must go in header, but which?
 
 /* Module variables */
 static int currentPV, highTextStart[2], highTextEnd[2];
 #ifdef TODO_GTK
-static Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 static Widget memoWidget;
 #endif
-GdkPixbuf *iconsGTK[8];
-GtkWidget *outputFieldGTK[2][7]; // [HGM] front-end array to translate output field to window handlestatic void *memoWidget;
+static GdkPixbuf *iconsGTK[8];
+static GtkWidget *outputFieldGTK[2][7]; // [HGM] front-end array to translate output field to window handlestatic void *memoWidget;
 
 static void
 ReadIcon (gchar *svgFilename, int iconNr)
