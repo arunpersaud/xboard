@@ -373,6 +373,7 @@ static Option generalOptions[] = {
 { 0,  0, 0, NULL, (void*) &appData.ringBellAfterMoves, "", NULL, CheckBox, N_("Move Sound") },
 { 0,  0, 0, NULL, (void*) &appData.oneClick, "", NULL, CheckBox, N_("One-Click Moving") },
 { 0,  0, 0, NULL, (void*) &appData.periodicUpdates, "", NULL, CheckBox, N_("Periodic Updates (in Analysis Mode)") },
+{ 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, "" },
 { 0,  0, 0, NULL, (void*) &appData.ponderNextMove, "", NULL, CheckBox, N_("Ponder Next Move") },
 { 0,  0, 0, NULL, (void*) &appData.popupExitMessage, "", NULL, CheckBox, N_("Popup Exit Messages") },
 { 0,  0, 0, NULL, (void*) &appData.popupMoveErrors, "", NULL, CheckBox, N_("Popup Move Errors") },
@@ -705,9 +706,8 @@ static char *soundFiles[] = { // sound files corresponding to above names
 };
 
 static Option soundOptions[] = {
-{ 0, 0, 0, NULL, (void*) &appData.soundProgram, "", NULL, TextBox, N_("Sound Program:") },
-{ 0, 0, 0, NULL, (void*) &appData.soundDirectory, "", NULL, PathName, N_("Sounds Directory:") },
 { 0, 0, 0, NULL, (void*) (soundFiles+2) /* kludge! */, ".wav", NULL, FileName, N_("User WAV File:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundProgram, "", NULL, TextBox, N_("Sound Program:") },
 { 0, 0, 0, NULL, (void*) &trialSound, (char*) soundFiles, soundNames, ComboBox, N_("Try-Out Sound:") },
 { 0, SAME_ROW, 0, NULL, (void*) &Test, NULL, NULL, Button, N_("Play") },
 { 0, 0, 0, NULL, (void*) &appData.soundMove, (char*) soundFiles, soundNames, ComboBox, N_("Move:") },
@@ -716,13 +716,15 @@ static Option soundOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.soundIcsDraw, (char*) soundFiles, soundNames, ComboBox, N_("Draw:") },
 { 0, 0, 0, NULL, (void*) &appData.soundIcsUnfinished, (char*) soundFiles, soundNames, ComboBox, N_("Unfinished:") },
 { 0, 0, 0, NULL, (void*) &appData.soundIcsAlarm, (char*) soundFiles, soundNames, ComboBox, N_("Alarm:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundChallenge, (char*) soundFiles, soundNames, ComboBox, N_("Challenge:") },
+{ 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, "" },
+{ 0, 0, 0, NULL, (void*) &appData.soundDirectory, "", NULL, PathName, N_("Sounds Directory:") },
 { 0, 0, 0, NULL, (void*) &appData.soundShout, (char*) soundFiles, soundNames, ComboBox, N_("Shout:") },
 { 0, 0, 0, NULL, (void*) &appData.soundSShout, (char*) soundFiles, soundNames, ComboBox, N_("S-Shout:") },
 { 0, 0, 0, NULL, (void*) &appData.soundChannel, (char*) soundFiles, soundNames, ComboBox, N_("Channel:") },
 { 0, 0, 0, NULL, (void*) &appData.soundChannel1, (char*) soundFiles, soundNames, ComboBox, N_("Channel 1:") },
 { 0, 0, 0, NULL, (void*) &appData.soundTell, (char*) soundFiles, soundNames, ComboBox, N_("Tell:") },
 { 0, 0, 0, NULL, (void*) &appData.soundKibitz, (char*) soundFiles, soundNames, ComboBox, N_("Kibitz:") },
-{ 0, 0, 0, NULL, (void*) &appData.soundChallenge, (char*) soundFiles, soundNames, ComboBox, N_("Challenge:") },
 { 0, 0, 0, NULL, (void*) &appData.soundRequest, (char*) soundFiles, soundNames, ComboBox, N_("Request:") },
 { 0, 0, 0, NULL, (void*) &appData.soundSeek, (char*) soundFiles, soundNames, ComboBox, N_("Seek:") },
 { 0, SAME_ROW, 0, NULL, NULL, "", NULL, EndMark , "" }
