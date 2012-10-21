@@ -774,6 +774,18 @@ ParseCommPortSettings (char *s)
 
 int frameX, frameY;
 
+void
+GetActualPlacement (GtkWidget *shell, WindowPlacement *wp)
+{
+  GtkAllocation a;
+  if(!shell) return;
+  gtk_widget_get_allocation(shell, &a);
+  wp->x = a.x;
+  wp->y = a.y;
+  wp->width = a.width;
+  wp->height = a.height;
+  frameX = a.x; frameY = a.y; // remember to decide if windows touch
+}
 #ifdef TODO_GTK
 void
 GetActualPlacement (Widget wg, WindowPlacement *wp)
@@ -799,7 +811,6 @@ void
 GetWindowCoords ()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
-#ifdef TODO_GTK
   GetActualPlacement(shellWidget, &wpMain);
   if(shellUp[EngOutDlg]) GetActualPlacement(shells[EngOutDlg], &wpEngineOutput);
   if(shellUp[HistoryDlg]) GetActualPlacement(shells[HistoryDlg], &wpMoveHistory);
@@ -807,7 +818,6 @@ GetWindowCoords ()
   if(shellUp[GameListDlg]) GetActualPlacement(shells[GameListDlg], &wpGameList);
   if(shellUp[CommentDlg]) GetActualPlacement(shells[CommentDlg], &wpComment);
   if(shellUp[TagsDlg]) GetActualPlacement(shells[TagsDlg], &wpTags);
-#endif
 }
 
 void
@@ -827,7 +837,7 @@ MainWindowUp ()
 #ifdef TODO_GTK
   return xBoardWindow != 0;
 #else
-  return 0;
+  return DialogExists(BoardWindow);
 #endif
 }
 
@@ -862,6 +872,9 @@ ConvertToLine (int argc, char **argv)
 void
 ResizeBoardWindow (int w, int h, int inhibit)
 {
+    w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
+    h += marginH;
+    gtk_window_resize(((GtkWidget *) optList[W_BOARD].handle), w, h);
 #ifdef TODO_GTK
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH;

@@ -783,6 +783,7 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     GdkEventExpose *eevent = (GdkEventExpose *) event;
     GdkEventButton *bevent = (GdkEventButton *) event;
     GdkEventMotion *mevent = (GdkEventMotion *) event;
+    GtkAllocation a;
     cairo_t *cr;
 
 //    if (!XtIsRealized(widget)) return;
@@ -790,27 +791,34 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     switch(event->type) {
 	case GDK_EXPOSE: // make handling of expose events generic, just copying from memory buffer (->choice) to display (->textValue)
 	    /* Get window size */
+	    gtk_widget_get_allocation(widget, &a);
+	    w = a.width; h = a.height;
+//printf("expose %dx%d @ (%d,%d)\n", w, h, a.x, a.y);
 #ifdef TODO_GTK
 	    j = 0;
 	    XtSetArg(args[j], XtNwidth, &w); j++;
 	    XtSetArg(args[j], XtNheight, &h); j++;
 	    XtGetValues(widget, args, j);
-	    sizing = ((w != graph->max || h != graph->value) && ((XExposeEvent*)event)->count >= 0);
+#endif
+	    sizing = ((w != graph->max || h != graph->value) && eevent->count >= 0);
 	    graph->max = w; graph->value = h;
-	    if(sizing && ((XExposeEvent*)event)->count > 0) { graph->max = 0; return; } // don't bother if further exposure is pending during resize
+	    if(sizing && eevent->count > 0) { graph->max = 0; return; } // don't bother if further exposure is pending during resize
+#ifdef TODO_GTK
 	    if(!graph->textValue || sizing) { // create surfaces of new size for display widget
 		if(graph->textValue) cairo_surface_destroy((cairo_surface_t *)graph->textValue);
 		graph->textValue = (char*) cairo_xlib_surface_create(xDisplay, XtWindow(widget), DefaultVisual(xDisplay, 0), w, h);
 	    }
+#endif
 	    if(sizing) { // the memory buffer was already created in GenericPopup(),
 			 // to give drawing routines opportunity to use it befor first expose event
 			 // (which are only processed when main gets to the event loop, so after all init!)
 			 // so only change when size is no longer good
+#ifdef TODO_GTK
 		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
+#endif
 		break;
 	    }
-#endif
 	    cr = gdk_cairo_create(((GtkWidget *) (graph->handle))->window);
 	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
 	    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
