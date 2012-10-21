@@ -110,13 +110,13 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/eo_White.svg
 
 shogidir = $(datadir)/games/xboard/themes/shogi
-dist_shogi_DATA = shogi/shogi_gold.svg shogi/shogi_bishop_promoted.svg\
-           shogi/shogi_bishop.svg      shogi/shogi_king.svg\
-           shogi/shogi_knight.svg      shogi/shogi_knight_promoted.svg\
-           shogi/shogi_lance.svg       shogi/shogi_lance_promoted.svg\
-           shogi/shogi_pawn.svg        shogi/shogi_pawn_promoted.svg\
-           shogi/shogi_rook.svg        shogi/shogi_rook_promoted.svg\
-           shogi/shogi_silver.svg      shogi/shogi_silver_promoted.svg
+dist_shogi_DATA = shogi/WhiteGold.svg shogi/WhiteCrownedBishop.svg\
+           shogi/WhiteBishop.svg      shogi/WhiteKing.svg\
+           shogi/WhiteKnight.svg      shogi/WhiteGoldKnight.svg\
+           shogi/WhiteLance.svg       shogi/WhiteGoldLance.svg\
+           shogi/WhitePawn.svg        shogi/WhiteGoldPawn.svg\
+           shogi/WhiteRook.svg        shogi/WhiteCrownedRook.svg\
+           shogi/WhiteAdvisor.svg     shogi/WhiteGoldSilver.svg
 
 ### directory and files for pixmaps
 
