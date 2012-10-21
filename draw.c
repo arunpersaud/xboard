@@ -287,8 +287,13 @@ ScaleOnePiece (int color, int piece)
   }
 
   if(!pngPieceImages[color][piece]) { // we still did not manage to acquire a piece bitmap
-    if(!(svgPieces[color][piece] = LoadSVG(SVGDIR, color, piece))) // try to fall back on installed svg
-      DisplayError(_("No default pieces installed\nSelect your own -pieceImageDirectory"), 0); // give up
+    static int warned = 0;
+    if(!(svgPieces[color][piece] = LoadSVG(SVGDIR, color, piece)) && !warned) { // try to fall back on installed svg
+      char *msg = _("No default pieces installed\nSelect your own -pieceImageDirectory");
+      printf("%s\n", msg); // give up
+      DisplayError(msg, 0);
+      warned = 1; // prevent error message being repeated for each piece type
+    }
   }
 
   img = pngPieceImages[color][piece];
@@ -297,6 +302,8 @@ ScaleOnePiece (int color, int piece)
   if(pngPieceBitmaps2[color][piece]) cairo_surface_destroy (pngPieceBitmaps2[color][piece]);
   pngPieceBitmaps2[color][piece] = cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
   if(piece <= WhiteKing) pngPieceBitmaps[color][piece] = cs;
+
+  if(!img) return;
 
   // scaled copying of the raw png image
   cr = cairo_create(cs);
