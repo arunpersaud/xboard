@@ -266,6 +266,11 @@ char *layoutName;
 
 char installDir[] = "."; // [HGM] UCI: needed for UCI; probably needs run-time initializtion
 
+/* pixbufs */
+static GdkPixbuf       *mainwindowIcon=NULL;
+static GdkPixbuf       *WhiteIcon=NULL;
+static GdkPixbuf       *BlackIcon=NULL;
+
 typedef unsigned int BoardSize;
 BoardSize boardSize;
 Boolean chessProgram;
@@ -1331,18 +1336,13 @@ main (int argc, char **argv)
     InitMenuMarkers();
 
     /*
-     * Create an icon.
+     * Create an icon. (Use two icons, to indicate whther it is white's or black's turn.)
      */
-#ifdef TODO_GTK
-    ReadBitmap(&wIconPixmap, "icon_white.bm",
-	       icon_white_bits, icon_white_width, icon_white_height);
-    ReadBitmap(&bIconPixmap, "icon_black.bm",
-	       icon_black_bits, icon_black_width, icon_black_height);
-    iconPixmap = wIconPixmap;
-    i = 0;
-    XtSetArg(args[i], XtNiconPixmap, iconPixmap);  i++;
-    XtSetValues(shellWidget, args, i);
-#endif
+    WhiteIcon  = gdk_pixbuf_new_from_file(SVGDIR "/icon_white.svg", NULL);
+    BlackIcon  = gdk_pixbuf_new_from_file(SVGDIR "/icon_black.svg", NULL);
+    mainwindowIcon = WhiteIcon;
+    gtk_window_set_icon(GTK_WINDOW(shellWidget), mainwindowIcon);
+
 
     /*
      * Create a cursor for the board widget.
@@ -2283,22 +2283,16 @@ DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
     g_free(markup);
 }
 
-#ifdef TODO_GTK
-static Pixmap *clockIcons[] = { &wIconPixmap, &bIconPixmap };
-#endif
+static GdkPixbuf **clockIcons[] = { &WhiteIcon, &BlackIcon };
 
 void
 SetClockIcon (int color)
 {
-#ifdef TODO_GTK
-    Arg args[16];
-    Pixmap pm = *clockIcons[color];
-    if (iconPixmap != pm) {
-	iconPixmap = pm;
-	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
-	XtSetValues(shellWidget, args, 1);
+    GdkPixbuf *pm = *clockIcons[color];
+    if (mainwindowIcon != pm) {
+        mainwindowIcon = pm;
+	gtk_window_set_icon(GTK_WINDOW(shellWidget), mainwindowIcon);
     }
-#endif
 }
 
 #define INPUT_SOURCE_BUF_SIZE 8192
