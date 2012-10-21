@@ -1742,10 +1742,7 @@ do_flash_delay (unsigned long msec)
 void
 FlashDelay (int flash_delay)
 {
-#ifdef TODO_GTK
-	XSync(xDisplay, False);
 	if(flash_delay) do_flash_delay(flash_delay);
-#endif
 }
 
 double
