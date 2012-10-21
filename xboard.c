@@ -1736,8 +1736,8 @@ ReSize (WindowPlacement *wp)
 	} else ResizeBoardWindow(BOARD_WIDTH * (squareSize + lineGap) + lineGap, BOARD_HEIGHT * (squareSize + lineGap) + lineGap, 0);
 	w = BOARD_WIDTH * (squareSize + lineGap) + lineGap;
 	h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
-	if(optList->max   > w) optList->max = w;
-	if(optList->value > h) optList->value = h;
+	if(optList[W_BOARD].max   > w) optList[W_BOARD].max = w;
+	if(optList[W_BOARD].value > h) optList[W_BOARD].value = h;
 }
 
 static XtIntervalId delayedDragID = 0;

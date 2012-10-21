@@ -551,10 +551,12 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	    XtSetArg(args[j], XtNwidth, &w); j++;
 	    XtSetArg(args[j], XtNheight, &h); j++;
 	    XtGetValues(widget, args, j);
+
 	    if(w < graph->max || w > graph->max + 1 || h != graph->value) { // use width fudge of 1 pixel
-		sizing = (((XExposeEvent*)event)->count >= 0); // suppress sizing on ordered redraw in response to sizing.
+		sizing = (((XExposeEvent*)event)->count >= 0); // suppress sizing on expose for ordered redraw in response to sizing.
 		graph->max = w; graph->value = h; // note: old values are kept if we we don't exceed width fudge
-	    }
+	    } else w = graph->max;
+
 	    if(sizing && ((XExposeEvent*)event)->count > 0) { graph->max = 0; return; } // don't bother if further exposure is pending during resize
 	    if(!graph->textValue || sizing) { // create surfaces of new size for display widget
 		if(graph->textValue) cairo_surface_destroy((cairo_surface_t *)graph->textValue);
