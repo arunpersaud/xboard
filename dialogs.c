@@ -2096,7 +2096,7 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
     mainOptions[W_BOARD].max = mainOptions[W_SMALL].max = size; // board size
     mainOptions[W_SMALL].max = size - 2; // board title (subtract border!)
     mainOptions[W_BLACK].max = mainOptions[W_WHITE].max = size/2-3; // clock width
-    mainOptions[W_MESSG].max = appData.showButtonBar ? size-130 : size-2; // message
+    mainOptions[W_MESSG].max = appData.showButtonBar ? size-135 : size-2; // message
     mainOptions[W_MENU].max = size-40; // menu bar
     mainOptions[W_TITLE].type = appData.titleInWindow ? Label : -1 ;
     if(logo && logo <= size/4) { // Activate logos
