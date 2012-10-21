@@ -551,23 +551,26 @@ GraphEventProc(Widget widget, caddr_t client_data, XEvent *event)
 	    XtSetArg(args[j], XtNwidth, &w); j++;
 	    XtSetArg(args[j], XtNheight, &h); j++;
 	    XtGetValues(widget, args, j);
-	    sizing = ((w != graph->max || h != graph->value) && ((XExposeEvent*)event)->count >= 0);
-	    graph->max = w; graph->value = h;
+	    if(w < graph->max || w > graph->max + 1 || h != graph->value) { // use width fudge of 1 pixel
+		sizing = (((XExposeEvent*)event)->count >= 0); // suppress sizing on ordered redraw in response to sizing.
+		graph->max = w; graph->value = h; // note: old values are kept if we we don't exceed width fudge
+	    }
 	    if(sizing && ((XExposeEvent*)event)->count > 0) { graph->max = 0; return; } // don't bother if further exposure is pending during resize
 	    if(!graph->textValue || sizing) { // create surfaces of new size for display widget
 		if(graph->textValue) cairo_surface_destroy((cairo_surface_t *)graph->textValue);
 		graph->textValue = (char*) cairo_xlib_surface_create(xDisplay, XtWindow(widget), DefaultVisual(xDisplay, 0), w, h);
 	    }
 	    if(sizing) { // the memory buffer was already created in GenericPopup(),
-			 // to give drawing routines opportunity to use it befor first expose event
+			 // to give drawing routines opportunity to use it before first expose event
 			 // (which are only processed when main gets to the event loop, so after all init!)
 			 // so only change when size is no longer good
 		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 		break;
 	    }
-	    ExposeRedraw(graph,	((XExposeEvent*)event)->x, ((XExposeEvent*)event)->y,
-				((XExposeEvent*)event)->width, ((XExposeEvent*)event)->height);
+	    w = ((XExposeEvent*)event)->width;
+	    if(((XExposeEvent*)event)->x + w > graph->max) w--; // cut off fudge pixel
+	    if(w) ExposeRedraw(graph, ((XExposeEvent*)event)->x, ((XExposeEvent*)event)->y, w, ((XExposeEvent*)event)->height);
 	    return;
 	case MotionNotify:
 	    f = 0;
