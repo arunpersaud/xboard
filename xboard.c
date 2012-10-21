@@ -222,6 +222,7 @@ void DisplayMove P((int moveNumber));
 void ICSInitScript P((void));
 void update_ics_width P(());
 int CopyMemoProc P(());
+static gboolean EventProc P((GtkWidget *widget, GdkEvent *event, gpointer g));
 
 #ifdef TODO_GTK
 /*
@@ -762,6 +763,19 @@ ParseCommPortSettings (char *s)
 
 int frameX, frameY;
 
+void
+GetActualPlacement (GtkWidget *shell, WindowPlacement *wp)
+{
+  GtkAllocation a;
+  if(!shell) return;
+  gtk_widget_get_allocation(shell, &a);
+  wp->x = a.x;
+  wp->y = a.y;
+  wp->width = a.width;
+  wp->height = a.height;
+printf("placement\n");
+  frameX = a.x; frameY = a.y; // remember to decide if windows touch
+}
 #ifdef TODO_GTK
 void
 GetActualPlacement (Widget wg, WindowPlacement *wp)
@@ -787,7 +801,6 @@ void
 GetWindowCoords ()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
-#ifdef TODO_GTK
   GetActualPlacement(shellWidget, &wpMain);
   if(shellUp[EngOutDlg]) GetActualPlacement(shells[EngOutDlg], &wpEngineOutput);
   if(shellUp[HistoryDlg]) GetActualPlacement(shells[HistoryDlg], &wpMoveHistory);
@@ -795,7 +808,6 @@ GetWindowCoords ()
   if(shellUp[GameListDlg]) GetActualPlacement(shells[GameListDlg], &wpGameList);
   if(shellUp[CommentDlg]) GetActualPlacement(shells[CommentDlg], &wpComment);
   if(shellUp[TagsDlg]) GetActualPlacement(shells[TagsDlg], &wpTags);
-#endif
 }
 
 void
@@ -815,7 +827,7 @@ MainWindowUp ()
 #ifdef TODO_GTK
   return xBoardWindow != 0;
 #else
-  return 0;
+  return DialogExists(BoardWindow);
 #endif
 }
 
@@ -850,6 +862,9 @@ ConvertToLine (int argc, char **argv)
 void
 ResizeBoardWindow (int w, int h, int inhibit)
 {
+    w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
+    h += marginH;
+//    gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
 #ifdef TODO_GTK
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH;
@@ -1276,6 +1291,7 @@ main (int argc, char **argv)
 0);
 #endif
     InitDrawingHandle(optList + W_BOARD);
+    shellWidget      = shells[BoardWindow];
     currBoard        = &optList[W_BOARD];
     boardWidget      = optList[W_BOARD].handle;
     menuBarWidget    = optList[W_MENU].handle;
@@ -1331,6 +1347,12 @@ main (int argc, char **argv)
     shellArgs[5].value = shellArgs[3].value = h;
 //    XtSetValues(shellWidget, &shellArgs[2], 4);
 #endif
+    {
+	GtkAllocation a;
+	gtk_widget_get_allocation(shells[BoardWindow], &a);
+	w = a.width; h = a.height;
+printf("start size (%d,%d), %dx%d\n", a.x, a.y, w, h);
+    }
     marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
     marginH =  h - boardHeight;
 
@@ -1361,6 +1383,7 @@ main (int argc, char **argv)
 		      (XtEventHandler) EventProc, NULL);
 #endif
     g_signal_connect(shells[BoardWindow], "key-press-event", G_CALLBACK(KeyPressProc), NULL);
+    g_signal_connect(shells[BoardWindow], "configure-event", G_CALLBACK(EventProc), NULL);
 
     /* [AS] Restore layout */
     if( wpMoveHistory.visible ) {
@@ -1715,11 +1738,9 @@ Fraction (int x, int start, int stop)
 
 static WindowPlacement wpNew;
 
-#ifdef TODO_GTK
 void
-CoDrag (Widget sh, WindowPlacement *wp)
+CoDrag (GtkWidget *sh, WindowPlacement *wp)
 {
-    Arg args[16];
     int j=0, touch=0, fudge = 2;
     GetActualPlacement(sh, wp);
     if(abs(wpMain.x + wpMain.width + 2*frameX - wp->x)         < fudge) touch = 1; else // right touch
@@ -1733,14 +1754,18 @@ CoDrag (Widget sh, WindowPlacement *wp)
 	double fracBot = Fraction(wp->y + wp->height + frameX + frameY + 1, wpMain.y, wpMain.y + wpMain.height + frameX + frameY);
 	wp->y += fracTop * heightInc;
 	heightInc = (int) (fracBot * heightInc) - (int) (fracTop * heightInc);
+#ifdef TODO_GTK
 	if(heightInc) XtSetArg(args[j], XtNheight, wp->height + heightInc), j++;
+#endif
     } else if(touch > 2 && wpNew.width != wpMain.width) { // top or bottom and width changed
 	int widthInc = wpNew.width - wpMain.width;
 	double fracLeft = Fraction(wp->x, wpMain.x, wpMain.x + wpMain.width + 2*frameX);
 	double fracRght = Fraction(wp->x + wp->width + 2*frameX + 1, wpMain.x, wpMain.x + wpMain.width + 2*frameX);
 	wp->y += fracLeft * widthInc;
 	widthInc = (int) (fracRght * widthInc) - (int) (fracLeft * widthInc);
+#ifdef TODO_GTK
 	if(widthInc) XtSetArg(args[j], XtNwidth, wp->width + widthInc), j++;
+#endif
     }
     wp->x += wpNew.x - wpMain.x;
     wp->y += wpNew.y - wpMain.y;
@@ -1775,7 +1800,7 @@ ReSize (WindowPlacement *wp)
 #ifdef TODO_GTK
 static XtIntervalId delayedDragID = 0;
 #else
-static int delayedDragID = 0;
+static guint delayedDragTag = 0;
 #endif
 
 void
@@ -1785,7 +1810,8 @@ DragProc ()
 	if(busy) return;
 
 	busy = 1;
-	GetActualPlacement(shellWidget, &wpNew);
+//	GetActualPlacement(shellWidget, &wpNew);
+printf("drag proc (%d,%d) %dx%d\n", wpNew.x, wpNew.y, wpNew.width, wpNew.height);
 	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
 	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) { // not sized
 	    busy = 0; return; // false alarm
@@ -1797,29 +1823,33 @@ DragProc ()
 	if(shellUp[GameListDlg]) CoDrag(shells[GameListDlg], &wpGameList);
 	wpMain = wpNew;
 	DrawPosition(True, NULL);
-	delayedDragID = 0; // now drag executed, make sure next DelayedDrag will not cancel timer event (which could now be used by other)
+	if(delayedDragTag) g_source_remove(delayedDragTag);
+	delayedDragTag = 0; // now drag executed, make sure next DelayedDrag will not cancel timer event (which could now be used by other)
 	busy = 0;
 }
-#endif
 
 void
 DelayedDrag ()
 {
-#ifdef TODO_GTK
-    if(delayedDragID) XtRemoveTimeOut(delayedDragID); // cancel pending
-    delayedDragID =
-      XtAppAddTimeOut(appContext, 200, (XtTimerCallbackProc) DragProc, (XtPointer) 0); // and schedule new one 50 msec later
-#endif
+printf("old timr = %d\n", delayedDragTag);
+    if(delayedDragTag) g_source_remove(delayedDragTag);
+    delayedDragTag = g_timeout_add( 200, (GSourceFunc) DragProc, NULL);
+printf("new timr = %d\n", delayedDragTag);
 }
 
-#ifdef TODO_GTK
-void
-EventProc (Widget widget, caddr_t unused, XEvent *event)
+static gboolean
+EventProc (GtkWidget *widget, GdkEvent *event, gpointer g)
 {
-    if(XtIsRealized(widget) && event->type == ConfigureNotify || appData.useStickyWindows)
+printf("event proc (%d,%d) %dx%d\n", event->configure.x, event->configure.y, event->configure.width, event->configure.height);
+    // immediately
+    wpNew.x = event->configure.x;
+    wpNew.y = event->configure.y;
+    wpNew.width  = event->configure.width;
+    wpNew.height = event->configure.height;
+    if(appData.useStickyWindows)
 	DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
+    return FALSE;
 }
-#endif
 
 /*
  * event handler for redrawing the board

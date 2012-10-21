@@ -804,6 +804,7 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     GdkEventExpose *eevent = (GdkEventExpose *) event;
     GdkEventButton *bevent = (GdkEventButton *) event;
     GdkEventMotion *mevent = (GdkEventMotion *) event;
+    GtkAllocation a;
     cairo_t *cr;
 
 //    if (!XtIsRealized(widget)) return;
@@ -811,33 +812,38 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     switch(event->type) {
 	case GDK_EXPOSE: // make handling of expose events generic, just copying from memory buffer (->choice) to display (->textValue)
 	    /* Get window size */
+	    gtk_widget_get_allocation(widget, &a);
+	    w = a.width; h = a.height;
+//printf("expose %dx%d @ (%d,%d)\n", w, h, a.x, a.y);
 #ifdef TODO_GTK
 	    j = 0;
 	    XtSetArg(args[j], XtNwidth, &w); j++;
 	    XtSetArg(args[j], XtNheight, &h); j++;
 	    XtGetValues(widget, args, j);
-
+#endif
 	    if(w < graph->max || w > graph->max + 1 || h != graph->value) { // use width fudge of 1 pixel
-		if(((XExposeEvent*)event)->count >= 0) { // suppress sizing on expose for ordered redraw in response to sizing.
+		if(eevent->count >= 0) { // suppress sizing on expose for ordered redraw in response to sizing.
 		    sizing = 1;
 		    graph->max = w; graph->value = h; // note: old values are kept if we we don't exceed width fudge
 		}
 	    } else w = graph->max;
-
-	    if(sizing && ((XExposeEvent*)event)->count > 0) { graph->max = 0; return; } // don't bother if further exposure is pending during resize
+	    if(sizing && eevent->count > 0) { graph->max = 0; return; } // don't bother if further exposure is pending during resize
+#ifdef TODO_GTK
 	    if(!graph->textValue || sizing) { // create surfaces of new size for display widget
 		if(graph->textValue) cairo_surface_destroy((cairo_surface_t *)graph->textValue);
 		graph->textValue = (char*) cairo_xlib_surface_create(xDisplay, XtWindow(widget), DefaultVisual(xDisplay, 0), w, h);
 	    }
+#endif
 	    if(sizing) { // the memory buffer was already created in GenericPopup(),
 			 // to give drawing routines opportunity to use it before first expose event
 			 // (which are only processed when main gets to the event loop, so after all init!)
 			 // so only change when size is no longer good
+#ifdef TODO_GTK
 		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
+#endif
 		break;
 	    }
-#endif
 	    w = eevent->area.width;
 	    if(eevent->area.x + w > graph->max) w--; // cut off fudge pixel
 	    cr = gdk_cairo_create(((GtkWidget *) (graph->handle))->window);
@@ -1158,7 +1164,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 
     shells[dlgNr] = dialog;
     box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
-    gtk_box_set_spacing(GTK_BOX(box), 5);    
+//    gtk_box_set_spacing(GTK_BOX(box), 5);    
 
     arraysize = 0;
     for (i=0;option[i].type != EndMark;i++) {
@@ -1172,6 +1178,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
     for (i=0;option[i].type != EndMark;i++) {
 	if(option[i].type == -1) continue;
         top++;
+printf("option =%2d, top =%2d\n", i, top);
         if (top >= height) {
             gtk_table_resize(GTK_TABLE(table), height, r);
 	    if(!pane) { // multi-column: put tables in intermediate hbox
@@ -1180,7 +1187,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 		else
 		    pane =  gtk_vbox_new (FALSE, 0);
 		gtk_box_set_spacing(GTK_BOX(pane), 5 + 5*breakType);
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), pane, TRUE, TRUE, 0);
+		gtk_box_pack_start (GTK_BOX (/*GTK_DIALOG (dialog)->vbox*/box), pane, TRUE, TRUE, 0);
 	    }
 	    gtk_box_pack_start (GTK_BOX (pane), table, TRUE, TRUE, 0);
 	    table = gtk_table_new(arraysize - i, r=TableWidth(option + i), FALSE);
@@ -1410,8 +1417,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
             gtk_widget_set_size_request(graph, option[i].max, option[i].value);
-//	    gtk_drawing_area_size(graph, option[i].max, option[i].value);
-            gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+r, top, top+1);
+            Pack(hbox, GTK_TABLE(table), graph, left, left+r, top, GTK_EXPAND);
             g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
@@ -1452,6 +1458,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    break;
 #endif
 	  case DropDown:
+	    top--;
 	    msg = _(option[i].name); // write name on the menu button
 //	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 //	    XtSetArg(args[j], XtNlabel, msg);  j++;
@@ -1477,6 +1484,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    boxStart = i;
 	    break;
 	  case BarEnd:
+	    top--;
             gtk_table_attach(GTK_TABLE(table), menuBar, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
 	    
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
@@ -1484,12 +1492,16 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  case BoxEnd:
 //	    XtManageChildren(&form, 1);
 //	    SqueezeIntoBox(&option[boxStart], i-boxStart, option[boxStart].max);
-	    hbox = oldHbox;
+	    hbox = oldHbox; top--;
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
 	    break;
 	  case Break:
             breakType = option[i].min & SAME_ROW;
 	    top = height; // force next option to start in a new table
+            break; 
+
+	  case PopUp:
+	    top--;
             break; 
 	default:
 	    printf("GenericPopUp: unexpected case in switch. i=%d type=%d name=%s.\n", i, option[i].type, option[i].name);
@@ -1500,7 +1512,8 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
     if(pane)
 	gtk_box_pack_start (GTK_BOX (pane), table, TRUE, TRUE, 0);
     else
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), table, TRUE, TRUE, 0);
+        gtk_table_resize(GTK_TABLE(table), top+1, r),
+	gtk_box_pack_start (GTK_BOX (/*GTK_DIALOG (dialog)->vbox*/box), table, TRUE, TRUE, 0);
 
     option[i].handle = (void *) table; // remember last table in EndMark handle (for hiding Engine-Output pane).
 
