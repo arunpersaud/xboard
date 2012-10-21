@@ -709,8 +709,8 @@ SetPositionAndSize (Arg *args, Widget leftNeigbor, Widget topNeigbor, int b, int
     if(!appData.monoMode) {
 	if(!b && appData.dialogColor[0]) XtSetArg(args[j], XtNbackground, dialogColor),  j++;
 	if(b == 3 && appData.buttonColor[0]) XtSetArg(args[j], XtNbackground, buttonColor),  j++;
-	if(b == 3) b = 1;
     }
+    if(b == 3) b = 1;
     // border
     XtSetArg(args[j], XtNborderWidth, b);  j++;
     return j;
