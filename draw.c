@@ -289,10 +289,10 @@ ScaleOnePiece (int color, int piece)
   if(!pngPieceImages[color][piece]) { // we don't have cached bitmap (implying we did not have cached svg)
     if(*appData.pieceDirectory) { // user specified piece directory
       snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pieceDirectory, color ? "Black" : "White", pngPieceNames[piece]);
-      pngPieceImages[color][piece] = img = cairo_image_surface_create_from_png (buf); // try if there are png pieces there
+      img = cairo_image_surface_create_from_png (buf); // try if there are png pieces there
       if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) { // there were not
 	svgPieces[color][piece] = LoadSVG(appData.pieceDirectory, color, piece); // so try if he has svg there
-      }
+      } else pngPieceImages[color][piece] = img;
     }
   }
 
