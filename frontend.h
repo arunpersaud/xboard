@@ -184,6 +184,7 @@ extern char *homeDir;
 
 /* these are in wgamelist.c */
 void GameListPopUp P((FILE *fp, char *filename));
+void GameListPopDown P((void));
 void GameListHighlight P((int index));
 void GameListDestroy P((void));
 
