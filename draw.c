@@ -245,13 +245,13 @@ LoadSVG (char *dir, int color, int piece)
     char buf[MSG_SIZ];
   RsvgHandle *svg=svgPieces[color][piece];
   RsvgDimensionData svg_dimensions;
-  GError **svgerror=NULL;
+  GError *svgerror=NULL;
   cairo_surface_t *img;
   cairo_t *cr;
 
     snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White", pngPieceNames[piece]);
 
-    if(svg || *dir && (svg = rsvg_handle_new_from_file(buf, svgerror))) {
+    if(svg || *dir && (svg = rsvg_handle_new_from_file(buf, &svgerror))) {
 
       rsvg_handle_get_dimensions(svg, &svg_dimensions);
       img = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, squareSize,  squareSize);
@@ -267,6 +267,8 @@ LoadSVG (char *dir, int color, int piece)
 
       return svg;
     }
+    if(svgerror)
+	g_error_free(svgerror);
     return NULL;
 }
 
