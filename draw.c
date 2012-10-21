@@ -518,8 +518,9 @@ DrawGrid()
   /* lines in X */
   for (i = 0; i < BOARD_WIDTH + BOARD_HEIGHT + 2; i++)
     {
-      cairo_move_to (cr, gridSegments[i].x1 + odd, gridSegments[i].y1 + odd);
-      cairo_line_to (cr, gridSegments[i].x2 + odd, gridSegments[i].y2 + odd);
+      int h = (gridSegments[i].y1 == gridSegments[i].y2); // horizontal
+      cairo_move_to (cr, gridSegments[i].x1 + !h*odd, gridSegments[i].y1 + h*odd);
+      cairo_line_to (cr, gridSegments[i].x2 + !h*odd, gridSegments[i].y2 + h*odd);
       cairo_stroke (cr);
     }
 
