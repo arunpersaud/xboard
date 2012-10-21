@@ -166,7 +166,6 @@ void
 InitDrawingSizes (BoardSize boardSize, int flags)
 {   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
     int boardWidth, boardHeight;
-    int i;
     static int oldWidth, oldHeight;
     static VariantClass oldVariant;
     static int oldMono = -1, oldTwoBoards = 0;
