@@ -134,12 +134,38 @@ SwitchWindow ()
     csBoardWindow = DRAWABLE(currBoard);
 }
 
+void
+SelectPieces(VariantClass v)
+{
+    int i;
+    for(i=0; i<2; i++) {
+	int p;
+	for(p=0; p<=(int)WhiteKing; p++)
+	   pngPieceBitmaps[i][p] = pngPieceBitmaps2[i][p]; // defaults
+	if(v == VariantShogi) {
+	   pngPieceBitmaps[i][(int)WhiteCannon] = pngPieceBitmaps2[i][(int)WhiteKing+1];
+	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteKing+2];
+	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhiteKing+3];
+	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+4];
+	   pngPieceBitmaps[i][(int)WhiteQueen] = pngPieceBitmaps2[i][(int)WhiteLance];
+	}
+#ifdef GOTHIC
+	if(v == VariantGothic) {
+	   pngPieceBitmaps[i][(int)WhiteMarshall] = pngPieceBitmaps2[i][(int)WhiteSilver];
+	}
+#endif
+	if(v == VariantSChess) {
+	   pngPieceBitmaps[i][(int)WhiteAngel]    = pngPieceBitmaps2[i][(int)WhiteFalcon];
+	   pngPieceBitmaps[i][(int)WhiteMarshall] = pngPieceBitmaps2[i][(int)WhiteAlfil];
+	}
+    }
+}
+
 #define BoardSize int
 void
 InitDrawingSizes (BoardSize boardSize, int flags)
 {   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
     int boardWidth, boardHeight;
-    int i;
     static int oldWidth, oldHeight;
     static VariantClass oldVariant;
     static int oldMono = -1, oldTwoBoards = 0;
@@ -171,27 +197,8 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 
   if(gameInfo.variant != oldVariant) { // and only if variant changed
 
-    for(i=0; i<2; i++) {
-	int p;
-	for(p=0; p<=(int)WhiteKing; p++)
-	   pngPieceBitmaps[i][p] = pngPieceBitmaps2[i][p]; // defaults
-	if(gameInfo.variant == VariantShogi) {
-	   pngPieceBitmaps[i][(int)WhiteCannon] = pngPieceBitmaps2[i][(int)WhiteKing+1];
-	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteKing+2];
-	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhiteKing+3];
-	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+4];
-	   pngPieceBitmaps[i][(int)WhiteQueen] = pngPieceBitmaps2[i][(int)WhiteLance];
-	}
-#ifdef GOTHIC
-	if(gameInfo.variant == VariantGothic) {
-	   pngPieceBitmaps[i][(int)WhiteMarshall] = pngPieceBitmaps2[i][(int)WhiteSilver];
-	}
-#endif
-	if(gameInfo.variant == VariantSChess) {
-	   pngPieceBitmaps[i][(int)WhiteAngel]    = pngPieceBitmaps2[i][(int)WhiteFalcon];
-	   pngPieceBitmaps[i][(int)WhiteMarshall] = pngPieceBitmaps2[i][(int)WhiteAlfil];
-	}
-    }
+    SelectPieces(gameInfo.variant);
+
     oldMono = -10; // kludge to force recreation of animation masks
     oldVariant = gameInfo.variant;
   }
@@ -242,7 +249,7 @@ LoadSVG (char *dir, int color, int piece)
 
     snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White", pngPieceNames[piece]);
 
-    if(svg || *dir && (svg = rsvg_handle_new_from_file(buf,svgerror))) {
+    if(svg || *dir && (svg = rsvg_handle_new_from_file(buf, svgerror))) {
 
       rsvg_handle_get_dimensions(svg, &svg_dimensions);
       img = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, squareSize,  squareSize);
@@ -293,7 +300,6 @@ ScaleOnePiece (int color, int piece)
   // create new bitmap to hold scaled piece image (and remove any old)
   if(pngPieceBitmaps2[color][piece]) cairo_surface_destroy (pngPieceBitmaps2[color][piece]);
   pngPieceBitmaps2[color][piece] = cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
-  if(piece <= WhiteKing) pngPieceBitmaps[color][piece] = cs;
 
   // scaled copying of the raw png image
   cr = cairo_create(cs);
@@ -338,6 +344,7 @@ CreatePNGPieces ()
     ScaleOnePiece(0, p);
     ScaleOnePiece(1, p);
   }
+  SelectPieces(gameInfo.variant);
 }
 
 void
