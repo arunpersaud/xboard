@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard-4.6.0.20120304\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2012-10-13 08:12+0200\n"
+"POT-Creation-Date: 2012-10-21 15:48-0700\n"
 "PO-Revision-Date: 2012-03-05 21:55+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: uk\n"
 "X-Generator: Lokalize 1.2\n"
-"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n%"
-"10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
+"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
@@ -371,7 +371,7 @@ msgstr "Некоректний хід у виведених даних ICS: «%s
 msgid "Gap in move list"
 msgstr "Пропущено хід у списку ходів"
 
-#: backend.c:9807 dialogs.c:459
+#: backend.c:9807 dialogs.c:453
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "Варіант %s не підтримується %s"
@@ -892,7 +892,7 @@ msgstr "Клонувати турнір"
 msgid "First you must specify an existing tourney file to clone"
 msgstr "Спочатку вам слід вказати вже створений файл турніру для клонування"
 
-#: dialogs.c:330 dialogs.c:1249
+#: dialogs.c:330 dialogs.c:1243
 msgid "# no engines are installed"
 msgstr ""
 
@@ -956,7 +956,7 @@ msgstr "Хід у одне клацання"
 msgid "Periodic Updates (in Analysis Mode)"
 msgstr "Періодичні оновлення (у режимі аналізу)"
 
-#: dialogs.c:375 dialogs.c:512
+#: dialogs.c:375 dialogs.c:506
 msgid "Ponder Next Move"
 msgstr "Обдумати наступний хід"
 
@@ -1152,274 +1152,259 @@ msgstr "Кількість файлів дошки:"
 msgid "Holdings Size:"
 msgstr "Розмір резерву:"
 
-#: dialogs.c:443
-msgid ""
-"WARNING: variants with un-orthodox\n"
-"pieces only have built-in bitmaps\n"
-"for -boardSize middling, bulky and\n"
-"petite, and substitute king or amazon\n"
-"for missing bitmaps. (See manual.)"
-msgstr ""
-"УВАГА: для варіантів з неортодоксальними\n"
-"фігурами використовуватимуться зображення\n"
-"для -boardSize середнього, великого і\n"
-"малого розмірів. Для фігур без зображень\n"
-"буде використано зображення короля або\n"
-"амазонки. (Див. підручник.)"
-
-#: dialogs.c:464
+#: dialogs.c:458
 #, c-format
 msgid "Warning: second engine (%s) does not support this!"
 msgstr "Попередження: ця можливість не підтримується другим рушієм (%s)!"
 
-#: dialogs.c:487
+#: dialogs.c:481
 #, c-format
 msgid ""
 "All variants not supported by first engine\n"
 "(currently %s) are disabled"
 msgstr ""
 
-#: dialogs.c:488
+#: dialogs.c:482
 msgid "New Variant"
 msgstr "Новий варіант"
 
-#: dialogs.c:513
+#: dialogs.c:507
 msgid "Maximum Number of CPUs per Engine:"
 msgstr "Максимальна кількість процесорів на рушій:"
 
-#: dialogs.c:514
+#: dialogs.c:508
 msgid "Polygot Directory:"
 msgstr "Каталог бібліотек Polygot:"
 
-#: dialogs.c:515
+#: dialogs.c:509
 msgid "Hash-Table Size (MB):"
 msgstr "Розмір таблиці хешів (у МБ):"
 
-#: dialogs.c:516
+#: dialogs.c:510
 msgid "Nalimov EGTB Path:"
 msgstr "Шлях до бази даних EGTB Налімова:"
 
-#: dialogs.c:517
+#: dialogs.c:511
 msgid "EGTB Cache Size (MB):"
 msgstr "Розмір кешу EGTB (у МБ):"
 
-#: dialogs.c:518
+#: dialogs.c:512
 msgid "Use GUI Book"
 msgstr "Використовувати книгу з графічним інтерфейсом"
 
-#: dialogs.c:519
+#: dialogs.c:513
 msgid "Opening-Book Filename:"
 msgstr "Назва файла даних дебютів:"
 
-#: dialogs.c:520
+#: dialogs.c:514
 msgid "Book Depth (moves):"
 msgstr "Глибина книги (у ходах):"
 
-#: dialogs.c:521
+#: dialogs.c:515
 msgid "Book Variety (0) vs. Strength (100):"
 msgstr "Компроміс між різноманітністю (0) і силою (100) книги:"
 
-#: dialogs.c:522
+#: dialogs.c:516
 msgid "Engine #1 Has Own Book"
 msgstr "Рушій 1 має власну книгу"
 
-#: dialogs.c:523
+#: dialogs.c:517
 msgid "Engine #2 Has Own Book          "
 msgstr "Рушій 2 має власну книгу          "
 
-#: dialogs.c:532
+#: dialogs.c:526
 msgid "Common Engine Settings"
 msgstr "Загальні параметри рушіїв"
 
-#: dialogs.c:538
+#: dialogs.c:532
 msgid "Detect all Mates"
 msgstr "Виявляти всі мати"
 
-#: dialogs.c:539
+#: dialogs.c:533
 msgid "Verify Engine Result Claims"
 msgstr "Перевіряти вимоги до результатів рушія"
 
-#: dialogs.c:540
+#: dialogs.c:534
 msgid "Draw if Insufficient Mating Material"
 msgstr "Нічия, якщо недостатньо фігур для мату"
 
-#: dialogs.c:541
+#: dialogs.c:535
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
 msgstr "Визначати тривіальні нічиї (трикратне повторення)"
 
-#: dialogs.c:542
+#: dialogs.c:536
 msgid "N-Move Rule:"
 msgstr "Правило N-го ходу:"
 
-#: dialogs.c:543
+#: dialogs.c:537
 msgid "N-fold Repeats:"
 msgstr "N-кратне повторення:"
 
-#: dialogs.c:544
+#: dialogs.c:538
 msgid "Draw after N Moves Total:"
 msgstr "Нічия після N ходів загалом:"
 
-#: dialogs.c:545
+#: dialogs.c:539
 msgid "Win / Loss Threshold:"
 msgstr "Поріг виграшу/програшу:"
 
-#: dialogs.c:546
+#: dialogs.c:540
 msgid "Negate Score of Engine #1"
 msgstr "Негативна оцінка рушія 1"
 
-#: dialogs.c:547
+#: dialogs.c:541
 msgid "Negate Score of Engine #2"
 msgstr "Негативна оцінка рушія 2"
 
-#: dialogs.c:554
+#: dialogs.c:548
 msgid "Adjudicate non-ICS Games"
 msgstr "Судити ігри, що не належать до класу ICS"
 
-#: dialogs.c:567
+#: dialogs.c:561
 msgid "Auto-Kibitz"
 msgstr "Автопоради"
 
-#: dialogs.c:568
+#: dialogs.c:562
 msgid "Auto-Comment"
 msgstr "Автокоментарі"
 
-#: dialogs.c:569
+#: dialogs.c:563
 msgid "Auto-Observe"
 msgstr "Автоспостереження"
 
-#: dialogs.c:570
+#: dialogs.c:564
 msgid "Auto-Raise Board"
 msgstr "Автопідняття дошки"
 
-#: dialogs.c:571
+#: dialogs.c:565
 msgid "Background Observe while Playing"
 msgstr "Спостереження у тлі під час гри"
 
-#: dialogs.c:572
+#: dialogs.c:566
 msgid "Dual Board for Background-Observed Game"
 msgstr "Подвійна дошка для ігор з фоновим спостереженням"
 
-#: dialogs.c:573
+#: dialogs.c:567
 msgid "Get Move List"
 msgstr "Отримати список ходів"
 
-#: dialogs.c:574
+#: dialogs.c:568
 msgid "Quiet Play"
 msgstr "Мовчазна гра"
 
-#: dialogs.c:575
+#: dialogs.c:569
 msgid "Seek Graph"
 msgstr "Граф викликів"
 
-#: dialogs.c:576
+#: dialogs.c:570
 msgid "Auto-Refresh Seek Graph"
 msgstr "Автоматичне оновлення графу пошуків"
 
-#: dialogs.c:577
+#: dialogs.c:571
 msgid "Premove"
 msgstr "Попередній хід"
 
-#: dialogs.c:578
+#: dialogs.c:572
 msgid "Premove for White"
 msgstr "Попередній хід для білих"
 
-#: dialogs.c:579
+#: dialogs.c:573
 msgid "First White Move:"
 msgstr "Перший хід білих:"
 
-#: dialogs.c:580
+#: dialogs.c:574
 msgid "Premove for Black"
 msgstr "Попередній хід для чорних"
 
-#: dialogs.c:581
+#: dialogs.c:575
 msgid "First Black Move:"
 msgstr "Перший хід чорних:"
 
-#: dialogs.c:583
+#: dialogs.c:577
 msgid "Alarm"
 msgstr "Нагадування"
 
-#: dialogs.c:584
+#: dialogs.c:578
 msgid "Alarm Time (msec):"
 msgstr "Час нагадування (у мс):"
 
-#: dialogs.c:586
+#: dialogs.c:580
 msgid "Colorize Messages"
 msgstr "Розфарбовувати повідомлення"
 
-#: dialogs.c:587
+#: dialogs.c:581
 msgid "Shout Text Colors:"
 msgstr "Кольори тексту вигуків:"
 
-#: dialogs.c:588
+#: dialogs.c:582
 msgid "S-Shout Text Colors:"
 msgstr "Колір тексту S-вигуків:"
 
-#: dialogs.c:589
+#: dialogs.c:583
 msgid "Channel #1 Text Colors:"
 msgstr "Кольори тексту каналу 1:"
 
-#: dialogs.c:590
+#: dialogs.c:584
 msgid "Other Channel Text Colors:"
 msgstr "Кольори тексту інших каналів:"
 
-#: dialogs.c:591
+#: dialogs.c:585
 msgid "Kibitz Text Colors:"
 msgstr "Кольори тексту порад:"
 
-#: dialogs.c:592
+#: dialogs.c:586
 msgid "Tell Text Colors:"
 msgstr "Кольори тексту висловлювань:"
 
-#: dialogs.c:593
+#: dialogs.c:587
 msgid "Challenge Text Colors:"
 msgstr "Кольори тексту викликів:"
 
-#: dialogs.c:594
+#: dialogs.c:588
 msgid "Request Text Colors:"
 msgstr "Кольори тексту запитів:"
 
-#: dialogs.c:595
+#: dialogs.c:589
 msgid "Seek Text Colors:"
 msgstr "Кольори тексту під час пошуку:"
 
-#: dialogs.c:602
+#: dialogs.c:596
 msgid "ICS Options"
 msgstr "Параметри ICS"
 
-#: dialogs.c:607
+#: dialogs.c:601
 msgid "Exact position match"
 msgstr "Точний збіг позицій"
 
-#: dialogs.c:607
+#: dialogs.c:601
 msgid "Shown position is subset"
 msgstr "Показана позиція є підмножиною"
 
-#: dialogs.c:607
+#: dialogs.c:601
 msgid "Same material with exactly same Pawn chain"
 msgstr "Однаковий матеріал з однаковим ланцюжком пішаків"
 
-#: dialogs.c:608
+#: dialogs.c:602
 msgid "Same material"
 msgstr "Однаковий матеріал"
 
-#: dialogs.c:608
+#: dialogs.c:602
 msgid "Material range (top board half optional)"
 msgstr "Діапазон матеріалу (верхня половина дошки, необов’язковий)"
 
-#: dialogs.c:608
+#: dialogs.c:602
 msgid "Material difference (optional stuff balanced)"
 msgstr "Відмінність матеріалів (з додатковим врівноваженням можливостей)"
 
-#: dialogs.c:620
+#: dialogs.c:614
 msgid "Auto-Display Tags"
 msgstr "Автопоказ міток"
 
-#: dialogs.c:621
+#: dialogs.c:615
 msgid "Auto-Display Comment"
 msgstr "Автопоказ коментарів"
 
-#: dialogs.c:622
+#: dialogs.c:616
 msgid ""
 "Auto-Play speed of loaded games\n"
 "(0 = instant, -1 = off):"
@@ -1427,11 +1412,11 @@ msgstr ""
 "Швидкість автогри у завантажених іграх\n"
 "(0 = негайний показ, -1 = вимкнути автогру):"
 
-#: dialogs.c:623
+#: dialogs.c:617
 msgid "Seconds per Move:"
 msgstr "Секунд на хід:"
 
-#: dialogs.c:624
+#: dialogs.c:618
 msgid ""
 "\n"
 "options to use in game-viewer mode:"
@@ -1439,7 +1424,7 @@ msgstr ""
 "\n"
 "Параметри режиму перегляду ігор:"
 
-#: dialogs.c:626
+#: dialogs.c:620
 msgid ""
 "\n"
 "Thresholds for position filtering in game list:"
@@ -1447,690 +1432,690 @@ msgstr ""
 "\n"
 "Порогові значення фільтрування позицій у списку ігор:"
 
-#: dialogs.c:627
+#: dialogs.c:621
 msgid "Elo of strongest player at least:"
 msgstr "Рейтинг Ело для сильнішого гравця не нижче за:"
 
-#: dialogs.c:628
+#: dialogs.c:622
 msgid "Elo of weakest player at least:"
 msgstr "Рейтинг Ело для слабшого гравця не нижче за:"
 
-#: dialogs.c:629
+#: dialogs.c:623
 msgid "No games before year:"
 msgstr "Не показувати ігри до року:"
 
-#: dialogs.c:630
+#: dialogs.c:624
 msgid "Minimum nr consecutive positions:"
 msgstr "Мінімальна к-ть послідовних позицій:"
 
-#: dialogs.c:631
+#: dialogs.c:625
 msgid "Search mode:"
 msgstr "Режим пошуку:"
 
-#: dialogs.c:632
+#: dialogs.c:626
 msgid "Also match reversed colors"
 msgstr "Шукати у позиціях зворотних кольорів"
 
-#: dialogs.c:633
+#: dialogs.c:627
 msgid "Also match left-right flipped position"
 msgstr "Шукати у симетричних позиціях"
 
-#: dialogs.c:641
+#: dialogs.c:635
 msgid "Load Game Options"
 msgstr "Параметри завантаження ігор"
 
-#: dialogs.c:653
+#: dialogs.c:647
 msgid "Auto-Save Games"
 msgstr "Автозбереження ігор"
 
-#: dialogs.c:654
+#: dialogs.c:648
 msgid "Save Games on File:"
 msgstr "Зберігати ігри до файла:"
 
-#: dialogs.c:655
+#: dialogs.c:649
 msgid "Save Final Positions on File:"
 msgstr "Зберігати остаточні позиції до файла:"
 
-#: dialogs.c:656
+#: dialogs.c:650
 msgid "PGN Event Header:"
 msgstr "Обробник подій PGN:"
 
-#: dialogs.c:657
+#: dialogs.c:651
 msgid "Old Save Style (as opposed to PGN)"
 msgstr "Застарілий стиль збереження (на відміну від PGN)"
 
-#: dialogs.c:658
+#: dialogs.c:652
 msgid "Include Number Tag in tourney PGN"
 msgstr "Включити мітку номера до PGN турніру"
 
-#: dialogs.c:659
+#: dialogs.c:653
 msgid "Save Score/Depth Info in PGN"
 msgstr "Зберігати дані щодо рейтингу/глибини у PGN"
 
-#: dialogs.c:660
+#: dialogs.c:654
 msgid "Save Out-of-Book Info in PGN           "
 msgstr "Зберігати сторонні дані до PGN           "
 
-#: dialogs.c:667
+#: dialogs.c:661
 msgid "Save Game Options"
 msgstr "Параметри збереження ігор"
 
-#: dialogs.c:676
+#: dialogs.c:670
 msgid "No Sound"
 msgstr "Без звуку"
 
-#: dialogs.c:677
+#: dialogs.c:671
 msgid "Default Beep"
 msgstr "Типовий гудок"
 
-#: dialogs.c:678
+#: dialogs.c:672
 msgid "Above WAV File"
 msgstr "Файл WAV вище"
 
-#: dialogs.c:679
+#: dialogs.c:673
 msgid "Car Horn"
 msgstr "Автомобільний гудок"
 
-#: dialogs.c:680
+#: dialogs.c:674
 msgid "Cymbal"
 msgstr "Цимбали"
 
-#: dialogs.c:681
+#: dialogs.c:675
 msgid "Ding"
 msgstr "Дзвінок"
 
-#: dialogs.c:682
+#: dialogs.c:676
 msgid "Gong"
 msgstr "Гонг"
 
-#: dialogs.c:683
+#: dialogs.c:677
 msgid "Laser"
 msgstr "Лазер"
 
-#: dialogs.c:684
+#: dialogs.c:678
 msgid "Penalty"
 msgstr "Штраф"
 
-#: dialogs.c:685
+#: dialogs.c:679
 msgid "Phone"
 msgstr "Телефон"
 
-#: dialogs.c:686
+#: dialogs.c:680
 msgid "Pop"
 msgstr "Плескання"
 
-#: dialogs.c:687
+#: dialogs.c:681
 msgid "Slap"
 msgstr "Клацання"
 
-#: dialogs.c:688
+#: dialogs.c:682
 msgid "Wood Thunk"
 msgstr "Удар об дерево"
 
-#: dialogs.c:690
+#: dialogs.c:684
 msgid "User File"
 msgstr "Файл користувача"
 
-#: dialogs.c:712
+#: dialogs.c:706
 msgid "Sound Program:"
 msgstr "Програма відтворення:"
 
-#: dialogs.c:713
+#: dialogs.c:707
 msgid "Sounds Directory:"
 msgstr "Каталог звуків:"
 
-#: dialogs.c:714
+#: dialogs.c:708
 msgid "User WAV File:"
 msgstr "Файл WAV користувача:"
 
-#: dialogs.c:715
+#: dialogs.c:709
 msgid "Try-Out Sound:"
 msgstr "Тестовий звук:"
 
-#: dialogs.c:716
+#: dialogs.c:710
 msgid "Play"
 msgstr "Пуск"
 
-#: dialogs.c:717
+#: dialogs.c:711
 msgid "Move:"
 msgstr "Хід:"
 
-#: dialogs.c:718
+#: dialogs.c:712
 msgid "Win:"
 msgstr "Виграшів:"
 
-#: dialogs.c:719
+#: dialogs.c:713
 msgid "Lose:"
 msgstr "Програшів:"
 
-#: dialogs.c:720
+#: dialogs.c:714
 msgid "Draw:"
 msgstr "Нічиїх:"
 
-#: dialogs.c:721
+#: dialogs.c:715
 msgid "Unfinished:"
 msgstr "Незавершених:"
 
-#: dialogs.c:722
+#: dialogs.c:716
 msgid "Alarm:"
 msgstr "Нагадування:"
 
-#: dialogs.c:723
+#: dialogs.c:717
 msgid "Shout:"
 msgstr "Вигук:"
 
-#: dialogs.c:724
+#: dialogs.c:718
 msgid "S-Shout:"
 msgstr "S-вигук:"
 
-#: dialogs.c:725
+#: dialogs.c:719
 msgid "Channel:"
 msgstr "Канал:"
 
-#: dialogs.c:726
+#: dialogs.c:720
 msgid "Channel 1:"
 msgstr "Канал 1:"
 
-#: dialogs.c:727
+#: dialogs.c:721
 msgid "Tell:"
 msgstr "Висловлення:"
 
-#: dialogs.c:728
+#: dialogs.c:722
 msgid "Kibitz:"
 msgstr "Порада:"
 
-#: dialogs.c:729
+#: dialogs.c:723
 msgid "Challenge:"
 msgstr "Виклик:"
 
-#: dialogs.c:730
+#: dialogs.c:724
 msgid "Request:"
 msgstr "Запит:"
 
-#: dialogs.c:731
+#: dialogs.c:725
 msgid "Seek:"
 msgstr "Пошук:"
 
-#: dialogs.c:747
+#: dialogs.c:741
 msgid "Sound Options"
 msgstr "Параметри звуку"
 
-#: dialogs.c:768
+#: dialogs.c:762
 msgid "White Piece Color:"
 msgstr "Колір фігур білих:"
 
 #. TRANSLATORS: R = single letter for the color red
-#: dialogs.c:771 dialogs.c:780 dialogs.c:786 dialogs.c:792 dialogs.c:798
-#: dialogs.c:804
+#: dialogs.c:765 dialogs.c:774 dialogs.c:780 dialogs.c:786 dialogs.c:792
+#: dialogs.c:798
 msgid "R"
 msgstr "Ч"
 
 #. TRANSLATORS: G = single letter for the color green
-#: dialogs.c:773 dialogs.c:781 dialogs.c:787 dialogs.c:793 dialogs.c:799
-#: dialogs.c:805
+#: dialogs.c:767 dialogs.c:775 dialogs.c:781 dialogs.c:787 dialogs.c:793
+#: dialogs.c:799
 msgid "G"
 msgstr "З"
 
 #. TRANSLATORS: B = single letter for the color blue
-#: dialogs.c:775 dialogs.c:782 dialogs.c:788 dialogs.c:794 dialogs.c:800
-#: dialogs.c:806
+#: dialogs.c:769 dialogs.c:776 dialogs.c:782 dialogs.c:788 dialogs.c:794
+#: dialogs.c:800
 msgid "B"
 msgstr "С"
 
 #. TRANSLATORS: D = single letter to make a color darker
-#: dialogs.c:777 dialogs.c:783 dialogs.c:789 dialogs.c:795 dialogs.c:801
-#: dialogs.c:807
+#: dialogs.c:771 dialogs.c:777 dialogs.c:783 dialogs.c:789 dialogs.c:795
+#: dialogs.c:801
 msgid "D"
 msgstr "Т"
 
-#: dialogs.c:778
+#: dialogs.c:772
 msgid "Black Piece Color:"
 msgstr "Колір фігур чорних:"
 
-#: dialogs.c:784
+#: dialogs.c:778
 msgid "Light Square Color:"
 msgstr "Колір світлих клітинок:"
 
-#: dialogs.c:790
+#: dialogs.c:784
 msgid "Dark Square Color:"
 msgstr "Колір темних клітинок:"
 
-#: dialogs.c:796
+#: dialogs.c:790
 msgid "Highlight Color:"
 msgstr "Колір позначення:"
 
-#: dialogs.c:802
+#: dialogs.c:796
 msgid "Premove Highlight Color:"
 msgstr "Колір підсвічування плану ходу:"
 
-#: dialogs.c:808
+#: dialogs.c:802
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
 msgstr "Стиль обміну фігурами сьогі     (Кольорові кнопки відновлюють типовий)"
 
-#: dialogs.c:810
+#: dialogs.c:804
 msgid "Mono Mode"
 msgstr "Монорежим"
 
-#: dialogs.c:811
+#: dialogs.c:805
 msgid "Line Gap ( -1 = default for board size):"
 msgstr "Проміжок між рядами ( -1 = типовий для розмірів дошки):"
 
-#: dialogs.c:812
+#: dialogs.c:806
 msgid "Use Board Textures"
 msgstr "Використовувати текстури дошки"
 
-#: dialogs.c:813
+#: dialogs.c:807
 msgid "Light-Squares Texture File:"
 msgstr "Файл текстур світлих клітинок:"
 
-#: dialogs.c:814
+#: dialogs.c:808
 msgid "Dark-Squares Texture File:"
 msgstr "Файл текстур темних клітинок:"
 
-#: dialogs.c:815
+#: dialogs.c:809
 msgid "Use external piece bitmaps with their own colors"
 msgstr ""
 
-#: dialogs.c:816
+#: dialogs.c:810
 #, fuzzy
 msgid "Directory with Pieces Images:"
 msgstr "Каталог bitmap фігур:"
 
-#: dialogs.c:866
+#: dialogs.c:860
 msgid "Board Options"
 msgstr "Параметри дошки"
 
-#: dialogs.c:919 menus.c:695
+#: dialogs.c:913 menus.c:695
 msgid "ICS text menu"
 msgstr "Текстове меню ICS"
 
-#: dialogs.c:938
+#: dialogs.c:932
 msgid "clear"
 msgstr "спорожнити"
 
-#: dialogs.c:939 dialogs.c:995
+#: dialogs.c:933 dialogs.c:989
 msgid "save changes"
 msgstr "зберегти зміни"
 
-#: dialogs.c:1010
+#: dialogs.c:1004
 msgid "Edit book"
 msgstr "Змінити книгу"
 
-#: dialogs.c:1010 menus.c:697
+#: dialogs.c:1004 menus.c:697
 msgid "Tags"
 msgstr "Мітки"
 
-#: dialogs.c:1126
+#: dialogs.c:1120
 msgid "ICS input box"
 msgstr "Поле введення ICS"
 
-#: dialogs.c:1157
+#: dialogs.c:1151
 msgid "Type a move"
 msgstr "Введіть хід"
 
-#: dialogs.c:1182
+#: dialogs.c:1176
 msgid "Engine Settings"
 msgstr "Параметри рушія"
 
-#: dialogs.c:1207
+#: dialogs.c:1201
 msgid "Select engine from list:"
 msgstr "Виберіть рушій зі списку:"
 
-#: dialogs.c:1210
+#: dialogs.c:1204
 msgid "or specify one below:"
 msgstr "або вкажіть його нижче:"
 
-#: dialogs.c:1211
+#: dialogs.c:1205
 msgid "Nickname (optional):"
 msgstr "Псевдонім (необов’язковий):"
 
-#: dialogs.c:1212
+#: dialogs.c:1206
 msgid "Use nickname in PGN player tags of engine-engine games"
 msgstr "Використовувати псевдонім у мітках гравця PGN під час ігор між рушіями"
 
-#: dialogs.c:1213
+#: dialogs.c:1207
 msgid "Engine Directory:"
 msgstr "Каталог рушія:"
 
-#: dialogs.c:1214
+#: dialogs.c:1208
 msgid "Engine Command:"
 msgstr "Команда рушія:"
 
-#: dialogs.c:1215
+#: dialogs.c:1209
 msgid "(Directory will be derived from engine path when empty)"
 msgstr ""
 "(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
 
-#: dialogs.c:1216
+#: dialogs.c:1210
 msgid "UCI"
 msgstr "UCI"
 
-#: dialogs.c:1217
+#: dialogs.c:1211
 msgid "WB protocol v1 (do not wait for engine features)"
 msgstr "Протокол WB версії 1 (не чекати на дані щодо можливостей)"
 
-#: dialogs.c:1218
+#: dialogs.c:1212
 msgid "Must not use GUI book"
 msgstr "Не повинен використовувати книгу з графічним інтерфейсом"
 
-#: dialogs.c:1219
+#: dialogs.c:1213
 msgid "Add this engine to the list"
 msgstr "Додати цей рушій до списку"
 
-#: dialogs.c:1220
+#: dialogs.c:1214
 msgid "Force current variant with this engine"
 msgstr "Примусово визначити поточний варіант для рушія"
 
-#: dialogs.c:1270
+#: dialogs.c:1264
 #, fuzzy
 msgid "Load first engine"
 msgstr "Завантажити рушій"
 
-#: dialogs.c:1276
+#: dialogs.c:1270
 #, fuzzy
 msgid "Load second engine"
 msgstr "Завантажити вказаний рушій як"
 
-#: dialogs.c:1299
+#: dialogs.c:1293
 msgid "shuffle"
 msgstr "перемішати"
 
-#: dialogs.c:1300
+#: dialogs.c:1294
 msgid "Start-position number:"
 msgstr "Номер початкової позиції:"
 
-#: dialogs.c:1301
+#: dialogs.c:1295
 msgid "randomize"
 msgstr "випадково"
 
-#: dialogs.c:1302
+#: dialogs.c:1296
 msgid "pick fixed"
 msgstr "вибрати фіксовану"
 
-#: dialogs.c:1319
+#: dialogs.c:1313
 msgid "New Shuffle Game"
 msgstr "Нова випадкова гра"
 
-#: dialogs.c:1338
+#: dialogs.c:1332
 msgid "classical"
 msgstr "класичні"
 
-#: dialogs.c:1339
+#: dialogs.c:1333
 msgid "incremental"
 msgstr "нарощувальний"
 
-#: dialogs.c:1340
+#: dialogs.c:1334
 msgid "fixed max"
 msgstr "фіксований максимум"
 
-#: dialogs.c:1341
+#: dialogs.c:1335
 msgid "Moves per session:"
 msgstr "Ходів за сеанс:"
 
-#: dialogs.c:1342
+#: dialogs.c:1336
 msgid "Initial time (min):"
 msgstr "Початковий час (у хвилинах):"
 
-#: dialogs.c:1343
+#: dialogs.c:1337
 msgid "Increment or max (sec/move):"
 msgstr "Збільшення або максимум (сек/хід):"
 
-#: dialogs.c:1344
+#: dialogs.c:1338
 msgid "Time-Odds factors:"
 msgstr "Коефіцієнти виправлення часу:"
 
-#: dialogs.c:1345
+#: dialogs.c:1339
 msgid "Engine #1"
 msgstr "Рушій 1"
 
-#: dialogs.c:1346
+#: dialogs.c:1340
 msgid "Engine #2 / Human"
 msgstr "Рушій 2 / Людина"
 
-#: dialogs.c:1386 dialogs.c:1389 dialogs.c:1394 dialogs.c:1395
+#: dialogs.c:1380 dialogs.c:1383 dialogs.c:1388 dialogs.c:1389
 msgid "Unused"
 msgstr "Не використовується"
 
-#: dialogs.c:1407
+#: dialogs.c:1401
 msgid "Time Control"
 msgstr "Керування часом"
 
-#: dialogs.c:1435
+#: dialogs.c:1429
 msgid "Error writing to chess program"
 msgstr "Помилка під час спроби запису даних до шахової програми"
 
-#: dialogs.c:1501
+#: dialogs.c:1495
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: dialogs.c:1506 dialogs.c:1895 dialogs.c:1899
+#: dialogs.c:1500 dialogs.c:1889 dialogs.c:1893
 msgid "King"
 msgstr "Король"
 
-#: dialogs.c:1509
+#: dialogs.c:1503
 msgid "Captain"
 msgstr "Капітан"
 
-#: dialogs.c:1510
+#: dialogs.c:1504
 msgid "Lieutenant"
 msgstr "Лейтенант"
 
-#: dialogs.c:1511
+#: dialogs.c:1505
 msgid "General"
 msgstr "Загальне"
 
-#: dialogs.c:1512
+#: dialogs.c:1506
 msgid "Warlord"
 msgstr "Полководець"
 
-#: dialogs.c:1514 dialogs.c:1894 dialogs.c:1898 dialogs.c:1917
+#: dialogs.c:1508 dialogs.c:1888 dialogs.c:1892 dialogs.c:1911
 msgid "Knight"
 msgstr "Кінь"
 
-#: dialogs.c:1515 dialogs.c:1894 dialogs.c:1898 dialogs.c:1917
+#: dialogs.c:1509 dialogs.c:1888 dialogs.c:1892 dialogs.c:1911
 msgid "Bishop"
 msgstr "Слон"
 
-#: dialogs.c:1516 dialogs.c:1894 dialogs.c:1898 dialogs.c:1917
+#: dialogs.c:1510 dialogs.c:1888 dialogs.c:1892 dialogs.c:1911
 msgid "Rook"
 msgstr "Тура"
 
-#: dialogs.c:1520 dialogs.c:1896 dialogs.c:1900
+#: dialogs.c:1514 dialogs.c:1890 dialogs.c:1894
 msgid "Archbishop"
 msgstr "Архієпископ"
 
-#: dialogs.c:1521 dialogs.c:1896 dialogs.c:1900
+#: dialogs.c:1515 dialogs.c:1890 dialogs.c:1894
 msgid "Chancellor"
 msgstr "Канцлер"
 
-#: dialogs.c:1523 dialogs.c:1895 dialogs.c:1899 dialogs.c:1917
+#: dialogs.c:1517 dialogs.c:1889 dialogs.c:1893 dialogs.c:1911
 msgid "Queen"
 msgstr "Королева"
 
-#: dialogs.c:1527
+#: dialogs.c:1521
 msgid "Defer"
 msgstr "Зменшити пріоритет"
 
-#: dialogs.c:1528 dialogs.c:1896 dialogs.c:1900
+#: dialogs.c:1522 dialogs.c:1890 dialogs.c:1894
 msgid "Promote"
 msgstr "Підвищити"
 
-#: dialogs.c:1543
+#: dialogs.c:1537
 msgid "Chat partner:"
 msgstr ""
 
-#: dialogs.c:1627
+#: dialogs.c:1621
 msgid "Chat box"
 msgstr ""
 
-#: dialogs.c:1668
+#: dialogs.c:1662
 msgid "factory"
 msgstr "типові"
 
-#: dialogs.c:1669
+#: dialogs.c:1663
 msgid "up"
 msgstr "вгору"
 
-#: dialogs.c:1670
+#: dialogs.c:1664
 msgid "down"
 msgstr "вниз"
 
-#: dialogs.c:1688
+#: dialogs.c:1682
 msgid "No tag selected"
 msgstr "Не вибрано жодної мітки"
 
-#: dialogs.c:1717
+#: dialogs.c:1711
 msgid "Game-list options"
 msgstr "Параметри списку гри"
 
-#: dialogs.c:1793 dialogs.c:1807
+#: dialogs.c:1787 dialogs.c:1801
 msgid "Error"
 msgstr "Помилка"
 
-#: dialogs.c:1830
+#: dialogs.c:1824
 msgid "Fatal Error"
 msgstr "Критична помилка"
 
-#: dialogs.c:1830
+#: dialogs.c:1824
 msgid "Exiting"
 msgstr "Вихід"
 
-#: dialogs.c:1841
+#: dialogs.c:1835
 msgid "Information"
 msgstr "Інформація"
 
-#: dialogs.c:1848
+#: dialogs.c:1842
 msgid "Note"
 msgstr "Нотатка"
 
-#: dialogs.c:1894 dialogs.c:2161 dialogs.c:2164
+#: dialogs.c:1888 dialogs.c:2155 dialogs.c:2158
 msgid "White"
 msgstr "Білі"
 
-#: dialogs.c:1894 dialogs.c:1898 dialogs.c:1917
+#: dialogs.c:1888 dialogs.c:1892 dialogs.c:1911
 msgid "Pawn"
 msgstr "Пішак"
 
-#: dialogs.c:1895 dialogs.c:1899
+#: dialogs.c:1889 dialogs.c:1893
 msgid "Elephant"
 msgstr "Слон"
 
-#: dialogs.c:1895 dialogs.c:1899
+#: dialogs.c:1889 dialogs.c:1893
 msgid "Cannon"
 msgstr "Гармата"
 
-#: dialogs.c:1896 dialogs.c:1900
+#: dialogs.c:1890 dialogs.c:1894
 msgid "Demote"
 msgstr "Розжалувати"
 
-#: dialogs.c:1897 dialogs.c:1901
+#: dialogs.c:1891 dialogs.c:1895
 msgid "Empty square"
 msgstr "Порожня клітинка"
 
-#: dialogs.c:1897 dialogs.c:1901
+#: dialogs.c:1891 dialogs.c:1895
 msgid "Clear board"
 msgstr "Спорожнити дошку"
 
-#: dialogs.c:1898 dialogs.c:2173 dialogs.c:2176
+#: dialogs.c:1892 dialogs.c:2167 dialogs.c:2170
 msgid "Black"
 msgstr "Чорні"
 
-#: dialogs.c:1991 menus.c:853
+#: dialogs.c:1985 menus.c:853
 msgid "File"
 msgstr "Файл"
 
-#: dialogs.c:1992 menus.c:854
+#: dialogs.c:1986 menus.c:854
 msgid "Edit"
 msgstr "Зміни"
 
-#: dialogs.c:1993 menus.c:855
+#: dialogs.c:1987 menus.c:855
 msgid "View"
 msgstr "Перегляд"
 
-#: dialogs.c:1994 menus.c:856
+#: dialogs.c:1988 menus.c:856
 msgid "Mode"
 msgstr "Режим"
 
-#: dialogs.c:1995 menus.c:857
+#: dialogs.c:1989 menus.c:857
 msgid "Action"
 msgstr "Дія"
 
-#: dialogs.c:1996 menus.c:858
+#: dialogs.c:1990 menus.c:858
 msgid "Engine"
 msgstr "Рушій"
 
-#: dialogs.c:1997 menus.c:859
+#: dialogs.c:1991 menus.c:859
 msgid "Options"
 msgstr "Параметри"
 
-#: dialogs.c:1998 menus.c:860
+#: dialogs.c:1992 menus.c:860
 msgid "Help"
 msgstr "Довідка"
 
-#: dialogs.c:2008
+#: dialogs.c:2002
 msgid "<<"
 msgstr ""
 
-#: dialogs.c:2009
+#: dialogs.c:2003
 msgid "<"
 msgstr ""
 
-#: dialogs.c:2011
+#: dialogs.c:2005
 msgid ">"
 msgstr ""
 
-#: dialogs.c:2012
+#: dialogs.c:2006
 msgid ">>"
 msgstr ""
 
-#: dialogs.c:2280
+#: dialogs.c:2274
 #, fuzzy
 msgid "Directories:"
 msgstr "Каталог звуків:"
 
-#: dialogs.c:2281
+#: dialogs.c:2275
 #, fuzzy
 msgid "Files:"
 msgstr "Файл"
 
-#: dialogs.c:2282
+#: dialogs.c:2276
 msgid "by name"
 msgstr ""
 
-#: dialogs.c:2283
+#: dialogs.c:2277
 msgid "by type"
 msgstr ""
 
-#: dialogs.c:2286
+#: dialogs.c:2280
 #, fuzzy
 msgid "Filename:"
 msgstr "Фільтр:"
 
-#: dialogs.c:2287
+#: dialogs.c:2281
 #, fuzzy
 msgid "New directory"
 msgstr "Каталог рушія:"
 
-#: dialogs.c:2288
+#: dialogs.c:2282
 #, fuzzy
 msgid "File type:"
 msgstr "Фільтр:"
 
-#: dialogs.c:2363
+#: dialogs.c:2357
 #, fuzzy
 msgid "Contents of"
 msgstr "Коментарі"
 
-#: dialogs.c:2389
+#: dialogs.c:2383
 #, fuzzy
 msgid " next page"
 msgstr "наступна сторінка"
 
-#: dialogs.c:2411
+#: dialogs.c:2405
 msgid "FIRST TYPE DIRECTORY NAME HERE"
 msgstr ""
 
-#: dialogs.c:2412
+#: dialogs.c:2406
 msgid "TRY ANOTHER NAME"
 msgstr ""
 
@@ -2836,7 +2821,7 @@ msgstr ""
 "визначено %s з розміром у пікселях %d\n"
 "  як %s\n"
 
-#: xboard.c:2044
+#: xboard.c:2048
 msgid "Can't open temp file"
 msgstr "Не вдалося відкрити тимчасовий файл даних"
 
@@ -2857,19 +2842,19 @@ msgstr ""
 msgid "Move list"
 msgstr "Список ходів"
 
-#: xoptions.c:306 xoptions.c:869
+#: xoptions.c:306 xoptions.c:876
 msgid "browse"
 msgstr "вибрати"
 
-#: xoptions.c:777
+#: xoptions.c:784
 msgid "Engine has no options"
 msgstr "Рушієві не передаються жодні параметри"
 
-#: xoptions.c:1113
+#: xoptions.c:1120
 msgid "OK"
 msgstr "Гаразд"
 
-#: xoptions.c:1117
+#: xoptions.c:1124
 msgid "cancel"
 msgstr "скасувати"
 
@@ -2907,6 +2892,20 @@ msgstr "Не вдалося відкрити файл переспрямуван
 #, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr "Невідоме значення булевого аргументу %s"
+
+#~ msgid ""
+#~ "WARNING: variants with un-orthodox\n"
+#~ "pieces only have built-in bitmaps\n"
+#~ "for -boardSize middling, bulky and\n"
+#~ "petite, and substitute king or amazon\n"
+#~ "for missing bitmaps. (See manual.)"
+#~ msgstr ""
+#~ "УВАГА: для варіантів з неортодоксальними\n"
+#~ "фігурами використовуватимуться зображення\n"
+#~ "для -boardSize середнього, великого і\n"
+#~ "малого розмірів. Для фігур без зображень\n"
+#~ "буде використано зображення короля або\n"
+#~ "амазонки. (Див. підручник.)"
 
 #~ msgid "Directory with Pixmap Pieces:"
 #~ msgstr "Каталог pixmap фігур:"
