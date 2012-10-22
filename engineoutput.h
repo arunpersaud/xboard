@@ -55,6 +55,7 @@ enum ENGINE_STATE { STATE_UNKNOWN, STATE_THINKING, STATE_IDLE, STATE_PONDERING, 
 
 extern int  windowMode;
 extern char exclusionHeader[];
+extern int highTextStart[2], highTextEnd[2];
 
 // back-end called by front-end
 void SetEngineState( int which, enum ENGINE_STATE state, char * state_data );

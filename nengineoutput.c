@@ -69,7 +69,7 @@ extern char *getenv();
 int  windowMode = 1;
 
 char *mem1, *mem2; // dummies, as this dialog can never be OK'ed
-static int currentPV, highTextStart[2], highTextEnd[2];
+int highTextStart[2], highTextEnd[2];
 
 int MemoProc P((Option *opt, int n, int x, int y, char *text, int index));
 
