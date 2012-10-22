@@ -881,7 +881,7 @@ ResizeBoardWindow (int w, int h, int inhibit)
 {
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH;
-    gtk_window_resize(gtk_widget_get_window(shells[BoardWindow]), w, h);
+//    gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
 #ifdef TODO_GTK
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH;
@@ -1861,7 +1861,7 @@ printf("event proc (%d,%d) %dx%d\n", event->configure.x, event->configure.y, eve
     wpNew.height = event->configure.height;
     if(appData.useStickyWindows)
 	DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
-    return TRUE;
+    return FALSE;
 }
 
 /*

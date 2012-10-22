@@ -1136,7 +1136,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 
     shells[dlgNr] = dialog;
     box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
-    gtk_box_set_spacing(GTK_BOX(box), 5);    
+//    gtk_box_set_spacing(GTK_BOX(box), 5);    
 
     arraysize = 0;
     for (i=0;option[i].type != EndMark;i++) {
@@ -1151,6 +1151,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     for (i=0;option[i].type != EndMark;i++) {
 	if(option[i].type == -1) continue;
         top++;
+printf("option =%2d, top =%2d\n", i, top);
         if (top >= height) {
             gtk_table_resize(GTK_TABLE(table), height, r);
 	    if(!pane) { // multi-column: put tables in intermediate hbox
@@ -1159,7 +1160,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 		else
 		    pane =  gtk_vbox_new (FALSE, 0);
 		gtk_box_set_spacing(GTK_BOX(pane), 5 + 5*breakType);
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), pane, TRUE, TRUE, 0);
+		gtk_box_pack_start (GTK_BOX (/*GTK_DIALOG (dialog)->vbox*/box), pane, TRUE, TRUE, 0);
 	    }
 	    gtk_box_pack_start (GTK_BOX (pane), table, TRUE, TRUE, 0);
 	    table = gtk_table_new(arraysize - i, r=TableWidth(option + i), FALSE);
@@ -1390,8 +1391,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
             gtk_widget_set_size_request(graph, option[i].max, option[i].value);
-//	    gtk_drawing_area_size(graph, option[i].max, option[i].value);
-            gtk_table_attach_defaults(GTK_TABLE(table), graph, left, left+r, top, top+1);
+            Pack(hbox, GTK_TABLE(table), graph, left, left+r, top, GTK_EXPAND);
             g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
@@ -1432,6 +1432,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    break;
 #endif
 	  case DropDown:
+	    top--;
 	    msg = _(option[i].name); // write name on the menu button
 //	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 //	    XtSetArg(args[j], XtNlabel, msg);  j++;
@@ -1457,6 +1458,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    boxStart = i;
 	    break;
 	  case BarEnd:
+	    top--;
             gtk_table_attach(GTK_TABLE(table), menuBar, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
 	    
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
@@ -1464,12 +1466,16 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	  case BoxEnd:
 //	    XtManageChildren(&form, 1);
 //	    SqueezeIntoBox(&option[boxStart], i-boxStart, option[boxStart].max);
-	    hbox = oldHbox;
+	    hbox = oldHbox; top--;
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
 	    break;
 	  case Break:
             breakType = option[i].min & SAME_ROW;
 	    top = height; // force next option to start in a new table
+            break; 
+
+	  case PopUp:
+	    top--;
             break; 
 	default:
 	    printf("GenericPopUp: unexpected case in switch. i=%d type=%d name=%s.\n", i, option[i].type, option[i].name);
@@ -1480,7 +1486,8 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     if(pane)
 	gtk_box_pack_start (GTK_BOX (pane), table, TRUE, TRUE, 0);
     else
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), table, TRUE, TRUE, 0);
+        gtk_table_resize(GTK_TABLE(table), top+1, r),
+	gtk_box_pack_start (GTK_BOX (/*GTK_DIALOG (dialog)->vbox*/box), table, TRUE, TRUE, 0);
 
     option[i].handle = (void *) table; // remember last table in EndMark handle (for hiding Engine-Output pane).
 

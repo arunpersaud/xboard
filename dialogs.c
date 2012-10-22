@@ -2080,6 +2080,8 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
   { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[0], PopUp, "menuW" },
   { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[1], PopUp, "menuB" },
   { -1, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, dropMenuStrings, PopUp, "menuD" },
+{ 0,  0,          0, NULL, (void*) &appData.saveGameFile, ".pgn .game", NULL, FileName, N_("Save Tourney Games on:") },
+//{ 0,  0, 0, NULL, NULL, "", NULL, EndMark , "" },
 { 0,  NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
