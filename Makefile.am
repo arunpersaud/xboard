@@ -18,16 +18,19 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 moves.c moves.h \
 		 parser.c parser.h \
 		 pgntags.c \
-	  	 uci.c gtk/xtimer.c \
-	 	 gtk/xboard.c gtk/xboard.h args.h menus.c menus.h \
-	 	 draw.c draw.h xboard2.h \
-	 	 usounds.c usystem.c usystem.h \
+	  	 uci.c \
+	 	 args.h xboard2.h \
 	 	 board.c board.h \
-		 engineoutput.c engineoutput.h \
-		 nengineoutput.c gtk/xengineoutput.c \
-		 evalgraph.c evalgraph.h nevalgraph.c \
+	 	 draw.c draw.h \
+	 	 dialogs.c dialogs.h \
+		 engineoutput.c nengineoutput.c engineoutput.h \
+		 evalgraph.c nevalgraph.c evalgraph.h \
 		 history.c nhistory.c \
-		 gtk/xoptions.c dialogs.c dialogs.h \
+	 	 menus.c menus.h \
+	 	 usounds.c usystem.c usystem.h \
+	 	 gtk/xengineoutput.c \
+	 	 gtk/xboard.c gtk/xboard.h \
+		 gtk/xoptions.c gtk/xtimer.c \
 		 $(ZPY)
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@ @CAIRO_LIBS@
