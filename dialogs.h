@@ -152,6 +152,7 @@ void SetDialogTitle  P((DialogClass dlg, char *title));
 void LoadListBox P((Option *opt, char *emptyText, int n1, int n2));
 void HighlightListBoxItem P((Option *opt, int nr));
 void HighlightWithScroll P((Option *opt, int sel, int max));
+void ScrollToCursor P((Option *opt, int pos));
 int  SelectedListBoxItem P((Option *opt));
 void BoardFocus P((void));
 void FocusOnWidget P((Option *opt, DialogClass dlg));
@@ -190,5 +191,4 @@ void SendString P((char *p));
 // in ngamelist.c
 int GameListClicks P((int direction));
 void SetFilter P((void));
-
 

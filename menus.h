@@ -163,6 +163,7 @@ void SaveSettings P((char *));
 void EditBookProc P((void));
 void InitMenuMarkers P((void));
 void ShowGameListProc P((void)); // in ngamelist.c
+void HistoryShowProc P((void));  // in nhistory.c
 
 
 // must be moved to xengineoutput.h

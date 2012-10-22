@@ -318,6 +318,14 @@ HighlightWithScroll (Option *opt, int index, int max)
     HighlightItem (opt, index, TRUE); // ignore max
 }
 
+void
+ScrollToCursor (Option *opt, int caretPos)
+{
+    static GtkTextIter iter;
+    gtk_text_buffer_get_iter_at_offset((GtkTextBuffer *) opt->handle, &iter, caretPos);
+    gtk_text_view_scroll_to_iter((GtkTextView *) opt->textValue, &iter, 0.0, 0, 0.5, 0.5);
+}
+
 int
 SelectedListBoxItem (Option *opt)
 {

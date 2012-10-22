@@ -26,7 +26,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 engineoutput.c engineoutput.h \
 		 nengineoutput.c xengineoutput.c \
 		 evalgraph.c evalgraph.h nevalgraph.c \
-		 history.c nhistory.c xhistory.c xhistory.h \
+		 history.c nhistory.c \
 		 xoptions.c dialogs.c dialogs.h \
 		 $(ZPY)
 SUBDIRS = po
