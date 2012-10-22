@@ -195,6 +195,7 @@ char *FindFont P((char *pattern, int targetPxlSize));
 #endif
 void DelayedDrag P((void));
 void ICSInputBoxPopUp P((void));
+void MoveTypeInProc P((GdkEventKey *eventkey));
 gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
 Boolean TempBackwardActive = False;
 void DisplayMove P((int moveNumber));
@@ -367,12 +368,6 @@ String xboardResources[] = {
     NULL
   };
 #endif
-
-/* Max possible square size */
-#define MAXSQSIZE 256
-
-static int xpm_avail[MAXSQSIZE];
-
 
 void
 BoardToTop ()
@@ -793,7 +788,6 @@ main (int argc, char **argv)
     int boardWidth, boardHeight, w, h;
     char *p;
     int forceMono = False;
-    GError *gtkerror=NULL;
 
     srandom(time(0)); // [HGM] book: make random truly random
 
@@ -1441,7 +1435,7 @@ static WindowPlacement wpNew;
 void
 CoDrag (GtkWidget *sh, WindowPlacement *wp)
 {
-    int j=0, touch=0, fudge = 2;
+    int touch=0, fudge = 2;
     GetActualPlacement(sh, wp);
     if(abs(wpMain.x + wpMain.width + 2*frameX - wp->x)         < fudge) touch = 1; else // right touch
     if(abs(wp->x + wp->width + 2*frameX - wpMain.x)            < fudge) touch = 2; else // left touch
@@ -1806,12 +1800,6 @@ SetWindowTitle (char *text, char *title, char *icon)
     gtk_window_set_title (GTK_WINDOW(shells[BoardWindow]), title);
 }
 
-
-static int
-NullXErrorCheck (Display *dpy, XErrorEvent *error_event)
-{
-    return 0;
-}
 
 void
 DisplayIcsInteractionTitle (String message)

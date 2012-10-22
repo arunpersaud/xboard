@@ -97,7 +97,7 @@ extern char *getenv();
 
 
 /* Module variables */
-static int currentPV, highTextStart[2], highTextEnd[2];
+static int currentPV;
 static Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 static Widget memoWidget;
 

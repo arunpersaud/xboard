@@ -69,12 +69,10 @@ extern char *getenv();
 extern Option engoutOptions[]; // must go in header, but which?
 
 /* Module variables */
-static int currentPV, highTextStart[2], highTextEnd[2];
 #ifdef TODO_GTK
 static Widget memoWidget;
 #endif
 static GdkPixbuf *iconsGTK[8];
-static GtkWidget *outputFieldGTK[2][7]; // [HGM] front-end array to translate output field to window handlestatic void *memoWidget;
 
 static void
 ReadIcon (gchar *svgFilename, int iconNr)
@@ -127,15 +125,6 @@ InsertIntoMemo (int which, char * text, int where)
 	highTextStart[which] += len; highTextEnd[which] += len;
     }
 }
-
-//--------------------------------- PV walking ---------------------------------------
-
-char memoTranslations[] =
-":Ctrl<Key>c: CopyMemoProc() \n \
-<Btn3Motion>: HandlePV() \n \
-Shift<Btn3Down>: select-start() extend-end() SelectPV(1) \n \
-Any<Btn3Down>: select-start() extend-end() SelectPV(0) \n \
-<Btn3Up>: StopPV() \n";
 
 //------------------------------- pane switching -----------------------------------
 

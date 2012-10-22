@@ -151,7 +151,7 @@ void GetWidgetTextGTK(GtkWidget *w, char **buf)
     GtkTextIter end;    
 
     if (GTK_IS_ENTRY(w)) {
-	*buf = gtk_entry_get_text(GTK_ENTRY (w));
+	*buf = (char *) gtk_entry_get_text(GTK_ENTRY (w));
     } else
     if (GTK_IS_TEXT_BUFFER(w)) {
         gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(w), &start);
@@ -290,15 +290,11 @@ LoadListBox (Option *opt, char *emptyText, int n1, int n2)
 void
 HighlightItem (Option *opt, int index, int scroll)
 {
-    char *value, **data = (char **) (opt->target);
     GtkWidget *list = (GtkWidget *) (opt->handle);
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
-    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(list));
-    GtkListStore *store = GTK_LIST_STORE(model);
     GtkTreePath *path = gtk_tree_path_new_from_indices(index, -1);
-    GtkTreeIter iter;
     gtk_tree_selection_select_path(selection, path);
-    if(scroll) gtk_tree_view_scroll_to_cell(list, path, NULL, 0, 0, 0);
+    if(scroll) gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(list), path, NULL, 0, 0, 0);
     gtk_tree_path_free(path);
 }
 
@@ -425,7 +421,7 @@ CreateMenuPopup (Option *opt, int n, int def)
 	  if(!(opt->min & NO_GETTEXT)) msg = _(msg);
 	  if(mb[i].handle) {
 	    entry = gtk_check_menu_item_new_with_label(msg); // should be used for items that can be checkmarked
-	    if(mb[i].handle == RADIO) gtk_check_menu_item_set_draw_as_radio(entry, True);
+	    if(mb[i].handle == RADIO) gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(entry), True);
 	  } else
 	    entry = gtk_menu_item_new_with_label(msg);
 	  gtk_signal_connect_object (GTK_OBJECT (entry), "activate", GTK_SIGNAL_FUNC(MenuSelect), (gpointer) (n<<16)+i);
@@ -561,7 +557,7 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 {   // handle mouse clicks on text widgets that need it
     int w, h;
     int button=10, f=1;
-    Option *opt, *memo = (Option *) gdata;
+    Option *memo = (Option *) gdata;
     MemoCallback *userHandler = (MemoCallback *) memo->choice;
     GdkEventButton *bevent = (GdkEventButton *) event;
     GdkEventMotion *mevent = (GdkEventMotion *) event;
@@ -588,8 +584,8 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	    shiftState = bevent->state & GDK_SHIFT_MASK;
 	    controlState = bevent->state & GDK_CONTROL_MASK;
 // GTK_TODO: is this really the most efficient way to get the character at the mouse cursor???
-	    gtk_text_view_window_to_buffer_coords(widget, GTK_TEXT_WINDOW_WIDGET, w, h, &x, &y);
-	    gtk_text_view_get_iter_at_location(widget, &start, x, y);
+	    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(widget), GTK_TEXT_WINDOW_WIDGET, w, h, &x, &y);
+	    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(widget), &start, x, y);
 	    gtk_text_buffer_place_cursor(memo->handle, &start);
 	    /* get cursor position into index */
 	    g_object_get(memo->handle, "cursor-position", &index, NULL);
@@ -793,7 +789,7 @@ static void
 GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 {   // handle expose and mouse events on Graph widget
     int w, h;
-    int j, button=10, f=1, sizing=0;
+    int button=10, f=1, sizing=0;
     Option *opt, *graph = (Option *) gdata;
     PointerCallback *userHandler = graph->target;
     GdkEventExpose *eevent = (GdkEventExpose *) event;
@@ -993,18 +989,17 @@ ListCallback (GtkWidget *widget, GdkEventButton *event, gpointer gdata)
     return TRUE;
 }
 
+#ifdef TODO_GTK
+// This is needed for color pickers?
 static char *oneLiner  =
    "<Key>Return: redraw-display() \n \
     <Key>Tab: TabProc() \n ";
-static char scrollTranslations[] =
-   "<Btn1Up>(2): WheelProc(0 0 A) \n \
-    <Btn4Down>: WheelProc(-1) \n \
-    <Btn5Down>: WheelProc(1) \n ";
+#endif
 
+#ifdef TODO_GTK
 static void
 SqueezeIntoBox (Option *opt, int nr, int width)
 {   // size buttons in bar to fit, clipping button names where necessary
-#ifdef TODO_GTK
     int i, wtot = 0;
     Dimension widths[20], oldWidths[20];
     Arg arg;
@@ -1026,8 +1021,8 @@ SqueezeIntoBox (Option *opt, int nr, int width)
 	XtSetValues(opt[i].handle, &arg, 1);
     }
     opt->min = wtot;
-#endif
 }
+#endif
 
 #ifdef TODO_GTK
 int
@@ -1412,7 +1407,7 @@ printf("option =%2d, top =%2d\n", i, top);
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
             gtk_widget_set_size_request(graph, option[i].max, option[i].value);
-            Pack(hbox, GTK_TABLE(table), graph, left, left+r, top, GTK_EXPAND);
+            Pack(hbox, table, graph, left, left+r, top, GTK_EXPAND);
             g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
