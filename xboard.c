@@ -1629,178 +1629,100 @@ ModeHighlight ()
  * Button/menu procedures
  */
 
-#ifdef TODO_GTK
-/* this variable is shared between CopyPositionProc and SendPositionSelection */
-char *selected_fen_position=NULL;
-
-Boolean
-SendPositionSelection (Widget w, Atom *selection, Atom *target,
-		       Atom *type_return, XtPointer *value_return,
-		       unsigned long *length_return, int *format_return)
+void CopyFileToClipboard(gchar *filename)
 {
-  char *selection_tmp;
+    gchar *selection_tmp;
+    GtkClipboard *cb;
 
-//  if (!selected_fen_position) return False; /* should never happen */
-  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
-   if (!selected_fen_position) { // since it never happens, we use it for indicating a game is being sent
-    FILE* f = fopen(gameCopyFilename, "r"); // This code, taken from SendGameSelection, now merges the two
+    // read the file
+    FILE* f = fopen(filename, "r");
     long len;
     size_t count;
-    if (f == NULL) return False;
+    if (f == NULL) return;
     fseek(f, 0, 2);
     len = ftell(f);
     rewind(f);
-    selection_tmp = XtMalloc(len + 1);
+    selection_tmp = g_try_malloc(len + 1);
+    if (selection_tmp == NULL) {
+        printf("Malloc failed in CopyFileToClipboard\n");
+        return;
+    }
     count = fread(selection_tmp, 1, len, f);
     fclose(f);
     if (len != count) {
-      XtFree(selection_tmp);
-      return False;
+      g_free(selection_tmp);
+      return;
     }
-    selection_tmp[len] = NULLCHAR;
-   } else {
-    /* note: since no XtSelectionDoneProc was registered, Xt will
-     * automatically call XtFree on the value returned.  So have to
-     * make a copy of it allocated with XtMalloc */
-    selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
-    safeStrCpy(selection_tmp, selected_fen_position, strlen(selected_fen_position)+16 );
-   }
-
-    *value_return=selection_tmp;
-    *length_return=strlen(selection_tmp);
-    *type_return=*target;
-    *format_return = 8; /* bits per byte */
-    return True;
-  } else if (*target == XA_TARGETS(xDisplay)) {
-    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
-    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
-    targets_tmp[1] = XA_STRING;
-    *value_return = targets_tmp;
-    *type_return = XA_ATOM;
-    *length_return = 2;
-#if 0
-    // This code leads to a read of value_return out of bounds on 64-bit systems.
-    // Other code which I have seen always sets *format_return to 32 independent of
-    // sizeof(Atom) without adjusting *length_return. For instance see TextConvertSelection()
-    // at http://cgit.freedesktop.org/xorg/lib/libXaw/tree/src/Text.c -- BJ
-    *format_return = 8 * sizeof(Atom);
-    if (*format_return > 32) {
-      *length_return *= *format_return / 32;
-      *format_return = 32;
+    selection_tmp[len] = NULLCHAR; // file is now in selection_tmp
+    
+    // copy selection_tmp to clipboard
+    GdkDisplay *gdisp = gdk_display_get_default();
+    if (!gdisp) {
+        g_free(selection_tmp);
+        return;
     }
-#else
-    *format_return = 32;
-#endif
-    return True;
-  } else {
-    return False;
-  }
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text(cb, selection_tmp, -1);
+    g_free(selection_tmp);    
 }
-#endif
 
-/* note: when called from menu all parameters are NULL, so no clue what the
- * Widget which was clicked on was, or what the click event was
- */
 void
 CopySomething (char *src)
 {
-#ifdef TODO_GTK
-    selected_fen_position = src;
-    /*
-     * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
-     * have a notion of a position that is selected but not copied.
-     * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
-     */
-    XtOwnSelection(menuBarWidget, XA_PRIMARY,
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
-    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
-#endif
+    GdkDisplay *gdisp = gdk_display_get_default();
+    GtkClipboard *cb;
+    if(!src) { CopyFileToClipboard(gameCopyFilename); return; }
+    if (gdisp == NULL) return;
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text(cb, src, -1);
 }
 
-#ifdef TODO_GTK
-/* function called when the data to Paste is ready */
-static void
-PastePositionCB (Widget w, XtPointer client_data, Atom *selection,
-		 Atom *type, XtPointer value, unsigned long *len, int *format)
-{
-  char *fenstr=value;
-  if (value==NULL || *len==0) return; /* nothing had been selected to copy */
-  fenstr[*len]='\0'; /* normally this string is terminated, but be safe */
-  EditPositionPasteFEN(fenstr);
-  XtFree(value);
-}
-#endif
-
-/* called when Paste Position button is pressed,
- * all parameters will be NULL */
 void
 PastePositionProc ()
 {
-#ifdef TODO_GTK
-    XtGetSelectionValue(menuBarWidget,
-      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-      /* (XtSelectionCallbackProc) */ PastePositionCB,
-      NULL, /* client_data passed to PastePositionCB */
+    GdkDisplay *gdisp = gdk_display_get_default();
+    GtkClipboard *cb;
+    gchar *fenstr;
 
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
+    if (gdisp == NULL) return;
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);    
+    fenstr = gtk_clipboard_wait_for_text(cb);
+    if (fenstr==NULL) return; // nothing had been selected to copy  
+    EditPositionPasteFEN(fenstr);
     return;
-#endif
 }
 
-#ifdef TODO_GTK
-/* note: when called from menu all parameters are NULL, so no clue what the
- * Widget which was clicked on was, or what the click event was
- */
-/* function called when the data to Paste is ready */
-static void
-PasteGameCB (Widget w, XtPointer client_data, Atom *selection,
-	     Atom *type, XtPointer value, unsigned long *len, int *format)
-{
-  FILE* f;
-  if (value == NULL || *len == 0) {
-    return; /* nothing had been selected to copy */
-  }
-  f = fopen(gamePasteFilename, "w");
-  if (f == NULL) {
-    DisplayError(_("Can't open temp file"), errno);
-    return;
-  }
-  fwrite(value, 1, *len, f);
-  fclose(f);
-  XtFree(value);
-  LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
-}
-#endif
-
-/* called when Paste Game button is pressed,
- * all parameters will be NULL */
 void
 PasteGameProc ()
 {
-#ifdef TODO_GTK
-    XtGetSelectionValue(menuBarWidget,
-      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-      /* (XtSelectionCallbackProc) */ PasteGameCB,
-      NULL, /* client_data passed to PasteGameCB */
+    gchar *text=NULL;
+    GtkClipboard *cb;
+    guint len=0;
+    FILE* f;
 
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
+    // get game from clipboard
+    GdkDisplay *gdisp = gdk_display_get_default();
+    if (gdisp == NULL) return;
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);    
+    text = gtk_clipboard_wait_for_text(cb);
+    if (text == NULL) return; // nothing to paste  
+    len = strlen(text);
+
+    // write to temp file
+    if (text == NULL || len == 0) {
+      return; //nothing to paste 
+    }
+    f = fopen(gamePasteFilename, "w");
+    if (f == NULL) {
+      DisplayError(_("Can't open temp file"), errno);
+      return;
+    }
+    fwrite(text, 1, len, f);
+    fclose(f);
+
+    // load from file 
+    LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
     return;
-#endif
 }
 
 
