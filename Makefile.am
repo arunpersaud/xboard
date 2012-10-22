@@ -10,10 +10,9 @@ endif
 
 ### define sources for the front-end and backend
 
-GTKsources = xboard.c  xtimer.c xgamelist.c \
-             xhistory.c  xoptions.c  xboard.h  \
-             xengineoutput.c  xgamelist.h \
-             xhistory.h
+GTKsources = gtk/xboard.c  gtk/xboard.h \
+             gtk/xoptions.c  gtk/xtimer.c \
+             gtk/xengineoutput.c
 
 Xsources   = xaw/xboard.c xaw/xboard.h \
              xaw/xengineoutput.c \
@@ -49,6 +48,7 @@ backendsources = backend.c backend.h backendz.h \
 
 if withGTK
   xboard_SOURCES = $(backendsources) $(GTKsources)
+  headers = -I gtk
 endif
 if withXaw
   xboard_SOURCES = $(backendsources) $(Xsources)

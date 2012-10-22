@@ -159,8 +159,6 @@ extern char *getenv();
 #include "xboard.h"
 #include "xboard2.h"
 #include "childio.h"
-#include "xgamelist.h"
-#include "xhistory.h"
 #include "menus.h"
 #include "board.h"
 #include "dialogs.h"
@@ -198,25 +196,6 @@ char *FindFont P((char *pattern, int targetPxlSize));
 void DelayedDrag P((void));
 void ICSInputBoxPopUp P((void));
 gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
-#ifdef TODO_GTK
-static void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
-void HandlePV P((Widget w, XEvent * event,
-		     String * params, Cardinal * nParams));
-void DrawPositionProc P((Widget w, XEvent *event,
-		     String *prms, Cardinal *nprms));
-void CommentClick P((Widget w, XEvent * event,
-		   String * params, Cardinal * nParams));
-void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
-void KeyBindingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void QuitWrapper P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-static void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-static void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-static void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TempBackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TempForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
-#endif
 Boolean TempBackwardActive = False;
 void DisplayMove P((int moveNumber));
 void ICSInitScript P((void));
@@ -225,17 +204,6 @@ int CopyMemoProc P(());
 static gboolean EventProc P((GtkWidget *widget, GdkEvent *event, gpointer g));
 
 #ifdef TODO_GTK
-/*
-* XBoard depends on Xt R4 or higher
-*/
-int xtVersion = XtSpecificationRelease;
-
-int xScreen;
-Display *xDisplay;
-Window xBoardWindow;
-Pixel lowTimeWarningColor, dialogColor, buttonColor; // used in widgets
-Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
-Widget shellWidget, formWidget, boardWidget, titleWidget, dropMenu, menuBarWidget;
 #if ENABLE_NLS
 XFontSet fontSet, clockFontSet;
 #else
@@ -244,10 +212,8 @@ XFontStruct *clockFontStruct;
 #endif
 Font coordFontID, countFontID;
 XFontStruct *coordFontStruct, *countFontStruct;
-XtAppContext appContext;
 #else
 void *shellWidget, *formWidget, *boardWidget, *titleWidget, *dropMenu, *menuBarWidget;
-void *appContext;
 GtkWidget       *mainwindow;
 #endif
 Option *optList; // contains all widgets of main window
@@ -271,8 +237,6 @@ int smallLayout = 0, tinyLayout = 0,
   errorExitStatus = -1, defaultLineGap;
 #ifdef TODO_GTK
 Dimension textHeight;
-Pixel timerForegroundPixel, timerBackgroundPixel;
-Pixel buttonForegroundPixel, buttonBackgroundPixel;
 #endif
 char *chessDir, *programName, *programVersion;
 Boolean alwaysOnTop = False;
@@ -311,50 +275,10 @@ DropMenuEnables dmEnables[] = {
 };
 
 #ifdef TODO_GTK
-Arg shellArgs[] = {
-    { XtNwidth, 0 },
-    { XtNheight, 0 },
-    { XtNminWidth, 0 },
-    { XtNminHeight, 0 },
-    { XtNmaxWidth, 0 },
-    { XtNmaxHeight, 0 }
-};
-
 XtResource clientResources[] = {
     { "flashCount", "flashCount", XtRInt, sizeof(int),
 	XtOffset(AppDataPtr, flashCount), XtRImmediate,
 	(XtPointer) FLASH_COUNT  },
-};
-
-XrmOptionDescRec shellOptions[] = {
-    { "-flashCount", "flashCount", XrmoptionSepArg, NULL },
-    { "-flash", "flashCount", XrmoptionNoArg, "3" },
-    { "-xflash", "flashCount", XrmoptionNoArg, "0" },
-};
-
-XtActionsRec boardActions[] = {
-    { "DrawPosition", DrawPositionProc },
-    { "HandlePV", HandlePV },
-    { "SelectPV", SelectPV },
-    { "StopPV", StopPV },
-    { "MenuItem", KeyBindingProc }, // [HGM] generic handler for key bindings
-    { "QuitProc", QuitWrapper },
-    { "ManProc", ManInner },
-    { "TempBackwardProc", TempBackwardProc },
-    { "TempForwardProc", TempForwardProc },
-    { "CommentClick", (XtActionProc) CommentClick },
-    { "GenericPopDown", (XtActionProc) GenericPopDown },
-    { "ErrorPopDown", (XtActionProc) ErrorPopDown },
-    { "CopyMemoProc", (XtActionProc) CopyMemoProc },
-    { "SelectMove", (XtActionProc) SelectMove },
-    { "LoadSelectedProc", LoadSelectedProc },
-    { "SetFilterProc", SetFilterProc },
-    { "TypeInProc", TypeInProc },
-    { "EnterKeyProc", EnterKeyProc },
-    { "UpKeyProc", UpKeyProc },
-    { "DownKeyProc", DownKeyProc },
-    { "WheelProc", WheelProc },
-    { "TabProc", TabProc },
 };
 #endif
 
@@ -449,138 +373,6 @@ String xboardResources[] = {
 
 static int xpm_avail[MAXSQSIZE];
 
-#ifdef HAVE_DIR_STRUCT
-
-/* Extract piece size from filename */
-static int
-xpm_getsize (char *name, int len, char *ext)
-{
-    char *p, *d;
-    char buf[10];
-
-    if (len < 4)
-      return 0;
-
-    if ((p=strchr(name, '.')) == NULL ||
-	StrCaseCmp(p+1, ext) != 0)
-      return 0;
-
-    p = name + 3;
-    d = buf;
-
-    while (*p && isdigit(*p))
-      *(d++) = *(p++);
-
-    *d = 0;
-    return atoi(buf);
-}
-
-/* Setup xpm_avail */
-static int
-xpm_getavail (char *dirname, char *ext)
-{
-    DIR *dir;
-    struct dirent *ent;
-    int  i;
-
-    for (i=0; i<MAXSQSIZE; ++i)
-      xpm_avail[i] = 0;
-
-    if (appData.debugMode)
-      fprintf(stderr, "XPM dir:%s:ext:%s:\n", dirname, ext);
-
-    dir = opendir(dirname);
-    if (!dir)
-      {
-	  fprintf(stderr, _("%s: Can't access XPM directory %s\n"),
-		  programName, dirname);
-	  exit(1);
-      }
-
-    while ((ent=readdir(dir)) != NULL) {
-	i = xpm_getsize(ent->d_name, NAMLEN(ent), ext);
-	if (i > 0 && i < MAXSQSIZE)
-	  xpm_avail[i] = 1;
-    }
-
-    closedir(dir);
-
-    return 0;
-}
-
-void
-xpm_print_avail (FILE *fp, char *ext)
-{
-    int i;
-
-    fprintf(fp, _("Available `%s' sizes:\n"), ext);
-    for (i=1; i<MAXSQSIZE; ++i) {
-	if (xpm_avail[i])
-	  printf("%d\n", i);
-    }
-}
-
-/* Return XPM piecesize closest to size */
-int
-xpm_closest_to (char *dirname, int size, char *ext)
-{
-    int i;
-    int sm_diff = MAXSQSIZE;
-    int sm_index = 0;
-    int diff;
-
-    xpm_getavail(dirname, ext);
-
-    if (appData.debugMode)
-      xpm_print_avail(stderr, ext);
-
-    for (i=1; i<MAXSQSIZE; ++i) {
-	if (xpm_avail[i]) {
-	    diff = size - i;
-	    diff = (diff<0) ? -diff : diff;
-	    if (diff < sm_diff) {
-		sm_diff = diff;
-		sm_index = i;
-	    }
-	}
-    }
-
-    if (!sm_index) {
-	fprintf(stderr, _("Error: No `%s' files!\n"), ext);
-	exit(1);
-    }
-
-    return sm_index;
-}
-#else	/* !HAVE_DIR_STRUCT */
-/* If we are on a system without a DIR struct, we can't
-   read the directory, so we can't collect a list of
-   filenames, etc., so we can't do any size-fitting. */
-int
-xpm_closest_to (char *dirname, int size, char *ext)
-{
-    fprintf(stderr, _("\
-Warning: No DIR structure found on this system --\n\
-         Unable to autosize for XPM/XIM pieces.\n\
-   Please report this error to %s.\n\
-   Include system type & operating system in message.\n"), PACKAGE_BUGREPORT););
-    return size;
-}
-#endif /* HAVE_DIR_STRUCT */
-
-
-#ifdef TODO_GTK
-/* Arrange to catch delete-window events */
-Atom wm_delete_window;
-void
-CatchDeleteWindow (Widget w, String procname)
-{
-  char buf[MSG_SIZ];
-  XSetWMProtocols(xDisplay, XtWindow(w), &wm_delete_window, 1);
-  snprintf(buf, sizeof(buf), "<Message>WM_PROTOCOLS: %s() \n", procname);
-  XtAugmentTranslations(w, XtParseTranslationTable(buf));
-}
-#endif
 
 void
 BoardToTop ()
@@ -824,11 +616,7 @@ EnsureOnScreen (int *x, int *y, int minX, int minY)
 int
 MainWindowUp ()
 { // [HGM] args: allows testing if main window is realized from back-end
-#ifdef TODO_GTK
-  return xBoardWindow != 0;
-#else
   return DialogExists(BoardWindow);
-#endif
 }
 
 void
@@ -878,44 +666,15 @@ ResizeBoardWindow (int w, int h, int inhibit)
 #endif
 }
 
-#ifdef TODO_GTK
-static int
-MakeOneColor (char *name, Pixel *color)
-{
-    XrmValue vFrom, vTo;
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) name;
-	vFrom.size = strlen(name);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  return True;
-	} else {
-	  *color = *(Pixel *) vTo.addr;
-	}
-    }
-    return False;
-}
-#endif
-
 int
 MakeColors ()
-{   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
-    int forceMono = False;
-
-#ifdef TODO_GTK
-    if (appData.lowTimeWarning)
-	forceMono |= MakeOneColor(appData.lowTimeWarningColor, &lowTimeWarningColor);
-    if(appData.dialogColor[0]) MakeOneColor(appData.dialogColor, &dialogColor);
-    if(appData.buttonColor[0]) MakeOneColor(appData.buttonColor, &buttonColor);
-#endif
-
-    return forceMono;
+{   // dummy, as the GTK code does not make colors in advance
+    return FALSE;
 }
 
 void
 InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
-{   // detervtomine what fonts to use, and create them
+{   // determine what fonts to use, and create them
 #ifdef TODO_GTK
     XrmValue vTo;
     XrmDatabase xdb;
@@ -1031,12 +790,6 @@ int
 main (int argc, char **argv)
 {
     int i, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
-#ifdef TODO_GTK
-    XSetWindowAttributes window_attributes;
-    Arg args[16];
-    Dimension boardWidth, boardHeight, w, h;
-#else
-#endif
     int boardWidth, boardHeight, w, h;
     char *p;
     int forceMono = False;
@@ -1137,31 +890,6 @@ main (int argc, char **argv)
 	gameInfo.variant = StringToVariant(appData.variant);
 	InitPosition(FALSE);
 
-#ifdef TODO_GTK
-    /* GTK */
-    builder = gtk_builder_new();
-    filename = get_glade_filename ("mainboard.glade");
-    if(! gtk_builder_add_from_file (builder, filename, &gtkerror) )
-      {
-      if(gtkerror)
-        printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
-      }
-    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));
-
-    shellWidget =
-      XtAppInitialize(&appContext, "XBoard", shellOptions,
-		      XtNumber(shellOptions),
-		      &argc, argv, xboardResources, NULL, 0);
-
-    XtGetApplicationResources(shellWidget, (XtPointer) &appData,
-			      clientResources, XtNumber(clientResources),
-			      NULL, 0);
-
-    xDisplay = XtDisplay(shellWidget);
-    xScreen = DefaultScreen(xDisplay);
-    wm_delete_window = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
-#endif
-
     /*
      * determine size, based on supplied or remembered -size, or screen size
      */
@@ -1197,12 +925,6 @@ main (int argc, char **argv)
     } else {
         SizeDefaults *szd = sizeDefaults;
         if (*appData.boardSize == NULLCHAR) {
-#ifdef TODO_GTK
-	    while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize ||
-		   DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) {
-	      szd++;
-	    }
-#else
             GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(mainwindow));
             guint screenwidth = gdk_screen_get_width(screen);
             guint screenheight = gdk_screen_get_height(screen);
@@ -1210,7 +932,6 @@ main (int argc, char **argv)
 		   screenheight < szd->minScreenSize) {
 	      szd++;
 	    }
-#endif
 	    if (szd->name == NULL) szd--;
 	    appData.boardSize = strdup(szd->name); // [HGM] settings: remember name for saving settings
 	} else {
@@ -1265,10 +986,6 @@ main (int argc, char **argv)
 
     ParseIcsTextColors();
 
-#ifdef TODO_GTK
-    XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
-#endif
-
     /*
      * widget hierarchy
      */
@@ -1307,10 +1024,6 @@ main (int argc, char **argv)
       XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
       XtGetValues(optList[W_PAUSE].handle, args, 2);
     }
-#endif
-
-#ifdef TODO_GTK
-    xBoardWindow = XtWindow(boardWidget);
 #endif
 
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
@@ -1356,10 +1069,6 @@ printf("start size (%d,%d), %dx%d\n", a.x, a.y, w, h);
     marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
     marginH =  h - boardHeight;
 
-#ifdef TODO_GTK
-    CatchDeleteWindow(shellWidget, "QuitProc");
-#endif
-
     CreateAnyPieces();
     CreateGrid();
 
@@ -1373,15 +1082,6 @@ printf("start size (%d,%d), %dx%d\n", a.x, a.y, w, h);
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
-#ifdef TODO_GTK
-    XtAugmentTranslations(formWidget,
-			  XtParseTranslationTable(globalTranslations));
-
-    XtAddEventHandler(formWidget, KeyPressMask, False,
-		      (XtEventHandler) MoveTypeInProc, NULL);
-    XtAddEventHandler(shellWidget, StructureNotifyMask, False,
-		      (XtEventHandler) EventProc, NULL);
-#endif
     g_signal_connect(shells[BoardWindow], "key-press-event", G_CALLBACK(KeyPressProc), NULL);
     g_signal_connect(shells[BoardWindow], "configure-event", G_CALLBACK(EventProc), NULL);
 
@@ -1797,11 +1497,7 @@ ReSize (WindowPlacement *wp)
 	if(optList[W_BOARD].value > h) optList[W_BOARD].value = h;
 }
 
-#ifdef TODO_GTK
-static XtIntervalId delayedDragID = 0;
-#else
 static guint delayedDragTag = 0;
-#endif
 
 void
 DragProc ()
@@ -1850,17 +1546,6 @@ printf("event proc (%d,%d) %dx%d\n", event->configure.x, event->configure.y, eve
 	DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
     return FALSE;
 }
-
-/*
- * event handler for redrawing the board
- */
-#ifdef TODO_GTK
-void
-DrawPositionProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    DrawPosition(True, NULL);
-}
-#endif
 
 
 

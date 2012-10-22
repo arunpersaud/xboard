@@ -26,8 +26,8 @@
 #include <stdlib.h>
 
 #include "common.h"
+#include "frontend.h"
 #include "backend.h"
-#include "xhistory.h"
 #include "dialogs.h"
 #include "gettext.h"
 
@@ -82,6 +82,12 @@ Option historyOptions[] = {
 { 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 400, NULL, (void*) &historyText, NULL, (char**) &SelectMove, TextBox, "" },
 {   0,           NO_OK,             0, NULL, (void*) NULL, "", NULL, EndMark , "" }
 };
+
+void
+ScrollToCurrent (int caretPos)
+{
+    ScrollToCursor(&historyOptions[0], caretPos);
+}
 
 // ------------ standard entry points into MoveHistory code -----------
 

@@ -237,5 +237,6 @@ void SlavePopUp P((void));
 /* these are in xhistory.c  */
 Boolean MoveHistoryIsUp P((void));
 void HistoryPopUp P((void));
+void FindMoveByCharIndex P(( int char_index ));
 
 #endif /* XB_FRONTEND */

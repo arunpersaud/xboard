@@ -74,23 +74,23 @@ extern Option historyOptions[];
 // the bold argument says 0 = normal, 1 = bold typeface
 // the colorNr argument says 0 = font-default, 1 = gray
 void
-ScrollToCurrent (int caretPos)
+ScrollToCursor (Option *opt, int caretPos)
 {
     Arg args[10];
     char *s;
     int len;
-    GetWidgetText(&historyOptions[0], &s);
+    GetWidgetText(opt, &s);
     len = strlen(s);
     if(caretPos < 0 || caretPos > len) caretPos = len;
     if(caretPos > len-30) { // scroll to end, which causes no flicker
       static XEvent event;
-      XtCallActionProc(historyOptions[0].handle, "end-of-file", &event, NULL, 0);
+      XtCallActionProc(opt->handle, "end-of-file", &event, NULL, 0);
       return;
     }
     // the following leads to a very annoying flicker, even when no scrolling is done at all.
     XtSetArg(args[0], XtNinsertPosition, caretPos); // this triggers scrolling in Xaw
     XtSetArg(args[1], XtNdisplayCaret, False);
-    XtSetValues(historyOptions[0].handle, args, 2);
+    XtSetValues(opt->handle, args, 2);
 }
 
 
