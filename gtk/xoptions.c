@@ -1381,12 +1381,17 @@ printf("option =%2d, top =%2d\n", i, top);
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
             gtk_widget_set_size_request(graph, option[i].max, option[i].value);
-            Pack(hbox, table, graph, left, left+r, top, GTK_EXPAND);
             g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "button-release-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "motion-notify-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
+	    if(1) {
+		GtkWidget *frame = gtk_frame_new(NULL);
+                gtk_container_add(GTK_CONTAINER(frame), graph);
+		graph = frame;
+	    }
+            Pack(hbox, table, graph, left, left+r, top, GTK_EXPAND);
 
 #ifdef TODO_GTK
 	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
