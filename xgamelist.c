@@ -72,19 +72,3 @@ char filterTranslations[] =
   "<Key>Return: SetFilterProc() \n";
 
 
-#ifdef TODO_GTK
-void
-LoadSelectedProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    if(GameListClicks(atoi(prms[0]))) return; // if no game loaded, no focus transfer
-    XSync(xDisplay, False);
-    XSetInputFocus(xDisplay, XtWindow(boardWidget), RevertToPointerRoot, CurrentTime);
-}
-
-void
-SetFilterProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-    SetFilter();
-}
-#endif
-
