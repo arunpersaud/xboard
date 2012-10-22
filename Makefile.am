@@ -18,16 +18,16 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 moves.c moves.h \
 		 parser.c parser.h \
 		 pgntags.c \
-	  	 uci.c xtimer.c \
-	 	 xboard.c xboard.h args.h menus.c menus.h \
+	  	 uci.c gtk/xtimer.c \
+	 	 gtk/xboard.c gtk/xboard.h args.h menus.c menus.h \
 	 	 draw.c draw.h xboard2.h \
 	 	 usounds.c usystem.c usystem.h \
 	 	 board.c board.h \
 		 engineoutput.c engineoutput.h \
-		 nengineoutput.c xengineoutput.c \
+		 nengineoutput.c gtk/xengineoutput.c \
 		 evalgraph.c evalgraph.h nevalgraph.c \
 		 history.c nhistory.c \
-		 xoptions.c dialogs.c dialogs.h \
+		 gtk/xoptions.c dialogs.c dialogs.h \
 		 $(ZPY)
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@ @CAIRO_LIBS@
@@ -40,7 +40,7 @@ EXTRA_DIST = pixmaps shogi sounds winboard \
 DISTCLEANFILES = stamp-h
 
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @GTK_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"'
+	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -I gtk
 
 ACLOCAL_AMFLAGS = -I m4
 
