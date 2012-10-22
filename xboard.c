@@ -170,7 +170,6 @@ extern char *getenv();
 #include "xboard.h"
 #include "xboard2.h"
 #include "childio.h"
-#include "xgamelist.h"
 #include "xhistory.h"
 #include "menus.h"
 #include "board.h"

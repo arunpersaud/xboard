@@ -438,19 +438,6 @@ CreateMenuPopup (Option *opt, int n, int def)
       return menu;
 }
 
-char moveTypeInTranslations[] =
-    "<Key>Return: TypeInProc(1) \n"
-    "<Key>Escape: TypeInProc(0) \n";
-extern char filterTranslations[];
-extern char gameListTranslations[];
-extern char memoTranslations[];
-
-
-char *translationTable[] = { // beware: order is essential!
-   historyTranslations, commentTranslations, moveTypeInTranslations, ICSInputTranslations,
-   filterTranslations, gameListTranslations, memoTranslations
-};
-
 Option *typeIn; // kludge to distinguish type-in callback from input-box callback
 
 void
