@@ -152,17 +152,6 @@ extern char *getenv();
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
 
-#if HAVE_LIBXPM
-#include <X11/xpm.h>
-#define IMAGE_EXT "xpm"
-#else
-#define IMAGE_EXT "xim"
-#endif
-
-#include "bitmaps/icon_white.bm"
-#include "bitmaps/icon_black.bm"
-#include "bitmaps/checkmark.bm"
-
 #include "frontend.h"
 #include "backend.h"
 #include "backendz.h"
