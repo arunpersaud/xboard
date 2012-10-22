@@ -939,7 +939,7 @@ NewComCallback (int n)
 }
 
 Option commentOptions[] = {
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 250, NULL, (void*) &commentText, "", (MemoCallback *) &CommentClick, TextBox, "" },
+{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 250, NULL, (void*) &commentText, "", (char **) &CommentClick, TextBox, "" },
 { 0,     0,     50, NULL, (void*) &ClearComment, NULL, NULL, Button, N_("clear") },
 { 0, SAME_ROW, 100, NULL, (void*) &SaveChanges, NULL, NULL, Button, N_("save changes") },
 { 0, SAME_ROW,  0,  NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
@@ -2084,8 +2084,6 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
   { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[0], PopUp, "menuW" },
   { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[1], PopUp, "menuB" },
   { -1, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, dropMenuStrings, PopUp, "menuD" },
-{ 0,  0,          0, NULL, (void*) &appData.saveGameFile, ".pgn .game", NULL, FileName, N_("Save Tourney Games on:") },
-//{ 0,  0, 0, NULL, NULL, "", NULL, EndMark , "" },
 { 0,  NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 

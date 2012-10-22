@@ -829,16 +829,15 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 			 // to give drawing routines opportunity to use it before first expose event
 			 // (which are only processed when main gets to the event loop, so after all init!)
 			 // so only change when size is no longer good
-#ifdef TODO_GTK
 		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
-#endif
 		break;
 	    }
 	    w = eevent->area.width;
 	    if(eevent->area.x + w > graph->max) w--; // cut off fudge pixel
 	    cr = gdk_cairo_create(((GtkWidget *) (graph->handle))->window);
 	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
+//cairo_set_source_rgb(cr, 1, 0, 0);
 	    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 	    cairo_rectangle(cr, eevent->area.x, eevent->area.y, w, eevent->area.height);
 	    cairo_fill(cr);
@@ -1168,7 +1167,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
     for (i=0;option[i].type != EndMark;i++) {
 	if(option[i].type == -1) continue;
         top++;
-printf("option =%2d, top =%2d\n", i, top);
+//printf("option =%2d, top =%2d\n", i, top);
         if (top >= height) {
             gtk_table_resize(GTK_TABLE(table), height, r);
 	    if(!pane) { // multi-column: put tables in intermediate hbox
@@ -1406,13 +1405,23 @@ printf("option =%2d, top =%2d\n", i, top);
 	    break;
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
-            gtk_widget_set_size_request(graph, option[i].max, option[i].value);
-            Pack(hbox, table, graph, left, left+r, top, GTK_EXPAND);
+//            gtk_widget_set_size_request(graph, option[i].max, option[i].value);
+	    if(0){ GtkAllocation a;
+		a.x = 0; a.y = 0; a.width = option[i].max, a.height = option[i].value;
+		gtk_widget_set_allocation(graph, &a);
+	    }
             g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "button-release-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "motion-notify-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
+	    if(0) {
+		GtkWidget *frame = gtk_aspect_frame_new(NULL, 0, 0, 1, FALSE);
+//		gtk_frame_set_shadow_type(frame, GTK_SHADOW_NONE);
+                gtk_container_add(GTK_CONTAINER(frame), graph);
+		graph = frame;
+	    }
+            Pack(hbox, table, graph, left, left+r, top, GTK_EXPAND);
 
 #ifdef TODO_GTK
 	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
