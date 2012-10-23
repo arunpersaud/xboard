@@ -653,7 +653,7 @@ ResizeBoardWindow (int w, int h, int inhibit)
 {
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH;
-//    gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
+    gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
 #ifdef TODO_GTK
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH;
@@ -1064,10 +1064,13 @@ main (int argc, char **argv)
 	GtkAllocation a;
 	gtk_widget_get_allocation(shells[BoardWindow], &a);
 	w = a.width; h = a.height;
-printf("start size (%d,%d), %dx%d\n", a.x, a.y, w, h);
+//printf("start size (%d,%d), %dx%d\n", a.x, a.y, w, h);
+	gtk_widget_get_allocation(boardWidget, &a);
+	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
+	marginH =  h - a.height - 25; // subtract 25, because GTK seems to insert this amount of extra empty space
+	gtk_window_resize(GTK_WINDOW(shellWidget), marginW + boardWidth, marginH + boardHeight);
+//printf("margins h=%d v=%d\n", marginW, marginH);
     }
-    marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
-    marginH =  h - boardHeight;
 
     CreateAnyPieces();
     CreateGrid();
@@ -1503,7 +1506,7 @@ DragProc ()
 
 	busy = 1;
 //	GetActualPlacement(shellWidget, &wpNew);
-printf("drag proc (%d,%d) %dx%d\n", wpNew.x, wpNew.y, wpNew.width, wpNew.height);
+//printf("drag proc (%d,%d) %dx%d\n", wpNew.x, wpNew.y, wpNew.width, wpNew.height);
 	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
 	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) { // not sized
 	    busy = 0; return; // false alarm
@@ -1523,16 +1526,16 @@ printf("drag proc (%d,%d) %dx%d\n", wpNew.x, wpNew.y, wpNew.width, wpNew.height)
 void
 DelayedDrag ()
 {
-printf("old timr = %d\n", delayedDragTag);
+//printf("old timr = %d\n", delayedDragTag);
     if(delayedDragTag) g_source_remove(delayedDragTag);
     delayedDragTag = g_timeout_add( 200, (GSourceFunc) DragProc, NULL);
-printf("new timr = %d\n", delayedDragTag);
+//printf("new timr = %d\n", delayedDragTag);
 }
 
 static gboolean
 EventProc (GtkWidget *widget, GdkEvent *event, gpointer g)
 {
-printf("event proc (%d,%d) %dx%d\n", event->configure.x, event->configure.y, event->configure.width, event->configure.height);
+//printf("event proc (%d,%d) %dx%d\n", event->configure.x, event->configure.y, event->configure.width, event->configure.height);
     // immediately
     wpNew.x = event->configure.x;
     wpNew.y = event->configure.y;
