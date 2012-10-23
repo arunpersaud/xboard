@@ -271,9 +271,7 @@ ScaleOnePiece (int color, int piece)
 
   g_type_init ();
 
-  if(!svgPieces[color][piece]) { // try to freshly render cached svg pieces first, to supply the source bitmap
-    svgPieces[color][piece] = LoadSVG("", color, piece); // this fills pngPieceImages if we had cached svg with bitmap of wanted size
-  }
+  svgPieces[color][piece] = LoadSVG("", color, piece); // this fills pngPieceImages if we had cached svg with bitmap of wanted size
 
   if(!pngPieceImages[color][piece]) { // we don't have cached bitmap (implying we did not have cached svg)
     if(*appData.pieceDirectory) { // user specified piece directory
