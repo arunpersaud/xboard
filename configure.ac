@@ -28,7 +28,7 @@ dnl| to regenerate configure.  Then submit your changes to be folded into
 dnl| the standard version of xboard.
 
 dnl| define second argument as VERSION.PATCHLEVEL. e.g. 4.4.0j
-AC_INIT([xboard],[master-20121021],[bug-xboard@gnu.org])
+AC_INIT([xboard],[master-20120930],[bug-xboard@gnu.org])
 
 dnl| need this to be able to compile some files in a subdir (filebrowser)
 AM_INIT_AUTOMAKE([subdir-objects])
@@ -90,6 +90,10 @@ AC_CHECK_PROG(NROFF, nroff, [nroff -man], cat)
 AC_SUBST(NROFFFLAGS)
 AC_PATH_PROGS(AWKPATH, awk mawk gawk nawk)
 AC_PATH_PROGS(PERLPATH, perl)
+
+PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.16.0 gmodule-2.0 ])
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
 
 AC_HEADER_STDC
 AC_HEADER_TIME
