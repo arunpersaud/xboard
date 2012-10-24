@@ -19,22 +19,21 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 parser.c parser.h \
 		 pgntags.c \
 	  	 uci.c \
-	 	 args.h xboard2.h \
-	 	 board.c board.h \
+	 	 xaw/xboard.c xaw/xboard.h args.h menus.c menus.h \
 	 	 draw.c draw.h \
-	 	 dialogs.c dialogs.h \
-		 engineoutput.c nengineoutput.c engineoutput.h \
-		 evalgraph.c nevalgraph.c evalgraph.h \
-		 history.c nhistory.c \
-	 	 menus.c menus.h \
 	 	 usounds.c usystem.c usystem.h \
-	 	 gtk/xengineoutput.c \
-	 	 gtk/xboard.c gtk/xboard.h \
-		 gtk/xoptions.c gtk/xtimer.c \
+	 	 board.c board.h \
+		 xaw/xedittags.c xaw/xedittags.h \
+		 engineoutput.c engineoutput.h \
+		 nengineoutput.c xaw/xengineoutput.c \
+		 evalgraph.c evalgraph.h xaw/xevalgraph.c xaw/xevalgraph.h\
+	 	 xaw/xgamelist.c xaw/xgamelist.h\
+		 history.c xaw/xhistory.c xaw/xhistory.h \
+		 xaw/xoptions.c dialogs.c dialogs.h \
 		 $(ZPY)
 SUBDIRS = po
-xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@ @CAIRO_LIBS@
-EXTRA_DIST = pixmaps shogi sounds winboard \
+xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
+EXTRA_DIST = pixmaps shogi sounds winboard bitmaps\
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
@@ -42,8 +41,8 @@ EXTRA_DIST = pixmaps shogi sounds winboard \
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @GTK_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -I gtk
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
+	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -I xaw
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -111,13 +110,13 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/eo_White.svg
 
 shogidir = $(datadir)/games/xboard/themes/shogi
-dist_shogi_DATA = shogi/shogi_gold.svg shogi/shogi_bishop_promoted.svg\
-           shogi/shogi_bishop.svg      shogi/shogi_king.svg\
-           shogi/shogi_knight.svg      shogi/shogi_knight_promoted.svg\
-           shogi/shogi_lance.svg       shogi/shogi_lance_promoted.svg\
-           shogi/shogi_pawn.svg        shogi/shogi_pawn_promoted.svg\
-           shogi/shogi_rook.svg        shogi/shogi_rook_promoted.svg\
-           shogi/shogi_silver.svg      shogi/shogi_silver_promoted.svg
+dist_shogi_DATA = shogi/WhiteGold.svg shogi/WhiteCrownedBishop.svg\
+           shogi/WhiteBishop.svg      shogi/WhiteKing.svg\
+           shogi/WhiteKnight.svg      shogi/WhiteGoldKnight.svg\
+           shogi/WhiteLance.svg       shogi/WhiteGoldLance.svg\
+           shogi/WhitePawn.svg        shogi/WhiteGoldPawn.svg\
+           shogi/WhiteRook.svg        shogi/WhiteCrownedRook.svg\
+           shogi/WhiteAdvisor.svg     shogi/WhiteGoldSilver.svg
 
 ### directory and files for pixmaps
 
