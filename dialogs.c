@@ -925,7 +925,7 @@ static char *commentText;
 static int commentIndex;
 static void ClearComment P((int n));
 static void SaveChanges P((int n));
-static int savedIndex;  /* gross that this is global */
+int savedIndex;  /* gross that this is global (and even across files...) */
 
 static int CommentClick P((Option *opt, int n, int x, int y, char *val, int index));
 

@@ -23,7 +23,6 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 draw.c draw.h \
 	 	 usounds.c usystem.c usystem.h \
 	 	 board.c board.h \
-		 xaw/xedittags.c xaw/xedittags.h \
 		 engineoutput.c engineoutput.h \
 		 nengineoutput.c xaw/xengineoutput.c \
 		 evalgraph.c evalgraph.h xaw/xevalgraph.c xaw/xevalgraph.h\

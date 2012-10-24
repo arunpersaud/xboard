@@ -1267,7 +1267,6 @@ main (int argc, char **argv)
       XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
       XtGetValues(optList[W_PAUSE].handle, args, 2);
     }
-    AppendEnginesToMenu(appData.recentEngineList);
 
     xBoardWindow = XtWindow(boardWidget);
 
@@ -1625,18 +1624,6 @@ KeyBindingProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     if(item) ((MenuProc *) item->proc) ();
 }
 
-static void
-MenuEngineSelect (Widget w, caddr_t addr, caddr_t index)
-{
-    RecentEngineEvent((int) (intptr_t) addr);
-}
-
-void
-AppendMenuItem (char *msg, int n)
-{
-    CreateMenuItem((Widget) optList[W_ENGIN].textValue, msg, (XtCallbackProc) MenuEngineSelect, n);
-}
-
 void
 SetupDropMenu ()
 {
@@ -1796,7 +1783,7 @@ HandlePV (Widget w, XEvent * event, String * params, Cardinal * nParams)
     MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 }
 
-static int savedIndex;  /* gross that this is global */
+extern int savedIndex;  /* gross that this is global */
 
 void
 CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
