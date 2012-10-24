@@ -19,17 +19,17 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 parser.c parser.h \
 		 pgntags.c \
 	  	 uci.c \
-	 	 xboard.c xboard.h args.h menus.c menus.h \
+	 	 xaw/xboard.c xaw/xboard.h args.h menus.c menus.h \
 	 	 draw.c draw.h \
 	 	 usounds.c usystem.c usystem.h \
 	 	 board.c board.h \
-		 xedittags.c xedittags.h \
+		 xaw/xedittags.c xaw/xedittags.h \
 		 engineoutput.c engineoutput.h \
-		 nengineoutput.c xengineoutput.c \
-		 evalgraph.c evalgraph.h xevalgraph.c xevalgraph.h\
-	 	 xgamelist.c xgamelist.h\
-		 history.c xhistory.c xhistory.h \
-		 xoptions.c dialogs.c dialogs.h \
+		 nengineoutput.c xaw/xengineoutput.c \
+		 evalgraph.c evalgraph.h xaw/xevalgraph.c xaw/xevalgraph.h\
+	 	 xaw/xgamelist.c xaw/xgamelist.h\
+		 history.c xaw/xhistory.c xaw/xhistory.h \
+		 xaw/xoptions.c dialogs.c dialogs.h \
 		 $(ZPY)
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
@@ -42,7 +42,7 @@ EXTRA_DIST = pixmaps shogi sounds winboard bitmaps\
 DISTCLEANFILES = stamp-h
 
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"'
+	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -I xaw
 
 ACLOCAL_AMFLAGS = -I m4
 
