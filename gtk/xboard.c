@@ -2076,12 +2076,15 @@ UpdateLogos (int displ)
     return;
 }
 
-void FileNamePopUpGTK(label, def, filter, proc, openMode)
+void FileNamePopUpGTK(label, def, filter, proc, pathFlag, openMode, name, fp)
      char *label;
      char *def;
      char *filter;
      FileProc proc;
      char *openMode;
+     Boolean pathFlag;
+     char **name;
+     FILE **fp;
 {
   GtkWidget     *dialog;
   GtkFileFilter *gtkfilter;
