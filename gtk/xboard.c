@@ -556,33 +556,14 @@ GetActualPlacement (GtkWidget *shell, WindowPlacement *wp)
   GtkAllocation a;
   if(!shell) return;
   gtk_widget_get_allocation(shell, &a);
+  gtk_window_get_position(GTK_WINDOW(shell), &a.x, &a.y);
   wp->x = a.x;
   wp->y = a.y;
   wp->width = a.width;
   wp->height = a.height;
-printf("placement\n");
-  frameX = a.x; frameY = a.y; // remember to decide if windows touch
+//printf("placement: (%d,%d) %dx%d\n", a.x, a.y, a.width, a.height);
+  frameX = 3; frameY = 3; // remember to decide if windows touch
 }
-#ifdef TODO_GTK
-void
-GetActualPlacement (Widget wg, WindowPlacement *wp)
-{
-  XWindowAttributes winAt;
-  Window win, dummy;
-  int rx, ry;
-
-  if(!wg) return;
-
-  win = XtWindow(wg);
-  XGetWindowAttributes(xDisplay, win, &winAt); // this works, where XtGetValues on XtNx, XtNy does not!
-  XTranslateCoordinates (xDisplay, win, winAt.root, -winAt.border_width, -winAt.border_width, &rx, &ry, &dummy);
-  wp->x = rx - winAt.x;
-  wp->y = ry - winAt.y;
-  wp->height = winAt.height;
-  wp->width = winAt.width;
-  frameX = winAt.x; frameY = winAt.y; // remember to decide if windows touch
-}
-#endif
 
 void
 GetWindowCoords ()
@@ -648,17 +629,6 @@ ResizeBoardWindow (int w, int h, int inhibit)
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH;
     gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
-#ifdef TODO_GTK
-    w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
-    h += marginH;
-    shellArgs[0].value = w;
-    shellArgs[1].value = h;
-    shellArgs[4].value = shellArgs[2].value = w;
-    shellArgs[5].value = shellArgs[3].value = h;
-    XtSetValues(shellWidget, &shellArgs[0], inhibit ? 6 : 2);
-
-    XSync(xDisplay, False);
-#endif
 }
 
 int
@@ -1438,12 +1408,13 @@ static WindowPlacement wpNew;
 void
 CoDrag (GtkWidget *sh, WindowPlacement *wp)
 {
-    int touch=0, fudge = 2;
+    int touch=0, fudge = 2, f = 2;
     GetActualPlacement(sh, wp);
-    if(abs(wpMain.x + wpMain.width + 2*frameX - wp->x)         < fudge) touch = 1; else // right touch
-    if(abs(wp->x + wp->width + 2*frameX - wpMain.x)            < fudge) touch = 2; else // left touch
-    if(abs(wpMain.y + wpMain.height + frameX + frameY - wp->y) < fudge) touch = 3; else // bottom touch
-    if(abs(wp->y + wp->height + frameX + frameY - wpMain.y)    < fudge) touch = 4;      // top touch
+    if(abs(wpMain.x + wpMain.width + 2*frameX - f - wp->x)         < fudge) touch = 1; else // right touch
+    if(abs(wp->x + wp->width + 2*frameX + f - wpMain.x)            < fudge) touch = 2; else // left touch
+    if(abs(wpMain.y + wpMain.height + frameX - f + frameY - wp->y) < fudge) touch = 3; else // bottom touch
+    if(abs(wp->y + wp->height + frameX + frameY + f - wpMain.y)    < fudge) touch = 4;      // top touch
+//printf("CoDrag: touch = %d x=%d w=%d x2=%d w2=%d fx=%d\n", touch, wpMain.x, wpMain.width, wp->x, wp->width, frameX);
     if(!touch ) return; // only windows that touch co-move
     if(touch < 3 && wpNew.height != wpMain.height) { // left or right and height changed
 	int heightInc = wpNew.height - wpMain.height;
@@ -1454,6 +1425,7 @@ CoDrag (GtkWidget *sh, WindowPlacement *wp)
 #ifdef TODO_GTK
 	if(heightInc) XtSetArg(args[j], XtNheight, wp->height + heightInc), j++;
 #endif
+	wp->height += heightInc;
     } else if(touch > 2 && wpNew.width != wpMain.width) { // top or bottom and width changed
 	int widthInc = wpNew.width - wpMain.width;
 	double fracLeft = Fraction(wp->x, wpMain.x, wpMain.x + wpMain.width + 2*frameX);
@@ -1463,6 +1435,7 @@ CoDrag (GtkWidget *sh, WindowPlacement *wp)
 #ifdef TODO_GTK
 	if(widthInc) XtSetArg(args[j], XtNwidth, wp->width + widthInc), j++;
 #endif
+	wp->width += widthInc;
     }
     wp->x += wpNew.x - wpMain.x;
     wp->y += wpNew.y - wpMain.y;
@@ -1473,6 +1446,9 @@ CoDrag (GtkWidget *sh, WindowPlacement *wp)
     XtSetArg(args[j], XtNy, wp->y); j++;
     XtSetValues(sh, args, j);
 #endif
+	gtk_window_move(GTK_WINDOW(sh), wp->x, wp->y);
+//printf("moved to (%d,%d)\n", wp->x, wp->y);
+	gtk_window_resize(GTK_WINDOW(sh), wp->width, wp->height);
 }
 
 void
@@ -1484,6 +1460,7 @@ ReSize (WindowPlacement *wp)
 	sqy = (wp->height - lineGap - marginH) / BOARD_HEIGHT - lineGap;
 	if(sqy < sqx) sqx = sqy;
 	if(sqx != squareSize) {
+//printf("new sq size %d (%dx%d)\n", sqx, wp->width, wp->height);
 	    squareSize = sqx; // adopt new square size
 	    CreatePNGPieces(); // make newly scaled pieces
 	    InitDrawingSizes(0, 0); // creates grid etc.

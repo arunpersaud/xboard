@@ -634,7 +634,7 @@ GtkWidget *shells[NrOfDialogs];
 DialogClass parents[NrOfDialogs];
 WindowPlacement *wp[NrOfDialogs] = { // Beware! Order must correspond to DialogClass enum
     NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
-    NULL, NULL, NULL, NULL, /*&wpMain*/ NULL
+    NULL, NULL, NULL, NULL, &wpMain
 };
 
 int
@@ -679,21 +679,9 @@ PopDown (DialogClass n)
     //Arg args[10];    
     
     if (!shellUp[n] || !shells[n]) return 0;    
-#ifdef TODO_GTK
-// Not sure this is still used
     if(n && wp[n]) { // remember position
-	j = 0;
-	XtSetArg(args[j], XtNx, &windowX); j++;
-	XtSetArg(args[j], XtNy, &windowY); j++;
-	XtSetArg(args[j], XtNheight, &windowH); j++;
-	XtSetArg(args[j], XtNwidth, &windowW); j++;
-	XtGetValues(shells[n], args, j);
-	wp[n]->x = windowX;
-	wp[n]->x = windowY;
-	wp[n]->width  = windowW;
-	wp[n]->height = windowH;
+	GetActualPlacement(shells[n], wp[n]);
     }
-#endif
     
     gtk_widget_hide(shells[n]);
     shellUp[n]--; // count rather than clear
@@ -1493,6 +1481,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 
     option[i].handle = (void *) table; // remember last table in EndMark handle (for hiding Engine-Output pane).
 
+    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_NONE);
     /* Show dialog */
     gtk_widget_show_all( dialog );    
 
@@ -1509,6 +1498,13 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr]++;
+
+    if(dlgNr && wp[dlgNr] && wp[dlgNr]->width > 0) { // if persistent window-info available, reposition
+	gtk_window_move(GTK_WINDOW(dialog), wp[dlgNr]->x, wp[dlgNr]->y);
+//printf("moved %d to (%d,%d)\n", dlgNr, wp[dlgNr]->x, wp[dlgNr]->y);
+	gtk_window_resize(GTK_WINDOW(dialog), wp[dlgNr]->width, wp[dlgNr]->height);
+//printf("resized %d to %dx%d\n", dlgNr, wp[dlgNr]->width, wp[dlgNr]->height);
+    }
 
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
 }
