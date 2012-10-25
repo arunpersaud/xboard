@@ -143,6 +143,11 @@ static Arg formArgs[] = {
 };
 
 void
+CursorAtEnd (Option *opt)
+{
+}
+
+void
 GetWidgetText (Option *opt, char **buf)
 {
     Arg arg;
@@ -257,6 +262,11 @@ SelectedListBoxItem (Option *opt)
     XawListReturnStruct *rs;
     rs = XawListShowCurrent(opt->handle);
     return rs->list_index;
+}
+
+void
+HighlightText (Option *opt, int start, int end, Boolean on)
+{
 }
 
 void
@@ -910,6 +920,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    XtAddEventHandler(last, ButtonPressMask, False, CheckCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
 	    shrink = TRUE; // following buttons must get text height
 	    break;
+	  case Icon:
 	  case Label:
 	    msg = option[i].name;
 	    if(!msg) break;
@@ -1009,6 +1020,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	  case PopUp: // note: used only after Graph, so 'last' refers to the Graph widget
 	    option[i].handle = (void*) CreateComboPopup(last, option + i, i + 256*dlgNr, TRUE, option[i].value);
 	    break;
+	  case BarBegin:
 	  case BoxBegin:
 	    if(option[i].min & SAME_ROW) forelast = lastrow;
 	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
@@ -1031,6 +1043,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 		(last = XtCreateManagedWidget(option[i].name, menuButtonWidgetClass, form, args, j));
 	    option[i].textValue = (char*) CreateComboPopup(last, option + i, i + 256*dlgNr, FALSE, -1);
 	    break;
+	  case BarEnd:
 	  case BoxEnd:
 	    XtManageChildren(&form, 1);
 	    SqueezeIntoBox(&option[box], i-box, option[box].max);
@@ -1213,4 +1226,9 @@ HardSetFocus (Option *opt)
     XSetInputFocus(xDisplay, XtWindow(opt->handle), RevertToPointerRoot, CurrentTime);
 }
 
+void
+FileNamePopUpGTK(char *label, char *def, char *filter, FileProc proc, Boolean pathFlag, char *openMode, char **openName, FILE **openFP)
+{
+    Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, openName, openFP);
+}
 
