@@ -1,3 +1,5 @@
+bin_PROGRAMS = xboard
+
 ### if we are compiling with ZIPPY we need some extra source files
 
 if ZIPPY
@@ -6,8 +8,23 @@ else
   ZPY =
 endif
 
-bin_PROGRAMS = xboard
-xboard_SOURCES = backend.c backend.h backendz.h \
+### define sources for the front-end and backend
+
+GTKsources = xboard.c  xevalgraph.c  xgamelist.c \
+             xhistory.c  xoptions.c  xboard.h  \
+             xengineoutput.c  xevalgraph.h  xgamelist.h \
+             xhistory.h
+
+Xsources   = xaw/xboard.c xaw/xboard.h \
+             xaw/xedittags.c xaw/xedittags.h \
+             xaw/xengineoutput.c \
+             xaw/xevalgraph.c xaw/xevalgraph.h \
+             xaw/xgamelist.c xaw/xgamelist.h \
+             xaw/xhistory.c xaw/xhistory.h \
+             xaw/xoptions.c
+             
+
+backendsources = backend.c backend.h backendz.h \
 	 	 book.c \
 		 childio.c childio.h \
 	 	 common.h \
@@ -19,21 +36,33 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 parser.c parser.h \
 		 pgntags.c \
 	  	 uci.c \
-	 	 xaw/xboard.c xaw/xboard.h args.h menus.c menus.h \
-	 	 draw.c draw.h \
-	 	 usounds.c usystem.c usystem.h \
+	 	 args.h \
 	 	 board.c board.h \
-		 xaw/xedittags.c xaw/xedittags.h \
-		 engineoutput.c engineoutput.h \
-		 nengineoutput.c xaw/xengineoutput.c \
-		 evalgraph.c evalgraph.h xaw/xevalgraph.c xaw/xevalgraph.h\
-	 	 xaw/xgamelist.c xaw/xgamelist.h\
-		 history.c xaw/xhistory.c xaw/xhistory.h \
-		 xaw/xoptions.c dialogs.c dialogs.h \
+	 	 draw.c draw.h \
+		 dialogs.c dialogs.h \
+		 engineoutput.c nengineoutput.c engineoutput.h \
+		 evalgraph.c evalgraph.h \
+		 history.c \
+	 	 menus.c menus.h \
+	 	 usounds.c usystem.c usystem.h \
 		 $(ZPY)
+
+### combine sources depending on front-end
+
+if withGTK
+  xboard_SOURCES = $(backendsources) $(GTKsources)
+endif
+if withXaw
+  xboard_SOURCES = $(backendsources) $(Xsources)
+  headers = -I xaw
+endif
+
+###
+
 SUBDIRS = po
-xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
-EXTRA_DIST = pixmaps shogi sounds winboard bitmaps\
+xboard_LDADD = -lm @X_LIBS@ @LIBINTL@ @FRONTEND_LIBS@ @CAIRO_LIBS@
+
+EXTRA_DIST = pixmaps shogi png sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
@@ -41,8 +70,8 @@ EXTRA_DIST = pixmaps shogi sounds winboard bitmaps\
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -I xaw
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @FRONTEND_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
+	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' $(headers)
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -54,7 +83,6 @@ man6_MANS = xboard.man
 ### config file
 
 sysconf_DATA = xboard.conf
-
 
 ### icon files
 
@@ -126,7 +154,7 @@ dist_pixmaps_DATA = pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm 
 ### directory and files for pngs
 
 pngdir = $(datadir)/games/xboard/themes/textures
-dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png
+dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png png/xqboard.png
 
 ### directory and files for sound files
 
