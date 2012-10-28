@@ -772,7 +772,9 @@ DrawBlank (AnimNr anr, int x, int y, int startColor)
 void CopyRectangle (AnimNr anr, int srcBuf, int destBuf,
 		 int srcX, int srcY, int width, int height, int destX, int destY)
 {
-	cairo_t *cr = cairo_create (c_animBufs[anr+destBuf]);
+	cairo_t *cr;
+	c_animBufs[anr+4] = csBoardWindow;
+	cr = cairo_create (c_animBufs[anr+destBuf]);
 	cairo_set_source_surface (cr, c_animBufs[anr+srcBuf], destX - srcX, destY - srcY);
 	cairo_rectangle (cr, destX, destY, width, height);
 	cairo_fill (cr);
