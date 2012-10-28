@@ -1058,7 +1058,7 @@ static int
 SameRow (Option *opt)
 {
     return (opt->min & SAME_ROW && (opt->type == Button || opt->type == SaveButton || opt->type == Label
-				 || opt->type == ListBox || opt->type == BoxBegin || opt->type == Icon));
+				 || opt->type == ListBox || opt->type == BoxBegin || opt->type == Icon || opt->type == Graph));
 }
 
 static void
@@ -1174,7 +1174,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    if(SameRow(&option[i+1])) {
 		GtkAttachOptions x = GTK_FILL;
 		// make sure hbox is always available when we have more options on same row
-                hbox = gtk_hbox_new (option[i].type == Button && option[i].textValue, 0);
+                hbox = gtk_hbox_new (option[i].type == Button && option[i].textValue || option[i].type == Graph, 0);
 		if(!currentCps && option[i].value > 80) x |= GTK_EXPAND; // only vertically extended widgets should size vertically
                 if (strcmp(option[i].name, "") == 0 || option[i].type == Label || option[i].type == Button)
                     // for Label and Button name is contained inside option
@@ -1403,9 +1403,9 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "button-release-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "motion-notify-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
-	    if(0) {
-		GtkWidget *frame = gtk_aspect_frame_new(NULL, 0, 0, 1, FALSE);
-//		gtk_frame_set_shadow_type(frame, GTK_SHADOW_NONE);
+	    if(option[i].min & FIX_H) { // logo
+		GtkWidget *frame = gtk_aspect_frame_new(NULL, 0.5, 0.5, option[i].max/(float)option[i].value, FALSE);
+		gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_NONE);
                 gtk_container_add(GTK_CONTAINER(frame), graph);
 		graph = frame;
 	    }

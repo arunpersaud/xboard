@@ -586,7 +586,8 @@ DrawLogo (Option *opt, void *logo)
     w = cairo_image_surface_get_width (img);
     h = cairo_image_surface_get_height (img);
     cr = cairo_create(DRAWABLE(opt));
-    cairo_scale(cr, (float)appData.logoSize/w, appData.logoSize/(2.*h));
+//    cairo_scale(cr, (float)appData.logoSize/w, appData.logoSize/(2.*h));
+    cairo_scale(cr, (float)opt->max/w, (float)opt->value/h);
     cairo_set_source_surface (cr, img, 0, 0);
     cairo_paint (cr);
     cairo_destroy (cr);
