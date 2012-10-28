@@ -58,7 +58,7 @@ Boolean EvalGraphIsUp()
 }
 
 // [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end) 
-void DrawSegment( int x, int y, int *lastX, int *lastY, enum PEN penType )
+void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
 {
     POINT stPt;
     if(penType == PEN_NONE) MoveToEx( hdcPB, x, y, &stPt ); else {
