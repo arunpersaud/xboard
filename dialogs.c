@@ -478,6 +478,7 @@ Pick (int n)
 void
 NewVariantProc ()
 {
+   if(appData.noChessProgram) sprintf(warning, _("Only bughouse is not available in viewer mode")); else
    sprintf(warning, _("All variants not supported by first engine\n(currently %s) are disabled"), first.tidy);
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
 }
