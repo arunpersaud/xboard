@@ -1492,9 +1492,12 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
     gtk_widget_show_all( dialog );    
 
     /* hide OK/cancel buttons */
-    if((option[i].min & 2)) {
+    if((option[i].min & NO_OK)) {
         actionarea = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
         gtk_widget_hide(actionarea);
+    } else if((option[i].min & NO_CANCEL)) {
+        button = gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_REJECT);
+        gtk_widget_hide(button);
     }
 
     g_signal_connect (dialog, "response",
