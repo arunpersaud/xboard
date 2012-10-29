@@ -2052,6 +2052,12 @@ static void
 CCB (int n)
 {
     shiftKey = (ShiftKeys() & 3) != 0;
+    if(n < 0) { // button != 1
+	n = -n;
+	if(shiftKey && (gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack)) {
+	    AdjustClock(n == W_BLACK, 1);
+	}
+    } else
     ClockClick(n == W_BLACK);
 }
 

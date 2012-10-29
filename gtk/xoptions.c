@@ -566,8 +566,6 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     gboolean res;
     gint index, x, y;
 
-    if(memo->type == Label) { ((ButtonCallback*) memo->target)(memo->value); return TRUE; } // only clock widgets use this
-
     switch(event->type) { // figure out what's up
 	case GDK_MOTION_NOTIFY:
 	    f = 0;
@@ -583,6 +581,10 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	    button = bevent->button;
 	    shiftState = bevent->state & GDK_SHIFT_MASK;
 	    controlState = bevent->state & GDK_CONTROL_MASK;
+	    if(memo->type == Label) { // only clock widgets use this
+		((ButtonCallback*) memo->target)(button == 1 ? memo->value : -memo->value);
+		return TRUE;
+	    }
 // GTK_TODO: is this really the most efficient way to get the character at the mouse cursor???
 	    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(widget), GTK_TEXT_WINDOW_WIDGET, w, h, &x, &y);
 	    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(widget), &start, x, y);
@@ -1298,11 +1300,15 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 		label = frame;
 	    }
             gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
-            Pack(hbox, table, label, left, left+2, top, 0);
 	    if(option[i].target) { // allow user to specify event handler for button presses
+		button = gtk_event_box_new();
+                gtk_container_add(GTK_CONTAINER(button), label);
+		label = button;
 		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
 		g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
+		gtk_widget_set_sensitive(label, TRUE);
 	    }
+            Pack(hbox, table, label, left, left+2, top, 0);
 	    break;
           case SaveButton:
           case Button:
