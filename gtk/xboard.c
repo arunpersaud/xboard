@@ -1817,6 +1817,7 @@ void
 DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
 {
     GtkWidget *w = (GtkWidget *) opt->handle;
+    GdkColor col;
     char *markup;
     char bgcolor[10];
     char fgcolor[10];
@@ -1833,6 +1834,9 @@ DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
         (timer / 1000) < appData.icsAlarmTime) {
         strcpy(fgcolor, appData.lowTimeWarningColor);
     }
+
+    gdk_color_parse( bgcolor, &col );
+    gtk_widget_modify_bg(gtk_widget_get_parent(opt->handle), GTK_STATE_NORMAL, &col);
 
     if (appData.clockMode) {
         markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s:%s%s</span>",
