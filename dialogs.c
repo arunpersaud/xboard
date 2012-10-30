@@ -1640,6 +1640,7 @@ int
 ChatOK (int n)
 {   // can only be called through <Enter> in chat-partner text-edit, as there is no OK button
     char buf[MSG_SIZ];
+
     if(!partner || strcmp(partner, chatPartner[activePartner])) {
 	safeStrCpy(chatPartner[activePartner], partner, MSG_SIZ);
 	SetWidgetText(&chatOptions[5], "", -1); // clear text if we alter partner

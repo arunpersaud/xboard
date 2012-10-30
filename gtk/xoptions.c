@@ -244,7 +244,10 @@ SetWidgetState (Option *opt, int state)
 void
 SetWidgetLabel (Option *opt, char *buf)
 {
-    gtk_label_set_text(opt->handle, buf);
+    if(opt->type == Button) // Chat window uses this routine for changing button labels
+	gtk_button_set_label(opt->handle, buf);
+    else
+	gtk_label_set_text(opt->handle, buf);
 }
 
 void
@@ -438,7 +441,7 @@ CreateMenuPopup (Option *opt, int n, int def)
       return menu;
 }
 
-Option *typeIn; // kludge to distinguish type-in callback from input-box callback
+Option *icsBox; // kludge to distinguish type-in callback from input-box callback
 
 void
 CursorAtEnd (Option *opt)
@@ -447,21 +450,9 @@ CursorAtEnd (Option *opt)
 }
 
 static gboolean
-ICSKeyEvent(GtkWidget *widget, GdkEventKey *event, gpointer g)
-{
-    Option *opt = (Option *) g;
-    if(opt == typeIn) {
-	if(event->keyval == GDK_Return) {
-	    char *val;
-	    GetWidgetText(opt, &val);
-	    TypeInDoneEvent(val);
-	    PopDown(TransientDlg);
-	    return TRUE;
-	}
-	return FALSE;
-    }
-
-    switch(event->keyval) {
+ICSKeyEvent (int keyval)
+{   // TODO_GTK: arrow-handling should really be integrated in type-in proc, and this should be a backe-end OK handler
+    switch(keyval) {
       case GDK_Return: IcsKey(0); return TRUE;
       case GDK_Up:     IcsKey(1); return TRUE;
       case GDK_Down:  IcsKey(-1); return TRUE;
@@ -613,10 +604,10 @@ AddHandler (Option *opt, DialogClass dlg, int nr)
       case 0: // history (now uses generic textview callback)
       case 1: // comment (likewise)
 	break;
-      case 2: // move type-in
-	typeIn = opt;
       case 3: // input box
-	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (ICSKeyEvent), (gpointer) opt);
+	icsBox = opt;
+      case 2: // move type-in
+	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (TypeInProc), (gpointer) (dlg<<16 | (opt - dialogOptions[dlg])));
 	break;
       case 5: // game list
 	g_signal_connect(opt->handle, "button-press-event", G_CALLBACK (GameListEvent), (gpointer) 0 );
@@ -1566,9 +1557,7 @@ SetInsertPos (Option *opt, int pos)
 void
 HardSetFocus (Option *opt)
 {
-#ifdef TODO_GTK
-    XSetInputFocus(xDisplay, XtWindow(opt->handle), RevertToPointerRoot, CurrentTime);
-#endif
+    FocusOnWidget(opt, 0); // second arg not used in GDK
 }
 
 
