@@ -1456,6 +1456,7 @@ static Option promoOptions[] = {
 {   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
 {   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
 {   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
+{   0,  SAME_ROW,    0, NULL, (void*) &PromoPick, NULL, NULL, Button, NULL },
 {   0, SAME_ROW | NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
@@ -1492,7 +1493,7 @@ SetPromo (char *name, int nr, char promoChar)
 void
 PromotionPopUp ()
 { // choice depends on variant: prepare dialog acordingly
-  count = 7;
+  count = 8;
   SetPromo(_("Cancel"), --count, 0); // Beware: GenericPopUp cannot handle user buttons named "cancel" (lowe case)!
   if(gameInfo.variant != VariantShogi) {
     if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
