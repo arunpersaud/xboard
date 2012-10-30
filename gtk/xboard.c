@@ -1454,11 +1454,17 @@ CoDrag (GtkWidget *sh, WindowPlacement *wp)
 void
 ReSize (WindowPlacement *wp)
 {
-	int sqx, sqy, w, h;
+	int sqx, sqy, w, h, lg = lineGap;
 	if(wp->width == wpMain.width && wp->height == wpMain.height) return; // not sized
-	sqx = (wp->width  - lineGap - marginW) / BOARD_WIDTH - lineGap;
-	sqy = (wp->height - lineGap - marginH) / BOARD_HEIGHT - lineGap;
+	sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
+	sqy = (wp->height - lg - marginH) / BOARD_HEIGHT - lg;
 	if(sqy < sqx) sqx = sqy;
+	if(appData.overrideLineGap < 0) { // do second iteration with adjusted lineGap
+	    lg = lineGap = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
+	    sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
+	    sqy = (wp->height - lg - marginH) / BOARD_HEIGHT - lg;
+	    if(sqy < sqx) sqx = sqy;
+	}
 	if(sqx != squareSize) {
 //printf("new sq size %d (%dx%d)\n", sqx, wp->width, wp->height);
 	    squareSize = sqx; // adopt new square size
