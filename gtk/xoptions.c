@@ -1196,7 +1196,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
             w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 
-            if (option[i].type==TextBox && option[i].value > 80){                
+            if (option[i].type==TextBox && option[i].value > 80){
                 textview = gtk_text_view_new();                
                 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), option[i].min & T_WRAP ? GTK_WRAP_WORD : GTK_WRAP_NONE);
 #ifdef TODO_GTK
@@ -1210,6 +1210,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
                                                option[i].min & T_VSCRL ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER);
                 gtk_container_add(GTK_CONTAINER(sw), textview);
                 gtk_widget_set_size_request(GTK_WIDGET(sw), w, -1);
+                gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw), GTK_SHADOW_OUT);
  
                 textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));                
                 /* check if label is empty */ 
@@ -1380,6 +1381,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
                 gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
                 gtk_container_add(GTK_CONTAINER(sw), list);
                 gtk_widget_set_size_request(GTK_WIDGET(sw), option[i].max ? option[i].max : -1, option[i].value ? option[i].value : -1);
+                gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw), GTK_SHADOW_OUT);
  
                 if(option[i].textValue) // generic callback for double-clicking listbox item
                     g_signal_connect(list, "button-press-event", G_CALLBACK(ListCallback), (gpointer) (dlgNr<<16 | i) );
