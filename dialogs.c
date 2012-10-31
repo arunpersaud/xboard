@@ -1400,6 +1400,7 @@ TimeControlProc ()
    tmpOdds1 = tmpOdds2 = 1; tcType = 0;
    tmpTc = atoi(appData.timeControl);
    GenericPopUp(tcOptions, _("Time Control"), TransientDlg, BoardWindow, MODAL, 0);
+   SetTcType(searchTime ? 2 : appData.timeIncrement < 0 ? 0 : 1);
 }
 
 //------------------------------- Ask Question -----------------------------------------
