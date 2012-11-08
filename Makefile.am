@@ -9,19 +9,29 @@ else
 endif
 
 ### define sources for the front-end and backend
-
-GTKsources = gtk/xboard.c  gtk/xboard.h \
+GTKsources = gtk/xboard.c    gtk/xboard.h \
              gtk/xoptions.c  gtk/xtimer.c \
              gtk/xengineoutput.c
 
-Xsources   = xaw/xboard.c xaw/xboard.h \
-             xaw/xengineoutput.c \
+Xsources   = xaw/xboard.c    xaw/xboard.h    \
+             xaw/xengineoutput.c             \
              xaw/xgamelist.c xaw/xgamelist.h \
-             xaw/xhistory.c xaw/xhistory.h \
-             xaw/xoptions.c
-             
+             xaw/xhistory.c  xaw/xhistory.h  \
+             xaw/xoptions.c \
+             bitmaps/checkmark.bm bitmaps/icon_black.bm bitmaps/icon_white.bm
 
-backendsources = backend.c backend.h backendz.h \
+if withGTK
+  FRONTENDsources = $(GTKsources)
+  FRONTENDextras = $(Xsources)
+  headers = -I gtk
+endif
+if withXaw
+  FRONTENDsources = $(Xsources)
+  FRONTENDextras = $(GTKsources)
+  headers = -I xaw -DX11
+endif
+
+xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 book.c \
 		 childio.c childio.h \
 	 	 common.h \
@@ -42,18 +52,7 @@ backendsources = backend.c backend.h backendz.h \
 		 history.c nhistory.c \
 	 	 menus.c menus.h \
 	 	 usounds.c usystem.c usystem.h \
-		 $(ZPY)
-
-### combine sources depending on front-end
-
-if withGTK
-  xboard_SOURCES = $(backendsources) $(GTKsources)
-  headers = -I gtk
-endif
-if withXaw
-  xboard_SOURCES = $(backendsources) $(Xsources)
-  headers = -I xaw -DX11
-endif
+		 $(ZPY) $(FRONTENDsources)
 
 ###
 
@@ -64,7 +63,7 @@ EXTRA_DIST = pixmaps shogi png sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
-	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS
+	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS $(FRONTENDextras)
 
 DISTCLEANFILES = stamp-h
 

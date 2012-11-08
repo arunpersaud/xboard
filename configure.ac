@@ -147,11 +147,6 @@ AC_ARG_WITH([Xaw],
             [with_Xaw=yes],
             [with_Xaw=no])
 
-dnl | make results available in Makefile.am
-AM_CONDITIONAL([withGTK],   [test x"$with_GTK" = x"yes"])
-AM_CONDITIONAL([withXaw],   [test x"$with_Xaw3d" = x"yes"])
-AM_CONDITIONAL([withXaw],   [test x"$with_Xaw" = x"yes"])
-
 dnl | check for libraries
 if test x"$with_GTK" = x"yes" ; then
   PKG_CHECK_MODULES([GTK], [ gtk+-2.0 >= 2.16.0 gmodule-2.0 ])
@@ -191,8 +186,9 @@ dnl | check availability of Xaw3d
                     [AC_MSG_ERROR([--with-Xaw3d was given, but test for Xaw3d failed. Make sure that you have Xaw3d installed, else you might want to try the configure option --without-Xaw3d])],
 			       [-lXaw])])
 
-dnl | no Xaw3d, check for Xaw
+dnl | no Xaw3d, check for Xaw; make it the default
   if test x"$with_Xaw3d" = x"no" ; then
+     with_Xaw=yes
      save_cflags="$CFLAGS"
      save_cppflags="$CPPFLAGS"
      CFLAGS="$CFLAGS $X_CFLAGS"
@@ -209,6 +205,12 @@ dnl | no Xaw3d, check for Xaw
   fi
 
 fi
+
+dnl | make results available in Makefile.am
+AM_CONDITIONAL([withGTK],   [test x"$with_GTK" = x"yes"])
+AM_CONDITIONAL([withXaw],   [test x"$with_Xaw3d" = x"yes"])
+AM_CONDITIONAL([withXaw],   [test x"$with_Xaw" = x"yes"])
+
 
 AC_SUBST(FRONTEND_CFLAGS)
 AC_SUBST(FRONTEND_LIBS)
