@@ -471,11 +471,13 @@ enable_sigint=$enableval
 AC_DEFINE(ATTENTION, 1)])
 
 
+if test x"$with_Xaw3d" = x"yes" -o  x"$with_Xaw" = x"yes" ; then
 dnl | save all information for X in X_LIBS, also add the libraries themself
 dnl | since AC_PATH_XTRA only adds the paths
 X_LIBS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS -lXmu -lX11 -lXt "
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_LIBS)
+fi
 
 dnl | should we install desktop icons and mime associations?
 AC_ARG_ENABLE(	[update-mimedb],
