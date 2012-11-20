@@ -848,7 +848,7 @@ Enables icsEnables[] = {
     { "Mode.AnalyzeFile", False },
     { "Mode.TwoMachines", False },
     { "Mode.MachineMatch", False },
-#ifndef ZIPPY
+#if !ZIPPY
     { "Engine.Hint", False },
     { "Engine.Book", False },
     { "Engine.MoveNow", False },
