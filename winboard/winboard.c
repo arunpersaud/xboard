@@ -164,7 +164,7 @@ BoardSize boardSize;
 Boolean chessProgram;
 //static int boardX, boardY;
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
-int squareSize, lineGap, minorSize;
+int squareSize, lineGap, minorSize, border;
 static int winW, winH;
 static RECT messageRect, whiteRect, blackRect, leftLogoRect, rightLogoRect; // [HGM] logo
 static int logoHeight = 0;
@@ -2113,9 +2113,15 @@ void CreatePiecesFromFont()
 HBITMAP
 DoLoadBitmap(HINSTANCE hinst, char *piece, int squareSize, char *suffix)
 {
-  char name[128];
+  char name[128], buf[MSG_SIZ];
 
     snprintf(name, sizeof(name)/sizeof(name[0]), "%s%d%s", piece, squareSize, suffix);
+  if(appData.pieceDirectory[0]) {
+    HBITMAP res;
+    snprintf(buf, MSG_SIZ, "%s\\%s.bmp", appData.pieceDirectory, name);
+    res = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+    if(res) return res;
+  }
   if (gameInfo.event &&
       strcmp(gameInfo.event, "Easter Egg Hunt") == 0 &&
       strcmp(name, "k80s") == 0) {
@@ -2275,6 +2281,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   squareSize = sizeInfo[boardSize].squareSize;
   lineGap = sizeInfo[boardSize].lineGap;
   minorSize = 0; /* [HGM] Kludge to see if demagnified pieces need to be shifted  */
+  border = appData.useBorder && appData.border[0] ? squareSize/2 : 0;
 
   if( appData.overrideLineGap >= 0 && appData.overrideLineGap <= 5 ) {
       lineGap = appData.overrideLineGap;
@@ -2299,8 +2306,8 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     DrawMenuBar(hwndMain);
   }
 
-  boardWidth  = BoardWidth(boardSize, BOARD_WIDTH);
-  boardHeight = BoardWidth(boardSize, BOARD_HEIGHT);
+  boardWidth  = BoardWidth(boardSize, BOARD_WIDTH) + 2*border;
+  boardHeight = BoardWidth(boardSize, BOARD_HEIGHT) + 2*border;
 
   /* Get text area sizes */
   hdc = GetDC(hwndMain);
@@ -2471,20 +2478,20 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
     /* [HGM] Loop had to be split in part for vert. and hor. lines */
     for (i = 0; i < BOARD_HEIGHT + 1; i++) {
-      gridEndpoints[i*2].x = boardRect.left + lineGap / 2;
+      gridEndpoints[i*2].x = boardRect.left + lineGap / 2 + border;
       gridEndpoints[i*2].y = gridEndpoints[i*2 + 1].y =
-	boardRect.top + lineGap / 2 + (i * (squareSize + lineGap));
+	boardRect.top + lineGap / 2 + (i * (squareSize + lineGap)) + border;
       gridEndpoints[i*2 + 1].x = boardRect.left + lineGap / 2 +
-        BOARD_WIDTH * (squareSize + lineGap);
+        BOARD_WIDTH * (squareSize + lineGap) + border;
       gridVertexCounts[i*2] = gridVertexCounts[i*2 + 1] = 2;
     }
     for (i = 0; i < BOARD_WIDTH + 1; i++) {
-      gridEndpoints[i*2 + BOARD_HEIGHT*2 + 2].y = boardRect.top + lineGap / 2;
+      gridEndpoints[i*2 + BOARD_HEIGHT*2 + 2].y = boardRect.top + lineGap / 2 + border;
       gridEndpoints[i*2 + BOARD_HEIGHT*2 + 2].x =
         gridEndpoints[i*2 + 1 + BOARD_HEIGHT*2 + 2].x = boardRect.left +
-	lineGap / 2 + (i * (squareSize + lineGap));
+	lineGap / 2 + (i * (squareSize + lineGap)) + border;
       gridEndpoints[i*2 + 1 + BOARD_HEIGHT*2 + 2].y =
-        boardRect.top + BOARD_HEIGHT * (squareSize + lineGap);
+        boardRect.top + BOARD_HEIGHT * (squareSize + lineGap) + border;
       gridVertexCounts[i*2] = gridVertexCounts[i*2 + 1] = 2;
     }
   }
@@ -2737,11 +2744,11 @@ VOID
 SquareToPos(int row, int column, int * x, int * y)
 {
   if (flipView) {
-    *x = boardRect.left + lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
-    *y = boardRect.top + lineGap + row * (squareSize + lineGap);
+    *x = boardRect.left + lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap) + border;
+    *y = boardRect.top + lineGap + row * (squareSize + lineGap) + border;
   } else {
-    *x = boardRect.left + lineGap + column * (squareSize + lineGap);
-    *y = boardRect.top + lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap);
+    *x = boardRect.left + lineGap + column * (squareSize + lineGap) + border;
+    *y = boardRect.top + lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap) + border;
   }
 }
 
@@ -2768,15 +2775,23 @@ DrawCoordsOnDC(HDC hdc)
   y = boardRect.top + lineGap;
   x = boardRect.left + lineGap + gameInfo.holdingsWidth*(squareSize + lineGap);
 
+  if(border) {
+    SetTextAlign(hdc, TA_RIGHT|TA_TOP);
+    x += border - lineGap - 4; y += squareSize - 6;
+  } else
   SetTextAlign(hdc, TA_LEFT|TA_TOP);
   for (i = 0; i < BOARD_HEIGHT; i++) {
     str[0] = files[start + i];
-    ExtTextOut(hdc, x + 2, y + 1, 0, NULL, str, 1, NULL);
+    ExtTextOut(hdc, x + 2 - (border ? gameInfo.holdingsWidth * (squareSize + lineGap) : 0), y + 1, 0, NULL, str, 1, NULL);
     y += squareSize + lineGap;
   }
 
   start = flipView ? 23-(BOARD_RGHT-BOARD_LEFT) : 23;
 
+  if(border) {
+    SetTextAlign(hdc, TA_LEFT|TA_TOP);
+    x += -border + 4; y += border - squareSize + 6;
+  } else
   SetTextAlign(hdc, TA_RIGHT|TA_BOTTOM);
   for (i = 0; i < BOARD_RGHT - BOARD_LEFT; i++) {
     str[0] = ranks[start + i];
@@ -2813,14 +2828,14 @@ DrawHighlightOnDC(HDC hdc, BOOLEAN on, int x, int y, int pen)
   if (lineGap == 0) return;
   if (flipView) {
     x1 = boardRect.left +
-      lineGap/2 + ((BOARD_WIDTH-1)-x) * (squareSize + lineGap);
+      lineGap/2 + ((BOARD_WIDTH-1)-x) * (squareSize + lineGap) + border;
     y1 = boardRect.top +
-      lineGap/2 + y * (squareSize + lineGap);
+      lineGap/2 + y * (squareSize + lineGap) + border;
   } else {
     x1 = boardRect.left +
-      lineGap/2 + x * (squareSize + lineGap);
+      lineGap/2 + x * (squareSize + lineGap) + border;
     y1 = boardRect.top +
-      lineGap/2 + ((BOARD_HEIGHT-1)-y) * (squareSize + lineGap);
+      lineGap/2 + ((BOARD_HEIGHT-1)-y) * (squareSize + lineGap) + border;
   }
   hPen = pen ? premovePen : highlightPen;
   oldPen = SelectObject(hdc, on ? hPen : gridPen);
@@ -2898,7 +2913,9 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
     BitBlt(hdc, x, y, squareSize, squareSize, tmphdc, 0, 0,
 	   sqcolor ? SRCCOPY : NOTSRCCOPY);
   } else {
+    HBRUSH xBrush = whitePieceBrush;
     tmpSize = squareSize;
+    if(appData.pieceDirectory[0]) xBrush = GetStockObject(WHITE_BRUSH);
     if(minorSize &&
         ((piece >= (int)WhiteNightrider && piece <= WhiteGrasshopper) ||
          (piece >= (int)BlackNightrider && piece <= BlackGrasshopper))  ) {
@@ -2911,7 +2928,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
     if (color || appData.allWhite ) {
       oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, WHITE_PIECE));
       if( color )
-              oldBrush = SelectObject(hdc, whitePieceBrush);
+              oldBrush = SelectObject(hdc, xBrush);
       else    oldBrush = SelectObject(hdc, blackPieceBrush);
       if(appData.upsideDown && color==flipView)
         StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
@@ -2919,6 +2936,18 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
       /* Use black for outline of white pieces */
       SelectObject(tmphdc, PieceBitmap(piece, OUTLINE_PIECE));
+      if(appData.upsideDown && color==flipView)
+        StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, SRCAND);
+      else
+        BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, SRCAND);
+    } else if(appData.pieceDirectory[0]) {
+      oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, WHITE_PIECE));
+      oldBrush = SelectObject(hdc, xBrush);
+      if(appData.upsideDown && color==flipView)
+        StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
+      else
+        BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
+      SelectObject(tmphdc, PieceBitmap(piece, SOLID_PIECE));
       if(appData.upsideDown && color==flipView)
         StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, SRCAND);
       else
@@ -3308,6 +3337,38 @@ BOOL DrawPositionNeedsFullRepaint()
     }
 
     return result;
+}
+
+static HBITMAP borderBitmap;
+
+VOID
+DrawBackgroundOnDC(HDC hdc)
+{
+  
+  BITMAP bi;
+  HDC tmphdc;
+  HBITMAP hbm;
+  static char oldBorder[MSG_SIZ];
+  int w = 600, h = 600;
+
+  if(strcmp(appData.border, oldBorder)) { // load new one when old one no longer valid
+    strncpy(oldBorder, appData.border, MSG_SIZ-1);
+    borderBitmap = LoadImage( 0, appData.border, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
+  }
+  if(borderBitmap == NULL) { // loading failed, use white
+    FillRect( hdc, &boardRect, whitePieceBrush );
+    return;
+  }
+  tmphdc = CreateCompatibleDC(hdc);
+  hbm = SelectObject(tmphdc, borderBitmap);
+  if( GetObject( borderBitmap, sizeof(bi), &bi ) > 0 ) {
+            w = bi.bmWidth;
+            h = bi.bmHeight;
+  }
+  StretchBlt(hdc, boardRect.left, boardRect.top, boardRect.right - boardRect.left, 
+                  boardRect.bottom - boardRect.top, tmphdc, 0, 0, w, h, SRCCOPY);
+  SelectObject(tmphdc, hbm);
+  DeleteDC(tmphdc);
 }
 
 VOID
@@ -3828,6 +3889,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	Ellipse(hdcmem, x-r, y-r, x+r, y+r);
 	SelectObject(hdcmem, oldBrush);
   } else {
+    if(border) DrawBackgroundOnDC(hdcmem);
     DrawGridOnDC(hdcmem);
     if(nr == 0) { // [HGM] dual: decide which highlights to draw
 	DrawHighlightsOnDC(hdcmem, &highlightInfo, HIGHLIGHT_PEN);
@@ -4081,11 +4143,11 @@ PaintProc(HWND hwnd)
 int EventToSquare(x, limit)
      int x, limit;
 {
-  if (x <= 0)
+  if (x <= border)
     return -2;
-  if (x < lineGap)
+  if (x < lineGap + border)
     return -1;
-  x -= lineGap;
+  x -= lineGap + border;
   if ((x % (squareSize + lineGap)) >= squareSize)
     return -1;
   x /= (squareSize + lineGap);
@@ -9865,11 +9927,11 @@ ScreenSquare(column, row, pt)
      int column; int row; POINT * pt;
 {
   if (flipView) {
-    pt->x = lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
-    pt->y = lineGap + row * (squareSize + lineGap);
+    pt->x = lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap) + border;
+    pt->y = lineGap + row * (squareSize + lineGap) + border;
   } else {
-    pt->x = lineGap + column * (squareSize + lineGap);
-    pt->y = lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap);
+    pt->x = lineGap + column * (squareSize + lineGap) + border;
+    pt->y = lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap) + border;
   }
 }
 

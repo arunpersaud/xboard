@@ -211,7 +211,7 @@ ArgDescriptor argDescriptors[] = {
   { "xtitle", ArgFalse, (void *) &appData.titleInWindow, FALSE, INVALID },
   { "flashCount", ArgInt, (void *) &appData.flashCount, XBOARD, INVALID }, // let X handle this
   { "flashRate", ArgInt, (void *) &appData.flashRate, XBOARD, (ArgIniType) FLASH_RATE },
-  { "pieceImageDirectory", ArgFilename, (void *) &appData.pieceDirectory, XBOARD, (ArgIniType) "" },
+  { "pieceImageDirectory", ArgFilename, (void *) &appData.pieceDirectory, TRUE, (ArgIniType) "" },
   { "pid", ArgFilename, (void *) &appData.pieceDirectory, FALSE, INVALID },
   { "trueColors", ArgBoolean, (void *) &appData.trueColors, TRUE, (ArgIniType) FALSE },
   { "soundDirectory", ArgFilename, (void *) &appData.soundDirectory, XBOARD, (ArgIniType) "" },
@@ -575,6 +575,8 @@ ArgDescriptor argDescriptors[] = {
   { "userFileDirectory", ArgFilename, (void *) &homeDir, FALSE, (ArgIniType) installDir },
   { "usePieceFont", ArgBoolean, (void *) &appData.useFont, TRUE, (ArgIniType) FALSE },
   { "useBoardTexture", ArgBoolean, (void *) &appData.useBitmaps, TRUE, (ArgIniType) FALSE },
+  { "useBorder", ArgBoolean, (void *) &appData.useBorder, TRUE, (ArgIniType) FALSE },
+  { "border", ArgFilename, (void *) &appData.border, TRUE, (ArgIniType) "" },
 
   // [HGM] tournament options
   { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },

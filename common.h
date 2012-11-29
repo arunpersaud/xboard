@@ -424,6 +424,7 @@ typedef struct {
     Boolean noChessProgram;
     char *host[ENGINES];
     char *pieceDirectory;
+    char *border;
     char *soundDirectory;
     char *remoteShell;
     char *remoteUser;
@@ -556,6 +557,7 @@ typedef struct {
     Boolean hideThinkingFromHuman; /* If true, program thinking is generated but not displayed in human/computer matches */
     Boolean useBitmaps;
     Boolean useFont;
+    Boolean useBorder;
     char * liteBackTextureFile; /* Name of texture bitmap for lite squares */
     char * darkBackTextureFile; /* Name of texture bitmap for dark squares */
     int liteBackTextureMode;
