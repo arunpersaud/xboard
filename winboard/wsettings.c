@@ -781,7 +781,7 @@ Option themeOptions[] = {
   {   0,  0,    0, NULL, (void*) &appData.useBorder, NULL, NULL, CheckBox, N_("Draw border around board") },
   {   0,  0, 32+0, NULL, (void*) &appData.border, NULL, NULL, FileName, N_("Optional border bitmap:") },
   {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("        Beware: a specified piece font will prevail over piece bitmaps") },
-  {   0,  0,    0, NULL, (void*) &appData.bitmapDirectory, NULL, NULL, PathName, N_("Directory with piece bitmaps:") },
+  {   0,  0,    0, NULL, (void*) &appData.pieceDirectory, NULL, NULL, PathName, N_("Directory with piece bitmaps:") },
   {   0,  0,    0, NULL, (void*) &appData.useFont, NULL, NULL, CheckBox, N_("Use piece font") },
   {   0, 50,  150, NULL, (void*) &appData.fontPieceSize, "", NULL, Spin, N_("Font size (%):") },
   {   0,  0,    0, NULL, (void*) &appData.renderPiecesWithFont, NULL, NULL, TextBox, N_("Font name:") },

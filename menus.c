@@ -567,6 +567,12 @@ HideThinkingProc ()
   MARK_MENU_ITEM("Options.HideThinking", appData.hideThinkingFromHuman);
 }
 
+void
+CreateBookDelayed ()
+{
+  ScheduleDelayedEvent(CreateBookEvent, 50);
+}
+
 /*
  *  Menu definition tables
  */
@@ -587,6 +593,7 @@ MenuItem fileMenu[] = {
 //    {N_("Reload Same Position"), "Reload Same Position", ReloadPositionProc},
     {N_("Save Game       Ctrl+S"),        "SaveGame", SaveGameProc},
     {N_("Save Position    Ctrl+Shift+S"), "SavePosition", SavePositionProc},
+    {N_("Save Games as Book"), "CreateBook", CreateBookDelayed},
     {"----", NULL, NothingProc},
     {N_("Mail Move"),            "MailMove", MailMoveEvent},
     {N_("Reload CMail Message"), "ReloadCMailMessage", ReloadCmailMsgProc},

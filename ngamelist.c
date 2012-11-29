@@ -244,6 +244,12 @@ GameListPopUp (FILE *fp, char *filename)
     MarkMenu("View.GameList", GameListDlg);
 }
 
+FILE *
+GameFile ()
+{
+  return glc ? glc->fp : NULL;
+}
+
 void
 GameListDestroy ()
 {

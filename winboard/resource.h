@@ -71,6 +71,7 @@
 #define IDM_MachineBoth                 186  
 #define IDM_MuteSounds                  187
 #define IDM_Match                       188
+#define IDM_CreateBook                  189
 #define OPT_TCtext1                     202
 #define OPT_TCTime                      203
 #define OPT_TCtext2                     204

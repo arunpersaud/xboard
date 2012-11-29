@@ -420,6 +420,11 @@ VOID GameListPopUp(FILE *fp, char *filename)
   gameListUp = TRUE;
 }
 
+FILE *GameFile()
+{
+  return gameFile;
+}
+
 VOID GameListPopDown(void)
 {
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowGameList, MF_UNCHECKED);

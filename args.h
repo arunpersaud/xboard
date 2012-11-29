@@ -580,6 +580,7 @@ ArgDescriptor argDescriptors[] = {
   { "bookDepth", ArgInt, (void *) &appData.bookDepth, TRUE, (ArgIniType) 12 },
   { "bookVariation", ArgInt, (void *) &appData.bookStrength, TRUE, (ArgIniType) 50 },
   { "discourageOwnBooks", ArgBoolean, (void *) &appData.defNoBook, TRUE, (ArgIniType) FALSE },
+  { "mcBookMode", ArgTrue, (void *) &mcMode, FALSE, (ArgIniType) FALSE },
   { "defaultHashSize", ArgInt, (void *) &appData.defaultHashSize, TRUE, (ArgIniType) 64 },
   { "defaultCacheSizeEGTB", ArgInt, (void *) &appData.defaultCacheSizeEGTB, TRUE, (ArgIniType) 4 },
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },

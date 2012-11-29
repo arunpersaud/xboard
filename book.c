@@ -76,7 +76,7 @@ entry_t entry_none = {
     0, 0, 0, 0
 };
 
-char *promote_pieces=" nbrqac=";
+char *promote_pieces=" nbrqac=+";
 
 uint64 Random64[781] = {
    U64(0x9D39247E33776D41), U64(0x2AF7398005AAA5C7), U64(0x44DB015024623547), U64(0x9C15F73E62A76AE2),
@@ -380,12 +380,42 @@ hash (int moveNr)
 
 #define MOVE_BUF 100
 
+// fs routines read from memory buffer if no file specified
+
+static unsigned char *memBuf, *memPtr;
+static int bufSize;
+Boolean mcMode;
+
+int
+fsseek (FILE *f, int n, int mode)
+{
+    if(f) return fseek(f, n, mode);
+    if(mode == SEEK_SET) memPtr = memBuf + n; else
+    if(mode == SEEK_END) memPtr = memBuf + 16*bufSize + n;
+    return memPtr < memBuf || memPtr > memBuf + 16*bufSize;
+}
+
+int
+fstell (FILE *f)
+{
+  if(f) return ftell(f);
+  return memPtr - memBuf;
+}
+
+int
+fsgetc (FILE *f)
+{
+  if(f) return fgetc(f);
+  if(memPtr >= memBuf + 16*bufSize) return EOF;
+  return *memPtr++ ;
+}
+
 int
 int_from_file (FILE *f, int l, uint64 *r)
 {
     int i,c;
     for(i=0;i<l;i++){
-        c=fgetc(f);
+        c=fsgetc(f);
         if(c==EOF){
             return 1;
         }
@@ -399,6 +429,7 @@ entry_from_file (FILE *f, entry_t *entry)
 {
     int ret;
     uint64 r;
+    if(!f) { *entry = *(entry_t*) memPtr; memPtr += 16; return 0; }
     ret=int_from_file(f,8,&r);
     if(ret) return 1;
     entry->key=r;
@@ -423,12 +454,12 @@ find_key (FILE *f, uint64 key, entry_t *entry)
     int first, last, middle;
     entry_t last_entry,middle_entry;
     first=-1;
-    if(fseek(f,-16,SEEK_END)){
+    if(fsseek(f,-16,SEEK_END)){
         *entry=entry_none;
         entry->key=key+1; //hack
         return -1;
     }
-    last=ftell(f)/16;
+    last=fstell(f)/16;
     entry_from_file(f,&last_entry);
     while(1){
         if(last-first==1){
@@ -436,7 +467,7 @@ find_key (FILE *f, uint64 key, entry_t *entry)
             return last;
         }
         middle=(first+last)/2;
-        fseek(f,16*middle,SEEK_SET);
+        fsseek(f,16*middle,SEEK_SET);
         entry_from_file(f,&middle_entry);
         if(key<=middle_entry.key){
             last=middle;
@@ -454,20 +485,21 @@ move_to_string (char move_s[6], uint16 move)
     int width = BOARD_RGHT - BOARD_LEFT, size; // allow for alternative board formats
 
     size = width * BOARD_HEIGHT;
+    p    = move / (size*size);
+    move = move % (size*size);
     f  = move / size;
     fr = f / width;
     ff = f % width;
     t  = move % size;
     tr = t / width;
     tf = t % width;
-    p = move / (size*size);
     move_s[0] = ff + 'a';
     move_s[1] = fr + '1' - (BOARD_HEIGHT > 9);
     move_s[2] = tf + 'a';
     move_s[3] = tr + '1' - (BOARD_HEIGHT > 9);
 
     // kludge: encode drops as special promotion code
-    if(gameInfo.holdingsSize && p == 8) {
+    if(gameInfo.holdingsSize && p == 9) {
 	move_s[0] = f + '@'; // from square encodes piece type
 	move_s[1] = '@';     // drop symbol
 	p = 0;
@@ -497,28 +529,13 @@ move_to_string (char move_s[6], uint16 move)
 }
 
 int
-GetBookMoves (int moveNr, char *book, entry_t entries[])
+GetBookMoves (FILE *f, int moveNr, entry_t entries[], int max)
 {   // retrieve all entries for given position from book in 'entries', return number.
-    static FILE *f = NULL;
-    static char curBook[MSG_SIZ];
     entry_t entry;
     int offset;
     uint64 key;
     int count;
     int ret;
-
-    if(book == NULL || moveNr >= 2*appData.bookDepth) return -1; 
-//    if(gameInfo.variant != VariantNormal) return -1; // Zobrist scheme only works for normal Chess, so far
-    if(!f || strcmp(book, curBook)){ // keep book file open until book changed
-	strncpy(curBook, book, MSG_SIZ);
-	if(f) fclose(f);
-	f = fopen(book,"rb");
-    }
-    if(!f){
-        DisplayError(_("Polyglot book not valid"), 0);
-	appData.usePolyglotBook = FALSE;
-	return -1;
-    }
 
     key = hash(moveNr);
     if(appData.debugMode) fprintf(debugFP, "book key = %08x%08x\n", (unsigned int)(key>>32), (unsigned int)key);
@@ -529,7 +546,7 @@ GetBookMoves (int moveNr, char *book, entry_t entries[])
     }
     entries[0] = entry;
     count=1;
-    fseek(f, 16*(offset+1), SEEK_SET);
+    fsseek(f, 16*(offset+1), SEEK_SET);
     while(1){
         ret=entry_from_file(f, &entry);
         if(ret){
@@ -538,22 +555,127 @@ GetBookMoves (int moveNr, char *book, entry_t entries[])
         if(entry.key != key){
             break;
         }
-        if(count == MOVE_BUF) break;
+        if(count == max) break;
         entries[count++] = entry;
     }
     return count;
 }
 
-char *
-ProbeBook (int moveNr, char *book)
+int
+ReadFromBookFile (int moveNr, char *book, entry_t entries[])
+{   // retrieve all entries for given position from book in 'entries', return number.
+    static FILE *f = NULL;
+    static char curBook[MSG_SIZ];
+
+    if(book == NULL) return -1; 
+    if(!f || strcmp(book, curBook)){ // keep book file open until book changed
+	strncpy(curBook, book, MSG_SIZ);
+	if(f) fclose(f);
+	f = fopen(book,"rb");
+    }
+    if(!f){
+	DisplayError("Polyglot book not valid", 0);
+	appData.usePolyglotBook = FALSE;
+	return -1;
+    }
+
+    return GetBookMoves(f, moveNr, entries, MOVE_BUF);
+}
+
+// next three made into subroutines to facilitate future changes in storage scheme (e.g. 2 x 3 bytes)
+
+static int
+wins(entry_t *e)
 {
+    return e->learnPoints;
+}
+
+static int
+losses(entry_t *e)
+{
+    return e->learnCount;
+}
+
+static void
+CountMove (entry_t *e, int result)
+{
+    switch(result) {
+      case 0: e->learnCount ++; break;
+      case 1: e->learnCount ++; // count draw as win + loss
+      case 2: e->learnPoints ++; break;
+    }
+}
+
+#define MERGESIZE 2048
+#define HASHSIZE  1024*1024*4
+
+entry_t *memBook, *hashTab, *mergeBuf;
+int bookSize=1, mergeSize=1, mask = HASHSIZE-1;
+
+void
+InitMemBook ()
+{
+    static int initDone = FALSE;
+    if(initDone) return;
+    memBook  = (entry_t *) calloc(1024*1024, sizeof(entry_t));
+    hashTab  = (entry_t *) calloc(HASHSIZE,  sizeof(entry_t));
+    mergeBuf = (entry_t *) calloc(MERGESIZE+5, sizeof(entry_t));
+    memBook[0].key  = -1LL;
+    mergeBuf[0].key = -1LL;
+    initDone = TRUE;
+}
+
+char *
+MCprobe (moveNr)
+{
+    int count, count2, games, i, choice=0;
+    entry_t entries[MOVE_BUF];
+    float nominal[MOVE_BUF], tot, deficit, max, min;
+    static char move_s[6];
+
+    InitMemBook();
+    memBuf = (unsigned char*) memBook; bufSize = bookSize;   // in MC mode book resides in memory
+    count = GetBookMoves(NULL, moveNr, entries, MOVE_BUF);
+    if(count < 0) count = 0; // don't care about miss yet
+    memBuf = (unsigned char*) mergeBuf; bufSize = mergeSize; // there could be moves still waiting to be merged
+    count2 = count + GetBookMoves(NULL, moveNr, entries+count, MOVE_BUF - count);
+    if(appData.debugMode) fprintf(debugFP, "MC probe: %d/%d (%d+%d)\n", count, count2,bookSize,mergeSize);
+    if(!count2) return NULL;
+    tot = games = 0;
+    for(i=0; i<count2; i++) {
+	float w = wins(entries+i) + 10., l = losses(entries+i) + 10.;
+	float h = (w*w*w*w + 22500.*w*w) / (l*l*l*l + 22500.*l*l);
+	tot += nominal[i] = h;
+	games += wins(entries+i) + losses(entries+i);
+    }
+    tot = games / tot; max = min = 0;
+    for(i=0; i<count2; i++) {
+	nominal[i] *= tot; // normalize so they sum to games
+	deficit = nominal[i] - (wins(entries+i) + losses(entries+i));
+	if(deficit > max) max = deficit, choice = i;
+	if(deficit < min) min = deficit;
+    } // note that a single move will never be underplayed
+    if(max - min > 0.5*sqrt(nominal[choice])) { // if one of the listed moves is significantly under-played, play it now.
+	move_to_string(move_s, entries[choice].move);
+	if(appData.debugMode) fprintf(debugFP, "book move field = %d\n", entries[choice].move);
+	return move_s;
+    }
+    return NULL; // otherwise fake book miss to force engine think, hoping for hitherto unplayed move.
+}
+
+char
+*ProbeBook (int moveNr, char *book)
+{   // 
     entry_t entries[MOVE_BUF];
     int count;
     int i, j;
     static char move_s[6];
     int total_weight;
 
-    if((count = GetBookMoves(moveNr, book, entries)) <= 0) return NULL; // no book, or no hit
+    if(moveNr >= 2*appData.bookDepth) return NULL; 
+    if(mcMode) return MCprobe(moveNr);
+
+    if((count = ReadFromBookFile(moveNr, book, entries)) <= 0) return NULL; // no book, or no hit
 
     if(appData.bookStrength != 50) { // transform weights
         double power = 0, maxWeight = 0.0;
@@ -587,11 +709,11 @@ extern char yy_textstr[];
 entry_t lastEntries[MOVE_BUF];
 
 char *
-MovesToText (int count, entry_t *entries)
+MovesToText(int count, entry_t *entries)
 {
 	int i, totalWeight = 0;
 	char algMove[6];
-	char *p = (char*) malloc(30*count+1);
+	char *p = (char*) malloc(40*count+1);
 	for(i=0; i<count; i++) totalWeight += entries[i].weight;
 	*p = 0;
 	for(i=0; i<count; i++) {
@@ -600,23 +722,34 @@ MovesToText (int count, entry_t *entries)
 	    buf[0] = NULLCHAR;
 	    if(entries[i].learnCount || entries[i].learnPoints)
 		snprintf(buf, MSG_SIZ, " {%d/%d}", entries[i].learnPoints, entries[i].learnCount);
-	    snprintf(p+strlen(p), 30, "%5.1f%% %5d %s%s\n", 100*entries[i].weight/(totalWeight+0.001),
+	    snprintf(p+strlen(p), 40, "%5.1f%% %5d %s%s\n", 100*entries[i].weight/(totalWeight+0.001),
 					entries[i].weight, algMove, buf);
 //lastEntries[i] = entries[i];
 	}
 	return p;
 }
 
+static int
+CoordsToMove (int fromX, int fromY, int toX, int toY, char promoChar)
+{
+    int i, width = BOARD_RGHT - BOARD_LEFT;
+    int to = toX - BOARD_LEFT + toY * width;
+    int from = fromX - BOARD_LEFT + fromY * width;
+    for(i=0; promote_pieces[i]; i++) if(promote_pieces[i] == promoChar) break;
+    if(!promote_pieces[i]) i = 0;
+    if(fromY == DROP_RANK) i = 9, from = ToUpper(PieceToChar(fromX)) - '@';
+    return to + (i * width * BOARD_HEIGHT + from) * width * BOARD_HEIGHT;
+}
+
 int
 TextToMoves (char *text, int moveNum, entry_t *entries)
 {
 	int i, w, count=0;
-      uint64 hashKey = hash(moveNum);
-	int  fromX, fromY, toX, toY, to, from;
+	uint64 hashKey = hash(moveNum);
+	int  fromX, fromY, toX, toY;
 	ChessMove  moveType;
 	char promoChar, valid;
 	float dummy;
-	int width = BOARD_RGHT - BOARD_LEFT;
 
 	entries[0].key = hashKey; // make sure key is returned even if no moves
 	while((i=sscanf(text, "%f%%%d", &dummy, &w))==2 || (i=sscanf(text, "%d", &w))==1) {
@@ -631,12 +764,7 @@ TextToMoves (char *text, int moveNum, entry_t *entries)
 		entries[count].learnPoints = 0;
 		entries[count].learnCount  = 0;
 	    }
-	    to = toX + toY * width;
-	    from = fromX + fromY * width;
-	    for(i=0; promote_pieces[i]; i++) if(promote_pieces[i] == promoChar) break;
-	    if(!promote_pieces[i]) i = 0;
-	    if(fromY == DROP_RANK) i = 8, from = ToUpper(PieceToChar(fromX)) - '@';
-	    entries[count].move = to + (i * width * BOARD_HEIGHT + from) * width * BOARD_HEIGHT;
+	    entries[count].move = CoordsToMove(fromX, fromY, toX, toY, promoChar);
 	    entries[count].key  = hashKey;
 	    entries[count].weight = w;
 	    count++;
@@ -654,7 +782,7 @@ DisplayBook (int moveNr)
     int count;
     char *p;
     if(!bookUp) return FALSE;
-    count = currentCount = GetBookMoves(moveNr, appData.polyglotBook, entries);
+    count = currentCount = ReadFromBookFile(moveNr, appData.polyglotBook, entries);
     if(count < 0) return FALSE;
     p = MovesToText(count, entries);
     EditTagsPopUp(p, NULL);
@@ -663,7 +791,7 @@ DisplayBook (int moveNr)
 }
 
 void
-EditBookEvent ()
+EditBookEvent()
 {
       bookUp = TRUE;
 	bookUp = DisplayBook(currentMove);
@@ -707,19 +835,19 @@ SaveToBook (char *text)
     if(count != currentCount) {
 	readpos = 16*(offset + currentCount);
 	writepos = 16*(offset + count);
-	fseek(f, readpos, SEEK_SET);
+	fsseek(f, readpos, SEEK_SET);
 	readpos += len1 = fread(buf1, 1, 4096 - 16*currentCount, f); // salvage some entries immediately behind change
     }
-    fseek(f, 16*(offset), SEEK_SET);
+    fsseek(f, 16*(offset), SEEK_SET);
     for(i=0; i<count; i++) entry_to_file(f, entries + i); // save the change
     if(count != currentCount) {
 	do {
 	    for(i=0; i<len1; i++) buf2[i] = buf1[i]; len2 = len1;
 	    if(readpos > writepos) {
-		fseek(f, readpos, SEEK_SET);
+		fsseek(f, readpos, SEEK_SET);
 		readpos += len1 = fread(buf1, 1, 4096, f);
 	    } else len1 = 0; // wrote already past old EOF
-	    fseek(f, writepos, SEEK_SET);
+	    fsseek(f, writepos, SEEK_SET);
 	    fwrite(buf2, 1, len2, f);
 	    writepos += len2;
 	} while(len1);
@@ -727,3 +855,145 @@ SaveToBook (char *text)
     fclose(f);
 }
 
+void
+NewEntry (entry_t *e, uint64 key, int move, int result)
+{
+    e->key = key;
+    e->move = move;
+    e->learnPoints = 0;
+    e->learnCount = 0;
+    CountMove(e, result);
+}
+
+void
+Merge ()
+{
+    int i;
+
+    if(appData.debugMode) fprintf(debugFP, "book merge %d moves (old size %d)\n", mergeSize, bookSize);
+
+    bookSize += --mergeSize;
+    for(i=bookSize-1; mergeSize; i--) {
+	while(mergeSize && (i < mergeSize || mergeBuf[mergeSize-1].key >= memBook[i-mergeSize].key))
+	    memBook[i--] = mergeBuf[--mergeSize];
+	if(i < 0) break;
+	memBook[i] = memBook[i-mergeSize];
+    }
+    if(mergeSize) DisplayFatalError("merge error", 0, 0); // impossible
+    mergeSize = 1;
+    mergeBuf[0].key = -1LL;
+}
+
+void
+AddToBook (int moveNr, int result)
+{
+    entry_t entry;
+    int offset, start, move;
+    uint64 key;
+    int i, j, fromY, toY;
+    char fromX, toX, promo;
+extern char moveList[][MOVE_LEN];
+
+    if(!moveList[moveNr][0] || moveList[moveNr][0] == '\n') return; // could be terminal position
+
+    if(appData.debugMode) fprintf(debugFP, "add move %d to book %s", moveNr, moveList[moveNr]);
+
+    // calculate key and book representation of move
+    key = hash(moveNr);
+    if(moveList[moveNr][1] == '@') {
+	sscanf(moveList[moveNr], "%c@%c%d", &promo, &toX, &toY);
+	fromX = CharToPiece(WhiteOnMove(moveNr) ? ToUpper(promo) : ToLower(promo));
+	fromY = DROP_RANK; promo = NULLCHAR;
+    } else sscanf(moveList[moveNr], "%c%d%c%d%c", &fromX, &fromY, &toX, &toY, &promo), fromX -= AAA, fromY -= ONE - '0';
+    move = CoordsToMove(fromX, fromY, toX-AAA, toY-ONE+'0', promo);
+
+    // if move already in book, just add count
+    memBuf = (unsigned char*) memBook; bufSize = bookSize;   // in MC mode book resides in memory
+    offset = find_key(NULL, key, &entry);
+    while(memBook[offset].key == key) {
+	if(memBook[offset].move == move) {
+	    CountMove(memBook+offset, result); return;
+	} else offset++;
+    }
+    // move did not occur in the main book
+    memBuf = (unsigned char*) mergeBuf; bufSize = mergeSize; // it could be amongst moves still waiting to be merged
+    start = offset = find_key(NULL, key, &entry);
+    while(mergeBuf[offset].key == key) {
+	if(mergeBuf[offset].move == move) {
+            if(appData.debugMode) fprintf(debugFP, "found in book merge buf @ %d\n", offset);
+	    CountMove(mergeBuf+offset, result); return;
+	} else offset++;
+    }
+    if(start != offset) { // position was in mergeBuf, but move is new
+        if(appData.debugMode) fprintf(debugFP, "add in book merge buf @ %d\n", offset);
+	for(i=mergeSize++; i>offset; i--) mergeBuf[i] = mergeBuf[i-1]; // make room
+	NewEntry(mergeBuf+offset, key, move, result);
+	return;
+    }
+    // position was not in mergeBuf; look in hash table
+    i = (key & mask); offset = -1;
+    while(hashTab[i].key) { // search in hash table (necessary because sought item could be re-hashed)
+	if(hashTab[i].key == 1 && offset < 0) offset = i; // remember first invalidated entry we pass
+	if(!((hashTab[i].key - key) & ~1)) { // hit
+	    if(hashTab[i].move == move) {
+		CountMove(hashTab+i, result);
+		for(j=mergeSize++; j>start; j--) mergeBuf[j] = mergeBuf[j-1];
+	    } else {
+		// position already in hash now occurs with different move; move both moves to mergeBuf
+		for(j=mergeSize+1; j>start+1; j--) mergeBuf[j] = mergeBuf[j-2];
+		NewEntry(mergeBuf+start+1, key, move, result); mergeSize += 2;
+	    }
+	    hashTab[i].key = 1; // kludge to invalidate hash entry
+	    mergeBuf[start] = hashTab[i]; mergeBuf[start].key = key;
+	    if(mergeSize >= MERGESIZE) Merge();
+	    return;
+ 	}
+	i = i+1 & mask; // wrap!
+    }
+    // position did not yet occur in hash table. Put it there
+    if(offset < 0) offset = i;
+    NewEntry(hashTab+offset, key, move, result);
+    if(appData.debugMode)
+	fprintf(debugFP, "book hash @ %d (%d-%d)\n", offset, hashTab[offset].learnPoints, hashTab[offset].learnCount);
+}
+
+void
+AddGameToBook (int always)
+{
+    int i, result;
+
+    if(!mcMode && !always) return;
+
+    InitMemBook();
+    switch(gameInfo.result) {
+      case GameIsDrawn: result = 1; break;
+      case WhiteWins:   result = 2; break;
+      case BlackWins:   result = 0; break;
+      default: return; // don't treat games with unknown result
+    }
+
+    if(appData.debugMode) fprintf(debugFP, "add game to book (%d-%d)\n", backwardMostMove, forwardMostMove);
+
+    for(i=backwardMostMove; i<forwardMostMove && i < 2*appData.bookDepth; i++)
+	AddToBook(i, WhiteOnMove(i) ? result : 2-result); // flip result when black moves
+}
+
+void
+FlushBook ()
+{
+    FILE *f;
+    int i;
+
+    InitMemBook();
+    Merge(); // flush merge buffer to memBook
+
+    if(f = fopen(appData.polyglotBook, "wb")) {
+	for(i=0; i<bookSize; i++) {
+	    entry_t entry = memBook[i];
+	    entry.weight = entry.learnPoints;
+//	    entry.learnPoints = 0;
+//	    entry.learnCount  = 0;
+	    entry_to_file(f, &entry);
+	}
+    } else DisplayError("Could not create book", 0);
+}

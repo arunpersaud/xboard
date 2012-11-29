@@ -4867,6 +4867,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
       break;
 
+    case IDM_CreateBook:
+      CreateBookEvent();
+      break;
+
     case IDM_CopyGame:
       CopyGameToClipboard();
       break;

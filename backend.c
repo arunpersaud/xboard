@@ -10647,6 +10647,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 		    if (*appData.savePositionFile != NULLCHAR) {
 			SavePositionToFile(appData.savePositionFile);
 		    }
+		    AddGameToBook(FALSE); // Only does something during Monte-Carlo book building
 		}
 	    }
 
@@ -11779,6 +11780,7 @@ InitSearch ()
 }
 
 GameInfo dummyInfo;
+static int creatingBook;
 
 int
 GameContainsPosition (FILE *f, ListGame *lg)
@@ -12242,6 +12244,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	cm = (ChessMove) Myylex();
     }
 
+  if(!creatingBook) {
     if (first.pr == NoProc) {
 	StartChessProgram(&first);
     }
@@ -12254,6 +12257,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
     }
 	DisplayBothClocks();
     }
+  }
 
     /* [HGM] server: flag to write setup moves in broadcast file as one */
     loadFlag = appData.suppressLoadMoves;
@@ -12323,6 +12327,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
       keepInfo = 0;
     }
 
+    if(creatingBook) return TRUE;
     if (!matchMode && pos > 0) {
 	ToNrEvent(pos); // [HGM] no autoplay if selected on position
     } else
@@ -15034,6 +15039,40 @@ HintEvent ()
     }
     SendToProgram("hint\n", &first);
     hintRequested = TRUE;
+}
+
+void
+CreateBookEvent ()
+{
+    ListGame * lg = (ListGame *) gameList.head;
+    FILE *f;
+    int nItem;
+    static int secondTime = FALSE;
+
+    if( !(f = GameFile()) || ((ListGame *) gameList.tailPred)->number <= 0 ) {
+        DisplayError(_("Game list not loaded or empty"), 0);
+        return;
+    }
+
+    if(!secondTime && (f = fopen(appData.polyglotBook, "r"))) {
+        fclose(f);
+	secondTime++;
+	DisplayNote(_("Book file exists! Try again for overwrite."));
+	return;
+    }
+
+    creatingBook = TRUE;
+    secondTime = FALSE;
+
+    /* Get list size */
+    for (nItem = 1; nItem <= ((ListGame *) gameList.tailPred)->number; nItem++){
+	LoadGame(f, nItem, "", TRUE);
+	AddGameToBook(TRUE);
+        lg = (ListGame *) lg->node.succ;
+    }
+
+    creatingBook = FALSE;
+    FlushBook();
 }
 
 void

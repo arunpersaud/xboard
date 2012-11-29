@@ -112,6 +112,7 @@ extern char marker[BOARD_RANKS][BOARD_FILES];
 extern char lastMsg[MSG_SIZ];
 extern Boolean bookUp;
 extern int tinyLayout, smallLayout;
+extern Boolean mcMode;
 
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */
@@ -243,6 +244,8 @@ void ApplyMove P((int fromX, int fromY, int toX, int toY, int promoChar, Board b
 void PackMove P((int fromX, int fromY, int toX, int toY, ChessSquare promoPiece));
 void ics_printf P((char *format, ...));
 int GetEngineLine P((char *nick, int engine));
+void AddGameToBook P((int always));
+void FlushBook P((void));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));
@@ -437,6 +440,7 @@ int MultiPV P((ChessProgramState *cps));
 void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 void MakeEngineOutputTitle P((void));
 void LoadTheme P((void));
+void CreateBookEvent P((void));
 
 /* A point in time */
 typedef struct {

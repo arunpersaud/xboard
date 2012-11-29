@@ -178,6 +178,7 @@ void GameListPopUp P((FILE *fp, char *filename));
 void GameListPopDown P((void));
 void GameListHighlight P((int index));
 void GameListDestroy P((void));
+FILE *GameFile P((void));
 
 /* these are in wedittags.c */
 void EditTagsPopUp P((char *tags, char **dest));
