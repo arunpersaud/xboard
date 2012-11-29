@@ -9764,7 +9764,7 @@ CmailSigHandlerCallBack(InputSourceRef isr, VOIDSTAR closure,
 /* see wedittags.c for Edit Tags functions */
 
 
-VOID
+int
 ICSInitScript()
 {
   FILE *f;
@@ -9776,8 +9776,10 @@ ICSInitScript()
     if (f != NULL) {
       ProcessICSInitScript(f);
       fclose(f);
+      return TRUE;
     }
   }
+  return FALSE;
 }
 
 

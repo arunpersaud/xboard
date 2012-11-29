@@ -106,7 +106,7 @@ VOID InitAppData(LPSTR);
 VOID InitDrawingColors(VOID);
 VOID InitDrawingSizes(BoardSize boardSize, int flags);
 VOID InitMenuChecks(VOID);
-VOID ICSInitScript(VOID);
+int  ICSInitScript(VOID);
 BOOL CenterWindow(HWND hwndChild, HWND hwndParent);
 VOID ResizeEditPlusButtons(HWND hDlg, HWND hText, int sizeX, int sizeY, int newSizeX, int newSizeY);
 VOID PromotionPopup(HWND hwnd);

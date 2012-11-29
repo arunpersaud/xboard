@@ -338,6 +338,7 @@
 #define CBO_Sounds                      1350
 #define OPT_DefaultSounds               1351
 #define OPT_AlwaysOnTop                 1352
+#define OPT_AutoCreate                  1352
 #define OPT_AutoFlag                    1353
 #define OPT_AlwaysQueen                 1354
 #define OPT_AutoComment                 1354

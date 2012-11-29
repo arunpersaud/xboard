@@ -199,7 +199,6 @@ void MoveTypeInProc P((GdkEventKey *eventkey));
 gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
 Boolean TempBackwardActive = False;
 void DisplayMove P((int moveNumber));
-void ICSInitScript P((void));
 void update_ics_width P(());
 int CopyMemoProc P(());
 static gboolean EventProc P((GtkWidget *widget, GdkEvent *event, gpointer g));

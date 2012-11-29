@@ -260,7 +260,6 @@ void TempForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 Boolean TempBackwardActive = False;
 void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
-void ICSInitScript P((void));
 void update_ics_width P(());
 int CopyMemoProc P(());
 

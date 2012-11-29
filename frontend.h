@@ -185,7 +185,7 @@ void TagsPopUp P((char *tags, char *msg));
 void TagsPopDown P((void));
 
 void ParseIcsTextColors P((void));
-void ICSInitScript P((void));
+int  ICSInitScript P((void));
 void StartAnalysisClock P((void));
 void EngineOutputPopUp P((void));
 void EgineOutputPopDown P((void));

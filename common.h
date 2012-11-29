@@ -483,6 +483,7 @@ typedef struct {
     Boolean ponderNextMove;
     Boolean periodicUpdates;
     Boolean autoObserve;
+    Boolean autoCreateLogon;
     Boolean autoComment;
     Boolean getMoveList;
     Boolean testLegality;

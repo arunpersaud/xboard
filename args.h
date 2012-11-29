@@ -354,6 +354,7 @@ ArgDescriptor argDescriptors[] = {
   { "autocomm", ArgTrue, (void *) &appData.autoComment, FALSE, INVALID },
   { "xautocomm", ArgFalse, (void *) &appData.autoComment, FALSE, INVALID },
   { "-autocomm", ArgFalse, (void *) &appData.autoComment, FALSE, INVALID },
+  { "autoCreateLogon", ArgBoolean, (void *) &appData.autoCreateLogon, TRUE, (ArgIniType) FALSE },
   { "autoObserve", ArgBoolean, (void *) &appData.autoObserve, TRUE, (ArgIniType) FALSE },
   { "autobs", ArgTrue, (void *) &appData.autoObserve, FALSE, INVALID },
   { "xautobs", ArgFalse, (void *) &appData.autoObserve, FALSE, INVALID },

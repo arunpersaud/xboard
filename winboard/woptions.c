@@ -1188,6 +1188,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_AutoKibitz, appData.autoKibitz);
     CHECK_BOX(OPT_AutoComment, appData.autoComment);
     CHECK_BOX(OPT_AutoObserve, appData.autoObserve);
+    CHECK_BOX(OPT_AutoCreate, appData.autoCreateLogon);
     CHECK_BOX(OPT_GetMoveList, appData.getMoveList);
     CHECK_BOX(OPT_LocalLineEditing, appData.localLineEditing);
     CHECK_BOX(OPT_QuietPlay, appData.quietPlay);
@@ -1273,6 +1274,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.autoKibitz       = IS_CHECKED(OPT_AutoKibitz);
       appData.autoComment      = IS_CHECKED(OPT_AutoComment);
       appData.autoObserve      = IS_CHECKED(OPT_AutoObserve);
+      appData.autoCreateLogon  = IS_CHECKED(OPT_AutoCreate);
       appData.getMoveList      = IS_CHECKED(OPT_GetMoveList);
       appData.localLineEditing = IS_CHECKED(OPT_LocalLineEditing);
       appData.quietPlay        = IS_CHECKED(OPT_QuietPlay);

@@ -1845,6 +1845,7 @@ read_from_player (InputSourceRef isr, VOIDSTAR closure, char *message, int count
 {
     int outError, outCount;
     static int gotEof = 0;
+    static FILE *ini;
 
     /* Pass data read from player on to ICS */
     if (count > 0) {
@@ -1852,6 +1853,17 @@ read_from_player (InputSourceRef isr, VOIDSTAR closure, char *message, int count
 	outCount = OutputMaybeTelnet(icsPR, message, count, &outError);
 	if (outCount < count) {
             DisplayFatalError(_("Error writing to ICS"), outError, 1);
+	}
+	if(have_sent_ICS_logon == 2) {
+	  if(ini = fopen(appData.icsLogon, "w")) { // save first two lines (presumably username & password) on init script file
+	    fprintf(ini, "%s", message);
+	    have_sent_ICS_logon = 3;
+	  } else
+	    have_sent_ICS_logon = 1;
+	} else if(have_sent_ICS_logon == 3) {
+	    fprintf(ini, "%s", message);
+	    fclose(ini);
+	  have_sent_ICS_logon = 1;
 	}
     } else if (count < 0) {
 	RemoveInputSource(isr);
@@ -3438,9 +3450,15 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		continue;
 	    }
 
-	    if (!have_sent_ICS_logon && looking_at(buf, &i, "login:")) {
-		ICSInitScript();
-		have_sent_ICS_logon = 1;
+	    if (looking_at(buf, &i, "login:")) {
+	      if (!have_sent_ICS_logon) {
+		if(ICSInitScript())
+		  have_sent_ICS_logon = 1;
+		else // no init script was found
+		  have_sent_ICS_logon = (appData.autoCreateLogon ? 2 : 1); // flag that we should capture username + password
+	      } else { // we have sent (or created) the InitScript, but apparently the ICS rejected it
+		  have_sent_ICS_logon = (appData.autoCreateLogon ? 2 : 1); // request creation of a new script
+	      }
 		continue;
 	    }
 

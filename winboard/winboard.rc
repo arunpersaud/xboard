@@ -513,7 +513,9 @@ BEGIN
     CONTROL         "&Auto Kibitz",OPT_AutoKibitz,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,94,12,73,8
     CONTROL         "Auto &Observe",OPT_AutoObserve,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,25,150,8
+                    WS_TABSTOP,10,25,73,8
+    CONTROL         "Auto &Create Logon",OPT_AutoCreate,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,94,25,73,8
     CONTROL         "&Get Move List",OPT_GetMoveList,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,10,38,150,8
     CONTROL         "&Local Line Editing",OPT_LocalLineEditing,"Button",

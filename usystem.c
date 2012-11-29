@@ -712,7 +712,7 @@ OutputToProcessDelayed (ProcRef pr, char *message, int count, int *outError, lon
     return outCount;
 }
 
-void
+int
 ICSInitScript ()
 {
   /* try to open the icsLogon script, either in the location given
@@ -736,12 +736,13 @@ ICSInitScript ()
 	}
     }
 
-  if (f != NULL)
+  if (f != NULL) {
     ProcessICSInitScript(f);
-  else
+    return TRUE;
+  } else
     printf("Warning: Couldn't open icsLogon file (checked %s and %s).\n", appData.icsLogon, buf);
 
-  return;
+  return FALSE;
 }
 
 void
