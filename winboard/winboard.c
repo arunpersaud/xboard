@@ -1006,8 +1006,14 @@ LoadLogo(ChessProgramState *cps, int n, Boolean ics)
       }
   } else if(appData.autoLogo) {
       if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
-	sprintf(buf, "logos\\%s.bmp", appData.icsHost);
-	cps->programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+	char *opponent = "";
+	if(gameMode == IcsPlayingWhite) opponent = gameInfo.black;
+	if(gameMode == IcsPlayingBlack) opponent = gameInfo.white;
+	sprintf(buf, "logos\\%s\\%s.bmp", appData.icsHost, opponent);
+	if(!*opponent || !(cps->programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE ))) {
+	    sprintf(buf, "logos\\%s.bmp", appData.icsHost);
+	    cps->programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+	}
       } else
       if(appData.directory[n] && appData.directory[n][0]) {
         SetCurrentDirectory(appData.directory[n]);
