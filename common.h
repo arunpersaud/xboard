@@ -423,6 +423,7 @@ typedef struct {
     Boolean firstPlaysBlack;
     Boolean noChessProgram;
     char *host[ENGINES];
+    char *themeNames;
     char *pieceDirectory;
     char *border;
     char *soundDirectory;

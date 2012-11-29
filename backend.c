@@ -17483,3 +17483,59 @@ LoadVariation (int index, char *text)
 	ToNrEvent(currentMove+1);
 }
 
+void
+LoadTheme ()
+{
+    char *p, *q, buf[MSG_SIZ];
+    if(engineLine && engineLine[0]) { // a theme was selected from the listbox
+	snprintf(buf, MSG_SIZ, "-theme %s", engineLine);
+	ParseArgsFromString(buf);
+	ActivateTheme(TRUE); // also redo colors
+	return;
+    }
+    p = nickName;
+    if(*p && !strchr(p, '"')) // theme name specified and well-formed; add settings to theme list
+    {
+	int len;
+	q = appData.themeNames;
+	snprintf(buf, MSG_SIZ, "\"%s\"", nickName);
+      if(appData.useBitmaps) {
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ubt true -lbtf \"%s\" -dbtf \"%s\" -lbtm %d -dbtm %d",
+		appData.liteBackTextureFile, appData.darkBackTextureFile, 
+		appData.liteBackTextureMode,
+		appData.darkBackTextureMode );
+      } else {
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ubt false -lsc %s -dsc %s",
+		Col2Text(2),   // lightSquareColor
+		Col2Text(3) ); // darkSquareColor
+      }
+      if(appData.useBorder) {
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ub true -border \"%s\"",
+		appData.border);
+      } else {
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ub false");
+      }
+      if(appData.useFont) {
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -upf true -pf \"%s\" -fptc \"%s\" -fpfcw %s -fpbcb %s",
+		appData.renderPiecesWithFont,
+		appData.fontToPieceTable,
+		Col2Text(9),    // appData.fontBackColorWhite
+		Col2Text(10) ); // appData.fontForeColorBlack
+      } else {
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -upf false -pid \"%s\"",
+		appData.pieceDirectory);
+	if(!appData.pieceDirectory[0])
+	  snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -wpc %s -bpc %s",
+		Col2Text(0),   // whitePieceColor
+		Col2Text(1) ); // blackPieceColor
+      }
+      snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -hsc %s -phc %s\n",
+		Col2Text(4),   // highlightSquareColor
+		Col2Text(5) ); // premoveHighlightColor
+	appData.themeNames = malloc(len = strlen(q) + strlen(buf) + 1);
+	if(insert != q) insert[-1] = NULLCHAR;
+	snprintf(appData.themeNames, len, "%s\n%s%s", q, buf, insert);
+	if(q) 	free(q);
+    }
+    ActivateTheme(FALSE);
+}

@@ -1211,7 +1211,8 @@ BEGIN
         MENUITEM "&Comments",                   IDM_Comment
         MENUITEM SEPARATOR
         MENUITEM "&Game List Tags...",          IDM_GameListOptions
-        MENUITEM "&Board...",                   IDM_BoardOptions
+        MENUITEM "Colo&rs...",                  IDM_BoardOptions
+        MENUITEM "&Board Themes...",            IDM_ThemeOptions
         MENUITEM "&Fonts...",                   IDM_Fonts
     END
     POPUP "&Mode"

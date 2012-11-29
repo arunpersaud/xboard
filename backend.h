@@ -436,6 +436,7 @@ void Load P((ChessProgramState *cps, int n));
 int MultiPV P((ChessProgramState *cps));
 void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 void MakeEngineOutputTitle P((void));
+void LoadTheme P((void));
 
 /* A point in time */
 typedef struct {

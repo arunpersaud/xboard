@@ -139,6 +139,7 @@ VOID TourneyPopup();
 VOID LoadEnginePopUp();
 VOID LoadOptionsPopup(HWND hDlg);
 VOID InitTextures();
+void ThemeOptionsPopup(HWND hwnd);
 
 /* Constants */
 

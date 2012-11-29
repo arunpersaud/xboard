@@ -110,6 +110,7 @@
 #define DLG_NewGameFRC                  457
 #define DLG_GameListOptions             458
 #define DLG_MoveHistory                 459
+#define IDM_ThemeOptions                460
 #define DLG_EvalGraph                   461
 #define DLG_EngineOutput                463
 #define DLG_EnginePlayOptions           464

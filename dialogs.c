@@ -2577,4 +2577,14 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
 #endif
 }
 
+void
+ActivateTheme (int col)
+{
+}
+
+char *
+Col2Text (int n)
+{
+    return NULL;
+}
 

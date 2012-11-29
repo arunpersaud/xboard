@@ -1030,6 +1030,7 @@ InitTextures()
   backTextureSquareSize = 0; // kludge to force recalculation of texturemode
   
   if( appData.liteBackTextureFile && appData.liteBackTextureFile[0] != NULLCHAR && appData.liteBackTextureFile[0] != '*' ) {
+      if(liteBackTexture) DeleteObject(liteBackTexture);
       liteBackTexture = LoadImage( 0, appData.liteBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
       liteBackTextureMode = appData.liteBackTextureMode;
 
@@ -1039,6 +1040,7 @@ InitTextures()
   }
   
   if( appData.darkBackTextureFile && appData.darkBackTextureFile[0] != NULLCHAR && appData.darkBackTextureFile[0] != '*' ) {
+      if(darkBackTexture) DeleteObject(darkBackTexture);
       darkBackTexture = LoadImage( 0, appData.darkBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
       darkBackTextureMode = appData.darkBackTextureMode;
 
@@ -5201,6 +5203,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_BoardOptions:
       BoardOptionsPopup(hwnd);
+      break;
+
+    case IDM_ThemeOptions:
+      ThemeOptionsPopup(hwnd);
       break;
 
     case IDM_EnginePlayOptions:
@@ -9998,4 +10004,25 @@ int flock(int fid, int code)
       default: return -1;
     }
     return 0;
+}
+
+char *
+Col2Text (int n)
+{
+    static int i=0;
+    static char col[8][20];
+    COLORREF color = *(COLORREF *) colorVariable[n];
+    i = i+1 & 7;
+    snprintf(col[i], 20, "#%02lx%02lx%02lx", color&0xff, (color>>8)&0xff, (color>>16)&0xff);
+    return col[i];
+}
+
+void
+ActivateTheme (int new)
+{   // Redo initialization of features depending on options that can occur in themes
+   InitTextures();
+   if(new) InitDrawingColors();
+   fontBitmapSquareSize = 0; // request creation of new font pieces
+   InitDrawingSizes(-2, 0);
+   InvalidateRect(hwndMain, NULL, TRUE);
 }

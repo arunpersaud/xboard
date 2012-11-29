@@ -107,6 +107,7 @@ char *homeDir;
 char *firstEngineLine;
 char *secondEngineLine;
 char *icsNick;
+char *theme;
 
 void EnsureOnScreen(int *x, int *y, int minX, int minY);
 char StringGet(void *getClosure);
@@ -195,6 +196,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondDirectory", ArgFilename, (void *) &appData.secondDirectory, FALSE, (ArgIniType) SECOND_DIRECTORY },
   { "sd", ArgFilename, (void *) &appData.secondDirectory, FALSE, INVALID },
   { "variations", ArgBoolean, (void *) &appData.variations, TRUE, (ArgIniType) FALSE },
+  { "theme", ArgString, (void *) &theme, FALSE, (ArgIniType) "" },
 
   /* some options only used by the XBoard front end, and ignored in WinBoard         */
   /* Their saving is controlled by XBOARD, which in WinBoard is defined as FALSE */
@@ -498,6 +500,7 @@ ArgDescriptor argDescriptors[] = {
     TRUE, (ArgIniType) FCP_NAMES },
   { "secondChessProgramNames", ArgString, (void *) &secondChessProgramNames,
     !XBOARD, (ArgIniType) SCP_NAMES },
+  { "themeNames", ArgString, (void *) &appData.themeNames, !XBOARD, (ArgIniType) "native -upf false -ub false -ubt false -pid \"\"\n" },
   { "initialMode", ArgString, (void *) &appData.initialMode, FALSE, (ArgIniType) "" },
   { "mode", ArgString, (void *) &appData.initialMode, FALSE, INVALID },
   { "variant", ArgString, (void *) &appData.variant, FALSE, (ArgIniType) "normal" },
@@ -513,16 +516,24 @@ ArgDescriptor argDescriptors[] = {
   { "secondScoreAbs", ArgBoolean, (void *) &appData.secondScoreIsAbsolute, FALSE, (ArgIniType) FALSE },
   { "pgnExtendedInfo", ArgBoolean, (void *) &appData.saveExtendedInfoInPGN, TRUE, (ArgIniType) FALSE },
   { "hideThinkingFromHuman", ArgBoolean, (void *) &appData.hideThinkingFromHuman, TRUE, (ArgIniType) FALSE },
-  { "liteBackTextureFile", ArgString, (void *) &appData.liteBackTextureFile, TRUE, (ArgIniType) "" },
-  { "darkBackTextureFile", ArgString, (void *) &appData.darkBackTextureFile, TRUE, (ArgIniType) "" },
+  { "liteBackTextureFile", ArgFilename, (void *) &appData.liteBackTextureFile, TRUE, (ArgIniType) "" },
+  { "lbtf", ArgFilename, (void *) &appData.liteBackTextureFile, FALSE, INVALID },
+  { "darkBackTextureFile", ArgFilename, (void *) &appData.darkBackTextureFile, TRUE, (ArgIniType) "" },
+  { "dbtf", ArgFilename, (void *) &appData.darkBackTextureFile, FALSE, INVALID },
   { "liteBackTextureMode", ArgInt, (void *) &appData.liteBackTextureMode, TRUE, (ArgIniType) BACK_TEXTURE_MODE_PLAIN },
+  { "lbtm", ArgInt, (void *) &appData.liteBackTextureMode, FALSE, INVALID },
   { "darkBackTextureMode", ArgInt, (void *) &appData.darkBackTextureMode, TRUE, (ArgIniType) BACK_TEXTURE_MODE_PLAIN },
+  { "dbtm", ArgInt, (void *) &appData.darkBackTextureMode, FALSE, INVALID },
   { "renderPiecesWithFont", ArgString, (void *) &appData.renderPiecesWithFont, TRUE, (ArgIniType) "" },
+  { "pf", ArgString, (void *) &appData.renderPiecesWithFont, FALSE, INVALID },
   { "fontPieceToCharTable", ArgString, (void *) &appData.fontToPieceTable, TRUE, (ArgIniType) "" },
+  { "fptc", ArgString, (void *) &appData.fontToPieceTable, FALSE, INVALID },
   { "fontPieceBackColorWhite", ArgColor, (void *) 8, TRUE, (ArgIniType) WHITE_PIECE_COLOR },
   { "fontPieceForeColorWhite", ArgColor, (void *) 9, TRUE, (ArgIniType) WHITE_PIECE_COLOR },
   { "fontPieceBackColorBlack", ArgColor, (void *) 10, TRUE, (ArgIniType) BLACK_PIECE_COLOR },
   { "fontPieceForeColorBlack", ArgColor, (void *) 11, TRUE, (ArgIniType) BLACK_PIECE_COLOR },
+  { "fpfcw", ArgColor, (void *) 9, FALSE, INVALID },
+  { "fpbcb", ArgColor, (void *) 10, FALSE, INVALID },
   { "fontPieceSize", ArgInt, (void *) &appData.fontPieceSize, TRUE, (ArgIniType) 80 },
   { "overrideLineGap", ArgInt, (void *) &appData.overrideLineGap, TRUE, (ArgIniType) 1 },
   { "adjudicateLossThreshold", ArgInt, (void *) &appData.adjudicateLossThreshold, TRUE, (ArgIniType) 0 },
@@ -574,8 +585,11 @@ ArgDescriptor argDescriptors[] = {
   { "language", ArgFilename, (void *) &appData.language, TRUE, (ArgIniType) "" },
   { "userFileDirectory", ArgFilename, (void *) &homeDir, FALSE, (ArgIniType) installDir },
   { "usePieceFont", ArgBoolean, (void *) &appData.useFont, TRUE, (ArgIniType) FALSE },
+  { "upf", ArgBoolean, (void *) &appData.useFont, FALSE, INVALID },
   { "useBoardTexture", ArgBoolean, (void *) &appData.useBitmaps, TRUE, (ArgIniType) FALSE },
+  { "ubt", ArgBoolean, (void *) &appData.useBitmaps, FALSE, INVALID },
   { "useBorder", ArgBoolean, (void *) &appData.useBorder, TRUE, (ArgIniType) FALSE },
+  { "ub", ArgBoolean, (void *) &appData.useBorder, FALSE, INVALID },
   { "border", ArgFilename, (void *) &appData.border, TRUE, (ArgIniType) "" },
 
   // [HGM] tournament options

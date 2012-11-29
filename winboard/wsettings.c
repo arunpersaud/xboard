@@ -473,7 +473,8 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		          char filter[] =
 				"All files\0*.*\0Game files\0*.pgn;*.gam\0Position files\0*.fen;*.epd;*.pos\0"
 				"EXE files\0*.exe\0Tournament files (*.trn)\0*.trn\0"
-				"BIN Files\0*.bin\0LOG Files\0*.log\0INI Files\0*.ini\0\0";
+				"BIN Files\0*.bin\0LOG Files\0*.log\0INI Files\0*.ini\0"
+				"Image files\0*.bmp\0\0";
 		          OPENFILENAME ofn;
 
 		          safeStrCpy( buf, "" , sizeof( buf)/sizeof( buf[0]) );
@@ -755,6 +756,92 @@ void LoadEnginePopUp(HWND hwnd, int nr)
     snprintf(title, MSG_SIZ, _("Load %s Engine"), nr ? _("second") : _("first"));
 
     GenericPopup(hwnd, installOptions);
+}
+
+int PickTheme P((HWND hDlg));
+void DeleteTheme P((HWND hDlg));
+
+int ThemeOK()
+{
+    if(selected >= 0) { ASSIGN(engineLine, engineList[selected]); }
+    if(engineLine[0] == '#') { DisplayError(_("Select single theme from the group"), 0); return 0; }
+    LoadTheme();
+    return 1;
+}
+
+Option themeOptions[] = {
+  { 195, 14,    0, NULL, (void*) &PickTheme, (char*) &selected, engineMnemonic, ListBox, N_("Select theme from list:") },
+  {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify new theme below:") },
+  {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Theme name:") },
+  {   0,  0,    0, NULL, (void*) &appData.useBitmaps, NULL, NULL, CheckBox, N_("Use board textures") },
+  {   0,  0, 32+0, NULL, (void*) &appData.liteBackTextureFile, NULL, NULL, FileName, N_("Light-square texture:") },
+  {   0,  0, 32+0, NULL, (void*) &appData.darkBackTextureFile, NULL, NULL, FileName, N_("Dark-square texture:") },
+  {   0,  0,    3, NULL, (void*) &appData.darkBackTextureMode, "", NULL, Spin, N_("Dark reorientation mode:") },
+  {   0,  0,    3, NULL, (void*) &appData.liteBackTextureMode, "", NULL, Spin, N_("Light reorientation mode:") },
+  {   0,  0,    0, NULL, (void*) &appData.useBorder, NULL, NULL, CheckBox, N_("Draw border around board") },
+  {   0,  0, 32+0, NULL, (void*) &appData.border, NULL, NULL, FileName, N_("Optional border bitmap:") },
+  {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("        Beware: a specified piece font will prevail over piece bitmaps") },
+  {   0,  0,    0, NULL, (void*) &appData.bitmapDirectory, NULL, NULL, PathName, N_("Directory with piece bitmaps:") },
+  {   0,  0,    0, NULL, (void*) &appData.useFont, NULL, NULL, CheckBox, N_("Use piece font") },
+  {   0, 50,  150, NULL, (void*) &appData.fontPieceSize, "", NULL, Spin, N_("Font size (%):") },
+  {   0,  0,    0, NULL, (void*) &appData.renderPiecesWithFont, NULL, NULL, TextBox, N_("Font name:") },
+  {   0,  0,    0, NULL, (void*) &appData.fontToPieceTable, NULL, NULL, TextBox, N_("Font piece to char:") },
+//  {   0,  0,    0, NULL, (void*) &DeleteTheme, NULL, NULL, Button, N_("Up") },
+//  {   0,  0,    0, NULL, (void*) &DeleteTheme, NULL, NULL, Button, N_("Down") },
+  {   0,  0,    0, NULL, (void*) &DeleteTheme, NULL, NULL, Button, N_("Delete Theme") },
+  {   0,  1,    0, NULL, (void*) &ThemeOK, "", NULL, EndMark , "" }
+};
+
+void
+DeleteTheme (HWND hDlg)
+{
+    char *p, *q;
+    int i, selected = SendDlgItemMessage(hDlg, 2001+2*1, LB_GETCURSEL, 0, 0);
+    HANDLE hwndCombo = GetDlgItem(hDlg, 2001+2*1);
+    if(selected < 0) return;
+    if(p = strstr(appData.themeNames, engineList[selected])) {
+	if(q = strchr(p, '\n')) strcpy(p, q+1);
+    }
+    themeOptions[0].max = NamesToList(appData.themeNames, engineList, engineMnemonic, ""); // replace list by only the group contents
+    SendMessage(hwndCombo, LB_RESETCONTENT, 0, 0);
+    SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) "");
+    for(i=1; i<themeOptions[0].max; i++) {
+	    SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) engineMnemonic[i]);
+    }
+}
+
+int
+PickTheme (HWND hDlg)
+{
+    char buf[MSG_SIZ];
+    HANDLE hwndCombo = GetDlgItem(hDlg, 2001+2*1);
+    int i = SendDlgItemMessage(hDlg, 2001+2*1, LB_GETCURSEL, 0, 0);
+    if(i == 0) buf[0] = NULLCHAR; // back to top level
+    else if(engineList[i][0] == '#') safeStrCpy(buf, engineList[i], MSG_SIZ); // group header, open group
+    else {
+	ASSIGN(engineLine, engineList[i]);
+	LoadTheme();
+	EndDialog( hDlg, 0 );
+	return 0; // normal line, select engine
+    }
+    themeOptions[0].max = NamesToList(appData.themeNames, engineList, engineMnemonic, buf); // replace list by only the group contents
+    SendMessage(hwndCombo, LB_RESETCONTENT, 0, 0);
+    SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) buf);
+    for(i=1; i<themeOptions[0].max; i++) {
+	    SendMessage(hwndCombo, LB_ADDSTRING, 0, (LPARAM) engineMnemonic[i]);
+    }
+    return 0;
+}
+
+void ThemeOptionsPopup(HWND hwnd)
+{
+    addToList = TRUE; // defaults
+    if(nickName)     free(nickName);     nickName = strdup("");
+    if(engineLine)   free(engineLine);   engineLine = strdup("");
+    themeOptions[0].max = NamesToList(appData.themeNames, engineList, engineMnemonic, ""); // only top level
+    snprintf(title, MSG_SIZ, _("Board themes"));
+
+    GenericPopup(hwnd, themeOptions);
 }
 
 Boolean autoinc, twice, swiss;

@@ -233,6 +233,8 @@ void EvalGraphPopUp P((void));
 Boolean EvalGraphIsUp P((void));
 int  EvalGraphDialogExists P((void));
 void SlavePopUp P((void));
+void ActivateTheme P((int new));
+char *Col2Text P((int n));
 
 /* these are in xhistory.c  */
 Boolean MoveHistoryIsUp P((void));
