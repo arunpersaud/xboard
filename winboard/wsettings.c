@@ -762,7 +762,7 @@ char *tfName;
 
 int MatchOK()
 {
-    if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1);
+    if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1); else
     if(!appData.loadGameFile[0]) appData.loadGameIndex = -2*twice; // kludge to pass value of "twice" for use in GUI book
     if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
     if(CreateTourney(tfName) && !matchMode) { // CreateTourney reloads original settings if file already existed
@@ -770,6 +770,19 @@ int MatchOK()
 	return 1; // close dialog
     }
     return matchMode || !appData.participants[0]; // if we failed to create and are not in playing, forbid popdown if there are participants
+}
+
+void PseudoOK(HWND hDlg)
+{
+    void (*saveOK)();
+    saveOK = okFunc; okFunc = 0;
+    GetOptionValues(hDlg, activeCps, activeList);
+    EndDialog( hDlg, 0 );
+    comboCallback = NULL; activeCps = NULL;
+
+    if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1); else
+    if(!appData.loadGameFile[0]) appData.loadGameIndex = -2*twice; // kludge to pass value of "twice" for use in GUI book
+    if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
 }
 
 char *GetParticipants(HWND hDlg)
@@ -844,6 +857,7 @@ Option tourneyOptions[] = {
   { 0,  0,          0, NULL, (void*) &TimeControlOptionsPopup, "", NULL, Button, N_("Time Control...") },
   { 0,  0,          0, NULL, (void*) &UciOptionsPopup, "", NULL, Button, N_("Common Engine...") },
   { 0,  0,          0, NULL, (void*) &Inspect, "", NULL, Button, N_("Clone Tourney") },
+  { 0,  0,          0, NULL, (void*) &PseudoOK, "", NULL, Button, N_("Continue Later") },
   { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
