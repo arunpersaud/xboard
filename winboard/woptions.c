@@ -608,8 +608,9 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     lsc = lightSquareColor;
     dsc = darkSquareColor;
-    wpc = whitePieceColor;
-    bpc = blackPieceColor;
+    fonts = appData.useFont;
+    wpc = fonts ? appData.fontBackColorWhite : whitePieceColor;
+    bpc = fonts ? appData.fontForeColorBlack : blackPieceColor;
     hsc = highlightSquareColor;
     phc = premoveHighlightColor;
     mono = appData.monoMode;
@@ -617,7 +618,6 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     flip = appData.upsideDown;
     size = boardSize;
     bitmaps = appData.useBitmaps;
-    fonts = appData.useFont;
     grid = appData.overrideLineGap >= 0;
 
     SetBoardOptionEnables(hDlg);
@@ -661,8 +661,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if ((mono != appData.monoMode) ||
 	  (lsc  != lightSquareColor) ||
 	  (dsc  != darkSquareColor) ||
-	  (wpc  != whitePieceColor) ||
-	  (bpc  != blackPieceColor) ||
+	  (wpc  != fonts ? appData.fontBackColorWhite : whitePieceColor) ||
+	  (bpc  != fonts ? appData.fontForeColorBlack : blackPieceColor) ||
 	  (hsc  != highlightSquareColor) ||
           (flip != appData.upsideDown) ||
           (white != appData.allWhite) ||
@@ -673,8 +673,13 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 	  lightSquareColor = lsc;
 	  darkSquareColor = dsc;
-	  whitePieceColor = wpc;
-	  blackPieceColor = bpc;
+	  if(fonts) {
+	    appData.fontBackColorWhite = wpc;
+	    appData.fontForeColorBlack = bpc;
+	  } else {
+	    whitePieceColor = wpc;
+	    blackPieceColor = bpc;
+	  }
 	  highlightSquareColor = hsc;
 	  premoveHighlightColor = phc;
 	  appData.monoMode = mono;
