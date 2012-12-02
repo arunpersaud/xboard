@@ -2958,6 +2958,20 @@ VOID EnginePlayOptionsPopup(HWND hwnd)
  * UCI Options Dialog functions
  *
 \*---------------------------------------------------------------------------*/
+INT CALLBACK BrowseCallbackProc(HWND hwnd, 
+                                UINT uMsg,
+                                LPARAM lp, 
+                                LPARAM pData) 
+{
+    switch(uMsg) 
+    {
+      case BFFM_INITIALIZED: 
+        SendMessage(hwnd, BFFM_SETSELECTION, TRUE, (LPARAM)pData);
+        break;
+    }
+    return 0;
+}
+
 BOOL BrowseForFolder( const char * title, char * path )
 {
     BOOL result = FALSE;
@@ -2968,6 +2982,8 @@ BOOL BrowseForFolder( const char * title, char * path )
 
     bi.lpszTitle = title == 0 ? _("Choose Folder") : title;
     bi.ulFlags = BIF_RETURNONLYFSDIRS;
+    bi.lpfn = BrowseCallbackProc;
+    bi.lParam = (LPARAM) path;
 
     pidl = SHBrowseForFolder( &bi );
 

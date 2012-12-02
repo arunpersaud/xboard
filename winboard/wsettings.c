@@ -477,7 +477,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 				"Image files\0*.bmp\0\0";
 		          OPENFILENAME ofn;
 
-		          safeStrCpy( buf, "" , sizeof( buf)/sizeof( buf[0]) );
+			  GetDlgItemText( hDlg, i+3, buf, MSG_SIZ );
 
 		          ZeroMemory( &ofn, sizeof(ofn) );
 
@@ -499,6 +499,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		          }
 		} else
 		if(j == -3) {
+		    GetDlgItemText( hDlg, i+3, buf, MSG_SIZ );
 		    if( BrowseForFolder( _("Choose Folder:"), buf ) ) {
 			SetDlgItemText( hDlg, i+3, buf );
 		    }
