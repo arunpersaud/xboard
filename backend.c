@@ -9748,12 +9748,12 @@ ShowMove (int fromX, int fromY, int toX, int toY)
     if (instant) return;
 
     DisplayMove(currentMove - 1);
-    DrawPosition(FALSE, boards[currentMove]);
     if (!pausing || gameMode == PlayFromGameFile || gameMode == AnalyzeFile) {
 	    if (appData.highlightLastMove) { // [HGM] moved to after DrawPosition, as with arrow it could redraw old board
 		SetHighlights(fromX, fromY, toX, toY);
 	    }
     }
+    DrawPosition(FALSE, boards[currentMove]);
     DisplayBothClocks();
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
 }
