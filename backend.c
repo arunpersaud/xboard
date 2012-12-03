@@ -9426,8 +9426,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
                ) {
 	/* white pawn promotion */
         board[toY][toX] = CharToPiece(ToUpper(promoChar));
-        if(gameInfo.variant==VariantBughouse ||
-           gameInfo.variant==VariantCrazyhouse) /* [HGM] use shadow piece */
+        if((gameInfo.variant==VariantBughouse || gameInfo.variant==VariantCrazyhouse) 
+           && PieceToChar(PROMOTED board[toY][toX]) == '~') /* [HGM] use shadow piece (if available) */
             board[toY][toX] = (ChessSquare) (PROMOTED board[toY][toX]);
 	board[fromY][fromX] = EmptySquare;
     } else if ((fromY >= BOARD_HEIGHT>>1)
@@ -9487,8 +9487,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
                ) {
 	/* black pawn promotion */
 	board[toY][toX] = CharToPiece(ToLower(promoChar));
-        if(gameInfo.variant==VariantBughouse ||
-           gameInfo.variant==VariantCrazyhouse) /* [HGM] use shadow piece */
+        if((gameInfo.variant==VariantBughouse || gameInfo.variant==VariantCrazyhouse) 
+           && PieceToChar(PROMOTED board[toY][toX]) == '~') /* [HGM] use shadow piece (if available) */
             board[toY][toX] = (ChessSquare) (PROMOTED board[toY][toX]);
 	board[fromY][fromX] = EmptySquare;
     } else if ((fromY < BOARD_HEIGHT>>1)
