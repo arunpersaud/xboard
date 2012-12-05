@@ -395,6 +395,7 @@ typedef struct XB_CPS {
     int memSize;      /* [HGM] memsize: engine understands memory command   */
     char egtFormats[MSG_SIZ];     /* [HGM] EGT: supported tablebase formats */
     int bookSuspend;  /* [HGM] book: go was deferred because of book hit    */
+    int pause;        /* [HGM] pause: 1=supports it, 2=actually paused      */
     int nrOptions;    /* [HGM] options: remembered option="..." features    */
 #define MAX_OPTIONS 200
     Option option[MAX_OPTIONS];

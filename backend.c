@@ -8038,6 +8038,8 @@ DeferredBookMove (void)
 }
 
 static int savedWhitePlayer, savedBlackPlayer, pairingReceived;
+static ChessProgramState *stalledEngine;
+static char stashedInputMove[MSG_SIZ];
 
 void
 HandleMachineMove (char *message, ChessProgramState *cps)
@@ -8103,6 +8105,18 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     if ((sscanf(message, "%s %s %s", buf1, buf2, machineMove) == 3 && strcmp(buf2, "...") == 0) ||
 	(sscanf(message, "%s %s", buf1, machineMove) == 2 && strcmp(buf1, "move") == 0))
     {
+        if(pausing && !cps->pause) { // for pausing engine that does not support 'pause', we stash its move for processing when we resume.
+	    if(appData.debugMode) fprintf(debugFP, "pause %s engine after move\n", cps->which);
+	    safeStrCpy(stashedInputMove, message, MSG_SIZ);
+	    stalledEngine = cps;
+	    if(appData.ponderNextMove) { // bring both engines out of ponder
+		SendToProgram("easy\n", &first);
+		if(gameMode == TwoMachinesPlay) SendToProgram("easy\n", &second);
+	    }
+	    StopClocks();
+	    return;
+	}
+
         /* This method is only useful on engines that support ping */
         if (cps->lastPing != cps->lastPong) {
 	  if (gameMode == BeginningOfGame) {
@@ -10503,6 +10517,8 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
     }
 
     fromX = fromY = -1; // [HGM] abort any move the user is entering.
+
+    if(pausing) PauseEvent(); // can happen when we abort a paused game (New Game or Quit)
 
     if (appData.icsActive && (whosays == GE_ENGINE || whosays >= GE_ENGINE1)) {
 	/* If we are playing on ICS, the server decides when the
@@ -13362,6 +13378,20 @@ ExitEvent (int status)
 }
 
 void
+PauseEngine (ChessProgramState *cps)
+{
+    SendToProgram("pause\n", cps);
+    cps->pause = 2;
+}
+
+void
+UnPauseEngine (ChessProgramState *cps)
+{
+    SendToProgram("resume\n", cps);
+    cps->pause = 1;
+}
+
+void
 PauseEvent ()
 {
     if (appData.debugMode)
@@ -13369,8 +13399,24 @@ PauseEvent ()
     if (pausing) {
 	pausing = FALSE;
 	ModeHighlight();
+	if(stalledEngine) { // [HGM] pause: resume game by releasing withheld move
+	    StartClocks();
+	    if(gameMode == TwoMachinesPlay) { // we might have to make the opponent resume pondering
+		if(stalledEngine->other->pause) UnPauseEngine(stalledEngine->other);
+		else if(appData.ponderNextMove) SendToProgram("hard\n", stalledEngine->other);
+	    }
+	    if(appData.ponderNextMove) SendToProgram("hard\n", stalledEngine);
+	    HandleMachineMove(stashedInputMove, stalledEngine);
+	    stalledEngine = NULL;
+	    return;
+	}
 	if (gameMode == MachinePlaysWhite ||
-	    gameMode == MachinePlaysBlack) {
+	    gameMode == TwoMachinesPlay   ||
+	    gameMode == MachinePlaysBlack) { // the thinking engine must have used pause mode, or it would have been stalledEngine
+	    if(first.pause)  UnPauseEngine(&first);
+	    else if(appData.ponderNextMove) SendToProgram("hard\n", &first);
+	    if(second.pause) UnPauseEngine(&second);
+	    else if(gameMode == TwoMachinesPlay && appData.ponderNextMove) SendToProgram("hard\n", &second);
 	    StartClocks();
 	} else {
 	    DisplayBothClocks();
@@ -13413,12 +13459,29 @@ PauseEvent ()
 	  case TwoMachinesPlay:
 	    if (forwardMostMove == 0)
 	      return;		/* don't pause if no one has moved */
-	    if ((gameMode == MachinePlaysWhite &&
-		 !WhiteOnMove(forwardMostMove)) ||
-		(gameMode == MachinePlaysBlack &&
-		 WhiteOnMove(forwardMostMove))) {
+	    if(gameMode == TwoMachinesPlay) { // [HGM] pause: stop clocks if engine can be paused immediately
+		ChessProgramState *onMove = (WhiteOnMove(forwardMostMove) == (first.twoMachinesColor[0] == 'w') ? &first : &second);
+		if(onMove->pause) {           // thinking engine can be paused
+		    PauseEngine(onMove);      // do it
+		    if(onMove->other->pause)  // pondering opponent can always be paused immediately
+			PauseEngine(onMove->other);
+		    else
+			SendToProgram("easy\n", onMove->other);
+		    StopClocks();
+		}
+	    } else if(gameMode == (WhiteOnMove(forwardMostMove) ? MachinePlaysWhite : MachinePlaysBlack)) { // engine on move
+		if(first.pause) {
+		    PauseEngine(&first);
+		    StopClocks();
+		}
+	    } else { // human on move, pause pondering by either method
+		if(first.pause) 
+		    PauseEngine(&first);
+		else
+		    SendToProgram("easy\n", &first);
 		StopClocks();
 	    }
+	    // if no immediate pausing is possible, wait for engine to move, and stop clocks then
 	  case AnalyzeMode:
 	    pausing = TRUE;
 	    ModeHighlight();
@@ -15949,7 +16012,7 @@ ParseFeatures (char *args, ChessProgramState *cps)
     if (BoolFeature(&p, "exclude", &cps->excludeMoves, cps)) continue;
     if (BoolFeature(&p, "ics", &cps->sendICS, cps)) continue;
     if (BoolFeature(&p, "name", &cps->sendName, cps)) continue;
-    if (BoolFeature(&p, "pause", &val, cps)) continue; /* unused at present */
+    if (BoolFeature(&p, "pause", &cps->pause, cps)) continue; // [HGM] pause
     if (IntFeature(&p, "done", &val, cps)) {
       FeatureDone(cps, val);
       continue;
