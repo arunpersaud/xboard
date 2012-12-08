@@ -3351,7 +3351,7 @@ DrawBackgroundOnDC(HDC hdc)
   HDC tmphdc;
   HBITMAP hbm;
   static char oldBorder[MSG_SIZ];
-  int w = 600, h = 600;
+  int w = 600, h = 600, mode;
 
   if(strcmp(appData.border, oldBorder)) { // load new one when old one no longer valid
     strncpy(oldBorder, appData.border, MSG_SIZ-1);
@@ -3367,8 +3367,10 @@ DrawBackgroundOnDC(HDC hdc)
             w = bi.bmWidth;
             h = bi.bmHeight;
   }
+  mode = SetStretchBltMode(hdc, COLORONCOLOR);
   StretchBlt(hdc, boardRect.left, boardRect.top, boardRect.right - boardRect.left, 
                   boardRect.bottom - boardRect.top, tmphdc, 0, 0, w, h, SRCCOPY);
+  SetStretchBltMode(hdc, mode);
   SelectObject(tmphdc, hbm);
   DeleteDC(tmphdc);
 }
