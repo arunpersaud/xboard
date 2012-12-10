@@ -1151,7 +1151,7 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
                 return CharToPiece(promoChar) == EmptySquare ? ImpossibleMove : IllegalMove;
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
-                     (rf >= BOARD_HEIGHT*2/3 || rt >= BOARD_HEIGHT*2/3) ) {
+                     (rf >= BOARD_HEIGHT - BOARD_HEIGHT/3 || rt >= BOARD_HEIGHT - BOARD_HEIGHT/3) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && rt > BOARD_HEIGHT-2 ||
                          piece == WhiteKnight && rt > BOARD_HEIGHT-3) /* promotion mandatory */
                        cl.kind = promoChar == '=' ? IllegalMove : WhitePromotion;
