@@ -12340,9 +12340,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
     if (oldGameMode == AnalyzeFile ||
 	oldGameMode == AnalyzeMode) {
       appData.loadGameIndex = -1; // [HGM] order auto-stepping through games
-      keepInfo = 1;
       AnalyzeFileEvent();
-      keepInfo = 0;
     }
 
     if(creatingBook) return TRUE;
@@ -13619,7 +13617,9 @@ AnalyzeFileEvent ()
     }
 
     if (gameMode != AnalyzeMode) {
+	keepInfo = 1; // mere annotating should not alter PGN tags
 	EditGameEvent();
+	keepInfo = 0;
 	if (gameMode != EditGame) return;
 	if (!appData.showThinking) ToggleShowThinking();
 	ResurrectChessProgram();
@@ -13632,7 +13632,6 @@ AnalyzeFileEvent ()
     gameMode = AnalyzeFile;
     pausing = FALSE;
     ModeHighlight();
-    SetGameInfo();
 
     StartAnalysisClock();
     GetTimeMark(&lastNodeCountTime);
