@@ -5415,7 +5415,8 @@ ParsePV (char *pv, Boolean storeComments, Boolean atEnd)
   Boolean valid;
   int nr = 0;
 
-  if (gameMode == AnalyzeMode && currentMove < forwardMostMove) {
+  lastParseAttempt = pv; if(!*pv) return;    // turns out we crash when we parse an empty PV
+  if ((gameMode == AnalyzeMode || gameMode == AnalyzeFile) && currentMove < forwardMostMove) {
     PushInner(currentMove, forwardMostMove); // [HGM] engine might not be thinking on forwardMost position!
     pushed = TRUE;
   }
@@ -5520,7 +5521,7 @@ PvToSAN (char *pv)
 	static char buf[10*MSG_SIZ];
 	int i, k=0, savedEnd=endPV, saveFMM = forwardMostMove;
 	*buf = NULLCHAR;
-	if(forwardMostMove < endPV) PushInner(forwardMostMove, endPV);
+	if(forwardMostMove < endPV) PushInner(forwardMostMove, endPV); // shelve PV of PV-walk
 	ParsePV(pv, FALSE, 2); // this appends PV to game, suppressing any display of it
 	for(i = forwardMostMove; i<endPV; i++){
 	    if(i&1) snprintf(buf+k, 10*MSG_SIZ-k, "%s ", parseList[i]);
@@ -5528,6 +5529,7 @@ PvToSAN (char *pv)
 	    k += strlen(buf+k);
 	}
 	snprintf(buf+k, 10*MSG_SIZ-k, "%s", lastParseAttempt); // if we ran into stuff that could not be parsed, print it verbatim
+	if(pushed) { PopInner(0); pushed = FALSE; } // restore game continuation shelved by ParsePV
 	if(forwardMostMove < savedEnd) { PopInner(0); forwardMostMove = saveFMM; } // PopInner would set fmm to endPV!
 	endPV = savedEnd;
 	return buf;
