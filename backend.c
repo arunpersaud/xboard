@@ -224,6 +224,7 @@ FILE *WriteTourneyFile P((char *results, FILE *f));
 void DisplayTwoMachinesTitle P(());
 static void ExcludeClick P((int index));
 void ToggleSecond P((void));
+void PauseEngine P((ChessProgramState *cps));
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -8111,9 +8112,13 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    if(appData.debugMode) fprintf(debugFP, "pause %s engine after move\n", cps->which);
 	    safeStrCpy(stashedInputMove, message, MSG_SIZ);
 	    stalledEngine = cps;
-	    if(appData.ponderNextMove) { // bring both engines out of ponder
-		SendToProgram("easy\n", &first);
-		if(gameMode == TwoMachinesPlay) SendToProgram("easy\n", &second);
+	    if(appData.ponderNextMove) { // bring opponent out of ponder
+		if(gameMode == TwoMachinesPlay) {
+		    if(cps->other->pause)
+			PauseEngine(cps->other);
+		    else
+			SendToProgram("easy\n", cps->other);
+		}
 	    }
 	    StopClocks();
 	    return;
@@ -13402,7 +13407,7 @@ PauseEvent ()
 	if(stalledEngine) { // [HGM] pause: resume game by releasing withheld move
 	    StartClocks();
 	    if(gameMode == TwoMachinesPlay) { // we might have to make the opponent resume pondering
-		if(stalledEngine->other->pause) UnPauseEngine(stalledEngine->other);
+		if(stalledEngine->other->pause == 2) UnPauseEngine(stalledEngine->other);
 		else if(appData.ponderNextMove) SendToProgram("hard\n", stalledEngine->other);
 	    }
 	    if(appData.ponderNextMove) SendToProgram("hard\n", stalledEngine);
@@ -13468,16 +13473,16 @@ PauseEvent ()
 		    else
 			SendToProgram("easy\n", onMove->other);
 		    StopClocks();
-		}
+		} else if(appData.ponderNextMove) SendToProgram("easy\n", onMove); // pre-emptively bring out of ponder
 	    } else if(gameMode == (WhiteOnMove(forwardMostMove) ? MachinePlaysWhite : MachinePlaysBlack)) { // engine on move
 		if(first.pause) {
 		    PauseEngine(&first);
 		    StopClocks();
-		}
+		} else if(appData.ponderNextMove) SendToProgram("easy\n", &first); // pre-emptively bring out of ponder
 	    } else { // human on move, pause pondering by either method
 		if(first.pause) 
 		    PauseEngine(&first);
-		else
+		else if(appData.ponderNextMove) 
 		    SendToProgram("easy\n", &first);
 		StopClocks();
 	    }
