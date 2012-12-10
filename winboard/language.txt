@@ -1067,3 +1067,42 @@ END-OF-GAME MESSAGES (should they be translated?)
 "Make all use GUI book by default" === ""
 "You must supply a tournament file,\nfor storing the tourney progress" === ""
 "Not enough participants" === ""
+"Continue Later" === ""
+"First you must specify an existing tourney file to clone" === ""
+"No engine %s is installed" === ""
+
+# THEMES DIALOG
+
+"Board themes" === ""
+"Select theme from list:" === ""
+"Theme name:" === ""
+"Use board textures" === ""
+"Light-square texture:" === ""
+"Dark-square texture:" === ""
+"Dark reorientation mode:" === ""
+"Light reorientation mode:" === ""
+"Draw border around board" === ""
+"Optional border bitmap:" === ""
+"        Beware: a specified piece font will prevail over piece bitmaps" === ""
+"Directory with piece bitmaps:" === ""
+"Use piece font" === ""
+"Font size (%):" === ""
+"Font name:" === ""
+"Font piece to char:" === ""
+"Delete Theme" === ""
+"Select single theme from the group" === ""
+
+# book.c
+
+"Could not create book" === ""
+"Polyglot book not valid" === ""
+"Hash keys are different" === ""
+"Book Fault" === ""
+"Book file exists! Try again for overwrite." === ""
+
+# NEW MENU ITEMS IN 4.7
+
+"Save Games to Book" === ""
+"Colo&rs..." === ""
+"&Board Themes..." === ""
+

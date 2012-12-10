@@ -574,7 +574,7 @@ ReadFromBookFile (int moveNr, char *book, entry_t entries[])
 	f = fopen(book,"rb");
     }
     if(!f){
-	DisplayError("Polyglot book not valid", 0);
+	DisplayError(_("Polyglot book not valid"), 0);
 	appData.usePolyglotBook = FALSE;
 	return -1;
     }
@@ -995,5 +995,5 @@ FlushBook ()
 //	    entry.learnCount  = 0;
 	    entry_to_file(f, &entry);
 	}
-    } else DisplayError("Could not create book", 0);
+    } else DisplayError(_("Could not create book"), 0);
 }

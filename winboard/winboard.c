@@ -296,7 +296,7 @@ int dialogItems[][42] = {
   OPT_ChooseTellColor, OPT_ChooseChallengeColor, OPT_ChooseRequestColor,
   OPT_ChooseSeekColor, OPT_ChooseNormalColor, OPT_ChooseBackgroundColor,
   OPT_DefaultColors, OPT_DontColorize, IDC_Boxes, GPB_Colors, GPB_Premove,
-  GPB_General, GPB_Alarm }, 
+  GPB_General, GPB_Alarm, OPT_AutoCreate }, 
 { DLG_BoardOptions, IDOK, IDCANCEL, OPT_SizeTiny, OPT_SizeTeeny, OPT_SizeDinky,
   OPT_SizePetite, OPT_SizeSlim, OPT_SizeSmall, OPT_SizeMediocre, OPT_SizeMiddling,
   OPT_SizeAverage, OPT_SizeModerate, OPT_SizeMedium, OPT_SizeBulky, OPT_SizeLarge,
@@ -1279,6 +1279,7 @@ ParseFontName(char *name, MyFontParams *mfp)
     p = q + 1;
   } else {
     q = mfp->faceName;
+
     while (*p && !isdigit(*p)) {
       *q++ = *p++;
       if (q - mfp->faceName >= sizeof(mfp->faceName))
