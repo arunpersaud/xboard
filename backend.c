@@ -7614,6 +7614,9 @@ MatingPotential (int pCnt[], int side, int nMine, int nHis, int stale, int bisCo
 		        || majors + (12*pCnt[BlackFerz-side] | 6*pCnt[BlackAlfil-side]) > 16; // KCKAA, KCKAX, KCKEEX, KCKEXX (XX!=HH), KCKXXX
 		// TO DO: cases wih an unpromoted f-Pawn acting as platform for an opponent Cannon
 
+	} else if(v == VariantKnightmate) {
+		if(nMine == 1) return FALSE;
+		if(nMine == 2 && nHis == 1 && pCnt[WhiteBishop+side] + pCnt[WhiteFerz+side] + pCnt[WhiteKnight+side]) return FALSE; // KBK is only draw
 	} else if(pCnt[WhiteKing] == 1 && pCnt[BlackKing] == 1) { // other variants with orthodox Kings
 		int nBishops = pCnt[WhiteBishop+side] + pCnt[WhiteFerz+side];
 
