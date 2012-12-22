@@ -7130,7 +7130,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	return;
       }
       doubleClick = FALSE;
-      if(gameMode == AnalyzeMode && pausing && first.excludeMoves) { // use pause state to exclude moves
+      if(gameMode == AnalyzeMode && (pausing || controlKey) && first.excludeMoves) { // use pause state to exclude moves
 	doubleClick = TRUE; gatingPiece = boards[currentMove][y][x];
       }
       fromX = x; fromY = y; toX = toY = -1;
