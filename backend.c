@@ -7666,7 +7666,7 @@ Adjudicate (ChessProgramState *cps)
 	//       In any case it determnes if the game is a claimable draw (filling in EP_STATUS).
 	//       Actually ending the game is now based on the additional internal condition canAdjudicate.
 	//       Only when the game is ended, and the opponent is a computer, this opponent gets the move relayed.
-	int k, count = 0; static int bare = 1;
+	int k, drop, count = 0; static int bare = 1;
 	ChessProgramState *engineOpponent = (gameMode == TwoMachinesPlay ? cps->other : (cps ? NULL : &first));
 	Boolean canAdjudicate = !appData.icsActive;
 
@@ -7821,10 +7821,12 @@ Adjudicate (ChessProgramState *cps)
 
                 /* Check for rep-draws */
                 count = 0;
+                drop = gameInfo.holdingsSize && (gameInfo.variant != VariantSuper && gameInfo.variant != VariantSChess
+                                              && gameInfo.variant != VariantGreat && gameInfo.variant != VariantGrand);
                 for(k = forwardMostMove-2;
-                    k>=backwardMostMove && k>=forwardMostMove-100 &&
+                    k>=backwardMostMove && k>=forwardMostMove-100 && (drop ||
                         (signed char)boards[k][EP_STATUS] < EP_UNKNOWN &&
-                        (signed char)boards[k+2][EP_STATUS] <= EP_NONE && (signed char)boards[k+1][EP_STATUS] <= EP_NONE;
+                        (signed char)boards[k+2][EP_STATUS] <= EP_NONE && (signed char)boards[k+1][EP_STATUS] <= EP_NONE);
                     k-=2)
                 {   int rights=0;
                     if(CompareBoards(boards[k], boards[forwardMostMove])) {
