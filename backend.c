@@ -13438,7 +13438,7 @@ PauseEvent ()
 	    Reset(FALSE, TRUE);
 	    SendToICS(ics_prefix);
 	    SendToICS("refresh\n");
-	} else if (currentMove < forwardMostMove) {
+	} else if (currentMove < forwardMostMove && gameMode != AnalyzeMode) {
 	    ForwardInner(forwardMostMove);
 	}
 	pauseExamInvalid = FALSE;
