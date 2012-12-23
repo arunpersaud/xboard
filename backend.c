@@ -10668,6 +10668,9 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 		    && lastSavedGame != GameCheckSum() // [HGM] save: suppress duplicates
 								) {
 		    if (*appData.saveGameFile != NULLCHAR) {
+			if(result == GameUnfinished && matchMode && *appData.tourneyFile)
+			    AutoSaveGame(); // [HGM] protect tourney PGN from aborted games, and prompt for name instead
+			else
 			SaveGameToFile(appData.saveGameFile, TRUE);
 		    } else if (appData.autoSaveGames) {
 			AutoSaveGame();
