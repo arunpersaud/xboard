@@ -10063,7 +10063,15 @@ WriteTourneyFile (char *results, FILE *f)
 	fprintf(f, "-loadPositionFile \"%s\"\n", appData.loadPositionFile);
 	fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
 	fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
+	fprintf(f, "-usePolyglotBook %s\n", appData.usePolyglotBook ? "true" : "false");
+	fprintf(f, "-polyglotBook %s\n", appData.polyglotBook);
+	fprintf(f, "-bookDepth %d\n", appData.bookDepth);
+	fprintf(f, "-bookVariation %d\n", appData.bookStrength);
 	fprintf(f, "-discourageOwnBooks %s\n", appData.defNoBook ? "true" : "false");
+	fprintf(f, "-defaultHashSize %d\n", appData.defaultHashSize);
+	fprintf(f, "-defaultCacheSizeEGTB %d\n", appData.defaultCacheSizeEGTB);
+	fprintf(f, "-ponderNextMove %s\n", appData.ponderNextMove ? "true" : "false");
+	fprintf(f, "-smpCores %d\n", appData.smpCores);
 	if(searchTime > 0)
 		fprintf(f, "-searchTime \"%d:%02d\"\n", searchTime/60, searchTime%60);
 	else {
