@@ -786,6 +786,7 @@ InitEngine (ChessProgramState *cps, int n)
     cps->analysisSupport = 2; /* detect */
     cps->analyzing = FALSE;
     cps->initDone = FALSE;
+    cps->reload = FALSE;
 
     /* New features added by Tord: */
     cps->useFEN960 = FALSE;
@@ -9941,6 +9942,33 @@ InitChessProgram (ChessProgramState *cps, int setup)
 
 
 void
+ResendOptions (ChessProgramState *cps)
+{ // send the stored value of the options
+  int i;
+  char buf[MSG_SIZ];
+  Option *opt = cps->option;
+  for(i=0; i<cps->nrOptions; i++, opt++) {
+      switch(opt->type) {
+        case Spin:
+        case Slider:
+        case CheckBox:
+	    snprintf(buf, MSG_SIZ, "option %s=%d\n", opt->name, opt->value);
+          break;
+        case ComboBox:
+          snprintf(buf, MSG_SIZ, "option %s=%s\n", opt->name, opt->choice[opt->value]);
+          break;
+        default:
+	    snprintf(buf, MSG_SIZ, "option %s=%s\n", opt->name, opt->textValue);
+          break;
+        case Button:
+        case SaveButton:
+          continue;
+      }
+      SendToProgram(buf, cps);
+  }
+}
+
+void
 StartChessProgram (ChessProgramState *cps)
 {
     char buf[MSG_SIZ];
@@ -9980,9 +10008,12 @@ StartChessProgram (ChessProgramState *cps)
     cps->isr = AddInputSource(cps->pr, TRUE, ReceiveFromProgram, cps);
     if (cps->protocolVersion > 1) {
       snprintf(buf, MSG_SIZ, "xboard\nprotover %d\n", cps->protocolVersion);
-      cps->nrOptions = 0; // [HGM] options: clear all engine-specific options
-      cps->comboCnt = 0;  //                and values of combo boxes
+      if(!cps->reload) { // do not clear options when reloading because of -xreuse
+        cps->nrOptions = 0; // [HGM] options: clear all engine-specific options
+        cps->comboCnt = 0;  //                and values of combo boxes
+      }
       SendToProgram(buf, cps);
+      if(cps->reload) ResendOptions(cps);
     } else {
       SendToProgram("xboard\n", cps);
     }
@@ -10807,6 +10838,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	    SendToProgram("quit\n", &first);
             DoSleep( appData.delayAfterQuit );
 	    DestroyChildProcess(first.pr, first.useSigterm);
+	    first.reload = TRUE;
 	}
 	first.pr = NoProc;
     }
@@ -10832,6 +10864,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	    SendToProgram("quit\n", &second);
             DoSleep( appData.delayAfterQuit );
 	    DestroyChildProcess(second.pr, second.useSigterm);
+	    second.reload = TRUE;
 	}
 	second.pr = NoProc;
     }
@@ -15994,6 +16027,7 @@ FeatureDone (ChessProgramState *cps, int val)
     ScheduleDelayedEvent(cb, val ? 1 : 3600000);
   }
   cps->initDone = val;
+  if(val) cps->reload = FALSE;
 }
 
 /* Parse feature command from engine */
@@ -16056,6 +16090,7 @@ ParseFeatures (char *args, ChessProgramState *cps)
     if (BoolFeature(&p, "smp", &cps->maxCores, cps)) continue;
     if (StringFeature(&p, "egt", cps->egtFormats, cps)) continue;
     if (StringFeature(&p, "option", buf, cps)) {
+	if(cps->reload) continue; // we are reloading because of xreuse
 	FREE(cps->option[cps->nrOptions].name);
 	cps->option[cps->nrOptions].name = malloc(MSG_SIZ);
 	safeStrCpy(cps->option[cps->nrOptions].name, buf, MSG_SIZ);

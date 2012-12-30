@@ -405,6 +405,7 @@ typedef struct XB_CPS {
     void *programLogo; /* [HGM] logo: bitmap of the logo                    */
     char *fenOverride; /* [HGM} FRC: force FEN casling & ep fields by hand  */
     char userError;    /* [HGM] crash: flag to suppress fatal-error messages*/
+    char reload;       /* [HGM] options: flag to resend options with xreuse */
 } ChessProgramState;
 
 extern ChessProgramState first, second;
