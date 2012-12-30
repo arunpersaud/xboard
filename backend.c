@@ -10632,6 +10632,10 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
                       resultDetails = buf;
                 }
                 /* (Claiming a loss is accepted no questions asked!) */
+	    } else if(matchMode && result == GameIsDrawn && !strcmp(resultDetails, "Engine Abort Request")) {
+		forwardMostMove = backwardMostMove; // [HGM] delete game to surpress saving
+		result = GameUnfinished;
+		if(!*appData.tourneyFile) matchGame--; // replay even in plain match
 	    }
 	    /* [HGM] bare: don't allow bare King to win */
 	    if((gameInfo.holdingsWidth == 0 || gameInfo.variant == VariantSuper
