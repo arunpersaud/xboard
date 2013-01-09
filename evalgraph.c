@@ -5,7 +5,7 @@
  *
  * Copyright 2005 Alessandro Scotti
  *
- * Enhancments Copyright 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
+ * Enhancments Copyright 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
  *
  * ------------------------------------------------------------------------
  *

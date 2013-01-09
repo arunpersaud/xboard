@@ -1,7 +1,7 @@
 dnl| configure.in
 dnl|
 dnl| Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006, 2007,
-dnl| 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
+dnl| 2008, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
 dnl|
 dnl| GNU XBoard is free software: you can redistribute it and/or modify
 dnl| it under the terms of the GNU General Public License as published by

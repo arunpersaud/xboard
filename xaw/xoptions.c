@@ -1,7 +1,7 @@
 /*
  * xoptions.c -- Move list window, part of X front end for XBoard
  *
- * Copyright 2000, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
+ * Copyright 2000, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
