@@ -74,4 +74,3 @@ float Color P((char *col, int n));
 
 // defined in xoptions.c
 void GraphExpose P((Option *opt, int x, int y, int w, int h));
-

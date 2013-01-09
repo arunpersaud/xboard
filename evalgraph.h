@@ -55,4 +55,3 @@ void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move *
 extern int GetMoveIndexFromPoint( int x, int y );
 extern void PaintEvalGraph( void );
 extern char *MakeEvalTitle( char *title );
-

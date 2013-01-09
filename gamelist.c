@@ -672,4 +672,3 @@ GLT_ParseList ()
 	idx++;
     } while( id != '\0' );
 }
-

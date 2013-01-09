@@ -111,7 +111,7 @@ InsertIntoMemo (int which, char * text, int where)
 {
     char *p;
     GtkTextIter start;
- 
+
     /* the backend adds \r\n, which is needed for winboard,
      * for xboard we delete them again over here */
     if(p = strchr(text, '\r')) *p = ' ';
@@ -135,4 +135,3 @@ ResizeWindowControls (int mode)
     if(mode) gtk_widget_show(engoutOptions[13].handle);
     else     gtk_widget_hide(engoutOptions[13].handle);
 }
-

@@ -358,7 +358,7 @@ SaveGameListAsText (FILE *f)
 
     /* Copy the list into the global memory block */
     if( f != NULL ) {
- 
+
         lg = (ListGame *) gameList.head;
 
         for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){
@@ -375,4 +375,3 @@ SaveGameListAsText (FILE *f)
     }
     return False;
 }
-

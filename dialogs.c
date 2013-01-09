@@ -606,7 +606,7 @@ IcsOptionsProc ()
 
 //-------------------------------------------- Load Game Options ---------------------------------
 
-static char *modeNames[] = { N_("Exact position match"), N_("Shown position is subset"), N_("Same material with exactly same Pawn chain"), 
+static char *modeNames[] = { N_("Exact position match"), N_("Shown position is subset"), N_("Same material with exactly same Pawn chain"),
 		      N_("Same material"), N_("Material range (top board half optional)"), N_("Material difference (optional stuff balanced)"), NULL };
 static char *modeValues[] = { "1", "2", "3", "4", "5", "6" };
 static char *searchMode;
@@ -1127,7 +1127,7 @@ NextInHistory ()
 {
   if (histP == histIn) return NULL;
   histP = (histP + 1) % HISTORY_SIZE;
-  return history[histP];   
+  return history[histP];
 }
 // end of borrowed code
 
@@ -1838,7 +1838,7 @@ ErrorPopUp (char *title, char *label, int modal)
 {
     errorUp = True;
     errorOptions[1].name = label;
-    if(dialogError = shellUp[TransientDlg]) 
+    if(dialogError = shellUp[TransientDlg])
 	GenericPopUp(errorOptions+1, title, FatalDlg, TransientDlg, MODAL, 0); // pop up as daughter of the transient dialog
     else
 	GenericPopUp(errorOptions+modal, title, modal ? FatalDlg: ErrorDlg, BoardWindow, modal, 0); // kludge: option start address indicates modality
@@ -2009,7 +2009,7 @@ DisplayLogos (Option *w1, Option *w2)
 {
 	void *whiteLogo = first.programLogo, *blackLogo = second.programLogo;
 	if(appData.autoLogo) {
-	  
+
 	  switch(gameMode) { // pick logos based on game mode
 	    case IcsObserving:
 		whiteLogo = second.programLogo; // ICS logo
@@ -2116,7 +2116,7 @@ SizeKludge (int n)
     int w = width - 44 - mainOptions[n].min;
     mainOptions[W_TITLE].max = w; // width left behind menu bar
     if(w < 0.4*width) // if no reasonable amount of space for title, force small layout
-	mainOptions[W_SMALL].type = mainOptions[W_TITLE].type, mainOptions[W_TITLE].type = -1; 
+	mainOptions[W_SMALL].type = mainOptions[W_TITLE].type, mainOptions[W_TITLE].type = -1;
 }
 
 void
@@ -2588,4 +2588,3 @@ Col2Text (int n)
 {
     return NULL;
 }
-

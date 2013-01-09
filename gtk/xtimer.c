@@ -235,5 +235,3 @@ StartClockTimer (long millisec)
 {
     clockTimerTag = g_timeout_add(millisec,(GSourceFunc) ClockTimerCallback,NULL);
 }
-
-

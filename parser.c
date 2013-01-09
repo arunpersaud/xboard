@@ -151,7 +151,7 @@ PromoSuffix (char **p)
 {
     char *start = *p;
     if(**p == 'e' && (Match("ep", p) || Match("e.p.", p))) { *p = start; return NULLCHAR; } // non-compliant e.p. suffix is no promoChar!
-    if(**p == '+' && gameInfo.variant == VariantShogi) { (*p)++; return '+'; } 
+    if(**p == '+' && gameInfo.variant == VariantShogi) { (*p)++; return '+'; }
     if(**p == '=' || (gameInfo.variant == VariantSChess) && **p == '/') (*p)++; // optional = (or / for Seirawan gating)
     if(**p == '(' && (*p)[2] == ')' && isalpha( (*p)[1] )) { (*p) += 3; return ToLower((*p)[-2]); }
     if(isalpha(**p)) return ToLower(*(*p)++);
@@ -222,7 +222,7 @@ NextUnit (char **p)
 	}
 	// we always get here; move must be completely read now, with to-square coord(s) at end
 	if(n == 3) { // incomplete to-square. Could be Xiangqi traditional, or stuff like fxg
-	    if(piece && type[1] == NOTHING && type[0] == NUMERIC && type[2] == NUMERIC && 
+	    if(piece && type[1] == NOTHING && type[0] == NUMERIC && type[2] == NUMERIC &&
 		(separator == '+' || separator == '=' || separator == '-')) {
 		     // Xiangqi traditional
 
@@ -334,7 +334,7 @@ badMove:// we failed to find algebraic move
 	if(**p == '[') {
 	    oldp = ++(*p);
 	    if(Match("--", p)) { // "[--" could be start of position diagram
-		if(!Scan(']', p) && (*p)[-3] == '-' && (*p)[-2] == '-') return PositionDiagram; 
+		if(!Scan(']', p) && (*p)[-3] == '-' && (*p)[-2] == '-') return PositionDiagram;
 		*p = oldp;
 	    }
 	    SkipWhite(p);
@@ -355,7 +355,7 @@ badMove:// we failed to find algebraic move
 	// ********* SAN Castings *************************************
 	if(**p == 'O' || **p == 'o' || **p == '0') {
 	    int castlingType = 0;
-	    if(Match("O-O-O", p) || Match("o-o-o", p) || Match("0-0-0", p) || 
+	    if(Match("O-O-O", p) || Match("o-o-o", p) || Match("0-0-0", p) ||
 	       Match("OOO", p) || Match("ooo", p) || Match("000", p)) castlingType = 2;
 	    else if(Match("O-O", p) || Match("o-o", p) || Match("0-0", p) ||
 		    Match("OO", p) || Match("oo", p) || Match("00", p)) castlingType = 1;

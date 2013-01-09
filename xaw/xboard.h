@@ -174,4 +174,3 @@ extern int savedIndex;
 
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */
-

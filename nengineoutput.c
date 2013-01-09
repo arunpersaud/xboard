@@ -192,4 +192,3 @@ EngineOutputProc ()
 {
   if (!PopDown(EngOutDlg)) EngineOutputPopUp();
 }
-

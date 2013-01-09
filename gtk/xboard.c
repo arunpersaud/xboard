@@ -1565,7 +1565,7 @@ ModeHighlight ()
 	  /* Always toggle, don't set.  Previous code messes up when
 	     invoked while the button is pressed, as releasing it
 	     toggles the state again. */
-	    GdkColor color;     
+	    GdkColor color;
             gdk_color_parse( pausing ? "#808080" : "#F0F0F0", &color );
             gtk_widget_modify_bg ( GTK_WIDGET(optList[W_PAUSE].handle), GTK_STATE_NORMAL, &color );
 	}
@@ -1618,7 +1618,7 @@ void CopyFileToClipboard(gchar *filename)
       return;
     }
     selection_tmp[len] = NULLCHAR; // file is now in selection_tmp
-    
+
     // copy selection_tmp to clipboard
     GdkDisplay *gdisp = gdk_display_get_default();
     if (!gdisp) {
@@ -1627,7 +1627,7 @@ void CopyFileToClipboard(gchar *filename)
     }
     cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
     gtk_clipboard_set_text(cb, selection_tmp, -1);
-    g_free(selection_tmp);    
+    g_free(selection_tmp);
 }
 
 void
@@ -1649,9 +1649,9 @@ PastePositionProc ()
     gchar *fenstr;
 
     if (gdisp == NULL) return;
-    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);    
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
     fenstr = gtk_clipboard_wait_for_text(cb);
-    if (fenstr==NULL) return; // nothing had been selected to copy  
+    if (fenstr==NULL) return; // nothing had been selected to copy
     EditPositionPasteFEN(fenstr);
     return;
 }
@@ -1667,14 +1667,14 @@ PasteGameProc ()
     // get game from clipboard
     GdkDisplay *gdisp = gdk_display_get_default();
     if (gdisp == NULL) return;
-    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);    
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
     text = gtk_clipboard_wait_for_text(cb);
-    if (text == NULL) return; // nothing to paste  
+    if (text == NULL) return; // nothing to paste
     len = strlen(text);
 
     // write to temp file
     if (text == NULL || len == 0) {
-      return; //nothing to paste 
+      return; //nothing to paste
     }
     f = fopen(gamePasteFilename, "w");
     if (f == NULL) {
@@ -1684,7 +1684,7 @@ PasteGameProc ()
     fwrite(text, 1, len, f);
     fclose(f);
 
-    // load from file 
+    // load from file
     LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
     return;
 }
@@ -1710,7 +1710,7 @@ void MoveTypeInProc(eventkey)
 
     buf[0]=eventkey->keyval;
     buf[1]='\0';
-    if (*buf >= 32)        
+    if (*buf >= 32)
 	BoxAutoPopUp (buf);
 }
 
@@ -2160,4 +2160,3 @@ void FileNamePopUpGTK(label, def, filter, proc, pathFlag, openMode, name, fp)
   return;
 
 }
-

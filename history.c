@@ -21,7 +21,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/. 
+ * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  * ------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
@@ -79,7 +79,7 @@ OnlyCurrentPositionChanged ()
 
     if( lastFirst >= 0 &&
         lastLast >= lastFirst &&
-        lastCurrent >= lastFirst && 
+        lastCurrent >= lastFirst &&
         currFirst == lastFirst &&
         currLast == lastLast &&
         currCurrent >= 0 &&
@@ -145,7 +145,7 @@ AppendMoveToMemo (int index)
 
     /* PV info (if any) */
     if( appData.showEvalInMoveHistory && currPvInfo[index].depth > 0 ) {
-        sprintf( buf, "{%s%.2f/%d} ", 
+        sprintf( buf, "{%s%.2f/%d} ",
             currPvInfo[index].score >= 0 ? "+" : "",
             currPvInfo[index].score / 100.0,
             currPvInfo[index].depth );
@@ -172,7 +172,7 @@ static void
 DoHighlight (int index, int onoff)
 {
     if( index >= 0 && index < MAX_MOVES ) {
-        HighlightMove( histMoves[index].memoOffset, 
+        HighlightMove( histMoves[index].memoOffset,
             histMoves[index].memoOffset + histMoves[index].memoLength, onoff );
     }
 }
@@ -255,4 +255,3 @@ MoveHistorySet (char movelist[][2*MOVE_LEN], int first, int last, int current, C
     if(MoveHistoryDialogExists())
         UpdateMoveHistory(); // [HGM] call this directly, in stead of through call-back
 }
-

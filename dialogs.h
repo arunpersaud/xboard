@@ -87,14 +87,14 @@
 #define W_WHITE 12
 #define W_BLACK 13
 #define W_SMALL 15  // title in small layout
-#define W_MESSG 16 
+#define W_MESSG 16
 #define W_BUTTON 17 // button bar
 #define W_PAUSE 20
 #define W_BOARD 24
 #define W_MENUW 25
 #define W_MENUB 26
 #define W_DROP  27  // drop (popup) menu
- 
+
 typedef enum {  // identifier of dialogs done by GenericPopup
 TransientDlg=0, // transient: grabs mouse events and is destroyed at pop-down (so other dialog can use this ID next time)
 CommentDlg, TagsDlg, TextMenuDlg, InputBoxDlg, ChatDlg, DummyDlg, HistoryDlg, // persistent: no grab and reused
@@ -191,4 +191,3 @@ void SendString P((char *p));
 // in ngamelist.c
 int GameListClicks P((int direction));
 void SetFilter P((void));
-

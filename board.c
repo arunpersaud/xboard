@@ -163,7 +163,7 @@ SetHighlights (int fromX, int fromY, int toX, int toY)
 	    drawHighlight(hi2X, hi2Y, 0);
 	}
     }
-    
+
     if(arrow) // there currently is an arrow displayed
 	ArrowDamage(hi1X, hi1Y, hi2X, hi2Y); // mark which squares it damaged
 
@@ -1242,5 +1242,3 @@ DrawArrowHighlight (int fromX, int fromY, int toX,int toY)
     if( IsDrawArrowEnabled() && fromX >= 0 && fromY >= 0 && toX >= 0 && toY >= 0)
         DrawArrowBetweenSquares(fromX, fromY, toX, toY);
 }
-
-

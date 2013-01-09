@@ -283,4 +283,3 @@ ResizeWindowControls (int mode)
 	XtSetValues(form2, args, j);
     }
 }
-

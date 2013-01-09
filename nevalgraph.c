@@ -187,4 +187,3 @@ EvalGraphSet (int first, int last, int current, ChessProgramStats_Move * pvInfo)
         DisplayEvalGraph();
     }
 }
-

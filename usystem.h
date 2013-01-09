@@ -73,4 +73,3 @@ char *ExpandPathName P((char *path));
 int  MySearchPath P((char *installDir, char *name, char *fullname));
 int  MyGetFullPathName P((char *name, char *fullname));
 void PlaySoundForColor P((ColorClass cc));
-

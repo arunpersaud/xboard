@@ -385,7 +385,7 @@ CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
     if(list[0] == NULL) return NULL; // avoid empty menus, as they cause crash
     menu = XtCreatePopupShell(opt->name, simpleMenuWidgetClass, parent, NULL, 0);
 
-    for (i=0; 1; i++) 
+    for (i=0; 1; i++)
       {
 	char *msg = fromList ? list[i] : mb[i].string;
 	if(!msg) break;
@@ -457,7 +457,7 @@ RaiseWindow (DialogClass dlg)
           SubstructureRedirectMask | SubstructureNotifyMask,
           &xev);
 
-    XFlush(xDisplay); 
+    XFlush(xDisplay);
     XSync(xDisplay, False);
 }
 
@@ -638,7 +638,7 @@ GenericCallback (Widget w, XtPointer client_data, XtPointer call_data)
     currentOption = dialogOptions[dlg=data>>16]; data &= 0xFFFF;
     oldSh = shells[dlg]; shells[dlg] = sh; // bow to reality
     if (data == 30000) { // cancel
-        PopDown(dlg); 
+        PopDown(dlg);
     } else
     if (data == 30001) { // save buttons imply OK
         if(GenericReadout(currentOption, -1)) PopDown(dlg); // calls OK-proc after full readout, but no popdown if it returns false
@@ -873,7 +873,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
 	    XtSetArg(args[j], XtNresizable, True);  j++;
 	    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
-	    XtSetArg(args[j], XtNstring, option[i].type==Spin || option[i].type==Fractional ? def : 
+	    XtSetArg(args[j], XtNstring, option[i].type==Spin || option[i].type==Fractional ? def :
 				engineDlg ? option[i].textValue : *(char**)option[i].target);  j++;
 	    edit = last;
 	    option[i].handle = (void*)
@@ -1234,4 +1234,3 @@ FileNamePopUpGTK(char *label, char *def, char *filter, FileProc proc, Boolean pa
 {
     Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, openName, openFP);
 }
-

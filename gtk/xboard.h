@@ -172,4 +172,3 @@ extern char *selected_fen_position;
 
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */
-

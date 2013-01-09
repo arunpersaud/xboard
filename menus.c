@@ -171,7 +171,7 @@ ReloadPositionProc ()
 }
 
 void
-LoadPositionProc() 
+LoadPositionProc()
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
@@ -359,7 +359,7 @@ AboutProc ()
 #else
     char *zippy = "";
 #endif
-    snprintf(buf, sizeof(buf), 
+    snprintf(buf, sizeof(buf),
 _("%s%s\n\n"
 "Copyright 1991 Digital Equipment Corporation\n"
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
@@ -1219,5 +1219,3 @@ InitMenuMarkers()
 	MarkMenuItem("Options.SaveSettingsonExit", True);
     }
 }
-
-

@@ -196,4 +196,3 @@ extern int firstEngineItem;
 
 #define OPTIONSDIALOG
 #define INFOFILE     "xboard.info"
-

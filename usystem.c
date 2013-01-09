@@ -1,5 +1,5 @@
 /*
- * usystem.c -- X-free, but Unix-like code for XBoard front end 
+ * usystem.c -- X-free, but Unix-like code for XBoard front end
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
  * Massachusetts.
@@ -572,7 +572,7 @@ OpenTCP (char *host, char *port, ProcRef *pr)
 	      host, port, gai_strerror(error));
       return ENOENT;
     }
-     
+
     for (ai = ais; ai != NULL; ai = ai->ai_next) {
       if ((s = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) < 0) {
 	error = errno;
@@ -790,5 +790,3 @@ NotifyFrontendLogin ()
 {
     update_ics_width();
 }
-
-

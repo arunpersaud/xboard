@@ -232,8 +232,8 @@ CreatePNGBoard (char *s, int kind)
 }
 
 char *pngPieceNames[] = // must be in same order as internal piece encoding
-{ "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner", 
-  "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "King", 
+{ "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
+  "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "King",
   "GoldKnight", "GoldLance", "GoldPawn", "GoldSilver", NULL
 };
 
@@ -921,5 +921,3 @@ DrawEvalText (char *buf, int cbBuf, int y)
   /* free memory */
   cairo_destroy (cr);
 }
-
-

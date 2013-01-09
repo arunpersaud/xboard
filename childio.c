@@ -1,8 +1,8 @@
 /*
- * childio.c -- set up communication with child processes 
+ * childio.c -- set up communication with child processes
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts. 
+ * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
  * 2007, 2008, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
@@ -133,7 +133,7 @@ PseudoTTY (char pty_name[])
     extern char *ptsname();
     char *ptss;
     int fd;
-    
+
     fd = open("/dev/ptmx", O_RDWR);
     if (fd < 0) return fd;
     if (grantpt(fd) == -1) return -1;

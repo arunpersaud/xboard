@@ -842,4 +842,3 @@ void DisplayError P((String message, int error));
 #define secondOptions     engOptions[1]
 
 #endif
-

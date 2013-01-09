@@ -115,4 +115,3 @@ SetFilterProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
     SetFilter();
 }
-

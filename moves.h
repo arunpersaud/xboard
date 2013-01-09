@@ -77,7 +77,7 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 #define F_IGNORE_CHECK 32
 #define F_KRIEGSPIEL_CAPTURE 64 /* pawns can try to capture invisible pieces */
 #define F_ATOMIC_CAPTURE 128    /* capturing piece explodes, destroying itself
-				   and all non-pawns on adjacent squares; 
+				   and all non-pawns on adjacent squares;
 				   destroying your own king is illegal */
 #define F_FRC_TYPE_CASTLING 256 /* generate castlings as captures of own Rook */
 #define F_MANDATORY_CAPTURE 0x200
@@ -107,7 +107,7 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 extern void GenPseudoLegal P((Board board, int flags,
 			      MoveCallback callback, VOIDSTAR closure, ChessSquare filter));
 
-/* Like GenPseudoLegal, but include castling moves and (unless 
+/* Like GenPseudoLegal, but include castling moves and (unless
    F_IGNORE_CHECK is set in the flags) omit moves that would leave the
    king in check.  The CASTLE_OK flags are true if castling is not yet
    ruled out by a move of the king or rook.  Return TRUE if the player
@@ -122,7 +122,7 @@ extern int GenLegal P((Board board, int flags,
    e.p. capture.  The possibility of castling out of a check along the
    back rank is not accounted for (i.e., we still return nonzero), as
    this is illegal anyway.  Return value is the number of times the
-   king is in check. */ 
+   king is in check. */
 extern int CheckTest P((Board board, int flags,
 			int rf, int ff, int rt, int ft, int enPassant));
 

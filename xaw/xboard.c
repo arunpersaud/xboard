@@ -2528,4 +2528,3 @@ UpdateLogos (int displ)
     if(displ) DisplayLogos(&optList[W_WHITE-1], &optList[W_BLACK+1]);
     return;
 }
-

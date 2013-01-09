@@ -2,7 +2,7 @@
  * book.c -- code for probing Polyglot opening books
  *
  * This code was first released in the public domain by Michel Van den Bergh.
- * The array Random64 is taken from the Polyglot source code. 
+ * The array Random64 is taken from the Polyglot source code.
  * I am pretty sure that a table of random numbers is never protected
  * by copyright.
  *
@@ -65,7 +65,7 @@ typedef unsigned short uint16;
 typedef unsigned int uint32;
 
 typedef struct {
-    uint64 key;	
+    uint64 key;
     uint16 move;
     uint16 weight;
     uint16 learnPoints;
@@ -358,7 +358,7 @@ hash (int moveNr)
     f = boards[moveNr][EP_STATUS];
     if(f >= 0 && f < 8){
         if(!WhiteOnMove(moveNr)){
-	    // the test for neighboring Pawns might not be needed, 
+	    // the test for neighboring Pawns might not be needed,
 	    // as epStatus already kept track of it, but better safe than sorry.
             if((f>0 && boards[moveNr][3][f-1]==BlackPawn)||
                (f<7 && boards[moveNr][3][f+1]==BlackPawn)){
@@ -515,7 +515,7 @@ move_to_string (char move_s[6], uint16 move)
 
     if(gameInfo.variant != VariantNormal) return;
 
-    // correct FRC-style castlings in variant normal. 
+    // correct FRC-style castlings in variant normal.
     // [HGM] This is buggy code! e1h1 could very well be a normal R or Q move.
     if(!strcmp(move_s,"e1h1")){
       safeStrCpy(move_s,"e1g1", 6);
@@ -567,7 +567,7 @@ ReadFromBookFile (int moveNr, char *book, entry_t entries[])
     static FILE *f = NULL;
     static char curBook[MSG_SIZ];
 
-    if(book == NULL) return -1; 
+    if(book == NULL) return -1;
     if(!f || strcmp(book, curBook)){ // keep book file open until book changed
 	strncpy(curBook, book, MSG_SIZ);
 	if(f) fclose(f);
@@ -665,14 +665,14 @@ MCprobe (moveNr)
 
 char
 *ProbeBook (int moveNr, char *book)
-{   // 
+{   //
     entry_t entries[MOVE_BUF];
     int count;
     int i, j;
     static char move_s[6];
     int total_weight;
 
-    if(moveNr >= 2*appData.bookDepth) return NULL; 
+    if(moveNr >= 2*appData.bookDepth) return NULL;
     if(mcMode) return MCprobe(moveNr);
 
     if((count = ReadFromBookFile(moveNr, book, entries)) <= 0) return NULL; // no book, or no hit

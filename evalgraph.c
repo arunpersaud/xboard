@@ -102,7 +102,7 @@ MakeEvalTitle (char *title)
 
     if( depth <=0 ) return title;
     if( currCurrent & 1 ) score = -score; /* Flip score for black */
-    snprintf(buf, MSG_SIZ, "%s {%d: %s%.2f/%-2d %d}", title, currCurrent/2+1, 
+    snprintf(buf, MSG_SIZ, "%s {%d: %s%.2f/%-2d %d}", title, currCurrent/2+1,
 				score>0 ? "+" : " ", score/100., depth, (currPvInfo[currCurrent].time+50)/100);
 
     return buf;
@@ -152,7 +152,7 @@ static void
 DrawAxis ()
 {
     int cy = nHeightPB / 2, space = nHeightPB/(6 + appData.zoom);
-    
+
     DrawAxisSegmentHoriz( +5, TRUE );
     DrawAxisSegmentHoriz( +3, space >= 20 );
     DrawAxisSegmentHoriz( +1, space >= 20 && space*appData.zoom >= 40 );

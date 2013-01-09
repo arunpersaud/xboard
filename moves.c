@@ -520,7 +520,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		  }
               if(gameInfo.variant == VariantSpartan) rookRange = 2; // in Spartan Chess restrict range to modern Dababba
               goto doRook;
-              
+
             /* Shogi Dragon King has to continue as Ferz after Rook moves */
             case SHOGI WhiteDragon:
             case SHOGI BlackDragon:
@@ -673,14 +673,14 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 			   rf, ff, rf + 1, ff, closure);
 	      for (s = -1; s <= 1; s += 2) {
 	          if (rf < BOARD_HEIGHT-1 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT && board[rf + 1][ff + s] == EmptySquare)
-		      callback(board, flags, 
+		      callback(board, flags,
 			       rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotion : NormalMove,
 			       rf, ff, rf + 1, ff + s, closure);
 	          if (rf == 1 && ff + 2*s >= BOARD_LEFT && ff + 2*s < BOARD_RGHT && board[3][ff + 2*s] == EmptySquare )
 		      callback(board, flags, NormalMove, rf, ff, 3, ff + 2*s, closure);
 	      }
 	      break;
-		
+
 	    case BlackLance:
 	      if(gameInfo.variant == VariantSuper) goto Amazon;
 	      if (rf > 0 && WhitePiece(board[rf - 1][ff]))
@@ -689,7 +689,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 			   rf, ff, rf - 1, ff, closure);
 	      for (s = -1; s <= 1; s += 2) {
 	          if (rf > 0 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT && board[rf - 1][ff + s] == EmptySquare)
-		      callback(board, flags, 
+		      callback(board, flags,
 			       rf <= promoRank ? BlackPromotion : NormalMove,
 			       rf, ff, rf - 1, ff + s, closure);
 	          if (rf == BOARD_HEIGHT-2 && ff + 2*s >= BOARD_LEFT && ff + 2*s < BOARD_RGHT && board[rf-2][ff + 2*s] == EmptySquare )
@@ -721,7 +721,7 @@ extern void GenLegalCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
 				VOIDSTAR closure));
 
-void 
+void
 GenLegalCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
     register GenLegalClosure *cl = (GenLegalClosure *) closure;
@@ -1104,7 +1104,7 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
     if(quickFlag) flags = flags & ~1 | quickFlag & 1; // [HGM] speed: in quick mode quickFlag specifies side-to-move.
     if(rf == DROP_RANK) return LegalDrop(board, flags, ff, rt, ft);
     piece = filterPiece = board[rf][ff];
-    if(PieceToChar(piece) == '~') filterPiece = DEMOTED piece; 
+    if(PieceToChar(piece) == '~') filterPiece = DEMOTED piece;
 
     /* [HGM] Cobra and Falcon are wildcard pieces; consider all their moves legal */
     /* (perhaps we should disallow moves that obviously leave us in check?)              */
@@ -1383,7 +1383,7 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
                          piece == WhiteKnight && closure->rt > BOARD_HEIGHT-3) /* promotion mandatory */
                        closure->kind = c == '=' ? IllegalMove : WhitePromotion;
                     else /* promotion optional, default is defer */
-                       closure->kind = c == '+' ? WhitePromotion : WhiteNonPromotion; 
+                       closure->kind = c == '+' ? WhitePromotion : WhiteNonPromotion;
                 } else closure->kind = c == '+' ? IllegalMove : NormalMove;
             } else {
                 if( (int) piece < (int) BlackWazir && (closure->rf < BOARD_HEIGHT/3 || closure->rt < BOARD_HEIGHT/3) ) {
@@ -1629,7 +1629,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
             /* [HGM] in Shogi non-pawns can promote */
             *outp++ = promoChar; // Don't bother to correct move type, return value is never used!
         }
-        else if (gameInfo.variant != VariantSuper && promoChar && 
+        else if (gameInfo.variant != VariantSuper && promoChar &&
                  (piece == WhiteLance || piece == BlackLance) ) { // Lance sometimes represents Pawn
             *outp++ = '=';
             *outp++ = ToUpper(promoChar);
@@ -1640,7 +1640,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
         }
 	*outp = NULLCHAR;
         return cl.kind;
-	
+
       case EmptySquare:
 	/* Moving a nonexistent piece */
 	break;
