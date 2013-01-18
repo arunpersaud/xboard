@@ -8465,7 +8465,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	  snprintf(buf1, sizeof(buf1), "%swhisper %s\n", ics_prefix, message + 11);
 	  SendToICS(buf1);
 	}
-      }
+      } else if(appData.autoComment) AppendComment (forwardMostMove, message + 11, 1); // in local mode, add as move comment
       return;
     }
     if (!strncmp(message, "tellall ", 8)) {
