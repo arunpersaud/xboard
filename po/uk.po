@@ -2,22 +2,21 @@
 # Copyright (C) 2011 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
 #
-# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012.
+# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard-4.6.0.20120304\n"
+"Project-Id-Version: GNU xboard-4.6.0.20121211\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2012-12-11 22:25-0800\n"
-"PO-Revision-Date: 2012-03-05 21:55+0200\n"
+"PO-Revision-Date: 2013-01-18 15:02+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.2\n"
-"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
-"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Lokalize 1.4\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: args.h:810
 #, c-format
@@ -175,9 +174,7 @@ msgstr "Робота режиму гри комп’ютером білими р
 
 #: backend.c:1677
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
-"Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено "
-"шаховий рушій"
+msgstr "Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено шаховий рушій"
 
 #: backend.c:1682
 msgid "TwoMachines mode does not work with ICS mode"
@@ -265,8 +262,7 @@ msgstr ""
 
 #: backend.c:4237 backend.c:9713
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
+msgstr "Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
 
 #: backend.c:4356
 msgid "Error gathering move list: extra board"
@@ -288,8 +284,7 @@ msgstr "Ця дія неможлива у режимі гри або спост�
 
 #: backend.c:6010
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
-"Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
+msgstr "Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
 
 #: backend.c:6472
 msgid "You are playing Black"
@@ -354,8 +349,7 @@ msgstr "У %s не передбачено аналізу"
 #: backend.c:8624
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
-"Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
+msgstr "Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
 
 #: backend.c:8651
 #, c-format
@@ -453,9 +447,9 @@ msgid "You can only change one engine at the time"
 msgstr "Одночасно змінювати можна лише один рушій"
 
 #: backend.c:10144
-#, fuzzy, c-format
+#, c-format
 msgid "No engine %s is installed"
-msgstr "Рушія з вказаною вами назвою не встановлено"
+msgstr "Не встановлено жодного рушія %s"
 
 #: backend.c:10164
 msgid ""
@@ -607,8 +601,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Повідомлення cmail не завантажено.\n"
-"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш "
-"хід."
+"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш хід."
 
 #: backend.c:13167
 msgid "No unfinished games"
@@ -744,7 +737,7 @@ msgstr "Попередження: ви ще вивчаєте гру"
 
 #: backend.c:14180
 msgid "Click clock to clear board"
-msgstr ""
+msgstr "Клацніть на годиннику, щоб спорожнити дошку"
 
 #: backend.c:14190
 msgid "Close ICS engine analyze..."
@@ -792,7 +785,7 @@ msgstr "Список гри не завантажено або цей списо
 
 #: backend.c:15129
 msgid "Book file exists! Try again for overwrite."
-msgstr ""
+msgstr "Файл книги вже існує! Повторіть спробу, щоб перезаписати його."
 
 #: backend.c:15602
 #, c-format
@@ -860,32 +853,28 @@ msgid "Hash keys are different"
 msgstr "Ключі хешів не збігаються"
 
 #: book.c:998
-#, fuzzy
 msgid "Could not create book"
-msgstr "Не вдалося обробити хід"
+msgstr "Не вдалося створити книгу"
 
 #: dialogs.c:259
-#, fuzzy
 msgid "Tournament file:          "
-msgstr "Файл турніру:"
+msgstr "Файл турніру:             "
 
 #: dialogs.c:260
 msgid "Sync after round"
-msgstr ""
+msgstr "Синхронізувати після рауду"
 
 #: dialogs.c:261
-#, fuzzy
 msgid "    (for concurrent playing of a single"
-msgstr "Синхронізація після раунду    (для одночасної гри окремого"
+msgstr "    (для одночасної гри окремого"
 
 #: dialogs.c:262
 msgid "Sync after cycle"
-msgstr ""
+msgstr "Синхронізувати після кола"
 
 #: dialogs.c:263
-#, fuzzy
 msgid "      tourney with multiple XBoards)"
-msgstr "Синхронізація після кола  турніру з декількома XBoard)"
+msgstr "      турніру з декількома XBoard)"
 
 #: dialogs.c:264
 msgid "Tourney participants:"
@@ -933,8 +922,7 @@ msgstr "Номер позиції (-1 або -2 = автоматичне збі�
 
 #: dialogs.c:282
 msgid "Rewind Index after this many Games (0 = never):"
-msgstr ""
-"Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
+msgstr "Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
 
 #: dialogs.c:283
 msgid "Disable own engine books by default"
@@ -958,7 +946,7 @@ msgstr "Спочатку вам слід вказати вже створени�
 
 #: dialogs.c:332 dialogs.c:1315
 msgid "# no engines are installed"
-msgstr ""
+msgstr "# не встановлено жодного рушія"
 
 #: dialogs.c:344
 msgid "Match Options"
@@ -1054,7 +1042,7 @@ msgstr "Перевіряти коректність"
 
 #: dialogs.c:386
 msgid "Top-Level Dialogs"
-msgstr ""
+msgstr "Вікна верхнього рівня"
 
 #: dialogs.c:387
 msgid "Flash Moves (0 = no flashing):"
@@ -1105,18 +1093,16 @@ msgid "no castle"
 msgstr "без тури"
 
 #: dialogs.c:416
-#, fuzzy
 msgid "cylinder *"
-msgstr "циліндричні"
+msgstr "циліндричні *"
 
 #: dialogs.c:417
 msgid "3-checks"
 msgstr "Три шахи"
 
 #: dialogs.c:418
-#, fuzzy
 msgid "berolina *"
-msgstr "бероліна"
+msgstr "бероліна *"
 
 #: dialogs.c:419
 msgid "atomic"
@@ -1216,7 +1202,7 @@ msgstr "сянці (9x10)"
 
 #: dialogs.c:446
 msgid " "
-msgstr ""
+msgstr " "
 
 #: dialogs.c:447
 msgid "courier (12x8)"
@@ -1230,7 +1216,7 @@ msgstr "Попередження: ця можливість не підтрим�
 #: dialogs.c:487
 #, c-format
 msgid "Only bughouse is not available in viewer mode"
-msgstr ""
+msgstr "У режимі перегляду недоступні лише шведські шахи"
 
 #: dialogs.c:488
 #, c-format
@@ -1238,6 +1224,8 @@ msgid ""
 "All variants not supported by first engine\n"
 "(currently %s) are disabled"
 msgstr ""
+"Всі варіанти, які не підтримуються першим рушієм\n"
+"(зараз це %s), вимкнено"
 
 #: dialogs.c:489
 msgid "New Variant"
@@ -1353,7 +1341,7 @@ msgstr "Автопідняття дошки"
 
 #: dialogs.c:572
 msgid "Auto-Create Logon Script"
-msgstr ""
+msgstr "Автостворення скрипту входу"
 
 #: dialogs.c:573
 msgid "Background Observe while Playing"
@@ -1793,12 +1781,11 @@ msgstr "Файл текстур темних клітинок:"
 
 #: dialogs.c:818
 msgid "Use external piece bitmaps with their own colors"
-msgstr ""
+msgstr "Зовнішні растрові зображення фігур з власними кольорами"
 
 #: dialogs.c:819
-#, fuzzy
 msgid "Directory with Pieces Images:"
-msgstr "Каталог bitmap фігур:"
+msgstr "Каталог з зображеннями фігур:"
 
 #: dialogs.c:869
 msgid "Board Options"
@@ -1866,8 +1853,7 @@ msgstr "Команда рушія:"
 
 #: dialogs.c:1281
 msgid "(Directory will be derived from engine path when empty)"
-msgstr ""
-"(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
+msgstr "(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
 
 #: dialogs.c:1282
 msgid "UCI"
@@ -1890,14 +1876,12 @@ msgid "Force current variant with this engine"
 msgstr "Примусово визначити поточний варіант для рушія"
 
 #: dialogs.c:1336
-#, fuzzy
 msgid "Load first engine"
-msgstr "Завантажити рушій"
+msgstr "Завантажити перший рушій"
 
 #: dialogs.c:1342
-#, fuzzy
 msgid "Load second engine"
-msgstr "Завантажити вказаний рушій як"
+msgstr "Завантажити другий рушій"
 
 #: dialogs.c:1365
 msgid "shuffle"
@@ -2026,11 +2010,11 @@ msgstr "Підвищити"
 
 #: dialogs.c:1611
 msgid "Chat partner:"
-msgstr ""
+msgstr "Співрозмовник:"
 
 #: dialogs.c:1696
 msgid "Chat box"
-msgstr ""
+msgstr "Панель спілкування"
 
 #: dialogs.c:1737
 msgid "factory"
@@ -2138,76 +2122,71 @@ msgstr "Довідка"
 
 #: dialogs.c:2085
 msgid "<<"
-msgstr ""
+msgstr "<<"
 
 #: dialogs.c:2086
 msgid "<"
-msgstr ""
+msgstr "<"
 
 #: dialogs.c:2088
 msgid ">"
-msgstr ""
+msgstr ">"
 
 #: dialogs.c:2089
 msgid ">>"
-msgstr ""
+msgstr ">>"
 
 #: dialogs.c:2358
-#, fuzzy
 msgid "Directories:"
-msgstr "Каталог звуків:"
+msgstr "Каталоги:"
 
 #: dialogs.c:2359
-#, fuzzy
 msgid "Files:"
-msgstr "Файл"
+msgstr "Файли:"
 
 #: dialogs.c:2360
 msgid "by name"
-msgstr ""
+msgstr "за назвою"
 
 #: dialogs.c:2361
 msgid "by type"
-msgstr ""
+msgstr "за типом"
 
 #: dialogs.c:2364
-#, fuzzy
 msgid "Filename:"
-msgstr "Фільтр:"
+msgstr "Назва файла:"
 
 #: dialogs.c:2365
-#, fuzzy
 msgid "New directory"
-msgstr "Каталог рушія:"
+msgstr "Новий каталог"
 
 #: dialogs.c:2366
-#, fuzzy
 msgid "File type:"
-msgstr "Фільтр:"
+msgstr "Тип файлів:"
 
 #: dialogs.c:2441
-#, fuzzy
 msgid "Contents of"
-msgstr "Коментарі"
+msgstr "Вміст"
 
 #: dialogs.c:2467
-#, fuzzy
 msgid " next page"
-msgstr "наступна сторінка"
+msgstr " наступна сторінка"
 
 #: dialogs.c:2489
 msgid "FIRST TYPE DIRECTORY NAME HERE"
-msgstr ""
+msgstr "СПОЧАТКУ ВКАЖІТЬ ТУТ НАЗВУ КАТАЛОГУ"
 
 #: dialogs.c:2490
 msgid "TRY ANOTHER NAME"
-msgstr ""
+msgstr "СПРОБУЙТЕ ІНШУ НАЗВУ"
 
 #: draw.c:298
 msgid ""
 "No default pieces installed\n"
 "Select your own -pieceImageDirectory"
 msgstr ""
+"Типових зображень фігур не встановлено.\n"
+"Вкажіть власні за допомогою параметра -pieceImageDirectory"
 
 #: engineoutput.c:107
 #, c-format
@@ -2244,9 +2223,7 @@ msgstr "Не вдалося відкрити файл «%s»\n"
 
 #: gtk/xboard.c:845 xaw/xboard.c:1114
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з "
-"більшими значеннями BOARD_RANKS або BOARD_FILES"
+msgstr "Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з більшими значеннями BOARD_RANKS або BOARD_FILES"
 
 #: gtk/xboard.c:864 xaw/xboard.c:1146
 #, c-format
@@ -2319,12 +2296,10 @@ msgid ""
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2335,13 +2310,10 @@ msgstr ""
 "© Free Software Foundation, 1992–2012\n"
 "© Alessandro Scotti, 2005\n"
 "\n"
-"%s є вільним програмним забезпеченням, його працездатність не гарантується. "
-"Докладніше про це у файлі COPYING.\n"
+"%s є вільним програмним забезпеченням, його працездатність не гарантується. Докладніше про це у файлі COPYING.\n"
 "\n"
-"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/"
-"xboard/\n"
-"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/"
-"software/xboard/whats_new.html\n"
+"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/xboard/\n"
+"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Надішліть повідомлення про ваду на адресу: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2387,9 +2359,8 @@ msgid "Save Position    Ctrl+Shift+S"
 msgstr "Зберегти позицію Ctrl+Shift+S"
 
 #: menus.c:596
-#, fuzzy
 msgid "Save Games as Book"
-msgstr "Зберігати ігри до файла:"
+msgstr "Зберегти ігри як книгу"
 
 #: menus.c:598
 msgid "Mail Move"
@@ -2501,7 +2472,7 @@ msgstr "Поле введення ICS"
 
 #: menus.c:642
 msgid "Open Chat Window"
-msgstr ""
+msgstr "Відкрити вікно спілкування"
 
 #: menus.c:644
 msgid "Board..."
@@ -2612,14 +2583,12 @@ msgid "Adjudicate Draw"
 msgstr "Визначити нічию"
 
 #: menus.c:687
-#, fuzzy
 msgid "Load New 1st Engine ..."
-msgstr "Завантажити новий рушій…"
+msgstr "Завантажити новий перший рушій…"
 
 #: menus.c:688
-#, fuzzy
 msgid "Load New 2nd Engine ..."
-msgstr "Завантажити новий рушій…"
+msgstr "Завантажити новий другий рушій…"
 
 #: menus.c:690
 msgid "Engine #1 Settings ..."
@@ -2766,14 +2735,12 @@ msgid "e-Mail Bug Report"
 msgstr "Надіслати звіт про ваду електронною поштою"
 
 #: nengineoutput.c:78 nengineoutput.c:85
-#, fuzzy
 msgid "engine name"
-msgstr "Рушій 1"
+msgstr "назва рушія"
 
 #: nengineoutput.c:80 nengineoutput.c:87
-#, fuzzy
 msgid "move"
-msgstr "ходів"
+msgstr "хід"
 
 #: nengineoutput.c:153
 msgid "Engine output"
@@ -2784,6 +2751,8 @@ msgid ""
 "Mismatch of STRIDE in nengineoutput.c\n"
 "Change and recompile!"
 msgstr ""
+"Невідповідність STRIDE у nengineoutput.c\n"
+"Змініть і зберіть програму знову!"
 
 #: nevalgraph.c:68
 msgid "Evaluation graph"
@@ -2791,7 +2760,7 @@ msgstr "Граф оцінки позиції"
 
 #: nevalgraph.c:105
 msgid "Eval"
-msgstr ""
+msgstr "Оцінка"
 
 #: ngamelist.c:87
 msgid "find position"
@@ -2799,16 +2768,15 @@ msgstr "знайти позицію"
 
 #: ngamelist.c:88
 msgid "narrow"
-msgstr ""
+msgstr "звуження"
 
 #: ngamelist.c:89
 msgid "thresholds"
 msgstr "порогові значення"
 
 #: ngamelist.c:90
-#, fuzzy
 msgid "tags"
-msgstr "Мітки"
+msgstr "мітки"
 
 #: ngamelist.c:91
 msgid "next"
@@ -2934,22 +2902,20 @@ msgstr "Гаразд"
 msgid "cancel"
 msgstr "скасувати"
 
-#~ msgid ""
-#~ "WARNING: variants with un-orthodox\n"
-#~ "pieces only have built-in bitmaps\n"
-#~ "for -boardSize middling, bulky and\n"
-#~ "petite, and substitute king or amazon\n"
-#~ "for missing bitmaps. (See manual.)"
-#~ msgstr ""
-#~ "УВАГА: для варіантів з неортодоксальними\n"
-#~ "фігурами використовуватимуться зображення\n"
-#~ "для -boardSize середнього, великого і\n"
-#~ "малого розмірів. Для фігур без зображень\n"
-#~ "буде використано зображення короля або\n"
-#~ "амазонки. (Див. підручник.)"
+#~ msgid "Browse"
+#~ msgstr "Вибрати"
 
-#~ msgid "Directory with Pixmap Pieces:"
-#~ msgstr "Каталог pixmap фігур:"
+#~ msgid "Filter on extensions:"
+#~ msgstr "Фільтр суфіксів:"
+
+#~ msgid "Pathname:"
+#~ msgstr "Назва шляху:"
+
+#~ msgid "XsraSelFile: can't get current directory"
+#~ msgstr "XsraSelFile: не вдалося отримати назву поточного каталогу"
+
+#~ msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
+#~ msgstr "%s: помилка у геометричних параметрах titleWidget — %d %d %d %d %d\n"
 
 #~ msgid "Error expanding path name \"%s\"\n"
 #~ msgstr "Помилка під час спроби розгортання адреси каталогу «%s»\n"
@@ -2963,6 +2929,9 @@ msgstr "скасувати"
 
 #~ msgid "Closest %s size: %d\n"
 #~ msgstr "Найближчий розмір %s: %d\n"
+
+#~ msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
+#~ msgstr "%s: помилка у геометричних параметрах messageWidget — %d %d %d %d %d\n"
 
 #~ msgid "%s: error loading XIM!\n"
 #~ msgstr "%s: помилка завантаження XIM!\n"
@@ -3018,8 +2987,7 @@ msgstr "скасувати"
 #~ msgstr "Некоректне растрове зображення у файлі %s"
 
 #~ msgid "Ran out of memory reading bitmap file %s"
-#~ msgstr ""
-#~ "Під час читання растрового зображення %s було вичерпано обсяг пам’яті"
+#~ msgstr "Під час читання растрового зображення %s було вичерпано обсяг пам’яті"
 
 #~ msgid "Unknown XReadBitmapFile error %d on file %s"
 #~ msgstr "Невідома помилка XReadBitmapFile %d під час обробки файла %s"
@@ -3028,29 +2996,7 @@ msgstr "скасувати"
 #~ msgstr "%s: %s… використовуємо вбудоване\n"
 
 #~ msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
-#~ msgstr ""
-#~ "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… "
-#~ "використовуємо вбудоване\n"
-
-#~ msgid "Browse"
-#~ msgstr "Вибрати"
-
-#~ msgid "Filter on extensions:"
-#~ msgstr "Фільтр суфіксів:"
-
-#~ msgid "Pathname:"
-#~ msgstr "Назва шляху:"
-
-#~ msgid "XsraSelFile: can't get current directory"
-#~ msgstr "XsraSelFile: не вдалося отримати назву поточного каталогу"
-
-#~ msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
-#~ msgstr ""
-#~ "%s: помилка у геометричних параметрах titleWidget — %d %d %d %d %d\n"
-
-#~ msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
-#~ msgstr ""
-#~ "%s: помилка у геометричних параметрах messageWidget — %d %d %d %d %d\n"
+#~ msgstr "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… використовуємо вбудоване\n"
 
 #~ msgid "----"
 #~ msgstr "----"
@@ -3082,6 +3028,9 @@ msgstr "скасувати"
 #~ msgid "This feature is experimental"
 #~ msgstr "Цю можливість ще не перевірено"
 
+#~ msgid "Filter:"
+#~ msgstr "Фільтр:"
+
 #~ msgid "filtertext"
 #~ msgstr "текст фільтрування"
 
@@ -3099,6 +3048,23 @@ msgstr "скасувати"
 
 #~ msgid "Second Engine"
 #~ msgstr "Другий рушій"
+
+#~ msgid ""
+#~ "WARNING: variants with un-orthodox\n"
+#~ "pieces only have built-in bitmaps\n"
+#~ "for -boardSize middling, bulky and\n"
+#~ "petite, and substitute king or amazon\n"
+#~ "for missing bitmaps. (See manual.)"
+#~ msgstr ""
+#~ "УВАГА: для варіантів з неортодоксальними\n"
+#~ "фігурами використовуватимуться зображення\n"
+#~ "для -boardSize середнього, великого і\n"
+#~ "малого розмірів. Для фігур без зображень\n"
+#~ "буде використано зображення короля або\n"
+#~ "амазонки. (Див. підручник.)"
+
+#~ msgid "Directory with Bitmap Pieces:"
+#~ msgstr "Каталог bitmap фігур:"
 
 #~ msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 #~ msgstr "Анімація ходів: фігура %d перестрибує з %d,%d до %d,%d \n"
@@ -3120,9 +3086,6 @@ msgstr "скасувати"
 
 #~ msgid "%s vs. %s (%d/%d%s)"
 #~ msgstr "%s проти %s (%d/%d%s)"
-
-#~ msgid "File to analyze"
-#~ msgstr "Файл для аналізу"
 
 #~ msgid "White "
 #~ msgstr "Білий "
