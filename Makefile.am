@@ -67,7 +67,7 @@ EXTRA_DIST = pixmaps shogi png sounds winboard \
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @CAIRO_CFLAGS@ @FRONTEND_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@ @CAIRO_CFLAGS@ @FRONTEND_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
 	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' $(headers)
 
 ACLOCAL_AMFLAGS = -I m4
