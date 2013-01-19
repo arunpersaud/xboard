@@ -1492,10 +1492,12 @@ DragProc ()
 	    busy = 0; return; // false alarm
 	}
 	ReSize(&wpNew);
-	if(shellUp[EngOutDlg]) CoDrag(shells[EngOutDlg], &wpEngineOutput);
-	if(shellUp[HistoryDlg]) CoDrag(shells[HistoryDlg], &wpMoveHistory);
-	if(shellUp[EvalGraphDlg]) CoDrag(shells[EvalGraphDlg], &wpEvalGraph);
-	if(shellUp[GameListDlg]) CoDrag(shells[GameListDlg], &wpGameList);
+	if(appData.useStickyWindows) {
+	    if(shellUp[EngOutDlg]) CoDrag(shells[EngOutDlg], &wpEngineOutput);
+	    if(shellUp[HistoryDlg]) CoDrag(shells[HistoryDlg], &wpMoveHistory);
+	    if(shellUp[EvalGraphDlg]) CoDrag(shells[EvalGraphDlg], &wpEvalGraph);
+	    if(shellUp[GameListDlg]) CoDrag(shells[GameListDlg], &wpGameList);
+        }
 	wpMain = wpNew;
 	DrawPosition(True, NULL);
 	if(delayedDragTag) g_source_remove(delayedDragTag);
@@ -1521,8 +1523,7 @@ EventProc (GtkWidget *widget, GdkEvent *event, gpointer g)
     wpNew.y = event->configure.y;
     wpNew.width  = event->configure.width;
     wpNew.height = event->configure.height;
-    if(appData.useStickyWindows)
-	DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
+    DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
     return FALSE;
 }
 
