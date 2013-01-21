@@ -1230,7 +1230,7 @@ HardSetFocus (Option *opt)
 }
 
 void
-FileNamePopUpGTK(char *label, char *def, char *filter, FileProc proc, Boolean pathFlag, char *openMode, char **openName, FILE **openFP)
+FileNamePopUpWrapper (char *label, char *def, char *filter, FileProc proc, Boolean pathFlag, char *openMode, char **openName, FILE **openFP)
 {
     Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, openName, openFP);
 }

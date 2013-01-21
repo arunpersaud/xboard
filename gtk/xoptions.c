@@ -427,7 +427,7 @@ CreateMenuPopup (Option *opt, int n, int def)
 	    if(mb[i].handle == RADIO) gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(entry), True);
 	  } else
 	    entry = gtk_menu_item_new_with_label(msg);
-	  gtk_signal_connect_object (GTK_OBJECT (entry), "activate", GTK_SIGNAL_FUNC(MenuSelect), (gpointer) (n<<16)+i);
+	  gtk_signal_connect_object (GTK_OBJECT (entry), "activate", GTK_SIGNAL_FUNC(MenuSelect), (gpointer) (intptr_t) ((n<<16)+i));
 	  gtk_widget_show(entry);
 	} else entry = gtk_separator_menu_item_new();
 	gtk_menu_append(GTK_MENU (menu), entry);
@@ -515,7 +515,7 @@ ShiftKeys ()
 static gboolean
 GameListEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 {
-    int n = (int) gdata;
+    int n = (intptr_t) gdata;
 
     if(n == 4) {
 	if(((GdkEventKey *) event)->keyval != GDK_Return) return FALSE;
@@ -612,7 +612,7 @@ AddHandler (Option *opt, DialogClass dlg, int nr)
       case 5: // game list
 	g_signal_connect(opt->handle, "button-press-event", G_CALLBACK (GameListEvent), (gpointer) 0 );
       case 4: // game-list filter
-	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (GameListEvent), (gpointer) nr );
+	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (GameListEvent), (gpointer) (intptr_t) nr );
 	break;
       case 6: // engine output (uses generic textview callback)
 	break;
@@ -1384,7 +1384,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
                 gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw), GTK_SHADOW_OUT);
 
                 if(option[i].textValue) // generic callback for double-clicking listbox item
-                    g_signal_connect(list, "button-press-event", G_CALLBACK(ListCallback), (gpointer) (dlgNr<<16 | i) );
+                    g_signal_connect(list, "button-press-event", G_CALLBACK(ListCallback), (gpointer) (intptr_t) (dlgNr<<16 | i) );
 
                 /* never has label, so let listbox occupy all columns */
                 Pack(hbox, table, sw, left, left+r, top, GTK_EXPAND);

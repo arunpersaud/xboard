@@ -168,7 +168,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     int boardWidth, boardHeight;
     static int oldWidth, oldHeight;
     static VariantClass oldVariant;
-    static int oldMono = -1, oldTwoBoards = 0;
+    static int oldTwoBoards = 0;
 
     if(!mainOptions[W_BOARD].handle) return;
 
@@ -199,11 +199,9 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 
     SelectPieces(gameInfo.variant);
 
-    oldMono = -10; // kludge to force recreation of animation masks
     oldVariant = gameInfo.variant;
   }
   CreateAnimVars();
-  oldMono = appData.monoMode;
 }
 
 void

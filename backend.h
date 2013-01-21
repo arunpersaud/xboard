@@ -96,6 +96,8 @@
 
 #include "lists.h"
 
+typedef int (*FileProc) P((FILE *f, int n, char *title));
+
 extern char *wbOptions;
 extern int gotPremove;
 extern GameMode gameMode;
@@ -114,6 +116,7 @@ extern Boolean bookUp;
 extern int tinyLayout, smallLayout;
 extern Boolean mcMode;
 
+void MarkMenuItem P((char *menuRef, int state));
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */
 char *PositionToFEN P((int move, char* useFEN960));

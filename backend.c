@@ -4180,9 +4180,13 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 void
 ParseBoard12 (char *string)
 {
+#if ZIPPY
+    int i, takeback;
+    char *bookHit = NULL; // [HGM] book
+#endif
     GameMode newGameMode;
-    int gamenum, newGame, newMove, relation, basetime, increment, ics_flip = 0, i;
-    int j, k, n, moveNum, white_stren, black_stren, white_time, black_time, takeback;
+    int gamenum, newGame, newMove, relation, basetime, increment, ics_flip = 0;
+    int j, k, n, moveNum, white_stren, black_stren, white_time, black_time;
     int double_push, castle_ws, castle_wl, castle_bs, castle_bl, irrev_count;
     char to_play, board_chars[200];
     char move_str[MSG_SIZ], str[MSG_SIZ], elapsed_time[MSG_SIZ];
@@ -4194,7 +4198,6 @@ ParseBoard12 (char *string)
     int fromX, fromY, toX, toY;
     char promoChar;
     int ranks=1, files=0; /* [HGM] ICS80: allow variable board size */
-    char *bookHit = NULL; // [HGM] book
     Boolean weird = FALSE, reqFlag = FALSE;
 
     fromX = fromY = toX = toY = -1;

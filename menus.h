@@ -52,7 +52,6 @@
 
 
 typedef void MenuProc P((void));
-typedef int (*FileProc) P((FILE *f, int n, char *title));
 
 typedef struct {
     char *string;
@@ -74,7 +73,6 @@ typedef struct {
 
 extern Menu menuBar[];
 
-void MarkMenuItem P((char *menuRef, int state));
 void ErrorPopUp P((char *title, char *text, int modal));
 void AppendEnginesToMenu P((char *list));
 void LoadGameProc P((void));

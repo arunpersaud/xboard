@@ -133,6 +133,7 @@ typedef struct {
 void NewTagsPopup P((char *text, char *msg));
 int AppendText P((Option *opt, char *s));
 void NewCommentPopup P((char *title, char *text, int index));
+void GetActualPlacement P((GtkWidget *shell, WindowPlacement *wp));
 #ifdef TODO_GTK
 void CatchDeleteWindow(Widget w, String procname);
 void GenericPopDown P((Widget w, XEvent *event, String *prms, Cardinal *nprms));

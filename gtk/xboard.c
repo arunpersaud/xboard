@@ -2061,7 +2061,7 @@ UpdateLogos (int displ)
     return;
 }
 
-void FileNamePopUpGTK(label, def, filter, proc, pathFlag, openMode, name, fp)
+void FileNamePopUpWrapper(label, def, filter, proc, pathFlag, openMode, name, fp)
      char *label;
      char *def;
      char *filter;

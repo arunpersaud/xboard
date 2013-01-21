@@ -164,7 +164,9 @@ void AddHandler  P((Option *opt, DialogClass dlg, int nr));
 void SendText P((int n));
 void DisplayLogos P((Option *left, Option *right));
 void Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
-			Boolean pathFlag, char *mode, char **name, FILE **fp));
+                       Boolean pathFlag, char *mode, char **name, FILE **fp));
+void FileNamePopUpWrapper P((char *label, char *def, char *filter, FileProc proc,
+                  Boolean pathFlag, char *openMode, char **openName, FILE **openFP));
 
 void InitDrawingParams P((int reload)); // in draw.c
 void InitDrawingHandle P((Option *opt));

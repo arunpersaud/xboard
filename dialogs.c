@@ -2568,14 +2568,7 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
 {
     fileProc = proc;		/* I can't see a way not */
     fileOpenMode = openMode;	/*   to use globals here */
-#ifdef TODO_GTK
-    {   // [HGM] use file-selector dialog stolen from Ghostview
-	// int index; // this is not supported yet
-	Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, &openName, &openFP);
-    }
-#else
-    FileNamePopUpGTK(label, def, filter, proc, False, openMode, &openName, &openFP);
-#endif
+    FileNamePopUpWrapper(label, def, filter, proc, False, openMode, &openName, &openFP);
 }
 
 void
