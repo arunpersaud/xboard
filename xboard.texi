@@ -145,6 +145,14 @@ like you entered all previous PV moves.
 As the display of the PV in that case starts after the first move
 a simple right-click will play the move the engine indicates.
 
+In Analysis mode you can also make a move by grabbing the piece
+with a double-click of the left mouse button
+(or while keeping the Ctrl key pressed).
+In this case the move you enter will not be played,
+but will be excluded from the analysis of the current position.
+(Or included if it was already excluded; it is a toggle.)
+This only works for engines that support this feature.
+
 When connected to an ICS, it is possible to call up a graphical
 representation of players seeking a game in stead of the chess board,
 when the latter is not in use
@@ -327,6 +335,19 @@ FEN (Forsythe-Edwards notation) format unless the @code{oldSaveStyle}
 option is true, in which case they are saved in an older,
 human-readable format that is specific to XBoard. Both formats
 can be read back by the @samp{Load Position} command.
+@item Save Games as Book
+@cindex Save Games as Book, Menu Item
+Creates an opening book from the currently loaded game file.
+The book will be saved on the file specified in the @samp{Common Engine}
+options dialog.
+The value of @samp{Book Depth} specified in that same dialog will 
+be used to determine how many moves of each game will be added to
+the internal book buffer.
+This command can take a long time to process,
+and the size of the buffer is currently limited.
+At the end the buffer will be saved as a Polyglot book,
+but the buffer will ot be cleared,
+so that you can continue adding games from other game files.
 @item Mail Move
 @itemx Reload CMail Message
 @cindex Mail Move, Menu Item
@@ -456,6 +477,8 @@ with @samp{?} (unknown value), or @samp{-} (inapplicable value).
 @cindex Edit Comment, Menu Item
 Adds or modifies a comment on the current position. Comments are
 saved by @samp{Save Game} and are displayed by @samp{Load Game},
+PGN variations will also be printed in this window,
+and can be promoted to main line by right-clicking them.
 @samp{Forward}, and @samp{Backward}.
 @item Edit Book
 @cindex Edit Book, Menu Item
@@ -592,6 +615,15 @@ But when the engine is in multi-variation mode this needs not always be true,
 and it is more convenient for someone analyzing games to see the moves sorted by score. 
 The order in which the engine found them is only of interest to the engine author, 
 and can still be deduced from the time or node count printed with the line.
+Right-clicking a line in this window, and then moving the mouse vertically with the
+right button kept down, will make XBoard play through the PV listed there.
+The use of the board window as 'variation board' will normally end when
+you release the right button,
+or when the opponent plays a move.
+But beware: in Analysis mode, moves thus played out will be added to the game.
+The Engine-Output pane for each engine will contain a header displaying the
+multi-PV status and a list of excluded moves in Analysis mode,
+which are also responsive to right-clicking.
 @item Show Move History
 @cindex Show Move History, Menu Item
 Shows or hides a list of moves of the current game.
@@ -626,6 +658,19 @@ creates an extra window that you can use for typing in ICS commands.
 The input box is especially useful if you want to type in something long or do
 some editing on your input, because output from ICS doesn't get mixed
 in with your typing as it would in the main terminal window.
+@item Open Chat Window
+@cindex Open Chat Window, Menu Item
+This menu item opens a window in which you can conduct upto 5 chats
+with other ICS users (or channels).
+To use the window, write the name of your chat partner, the channel number,
+or the words 'shouts', 'whispers', 'cshouts' in the upper field
+(closing with <Enter>).
+Everything you type in the lowest field will then automatically be sent to
+the mentioned party, while everything that party sends to you will
+appear in the central text box, rather than appear in the ICS console.
+The row of buttons allow you to choose between chat;
+to start a new chat, just select an empty button,
+and complete the @samp{Chat partner} field.
 @item Board
 @cindex Board, Menu Item
 Summons a dialog where you can customize the look of the chess board.
@@ -1510,6 +1555,7 @@ Defaults: 0
 @itemx Search mode
 @cindex Search mode, Menu Item
 @cindex find position, Menu Item
+@cindex narrow, Menu Item
 This setting determines which positions in a game will be considered a match
 to the position currently displayed in the board window
 when you press the @samp{find position} button in the Game List.
@@ -1524,6 +1570,10 @@ For the latter you have to place the material that must be present
 in the four lowest ranks of the board,
 and optional additional material in the four highest ranks of the board.
 You can request the optional material to be balanced.
+The @samp{narrow} button is similar in fuction to the @samp{find position} button,
+but only searches in the already selected games,
+rather than the complete game file,
+and can thus be used to refine a search based on multiple criteria.
 @itemx number of consecutive positions
 @cindex number of consecutive positions, Menu Item
 When you are searching by material, rather than for an exact match,
@@ -1894,6 +1944,19 @@ Default: @file{Fairy-Max}.
 Name of second chess engine, if needed.
 A second chess engine is started only in Two Machines (match) mode.
 Default: @file{Fairy-Max}.
+@item -fe or -firstEngine nickname
+@cindex fe, option
+@cindex firstEngine, option
+This is an alternative to the @code{fcp} option for specifying the first engine,
+for engines that were already configured (using the @samp{Load Engine} dialog)
+in XBoard's settings file.
+It will not only retrieve the real name of the engine,
+but also all options configured with it.
+(E.g. if it is UCI, whether it should use book.)
+@item -se or -secondEngine nickname
+@cindex se, option
+@cindex secondEngine, option
+As @code{fe}, but for the second engine.
 @item -fb/-xfb or -firstPlaysBlack true/false
 @cindex fb, option
 @cindex firstPlaysBlack, option
@@ -2120,6 +2183,21 @@ Default: 12.
 @cindex bookVariation, option
 A value n from 0 to 100 tunes the choice of moves from the GUI books
 from totally random to best-only. Default: 50
+@item -mcBookMode
+@cindex mcBookMode, option
+When this volatile option is specified, the probing algorithm of the
+GUI book is altered to always select the move that is most under-represented
+based on its performance.
+When all moves are played in approximately the right proportion,
+a book miss will be reported, to give the engine opportunity to
+explore a new move.
+In addition score of the moves will be kept track of during the session
+in a book buffer.
+By playing an match in this mode, a book will be built from scratch.
+The only output are the saved games, which can be converted to an
+actual book later, with the @samp{Save Games as Book} command.
+This command can also be used to pre-fill the book buffer
+before adding new games based on the probing algorithm.
 @item -fn string or -firstPgnName string
 @itemx -sn string or -secondPgnName string
 @cindex firstPgnName, option
@@ -2775,6 +2853,26 @@ Suppresses all GUI functions of XBoard
 (to speed up automated ultra-fast engine-engine games, which you don't want to watch). 
 There will be no board or clock updates, no printing of moves, 
 and no update of the icon on the task bar in this mode.
+@item -logoSize N
+@cindex logoSize, option
+This option controls the drawing of player logos next to the clocks.
+The integer N specifies the width of the logo in pixels;
+the logo height will always be half the width.
+When N = 0, no logos will be diplayed.
+Default: 0.
+@item -firstLogo imagefile
+@itemx -secondLogo imagefile
+@cindex firstLogo, option
+@cindex secondLogo, option
+Specify the images to be used as player logos when @code{logoSize}
+is non-zero, next to the white and black clocks, respectively.
+@item -autoLogo true/false
+@item -logoDir filename
+@cindex autoLogo, option
+@cindex logoDir, option
+When @code{autoLogo} is set, XBoard will search for a PNG image file
+with the name of the engine or ICS in the directory specified
+by @code{logoDir}.
 @item -recentEngines number
 @itemx -recentEngineList list
 @cindex recentEngines, option
@@ -3223,6 +3321,34 @@ as repeats, XBoard is fully e.p. and castling aware!
 If this option is true, XBoard acts as a passive chessboard; it
 does not start a chess engine at all. Turning on this option
 also turns off clockMode. Default: false.
+@item -viewer
+@itemx -viewerOptions string
+@cindex viewer, option
+@cindex viewerOptions, option
+Presence of the volatile option @code{viewer} on the command line
+will cause the value of the persistent option @code{viewerOptions}
+as stored in the settings file to be appended to the command line.
+The @code{view} option will be used by desktop associations with
+game or position file types, so that @code{viewerOptions} can be
+used to configure the exact mode XBoard will start in when it
+should act on such a file (e.g. in -ncp mode, or analyzing
+with your favorite engine). The options are also automatically
+appended when Board is invoked with a single argument not being
+an option name, which is then assumed to be the name of a
+@code{loadGameFile} or (when the name ends in .fen) a
+@code{loadPositionFile}.
+Default: "-ncp -engineOutputUp false -saveSettingsOnExit false".
+@item -tourneyOptions string
+@cindex tourneyOptions, option
+When XBoard is invoked with a single argument that is a file
+with .trn extension, it will assume this argument to be the value
+of a @code{tourneyFile} option,
+and apped the value of the persistent option @code{tourneyOptions}
+as stored in the settings file to the command line.
+Thus the value of @code{tourneyOptions} can be
+used to configure XBoard to automatically start running a
+tournament when it should act on such a file.
+Default: "-ncp -mm -saveSettingsOnExit false".
 @item -mode or -initialMode modename
 @cindex mode, option
 @cindex initalMode, option
