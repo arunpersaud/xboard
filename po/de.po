@@ -1,14 +1,14 @@
 # XBoard -- a graphical chessboard for X
 # Copyright (C) 2012 Free Software Foundation, Inc.
 # This file is distributed under the same license as the XBoard package.
-# Arun Persaud <arun@nubati.net>, 2009,2012
+# Arun Persaud <arun@nubati.net>, 2009,2012,2013
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xboard 4.6.0.20120405\n"
+"Project-Id-Version: xboard 4.6.0.20121211\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2012-12-11 22:25-0800\n"
-"PO-Revision-Date: 2012-05-28 10:55-0700\n"
+"PO-Revision-Date: 2013-01-20 18:51-0800\n"
 "Last-Translator: Arun Persaud <arun@nubati.net>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -25,32 +25,32 @@ msgstr ""
 #: args.h:820
 #, c-format
 msgid "Bad integer value %s"
-msgstr ""
+msgstr "Falscher Integer-wert %s"
 
 #: args.h:912 args.h:1150
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized argument %s"
-msgstr "%s: nicht erkanntes Argument %s\n"
+msgstr "Nicht erkanntes Argument %s"
 
 #: args.h:942
-#, fuzzy, c-format
+#, c-format
 msgid "No value provided for argument %s"
-msgstr "%s: nicht erkanntes Argument %s\n"
+msgstr "Fehlender Wert für Argument %s"
 
 #: args.h:1002
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
-msgstr ""
+msgstr "Unvollständiges \\ escape im Wert von »%s«"
 
 #: args.h:1105
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open indirection file %s"
-msgstr "Fehler beim Öffnen der Datei '%s'\n"
+msgstr "Fehler beim Öffnen der Datei »%s«"
 
 #: args.h:1122
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized boolean argument value %s"
-msgstr "%s: nicht erkanntes Argument %s\n"
+msgstr "Nicht anerkannter logischer Wert für Argument %s"
 
 #. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
@@ -136,8 +136,7 @@ msgstr "Konnte Kommunikationsport %s nicht öffnen"
 #: backend.c:1529
 #, c-format
 msgid "Could not connect to host %s, port %s"
-msgstr ""
-"Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
+msgstr "Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
 
 #: backend.c:1585
 #, c-format
@@ -447,9 +446,9 @@ msgid "You can only change one engine at the time"
 msgstr "Sie können immer nur ein Schachprogramm ändern"
 
 #: backend.c:10144
-#, fuzzy, c-format
+#, c-format
 msgid "No engine %s is installed"
-msgstr "Ein Schachprogram mit dem angegebenen Namen ist nicht installiert"
+msgstr "Das Schachprogram %s ist nicht installiert"
 
 #: backend.c:10164
 msgid ""
@@ -601,8 +600,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Die CMail-Nachricht wurde noch nicht geladen.\n"
-"Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut "
-"aus."
+"Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut aus."
 
 #: backend.c:13167
 msgid "No unfinished games"
@@ -786,7 +784,7 @@ msgstr "Noch keine Partie geladen"
 
 #: backend.c:15129
 msgid "Book file exists! Try again for overwrite."
-msgstr ""
+msgstr "Buchdatei existiert! Versuche erneut zum Überschreiben."
 
 #: backend.c:15602
 #, c-format
@@ -854,18 +852,16 @@ msgid "Hash keys are different"
 msgstr "Hash-schlüssel verschieden"
 
 #: book.c:998
-#, fuzzy
 msgid "Could not create book"
-msgstr "Konnte Zug nicht parsen"
+msgstr "Konnte Buch nicht erzeugen"
 
 #: dialogs.c:259
-#, fuzzy
 msgid "Tournament file:          "
-msgstr "Turnierdatei:"
+msgstr "Turnierdatei:          "
 
 #: dialogs.c:260
 msgid "Sync after round"
-msgstr ""
+msgstr "Sync. nach der Runde"
 
 #: dialogs.c:261
 msgid "    (for concurrent playing of a single"
@@ -873,7 +869,7 @@ msgstr ""
 
 #: dialogs.c:262
 msgid "Sync after cycle"
-msgstr ""
+msgstr "Sync. nach Zyklus"
 
 #: dialogs.c:263
 msgid "      tourney with multiple XBoards)"
@@ -901,7 +897,7 @@ msgstr ""
 
 #: dialogs.c:276
 msgid "Pause between Match Games (msec):"
-msgstr ""
+msgstr "Pause zwischen Tournierspielen (msek):"
 
 #: dialogs.c:277
 msgid "Save Tourney Games on:"
@@ -917,7 +913,7 @@ msgstr ""
 
 #: dialogs.c:280
 msgid "File with Start Positions:"
-msgstr ""
+msgstr "Datei mit Startstellung:"
 
 #: dialogs.c:281
 msgid "Position Number (-1 or -2 = Auto-Increment):"
@@ -941,17 +937,15 @@ msgstr "Ersetze Schachprogramm"
 
 #: dialogs.c:286
 msgid "Clone Tourney"
-msgstr ""
+msgstr "Klone Turnier"
 
 #: dialogs.c:316
 msgid "First you must specify an existing tourney file to clone"
-msgstr ""
-"Bitte geben Sie zuerst eine existierende Turnierdatei, die geklont werden "
-"kann"
+msgstr "Bitte geben Sie zuerst eine existierende Turnierdatei, die geklont werden kann"
 
 #: dialogs.c:332 dialogs.c:1315
 msgid "# no engines are installed"
-msgstr ""
+msgstr "# keine Schachprogramme installiert"
 
 #: dialogs.c:344
 msgid "Match Options"
@@ -999,7 +993,7 @@ msgstr "Letzten Zug hervorheben"
 
 #: dialogs.c:373
 msgid "Highlight with Arrow"
-msgstr ""
+msgstr "Hervorhebung mit Pfeil"
 
 #: dialogs.c:374 menus.c:729
 msgid "Move Sound"
@@ -1019,7 +1013,7 @@ msgstr "Nächsten Zug abwägen"
 
 #: dialogs.c:379
 msgid "Popup Exit Messages"
-msgstr ""
+msgstr "Popup Nachricht beim Beenden"
 
 #: dialogs.c:380 menus.c:735
 msgid "Popup Move Errors"
@@ -1207,7 +1201,7 @@ msgstr ""
 
 #: dialogs.c:446
 msgid " "
-msgstr ""
+msgstr " "
 
 #: dialogs.c:447
 msgid "courier (12x8)"
@@ -1232,7 +1226,7 @@ msgstr ""
 
 #: dialogs.c:489
 msgid "New Variant"
-msgstr ""
+msgstr "Neue Variante"
 
 #: dialogs.c:514
 msgid "Maximum Number of CPUs per Engine:"
@@ -1244,7 +1238,7 @@ msgstr "Polyglot-verzeichnis:"
 
 #: dialogs.c:516
 msgid "Hash-Table Size (MB):"
-msgstr ""
+msgstr "Größe der Hashtabelle (MB):"
 
 #: dialogs.c:517
 msgid "Nalimov EGTB Path:"
@@ -1260,7 +1254,7 @@ msgstr ""
 
 #: dialogs.c:520
 msgid "Opening-Book Filename:"
-msgstr ""
+msgstr "Dateiname des Eröffnungsbuches:"
 
 #: dialogs.c:521
 msgid "Book Depth (moves):"
@@ -1300,7 +1294,7 @@ msgstr ""
 
 #: dialogs.c:543
 msgid "N-Move Rule:"
-msgstr ""
+msgstr "N-Züge Regel:"
 
 #: dialogs.c:544
 msgid "N-fold Repeats:"
@@ -1308,19 +1302,19 @@ msgstr ""
 
 #: dialogs.c:545
 msgid "Draw after N Moves Total:"
-msgstr ""
+msgstr "Remi nach N Zügen (total):"
 
 #: dialogs.c:546
 msgid "Win / Loss Threshold:"
-msgstr ""
+msgstr "Gewinn/Verlust Grenzwert:"
 
 #: dialogs.c:547
 msgid "Negate Score of Engine #1"
-msgstr ""
+msgstr "Negiere Bewertung des 1. Schachprogramms"
 
 #: dialogs.c:548
 msgid "Negate Score of Engine #2"
-msgstr ""
+msgstr "Negiere Bewertung des 2. Schachprogramms"
 
 #: dialogs.c:555
 #, fuzzy
@@ -1329,7 +1323,7 @@ msgstr "Gewinn Weiß zuerkennen"
 
 #: dialogs.c:568
 msgid "Auto-Kibitz"
-msgstr ""
+msgstr "Auto-Kibitz"
 
 #: dialogs.c:569
 msgid "Auto-Comment"
@@ -1345,15 +1339,15 @@ msgstr "Automatisch das Brett in den Vordergrung bringen"
 
 #: dialogs.c:572
 msgid "Auto-Create Logon Script"
-msgstr ""
+msgstr "Automatisch Login-skript erzeugen"
 
 #: dialogs.c:573
 msgid "Background Observe while Playing"
-msgstr ""
+msgstr "Beobachte im Hintegrund während einer Partie"
 
 #: dialogs.c:574
 msgid "Dual Board for Background-Observed Game"
-msgstr ""
+msgstr "Zweites Brett für beobachtetes Spiel"
 
 #: dialogs.c:575
 msgid "Get Move List"
@@ -1381,7 +1375,7 @@ msgstr ""
 
 #: dialogs.c:581
 msgid "First White Move:"
-msgstr ""
+msgstr "Erster Zug von Weiß:"
 
 #: dialogs.c:582
 msgid "Premove for Black"
@@ -1389,7 +1383,7 @@ msgstr ""
 
 #: dialogs.c:583
 msgid "First Black Move:"
-msgstr ""
+msgstr "Erster Zug von Schwarz:"
 
 #: dialogs.c:585
 msgid "Alarm"
@@ -1397,7 +1391,7 @@ msgstr "Alarm"
 
 #: dialogs.c:586
 msgid "Alarm Time (msec):"
-msgstr ""
+msgstr "Alarmzeit (msek):"
 
 #: dialogs.c:588
 msgid "Colorize Messages"
@@ -1405,27 +1399,27 @@ msgstr "Nachrichten kolorieren"
 
 #: dialogs.c:589
 msgid "Shout Text Colors:"
-msgstr ""
+msgstr "Textfarbe Ruf:"
 
 #: dialogs.c:590
 msgid "S-Shout Text Colors:"
-msgstr ""
+msgstr "Textfarbe S-Ruf:"
 
 #: dialogs.c:591
 msgid "Channel #1 Text Colors:"
-msgstr ""
+msgstr "Textfarbe Kanal #1:"
 
 #: dialogs.c:592
 msgid "Other Channel Text Colors:"
-msgstr ""
+msgstr "Textfarbe andere Kanäle:"
 
 #: dialogs.c:593
 msgid "Kibitz Text Colors:"
-msgstr ""
+msgstr "Textfarbe Kibitz:"
 
 #: dialogs.c:594
 msgid "Tell Text Colors:"
-msgstr ""
+msgstr "Textfarbe Mitteilung:"
 
 #: dialogs.c:595
 msgid "Challenge Text Colors:"
@@ -1453,11 +1447,11 @@ msgstr ""
 
 #: dialogs.c:609
 msgid "Same material with exactly same Pawn chain"
-msgstr ""
+msgstr "Gleiches Material mit genau gleicher Bauernstruktur"
 
 #: dialogs.c:610
 msgid "Same material"
-msgstr ""
+msgstr "Gleiches Material"
 
 #: dialogs.c:610
 msgid "Material range (top board half optional)"
@@ -1499,11 +1493,11 @@ msgstr ""
 
 #: dialogs.c:629
 msgid "Elo of strongest player at least:"
-msgstr ""
+msgstr "Mind. Elo des stärksten Spielers:"
 
 #: dialogs.c:630
 msgid "Elo of weakest player at least:"
-msgstr ""
+msgstr "Mind. Elo des schwächsten Spielers:"
 
 #: dialogs.c:631
 msgid "No games before year:"
@@ -1539,7 +1533,7 @@ msgstr "Partien speichern als Datei:"
 
 #: dialogs.c:657
 msgid "Save Final Positions on File:"
-msgstr ""
+msgstr "Speichere Endstellung in Datei:"
 
 #: dialogs.c:658
 msgid "PGN Event Header:"
@@ -1631,11 +1625,11 @@ msgstr ""
 
 #: dialogs.c:716
 msgid "Try-Out Sound:"
-msgstr ""
+msgstr "Teste Geräusch:"
 
 #: dialogs.c:717
 msgid "Play"
-msgstr ""
+msgstr "Spielen"
 
 #: dialogs.c:718
 msgid "Move:"
@@ -1671,11 +1665,11 @@ msgstr ""
 
 #: dialogs.c:727
 msgid "Shout:"
-msgstr ""
+msgstr "Ruf:"
 
 #: dialogs.c:728
 msgid "S-Shout:"
-msgstr ""
+msgstr "S-Ruf:"
 
 #: dialogs.c:729
 msgid "Channel:"
@@ -1687,7 +1681,7 @@ msgstr "Kanal 1:"
 
 #: dialogs.c:731
 msgid "Tell:"
-msgstr ""
+msgstr "Mitteilung:"
 
 #: dialogs.c:732
 msgid "Kibitz:"
@@ -1699,7 +1693,7 @@ msgstr ""
 
 #: dialogs.c:734
 msgid "Seek:"
-msgstr ""
+msgstr "Gesuch:"
 
 #: dialogs.c:750
 msgid "Sound Options"
@@ -1747,7 +1741,7 @@ msgstr "Schwarzes Feld:"
 
 #: dialogs.c:799
 msgid "Highlight Color:"
-msgstr ""
+msgstr "Farbe zum Hervorheben:"
 
 #: dialogs.c:805
 msgid "Premove Highlight Color:"
@@ -1799,12 +1793,11 @@ msgstr ""
 
 #: dialogs.c:945 dialogs.c:1033
 msgid "save changes"
-msgstr ""
+msgstr "speichere Änderungen"
 
 #: dialogs.c:1048
-#, fuzzy
 msgid "Edit book"
-msgstr "Bearbeiten"
+msgstr "Bearbeite Buch"
 
 #: dialogs.c:1048 menus.c:639
 msgid "Tags"
@@ -1819,17 +1812,16 @@ msgid "Type a move"
 msgstr "Geben Sie einen Zug ein"
 
 #: dialogs.c:1246
-#, fuzzy
 msgid "Engine has no options"
-msgstr "Schachprogramm %s hat zuv viele Optionen\n"
+msgstr "Schachprogramm hat keine Optionen"
 
 #: dialogs.c:1248
 msgid "Engine Settings"
-msgstr ""
+msgstr "Schachprogrammeinstellungen"
 
 #: dialogs.c:1273
 msgid "Select engine from list:"
-msgstr ""
+msgstr "Wähle Schachprogram aus der Liste:"
 
 #: dialogs.c:1276
 msgid "or specify one below:"
@@ -1869,24 +1861,21 @@ msgstr ""
 
 #: dialogs.c:1285
 msgid "Add this engine to the list"
-msgstr ""
+msgstr "Füge diese Schachprogramm zur Liste hinzu"
 
 #: dialogs.c:1286
 msgid "Force current variant with this engine"
 msgstr ""
 
 #: dialogs.c:1336
-#, fuzzy
 msgid "Load first engine"
-msgstr "Erstes Schachprogramm"
+msgstr "Lade erstes Schachprogramm"
 
 #: dialogs.c:1342
-#, fuzzy
 msgid "Load second engine"
-msgstr "Zweites Schachprogramm"
+msgstr "Lade zweites Schachprogramm"
 
 #: dialogs.c:1365
-#, fuzzy
 msgid "shuffle"
 msgstr "Shuffle"
 
@@ -1895,7 +1884,6 @@ msgid "Start-position number:"
 msgstr "Startposition-Nummer:"
 
 #: dialogs.c:1367
-#, fuzzy
 msgid "randomize"
 msgstr "zufällig"
 
@@ -1936,22 +1924,21 @@ msgid "Time-Odds factors:"
 msgstr ""
 
 #: dialogs.c:1411
-#, fuzzy
 msgid "Engine #1"
-msgstr "Schachprogramm"
+msgstr "Schachprogramm #1"
 
 #: dialogs.c:1412
 msgid "Engine #2 / Human"
-msgstr ""
+msgstr "Schachprogram #2 / Spieler"
 
 #: dialogs.c:1452 dialogs.c:1455 dialogs.c:1460 dialogs.c:1461
 #: gtk/xoptions.c:191
 msgid "Unused"
-msgstr ""
+msgstr "Nicht benutzt"
 
 #: dialogs.c:1473
 msgid "Time Control"
-msgstr ""
+msgstr "Zeitkontrolle"
 
 #: dialogs.c:1502
 msgid "Error writing to chess program"
@@ -2142,41 +2129,36 @@ msgid ">>"
 msgstr ""
 
 #: dialogs.c:2358
-#, fuzzy
 msgid "Directories:"
-msgstr "Polyglot-verzeichnis:"
+msgstr "Verzeichnisse:"
 
 #: dialogs.c:2359
-#, fuzzy
 msgid "Files:"
-msgstr "Datei"
+msgstr "Dateien:"
 
 #: dialogs.c:2360
 msgid "by name"
-msgstr ""
+msgstr "nach Namen"
 
 #: dialogs.c:2361
 msgid "by type"
-msgstr ""
+msgstr "nach Typ"
 
 #: dialogs.c:2364
-#, fuzzy
 msgid "Filename:"
-msgstr "Filter:"
+msgstr "Dateinname:"
 
 #: dialogs.c:2365
 msgid "New directory"
-msgstr ""
+msgstr "Neues Verzeichnis"
 
 #: dialogs.c:2366
-#, fuzzy
 msgid "File type:"
-msgstr "Filter:"
+msgstr "Dateientyp:"
 
 #: dialogs.c:2441
-#, fuzzy
 msgid "Contents of"
-msgstr "Kommentare"
+msgstr "Inhalt von"
 
 #: dialogs.c:2467
 #, fuzzy
@@ -2189,7 +2171,7 @@ msgstr ""
 
 #: dialogs.c:2490
 msgid "TRY ANOTHER NAME"
-msgstr ""
+msgstr "VERSUCHE EINEN ANDEREN NAMEN"
 
 #: draw.c:298
 msgid ""
@@ -2230,9 +2212,7 @@ msgstr "Fehler beim Öffnen der Datei '%s'\n"
 
 #: gtk/xboard.c:845 xaw/xboard.c:1114
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe "
-"zu unterstützen"
+msgstr "Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe zu unterstützen"
 
 #: gtk/xboard.c:864 xaw/xboard.c:1146
 #, c-format
@@ -2305,12 +2285,10 @@ msgid ""
 "Enhancements Copyright 1992-2012 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2357,9 +2335,8 @@ msgid "Save Position    Ctrl+Shift+S"
 msgstr "Stellung speichern Strg+Shift+S"
 
 #: menus.c:596
-#, fuzzy
 msgid "Save Games as Book"
-msgstr "Partien speichern als Datei:"
+msgstr "Partien speichern als Buch:"
 
 #: menus.c:598
 msgid "Mail Move"
@@ -2582,14 +2559,12 @@ msgid "Adjudicate Draw"
 msgstr "Remi zuerkennen"
 
 #: menus.c:687
-#, fuzzy
 msgid "Load New 1st Engine ..."
-msgstr "Neues Schachprogramm laden…"
+msgstr "Neues erstes Schachprogramm laden…"
 
 #: menus.c:688
-#, fuzzy
 msgid "Load New 2nd Engine ..."
-msgstr "Neues Schachprogramm laden…"
+msgstr "Neues zweites Schachprogramm laden…"
 
 #: menus.c:690
 msgid "Engine #1 Settings ..."
@@ -2736,14 +2711,12 @@ msgid "e-Mail Bug Report"
 msgstr "E-mail Fehlerreport"
 
 #: nengineoutput.c:78 nengineoutput.c:85
-#, fuzzy
 msgid "engine name"
 msgstr "Schachprogramm"
 
 #: nengineoutput.c:80 nengineoutput.c:87
-#, fuzzy
 msgid "move"
-msgstr "Züge"
+msgstr "Zug"
 
 #: nengineoutput.c:153
 msgid "Engine output"
@@ -2776,9 +2749,8 @@ msgid "thresholds"
 msgstr "Schwellenwert"
 
 #: ngamelist.c:90
-#, fuzzy
 msgid "tags"
-msgstr "Markierungen"
+msgstr ""
 
 #: ngamelist.c:91
 msgid "next"
@@ -2878,8 +2850,7 @@ msgid ""
 "   Include system type & operating system in message.\n"
 msgstr ""
 "Warnung: Keine DIR-Struktur auf dem Rechner gefunden --\n"
-"         wählen einer automatischen Größe für XPM/XIM Figuren "
-"fehlgeschlagen.\n"
+"         wählen einer automatischen Größe für XPM/XIM Figuren fehlgeschlagen.\n"
 "  Bitte schicken Sie einen Bug-report and %s.\n"
 "  Geben Sie dabei den Rechnertyp und das Betriebsystem an.\n"
 
@@ -2905,6 +2876,21 @@ msgstr "OK"
 msgid "cancel"
 msgstr "abbrechen"
 
+#~ msgid "Browse"
+#~ msgstr "Durchsuchen"
+
+#~ msgid "Filter on extensions:"
+#~ msgstr "filtere nach Dateinendung:"
+
+#~ msgid "Pathname:"
+#~ msgstr "Pfadname:"
+
+#~ msgid "XsraSelFile: can't get current directory"
+#~ msgstr "XsraSelFile: kann aktuelles Verzeichnis nicht laden"
+
+#~ msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
+#~ msgstr "%s: titleWidget Geometriefehler %d %d %d %d %d\n"
+
 #~ msgid "Error expanding path name \"%s\"\n"
 #~ msgstr "Fehler beim Expandieren des Pfadnamens \"%s\"\n"
 
@@ -2917,6 +2903,9 @@ msgstr "abbrechen"
 
 #~ msgid "Closest %s size: %d\n"
 #~ msgstr "Nächste %s Größe: %d\n"
+
+#~ msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
+#~ msgstr "%s: messageWidget Geometriefehler %d %d %d %d %d\n"
 
 #~ msgid "%s: error loading XIM!\n"
 #~ msgstr "%s: Fehler beim Laden von XIM!\n"
@@ -2983,24 +2972,6 @@ msgstr "abbrechen"
 #~ msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
 #~ msgstr "%s: Bitmap %s ist %dx%d und nicht %dx%d... benutze integrierte\n"
 
-#~ msgid "Browse"
-#~ msgstr "Durchsuchen"
-
-#~ msgid "Filter on extensions:"
-#~ msgstr "filtere nach Dateinendung:"
-
-#~ msgid "Pathname:"
-#~ msgstr "Pfadname:"
-
-#~ msgid "XsraSelFile: can't get current directory"
-#~ msgstr "XsraSelFile: kann aktuelles Verzeichnis nicht laden"
-
-#~ msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
-#~ msgstr "%s: titleWidget Geometriefehler %d %d %d %d %d\n"
-
-#~ msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
-#~ msgstr "%s: messageWidget Geometriefehler %d %d %d %d %d\n"
-
 #~ msgid "----"
 #~ msgstr "----"
 
@@ -3031,6 +3002,9 @@ msgstr "abbrechen"
 #~ msgid "This feature is experimental"
 #~ msgstr "Dieses Feature is experimentell"
 
+#~ msgid "Filter:"
+#~ msgstr "Filter:"
+
 #~ msgid "filtertext"
 #~ msgstr "Filtertext"
 
@@ -3042,9 +3016,6 @@ msgstr "abbrechen"
 
 #~ msgid "prev"
 #~ msgstr "vorh."
-
-#~ msgid "File to analyze"
-#~ msgstr "Datei zum Analysieren"
 
 #~ msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 #~ msgstr "Animiere Züge: Figur %d hüpft von %d,%d zu %d,%d\n"
