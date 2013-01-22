@@ -8203,7 +8203,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    /* Machine move could not be parsed; ignore it. */
 	  snprintf(buf1, MSG_SIZ*10, _("Illegal move \"%s\" from %s machine"),
 		    machineMove, _(cps->which));
-	    DisplayError(buf1, 0);
+	    DisplayMoveError(buf1);
             snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d",
                     machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, moveType);
 	    if (gameMode == TwoMachinesPlay) {
