@@ -7859,7 +7859,7 @@ Adjudicate (ChessProgramState *cps)
                              /* adjudicate after user-specified nr of repeats */
 			     int result = GameIsDrawn;
 			     char *details = "XBoard adjudication: repetition draw";
-			     if(gameInfo.variant == VariantXiangqi && appData.testLegality) {
+			     if((gameInfo.variant == VariantXiangqi || gameInfo.variant == VariantShogi) && appData.testLegality) {
 				// [HGM] xiangqi: check for forbidden perpetuals
 				int m, ourPerpetual = 1, hisPerpetual = 1;
 				for(m=forwardMostMove; m>k; m-=2) {
@@ -7877,6 +7877,12 @@ Adjudicate (ChessProgramState *cps)
 				if(hisPerpetual && !ourPerpetual) { // he is checking us, but did not repeat yet
 				    break; // (or we would have caught him before). Abort repetition-checking loop.
 				} else
+				if(gameInfo.variant == VariantShogi) { // in Shogi other repetitions are draws
+				    if(BOARD_HEIGHT == 5 && BOARD_RGHT - BOARD_LEFT == 5) { // but in mini-Shogi gote wins!
+					result = BlackWins;
+					details = "Xboard adjudication: repetition";
+				    }
+				} else // it must be XQ
 				// Now check for perpetual chases
 				if(!ourPerpetual && !hisPerpetual) { // no perpetual check, test for chase
 				    hisPerpetual = PerpetualChase(k, forwardMostMove);
