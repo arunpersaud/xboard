@@ -1264,7 +1264,7 @@ MateTest (Board board, int flags)
 	else if(gameInfo.variant == VariantGiveaway) return MT_STEALMATE; // no check exists, stalemated = win
 
         return inCheck ? MT_CHECKMATE
-		       : (gameInfo.variant == VariantXiangqi || gameInfo.variant == VariantShatranj) ?
+		       : (gameInfo.variant == VariantXiangqi || gameInfo.variant == VariantShatranj || gameInfo.variant == VariantShogi) ?
 			  MT_STAINMATE : MT_STALEMATE;
     }
 }

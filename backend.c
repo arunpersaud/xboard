@@ -7757,7 +7757,7 @@ Adjudicate (ChessProgramState *cps)
 			boards[forwardMostMove][EP_STATUS] = nrW == nrB ? EP_STALEMATE :
 						   ((nrW < nrB) != WhiteOnMove(forwardMostMove) ?
 									EP_CHECKMATE : EP_WINS);
-		    else if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantXiangqi)
+		    else if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantXiangqi || gameInfo.variant == VariantShogi)
 		        boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE; // and in these variants being stalemated loses
 		}
 		break;
