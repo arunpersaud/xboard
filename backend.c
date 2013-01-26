@@ -7764,6 +7764,14 @@ Adjudicate (ChessProgramState *cps)
 	      case MT_CHECKMATE:
 		reason = "Xboard adjudication: Checkmate";
 		boards[forwardMostMove][EP_STATUS] = (gameInfo.variant == VariantLosers ? EP_WINS : EP_CHECKMATE);
+		if(gameInfo.variant == VariantShogi) {
+		    if(forwardMostMove > backwardMostMove
+		       && moveList[forwardMostMove-1][1] == '@'
+		       && CharToPiece(ToUpper(moveList[forwardMostMove-1][0])) == WhitePawn) {
+			reason = "XBoard adjudication: pawn-drop mate";
+			boards[forwardMostMove][EP_STATUS] = EP_WINS;
+		    }
+		}
 		break;
 	    }
 
