@@ -867,7 +867,9 @@ void
 ReplaceEngine (ChessProgramState *cps, int n)
 {
     oldMode = gameMode; // remember mode, so it can be restored after loading sequence is complete
+    keepInfo = 1;
     if(oldMode != BeginningOfGame) EditGameEvent();
+    keepInfo = 0;
     UnloadEngine(cps);
     appData.noChessProgram = FALSE;
     appData.clockMode = TRUE;
