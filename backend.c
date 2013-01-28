@@ -10346,6 +10346,13 @@ SetPlayer (int player, char *p)
 	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
 	appData.firstHasOwnBookUCI = !appData.defNoBook; appData.protocolVersion[0] = PROTOVER;
 	ParseArgsFromString(buf);
+    } else { // no engine with this nickname is installed!
+	snprintf(buf, MSG_SIZ, _("No engine %s is installed"), engineName);
+	ReserveGame(nextGame, ' '); // unreserve game and drop out of match mode with error
+	matchMode = FALSE; appData.matchGames = matchGame = roundNr = 0;
+	ModeHighlight();
+	DisplayError(buf, 0);
+	return 0;
     }
     free(engineName);
     return i;
@@ -10420,7 +10427,7 @@ int
 NextTourneyGame (int nr, int *swapColors)
 {   // !!!major kludge!!! fiddle appData settings to get everything in order for next tourney game
     char *p, *q;
-    int whitePlayer, blackPlayer, firstBusy=1000000000, syncInterval = 0, nPlayers;
+    int whitePlayer, blackPlayer, firstBusy=1000000000, syncInterval = 0, nPlayers, OK = 1;
     FILE *tf;
     if(appData.tourneyFile[0] == NULLCHAR) return 1; // no tourney, always allow next game
     tf = fopen(appData.tourneyFile, "r");
@@ -10472,18 +10479,18 @@ NextTourneyGame (int nr, int *swapColors)
     // redefine engines, engine dir, etc.
     NamesToList(firstChessProgramNames, command, mnemonic, "all"); // get mnemonics of installed engines
     if(first.pr == NoProc) {
-      SetPlayer(whitePlayer, appData.participants); // find white player amongst it, and parse its engine line
+      if(!SetPlayer(whitePlayer, appData.participants)) OK = 0; // find white player amongst it, and parse its engine line
       InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.
     }
     if(second.pr == NoProc) {
       SwapEngines(1);
-      SetPlayer(blackPlayer, appData.participants); // find black player amongst it, and parse its engine line
+      if(!SetPlayer(blackPlayer, appData.participants)) OK = 0; // find black player amongst it, and parse its engine line
       SwapEngines(1);         // and make that valid for second engine by swapping
       InitEngine(&second, 1);
     }
     CommonEngineInit();     // after this TwoMachinesEvent will create correct engine processes
     UpdateLogos(FALSE);     // leave display to ModeHiglight()
-    return 1;
+    return OK;
 }
 
 void
