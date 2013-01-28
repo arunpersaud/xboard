@@ -840,6 +840,8 @@ InitEngine (ChessProgramState *cps, int n)
 
 ChessProgramState *savCps;
 
+GameMode oldMode;
+
 void
 LoadEngine ()
 {
@@ -849,21 +851,23 @@ LoadEngine ()
     if(gameInfo.variant != StringToVariant(appData.variant)) {
 	// we changed variant when loading the engine; this forces us to reset
 	Reset(TRUE, savCps != &first);
-	EditGameEvent(); // for consistency with other path, as Reset changes mode
+	oldMode = BeginningOfGame; // to prevent restoring old mode
     }
     InitChessProgram(savCps, FALSE);
-    SendToProgram("force\n", savCps);
+    if(gameMode == EditGame) SendToProgram("force\n", savCps); // in EditGame mode engine must be in force mode
     DisplayMessage("", "");
     if (startedFromSetupPosition) SendBoard(savCps, backwardMostMove);
     for (i = backwardMostMove; i < currentMove; i++) SendMoveToProgram(i, savCps);
     ThawUI();
     SetGNUMode();
+    if(oldMode == AnalyzeMode) AnalyzeModeEvent();
 }
 
 void
 ReplaceEngine (ChessProgramState *cps, int n)
 {
-    EditGameEvent();
+    oldMode = gameMode; // remember mode, so it can be restored after loading sequence is complete
+    if(oldMode != BeginningOfGame) EditGameEvent();
     UnloadEngine(cps);
     appData.noChessProgram = FALSE;
     appData.clockMode = TRUE;
