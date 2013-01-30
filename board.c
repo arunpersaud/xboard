@@ -953,7 +953,7 @@ DrawPosition (int repaint, Board board)
 		DrawSquare(i, j, board[i][j], 0);
 		if(damage[nr][i][j] & 2) {
 		    drawHighlight(j, i, 0);   // repair arrow damage
-		    damage[nr][i][j] = False; // this flushed the square as well
+		    if(lineGap) damage[nr][i][j] = False; // this flushed the square as well
 		} else damage[nr][i][j] = 1;  // mark for expose
 	    }
 
@@ -988,19 +988,19 @@ DrawPosition (int repaint, Board board)
     /* Draw highlights */
     if (pm1X >= 0 && pm1Y >= 0) {
       drawHighlight(pm1X, pm1Y, 2);
-      damage[nr][pm1Y][pm1X] = False;
+      if(lineGap) damage[nr][pm1Y][pm1X] = False;
     }
     if (pm2X >= 0 && pm2Y >= 0) {
       drawHighlight(pm2X, pm2Y, 2);
-      damage[nr][pm2Y][pm2X] = False;
+      if(lineGap) damage[nr][pm2Y][pm2X] = False;
     }
     if (hi1X >= 0 && hi1Y >= 0) {
       drawHighlight(hi1X, hi1Y, 1);
-      damage[nr][hi1Y][hi1X] = False;
+      if(lineGap) damage[nr][hi1Y][hi1X] = False;
     }
     if (hi2X >= 0 && hi2Y >= 0) {
       drawHighlight(hi2X, hi2Y, 1);
-      damage[nr][hi2Y][hi2X] = False;
+      if(lineGap) damage[nr][hi2Y][hi2X] = False;
     }
     DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y);
   }
