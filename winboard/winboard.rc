@@ -1166,7 +1166,7 @@ BEGIN
         MENUITEM "S&ave Position...\tCtrl+Shift+S",IDM_SavePosition
         MENUITEM SEPARATOR
         MENUITEM "Save as &Diagram...",         IDM_SaveDiagram
-        MENUITEM "Save Games to Book",          IDM_CreateBook
+        MENUITEM "Save Games to &Book",         IDM_CreateBook
         MENUITEM SEPARATOR
         MENUITEM "&Quit",                       IDM_Exit
     END
