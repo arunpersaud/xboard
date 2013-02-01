@@ -1035,6 +1035,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "Load mentioned engine as" === ""
 "Load Engine" === ""
 "You did not specify the engine executable" === ""
+"Select single engine from the group" === ""
 
 # TOURNAMENT OPTIONS DIALOG
 
@@ -1075,6 +1076,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 
 "Board themes" === ""
 "Select theme from list:" === ""
+"or specify new theme below:" === ""
 "Theme name:" === ""
 "Use board textures" === ""
 "Light-square texture:" === ""
@@ -1102,7 +1104,9 @@ END-OF-GAME MESSAGES (should they be translated?)
 
 # NEW MENU ITEMS IN 4.7
 
-"Save Games to Book" === ""
+"Save Games to &Book" === ""
 "Colo&rs..." === ""
+"Load &First Engine..." === ""
+"Load &Second Engine..." === ""
 "&Board Themes..." === ""
-
+"Auto &Create Logon" === ""
