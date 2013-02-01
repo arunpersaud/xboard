@@ -1063,6 +1063,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 
   if (SearchPath(NULL, "WinBoard.exe", NULL, MSG_SIZ, installDir, &filepart)) {
     *filepart = NULLCHAR;
+    SetCurrentDirectory(installDir);
   } else {
     GetCurrentDirectory(MSG_SIZ, installDir);
   }
