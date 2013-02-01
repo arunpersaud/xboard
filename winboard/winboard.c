@@ -4679,7 +4679,6 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   FILE *f;
   UINT number;
   char fileTitle[MSG_SIZ];
-  char buf[MSG_SIZ];
   static SnapData sd;
   static int peek=0;
 

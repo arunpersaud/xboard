@@ -786,7 +786,7 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	    /* Get window size */
 	    gtk_widget_get_allocation(widget, &a);
 	    w = a.width; h = a.height;
-//printf("expose %dx%d @ (%d,%d)\n", w, h, a.x, a.y);
+//printf("expose %dx%d @ (%d,%d): %dx%d @(%d,%d)\n", w, h, a.x, a.y, eevent->area.width, eevent->area.height, eevent->area.x, eevent->area.y);
 #ifdef TODO_GTK
 	    j = 0;
 	    XtSetArg(args[j], XtNwidth, &w); j++;
