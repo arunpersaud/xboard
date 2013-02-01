@@ -9,6 +9,7 @@
 ##    3-oct-2011. H.G.Muller. Added a few missing translations.
 ##    7-oct-2011. H.G.Muller. Redid Load Options dialog, new Tournament dialog strings
 ##   10-feb-2012. H.G.Muller. Added some strings in Load Engine, Tournament and Board dialogs
+##    1-feb-2010. H.G.Muller. Added new strings for version 4.7.0
 ##
 ## If you revise this, please insert your date, name and description.
 ## AUB uw naam en datum hierboven bijschrijven als u dit bestand bijwerkt
@@ -1027,6 +1028,49 @@ END-OF-GAME MESSAGES (should they be translated?)
 "Make all use GUI book by default" === "Gebruik openingsboek voor iedereen"
 "You must supply a tournament file,\nfor storing the tourney progress" === "U moet een toernooibestand specificeren,\nwaarin de voortgang kan worden bijgehouden"
 "Not enough participants" === "Niet genoeg deelnemers voor een dergelijk toernooi"
+"Continue Later" === "Straks afmaken"
+"First you must specify an existing tourney file to clone" === "U moet eerst een bestand om te klonen specificeren"
+"No engine %s is installed" === "Er is geen schaakprogramma %s geïnstalleerd"
+
+
+# THEMES DIALOG
+
+"Board themes" === "Schaakbord thema's"
+"Select theme from list:" === "Kies thema uit de lijst:"
+"or specify new theme below:" === "of specifficeer een nieuw thema hieronder:"
+"Theme name:" === "Thema naam:"
+"Use board textures" === "Kleur bord in"
+"Light-square texture:" === "Patroon lichte velden"
+"Dark-square texture:" === "Patroon donkere velden"
+"Dark reorientation mode:" === "donkere orientatiemethode:"
+"Light reorientation mode:" === "lichte orientatiemethode:"
+"Draw border around board" === "Bord met rand"
+"Optional border bitmap:" === "Rand afbeelding"
+"        Beware: a specified piece font will prevail over piece bitmaps" === "        Let op: een schaakfiguren lettertype prevaleert over plaatjes"
+"Directory with piece bitmaps:" === "Map met stukkenplaatjes"
+"Use piece font" === "Gebruik schaakfiguur lettertype"
+"Font size (%):" === "Afmeting lettertype(%)"
+"Font name:" === "Lettertype:"
+"Font piece to char:" === "Letters voor stukken:"
+"Delete Theme" === "Verwijder thema"
+"Select single theme from the group" === "Selecteer een enkel thema uit de groep"
+
+# book.c
+
+"Could not create book" === "Kon geen openingen bestand maken"
+"Polyglot book not valid" === "Polyglot openingboek ongeldig"
+"Hash keys are different" === ""
+"Book Fault" === "Boek fout"
+"Book file exists! Try again for overwrite." === "Openingsboek bestaat al. Probeer het nog eens om het te overschrijven."
+
+# NEW MENU ITEMS IN 4.7
+
+"Save Games to &Book" === "Sla partijen op als openings&boek"
+"Colo&rs..." === "Kleu&ren..."
+"&Board Themes..." === "&Bord stijlen..."
+"Load &First Engine..." === "1e Schaakprogramma &Wisselen..."
+"Load &Second Engine..." === "2e &Schaakprogramma Wisselen..."
+"Auto &Create Logon" === "Bewaar login in&fo"
 
 JAWS strings
 
