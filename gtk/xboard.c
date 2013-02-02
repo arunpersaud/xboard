@@ -371,7 +371,7 @@ String xboardResources[] = {
 void
 BoardToTop ()
 {
-  gtk_window_present(GTK_WINDOW(mainwindow));
+  gtk_window_present(GTK_WINDOW(shells[BoardWindow]));
 }
 
 //---------------------------------------------------------------------------------------------------------
