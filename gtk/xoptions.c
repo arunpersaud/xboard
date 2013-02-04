@@ -555,7 +555,7 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     GtkTextIter start, end;
     String val = NULL;
     gboolean res;
-    gint index, x, y;
+    gint index = 0, x, y;
 
     switch(event->type) { // figure out what's up
 	case GDK_MOTION_NOTIFY:
@@ -1071,7 +1071,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     GtkWidget *box;
     GtkWidget *checkbutton;
     GtkWidget *entry;
-    GtkWidget *oldHbox, *hbox = NULL;
+    GtkWidget *oldHbox = NULL, *hbox = NULL;
     GtkWidget *pane = NULL;
     GtkWidget *button;
     GtkWidget *table;
@@ -1086,10 +1086,10 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     GtkWidget *list;
     GtkWidget *graph;
     GtkWidget *menuButton;
-    GtkWidget *menuBar;
+    GtkWidget *menuBar = NULL;
     GtkWidget *menu;
 
-    int i, j, arraysize, left, top, height=999, width=1, boxStart, breakType = 0, r;
+    int i, j, arraysize, left, top, height=999, width=1, boxStart=0, breakType = 0, r;
     char def[MSG_SIZ], *msg, engineDlg = (currentCps != NULL && dlgNr != BrowserDlg);
 
     if(dlgNr < PromoDlg && shellUp[dlgNr]) return 0; // already up

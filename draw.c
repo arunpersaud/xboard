@@ -544,6 +544,7 @@ DrawBorder (int x, int y, int type, int odd)
 	case 0: col = "#000000"; break;
 	case 1: col = appData.highlightSquareColor; break;
 	case 2: col = appData.premoveHighlightColor; break;
+	default: col = "#808080"; break; // cannot happen
     }
     cr = cairo_create(csBoardWindow);
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
@@ -608,11 +609,12 @@ BlankSquare (cairo_surface_t *dest, int x, int y, int color, ChessSquare piece, 
 	    cairo_fill (cr);
 	    cairo_destroy (cr);
     } else { // evenly colored squares
-	char *col;
+	char *col = NULL;
 	switch (color) {
 	  case 0: col = appData.darkSquareColor; break;
 	  case 1: col = appData.lightSquareColor; break;
 	  case 2: col = "#000000"; break;
+	  default: col = "#808080"; break; // cannot happen
 	}
 	SetPen(cr, 2.0, col, 0);
 	cairo_rectangle (cr, fac*x, fac*y, squareSize, squareSize);

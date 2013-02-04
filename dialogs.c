@@ -1150,7 +1150,7 @@ ICSInputSendText ()
 void
 IcsKey (int n)
 {   // [HGM] input: let up-arrow recall previous line from history
-    char *val;
+    char *val = NULL; // to suppress spurious warning
 
     if (!shellUp[InputBoxDlg]) return;
     switch(n) {
