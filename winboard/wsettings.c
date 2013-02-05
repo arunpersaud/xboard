@@ -977,7 +977,7 @@ void TourneyPopup(HWND hwnd)
 {
     int n = NamesToList(firstChessProgramNames, engineList, engineMnemonic, "");
     autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
-    twice = FALSE; swiss = appData.tourneyType < 0;
+    twice = appData.loadGameIndex == -2 || appData.loadPositionIndex == -2; swiss = appData.tourneyType < 0;
     tourneyOptions[0].max = n;
     snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
     ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
