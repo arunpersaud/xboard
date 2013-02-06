@@ -1,3 +1,86 @@
+** Version 4.7.0 **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.7.0/ )
+
+   * Code refactoring of XBoard
+    * The old X11 front-end has been largely rewritten,
+      so that all windows are now created by a single
+      generic routine
+    * XBoard now uses the Cairo library for all drawing
+    * Pixmaps and bitmaps no longer supported;
+      XBoard now uses PNG and SVG images instead.
+    * An alternative (as yet experimental) front-end
+      using GTK has been added
+
+   * Interactive Analysis
+    * Excluding moves from analysis by playing them
+    * Excluded-moves header in Engine Output window
+    * Analyzing with two engines simultaneously
+    * Annotating an entire muti-game file
+    * Analysing positions by Monte-Carlo play
+
+   * Other New Functionality
+    * Displaying player logos (XB)
+    * Player logo on ICS can be based on player handle
+    * Chat boxes for XBoard
+    * Narrowing down of position searches
+    * Copying pieces when editing a position
+    * Starting WinBoard through drag & drop
+    * Recalling fully configured engines and ICS
+    * Creating an opening book from a game file
+    * Pausing a game
+    * Automatically observing partner games with dual-board
+	
+   * Interface Improvements
+    * Recognizes file type of lone argument by extension
+    * Default startup settings configurable per mode
+    * Separate menu items for loading 1st and 2nd engine
+    * Engines can be selected from listboxes
+    * Grouping of engines in the installed-engines list
+    * Stay in Analyze or Game Start mode after engine loading
+    * 'Continue Later' button in WB tournament dialog
+    * A new --help option (XB)
+    * A second board window for observing ICS games (XB)
+    * Smoother graphics and a resizable board (XB)
+    * A rejuvenated file browser (XB Xaw)
+    * Scrolling listboxes with mouse wheel (XB Xaw)
+    * Tabbing through dialog etry fields (XB Xaw)
+    * Adapt width of auxilliary windows on board resize (WB)
+    * External piece bitmaps (WB)
+    * Border around the board (WB)
+    * Saving settings as themes (WB)
+
+   * Bug fixes
+    * Grayout of Analysis menu item in zippy mode
+    * Crash on flagging in -st mode
+    * Keep track of virginity in variant seirawan FENs
+    * Immunity to capitalized promo pieces
+    * Avoid board sizes with unavailabile variant pieces
+    * Work-around for FICS violation of SAN
+    * Check validity of tourney participants
+    * Loop-Chess promotions with legality testing on
+    * Fix -fSAN option in Analyze File mode
+    * Scrolling of Engine Output after PV walk (XB)
+    * Start browsing in currently-selected folder (WB)
+    * Allow entry of fractional timeIncrement (WB)
+    * Resolve conflict between -mps and -inc options
+    * Size of mini-Shogi promotion zone
+    * Adjudication of stalemate and perpetuals in Shogi
+    * Rep-draw detection in drop games
+    * Insufficient-material draws in Knightmate
+    * Replacing of engine in non-last game position
+    * Sweep selection of promo-piece in click-click move
+    * Don't save aborted games in tourney PGN
+    * Remember ponder, book and other settings in tourney file
+    * Do not erase PGN tags on engine loading
+    * Solved feature problems with engine loading in match mode
+    * Re-send option settings to -xreuse engine
+    * Allow use of 'shadow' promotion pieces in any variant
+    * WinBoard did not always start in its installation folder
+    * Initialization of 'Twice' checkbox in Tournament dialog (WB)
+    * Clearing of marker dots after mode or settings change
+
+
 ** Version 4.6.0 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.6.0/ )
