@@ -3,6 +3,2893 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2013-02-05 22:52:42 -0800 Arun Persaud <arun@nubati.net>:
+new version number for release of 4.7.0
+
+
+2013-02-05 11:56:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let initial setting of Twice checkbox reflect current state
+
+The Twice checkbox in the Tournament dialog of WinBoard was by default
+starting unticked. It is more convenient to have it preserve the current
+state, however, based on the -lpi or -lgi value. Like the auto-incremet
+checkbox already did.
+
+2013-02-04 22:07:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put GTK warning in about-box
+
+
+2013-02-04 21:59:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warnings of build server
+
+
+2013-02-02 15:58:04 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix GTK error auto-raising board
+
+The variable mainwindow is not set in the gtk2 version. Unfortunately
+it is still used to determine default board size...
+
+2013-02-01 19:42:12 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update Dutch WB translation
+
+
+2013-02-01 19:37:06 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add some new strings to WB translation template
+
+
+2013-02-01 19:34:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Assign shortcut char to WB menu item
+
+The new Save games as Book item did not have a shortcut yet.
+
+2013-02-01 19:31:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let WinBoard start in its installation folder
+
+The current directory in WinBoard was not automatically the same as the
+installDir returned by SearchPath. Especially not if used without shortcut
+by file association.
+
+2013-02-01 19:29:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warning in WinBoard
+
+
+2013-01-30 14:25:57 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix expose of to-square with grid off
+
+The code relied on drawHighlight to request an expose evet for the entire
+square, but when lineGap = 0, drawHighlight is a no-op.
+
+2013-01-29 08:39:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix library order
+
+On OS X dialog windows could not get focus if -lXaw appeared after
+-lX11 -lXt in the linker command. This was cured by moving
+@FRONTEND_FLAGS@ (which expands to -lXaw) first in the LDADD parameter
+of the automake file.
+
+2013-01-28 17:38:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Preserve PGN tags when loading engine
+
+Switching to EditGame mode would normally erase the tags, but when analyzing
+a loaded game this would be undesirable. When the engine is playing, keeping
+the tags is dubious, but it is not obvious what to put in a new name tag,
+so we leave that for now.
+
+2013-01-28 17:23:47 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Preserve mode on engine loading (sometimes)
+
+That the mode always switched to EditGame after engine loading was
+particularly annoying at the start of a game (where leaving BeginningOfGame
+mode would disablethe Time Control dialog, and the engine would not
+automatically reply if you start playing) and AnalyzeMode. These two
+modes are now preserved, BeginningOfGame by refraining from calling
+EditGameEvent() and sending 'force' to the new engine, and AnalyzeMode
+be calling AnalyzeModeEvent() after the engine is loaded and repositioned.
+
+2013-01-28 14:14:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Catch unknown engine in tourney games
+
+When an XBoard instance is playing on a tourney it can happen that it is
+using a settings file with an engine list not yet containing a certain
+participant, because that participant was just installed in the instance
+that created the tourney file, but it did not save those modifications yet.
+This error is now caught, and leads to an error popup and stopping of the
+tourney play. This error was made non-fatal to allow the user to decide
+if he wants to quit with or without saving the settings (which, after all,
+does not seem up-to-date).
+
+2013-01-26 18:08:37 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Adjudicate pawn-drop mate as loss in Shogi
+
+Mating with a Pawn drop is illegal in Shogi, but rather than burdoning
+the legality-testing by this complex rule, we simply invert the result
+for such a mate. After all, Shogi customs are such that everything illegal
+leads to an immediate loss.
+
+2013-01-25 10:05:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Adjudicate perpetual checks as loss also in Shogi
+
+The Xiangqi code for recognizing perpetual checks is now also activated for
+Shogi, but in this case we bail out before checking for perpetual chases.
+The mini-Shogi case is then recognized as a win for gote.
+
+2013-01-25 09:55:56 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Stalemate is a win in Shogi
+
+In regular Shogi this never occurs, but in the mini variants it happens
+often enough.
+
+2013-01-22 20:49:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix engine timeout problem in match mode
+
+Reload of a reuse=0 engine would cause a done=1 event which would be
+abort the feature timeout of the other engine in the first game.
+
+2013-01-22 20:32:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Enforce -popupMoveErrors
+
+One move error was using DisplayError(), in stead of DisplayMoveError(),
+and thus did not obey the -popupMoveErrors option.
+
+2013-01-21 15:30:29 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file
+
+
+2013-01-21 10:26:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix some warnings
+
+
+2013-01-20 19:09:05 -0800 Arun Persaud <arun@nubati.net>:
+Updated German translation
+
+
+2013-01-19 17:54:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Do delayed board draw also with -stickyWindows false
+
+Only CoDrag needs to be suppressed on a configure event with
+-stickyWindows false, not the board redraw.
+
+2013-01-18 11:11:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let tellothers command add comment to PGN in local mode
+
+
+2012-12-30 15:19:57 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow use of ~ in pieceToChar for shadow pieces in any variant
+
+The use of shadow-pieces for promoted Pawns was limited to Crazyhouse and
+Bughouse. But this is not necessary, and in fact undesirable, as it made
+it impossible to implement Crazyhouse960, which combines shadow promotions
+with Fischer castling (only available in variant fischerandom)s, and thus
+has to be played as 8x8+5_fischerandom, using the Crazyhouse -pieceToChaTable.
+
+2012-12-30 15:06:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Resend engine-defined options after reuse=0 reload
+
+When the engine process is re-spawned for a new game under -xreuse setting,
+any alteration of engine settings brought about through the Engine Settings
+dialogs would be lost, and revert to the engine's default. This is now fixed
+by re-sending all options (known from the previous load of the same engine)
+with the current settings immediately after "protover 2", and ignoring the
+engine's option features. Rather than clearing the option list, and
+redefining it from the option features.
+
+2012-12-30 14:58:16 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement aborting of games on engine request.
+
+A new game-end command is added. For bakward compatibility it is disguised
+as an old one, namely "1/2-1/2 {Engine Abort Request}". These resultDetails
+are recognized as special, and rather than ending the game in a draw (which
+GUIs not implementing this), the game will be completely 'expunged' from
+the match or tourney it is part of, leaving no trace in the saveGameFile.
+
+2012-12-30 14:54:43 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Store some more tourney params in tourney file
+
+The hash and threads settings, as well as ponder and book options are now
+also saved in the tourney file, so that tournaments can be played in
+parallel where these parameters differ, and no mess up can occur on
+restarting a touney after doing something else.
+
+2012-12-23 11:26:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Do not automatically save aborted games in tourney PGN
+
+When the game result is 'unfinished', we prompt for a filename rather
+then using the specified saveGameFile if a tourney is in progress.
+
+2013-01-19 08:35:52 -0800 Arun Persaud <arun@nubati.net>:
+fix configure bug that showed up on OS X (couldn't find X11/Dialog.h)
+
+X_CFLAGS (set by AC_PATH_XTRA) was not used in Makefile.am. It was used in tests for X11/Dialog.h, etc. so configure worked, but make didn't.
+
+2013-01-18 22:26:13 -0800 Arun Persaud <arun@nubati.net>:
+Updated Ukrainian translations
+
+
+2013-01-09 07:57:43 -0800 Arun Persaud <arun@nubati.net>:
+removed trailing whitespace
+
+
+2013-01-09 07:49:20 -0800 Arun Persaud <arun@nubati.net>:
+Updated copyright notice to 2013
+
+
+2012-12-22 22:46:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Do not move to forwadMostMove when unpausing AnalyzeMode
+
+
+2012-12-22 22:44:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use Ctrl key in AnalyzeMode to exclude entered move
+
+
+2012-12-22 20:40:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement insufficient mating material for Knightmate
+
+KBK is draw with Royal Knight. With exo-pieces also KNK and KFK.
+
+2012-12-22 20:25:51 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix rep-draw detection in drop games
+
+In games like Crazyhouse every move is reversible, as captured pieces
+can eventually change sides again, and be dropped back on the board.
+So we have to search back a full 100 ply for repetitions, passing captures
+and Pawn moves.
+
+2012-12-11 22:33:07 -0800 Arun Persaud <arun@nubati.net>:
+updated po/pot files
+
+
+2012-12-11 22:18:05 -0800 Arun Persaud <arun@nubati.net>:
+new version number for developer release
+
+
+2012-12-10 14:48:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Prefer pause mode on pondering engine over 'easy'
+
+If the thinking engine is stopped after its move because it does not
+support pause, is is still better to use pause on the pondering engine
+than to switch of its pondering with 'easy', as the latter might not
+be instantaneous. Also switch off pondering in the thinking engine before
+it gives the move, just in case it does not respond immediately to
+easy / hard.
+
+2012-12-10 13:40:47 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update WinBoard translation template
+
+
+2012-12-10 13:35:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix min-Shogi promotion zone
+
+In integer arithmetic N*2/3 is not the same as N - N/3, with as a result
+that the white promotion zone was 2 ranks deep on 5x5 boards. This only
+happened in LegalityTest, but because this would classify all moves to
+4th rank an non-promotions, they would be printed with a faulty
+deferral (=) sign as promochar in SAN.
+
+2012-12-10 13:32:49 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Do not clear PGN tags on Analyze File
+
+
+2012-12-10 13:28:37 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix -fSAN in AnalyzeFile mode
+
+The exception that a PV relates to currentMove rather than forwardMostMove
+applies not oly in AnalyzeMode, but also in AnalyzeFile. Furthermore,
+PvToSan did not properly restore the pushed game tail in this case.
+
+2012-12-08 16:02:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve scaling of border bitmap (WB)
+
+The StretchBlt mode is set from dither to delete.
+
+2012-12-05 16:34:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement use of pause / resume protocol commands
+
+Engines that implement feature pause=1 will be paused during their move
+on a pause event; pondering engines will be controlled either through
+'pause' or (if they don't support that) 'easy', which both should work
+instantaneously. If the thinking engine does not support 'pause', the pausing
+will be deferred to when it produces its move, and is implemented by not
+relaying the move, and switch off pondering for both.
+
+2012-12-03 12:58:36 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Loop-Chess promotions
+
+Loop Chess is not a supported variant, but hould be playable as Crazyhouse
+with an altered pieceToCharTable, not defining the shadow promotion pieces.
+But with legality testing on promotion to shadow piece would take place
+even if the shadow piece was not defined.
+
+2012-12-02 22:44:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix move highlighting with animation off
+
+In WB the moving of SetHighlights to after the animation had broken the
+highlighting of engine moves, because it was also moved after DrawPosition.
+While it is DrawPosition that actually draws the highlights. Now it has been
+moved to just before DrawPosition.
+
+2012-12-02 11:09:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Start browsing in currently-selected folder (WB)
+
+The folder-browse dialog always started at My Computer, while file browsing
+started in the globally last-used folder (which might not be related at all
+to the file entry we are now browsing for).
+
+2012-11-29 23:38:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement book-creation functions
+
+A new menu item triggers conversion of the currently loaded PGN file
+to a Polyglot book, saved with the GUI-book filename. A (volatile) option
+-mcBookMode alters the probing algorithm to build a book from scratch by
+playing games (and using a form of learning).
+
+2012-11-29 22:23:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use colors in Board-Options dialog also for font pieces (WB)
+
+The piece color settings now control the pieceColor or fontPieceColor
+settings, depending on the setting of -usePieceFont.
+
+2012-11-29 22:14:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement auto-creation of ICS logon file
+
+Under control of the new option -autoCreateLogon (which can be set from
+the ICS Options dialog) the first two lines in response to the ICS "login:"
+pompt will be saved on a newly created logon file (if logon from such
+an existing file failed).
+
+2012-11-29 21:56:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Themes dialog (WB)
+
+This dialog, done by the generic popup, contains controls for many settings
+that so far could only be controlled by options. It also introduces the
+concept of 'themes', sets of options stored in the multi-line option
+-themeNames.
+  Add some dummy routines to suppress compile errors in functions that
+cannot be called yet in XBoard.
+
+2012-11-29 21:32:03 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow external piece bitmaps and board border (WB)
+
+The -pieceImageDirectory is now also used for WinBoard, to indicate
+a directory of .bmp files, used to replace the built-ins. The outline
+and solid bitmaps can be full-color. This allows winBoard to use the
+WinBoard-zeta graphics. A new option -border can indicate a bitmap file
+used to draw a half-square-wide border around the board.
+  A white background has to be drawn underneath the black pieces, to avoid
+color-interference with the board, just like happens for the white pieces.
+These backgrounds now always use bright white, rather than -withePieceColor.
+
+We still have to work on the scaling of the zeta (600x600) bitmaps to
+the actual board size, as for some bitmaps the stratchblt is ugly.
+
+2012-11-29 21:05:15 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add 'Continue Later' button in Tournament dialog (WB)
+
+This button makes it possible to accept the values specified in the
+dialog without immediately starting the tournament (as OK does),
+so you can re-open the dialog later, and OK it then.
+
+2012-11-29 20:25:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Load opponent logo based on handle in ICS play (WB)
+
+The logos for handles on FICS are sought in folder logos\freeches.org\*.bmp,
+etc. If no logo for the handle is found there, the logo of the ICS is
+displayed as usual.
+
+2012-11-19 20:35:05 -0800 Daniel Dugovic <dandydand@gmail.com>:
+Fix configure script for --enable-zippy  (tiny change)
+
+reported and patch by Daniel.
+
+edited by Arun Persaud:
+- also fixed #ifndef ZIPPY -> #if !ZIPPY
+- didn't change #if -> #ifdef
+
+2012-11-10 00:12:34 -0800 Arun Persaud <arun@nubati.net>:
+don't define X_LIBS when using gtk-frontend
+
+
+2012-11-07 22:16:09 -0800 Arun Persaud <arun@nubati.net>:
+updated po/pot files; added new frontend files
+
+
+2012-11-07 22:14:20 -0800 Arun Persaud <arun@nubati.net>:
+fix configure script for --with-Xaw and --with-gtk
+
+made Xaw the default and included xaw or gtk sources as extras
+in case the other frontend is selected for make distcheck
+
+2012-11-07 21:13:38 -0800 Arun Persaud <arun@nubati.net>:
+new version number for developer release
+
+
+2012-10-31 09:55:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Draw frames around memos and listboxes
+
+
+2012-10-30 17:39:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Adapt lineGap during sizing
+
+
+2012-10-30 15:04:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix clock highlighting
+
+
+2012-10-30 10:59:45 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Chat Box
+
+The genric TypeInProc is re-instated, and replaces ICSKeyEvent as primary
+handler for special keys in one-liner text edits.
+
+2012-10-29 19:46:27 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Pay attention to NO_CANCEL dialog flag
+
+
+2012-10-29 14:18:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix clock clicking with GtkEventBox
+
+Like in WinBoard the button-3 case is now handled in the primary
+event handler (and communicated to it in a kludgy way). It would be
+better if this was absorbed in ClockClick().
+
+2012-10-28 22:25:22 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix logo placement
+
+Graphs were not recognized as possible SAME_ROW elements. A Graph requesting
+FIXED_H (which only the logos did) is now packed into a (borderless) aspect
+frame.
+
+2012-10-25 23:04:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add window positioning
+
+Sticky windows now sort of works, but needs unexplained fudge factors.
+Reopening a persistent dialog centers it on the board, and disobeys
+the positioning command. The WindowPlacement of the BoardWindow was
+again added (it was commented out during development).
+
+2012-10-22 22:41:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make board sizing work through subtracting fixed height
+
+There is now no attempt to give a size to the board drawing area, so it
+can later be sized as small as we want. The frame width is determined
+by subtracting the nominal board size from the actual window size,
+(because the clocks will have that width, and the board will startas 1x1),
+while the vertical margin is determined as the difference between the
+bactual window height, the drawing-area height minus a fudge of 25 pixels
+to compesate for the erroneously allocated blank space below the board.
+
+2012-10-22 21:09:51 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warnings
+
+The highTextStart/End are now declared in engineoutput.h, shared between
+nengineoutput.c and xengineoutput.c. Unused variables were removed.
+Also fix warnings in xboard.c and xoptions.c.
+
+2012-10-22 17:40:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Delete emptied front-end files, and move rest to gtk directory
+
+Remove #ifdeffed-out Xt code that has GTK implementation. The xgamelist
+and xhistory have been completely cleared off content, and were removed.
+
+2012-10-27 00:12:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add copy-paste
+
+The code from gtk-xt could be used with almost no modification.
+
+2012-10-21 09:09:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Some experimenting with sizing
+
+Does not work as intended yet.
+
+2012-10-21 23:04:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add task-bar icon
+
+Funny enough it was necessary to swap the two svg icons to make this work!
+
+2012-10-20 10:29:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make some tall dialogs multi-column
+
+A dummy button was added to the last row of New Variant to make the
+number even. A legality-test warning as put in the New Variant dialog
+Fix width of tourney-file in Match dialog
+
+2012-10-20 21:14:33 -0700 Arun Persaud <arun@nubati.net>:
+updated some icons to SVG
+
+
+2012-10-20 19:57:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add displaying of icons
+
+A new Option type, 'Icon', was added for this as in GTK Icons and Labels
+need different types of widget. The icons are now svg, so we could
+remove the icon pixmaps.
+
+2012-10-20 14:25:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix button bar
+
+
+2012-10-20 14:03:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add BarBegin, BarEnd options
+
+This makes the button bar display correctly. Also fix v-sizing of menu bar.
+
+2012-10-20 10:01:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add listbox double-click callback
+
+This function was formerly performed by WheelProc.
+
+2012-10-19 17:29:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add hiding / showing second Engine Output pane
+
+The handle of the GTK table for the second engine is stored in the
+EndMark handle by GenericPopUp, so it can be used later to hise/show
+that table.
+
+2012-10-19 17:15:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Use different tables for different dialog columns
+
+Making the same table wider (in steps of 3) to get multiple columns
+does not work, because it forces options to align vertically. This
+wrecks dialogs like Load Engine, where one column contains a very
+high option (listbox). Now differnt tables are created for each column,
+packed in a new itermediate hbox. In case of the Engine Output window,
+a vbox is used instead to cause vertical stacking.
+  Only multi-line text-edits and listboxes are now allowed to take up
+vertical space changes, while only the middle colum of the table
+can take up horizontal size changes. Within packing boxes space is
+equally distributed.
+  The labels above the particiant-selection widgets had not the same width
+as the textview / listbox, leading to misplacement of the second label.
+  For Engine Settings the spontaneous breaking into columns did not
+involve a SAME_ROW flag, so the 'columns' were stacked vertically.
+In addition the columns were too tall for GTK. They are now 20 options max.
+
+2012-10-19 13:46:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Deselect first char in Move Type-in and ICS Input Box
+
+After popup the Move Type-In had the typed character in it, but it was
+selected, so that typing a second character would erase it again.
+Same for the ICS Input Box. A prototype for CursorAtEnd is now also added.
+
+2012-10-19 13:33:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Close Move Type-in on Enter
+
+The code is squeezed into the ICSKeyEvent callback.
+
+2012-10-18 21:57:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add access routines to checkboxes and FocusOnWidget
+
+The <Enter> handler of the filter field needs it to return focus to
+the listbox.
+
+2012-10-18 21:42:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add game-list callbacks
+
+The callbacks for listbox and filter text are treated by the same callback,
+which does both key presses and button double-clicks.
+Giving focus back to the listbox after filtering does not yet work!
+
+2012-10-18 16:27:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add optional callback to Label Options
+
+For some reason this does not work. The callback isn't called!
+
+2012-10-18 13:40:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add type-in event to board for popping up box
+
+
+2012-10-18 13:12:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Shift detection
+
+The state of Shift and Ctrl was only probed on button clicks, so it
+is now read out of the button-event struct in the relevant button handlers.
+For backwad compatibility, they store it in a global, so the routine
+ShiftKeys can take them from there.
+
+2012-10-18 12:35:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove some unneeded low-level X11 code
+
+Things like tabbing between controls, mouse-wheel scolling etc. are all
+automatic in GTK, and thuse don't need to be ported.
+
+2012-10-18 10:12:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add file browser
+
+The gtk-xt code for browsing in response to menu items rather than dialog
+browse buttons) was grafted. It seems desirable to merge the two browsing
+functions, though. Pass extra params used by Xaw to FileNamePopUpGTK.
+The code was altered to use DelayedLoad.
+
+2012-10-18 09:54:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ListBox, and add some support routines
+
+The srolled-window for the listbox used a uninitialized variable for its
+width, causing a crash. Now it pays attention to the Option.max and .value
+size hints. The access routines were copied from gtk-xt. HighlightWithScroll
+could just a wrapper for HighlightListBoxItem, as GTK auto-scrolls.
+
+2012-10-17 20:01:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Connect CommentClick handler
+
+This can make use of generic memo callback, so it could be entirely
+backend. Therefore it was moved to dialogs.h. As it shared a global with
+some other back-end popup routines to remember the current move, these
+could now be moved out of xboard.c too. (Well, not so for the X11 front-end,
+so it has now been put in a header. :-( )
+
+2012-10-17 19:41:11 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix animation
+
+Because FrameDelay does block the event loop, even though it releaes the
+CPU, expose events start to lag behind the actual drawing. By combining
+expose events for overlapping squares, rather than decompose them into
+3 rectangles, this problem seems to go away. But only if there is an
+extra exposure on the squares to be drawn also non-overlapping frames
+will be properly drawn (?!).
+
+2012-10-17 14:40:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement highlighting in engine output by through generic method
+
+HighlightMove was made generally available for all text. It is now just a
+wrapper for the generic HighlightText, and could be moved to the back-end.
+(This requires the initialization to be widget specific, and the flag
+indicating it has been done is now stored in the Option.min field.)
+
+2012-10-17 14:33:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let engine-output memos use new generic callback
+
+
+2012-10-17 13:53:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add scrolling of Move History
+
+To have access to the textview, its handle is now stored in the
+Option.textValue field.
+
+2012-10-17 13:11:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add highlighting in move list
+
+For now it is assumed the normal background will be white (for clearing
+the highlight).
+
+2012-10-16 19:44:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make generic memo-event handler, and connect history callback
+
+Large text widgets can now define a user handler in their Option.choice
+field. If they do, agneric callback is added tothem, which catches mouse
+events. Button release and pointer motion pass their coordinate and type
+to the specified user routine. Button presses in addition retrieve
+the text from the widget, set the cursor in it to the clicked point,
+and convert it to a character position, also passed to the user.
+  The user is responsible for ignoring events he is not interested in.
+
+2012-10-16 15:58:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add key-handler for ICS Input Box
+
+In contrast to the X11 code, all intercepted keys are now treated by
+the same callback. The ICS Input Box callback triggers on Up, Down and
+Return key, and refers to these symbolically.
+
+2012-10-16 15:05:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Highlight Pause button
+
+
+2012-10-16 13:52:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Better cleansing of xboard.c from X11 types
+
+The #includes for X11 files were still in there.
+
+2012-10-16 13:28:32 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add text insertion in engine-output memos
+
+
+2012-10-16 09:34:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Append recent engines to engine menu
+
+This is now entirely moved to the back-end, by doing it in the table
+from which the menus are later generated. The special callback for engine
+items is abandoned, and the euProc for such items is left NULL to flag
+that RecentEngineEvent should be invoked with the applicable engine number.
+To calculate the latter a global variable firstEngineItem is dynamically
+set to the length of the regular engine menu.
+
+2012-10-15 22:17:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Transfer more gtk-xt code, and add some new
+
+Add input-source handling
+Graft color picker (<Enter> callbeack in the text field is still missing!)
+Handle contents of label widgets (store handles in Option for access)
+Add printing of clocks
+Add printing of window title
+Pay attention to BORDER attribute of Label Options (pack in frame)
+Delete ReadBitmap code (also remove #including of bitmap files for icons)
+Fix layout of textviews (adapt to newer Option format, incl. wrap, scroll)
+Support vertical stacking in Break Option (no table widening when !SAME_ROW)
+Make default horizontal scroll policy automatic (for engine-output window)
+Fix disabling of unused spinners in TC dialog
+
+2012-10-15 20:47:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Connect dialog Browse buttons to GTK browser
+
+
+2012-10-15 19:52:17 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement menu checkmarking and enabling
+
+odes in the (later over-written) handle field specify which items
+are to be checkmarked, and by what style button.
+
+2012-10-15 16:18:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Attach expose handler and connect to mouse events
+
+The GraphExposeProc is conected to the Graph widgets. A gdk draw routine
+is used to copy the buffer bitmap to the display. It is also connected
+to button and motion-notify events.
+  In this version the board can be fully operated with the mouse.
+
+2012-10-14 22:00:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Transfer most available gtk-xt code to xoptions.c
+
+GenericPopUp and PopDown are grafted from gtk-xt into gtk2.
+The version compiles, but segfaults before doing anything, with error
+messages about unexpected cases in GenericPopup for Graph and PopUp Options
+of the main board. The spin options need special treatment in GetWidgtText.
+
+2012-10-15 11:41:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Give LoadListBox two extra parameters
+
+It often occurs that we just want to swap two elements, and reloading
+the entire listbox would be a very inefficient way to do this in widget
+sets that allow access to a single element.
+
+2012-10-14 20:36:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove all X11 code by #ifdeffing it out
+
+With #ifdef TODO_GTK we disable all X11 code, in order to get a compiling
+X11-free version. The disabled sections can then be replaced by code
+for another widget set, the X11 version still showing what it was supposed
+to do.
+
+2012-10-14 17:37:18 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move timer functions to new file xtimer.c
+
+The timers for the clocks, periodic analysis events and ScheduleDelayedEvent
+go into a separate file.
+
+2012-10-14 15:31:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make xevalgraph.c backend
+
+The only front-end stuff left in xevalgraph.c was an unnecessary reading
+of the window size (which could be obtained from the WindowPlaceent struct),
+and drawing (all cairo now). The drawing was moved to draw.c, and the
+remaining part renamed nevalgraph.c.
+
+An attempt to list them in a less chaotic way.
+
+2012-10-14 14:34:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Cleanse back-end code of all references to X11 types
+
+When compiling for X11, common.h #included X11/Intrinsics.h so that
+X11-specific data types could still be used throughout the back-end part
+not shared with WinBoard. By temporarily disabling this, error messages
+could be generated on all such occurrences, and were then solved. This
+included the following:
+  The InputSource struct is not uses in usystem.c at all, and its definition
+could be moved to xboard.c. InputSourceRef, which logically should heve been
+defined as (InputSource *), is in reality (void *), so the back-end can
+pass it around.
+  Some non-platform-dependent stuff of general interest had prototypes
+(or external vars) in xboard.h. This is now moved to a new header xboard2.h,
+to allow it to be shared without bringing in X11 dependence.
+  The EngineOutputProc was defined inconsistently, but the header was not
+sufficiently shared to flag this error. This has been repaired now, by moving
+the template to menus.h.
+
+2012-10-14 13:39:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove xedittags.c, .h from project
+
+The tiny bit of code that was left was absorbed in dialogs.c, the one
+prototype to menus.h.
+
+2012-10-14 12:53:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove inclusion of frontend.h from backendz.h
+
+This did not seem to serve any purpose at all.
+
+2012-10-14 12:49:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Split xhistory.c in front-end and middle-end part
+
+
+2012-10-14 12:21:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move MarkMenuItem to xoptions.c
+
+This to make xoptions.c completely independent from the inclusion of
+frontend.h. The prototype is moved to menus.h.
+  Loose end: DrawPosition in board.c does not see the prototype.
+Very suspect that it wants to see it. Why would it have to correct the
+flipView setting??? Better se to it that it is correct to start with!
+
+2012-10-14 12:14:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+move testing for no options to back-end
+
+The test if an engine has options and display a note instead of
+the Engine Settings dialog when this is not the case is moved
+to outside of GenericPopUp, to make the later independent of calling
+other routines.
+
+2012-10-14 11:20:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove some unnecessary header includes
+
+
+2012-10-14 10:47:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move ICS-engine analyze and AnalyzeGame code to shared back-end
+
+This code was still duplicated between WB and XB in the front-ends.
+Because of its incorporation in AnalyzeModeEvent the 'middle-end'
+function AnalyzeModeProc could be eliminated. AnalyzeModeEvent was made
+to return an int to flag its success, and keep the JAWS code based
+on it out of XBoard.
+ The AnalyzeGame code  is now incorporated in AnalyzeFileEvent().
+
+2012-10-26 10:28:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add configure switches for Xaw vs GTK.
+
+This patch is an adapted version of the one Arun made at the end of the
+gtk2 branch. It uses the exact same version of his configure.ac, but the
+Makefile.am is adapted to the situation in master at the beginning of it,
+after duplication of the X11 front-end files in the xaw directory for
+preserving them, while the versions that will be modified to GTK front-end
+are still in the xboard directory.
+
+2012-10-25 11:12:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Prepare xoptions.c for middle-end changes
+
+Some changes that can be pre-empted, such as the splitting of Label
+into Label and Icon Option type, and some dummy wrappers are already
+implemented, so they can be used when needed by GTK.
+
+2012-10-25 09:20:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Preserve copies of the X11 front-end in xboard directory
+
+The X11 front-end has been moved to the xaw directory, but copies
+are retained for modifying them to gtk versions.
+
+2012-10-24 08:55:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move X11 front-end to directory xaw
+
+
+2012-10-31 18:18:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix initial enables in TC dialog
+
+
+2012-10-30 14:47:24 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix image extension used for browsing to .pgn
+
+
+2012-10-28 21:39:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix WinBoard compile error on enum PEN
+
+
+2012-10-30 11:20:54 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash in promotion popup
+
+There were not enough entries for Capablanca Chess with legality-testing off,
+where King is also presented as a choice.
+
+2012-10-28 18:19:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix message in New Variant dialog
+
+Even in -ncp mode the message was referring to the 'current engine'.
+
+2012-10-28 18:16:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on animation after resizing
+
+The animate buffers were still holding pointers to a discarded cairo surface.
+
+2012-10-21 14:49:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix variant-dependent pieces
+
+The code to select the actually used piece images from the available ones
+(from InitDrawingSizes) is now made into a subroutine, and also called
+after resizing the pieces.
+
+2012-10-26 10:18:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Replace marble texture pixmaps by png
+
+
+2012-10-26 10:13:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Replace xiangqi board pixmaps by png images
+
+
+2012-10-26 10:08:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove the texture pixmaps from project
+
+These were already replaced by png textures.
+
+2012-10-23 15:02:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix re-rendering of svg on resize
+
+The previously prepared bitmaps were retained if we resized, rather then
+rendering the svg atthe new size.
+
+2012-10-21 15:48:30 -0700 Arun Persaud <arun@nubati.net>:
+update po/pot files
+
+
+2012-10-21 15:47:12 -0700 Arun Persaud <arun@nubati.net>:
+new version number for developer release
+
+
+2012-10-21 11:10:36 -0700 Arun Persaud <arun@nubati.net>:
+we still need a few bitmaps, so the directory needs to be included in Makefile.am
+
+make distcheck complained about this
+
+2012-10-21 15:56:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Rename svg shogi pieces, so they become usable
+
+Only white pieces are present. For black they would have to be flipped.
+
+2012-10-21 15:54:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in resizing on variant switch
+
+The fix of the garbage pixels had unfortunately broken this.
+
+2012-10-21 15:15:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in fallback mechanism
+
+After failure to load a piece from a specified -pieceImageDirectory
+the default theme was not tried, because the cairo function to load
+from a pgn file returns a valid handle even if the file does not exist.
+
+2012-10-21 14:58:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Get svg error message
+
+
+2012-10-21 14:49:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix variant-dependent pieces
+
+The code to select the actually used piece images from the available ones
+(from InitDrawingSizes) is now made into a subroutine, and also called
+after resizing the pieces.
+
+2012-10-16 12:08:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove caveat on available pieces fromNew Variant dialog
+
+In the cairo version all pieces are available at all board sizes.
+
+2012-10-21 11:41:11 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove some unused images from png directory
+
+Currently only the three board texture files are used. But the piece
+images are still left, because they might be useful if we ever want
+to mae XBoard configurable for not using librsvg.
+
+2012-10-21 10:40:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in resizing
+
+The nominal size of the window was not set in the correct Option struct.
+
+2012-10-21 09:58:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Prevent odd-width line shift in length direction
+
+
+2012-10-21 09:48:29 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Print missing-pieces error message to console
+
+The GUI might not yet be up at this point.In addition, suppress
+the rest of the code, because it could give segfaults.
+
+2012-10-21 09:30:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix garbage pixels on the right of the board
+
+The extra pixel that is requested in sizing the board window back to
+an available size because we ofte get one less pixel than we ask for
+can lead to a line of garbage pixels next to the board. This is combatted
+by limiting expose events to the true board area, remembering that in the
+Graph Option rather than the actual window size, and suppressing resizing
+when the latter only exceeds the stored width by more than 1 pixel.
+
+2012-10-15 10:27:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Trim board-window size
+
+The board window will sometimes be a pixel larger than requested.
+The ReSize routine will now reset the size values in the Graph Option
+to what they were supposed to be, to prevent expose events will
+draw nonsense in the extra space.
+
+2012-10-13 23:26:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Adapt docs for svg/png in stead of bitmap/pixmap
+
+
+2012-10-13 09:35:31 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Spontaeous changes in gettext stuff
+
+
+2012-10-13 08:03:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move Shogi svg pieces to own directory
+
+
+2012-10-13 07:57:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove unnecessary Xt colors and call to MakeColors
+
+
+2012-10-13 07:50:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Code cleanup: move expose redraw to draw.c
+
+
+2012-10-13 07:37:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress warning for InitDrawingHandle
+
+
+2012-10-13 07:33:15 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make fallbackPieceImageDirectory hardcoded
+
+
+2012-10-13 07:18:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Increase drag delay too 200 msec
+
+On my slow laptop it can take more than 100 msec to reallocate bitmaps
+in the generic expose, with as a consequence that the DelayedDrag event
+is not processed before the timeout expires. The timeout event then triggers
+a redraw, which again takes so long that the timeout expires before the
+event to reset the timer could be processed, and this just perpetuates
+itself, leading to a large series of queued redraws, and a long waiting time
+for an image to appear after the sizing stops.
+
+2012-10-13 07:01:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix segfault on faulty command-line option
+
+
+2012-10-12 14:42:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress anti-aliasing in -monoMode
+
+In the color-substitution code, always use bi-level alpha and color.
+
+2012-10-12 13:34:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove piece pixmaps from project
+
+
+2012-10-12 11:47:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement proper fallback cascade
+
+Try in order cached svg, cached bitmap, user png, user svg, default svg.
+
+2012-10-12 11:06:06 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Cache svg handles
+
+
+2012-10-12 10:45:29 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Install svg pieces in themes/default
+
+The svg pieces are installed with the XBoard data in the directory
+.../xboard/themes/default . A new option -fallbackPieceImageDirectory
+is added, and is configured in the master settings file to point to
+these pieces. This options, which replaces -svgDirectory, is volatile,
+and the menu control to set it is removed. The -pngDirectory option
+is renamed to -pieceImageDirectory (-pid).
+
+2012-10-12 10:02:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove bitmaps from project
+
+
+2012-10-12 09:55:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Install the wood textures as png
+
+The xboard.conf has to be edited to set these as default textures,
+in stead of the .xpm files.
+
+2012-10-12 09:50:31 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add hatched board texture
+
+A png file with hatching is added, so it can be used for dark squares
+in a monochrome theme. It is installed in a new data directory
+.../xboard/themes/textures.
+
+2012-10-11 22:21:06 -0700 Arun Persaud <arun@nubati.net>:
+added a black and white theme to replace the mono option
+
+
+2012-10-11 20:56:42 -0700 Arun Persaud <arun@nubati.net>:
+added SVGs to dist files in automake
+
+
+2012-10-11 19:44:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix exposure of atomic captures
+
+The grid lines had to be repaired too, so damage marker 2 had to be used.
+
+2012-10-11 19:13:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix animation with textures off
+
+The blank square was not shifted to (0,0) when drawing the animation buffer.
+
+2012-10-11 19:08:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix 1-pixel offset of grid lines on some cairo implementations
+
+
+2012-10-11 09:51:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Solve odd lineGap problem
+
+Not all cairo versions seem to round the same when an odd-width line
+is to be drawn at integer coordinates. So now we explicitly ask it
+to be drawn centered on half-odd-integer coordinates.
+
+2012-10-09 18:52:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -trueColors option
+
+
+2012-10-09 14:56:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Always render svg pieces anew on size change
+
+The svg pieces are now unconditionally rendered to supply the pngPieceImage
+master source otherwise read from png file. This is then fed into the
+original png code (so that if for some reason it fails, we fall back on png
+pieces, and finally on built-in pixmaps).
+
+2012-10-09 14:06:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix rsvg version in configure.ac
+
+
+2012-10-08 19:54:19 -0700 Arun Persaud <arun@nubati.net>:
+initial svg rendering
+
+
+2012-10-08 18:34:05 -0700 Arun Persaud <arun@nubati.net>:
+added cairo and librsvg to configure process
+
+
+2012-10-08 18:32:55 -0700 Arun Persaud <arun@nubati.net>:
+added SVGs
+
+converted from inkscape SVG to plain SVG before adding
+
+2012-10-10 21:19:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Adapt Eval Graph code to new drawing system
+
+The eval graph now triggers an expose after drawing, and gets its size
+from the Option fields.
+
+2012-10-10 20:37:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix expose requests seek graph
+
+
+2012-10-10 20:07:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make draw handle for board globally available
+
+
+2012-10-10 19:45:39 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let expose requests pay proper attenton to widget
+
+So far, expose requests were always assumed to be for the board widget,
+preventing display of the labels.
+
+2012-10-10 18:45:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix initial display of logos
+
+The logos were selected and printed during the initialization,
+before the main event loop was started. So the expose events during
+widget creation, which created the drawing surfaces, were only processed
+after the initial drawing of logos, so that there was nothing to draw on!
+
+2012-10-10 17:25:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix alignment of highlight expose
+
+
+2012-10-10 17:19:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+remove NewSurfaces
+
+
+2012-10-09 13:57:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make expose handler generic
+
+The Graph Option now returns two handles in hitherto unused fields of its
+Option struct: Option.choice is a cairo handle of a memory buffer the user
+must draw to, while Option.textValue is the handle to the widget.
+Expose events copy the memory buffer to the display for the exposed area.
+A routine DrawExpose() is supplied to let the user generate expose events.
+
+2012-10-06 21:30:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Reload piece images when pngDirectory is changed
+
+The OK function of the board options dialog now tests for a change
+in pngDirectory and passes a parameter to InitDrawingParams to tell
+it to destroy the old images. This cause a reload on scaling the pieces.
+
+2012-10-06 20:16:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress redraw during sizing
+
+
+2012-10-06 20:10:18 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in resize trigger
+
+Even if the square size does not change, the window has to be shrunk
+back to fit the board.
+
+2012-10-06 19:54:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make Piececolor options work on png pieces
+
+The scaled, antialiased bitmaps are now colored according to the option
+settings. This is done by decomposing every pixel in a white, black and
+transparency component, which is possible because the opacity is
+directly give in the alpha channel, and black originally was a hard zero.
+So what you se in the red channel must be white (as the original white
+was #FFFFCC), and the rest of the opacity must be due to black.
+  The color to be replaced (white for the white pieces, black for the black
+pieces) is then replaced by the original weight of this color times the
+color from the option.
+
+2012-10-06 17:53:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Plug resource leak on rezising with pixmaps
+
+
+2012-10-06 16:19:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fall back on built-in pixmaps if png pieces unreadable
+
+
+2012-10-06 14:21:11 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Do coordinate text alignment with cairo
+
+
+2012-10-06 13:40:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Some cleanup
+
+
+2012-10-06 12:14:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Clean up drawing code
+
+Now all routines only draw through cairo, the destination surface can
+be passed to them, making it possible to do the duplicate drawing
+to the memory board image in a cleaner way.
+
+2012-10-06 11:37:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Check in draw.c, draw.h
+
+
+2012-10-06 11:26:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove all bitmap & pixmap drawing
+
+All Xt code for drawing the board is now removed, as are the
+-pixmapDirectory and -bitmapdirectory option. This version is now
+completely dependent on cairo for handling of all graphics anywhere.
+(The build-in pixmaps are still left, though, for later use as an
+alterative cairo source when no png files are found.)
+
+2012-10-06 10:29:06 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Separate off drawing routines from xboard.c
+
+A new source file draw.c is created to hold all code associated with
+board drawing. The routines for loading bitmaps and creating colors
+were left in xboard.c, though, as they are also used for handling
+icons and colors of widgets.
+
+2012-10-05 19:53:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix erasing dots in seek graph
+
+The cairo dots were just a little bit bigger than the old ones, so they
+were not properly erased, but left a remnant.
+
+2012-10-05 19:25:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Cleanup CairoOverlayPiece
+
+
+2012-10-05 19:22:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Draw arrow also on backup image
+
+
+2012-10-05 19:16:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix highlight clearing
+
+
+2012-10-05 18:59:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove acceleration trick
+
+
+2012-10-05 18:54:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement variant-dependent png piece symbols
+
+
+2012-10-05 18:42:51 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix clearing of markers dots with promo popup
+
+
+2012-10-05 18:32:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Also render coordinates to backup board
+
+
+2012-10-05 18:30:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove debug print
+
+
+2012-10-05 18:29:13 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let cairo also do evenly colored squares.
+
+
+2012-10-05 17:56:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make dragged piece for excluding moves transparent
+
+
+2012-10-05 17:42:18 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix DrawSeekText
+
+
+2012-10-05 17:40:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo coordinate / piece-count printing ith cairo
+
+
+2012-10-05 15:40:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Also use cairo on slave board
+
+With dual-board observing the drawing should be redirected to the
+slave board, so SwitchWindow should also switch the xlib-surface to
+one for the slave window.
+
+2012-10-05 15:12:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Cure flashing of piece on from-square
+
+In a drag-drop move the piece was flashed on the from square after the
+user dropped it on the to-square, because highlights were set before the
+move had updated the board. And highlighting with arrow can cause a redraw
+of the last board. Same with setting or clearing marker dots.
+
+2012-10-05 14:20:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Specify proper condition for using cairo animation
+
+
+2012-10-05 14:07:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow resizing of board window
+
+In full png mode the size of the board window is no longer locked.
+After resizing, the square size is calculated as the largest one that
+would fit the window, and the window is then shrunk around it. To prevent
+excessive redrawing during sizing, the redraw is delayed by putting it
+in DragProc.
+
+2012-10-05 10:41:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Switch to using 64x64 png images
+
+The bitmap scaling works better when the needed factors are not too large,
+as the svg rendering's anti-aliasing did not blur more than 1 pixel.
+So after shrinking too much the images are not effectively anti-aliased
+anymore.
+
+2012-10-05 10:16:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Maintain in-memory copy of the board image
+
+As reading back from the xlib-surface proves incredibly slow (cairo probably
+converts the entire image from Xt format to cairo format when we set it
+as a source, even though we only want to read a few dozen pixels), we now
+keep an exact copy of the board image as a cairo bitmap in memory. This
+restores the speed of the animation, but unfortunately leads to awful code.
+
+2012-10-04 22:15:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Do animation with cairo
+
+Unfortunately this is incredibly slow.
+
+2012-10-04 18:36:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow back-texture files to be PNG, (drawn with cairo)
+
+
+2012-10-04 15:10:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add png pieces
+
+A new directory with 256x256 png piece images is added to the source tree.
+
+2012-10-04 15:01:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add mode to draw PNG piece images through cairo
+
+The PNG images have to be supplied as files in a -pngDirectory (a new
+option) with a 256x256 bitmap. They are then scaled by cairo to the
+desired square size. This does not work very well for the smaller sizes.
+
+2012-10-03 14:45:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo marker dots with cairo
+
+
+2012-10-03 14:27:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo highlights with cairo
+
+
+2012-10-03 14:07:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make convenience routine SetPen globally available
+
+The routine to set a pen as specified by  a color string that was used
+in xevalgraph is moved to xboard.c, where there also is lots of demand
+for it. The arrow drawing now uses it for setting the highlightSquareColor.
+
+2012-10-03 12:28:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo grid with cairo
+
+
+2012-10-03 12:00:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo arrow highlighting with cairo
+
+
+2012-10-03 11:20:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo seek graph with cairo
+
+New front-end services DrawSeekOpen() and DrawSeekClose() have been
+added, and are called from the back-end to enclose any drawing activity.
+In WinBoard these had to be defined as dummies.
+
+2012-10-02 15:31:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo logos with cairo
+
+The logos must now be .png files, and are internally handled as their
+filenames. (So no preparation of a drawable from it at startup.)
+Cairo allows them to be scaled to the requested logoSize.
+
+2012-10-02 14:02:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Eval Graph resolution problems
+
+Anti-aliasing had to be switched off to get a crisp graph. A second problem
+was that the dashed lines were drawn in both directions, with interfering
+dashes.
+
+2012-10-02 10:54:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo Eval Graph drawing with cairo
+
+
+2012-10-21 10:21:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix button-border-width bug in monoMode
+
+The kludge of signalling we are dealing wih a button rather than a label
+was wrongly implemented in case of momoMode.
+
+2012-10-21 10:14:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Reserve more space for button bar
+
+In some board sizes the button bar was wider than the code guessed,
+so the window width would be determined by the message + buttons row rather
+than the board.
+
+2012-10-21 11:24:18 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix WinBoard compile errors
+
+
+2012-10-13 09:33:39 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix non-NLS compile error for XFontStruct
+
+
+2012-10-12 12:04:17 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix browsing for path
+
+A pathname was still prefixed with the cuurent directory.
+
+2012-10-07 21:00:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Use Pause state in AnalyzeMode to imply move exclusion
+
+The pause state was not used in AnalyzeMode so far. Now it is used to
+imply all entered moves are for exclusion/inclusion.
+
+2012-09-30 18:55:13 -0700 Arun Persaud <arun@nubati.net>:
+new version number for developer release
+
+
+2012-09-30 22:16:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix broken -ics and -cp options
+
+The patch to specify engines and ICS by nickame broke the use of the
+regular options to do this, because they could also reset them. Now
+this is fixed by only setting them (through |= in stead of =).
+
+2012-09-30 22:01:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file
+
+The description of exclude-moves, multi-game ananalysis and duo-analysis
+is added.
+
+2012-09-30 10:07:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Resolve conflict between -mps and -inc options
+
+The age-old problem that a persistent valid -inc value will cause -mps
+to be ignored is solved by the kludge of storing these two as a single
+option (-mps) in the settings file, and declaring the other (-inc) volatile.
+The range of negative numbers (invalid as -mps value) was available for
+that, and now is used to store the negated value of -inc in msec.
+For backward compatibility, specification of -inc causes interpretation
+of -mps in the old way. The forcing of -inc to -1 in the master settings file
+could be safely removed because of this change, so that the time increment
+now is a persistent option.
+
+2012-09-29 23:13:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow entry of fractional increment in WB time-control dialog
+
+The numeric edit is changed to a general text edit, and code is added
+to convert the text it contains to and from float, with proper error check.
+
+2012-09-29 23:05:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Preconfigure -icsNames in xboard.conf
+
+Although XBoard has no startup dialog with an ICS combobox, the -icsNames
+option is now used to select lines from with the -is option, and in
+interpretation of positional arguments. The most common ICS are configured
+together with a short nickname, so that commands like "xboard fics" will work.
+
+2012-09-29 22:58:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow ICS nickname as positional argument
+
+If an argument is encountered that is not preceded by an option name,
+it is now first checked if it corresponds to the nickname of an ICS
+in -icsNames. If so, it is assumed to be the value of an -is option,
+selecting -ics mode with that ICS and all the options installed with it.
+
+2012-09-28 20:28:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Cure some sick behavior in XBoard Engine Output right-clicks
+
+When a PV-walk is in progress, the PV is highlighted by selecting it,
+and this focuses the attention of the scroll bar on it, so it remains in
+view. But after release, that line was kept in view, rather than scrolling
+back to the top of the window (where the header line bust be available
+for clicking)
+
+2012-09-28 13:28:17 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow Analyze Game to auto-step through entire game file
+
+If the game index is set to auto-increment (-lgi -1), the Analyze Game
+function will automatically load the next game of the current game file
+(starting to auto-play/annotate that) when the end of the current game is
+reached. This flushes the annotated game if auto-saving was set,
+so that eventually all games in the file will be annotatd and saved.
+  The game index is automatically set to auto-increment when we load
+a file while in Analyze Game mode, but switching this mode on while a game
+is already loaded will stop at the end of that game, as usual (if -lgi was
+not explicitly set).
+
+2012-09-28 13:24:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let second engine move in lockstep during dual analysis
+
+When the second engine is also analysing (as indicated by its stat variable
+second.analyzing), we send all moves / undos / positions /  in&excludes that
+go to the first engine also to second.
+
+2012-09-27 19:07:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow second engine to analyze too
+
+Clicking the Analysis menu when analysis is already in progress will
+now toggle the secon engine to analyze the same position. For now,
+this lasts only until the position changes (or you leave analyze mode),
+after which the second engine is always switched off, and the Engine
+Output window returns to single pane. Each pane now has its own header
+line; the exclude header is suppressed in the second pane.
+
+2012-09-27 18:11:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add options -fe, -se, -is to load installed engines/ics from list
+
+The volatile string options -fe, -se ('first/second engine') load the first
+and second engine of the given nickname in the -firstChessProgramNames list,
+including all options that were installed with it (similar to when in
+WinBoard the that engine line had been selected through the Startup Dialog's
+combobox). The option -is is similarly used to retrieve the line for an
+ICS in the -icsNames list.
+
+2012-09-27 18:02:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add check on validity of tourney participants
+
+Before allowing OK of the Tournament Options dialog, it is now checked
+whether all participants (which are given as nicknames) can be found
+in the list of installed engines, so that no problems will occurr with
+non-existing engines during the tourney (if typos crept in after hand-
+editing the list).
+
+2012-09-25 16:21:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement --help option
+
+The list of options is printed before exiting. Some attempt is made
+to do it in a nice way.
+
+2012-09-23 20:10:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement variant seirawan in -serverMoves option
+
+Write the gating moves such that the ChessLive! viewer will understand them.
+
+2012-09-23 20:05:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Workaround for FICS bug
+
+FICS does not properly understand SAN, and thinks bxc3 can be a Bishop move.
+This broke 'Upload to examine', because that uploaded in SAN. In case the
+SAN starts with Bx or bx, it now uses long algebraic (with = before the
+promo char).
+
+2012-09-20 18:17:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Define XOP mime type for XBoard
+
+Supply a white-knight icon for this mime type, called application/x-xboard-opt,
+and a sesktop file to associate it with running XBoard with this settings file.
+
+2012-09-20 17:24:29 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Pay attention to extension of 'positional' arguments
+
+An argument without preceding option name was assumed to be an -lgf argument.
+This patch still does that by default, but if the argument ends in .fen, .epd,
+.trn, .ini or .xop it is considered an -lpf, -tf or -opt argument.
+  In addition, an implied -lpf or -lgf argument also imply the option -viewer,
+which inserts the -viewerOptions string into the command line, and proesses it
+as options. A new option -tourneyOptions is similarly inserted for an implied
+-tf argument. These strings should contain all options needed to start XBoard
+fully configured as game viewer or tourney playing agent on the mentioned file.
+
+2012-09-20 15:29:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let windows stick to right display edge (WB)
+
+Auxiliary windows docked to the board window from below or to the right, which are
+pushed out of view when the board window resizes, will be trimmed to just touch the
+diplay edge (if sufficient width or height remains). When the board window shrinks,
+auxiliary windows touching the edge will be resized so they remain touching it.
+
+2012-09-20 15:20:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Round board size to one where piece images available (WB)
+
+When using built-in bitmaps, in sizes where unorthodox pieces are needed, but not
+available, the size is temporarily rounded to one of the sizes where they are.
+
+2012-07-03 17:21:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in Edit Position
+
+Due to = in stead of == the variant was always set to S-Chess in
+EditPositionDone().
+
+2012-08-28 21:24:51 -0700 Daniel Macks <dmacks@netspace.org>:
+bug #37210: Mishandling of X11 -I flags (tiny change)
+
+AP: applied patch from bugtracker and added one missing 'save_cppflags="$CPPFLAGS"'
+
+2012-06-02 14:31:18 -0700 Arun Persaud <arun@nubati.net>:
+bug #36229: changed ICS_* from define to enum
+
+
+2012-05-28 13:58:00 -0700 Arun Persaud <arun@nubati.net>:
+bug #36229: changed STATE_* from define to enum
+
+enabling better compiler checks
+
+2012-05-28 13:50:50 -0700 Arun Persaud <arun@nubati.net>:
+bug #36229: changed PEN_* from define to enum
+
+This should allow better checks by the compiler
+
+2012-05-28 13:01:15 -0700 Arun Persaud <arun@nubati.net>:
+fix bug #36228: reserved identifier violation
+
+variables and macro names beginning with _ are renamed to XB_. More consistent naming of include guards.
+See link in bug report.
+
+2012-05-28 12:36:37 -0700 Arun Persaud <arun@nubati.net>:
+Updated German translation
+
+
+2012-04-30 20:06:00 -0700 Arun Persaud <arun@nubati.net>:
+new version number for developer release
+
+
+2012-04-24 11:23:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Decapitalize promoChar in move parser
+
+
+2012-04-23 14:12:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Keep track of virginity of back-rank pieces in variant seirawan
+
+The forelast rank of the Board array is now used in VariantSChess to
+contain flags that indicate virginity of the back-rank pieces, one bit
+for white, the other for black. Legality checking of gatings now makes
+use of this info. FENs mention all virgin pieces not implied by castling
+rights in the castling field, by printing the corresponding file IDs,
+as long as holdings are non-empty. The FEN reader now also understands
+this format. EditPositionDone fakes virginity for all pieces that are
+on their starting square.
+
+2012-04-17 19:49:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress clear-board message after pasting FEN
+
+The message field is now always cleared when you leave EditPosition mode.
+
+2012-04-17 19:45:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix faking of castling rights after editing position with holdings
+
+The queen-side rook was always imagined at X=0, which is in the holdings
+when these exist, so that Q-side castling in such games was never allowed
+after EditPosition.
+
+2012-04-20 10:29:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix WB Engine Settings window
+
+The listbox patch has broken this window, by making it only list the
+first option of the engine, by switching to the next column based on a >=
+test rather than == test. Fixed by using 1000 as invalid value for the
+break point, rather than -1.
+
+2012-04-20 00:01:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix key binding of DebugProc
+
+The name used for binding was DebugProc, while the ite was named Debug.
+
+2012-04-16 20:51:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ICS Text Menu popup
+
+The space for the option names needed to be allocated.
+
+2012-04-16 20:37:06 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix disabling of Load Engine menu
+
+
+2012-04-15 22:53:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Port chat boxes to XBoard
+
+A new menu item Open Chat Window is added to the View menu. It opens a
+window that can handle 5 chats. A row of buttons on top selects which is
+the foreground chat partner, to which we type, and whose incoming messages
+will be displayed in the memo. The leftmost 'button' is not really a button,
+but a text edit, and the active partner is displayed there (so it can be
+altered). Selecting another chat partner through a button, moves that partner
+to the text-edit, and reshuffles the buttons. Incoming messages in a chat
+that is not foreground make the corresponding button color orange.
+
+2012-04-16 20:27:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow chaining of single-line text-edits to top
+
+For the benefit of the chat window, a text-edit plus leading description
+can now also be chained to the top edge of a dialog. The chaining of the
+(degenerate) multi-line ICS Input Box and Move Type-In was entirely to the
+bottom, which has now been corrected.
+
+2012-04-12 09:30:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add logo widgets in main board window
+
+New options -logoSize and -logoDir are added. The former enables logo display,
+when non-zero and not too big. The latter is used by -autoLogo. The options
+ -firstLogo and -secondLogo also work. Problem is that the clock height
+is larger than the logo height, and for now a nasty trick in GenericPopUp
+is used to position the next element (message field) w.r.t. the clocks,
+rather than the last element of the row above (the logo): in case of a
+SAME_ROW Graph element, 'last' is kept at the previous element.
+
+2012-04-19 10:48:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on time forfeit with -st option
+
+When fixed time per move was set from the command line, the time-control
+strings were not set. This let to a crash when an engine forfeited.
+The GetTimeQuota function is now made resistant to a NULL pointer here.
+
+2012-04-19 10:39:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Solve WinBoard name clashes, fix zippy-analyze menu graying
+
+Some of the function names used in the refactored X11 front-end collided
+with Windows system names from winboard.h, or with names of internal routines
+in WinBoard front-end files (so they could not be declared in frontend.h).
+These were renamed. Some prototypes in engineoutput.h contained X11 types,
+and they were moved to xboard.h.
+  In addition, two menu-item names were corrected to two-part names.
+
+2012-04-18 12:00:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Offer primitive paging in file browser
+
+If there are more than 1000 files that would have to be displayed,
+the number will be limited to 999, and a 'next page' entry will appear
+at the bottom. Clicking that will give you the next group.
+ This is an emergency measure only, as it interferes with sorting
+(grouping is based on order inside the directory, i.e. kind of arbitrary,
+and sorting is only done within a group.) There is no such thing for the
+folder list yet. There is no way to go back to a previous page, other
+than closing and re-opening the browser, or selecting another file type.
+
+2012-04-18 11:16:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add pixmap as file type known to browser
+
+Users can browse for a pixmap to set the board texture.
+
+2012-04-17 15:45:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warning about signedness
+
+Note: the promoChar in ExcludeMoves was explicitly defined to make
+sure the kludge promoChar = -1 for indicating best move works. But it
+should be equivalent to casting the promoChar to (signed char) just
+before the comparison.
+
+2012-04-17 15:44:15 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warnings about character index
+
+
+2012-04-17 15:37:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move ManProc to xboard.c
+
+It calls ManInner, which requires X11 data types, even if the values are NULL.
+
+2012-04-17 15:27:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move FileNamePopUp to dialogs.c
+
+
+2012-04-17 15:15:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix readout of numeric combobox
+
+As currently no numeric comboboxes are used, this bug was silent.
+
+2012-04-17 15:10:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Shuffle prototypes to correct header, or add them there
+
+
+2012-04-17 14:15:15 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix MenuNameToItem
+
+This function could crash when called with ann argument that did not
+contain a period, while the idea was that it should handle this as if the
+item is in noMenu (for user-specified key binding to non-menu funtions).
+
+2012-04-16 19:43:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix click-click under-promotion animation save
+
+
+2012-04-17 11:02:39 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Define TOPLEVEL in winboard.c
+
+
+2012-04-17 10:59:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add two new strings to WinBoard language file
+
+
+2012-04-17 10:51:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix second-engine variant test
+
+The test whether the second engine supports the selected variant took place
+before the second engine was loaded, thus always coming to the conclusion
+that the variant was not supported, and aborting the TwoMachines command.
+The test is now moved to after second-engine loading (but before its
+initialization, where non-supporting would become a fatal error).
+
+2012-04-16 12:11:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix clearing of ICS input box after send
+
+
+2012-04-16 19:08:10 -0700 Arun Persaud <arun@nubati.net>:
+enable -Wall -Wno-parentheses for all compilers that understand them
+
+
+2012-04-16 13:18:37 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Remove 5 unused variables from zippy code
+
+
+2012-04-16 13:14:06 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Remove unused static function ShowTC
+
+
+2012-04-16 13:10:58 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Remove unused static function MenuBarSelect
+
+
+2012-04-16 13:07:01 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Remove unused variable first_entry from function find_key
+
+
+2012-04-16 13:01:09 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Remove unused variable tm from function SaveGamePGN
+
+
+2012-04-16 12:56:46 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Remove unused variable delayedKing from function QuickScan
+
+
+2012-04-16 12:52:57 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Remove unused variable pdown from function UserMoveEvent
+
+
+2012-04-15 04:25:59 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Change some double literals to floats.
+
+To avoid unnecessary implicit promotions of float variables to double.
+
+2012-04-15 11:12:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove debug printf
+
+
+2012-04-14 22:43:03 +0200 Byrial Jensen <byrial@vip.cybercity.dk>:
+Translate "NPS" also in engine output window
+
+
+2012-04-14 16:19:34 -0700 Arun Persaud <arun@nubati.net>:
+removed unused variables (-Wunused-variable)
+
+
+2012-04-14 15:37:05 -0700 Arun Persaud <arun@nubati.net>:
+added m4 directory to search path for aclocal. As suggested by Michel Van den Bergh
+
+
+2012-04-14 23:21:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Eval Graph scale in drop games
+
+
+2012-04-14 23:16:29 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ArrowDamage out-of-bounds access on drop moves
+
+
+2012-04-14 21:33:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement automatic partner observe
+
+Starting a game, or starting to observe one, now automatically issues a
+'pobserve' command if dual-board is switched on, so that the partner game
+will pop up in the secondary board (assuming it is bughouse).
+ The secondary board now displays the players in the title. (This (lightly)
+breaks WinBoard again.) When the primary game ends, the secondary board
+closes automatically. Initial sizing of the board is repaired, and now uses
+the actual current board size, rather than the initial size of the main board.
+
+2012-04-14 15:43:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash due to empty PV
+
+Reception of a stat01 command before the first PV could cause a crash,
+as apparently the parser cannot handle this.
+
+2012-04-14 13:27:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress testing for availability in bughouse drops
+
+Give up on testing legality of bughouse drop moves; this only causes problems,
+because the move list sent by the ICS is not accompanied by holdings updates.
+So XBoard parses it thinking the holdings are empty, making every drop move
+an ImpossibleMove. Bughouse can only be played on ICS, and we might as well
+trust the ICS that it will only pass us legal moves. A user should not be
+able to enter illegal drops; unavailable pieces cannot be grabbed from the
+holdings, and typing is diverted to the ICS directly (which would reject the
+illegal drop without XBoard even knowing about it).
+  Also improve switching to bh/zh, based on drop move in initial board.
+
+2012-04-14 09:11:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix some compile errors / warnings
+
+
+2012-04-13 19:06:17 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix promotionPopDown on new move entry
+
+The promotion popup is non-modal, and old XBoard versions popped it down
+as soon as the user clicked the board, so he could just enter a new move
+to abort the promotion. This was broken in the new version, because the code
+to do the PopDown and abort in HandleUserMove had not been ported.
+
+2012-04-13 18:38:51 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Use in-place sweep-selection for click-click under-promotion
+
+With detour under-promotion a piece cycles through all possible choices
+during backwards dragging. But in a click-click move there is no dragging.
+This used to be solved by letting the second click start a drag event of
+the default promotion choice, which you could accept by immediately
+releasing the mouse button, or drag around to change it first.
+ The dragging in this case seemed a little unnatural, because the to-square
+was already indicated by the down-click. So it has been changed now to the
+promo choice appearing on the down-clicked to-square, followed by
+EditPosition-like sweep-selection on that square when one wants to under-
+promote. The move is always accepted no matter where the up-click takes
+place, except when it takes place on the from-square (which offers a last-
+resort abort possibiliy).
+ Note that click-click promotion is essential in variants where it is not
+obvious from the from-square alone that a promotion is imminent, but where
+it depends on the to-square. (Such as Shogi.) There drag-drop detour under-
+promotion is not possible.
+
+2012-04-13 16:05:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve arrow drawing
+
+The arrow is now erased together with the border highlights, by marking
+the damage it did, and then doing a selected redraw of the board to let
+the damaged square be re-drawn. Highlights of a previous move are now
+cleared on the down-click that selects a new piece, so there never is an
+arrow to infavorably interact with animation of dragging.
+
+2012-04-13 14:57:15 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Also do selective redraw with showTargetSquares on
+
+The XBoard DrawPosition now also keeps track of the previous marker state,
+and redraws squares for which thi shas changed. As a result, the routine
+MarkTargetSquares does no longer have to force to complete redraw.
+(Breaks WinBoard?)
+
+2012-04-13 00:33:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix click-click sweep promotions to empty square
+
+These did not work, because DragPieceBegin would fail on an EmptySquare.
+
+2012-04-12 23:58:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move clearing of target squares to after drag end
+
+A dragged piece that would partly overshoot its destination into a square
+with a marker would effectively protect that marker from erasing, when the
+erasing was done before the piece was released, because redrawal after the
+move only would draw the target square. (Unlike erasing, which forces a full
+redraw.)
+
+2012-04-12 23:49:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix double promotion popup
+
+Only the up-click of a click-click move gives a promotion popup now.
+
+2012-04-12 23:32:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix promotion popup
+
+The new GenericPopUp did not like it if the first button had 'SAME_ROW' set.
+
+2012-04-12 17:28:32 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow clearing of marker dots in any mode
+
+There might already be dots when you change to a mode where there should
+be none, and you don't want them to stay on forever in that case...
+
+2012-04-12 17:00:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix redraw of secondary board on flipping view
+
+
+2012-04-12 10:30:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let clocks of secondary board count down
+
+The back-end now remembers what is the active clock, and the time left on it.
+This is then decremented and updated together with the clocks of your own
+game, using the partnerUp flag to divert the clock display to the secondary.
+
+2012-04-12 09:47:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix 3 forgotten symbolic widget references
+
+
+2012-04-11 19:24:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add sound files to browser menu
+
+
+2012-04-11 13:04:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add New Directory button to file browser
+
+
+2012-04-11 09:54:51 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Detect engine exit during startup
+
+The case where engine startup failure does not result in a fatal protocol
+message, like "No such file", but where it simply exits, is now also covered.
+
+2012-04-10 22:55:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress popup for fatal error after tellusererror
+
+For cooperating better with Polyglot, and allowing more to-the-point
+error messaging, the (awful) default message will be suppressed if the
+dying engine already provided an explanation for its demise to the user.
+
+2012-04-10 20:28:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Engine Output icon heights in international versions
+
+The text in a label option could not be an empty string, or it would be
+'translated' to something of enormous size. So it is set to a space now.
+
+2012-04-10 20:21:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix internationalization
+
+The internationalization was broken by moving the XtSetLanguageProc
+to behind 'bindtextdomain'.
+
+2012-04-10 20:03:46 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make reference to board widgets symbolic
+
+
+2012-04-10 18:39:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Don't strip path from engine name if directory given
+
+
+2012-04-10 17:54:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix vertical chaining of Buttons and browser ListBoxes
+
+
+2012-04-10 15:53:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix auto-play
+
+The 'narrow search' modification had broken auto-play, because all selected
+games were marked as matching position 0, so that they would all start in
+thr opening position.
+
+2012-04-10 13:30:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+updated po/pot files
+
+
+2012-04-10 11:54:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+new version number for developer release
+
+
+2012-04-10 13:22:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update POTFILES.in
+
+
+2012-04-10 13:21:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Makefile EXTRA_DIST
+
+
+2012-04-02 17:53:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Use Ctrl key in EditPosition mode to copy pieces
+
+
+2012-03-28 23:51:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in FRC castling for position search
+
+In FRC it is essential that both pieces are taken off the board before
+any of them is put back, lest they obliterate each other.
+
+2012-03-28 12:25:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug on loading engine
+
+A newly loaded engine was put at the end of the game, rather than at the
+current position, (which is required in EditGame mode).
+
+2012-04-06 17:02:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add 'Narrow' function to position search
+
+
+2012-04-06 10:52:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Reorganize main() a bit
+
+The font stuff goes into a separate routine, and the X11 stuff is
+moved backwards as far as possible.
+
+2012-04-04 21:55:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Give the dual-board option a separate board window
+
+The second board window pops up whenever an alien board is received
+during your game. Moves in it are highlighted by an arrow, irrespective
+of the 'Highlight with Arrow' setting. The clocks are displayed, but do
+not count down.
+
+2012-04-05 11:23:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Port engine grouping to Match Options dialog
+
+
+2012-04-05 15:18:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Change default directory in Load Engine to "."
+
+
+2012-04-05 10:49:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Port grouping to XBoard Load Engine Add highlight to Load Engine grouping
+
+
+2012-04-06 17:19:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix default file types for browse buttons
+
+
+2012-04-03 09:14:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+New browser
+
+Redo file browser with GenericPopUp
+
+This had to solve quite some problems, because it wanted to use a ComboBox
+option while a transient dialog could be up, was a non-engine dialog
+while an engine dialog is up, and XRaiseWindow does not work properly.
+  Sorting is done alphabetically, or for digit groups by numeric value.
+
+2012-04-02 14:43:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Use ListBox in stead of ComboBox in Match-Options dialog
+
+
+2012-04-02 14:09:15 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Use ListBox in stead of ComboBox in Load Engine dialog
+
+Make Load Engine listbox sensitive to double-clicking
+
+2012-03-26 17:06:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add message about enabling in New Variant dialog
+
+
+2012-03-31 20:27:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move LoadGamePopUp to menus.c
+
+
+2012-03-31 20:25:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move DisplayMessage to dialogs.c
+
+Use the wrapper SetWidgetLabel to make it back-end.
+
+2012-03-31 15:23:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix switching debug option during session.
+
+Switching on debug mode during the session did not create the requested
+debug file.
+
+2012-03-31 15:22:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Correct texi file for use of .Xresources
+
+
+2012-04-02 19:19:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix recent-engines menu
+
+A new primitive to create an item in a given menu was added to do this.
+
+2012-03-31 10:54:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Switch back two two-part menu names
+
+The menu code is again completely changed; a handle field is added
+to the MenuItem tables to store the widget for the item, and this info
+is used to alter sensitivity or marking. MenuToNr is replaced by
+MenuNameToItem, which looks up the two-level name directly in the
+menu tables. Put all currently unused MenuProcs in noMenu table,
+so they are available for key binding through the new method.
+
+2012-03-24 18:36:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo main board window with generic popup
+
+Some of the improvements in GenericPopUp (committed earlier) were added
+especiall for this (menu and box Option types), and the commits that used
+them to make a fully functional board, listed below, were collapsed into
+this one.
+
+This uses the new box and menu features of the Generic popup.
+Make option table shadow board consistent with refactor
+Do main menus in shadow board
+ The board made by GenericPopUp now also has (functional) menus. The Expose
+ callback now also uses the new format (passing coordinates).
+Use BoxEnd callback to decide about smallLayout
+ The shadow board now dynamically decides whether it should use smallLayout
+ positioning of the title-in-window widget, using a callback in the BoxEnd
+ option for the menu bar: If no reasonable amount of space is left behind
+ the menu bar, the title is forced under the clocks (smallLayout).
+Do some mouse handling on shadow board
+ Only button 1 events for now. We have to keep track if the button is down!
+Connect button 3 to shadow board
+ For now only for piece and PV manipulation: no context menus yet
+Symbolic reference in option formatting
+choice <-> textValue xboard.c
+Improve expose callback shadow board
+Implement context menus of shadow board
+ This uses the new generic PopUp option
+TopLevel xboard.c
+Make mock-up board available through menu item
+Make clocks of shadow board sensitive to clicking
+Make button bar of shadow board operational
+ The back-end Event functions are specified as user callbacks directly;
+ this is not very clean, as they are parameterless, but called with an int
+ argument. This should have no bad consequences, though.
+Switch to using shadow board as main board
+ The menu marking and enabling had to b switched off for this, as it
+ only worked on the old menus. Remove HandleUserMove.
+Deleting of unused shell variables, clocks to dialogs.c
+Move BoardPopUp to dialogs.c
+ This required passing on fome front-end vars as parameters, and returning
+ apointer to the option list, to make the handles available in xboard.c.
+Simplify InitDrawingSizes
+ Now that all widgets of the main window are properly chained, there is
+ no need to resize them when the board format changes: setting a new width
+ for the shell suffices.
+Cleanup some unused Xt Args
+
+2012-03-31 10:53:46 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove unnecessary menu unmarking for Edit Tags
+
+
+2012-03-29 19:09:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Split sync-after options in Match dialog into checkbox + label
+
+Now the checkbox texts are highlighted on hovering, we don't want the
+explanatory text behind it to be highlighted with it.
+
+2012-03-26 17:12:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make variant-unsupported-by-second error non-fatal
+
+
+2012-03-23 20:06:15 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo Eval Graph with generic popup
+
+The Graph option of the GenericPopUp is used to implement the Eval Graph.
+Compared to the previous implementation, which was drawing directly in the
+form widget, the new one has one extra widget layer, but that did not
+affect the code anywhere. Adapt eval title to width of eval graph.
+
+2012-03-23 15:17:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo Engine Output window with generic popup
+
+A new file nengineoutput.c holds the X-independent code. This makes use
+of new capablities of GenerciPopup, for having Label widgets on same row,
+stacking panes after a Break, and chaining Label and Text widgets.
+
+2012-03-21 23:00:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo Game List with generic popup
+
+Check in ngamelist.c
+Redo Game List with generic popup
+ The X-independent code (i.e. almost all) is moved to a new file
+ ngamelist.c.
+Make button in Game List to pop up Game List Options
+Fix scrolling game list
+Fix popup of existing Game List after loading file
+Wheel-scroll game list
+Symbolic reference game list
+TopLevel game list
+Put format flags with listbox options
+
+2012-03-21 17:58:27 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo Game List Options with generic popup
+
+
+2012-04-05 21:56:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -dialogColor and -buttonColor options
+
+These only override system defaults if they are non-empty strings.
+
+2012-03-28 15:52:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -topLevel option
+
+This persistent Boolean option determines if the auxiliary windows
+(Game List, Move List, Engine Output, Eval Graph, Tags and Comment)
+use top-level shells (with their own icon on the task bar, and
+independently closable). Other dialogs will always use transient shells.
+(Also he modal Error and Promotion dialogs, for which the modality
+presumably only serves to pop them down without special attention.)
+A control for this was added in the General Options dialog.
+
+2012-03-20 15:30:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo ErrorPopUp with generic dialog
+
+<Enter> keeps popping down error popup.Multiple Error popups remeain tricky;
+add comment to describe problem with multiple ErrorPopUps.
+
+2012-03-20 10:22:46 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo PromotionPopUp with generic dialog
+
+The dialog is no longer modal.
+
+2012-03-19 21:56:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo AskQuestion dialog with generic popup
+
+
+2012-03-19 21:55:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Major refactoring of GenericPopUp
+
+Allow more transient dialogs in GenericPopUp
+Remove grab from promotion popup
+Fix other generic popup over transient popup
+ To use the generic dialog generator for 'asynchronous' popups (Ask Qustion
+ or Error popup caused by engine), the currentOptions setting has to be
+ restored for the combo and checkbox callbacks of the transient to still
+ work after the asynchronous dialog returns. Note that only transient dialogs
+ can have check and combo controls.
+Make generic calcel button suppressible
+ Also #define some more symbols for Option.min flags,
+ and move them to dialogs.h.
+Change TypeInProc to general OK handler
+ The move type-in now has its own option list, to distinguish it from
+ the ICS input box, and give it its own OK handler. Rather than having
+ the translation for <Enter> on the text widget call TypeInEvent directly,
+ we let it call GenericCallback, which calls GenericReadout, which calls
+ the OK proc, which does the job.
+  To be able to call GenericCallback from the TypeInProc, the recognition
+ of OK and cancel buttons had to be changed. This because it was too difficult
+ to arrange the calling widget had label OK or cancell. So these buttons are
+ no longer recognized by name, but by the option number passed as client data.
+ (This solves the problem that a user could not make buttons named 'cancel'
+ or 'OK'.)
+Make Cancel button optional
+Fix closing multiple popups of same kind
+ The GenericCallback figures out its own shell, so all buttons of
+ multiple dialogs keep working. External calls to PopDown only work
+ on the lastcreated instance of that kind, though (including those from
+ the Delete Window button, which can do 'cross-closing'). shellUp is now
+ a counter, and PopDowns are only prevented when it reaches 0 or the
+ current shell does not exist. (To know this, PopDown now resets shells[n]
+ to NULL when is shell is destroyed.
+  Beware of double PopDowns (through OK procs); they wreck the system.
+Fix Delete Window button of multipe ErrorPopUps
+ The action routine for handling the Delete Window now pays attention
+ to the shell widget that the system passes to it, and temporarily
+ replaces shells[n] by it to let PopDown act on the proper instance.
+Add ListBox dialog type to GenericPopUp
+Fix vert sizing of ListBox
+Put listbox widgets in viewport
+Put listbox in viewport
+Improved xoptions.c support for focussing and listboxes
+Fix OK-row button positioning
+Let GenericPopUp take parent and modality as arguments
+ This makes the code a bit more explicit and less kludgy. It also becomes
+ possible to call the same dialog (e.g. Load Options) from the main menu
+ and from another dialog (e.g. the Game List).
+Support scroll function for generic popup listboxes
+Fix scrolling
+Move HighlightWithScroll to xoptions.c
+Change scroll algorithm
+Add mouse-wheel scroll to generic list boxes
+Implement tabbing between text edits
+Implement same-row text labels in generic dialog
+Allow labels to specify their chaining in generic popup
+ The opt.min variable is used to specify the chaining: 0xF0 are the bits
+ for (left, right) chaining of the left side (0xC0) and right side (0x30).
+ The 0xC bits determine top or bottom chaining of the entire label.
+ Without anything spcified (0), the chaining is XtRubber.
+ TextBox options can also specify top-chaining of their top. All this was
+ needed to allow decent implementation of the Engine Output window with
+ the generic popup. (Although tags and comment popup ca benefit from the
+ latter feature.)
+Let GenericPopUp support a Graph option
+ The Graph option results in an area where one can draw something. It is
+ positioned / chained similar to Label options. A handler for expose events
+ can be specified in the textValue field of the option.
+Implement box widgets and menu buttons in GenericPopup
+ To enhance the capabilities of GenericPopUp such that it could create the
+ main window, it needs to be able tha packaging of controls into a box widget
+ (for mennu and button bar). Menu buttons are also required elements
+ (although they do look a lot like comboboxes?) Option types BoxBegin and
+ BoxEnd can now be used to bracket a group of controls that will be put
+ in a box widget. (Cannot be used recursively!) The positioning of the box
+ is similar to that of a Label, and is specified in the BogBegin option.
+  The code to shrink the menu buttons to fit is also incorporated, to act
+ on any box widget: if the BoxBegin option specifies a width, the elements
+ in it are shrunk to meet the requirement. Otherwise the box just gets the
+ size of the sum of its children (plus spacings).
+  Label options can now specify a font, casted into their textValue field.
+ (This is needed to get the proper size for the clock widgets.)
+Implement callback in BoxEnd options
+ BoxEnd is a pseudo-option, to trigger packing the preceeding ones in
+ an earlier-opened box widget. In the process it calculates the size of
+ the box widget (and trims it if a size was specified for it in the
+ corresponding BoxBegin). The Option.target field of BoxEnd is now
+ interpreted as a callback, which can be use to take decisions based
+ on the determined size for the remaining options in the list, before
+ these are processed b GenericPopUp.
+Refactor xoptions.c
+ Make a subroutine to set args shared by almost all widgets. Swap meaning
+ of '1'-bit in option.min flag of Break option, to be consistent with
+ SAME_ROW interpretation in other option types.
+Make option tables consistent with refactored GenericPopUp
+ The flag for stacking in the Break option needed to be inverted, and
+ the BoardPopUp needed to pass the font in another field. Better use was
+ made of the improved chaining options too.
+Improve Graph-option event handling
+ The user-supplied callback now gets 3 arguments passed: the event type
+ (0 = pointer motion, 1...5 button press, -1...-5 release, 10 = expose),
+ and two coordinates. For ouse events these are the pointer (x,y), while
+ for expose events they are the window size (w,h). The callback is now
+ specified in the option.target field of the Graph option.
+Store engine options in malloc'ed memory
+ The Option.name field has been re-declared as (char*),  from (char[MSG_SIZ]).
+ There are still MSG_SIZ chars allocated irrespective of actual size, because
+ the field is also supposed to store the textValue, which can be changed by
+ the user. But at least it means that unused options of the generous list
+ now don't waste much space. (And the prparated Option tables in dialogs.c
+ will shrink by a large factor as well.)
+Improve GenericPopUp ComboBox handling.
+ The dialog type is now passed to the combobox callback as well, and this is
+ used to really figure out what option it is called for.
+Allow numeric comboboxes
+ When no list of strings is given in Option.choice, the target is assumed
+ to be (int), and the number of the slected entry is stored there. Also
+ adapts the Label options that act as fillers to the new method for making
+ dummies (namely NULL in the Option.name field).
+Put comboCallback in Option struct
+ Rather than having a general comboCallback variable for the entire current
+ dialog, each ComboBox option can now specify its own callback in the
+ target field of the option: the COMBO_CALLBACK bit of Option.min indicates
+ whether the target is a variable to be set or a callback. The callback can
+ still fetch the choice from the values array.
+Allow generic CreateComboPopup also to do main menus
+ An extra parameter to CreateComboPopup determines if the menu texts
+ should be taken from a list of strings (the old method with engine-
+ supplied choices), or from a menu table of MenuItems. It can now also
+ recognize "----" as a menu break, and keeps margins (for the marking).
+Make subroutine for determining curren combo selection
+Various fixes to GenericPopUp
+Delete one border-width setting
+Fix max nr of args in GenerocPopUp
+Fix button release events of Graph options
+Fix generic Graph callback pointer motion coordinates
+Make all format referencing in Option tables symbolic
+Let Option.choice define menu texts, rather than Option.textValue
+ This is more logical than ussing textValue for it, because choice already
+ has the correct (char**) type, while textValue was (char*), and needed
+ casting everywhere. Note that for engine options, the fields were the
+ same anyway, so no back-end change was required. The textValue now
+ contains the (casted) list of actual string values, where these are
+ needed. (But for numeric and function menus they aren't.)
+Add PopUp Option type
+ An new pseudo-Option is defined, to add a popup menu to a previous Graph
+ option. The actual popping up is done by the expose handler.
+ The function XUngrabPointer is the key to success here. A PopUp option
+ specifies a callback for handling the selection from the menu, which will
+ be called with the option number, exacty as with ComboBox options.
+Update option explanation in dialogs.h
+Make Spin and CheckBox callbacks pass dialog number
+ No longer rely on 'currentOptions' for getting the option belonging to
+ the callback, but get it out of the dialogOptions array indexed by dialog
+ type. This way things cannot be messed up by an asynchrounous error popup.
+ It also means that it is now save for non-modal dialogs to use these options.
+Use button widget for text behind checkbox
+Let listboxes use general formatting hints
+Let GenericPopUp option always finish last pane after Break
+Allow LisBox to specify select callback in Option.textValue
+Use double-click to trigger ListBox callback
+Make ListBox callback re-entrant
+Fix multi-line Label options
+Separate CreateMenuItem out from CreateComboPopup
+Chain checkbox texts entirely left
+Allow a user-specified callback to Label options
+ This is needed to implement the clocks. Let the CheckBox callback handle
+ it. For now ther is no distinction between different mouse buttons.
+
+2012-03-21 11:15:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Prevent double PopDowns
+
+Some DialogOK functions ordered an early PopDown themselves. This,
+however, resulted in PopDown being called twice when they returned TRUE.
+This interfered with the new system for allowing multiple instances of
+the same dialog. So these functions are now fixed to suppress the
+standard PopDown by always returning FALSE.
+
+2012-03-20 19:10:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Split usounds.c and usystem.c from xboard.c
+
+X-independent code was moved to separate files. The nef file usound.c
+contains the sound handling, which in XBoard is trivial, because it uses
+an external player, but could be replaced by a complex one on platforms
+that have to handle the sound themselves.
+  The usystem.c file contains all non-X Unix-like stuff, such as fork,
+pipe, system, getenv. I also contains some color parsing for the xterm
+colors. This stuff could be useful on platforms that support Unix-like
+system calls.
+
+2012-03-26 19:03:19 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make routine to probe shift keys
+
+The code to probe Alt keys was taken out of MoveTypeInProc, and extended
+to probing Ctrl and Shift keys too. These are now returned in the 6 LSB
+of an int by ShiftKeys().
+
+2012-03-19 13:15:11 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove one level of indirection on ICSInputBoxPopUp
+
+
+2012-04-10 10:26:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Cleanup of xboard.c
+
+Remove AskQuestionProc
+A bit of cleanup on xboard.c prototypes
+Remove dead file-browser code
+Delete vestigial jail code
+ All the stuff about jailColor was deleted. Only one fishy thing remains:
+ xpmJailSquare seems under some conditions used in BlankSquare to draw a
+ 'neutral' square. it is set to a copy of a light square image. But in the
+ current design 'neutral' means blacked out between board and holdings,
+ and even with image use, it should not resemble a light square...
+Remove registering of CommentPopDown and TagsPopDown
+Merge CopyGameSelection into CopyPositionSelection
+
+2012-03-19 11:38:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Move some back-endish routines from xboard.c to dialogs.c
+
+Move ICS input-history handling to dialogs.c
+Move ICS Input Box text handling to dialogs.c
+Move DisplayXxxx routines to dialogs.c
+Move DisplayTitle to dialogs.c
+ A wrapper SetWindowTitle remains in xboard.c.
+
+2012-03-18 20:10:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Split back-endish part off xoptions.c, and move to dialogs.c
+
+Some MenuProcs for dialogs were also moved to dialogs.c from menus.c.
+MoveTypeInProc which is an event handler for the board widget,
+was moved to xboard.c, where it can be static.
+
+Identify dialogs by enum type
+ A new header dialogs.h is created, which defines an enum type DialogClass
+ that is now used to identify the various dialogs done by GenericPopUp.
+ The prototypes for GenericPopUp/PopDown, and other globals shared by the
+ dialogs code and other modules can go in here as well.
+Remove ClearTextWidget
+ This did the same as SetWidgetText with an empty string.
+Split X-code from PutText
+Split back-end part from MoveTypeInProc
+Take set-title out of comment popup
+Sort MenuProcs in dialogs.c with their support functions
+Declare globals in dialogs.c with functions where they belong
+Add prototypes to dialogs.h
+Move prototypes and globals from xoptions.c to dialogs.h
+Make accessor DialogExists for dialog shells
+Add dialogs.c to makefile: compiles and runs!
+Combine 3 calls into front-end to InitDrawingParams
+Move EditCommentProc and ICSInputBoxProc to dialogs.c
+Pass option list as argument to GenericUpdate and GenericReadOut
+Shorten argument name from currentOption to opts
+ This to prevent confusing it with the global variable of that name.
+
+2012-03-18 15:33:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Declare some shared global variables in backend.h
+
+The vlobals twoBoards and partnerUp were only shared through an extern
+declaration in xboard.c
+
+2012-03-18 12:34:42 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Split back-endish part off drawing code and move to board.c
+
+Split DrawSquare in front-end and back-end part
+Back-endize DrawHighlights and DrawPosition
+ The already existing wrapper FlashDelay is used as a kludge to do an XSync.
+ We now pass a code for the line color GC to the highight routine. New
+ wrappers are DrawGrid() and DrawBorder().
+Back-endize atomic explosions
+Back-endize DrawArrow and DrawDragPiece
+ DrawDragPiece now calls DrawOneSquare with argument EmptySquare in stead
+ of the X-type referring BlankSquare. A new wrapper DrawPolygon fixes
+ DrawArrowBetweenPoints.
+Move board-drawing logic to new file board.c
+ All X-independent drawing logic (board, squares, arrows, highlights,
+ some animation stuff) has been extracted from xboard.c, and moved to
+ a new file board.c, which is back-end (but unshared with WinBoard).
+ A new header board.h defines the cross-references (which of course
+ required some functions to be no longer declared as static).
+  A bit of code was moved from DragPieceBegin to BeginAnimation, which
+ now has an extra argument to indicate which piece should appear from
+ under a dragged piece. This makes DragPieceBegin free of XCopyArea calls,
+ so it could be moved too.
+Make board.c truly back-end
+ Get rid of all X data types. For this the AnimState struct had to be
+ redefined: the GC and Pixmap was taken out and put in front-end arrays
+ indexed by anim agent (game and player). For this indexing a new enum
+ was defined. The XPoint type was also replaced by our own type of an
+ int pair (which is nasty, because the int size could be different).
+Move more animation code to board.c
+
+2012-03-18 10:08:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Contract some awful code replication
+
+The code for making an X-color was replicated 6 times, and is now made
+into a subroutine. The code for creating GCs was quite repetitive as well.
+
+2012-03-18 08:34:54 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Move more back-endish menu-related stuff from xboard.c to menus.c
+
+Move menu enabling to menus.c
+ Only the wrapper EnableMenuItem stays in xboard.c. A new wrapper
+ EnableButtonBar was necessary, because Training mode wants to enable/disable
+ that too.
+Move all back-endish MenuProcs to menus.c
+ Many if the MenuProcs that could not be eliminated by listing the
+ corresponding back-end MenuEvent function as handler directly, are
+ still completely plactform indpendent. (E.g. when the MenuEvent needs
+ a parameter.) These are all moved to menus.c now.
+Convert all dead MenuProcs to using MarkMenuItem
+ The MenuProcs for the option items that no longer exist were also
+ converted for check-marking their item in the new way, because we
+ might revive them for key binding.
+Move the dead MenuProcs also to menus.c
+Revive dead menu procs
+Move GreyRevert to menus.c
+Move ModeToWidgetName to menus.c
+Move initial menu marking to menus.c
+
+A new function InitMenuMarkers was split off from main() to do this.
+
+2012-03-18 08:17:53 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Switch to use of short menu references
+
+The prefixes menuXxxx. for the item names are abolished. This made it
+necessary to also add a MarkMenuItem function that can handle short names
+for putting the xMarkPixmap on the items, as the names returned by
+ModeToWidgetName are used for both enabling and check-marking.
+Let MarkMenu use MarkMenuItem wrapper
+
+2012-03-17 10:47:04 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Refactor menu code, and move it to menu.c
+
+Supply new method for key binding
+ It is annoying that every menu item needs its X-specific handler routine,
+ because this handler has to be registered to X for becoming eligible as
+ a key binding. Another disadvantage of this method is that the user wanting
+ to make the binding has to know the name under which the menu function
+ is registered (e.g. FlipViewProc).
+  A new method is now made available, which uses only a single (X-specific)
+ routine, registered with X as "MenuItem", as generic key-binding handler.
+ The bindings can then be made by the user specifying "MenuItem(FlipView)".
+ This requires a new list of potential bindings, which should be filled
+ by the menu-creation routines. (Currently only contains only a predeficed
+ example.)
+No longer register all MenuProcs with X
+ The list with available menu procs is moved to the user-maintained
+ menuItemList. Only QuitProc had to stay registered with X, because it is
+ used in CatchDeleteWindow. (So it is in both lists now.) In the future,
+ most of the list can be built automatically from the menu tables.
+Alter type of MenuProcs to void(void)
+ By getting rid of the argument list with X-types, most menu procs can
+ become back-end. In the cases of ManProc and QuitProc the original
+ version had to be kept as well, because in ManProc the argument was
+ actually used (with key binding), while QuitProc is used for delete window.
+Remove now unnecessary menu wrappers
+ Now the MenuProc have an empty argument list, those that also call a
+ single 'MenuEvent' without arguments have become completely redundant,
+ and have been taken out of the loop by calling the corresponding MenuEvent
+ directly.
+Build menuItemList from menu tables
+ Rather than having an initialized table of name-proc associations (which
+ used to be the X registrations) for the menu items, we now build the list
+ during menu cration from the menu tables. The menu "ref" is now used as
+ proc name. This means the old MenuProc names used in the predefined
+ key bindings had to be changed to conform to this. Note that the bindings
+ would slice up names containing spaces in several parameters, so in the
+ translations the spaces were squeezed out of the item names. This requires
+ a hand-written comparison routine Equal() to identify the binding.
+Remove prototypes of deleted MenuProcs
+Move prototypes of platform-independent MenuProcs to menus.h
+ Create a new header file for the menu stuff, so that we can move
+ the corresponding handler routines out of xboard.c to a back-end file.
+Extract back-end code from menu creation
+ The menu tables and code to interpret them is moved to a new file menu.c.
+ Only basic fuctions for creating a pop-down list and for adding an item
+ to it remain in xboard.c.
+
+2012-04-07 15:59:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove some unused (exclude-moves) variables
+
+
+2012-04-07 15:57:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Install engine within current group
+
+
+2012-04-07 15:53:29 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Switch to using listboxes for engine-selection in WinBoard
+
+
+2012-04-07 15:36:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Narrow button in WB Game List
+
+
+2012-04-05 15:15:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Silence unjust warning
+
+
+2012-04-04 12:18:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix memory corruption through InitString and second-engine loading
+
+The InitString and ComputerString options were not swapped when replacing
+the second engine, so that the ChessProgramStates of the first engine
+could point to an invalid (already freed) init string. Also make sure
+that appData.directory contains its value in allocated memory, even
+when hand-loading engines.
+  Some of the rare options were not swapped either, and would thus
+always be loaded for the first engine when -singleEngineList was true.
+They are now also all reset to their default, before engine load,
+to prevent options of one engine to linger on for a next that does
+not specify them. The intentional exception is -firstHost.
+
+2012-04-01 20:51:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix PV sorting during fail low
+
+When an engine reports a fail low as thinking output, and then re-searches
+the same move with larger window, it now gets a lower score. This line
+would then be sorted below the earlier fail low, because it was mistaken
+for a multi-PV line for an inferior move. This patch suppresses PVs
+overtaking each other if they start with the same move.
+
+2012-03-30 20:09:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Extend smallLayout regime up to size Medium
+
+Because of the increase number of menus, there is not enough space for a
+title next to the menu bar at smaller sizes. In fact it is questionable if
+the title should ever go on the same line as the menu bar.
+
+2012-03-30 10:38:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parsing crazyhouse promotions with legality testing off
+
+With legality testing off, any promotion suffixes in a move are taken
+'on faith'. But in crazyhouse the piece ID for normal pieces is used as
+promotion suffix for promoted pieces, so this would Loop Chess rather than
+Crazyhouse. Now attention is payed to presence of ID-less promotion pieces
+(indicated by ~ in the pieceToCharTable), and if there are, these prevail
+ovr the specified type.
+
+2012-03-30 10:07:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix browsing for save file in WB
+
+The generic popup browse buttons used the wrong flavor of browser,
+which would only accept existing files. This was inconvenient when browsing
+for a save file. The other flavor of browser is now used by default (so that
+engine options also use it), and a new flag is added in the option.max field
+(which was already indicating file type) to request readonly browsing for a
+save file.
+
+2012-04-02 10:18:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let clicking on header line exclude moves
+
+The exclude header in the Engine-Output window can now be clicked, to
+toggle the exlusion of the listed move. Clicking on 'none' resets all
+exclusions, clicking on 'best' excludes the first move of the latest PV.
+The pseudo-move 'tail' represents all non-listed moves.
+
+2012-04-01 22:39:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Keep list of excluded moves in Engine Output header
+
+As long as there is still space, excluded or included moves are added
+to a new header line in the Engine Output window (prefixed with + or -
+depending on whether they are currently excluded or included). Future
+in/exclusions of that same move then alter the prefix.
+
+2012-03-21 23:12:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix focus of Game List
+
+After focus was transferred to the filter text-edit, it was impossible
+to get it back on the game list (to make the arrow keys working again).
+A translation to left down-click is now used to assign focus, just as
+it would for text edits. For unknown reason this only worked if the
+translations were instated by Overriding, rather than Augmenting,
+which again required the normal translation of downclick, Set(), which
+selects the clicked item, to be explicitly mentioned as well.
+
+2012-03-16 22:41:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix taking effect of some option changes
+
+This fixes a bug reported at Ubuntu: when switching off move highlighting
+in Two Machines mode, the last move before the switch stayed highlighted.
+The GeneralOptionsOK() now clears any remaining highlights when highlighing
+is off. Similar problems with blind-fold mode and coordinates, which require
+a total board redraw to take effect, are now solved by also forcing such a
+redraw in GeneralOptionsOK() when they change.
+
+2012-03-16 21:58:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add exclude and setscore to protocol specs
+
+
+2012-03-16 14:47:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix clock stop after dragging
+
+DelayedDrag always cancelled the previous drag timeout event, even when
+this was no longer pending because it had already taken place, and the
+event ID was resused by some other timeout (usually a clock tick).
+
+2012-03-14 21:06:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement exclude moves
+
+Dragging a piece by double-clicking it on the from-square in analysis mode
+will not perform the entered move, but send an exclude or include command
+to the engine for that move (provided the engine enabled this with
+feature exclude=1), depending on if the move was already excluded or not.
+To this end a map of excluded moves is kept, and cleared when we move to
+another position through moving, undo, setboard or new. The user can see
+whether he included or excluded the move, as exclude uses premove highlights.
+  Commands "exclude|include all" are sent when we throw a double-clicked
+piece off board (vertically or horizontally, respectively), but after
+exclude all the most recent PV move is included again.
+  Remaining problem is that promotions can only be excluded.
+
+2012-03-14 15:13:18 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Mark new text "Click clock to clear board" for translation
+
+
+2012-03-13 21:46:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+More thorough switch to -ncp on engine failure
+
+The ProcRef and InputSource are now also cleared, and just to be sure there
+are no surviving adapters, the child is killed when engine startup fails.
+
+2012-03-13 21:25:22 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Install engines as ./exefile in XBoard
+
+When a path name is split into directory and filename, the latter in Linux
+must be preceded by ./ in order to make it executable in the directory
+XBoard starts it in.
+
+2012-03-13 14:11:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Inform user in EditPosition mode how to clear board
+
+With -pieceMenu false the board is cleared by clicking the clock, but
+since this is impossible to guess, it is now printed in the message field.
+
+2012-03-13 14:06:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix fall-back on -ncp mode
+
+When the requested engine could not be started, the user still had to
+wait for the feature timeout to expire before the UI was re-enabled,
+and the now-useless loading action would continue. In stead we now
+cancel any scheduled continuation, thaw the UI immediately, and switch
+the menus and gameMode to ncp straight away.
+
+2012-03-10 18:55:24 -0800 Arun Persaud <arun@nubati.net>:
+updated po/pot files
+
+
+2012-03-10 18:54:32 -0800 Arun Persaud <arun@nubati.net>:
+new version number for developer release
+
+
+2012-03-06 16:37:02 +0100 Byrial Jensen <byrial@vip.cybercity.dk>:
+Fix typo (seach) in string. It is already fixed in branch v4.6.x
+
+
+2012-03-04 14:52:34 -0800 Arun Persaud <arun@nubati.net>:
+added some documentation about what's need to be done for a release and a bash-release script
+
+
+2012-02-28 21:09:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix suspected bug in Makefile
+
+
+
+
 2012-02-26 18:55:10 -0800 Arun Persaud <arun@nubati.net>:
 add information about our webpage and were to report bugs into the help menu
 
