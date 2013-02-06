@@ -433,6 +433,7 @@ typedef struct {
     char *timeControl;
     Boolean trueColors;
     Boolean icsActive;
+    Boolean autoBox;
     char *icsHost;
     char *icsPort;
     char *icsCommPort;  /* if set, use serial port instead of tcp host/port */
