@@ -102,7 +102,6 @@ mime_DATA = xboard.xml
 
 svgdir = $(datadir)/games/xboard/themes/default
 dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
-           svg/DarkSquare.svg         svg/LightSquare.svg svg/NeutralSquare.svg \
            svg/BlackAdvisor.svg       svg/WhiteAdvisor.svg    \
            svg/BlackArchbishop.svg    svg/WhiteArchbishop.svg  \
            svg/BlackBishop.svg	      svg/WhiteBishop.svg      \
