@@ -142,6 +142,14 @@ dist_shogi_DATA = shogi/WhiteGold.svg shogi/WhiteCrownedBishop.svg\
            shogi/WhiteRook.svg        shogi/WhiteCrownedRook.svg\
            shogi/WhiteAdvisor.svg     shogi/WhiteGoldSilver.svg
 
+xiangqidir = $(datadir)/games/xboard/themes/xiangqi
+dist_svg_DATA = themes/xiangqiBlackAdvisor.svg  themes/xiangqiWhiteAdvisor.svg \
+           themes/xiangqi/BlackCanon.svg    themes/xiangqi/WhiteCanon.svg    \
+           themes/xiangqi/BlackElephant.svg themes/xiangqi/WhiteElephant.svg \
+           themes/xiangqi/BlackKnight.sv    themes/xiangqi/WhiteKnight.svg   \
+           themes/xiangqi/BlackGold.svg	    themes/xiangqi/WhiteGold.svg     \
+           themes/xiangqi/BlackPawn.svg	    themes/xiangqi/WhitePawn.svg     \
+           themes/xiangqi/BlackRook.svg	    themes/xiangqi/WhiteRook.svg
 ### directory and files for pixmaps
 
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
