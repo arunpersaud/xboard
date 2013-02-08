@@ -4258,6 +4258,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   }
 
   shiftKey = GetKeyState(VK_SHIFT) < 0; // [HGM] remember last shift status
+  controlKey = GetKeyState(VK_CONTROL) < 0; // [HGM] remember last shift status
 
   switch (message) {
   case WM_LBUTTONDOWN:
