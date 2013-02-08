@@ -78,7 +78,7 @@ typedef struct {
 extern AnimState anims[];
 
 void DrawPolygon P((Pnt arrow[], int nr));
-void DrawOneSquare P((int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align));
+void DrawOneSquare P((int x, int y, ChessSquare piece, int square_color, int marker, char *tString, char *bString, int align));
 void DrawDot P((int marker, int x, int y, int r));
 void DrawGrid P((void));
 int SquareColor P((int row, int column));

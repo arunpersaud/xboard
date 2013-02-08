@@ -670,21 +670,12 @@ DrawDot (int marker, int x, int y, int r)
   GraphExpose(currBoard, x-r, y-r, 2*r, 2*r);
 }
 
-void
-DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, char *string, int align)
-{   // basic front-end board-draw function: takes care of everything that can be in square:
-    // piece, background, coordinate/count, marker dot
-    cairo_t *cr;
-
-    if (piece == EmptySquare) {
-	BlankSquare(csBoardWindow, x, y, square_color, piece, 1);
-    } else {
-	pngDrawPiece(csBoardWindow, piece, square_color, x, y);
-    }
-
-    if(align) { // square carries inscription (coord or piece count)
+static void
+DrawText (char *string, int x, int y, int align)
+{
 	int xx = x, yy = y;
 	cairo_text_extents_t te;
+	cairo_t *cr;
 
 	cr = cairo_create (csBoardWindow);
 	cairo_select_font_face (cr, "Sans",
@@ -712,6 +703,22 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 	else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 	cairo_show_text (cr, string);
 	cairo_destroy (cr);
+}
+
+void
+DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, char *tString, char *bString, int align)
+{   // basic front-end board-draw function: takes care of everything that can be in square:
+    // piece, background, coordinate/count, marker dot
+
+    if (piece == EmptySquare) {
+	BlankSquare(csBoardWindow, x, y, square_color, piece, 1);
+    } else {
+	pngDrawPiece(csBoardWindow, piece, square_color, x, y);
+    }
+
+    if(align) { // square carries inscription (coord or piece count)
+	if(align > 1) DrawText(tString, x, y, align);       // top (rank or count)
+	if(bString && *bString) DrawText(bString, x, y, 1); // bottom (always lower right file ID)
     }
 
     if(marker) { // print fat marker dot, if requested

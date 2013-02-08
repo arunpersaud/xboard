@@ -60,7 +60,7 @@ SUBDIRS = po
 xboard_LDADD = -lm @FRONTEND_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
 
 EXTRA_DIST = pixmaps shogi png sounds winboard \
-	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
+	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop xboard-config.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
 	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS $(FRONTENDextras)
@@ -92,7 +92,7 @@ dist_svgicon_DATA = xboard.svg
 ### desktop files for KDE and gnome
 
 Applicationsdir = $(datadir)/applications
-Applications_DATA = xboard.desktop xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop
+Applications_DATA = xboard.desktop xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop  xboard-config.desktop
 
 ### mime file
 mimedir = $(datadir)/mime/packages
@@ -102,7 +102,6 @@ mime_DATA = xboard.xml
 
 svgdir = $(datadir)/games/xboard/themes/default
 dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
-           svg/DarkSquare.svg         svg/LightSquare.svg svg/NeutralSquare.svg \
            svg/BlackAdvisor.svg       svg/WhiteAdvisor.svg    \
            svg/BlackArchbishop.svg    svg/WhiteArchbishop.svg  \
            svg/BlackBishop.svg	      svg/WhiteBishop.svg      \
@@ -146,7 +145,7 @@ dist_shogi_DATA = shogi/WhiteGold.svg shogi/WhiteCrownedBishop.svg\
 ### directory and files for pixmaps
 
 pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
-dist_pixmaps_DATA = pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm pixmaps/board48.xpm
+dist_pixmaps_DATA = pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm pixmaps/board48.xpm pixmaps/ini32.xpm pixmaps/ini48.xpm
 
 ### directory and files for pngs
 

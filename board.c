@@ -771,7 +771,7 @@ DrawDragPiece ()
      it's being dragged around the board. So we erase the square
      that the piece is on and draw it at the last known drag point. */
   DrawOneSquare(anims[Player].startSquare.x, anims[Player].startSquare.y,
-		EmptySquare, anims[Player].startColor, 0, NULL, 0);
+		EmptySquare, anims[Player].startColor, 0, NULL, NULL, 0);
   AnimationFrame(Player, &anims[Player].prevFrame, anims[Player].dragPiece);
   damage[0][anims[Player].startBoardY][anims[Player].startBoardX] = TRUE;
 }
@@ -781,7 +781,7 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
 {
     int square_color, x, y, align=0;
     int i;
-    char string[2];
+    char tString[3], bString[2];
     int flash_delay;
 
     /* Calculate delay in milliseconds (2-delays per complete flash) */
@@ -799,37 +799,37 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
 
     square_color = SquareColor(row, column);
 
-    string[1] = NULLCHAR;
+    bString[1] = bString[0] = NULLCHAR;
     if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
 		&& column >= BOARD_LEFT && column < BOARD_RGHT) {
-	string[0] = 'a' + column - BOARD_LEFT;
+	bString[0] = 'a' + column - BOARD_LEFT;
 	align = 1; // coord in lower-right corner
     }
     if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT)) {
-	string[0] = ONE + row;
+	snprintf(tString, 3, "%d", ONE - '0' + row);
 	align = 2; // coord in upper-left corner
     }
     if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
-        string[0] = '0' + piece;
+	snprintf(tString, 3, "%d", piece);
 	align = 3; // holdings count in upper-right corner
     }
     if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
-	string[0] = '0' + piece;
+	snprintf(tString, 3, "%d", piece);
 	align = 4; // holdings count in upper-left corner
     }
     if(square_color == 2 || appData.blindfold) piece = EmptySquare;
 
     if (do_flash && piece != EmptySquare && appData.flashCount > 0) {
 	for (i=0; i<appData.flashCount; ++i) {
-	    DrawOneSquare(x, y, piece, square_color, 0, string, 0);
+	    DrawOneSquare(x, y, piece, square_color, 0, tString, bString, 0);
 	    GraphExpose(currBoard, x, y, squareSize, squareSize);
 	    FlashDelay(flash_delay);
-	    DrawOneSquare(x, y, EmptySquare, square_color, 0, string, 0);
+	    DrawOneSquare(x, y, EmptySquare, square_color, 0, tString, bString, 0);
 	    GraphExpose(currBoard, x, y, squareSize, squareSize);
 	    FlashDelay(flash_delay);
 	}
     }
-    DrawOneSquare(x, y, piece, square_color, partnerUp ? 0 : marker[row][column], string, align);
+    DrawOneSquare(x, y, piece, square_color, partnerUp ? 0 : marker[row][column], tString, bString, align);
 }
 
 /* Returns 1 if there are "too many" differences between b1 and b2

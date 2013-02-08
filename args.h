@@ -259,6 +259,7 @@ ArgDescriptor argDescriptors[] = {
   { "seekGraph", ArgBoolean, (void *) &appData.seekGraph, TRUE, (ArgIniType) FALSE },
   { "sg", ArgTrue, (void *) &appData.seekGraph, FALSE, INVALID },
   { "autoRefresh", ArgBoolean, (void *) &appData.autoRefresh, TRUE, (ArgIniType) FALSE },
+  { "autoBox", ArgBoolean, (void *) &appData.autoBox, XBOARD, (ArgIniType) TRUE },
   { "gateway", ArgString, (void *) &appData.gateway, FALSE, (ArgIniType) "" },
   { "loadGameFile", ArgFilename, (void *) &appData.loadGameFile, FALSE, (ArgIniType) "" },
   { "lgf", ArgFilename, (void *) &appData.loadGameFile, FALSE, INVALID },
