@@ -10044,7 +10044,7 @@ void
 TwoMachinesEventIfReady P((void))
 {
   static int curMess = 0;
-  if (first.lastPing != first.lastPong || !first.initDone) {
+  if (first.lastPing != first.lastPong) {
     if(curMess != 1) DisplayMessage("", _("Waiting for first chess program")); curMess = 1;
     ScheduleDelayedEvent(TwoMachinesEventIfReady, 10); // [HGM] fast: lowered from 1000
     return;
@@ -10055,7 +10055,6 @@ TwoMachinesEventIfReady P((void))
     return;
   }
   DisplayMessage("", ""); curMess = 0;
-  ThawUI();
   TwoMachinesEvent();
 }
 
@@ -11022,7 +11021,7 @@ ResurrectChessProgram ()
     if (appData.noChessProgram) return 1;
 
     if(matchMode /*&& appData.tourneyFile[0]*/) { // [HGM] tourney: make sure we get features after engine replacement. (Should we always do this?)
-	if(WaitForEngine(&first, TwoMachinesEventIfReady)) { doInit = 1; return 0; } // request to do init on next visit
+	if(WaitForEngine(&first, TwoMachinesEventIfReady)) { doInit = 1; return 0; } // request to do init on next visit, because we started engine
 	if(!doInit) return 1; // this replaces testing first.pr != NoProc, which is true when we get here, but first time no reason to abort
 	doInit = 0; // we fell through (first time after starting the engine); make sure it doesn't happen again
     } else {
@@ -13932,9 +13931,10 @@ WaitForEngine (ChessProgramState *cps, DelayedEventCallback retry)
 	StartChessProgram(cps);
 	if (cps->protocolVersion == 1) {
 	  retry();
+	  ScheduleDelayedEvent(retry, 1); // Do this also through timeout to avoid recursive calling of 'retry'
 	} else {
 	  /* kludge: allow timeout for initial "feature" command */
-	  FreezeUI();
+	  if(retry != TwoMachinesEventIfReady) FreezeUI();
 	  snprintf(buf, MSG_SIZ, _("Starting %s chess program"), _(cps->which));
 	  DisplayMessage("", buf);
 	  ScheduleDelayedEvent(retry, FEATURE_TIMEOUT);
@@ -13990,11 +13990,12 @@ TwoMachinesEvent P((void))
 
     if(!ResurrectChessProgram()) return;   /* in case first program isn't running (unbalances its ping due to InitChessProgram!) */
 
-    if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
+    if(!first.initDone && GetDelayedEvent() == TwoMachinesEventIfReady) return; // [HGM] engine #1 still waiting for feature timeout
     if(first.lastPing != first.lastPong) { // [HGM] wait till we are sure first engine has set up position
       ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
       return;
     }
+    if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
 
     if(second.protocolVersion >= 2 && !strstr(second.variants, VariantName(gameInfo.variant))) {
 	DisplayError("second engine does not play this", 0);
