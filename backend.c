@@ -464,7 +464,7 @@ long timeControl_2; /* [AS] Allow separate time controls */
 char *fullTimeControlString = NULL, *nextSession, *whiteTC, *blackTC, activePartner; /* [HGM] secondary TC: merge of MPS, TC and inc */
 long timeRemaining[2][MAX_MOVES];
 int matchGame = 0, nextGame = 0, roundNr = 0;
-Boolean waitingForGame = FALSE;
+Boolean waitingForGame = FALSE, startingEngine = FALSE;
 TimeMark programStartTime, pauseStart;
 char ics_handle[MSG_SIZ];
 int have_set_title = 0;
@@ -10896,7 +10896,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	second.pr = NoProc;
     }
 
-    if (matchMode && (gameMode == TwoMachinesPlay || waitingForGame && exiting)) {
+    if (matchMode && (gameMode == TwoMachinesPlay || (waitingForGame || startingEngine) && exiting)) {
 	char resChar = '=';
         switch (result) {
 	case WhiteWins:
@@ -10921,7 +10921,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	  break;
 	}
 
-	if(waitingForGame) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
+	if(exiting) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
 	if(appData.tourneyFile[0]){ // [HGM] we are in a tourney; update tourney file with game result
 	    if(appData.afterGame && appData.afterGame[0]) RunCommand(appData.afterGame);
 	    ReserveGame(nextGame, resChar); // sets nextGame
@@ -13987,6 +13987,7 @@ TwoMachinesEvent P((void))
 
 //    forwardMostMove = currentMove;
     TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
+    startingEngine = TRUE;
 
     if(!ResurrectChessProgram()) return;   /* in case first program isn't running (unbalances its ping due to InitChessProgram!) */
 
@@ -13998,6 +13999,7 @@ TwoMachinesEvent P((void))
     if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
 
     if(second.protocolVersion >= 2 && !strstr(second.variants, VariantName(gameInfo.variant))) {
+	startingEngine = FALSE;
 	DisplayError("second engine does not play this", 0);
 	return;
     }
@@ -14031,7 +14033,7 @@ TwoMachinesEvent P((void))
     }
 
     gameMode = TwoMachinesPlay;
-    pausing = FALSE;
+    pausing = startingEngine = FALSE;
     ModeHighlight(); // [HGM] logo: this triggers display update of logos
     SetGameInfo();
     DisplayTwoMachinesTitle();
