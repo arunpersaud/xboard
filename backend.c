@@ -9480,6 +9480,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
             board[toY][toX] = (ChessSquare) (PROMOTED board[toY][toX]);
 	board[fromY][fromX] = EmptySquare;
     } else if ((fromY >= BOARD_HEIGHT>>1)
+	       && (oldEP == toX || oldEP == EP_UNKNOWN || appData.testLegality)
 	       && (toX != fromX)
                && gameInfo.variant != VariantXiangqi
                && gameInfo.variant != VariantBerolina
@@ -9540,6 +9541,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
             board[toY][toX] = (ChessSquare) (PROMOTED board[toY][toX]);
 	board[fromY][fromX] = EmptySquare;
     } else if ((fromY < BOARD_HEIGHT>>1)
+	       && (oldEP == toX || oldEP == EP_UNKNOWN || appData.testLegality)
 	       && (toX != fromX)
                && gameInfo.variant != VariantXiangqi
                && gameInfo.variant != VariantBerolina
