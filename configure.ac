@@ -119,8 +119,12 @@ AC_TRY_COMPILE([],[],
   AC_MSG_RESULT(no)
   CFLAGS="$SAVE_CFLAGS")
 
-dnl | check for cairo and librsvg
+dnl | check for pkg-config
+AC_CHECK_PROGS([PKGCONFIG], [pkg-config], pkgconfig_not_found)
+AS_IF( [test "x$PKGCONFIG" = xpkgconfig_not_found],
+       AC_MSG_ERROR([cannot find pkg-config! Please install it.]))
 
+dnl | check for cairo and librsvg
 PKG_CHECK_MODULES([CAIRO], [ cairo >= 1.2.0 librsvg-2.0 >= 2.14.0 ])
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
