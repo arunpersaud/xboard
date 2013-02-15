@@ -464,7 +464,7 @@ long timeControl_2; /* [AS] Allow separate time controls */
 char *fullTimeControlString = NULL, *nextSession, *whiteTC, *blackTC, activePartner; /* [HGM] secondary TC: merge of MPS, TC and inc */
 long timeRemaining[2][MAX_MOVES];
 int matchGame = 0, nextGame = 0, roundNr = 0;
-Boolean waitingForGame = FALSE;
+Boolean waitingForGame = FALSE, startingEngine = FALSE;
 TimeMark programStartTime, pauseStart;
 char ics_handle[MSG_SIZ];
 int have_set_title = 0;
@@ -9480,6 +9480,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
             board[toY][toX] = (ChessSquare) (PROMOTED board[toY][toX]);
 	board[fromY][fromX] = EmptySquare;
     } else if ((fromY >= BOARD_HEIGHT>>1)
+	       && (oldEP == toX || oldEP == EP_UNKNOWN || appData.testLegality)
 	       && (toX != fromX)
                && gameInfo.variant != VariantXiangqi
                && gameInfo.variant != VariantBerolina
@@ -9540,6 +9541,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
             board[toY][toX] = (ChessSquare) (PROMOTED board[toY][toX]);
 	board[fromY][fromX] = EmptySquare;
     } else if ((fromY < BOARD_HEIGHT>>1)
+	       && (oldEP == toX || oldEP == EP_UNKNOWN || appData.testLegality)
 	       && (toX != fromX)
                && gameInfo.variant != VariantXiangqi
                && gameInfo.variant != VariantBerolina
@@ -10044,7 +10046,7 @@ void
 TwoMachinesEventIfReady P((void))
 {
   static int curMess = 0;
-  if (first.lastPing != first.lastPong || !first.initDone) {
+  if (first.lastPing != first.lastPong) {
     if(curMess != 1) DisplayMessage("", _("Waiting for first chess program")); curMess = 1;
     ScheduleDelayedEvent(TwoMachinesEventIfReady, 10); // [HGM] fast: lowered from 1000
     return;
@@ -10055,7 +10057,6 @@ TwoMachinesEventIfReady P((void))
     return;
   }
   DisplayMessage("", ""); curMess = 0;
-  ThawUI();
   TwoMachinesEvent();
 }
 
@@ -10897,7 +10898,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	second.pr = NoProc;
     }
 
-    if (matchMode && (gameMode == TwoMachinesPlay || waitingForGame && exiting)) {
+    if (matchMode && (gameMode == TwoMachinesPlay || (waitingForGame || startingEngine) && exiting)) {
 	char resChar = '=';
         switch (result) {
 	case WhiteWins:
@@ -10922,7 +10923,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	  break;
 	}
 
-	if(waitingForGame) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
+	if(exiting) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
 	if(appData.tourneyFile[0]){ // [HGM] we are in a tourney; update tourney file with game result
 	    if(appData.afterGame && appData.afterGame[0]) RunCommand(appData.afterGame);
 	    ReserveGame(nextGame, resChar); // sets nextGame
@@ -11022,7 +11023,7 @@ ResurrectChessProgram ()
     if (appData.noChessProgram) return 1;
 
     if(matchMode /*&& appData.tourneyFile[0]*/) { // [HGM] tourney: make sure we get features after engine replacement. (Should we always do this?)
-	if(WaitForEngine(&first, TwoMachinesEventIfReady)) { doInit = 1; return 0; } // request to do init on next visit
+	if(WaitForEngine(&first, TwoMachinesEventIfReady)) { doInit = 1; return 0; } // request to do init on next visit, because we started engine
 	if(!doInit) return 1; // this replaces testing first.pr != NoProc, which is true when we get here, but first time no reason to abort
 	doInit = 0; // we fell through (first time after starting the engine); make sure it doesn't happen again
     } else {
@@ -13932,9 +13933,10 @@ WaitForEngine (ChessProgramState *cps, DelayedEventCallback retry)
 	StartChessProgram(cps);
 	if (cps->protocolVersion == 1) {
 	  retry();
+	  ScheduleDelayedEvent(retry, 1); // Do this also through timeout to avoid recursive calling of 'retry'
 	} else {
 	  /* kludge: allow timeout for initial "feature" command */
-	  FreezeUI();
+	  if(retry != TwoMachinesEventIfReady) FreezeUI();
 	  snprintf(buf, MSG_SIZ, _("Starting %s chess program"), _(cps->which));
 	  DisplayMessage("", buf);
 	  ScheduleDelayedEvent(retry, FEATURE_TIMEOUT);
@@ -13987,16 +13989,19 @@ TwoMachinesEvent P((void))
 
 //    forwardMostMove = currentMove;
     TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
+    startingEngine = TRUE;
 
     if(!ResurrectChessProgram()) return;   /* in case first program isn't running (unbalances its ping due to InitChessProgram!) */
 
-    if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
+    if(!first.initDone && GetDelayedEvent() == TwoMachinesEventIfReady) return; // [HGM] engine #1 still waiting for feature timeout
     if(first.lastPing != first.lastPong) { // [HGM] wait till we are sure first engine has set up position
       ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
       return;
     }
+    if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
 
     if(second.protocolVersion >= 2 && !strstr(second.variants, VariantName(gameInfo.variant))) {
+	startingEngine = FALSE;
 	DisplayError("second engine does not play this", 0);
 	return;
     }
@@ -14030,7 +14035,7 @@ TwoMachinesEvent P((void))
     }
 
     gameMode = TwoMachinesPlay;
-    pausing = FALSE;
+    pausing = startingEngine = FALSE;
     ModeHighlight(); // [HGM] logo: this triggers display update of logos
     SetGameInfo();
     DisplayTwoMachinesTitle();

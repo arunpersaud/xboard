@@ -627,7 +627,7 @@ BlankSquare (cairo_surface_t *dest, int x, int y, int color, ChessSquare piece, 
 static void
 pngDrawPiece (cairo_surface_t *dest, ChessSquare piece, int square_color, int x, int y)
 {
-    int kind, p = piece;
+    int kind;
     cairo_t *cr;
 
     if ((int)piece < (int) BlackPawn) {
@@ -636,7 +636,7 @@ pngDrawPiece (cairo_surface_t *dest, ChessSquare piece, int square_color, int x,
 	kind = 1;
 	piece -= BlackPawn;
     }
-    if(appData.upsideDown && flipView) { p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
+    if(appData.upsideDown && flipView) kind = 1 - kind; // swap white and black pieces
     BlankSquare(dest, x, y, square_color, piece, 1); // erase previous contents with background
     cr = cairo_create (dest);
     cairo_set_source_surface (cr, pngPieceBitmaps[kind][piece], x, y);
