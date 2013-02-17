@@ -976,7 +976,7 @@ main (int argc, char **argv)
 //printf("start size (%d,%d), %dx%d\n", a.x, a.y, w, h);
 	gtk_widget_get_allocation(boardWidget, &a);
 	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
-	marginH =  h - a.height - 25; // subtract 25, because GTK seems to insert this amount of extra empty space
+	marginH =  h - a.height;
 	gtk_window_resize(GTK_WINDOW(shellWidget), marginW + boardWidth, marginH + boardHeight);
 //printf("margins h=%d v=%d\n", marginW, marginH);
     }

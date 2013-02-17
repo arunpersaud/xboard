@@ -1132,16 +1132,26 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
       XtCreatePopupShell(title, !top || !appData.topLevel ? transientShellWidgetClass : topLevelShellWidgetClass,
                                                            shells[parent], args, i);
 #endif
-    dialog = gtk_dialog_new_with_buttons( title,
-                                      GTK_WINDOW(shells[parent]),
-				      GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR |
-                                          (modal ? GTK_DIALOG_MODAL : 0),
-                                      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-                                      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-                                      NULL );
+
+    if(topLevel)
+      {
+	dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	box = gtk_vbox_new(FALSE,0);
+	gtk_container_add (GTK_CONTAINER (dialog), box);
+      }
+    else
+      {
+	dialog = gtk_dialog_new_with_buttons( title,
+					      GTK_WINDOW(shells[parent]),
+					      GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR |
+					      (modal ? GTK_DIALOG_MODAL : 0),
+					      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+					      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+					      NULL );
+	box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
+      }
 
     shells[dlgNr] = dialog;
-    box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
 //    gtk_box_set_spacing(GTK_BOX(box), 5);
 
     arraysize = 0;
@@ -1489,17 +1499,19 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
     option[i].handle = (void *) table; // remember last table in EndMark handle (for hiding Engine-Output pane).
 
     gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_NONE);
+
     /* Show dialog */
     gtk_widget_show_all( dialog );
 
     /* hide OK/cancel buttons */
-    if((option[i].min & NO_OK)) {
+    if(!topLevel)
+      if((option[i].min & NO_OK)) {
         actionarea = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
         gtk_widget_hide(actionarea);
-    } else if((option[i].min & NO_CANCEL)) {
+      } else if((option[i].min & NO_CANCEL)) {
         button = gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_REJECT);
         gtk_widget_hide(button);
-    }
+      }
 
     g_signal_connect (dialog, "response",
                       G_CALLBACK (GenericPopDown),
