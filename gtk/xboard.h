@@ -151,6 +151,8 @@ void StopPV P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 
 extern char memoTranslations[];
 
+extern GtkAccelGroup *GtkAccelerators;
+
 #if TODO_GTK
 extern Widget shells[];
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;

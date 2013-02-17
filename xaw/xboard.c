@@ -386,60 +386,17 @@ XtActionsRec boardActions[] = {
 };
 
 char globalTranslations[] =
-  ":<Key>F9: MenuItem(Actions.Resign) \n \
-   :Ctrl<Key>n: MenuItem(File.NewGame) \n \
-   :Meta<Key>V: MenuItem(File.NewVariant) \n \
-   :Ctrl<Key>o: MenuItem(File.LoadGame) \n \
-   :Meta<Key>Next: MenuItem(LoadNextGameProc) \n \
+  ":Meta<Key>Next: MenuItem(LoadNextGameProc) \n \
    :Meta<Key>Prior: MenuItem(LoadPrevGameProc) \n \
    :Ctrl<Key>Down: LoadSelectedProc(3) \n \
    :Ctrl<Key>Up: LoadSelectedProc(-3) \n \
-   :Ctrl<Key>s: MenuItem(File.SaveGame) \n \
-   :Ctrl<Key>c: MenuItem(Edit.CopyGame) \n \
-   :Ctrl<Key>v: MenuItem(Edit.PasteGame) \n \
-   :Ctrl<Key>O: MenuItem(File.LoadPosition) \n \
    :Shift<Key>Next: MenuItem(LoadNextPositionProc) \n \
    :Shift<Key>Prior: MenuItem(LoadPrevPositionProc) \n \
-   :Ctrl<Key>S: MenuItem(File.SavePosition) \n \
-   :Ctrl<Key>C: MenuItem(Edit.CopyPosition) \n \
-   :Ctrl<Key>V: MenuItem(Edit.PastePosition) \n \
-   :Ctrl<Key>q: MenuItem(File.Quit) \n \
-   :Ctrl<Key>w: MenuItem(Mode.MachineWhite) \n \
-   :Ctrl<Key>b: MenuItem(Mode.MachineBlack) \n \
-   :Ctrl<Key>t: MenuItem(Mode.TwoMachines) \n \
-   :Ctrl<Key>a: MenuItem(Mode.AnalysisMode) \n \
-   :Ctrl<Key>g: MenuItem(Mode.AnalyzeFile) \n \
-   :Ctrl<Key>e: MenuItem(Mode.EditGame) \n \
-   :Ctrl<Key>E: MenuItem(Mode.EditPosition) \n \
-   :Meta<Key>O: MenuItem(View.EngineOutput) \n \
-   :Meta<Key>E: MenuItem(View.EvaluationGraph) \n \
-   :Meta<Key>G: MenuItem(View.GameList) \n \
-   :Meta<Key>H: MenuItem(View.MoveHistory) \n \
    :<Key>Pause: MenuItem(Mode.Pause) \n \
-   :<Key>F3: MenuItem(Action.Accept) \n \
-   :<Key>F4: MenuItem(Action.Decline) \n \
-   :<Key>F12: MenuItem(Action.Rematch) \n \
-   :<Key>F5: MenuItem(Action.CallFlag) \n \
-   :<Key>F6: MenuItem(Action.Draw) \n \
-   :<Key>F7: MenuItem(Action.Adjourn) \n \
-   :<Key>F8: MenuItem(Action.Abort) \n \
-   :<Key>F10: MenuItem(Action.StopObserving) \n \
-   :<Key>F11: MenuItem(Action.StopExamining) \n \
    :Ctrl<Key>d: MenuItem(DebugProc) \n \
    :Meta Ctrl<Key>F12: MenuItem(DebugProc) \n \
-   :Meta<Key>End: MenuItem(Edit.ForwardtoEnd) \n \
-   :Meta<Key>Right: MenuItem(Edit.Forward) \n \
-   :Meta<Key>Home: MenuItem(Edit.BacktoStart) \n \
-   :Meta<Key>Left: MenuItem(Edit.Backward) \n \
    :<Key>Left: MenuItem(Edit.Backward) \n \
    :<Key>Right: MenuItem(Edit.Forward) \n \
-   :<Key>Home: MenuItem(Edit.Revert) \n \
-   :<Key>End: MenuItem(Edit.TruncateGame) \n \
-   :Ctrl<Key>m: MenuItem(Engine.MoveNow) \n \
-   :Ctrl<Key>x: MenuItem(Engine.RetractMove) \n \
-   :Meta<Key>J: MenuItem(Options.Adjudications) \n \
-   :Meta<Key>U: MenuItem(Options.CommonEngine) \n \
-   :Meta<Key>T: MenuItem(Options.TimeControl) \n \
    :Ctrl<Key>P: MenuItem(PonderNextMove) \n "
 #ifndef OPTIONSDIALOG
     "\
@@ -450,8 +407,6 @@ char globalTranslations[] =
    :Ctrl<Key>H: MenuItem(HideThinkingProc) \n "
 #endif
    "\
-   :<Key>F1: MenuItem(Help.ManXBoard) \n \
-   :<Key>F2: MenuItem(View.FlipView) \n \
    :<KeyDown>Return: TempBackwardProc() \n \
    :<KeyUp>Return: TempForwardProc() \n";
 
@@ -996,6 +951,109 @@ PrintArg (ArgType t)
   return p;
 }
 
+char *
+GenerateGlobalTranslationTable (void)
+{
+  /* go through all menu items and extract the keyboard shortcuts, so that X11 can load them */
+  char *output;
+
+  int i,j;
+  MenuItem *mi;
+
+  output = strdup("");
+
+  /* loop over all menu entries */
+  for( i=0; menuBar[i].mi ; i++)
+    {
+      mi = menuBar[i].mi;
+      for(j=0; mi[j].proc; j++)
+	{
+	  if (mi[j].accel)
+	    {
+	      int ctrl  = 0;
+	      int shift = 0;
+	      int alt   = 0;
+
+	      char *key,*test, *mods;
+
+	      /* check for Ctrl/Alt */
+	      if( strstr(mi[j].accel, "<Ctrl>")  ) ctrl  = 1;
+	      if( strstr(mi[j].accel, "<Shift>") ) shift = 1;
+	      if( strstr(mi[j].accel, "<Alt>")   ) alt   = 1;
+
+	      /* remove all <...> */
+	      test = strrchr(mi[j].accel, '>');
+	      if ( test==NULL )
+		key = strdup(mi[j].accel);
+	      else
+		key = strdup(++test); // remove ">"
+
+	      /* instead of shift X11 uses the uppercase letter directly*/
+	      if (shift && strlen(key)==1 )
+		{
+		  *key  = toupper(*key);
+		  shift = 0;
+		}
+
+	      /* handle some special cases which have different names in X11 */
+	      if ( strncmp(key, "Page_Down", 9) == 0 )
+		{
+		  free(key);
+		  key=strdup("Next");
+		}
+	      else if ( strncmp(key, "Page_Up", 7) == 0 )
+		{
+		  free(key);
+		  key=strdup("Prior");
+		};
+
+	      /* create string of mods */
+	      if (ctrl)
+		mods = strdup("Ctrl ");
+	      else
+		mods = strdup("");
+
+	      if(alt)
+		{
+		  mods = realloc(mods, strlen(mods) + strlen("Meta ")+1);
+		  strncat(mods, "Meta ", 5);
+		};
+
+	      if(shift)
+		{
+		  mods = realloc(mods, strlen(mods) + strlen("Shift ")+1);
+		  strncat(mods, "Shift ", 6);
+		};
+
+	      // remove trailing space
+	      if( isspace(mods[strlen(mods)-1]) )
+		mods[strlen(mods)-1]='\0';
+
+	      /* get the name for the callback, we can use MenuItem() here that will call KeyBindingProc */
+	      size_t namesize = snprintf(NULL, 0, "%s.%s", menuBar[i].ref, mi[j].ref);
+	      char *name = malloc(namesize+1);
+	      snprintf(name, namesize+1, "%s.%s", menuBar[i].ref, mi[j].ref);
+
+	      size_t buffersize = snprintf(NULL, 0, ":%s<Key>%s: MenuItem(%s) \n ", mods, key, name);
+	      char *buffer = malloc(buffersize+1);
+	      snprintf(buffer, buffersize+1, ":%s<Key>%s: MenuItem(%s) \n ", mods, key, name);
+
+	      /* add string to the output */
+	      output = realloc(output, strlen(output) + strlen(buffer)+1);
+	      strncat(output, buffer, strlen(buffer));
+
+	      /* clean up */
+	      free(key);
+	      free(buffer);
+	      free(name);
+	      free(mods);
+	    }
+	}
+    }
+  return output;
+}
+
+
 void
 PrintOptions ()
 {
@@ -1323,8 +1381,13 @@ main (int argc, char **argv)
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
+
+    char *TranslationsTableMenus=GenerateGlobalTranslationTable ();
+
     XtAugmentTranslations(formWidget,
 			  XtParseTranslationTable(globalTranslations));
+    XtAugmentTranslations(formWidget,
+			  XtParseTranslationTable(TranslationsTableMenus));
 
     XtAddEventHandler(formWidget, KeyPressMask, False,
 		      (XtEventHandler) MoveTypeInProc, NULL);
@@ -2528,3 +2591,4 @@ UpdateLogos (int displ)
     if(displ) DisplayLogos(&optList[W_WHITE-1], &optList[W_BLACK+1]);
     return;
 }
+

@@ -428,6 +428,14 @@ CreateMenuPopup (Option *opt, int n, int def)
 	  } else
 	    entry = gtk_menu_item_new_with_label(msg);
 	  gtk_signal_connect_object (GTK_OBJECT (entry), "activate", GTK_SIGNAL_FUNC(MenuSelect), (gpointer) (intptr_t) ((n<<16)+i));
+	  if(mb[i].accel) {
+	    guint accelerator_key;
+	    GdkModifierType accelerator_mods;
+
+	    gtk_accelerator_parse(mb[i].accel, &accelerator_key, &accelerator_mods);
+	    gtk_widget_add_accelerator (GTK_WIDGET(entry), "activate",GtkAccelerators,
+					accelerator_key, accelerator_mods, GTK_ACCEL_VISIBLE);
+	  };
 	  gtk_widget_show(entry);
 	} else entry = gtk_separator_menu_item_new();
 	gtk_menu_append(GTK_MENU (menu), entry);

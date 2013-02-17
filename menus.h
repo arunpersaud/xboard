@@ -55,6 +55,7 @@ typedef void MenuProc P((void));
 
 typedef struct {
     char *string;
+    char *accel;
     char *ref;
     MenuProc *proc;
     void *handle;
