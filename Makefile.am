@@ -67,8 +67,9 @@ EXTRA_DIST = pixmaps themes png sounds winboard \
 
 DISTCLEANFILES = stamp-h
 
+GITVERSION=$(shell sh -c 'git describe --dirty --always 2>/dev/null')
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@ @CAIRO_CFLAGS@ @FRONTEND_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' $(headers)
+	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -D__GIT_VERSION='"$(GITVERSION)"' $(headers)
 
 ACLOCAL_AMFLAGS = -I m4
 

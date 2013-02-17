@@ -1344,7 +1344,7 @@ void
 InitBackEnd2 ()
 {
     if (appData.debugMode) {
-	fprintf(debugFP, "%s\n", programVersion);
+      fprintf(debugFP, "Version: %s (%s)\n", programVersion, __GIT_VERSION);
     }
     ASSIGN(currentDebugFile, appData.nameOfDebugFile); // [HGM] debug split: remember initial name in use
 
