@@ -1091,8 +1091,8 @@ SetMachineThinkingEnables ()
 void
 GreyRevert (Boolean grey)
 {
-    MarkMenuItem("Edit.Revert", !grey);
-    MarkMenuItem("Edit.Annotate", !grey);
+    EnableNamedMenuItem("Edit.Revert", !grey);
+    EnableNamedMenuItem("Edit.Annotate", !grey);
 }
 
 char *
