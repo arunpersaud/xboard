@@ -392,7 +392,7 @@ GameListBuild (FILE *f)
 	}
     }
   }
-GetTimeMark(&t2);printf("GameListBuild %ld msec\n", SubtractTimeMarks(&t2,&t));
+    if(appData.debugMode) { GetTimeMark(&t2);printf("GameListBuild %ld msec\n", SubtractTimeMarks(&t2,&t)); }
     quickFlag = 0;
     PackGame(boards[scratch]); // for appending end-of-game marker.
     DisplayTitle("WinBoard");
