@@ -373,6 +373,46 @@ CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
     return entry;
 }
 
+char *
+format_accel (char *input)
+{
+  char *output;
+  char *key,*test;
+
+  output = strdup("");
+
+  if( strstr(input, "<Ctrl>") )
+    {
+      output = realloc(output, strlen(output) + strlen(_("Ctrl"))+2);
+      strncat(output, _("Ctrl"), strlen(_("Ctrl")) +1);
+      strncat(output, "+", 1);
+    };
+  if( strstr(input, "<Alt>") )
+    {
+      output = realloc(output, strlen(output) + strlen(_("Alt"))+2);
+      strncat(output, _("Alt"), strlen(_("Alt")) +1);
+      strncat(output, "+", 1);
+    };
+  if( strstr(input, "<Shift>") )
+    {
+      output = realloc(output, strlen(output) + strlen(_("Shift"))+2);
+      strncat(output, _("Shift"), strlen(_("Shift")) +1);
+      strncat(output, "+", 1);
+    };
+
+  test = strrchr(input, '>');
+  if ( test==NULL )
+    key = strdup(input);
+  else
+    key = strdup(++test); // remove ">"
+
+  output = realloc(output, strlen(output) + strlen(_(key))+2);
+  strncat(output, _(key), strlen(key) +1);
+
+  free(key);
+  return output;
+}
+
 static Widget
 CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 {   // fromList determines if the item texts are taken from a list of strings, or from a menu table
@@ -381,20 +421,47 @@ CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
     Arg arg;
     MenuItem *mb = (MenuItem *) opt->choice;
     char **list = (char **) opt->choice;
+    int maxlength=0;
+
 
     if(list[0] == NULL) return NULL; // avoid empty menus, as they cause crash
     menu = XtCreatePopupShell(opt->name, simpleMenuWidgetClass, parent, NULL, 0);
 
+    if(!fromList)
+      for (i=0; mb[i].string; i++)
+	if (maxlength < strlen(_(mb[i].string)) )
+	  maxlength = strlen(_(mb[i].string) );
+
     for (i=0; 1; i++)
       {
 	char *msg = fromList ? list[i] : mb[i].string;
+	char *label=NULL;
+
 	if(!msg) break;
-	entry = CreateMenuItem(menu, opt->min & NO_GETTEXT ? msg : _(msg), (XtCallbackProc) ComboSelect, (n<<16)+i);
+
+	if(!fromList && mb[i].accel)
+	  {
+	    char *menuname = opt->min & NO_GETTEXT ? msg : _(msg);
+	    char *accel = format_accel(mb[i].accel);
+	    size_t len;
+	    int fill = maxlength - strlen(menuname) +2+strlen(accel);
+
+	    len = strlen(menuname)+fill+1;
+	    label = malloc(len);
+
+	    snprintf(label,len,"%s%*s",menuname,fill,accel);
+	    free(accel);
+	  }
+	else
+	  label = strdup(opt->min & NO_GETTEXT ? msg : _(msg));
+
+	entry = CreateMenuItem(menu, label, (XtCallbackProc) ComboSelect, (n<<16)+i);
 	if(!fromList) mb[i].handle = (void*) entry; // save item ID, for enabling / checkmarking
 	if(i==def) {
 	    XtSetArg(arg, XtNpopupOnEntry, entry);
 	    XtSetValues(menu, &arg, 1);
 	}
+	free(label);
       }
       return menu;
 }
