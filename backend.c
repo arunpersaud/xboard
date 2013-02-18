@@ -328,7 +328,7 @@ safeStrCpy (char *dst, const char *src, size_t count)
     {
       dst[ count-1 ] = '\0'; // make sure incomplete copy still null-terminated
       if(appData.debugMode)
-      fprintf(debugFP, "safeStrCpy: copying %s into %s didn't work, not enough space %d\n",src,dst, (int)count);
+	fprintf(debugFP, "safeStrCpy: copying %s into %s didn't work, not enough space %d\n",src,dst, (int)count);
     }
 
   return dst;
@@ -2194,7 +2194,7 @@ StringToVariant (char *e)
       }
     }
     if (appData.debugMode) {
-      fprintf(debugFP, _("recognized '%s' (%d) as variant %s\n"),
+      fprintf(debugFP, "recognized '%s' (%d) as variant %s\n",
 	      e, wnum, VariantName(v));
     }
     return v;
@@ -3553,7 +3553,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		    gameInfo.whiteRating = string_to_rating(star_match[1]);
 		    gameInfo.blackRating = string_to_rating(star_match[3]);
 		    if (appData.debugMode)
-		      fprintf(debugFP, _("Ratings from header: W %d, B %d\n"),
+		      fprintf(debugFP, "Ratings from header: W %d, B %d\n",
 			      gameInfo.whiteRating, gameInfo.blackRating);
 		}
 		continue;
@@ -4211,7 +4211,7 @@ ParseBoard12 (char *string)
     newGame = FALSE;
 
     if (appData.debugMode)
-      fprintf(debugFP, _("Parsing board: %s\n"), string);
+      fprintf(debugFP, "Parsing board: %s\n", string);
 
     move_str[0] = NULLCHAR;
     elapsed_time[0] = NULLCHAR;
@@ -4680,11 +4680,10 @@ ParseBoard12 (char *string)
        to canonical algebraic form. */
     if (moveNum > 0) {
   if (appData.debugMode) {
-    if (appData.debugMode) { int f = forwardMostMove;
-        fprintf(debugFP, "parseboard %d, castling = %d %d %d %d %d %d\n", f,
-                boards[f][CASTLING][0],boards[f][CASTLING][1],boards[f][CASTLING][2],
-                boards[f][CASTLING][3],boards[f][CASTLING][4],boards[f][CASTLING][5]);
-    }
+    int f = forwardMostMove;
+    fprintf(debugFP, "parseboard %d, castling = %d %d %d %d %d %d\n", f,
+	    boards[f][CASTLING][0],boards[f][CASTLING][1],boards[f][CASTLING][2],
+	    boards[f][CASTLING][3],boards[f][CASTLING][4],boards[f][CASTLING][5]);
     fprintf(debugFP, "accepted move %s from ICS, parse it.\n", move_str);
     fprintf(debugFP, "moveNum = %d\n", moveNum);
     fprintf(debugFP, "board = %d-%d x %d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT);
@@ -13649,7 +13648,7 @@ AnalyzeModeEvent ()
             /* secure check */
             if (appData.icsEngineAnalyze) {
                 if (appData.debugMode)
-                    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
+                    fprintf(debugFP, "Found unexpected active ICS engine analyze \n");
                 ExitAnalyzeMode();
                 ModeHighlight();
             }
@@ -13663,7 +13662,7 @@ AnalyzeModeEvent ()
         }
         appData.icsEngineAnalyze = TRUE;
         if (appData.debugMode)
-            fprintf(debugFP, _("ICS engine analyze starting... \n"));
+            fprintf(debugFP, "ICS engine analyze starting... \n");
     }
 
     if (gameMode == AnalyzeMode) { ToggleSecond(); return 0; }
