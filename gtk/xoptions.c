@@ -1136,6 +1136,7 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
     if(topLevel)
       {
 	dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(dialog, title);
 	box = gtk_vbox_new(FALSE,0);
 	gtk_container_add (GTK_CONTAINER (dialog), box);
       }
