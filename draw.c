@@ -124,13 +124,10 @@ struct {
   int x1, x2, y1, y2;
 } gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 
-static int dual = 0;
-
 void
-SwitchWindow ()
+SwitchWindow (int main)
 {
-    dual = !dual;
-    currBoard = (dual ? &mainOptions[W_BOARD] : &dualOptions[3]);
+    currBoard = (main ? &mainOptions[W_BOARD] : &dualOptions[3]);
     csBoardWindow = DRAWABLE(currBoard);
 }
 

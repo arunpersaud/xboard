@@ -918,7 +918,7 @@ DrawPosition (int repaint, Board board)
 	MarkMenuItem("View.Flip View", flipView);
     }
 
-    if(nr) { SlavePopUp(); SwitchWindow(); } // [HGM] popup board if not yet popped up, and switch drawing to it.
+    if(nr) { SlavePopUp(); SwitchWindow(0); } // [HGM] popup board if not yet popped up, and switch drawing to it.
 
     /*
      * It would be simpler to clear the window with XClearWindow()
@@ -1034,7 +1034,7 @@ DrawPosition (int repaint, Board board)
     }
 
     FlashDelay(0); // this flushes drawing queue;
-    if(nr) SwitchWindow();
+    if(nr) SwitchWindow(1);
 }
 
 /* [AS] Arrow highlighting support */
