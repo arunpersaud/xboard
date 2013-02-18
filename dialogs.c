@@ -655,6 +655,7 @@ LoadOptionsProc ()
 
 static Option saveOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.autoSaveGames, "", NULL, CheckBox, N_("Auto-Save Games") },
+{ 0, 0, 0, NULL, (void*) &appData.onlyOwn, "", NULL, CheckBox, N_("Own Games Only") },
 { 0, 0, 0, NULL, (void*) &appData.saveGameFile, ".pgn", NULL, FileName,  N_("Save Games on File:") },
 { 0, 0, 0, NULL, (void*) &appData.savePositionFile, ".fen", NULL, FileName,  N_("Save Final Positions on File:") },
 { 0, 0, 0, NULL, (void*) &appData.pgnEventHeader, "", NULL, TextBox,  N_("PGN Event Header:") },

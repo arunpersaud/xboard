@@ -1609,11 +1609,13 @@ have expired (or in Xiangqi).
 @item Save Game Options
 @cindex Save Game Options, Menu Item
 Summons a dialog where you can specify the files on which XBoard should
-automtically save any played or entered games, 
+automatically save any played or entered games, 
 (the @code{saveGameFile} option), 
 or the final position of such games (the @code{savePositionfile} option).
 You can also select 'auto-save' without a file name,
 in which case XBoard will prompt the user for a file name after each game.
+In ICS mode you can limit the auto-saving to your own games
+(i.e. suppress saving of observed games).
 You can also set the default value for the PGN Event tag that will
 be used for each new game you start.
 Various options for the format of the game can be specified as well,
@@ -2761,6 +2763,9 @@ standard output.
 @cindex autoSaveGames, option
 Sets the Auto Save menu option.  @xref{Options Menu}.  Default: false.
 Ignored if @code{saveGameFile} is set.
+@item -onlyOwnGames true/false
+@cindex onlyOwnGames, option
+Suppresses auto-saving of ICS observed games. Default: false.
 @item -lpf or -loadPositionFile file
 @itemx -lpi or -loadPositionIndex index
 @cindex lpf, option

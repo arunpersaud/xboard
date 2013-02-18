@@ -10749,7 +10749,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 			else
 			SaveGameToFile(appData.saveGameFile, TRUE);
 		    } else if (appData.autoSaveGames) {
-			AutoSaveGame();
+			if(gameMode != IcsObserving || !appData.onlyOwn) AutoSaveGame();
 		    }
 		    if (*appData.savePositionFile != NULLCHAR) {
 			SavePositionToFile(appData.savePositionFile);

@@ -272,6 +272,7 @@ ArgDescriptor argDescriptors[] = {
   { "autosave", ArgTrue, (void *) &appData.autoSaveGames, FALSE, INVALID },
   { "xautosave", ArgFalse, (void *) &appData.autoSaveGames, FALSE, INVALID },
   { "-autosave", ArgFalse, (void *) &appData.autoSaveGames, FALSE, INVALID },
+  { "onlyOwnGames", ArgBoolean, (void *) &appData.onlyOwn, TRUE, (ArgIniType) FALSE },
   { "loadPositionFile", ArgFilename, (void *) &appData.loadPositionFile, FALSE, (ArgIniType) "" },
   { "lpf", ArgFilename, (void *) &appData.loadPositionFile, FALSE, INVALID },
   { "loadPositionIndex", ArgInt, (void *) &appData.loadPositionIndex, FALSE, (ArgIniType) 1 },

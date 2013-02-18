@@ -449,6 +449,7 @@ typedef struct {
     int loadGameIndex;      /* game # within file */
     char *saveGameFile;
     Boolean autoSaveGames;
+    Boolean onlyOwn;        /* [HGM] suppress auto-saving of observed games */
     char *loadPositionFile;
     int loadPositionIndex;  /* position # within file */
     char *savePositionFile;
