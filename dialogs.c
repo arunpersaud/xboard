@@ -2215,7 +2215,7 @@ SlaveExp (int n, int x, int y)
 Option dualOptions[] = { // auxiliary board window
 { 0, L2L|T2T,              198, NULL, NULL, NULL, NULL, Label, "White" }, // white clock
 { 0, R2R|T2T|SAME_ROW,     198, NULL, NULL, NULL, NULL, Label, "Black" }, // black clock
-{ 0, LR|T2T|BORDER,        401, NULL, NULL, NULL, NULL, Label, "message" }, // message field
+{ 0, LR|T2T|BORDER,        401, NULL, NULL, NULL, NULL, Label, "This feature is experimental" }, // message field
 { 401, LR|TT, 401, NULL, (char*) &SlaveExp, NULL, NULL, Graph, "shadow board" }, // board
 { 0,  NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
