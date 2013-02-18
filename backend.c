@@ -5492,6 +5492,8 @@ MultiPV (ChessProgramState *cps)
 	return -1;
 }
 
+Boolean extendGame; // signals to UnLoadPV() if walked part of PV has to be appended to game
+
 Boolean
 LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end, int pane)
 {
@@ -5523,6 +5525,7 @@ LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end, int pane)
 	}
 	ParsePV(buf+startPV, FALSE, gameMode != AnalyzeMode);
 	*start = startPV; *end = index-1;
+	extendGame = (gameMode == AnalyzeMode && appData.autoExtend);
 	return TRUE;
 }
 
@@ -5552,6 +5555,7 @@ LoadPV (int x, int y)
   int which = gameMode == TwoMachinesPlay && (WhiteOnMove(forwardMostMove) == (second.twoMachinesColor[0] == 'w'));
   lastX = x; lastY = y;
   ParsePV(lastPV[which], FALSE, TRUE); // load the PV of the thinking engine in the boards array.
+  extendGame = FALSE;
   return TRUE;
 }
 
@@ -5562,7 +5566,7 @@ UnLoadPV ()
   if(endPV < 0) return;
   if(appData.autoCopyPV) CopyFENToClipboard();
   endPV = -1;
-  if(gameMode == AnalyzeMode && currentMove > forwardMostMove) {
+  if(extendGame && currentMove > forwardMostMove) {
 	Boolean saveAnimate = appData.animate;
 	if(pushed) {
 	    if(shiftKey && storedGames < MAX_VARIATIONS-2) { // wants to start variation, and there is space

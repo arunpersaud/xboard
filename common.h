@@ -553,6 +553,7 @@ typedef struct {
     Boolean showButtonBar;
     Boolean icsEngineAnalyze;
     Boolean variations;         /* [HGM] enable variation-tree walking */
+    Boolean autoExtend;         /* [HGM] enable playing move(s) of right-clicked PV in analysis mode */
 
     /* [AS] New properties (down to the "ZIPPY" part) */
     Boolean scoreIsAbsolute[ENGINES];  /* If true, engine score is always from white side */

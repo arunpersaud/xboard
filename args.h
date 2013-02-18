@@ -196,6 +196,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondDirectory", ArgFilename, (void *) &appData.secondDirectory, FALSE, (ArgIniType) SECOND_DIRECTORY },
   { "sd", ArgFilename, (void *) &appData.secondDirectory, FALSE, INVALID },
   { "variations", ArgBoolean, (void *) &appData.variations, TRUE, (ArgIniType) FALSE },
+  { "appendPV", ArgBoolean, (void *) &appData.autoExtend, TRUE, (ArgIniType) FALSE },
   { "theme", ArgString, (void *) &theme, FALSE, (ArgIniType) "" },
 
   /* some options only used by the XBoard front end, and ignored in WinBoard         */
