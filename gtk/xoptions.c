@@ -1511,11 +1511,11 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
       } else if((option[i].min & NO_CANCEL)) {
         button = gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_REJECT);
         gtk_widget_hide(button);
-      }
-
-    g_signal_connect (dialog, "response",
+        g_signal_connect (dialog, "response",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
+      }
+
     g_signal_connect (dialog, "delete-event",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
