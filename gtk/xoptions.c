@@ -1506,12 +1506,14 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
 
     /* hide OK/cancel buttons */
     if(!topLevel)
-      if((option[i].min & NO_OK)) {
-        actionarea = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
-        gtk_widget_hide(actionarea);
-      } else if((option[i].min & NO_CANCEL)) {
-        button = gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_REJECT);
-        gtk_widget_hide(button);
+      {
+	if((option[i].min & NO_OK)) {
+	  actionarea = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
+	  gtk_widget_hide(actionarea);
+	} else if((option[i].min & NO_CANCEL)) {
+	  button = gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_REJECT);
+	  gtk_widget_hide(button);
+	}
         g_signal_connect (dialog, "response",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
