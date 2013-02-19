@@ -317,6 +317,7 @@ WindowPlacement wpEvalGraph;
 WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
 WindowPlacement wpTags;
+WindowPlacement wpDualBoard;
 
 
 /* This magic number is the number of intermediate frames used

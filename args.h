@@ -772,6 +772,12 @@ ArgDescriptor argDescriptors[] = {
   { "gameListY", ArgY,   (void *) &wpGameList.y, TRUE, (ArgIniType) CW_USEDEFAULT },
   { "gameListW", ArgInt, (void *) &wpGameList.width, TRUE, (ArgIniType) CW_USEDEFAULT },
   { "gameListH", ArgInt, (void *) &wpGameList.height, TRUE, (ArgIniType) CW_USEDEFAULT },
+#if XBOARD
+  { "slaveX", ArgX,   (void *) &wpDualBoard.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "slaveY", ArgY,   (void *) &wpDualBoard.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "slaveW", ArgInt, (void *) &wpDualBoard.width, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "slaveH", ArgInt, (void *) &wpDualBoard.height, TRUE, (ArgIniType) CW_USEDEFAULT },
+#endif
   /* [AS] Layout stuff */
   { "moveHistoryUp", ArgBoolean, (void *) &wpMoveHistory.visible, TRUE, (ArgIniType) TRUE },
   { "moveHistoryX", ArgX,   (void *) &wpMoveHistory.x, TRUE, (ArgIniType) CW_USEDEFAULT },

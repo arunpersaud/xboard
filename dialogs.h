@@ -125,7 +125,7 @@ extern int dialogError;
 extern ButtonCallback *comboCallback;
 extern void *userLogo;
 
-extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain;
+extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain, wpDualBoard;
 extern char *marked[];
 extern Boolean shellUp[];
 extern Option textOptions[], typeOptions[], dualOptions[], mainOptions[];
