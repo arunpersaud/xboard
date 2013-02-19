@@ -1029,7 +1029,7 @@ DrawPosition (int repaint, Board board)
 			GraphExpose(currBoard, x - lineGap, y - lineGap, squareSize + 2*lineGap, squareSize  + 2*lineGap);
 		    else
 			GraphExpose(currBoard, x, y, squareSize, squareSize);
-		    damage[nr][i][j] &= ~2; // remember damage by newly drawn error in '2' bit, to schedule it for erasure next draw
+		    damage[nr][i][j] &= 2; // remember damage by newly drawn error in '2' bit, to schedule it for erasure next draw
 		}
     }
 
