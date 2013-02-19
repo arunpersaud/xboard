@@ -732,6 +732,7 @@ main (int argc, char **argv)
 //    }
 
     bindtextdomain(PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset(PACKAGE, "UTF-8"); // needed when creating markup for the clocks
     textdomain(PACKAGE);
 #endif
 
