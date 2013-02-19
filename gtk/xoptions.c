@@ -1119,7 +1119,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 //        if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
 	width = n / 20 + 1;
         height = n / width + 1;
-printf("n=%d, h=%d, w=%d\n",n,height,width);
+if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 //	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = SAME_ROW; // OK on same line
         currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }
