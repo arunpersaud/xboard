@@ -1236,7 +1236,7 @@ FindFont (char *pattern, int targetPxlSize)
         safeStrCpy(p, best, strlen(best)+1 );
     }
     if (appData.debugMode) {
-        fprintf(debugFP, _("resolved %s at pixel size %d\n  to %s\n"),
+        fprintf(debugFP, "resolved %s at pixel size %d\n  to %s\n",
 		pattern, targetPxlSize, p);
     }
     XFreeFontNames(fonts);
