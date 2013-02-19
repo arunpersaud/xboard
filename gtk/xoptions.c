@@ -1105,6 +1105,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     if(dlgNr && dlgNr < PromoDlg && shells[dlgNr]) { // reusable, and used before (but popped down)
         gtk_widget_show(shells[dlgNr]);
         shellUp[dlgNr] = True;
+	if(wp[dlgNr]) gtk_window_move(GTK_WINDOW(shells[dlgNr]), wp[dlgNr]->x, wp[dlgNr]->y);
         return 0;
     }
 
