@@ -1525,11 +1525,11 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
                       (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr]++;
 
-    if(dlgNr && wp[dlgNr] && wp[dlgNr]->width > 0) { // if persistent window-info available, reposition
+    if(dlgNr && wp[dlgNr]) { // if persistent window-info available, reposition
+      if(wp[dlgNr]->x > 0 && wp[dlgNr]->y > 0)
 	gtk_window_move(GTK_WINDOW(dialog), wp[dlgNr]->x, wp[dlgNr]->y);
-//printf("moved %d to (%d,%d)\n", dlgNr, wp[dlgNr]->x, wp[dlgNr]->y);
+      if(wp[dlgNr]->width > 0 && wp[dlgNr]->height > 0)
 	gtk_window_resize(GTK_WINDOW(dialog), wp[dlgNr]->width, wp[dlgNr]->height);
-//printf("resized %d to %dx%d\n", dlgNr, wp[dlgNr]->width, wp[dlgNr]->height);
     }
 
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)

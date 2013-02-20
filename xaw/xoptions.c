@@ -1225,13 +1225,17 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     shellUp[dlgNr]++; // count rather than flag
     previous = NULL;
     if(textField) SetFocus(textField, popup, (XEvent*) NULL, False);
-    if(dlgNr && wp[dlgNr] && wp[dlgNr]->width > 0) { // if persistent window-info available, reposition
+    if(dlgNr && wp[dlgNr]) { // if persistent window-info available, reposition
 	j = 0;
-	XtSetArg(args[j], XtNheight, (Dimension) (wp[dlgNr]->height));  j++;
-	XtSetArg(args[j], XtNwidth,  (Dimension) (wp[dlgNr]->width));  j++;
-	XtSetArg(args[j], XtNx, (Position) (wp[dlgNr]->x));  j++;
-	XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
-	XtSetValues(popup, args, j);
+	if(wp[dlgNr]->width > 0 && wp[dlgNr]->height > 0) {
+	  XtSetArg(args[j], XtNheight, (Dimension) (wp[dlgNr]->height));  j++;
+	  XtSetArg(args[j], XtNwidth,  (Dimension) (wp[dlgNr]->width));  j++;
+	}
+	if(wp[dlgNr]->width > 0 && wp[dlgNr]->y > 0) {
+	  XtSetArg(args[j], XtNx, (Position) (wp[dlgNr]->x));  j++;
+	  XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
+	}
+	if(j) XtSetValues(popup, args, j);
     }
     RaiseWindow(dlgNr);
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
