@@ -151,7 +151,7 @@ static int
 GameListCreate (char *name)
 {
     int new;
-    if(new = GenericPopUp(gamesOptions, name, GameListDlg, BoardWindow, NONMODAL, 1))
+    if(new = GenericPopUp(gamesOptions, name, GameListDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&gamesOptions[1], GameListDlg, 4),
 	AddHandler(&gamesOptions[0], GameListDlg, 5);
     FocusOnWidget(&gamesOptions[0], GameListDlg);
@@ -278,7 +278,7 @@ ShowGameListProc ()
 	PopDown(GameListDlg);
 	return;
     }
-    GenericPopUp(NULL, NULL, GameListDlg, BoardWindow, NONMODAL, 1); // first two args ignored when shell exists!
+    GenericPopUp(NULL, NULL, GameListDlg, BoardWindow, NONMODAL, appData.topLevel); // first two args ignored when shell exists!
     MarkMenu("View.GameList", GameListDlg);
     GameListHighlight(lastLoadGameNumber);
 }

@@ -922,7 +922,7 @@ IcsTextProc ()
    textOptions[i].target = NULL;
    textOptions[i].min = 2;
    MarkMenu("View.ICStextmenu", TextMenuDlg);
-   GenericPopUp(textOptions, _("ICS text menu"), TextMenuDlg, BoardWindow, NONMODAL, 1);
+   GenericPopUp(textOptions, _("ICS text menu"), TextMenuDlg, BoardWindow, NONMODAL, appData.topLevel);
 }
 
 //---------------------------------------------------- Edit Comment -----------------------------------
@@ -982,7 +982,7 @@ NewCommentPopup (char *title, char *text, int index)
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
     MarkMenu("View.Comments", CommentDlg);
-    if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL, 1))
+    if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&commentOptions[0], CommentDlg, 1);
 }
 
@@ -1057,7 +1057,7 @@ NewTagsPopup (char *text, char *msg)
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].name = msg;
     MarkMenu("View.Tags", TagsDlg);
-    GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL, 1);
+    GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL, appData.topLevel);
 }
 
 void
@@ -2199,7 +2199,7 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
     if(!appData.showButtonBar) for(i=W_BUTTON; i<W_BOARD; i++) mainOptions[i].type = -1;
     for(i=0; i<8; i++) mainOptions[i+1].choice = (char**) menuBar[i].mi;
     AppendEnginesToMenu(appData.recentEngineList);
-    GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1);
+    GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1); // allways top-level
     return mainOptions;
 }
 
@@ -2232,7 +2232,7 @@ SlavePopUp ()
     dualOptions[3].value = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
     dualOptions[3].max = dualOptions[2].max = size; // board width
     dualOptions[0].max = dualOptions[1].max = size/2 - 3; // clock width
-    GenericPopUp(dualOptions, "XBoard", DummyDlg, BoardWindow, NONMODAL, 1);
+    GenericPopUp(dualOptions, "XBoard", DummyDlg, BoardWindow, NONMODAL, appData.topLevel);
     SlaveResize(dualOptions+3);
 }
 
