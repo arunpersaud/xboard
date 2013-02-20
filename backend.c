@@ -4320,7 +4320,7 @@ ParseBoard12 (char *string)
 	              partnerUp = 0; flipView = !flipView; } // [HGM] dual
       snprintf(partnerStatus, MSG_SIZ,"W: %d:%02d B: %d:%02d (%d-%d) %c", white_time*fac/60000, (white_time*fac%60000)/1000,
 		 (black_time*fac/60000), (black_time*fac%60000)/1000, white_stren, black_stren, to_play);
-      DisplayMessage(partnerStatus, "");
+      if(!twoBoards) DisplayMessage(partnerStatus, "");
 	partnerBoardValid = TRUE;
       return;
     }
