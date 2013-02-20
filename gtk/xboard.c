@@ -691,6 +691,21 @@ PrintOptions ()
   if(len) buf[len] = NULLCHAR, printf("%s\n", buf);
 }
 
+void
+SlaveResize (Option *opt)
+{
+    static int slaveW, slaveH, w, h;
+    GtkAllocation a;
+    if(!slaveH) {
+	gtk_widget_get_allocation(shells[DummyDlg], &a);
+	w = a.width; h = a.height;
+	gtk_widget_get_allocation(opt->handle, &a);
+	slaveW =  w - opt->max; // [HGM] needed to set new shellWidget size when we resize board
+	slaveH =  h - a.height + 13;
+   }
+  gtk_window_resize(GTK_WINDOW(shells[DummyDlg]), slaveW + opt->max, slaveH + opt->value);
+}
+
 int
 main (int argc, char **argv)
 {

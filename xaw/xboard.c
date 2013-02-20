@@ -1084,6 +1084,11 @@ PrintOptions ()
   if(len) buf[len] = NULLCHAR, printf("%s\n", buf);
 }
 
+void
+SlaveResize (Option *opt)
+{
+}
+
 int
 main (int argc, char **argv)
 {

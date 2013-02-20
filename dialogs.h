@@ -180,6 +180,7 @@ void DisplayTimerLabel P((Option *opt, char *color, long timer, int highlight));
 void SetWindowTitle P((char *text, char *title, char *icon));
 void SetupDropMenu P((void));
 Option *BoardPopUp P((int squareSize, int lineGap, void *clockFontThingy));
+void SlaveResize P((Option *opt));
 
 int  SetCurrentComboSelection P((Option *opt));
 void BoxAutoPopUp P((char *buf));

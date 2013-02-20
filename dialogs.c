@@ -2233,6 +2233,7 @@ SlavePopUp ()
     dualOptions[3].max = dualOptions[2].max = size; // board width
     dualOptions[0].max = dualOptions[1].max = size/2 - 3; // clock width
     GenericPopUp(dualOptions, "XBoard", DummyDlg, BoardWindow, NONMODAL, 1);
+    SlaveResize(dualOptions+3);
 }
 
 void
