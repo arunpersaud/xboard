@@ -1231,7 +1231,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	  XtSetArg(args[j], XtNheight, (Dimension) (wp[dlgNr]->height));  j++;
 	  XtSetArg(args[j], XtNwidth,  (Dimension) (wp[dlgNr]->width));  j++;
 	}
-	if(wp[dlgNr]->width > 0 && wp[dlgNr]->y > 0) {
+	if(wp[dlgNr]->x > 0 && wp[dlgNr]->y > 0) {
 	  XtSetArg(args[j], XtNx, (Position) (wp[dlgNr]->x));  j++;
 	  XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
 	}
