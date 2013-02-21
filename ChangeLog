@@ -3,9 +3,281 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2013-02-20 21:28:36 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Try to make life more bearable in Xaw menus
+
+The alignment still sucks, but not as much as before.
+
+2013-02-20 19:26:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix -topLevel option
+
+This option was copletely ignored, after the refactorig.
+
+2013-02-20 18:16:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix testing for valid window placement Xaw
+
+
+2013-02-20 12:15:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress printing of status line in dual-board mode
+
+
+2013-02-20 11:56:12 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix sizing of slave board GTK
+
+For lack of a known method to specify a default size for Graph widgets,
+we have to use the same system as for the main board: create with 0x0 size,
+and measure the size of the outer window to determine margins.
+After every popup we then resize to the required board size plus these
+margins. (Awful...)
+
+2013-02-20 10:08:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Better handling of undefined window parameters
+
+Repositioning and resizing a newly created dialog was based on the width
+parameter of the stored sizing info being valid. Now it is separately
+tested if the position is valid, so that sizing and moving can be done
+independently. This allows us to store position info, but not size info
+for the slave board, so that it automatically will use the size of the
+main board when first opened.
+
+2013-02-19 19:14:49 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Limit debug print to debug mode
+
+
+2013-02-19 19:14:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix repositioning of GTK windows
+
+After 'hide' and 'show' GTK would not position the window in the same place,
+but center it on the parent. Now we reposition the window after 'show' based
+on the WindowPlacement data (if available).
+
+2013-02-19 18:52:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remember window params of slave board
+
+The slave board now has been assigned a WindowPlacement, which is also
+saved in the settings file, through new options -slaveX/Y/W/H.
+
+2013-02-19 17:48:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix repairing of arrow damage
+
+The '2' bit in damage[][] to indicate the arrow was erroneously cleared,
+rather than kept.
+
+2013-02-18 19:55:20 -0800 Arun Persaud <arun@nubati.net>:
+fix OK-response in gtk dialogs, see c7f8df124
+
+the fix in c7f8df124 needs to be applied to both of those if cases
+
+2013-02-18 17:11:32 -0800 Arun Persaud <arun@nubati.net>:
+removed two more translations from debug output
+
+
+2013-02-18 17:09:30 -0800 Arun Persaud <arun@nubati.net>:
+fixed segfault of g_markup_printf_escaped which needs utf-8 strings
+
+defined text-domain as utf-8 solved this
+
+2013-02-18 13:38:51 -0800 Arun Persaud <arun@nubati.net>:
+fixed gtk-warning
+
+
+2013-02-18 10:06:36 -0800 Arun Persaud <arun@nubati.net>:
+removed some translation calls for messages in the debug log
+
+
+2013-02-18 09:46:53 -0800 Arun Persaud <arun@nubati.net>:
+add keyboard shortcuts back into Xaw version
+
+
+2013-02-17 14:13:30 -0800 Arun Persaud <arun@nubati.net>:
+in debug mode also print the git-version if available during build
+
+
+2013-02-18 21:19:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Print game-list timing messages only in debug mode
+
+
+2013-02-18 21:01:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix title of top-level windows
+
+
+2013-02-18 18:51:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Cure GTK warning in top-level windows
+
+There is no OK button in top-level windows, so the 'response' signal is
+not defined, and should not be connected.
+
+2013-02-18 18:33:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix graying of Revert menu item
+
+The new code was checkmarking it in stead of enabling it!
+
+2013-02-18 11:38:29 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -onlyOwnGames option
+
+This suppresses auto-saving of ICS observed games.
+
+2013-02-18 11:17:16 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow display of 50-move counter in zippy mode
+
+No chance it could be considered cheating there.
+
+2013-02-18 10:48:53 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add new vertical pixel fudge
+
+With the new GTK window type the board is 13 pixels too small.
+
+2013-02-18 10:29:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Don't add PV moves on board clicking in AnalyzeMode
+
+Playing PV moves by right-clicking the PV was only intended for clicks
+in the engine Output window, selecting from multi-PV analysis output,
+where by default it plays only the first move. PV walkig by right-clicking
+the board, however, would start the walk at the end even in AnalyzeMode,
+and thus add the entire PV. Which is probably not useful. So adding moves
+in that case has now completely been suppressed, so it can be used for
+harmless viewing of the latest PV.
+ The behavior has also been made subject to a persistent Boolean option
+-appendPV, configured to true, with a checkbox in General Options.
+ A checkbox has also been added there for controlling the -variations option,
+which is now also configured to true.
+
+2013-02-18 10:25:40 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove checkbox for 'Move Sound'
+
+This function is better controlled from the Sounds dialog.
+
+2013-02-18 09:59:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make switching between board windows absolute
+
+Selecting the window in which to draw the board when the slave board for
+-dualBoard was up was done by a toggle. For unknown reason this could cause
+a situation where the drawing took place in the other window than the
+intended one. The code is made more robust by explicitly specifying which
+window to draw in, based on the partnerUp flag.
+
+2013-02-18 09:50:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Warn about experimental nature of dual board
+
+The message field, which for now is unused, now contains a warning message.
+
+2013-02-17 10:49:21 -0800 Arun Persaud <arun@nubati.net>:
+add close buttons to gtk windows
+
+use windows instead of dialogs for toplevel elements
+
+2013-02-16 19:02:52 -0800 Arun Persaud <arun@nubati.net>:
+keyboard accelerators for both front ends.
+
+moved them out of the string definition, so that gtk can add them automatically.
+Also wrote a function that loads them for X11.
+
+TODO: add them again when creating X11 menu names
+
+2013-02-15 11:03:02 -0800 Arun Persaud <arun@nubati.net>:
+added rotated shogi pieces for -flipback option and moved them to the themes directory
+
+
+2013-02-14 17:27:27 -0800 Arun Persaud <arun@nubati.net>:
+add test for pkg-config
+
+exit configure in case we can't find it.
+
+2013-02-14 13:02:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Only perform e.p. capture if there are rights
+
+The heuristic for e.p. capture was such that any non-forward move with
+a Pawn to an empty square would delete the piece behind its new location
+(Xiangqi exempted). This is now limited to cases where EP_STATUS indicates
+that the deleted piece was a Pawn that performed a double-push on the
+previous move. (Or if there is unknown EP_STATUS.)
+ This makes XBoard more generally suitable for use with variants that have
+non-conventional Pawn moves (with legality testing off). To guarantee this
+will not have any unexpected effects in normal Chess, this patch will only
+be active if legality testing is off.
+
+2013-02-11 16:25:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Unreserve tourney game on exit during engine load
+
+While waiting for the feature timeout we are not yet in TwoMachines mode,
+so quitting XBoard at that stage would not unreserve the upcoming game.
+A global flag 'startingEngine' similar to 'waitingForGame' now signals
+this condition.
+
+2013-02-10 13:40:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Better fix of feature timeout
+
+The previous fix of the 2nd engine's done=1 aborting the 1st engine's
+feature timeout by starting the game caused problems with v1 engines,
+or other engines that would never send done=1. It is now fixed by
+explicitly testing for a pending feature timeout after resurrecting
+the 1st engine, rather than having TwoMachinesEventIfReady wait for
+initDone to be set by reception of done=1.
+ Also refrain from freezing the UI between match games, as in TwoMachines
+mode the UI is mostly disabled anyway.
+
+2013-02-08 16:24:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Connect Ctrl key in WinBoard
+
+The Control key is now checked during move entry, for excluding moves
+during analysis, or for copying pieces when editing a positions. But the
+WB front-end did not read it out yet!
+
+2013-02-08 16:23:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Makefile for install of Xiangqi pieces
+
+
+2013-02-08 15:35:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Xiangqi piece images to project
+
+Let the images install in themes/xiangqi.
+
+2013-02-08 15:14:43 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Revive -flipBlack option
+
+The -flipBlack option in the cairo version is now implemented the same
+way as it was in XBoard, swapping white and black pieces in filpView mode.
+This requires a set black piece images that are the upside-down versions
+of the white ones.
+
+2013-02-07 13:55:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove empty-square SVG images from project
+
+
+2013-02-06 19:00:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add desktop stuff for .xop MIME type.
+
+Icons and desktop file were missing, as was the automake code to package them.
+
+2013-02-06 16:48:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update NEWS file
+
+
+2013-02-06 14:48:27 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add boolean -autoBox option
+
+This option controls the automatic popup of the ICS Input Box on typing
+a printable character, which was annoing to some. The option can be
+set from the ICS Options dialog.
+
+2013-02-06 10:56:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Draw both coords in a1
+
+The lower-left board square needed two inscriptions, but DrawOneSquare()
+only allowed one, so that the file ID would not be written. Now two strings
+can be passed, and when align > 1 to indicate the alignment of the top
+string, it is still checked if a bottom string is present as well, which
+then is drawn with alignment 1 (= bottom right).
+ The rank coord or piece count can now also be double digit.
+
+2013-02-05 23:03:42 -0800 Arun Persaud <arun@nubati.net>:
+updated po files for new release (make distcheck)
+
+2013-02-05 23:02:07 -0800 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
 2013-02-05 22:52:42 -0800 Arun Persaud <arun@nubati.net>:
 new version number for release of 4.7.0
-
 
 2013-02-05 11:56:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
 Let initial setting of Twice checkbox reflect current state

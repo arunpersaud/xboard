@@ -2,16 +2,16 @@
 
 (git diff -b --stat --summary -M v4.6.2 HEAD)
 
- AUTHORS                               | 2117 +-----------
+ AUTHORS                               | 2117 +----------
  COPYRIGHT                             |    2 +-
- ChangeLog                             |  375 --
- DIFFSTAT                              |  112 +-
- Makefile.am                           |  193 +-
- NEWS                                  |   43 +-
- SHORTLOG                              |   92 +-
- args.h                                |   96 +-
+ ChangeLog                             | 2868 +++++++++++++-
+ DIFFSTAT                              | 3076 ++++++++++++++-
+ Makefile.am                           |  214 +-
+ NEWS                                  |   90 +-
+ SHORTLOG                              |  442 ++-
+ args.h                                |  105 +-
  autogen.sh                            |    2 +-
- backend.c                             |  902 ++++-
+ backend.c                             |  942 ++++-
  backend.h                             |   64 +-
  backendz.h                            |    9 +-
  bitmaps/README.bitmaps                |  101 -
@@ -395,56 +395,56 @@
  bitmaps/ws49s.bm                      |   27 -
  bitmaps/ws72o.bm                      |   48 -
  bitmaps/ws72s.bm                      |   48 -
- board.c                               | 1244 +++++++
+ board.c                               | 1244 ++++++
  board.h                               |   98 +
  book.c                                |  362 +-
  childio.c                             |    2 +-
  childio.h                             |    2 +-
  cmail.in                              |    2 +-
- common.h                              |   46 +-
- configure.ac                          |  132 +-
+ common.h                              |   49 +-
+ configure.ac                          |  136 +-
  copyright.texi                        |    2 +-
- dialogs.c                             | 2583 ++++++++++++++
- dialogs.h                             |  195 ++
+ dialogs.c                             | 2588 +++++++++++++
+ dialogs.h                             |  196 +
  doc-maint/coding-standards.org        |    6 +
  doc-maint/gendocs.sh                  |  361 ++
  doc-maint/make-xboard-release         |  186 +
  doc-maint/release.org                 |   71 +
  doc-maint/web-pages.org               |   40 +
- draw.c                                |  923 +++++
+ draw.c                                |  927 +++++
  draw.h                                |   76 +
  engine-intf.html                      |   45 +
- engineoutput.c                        |   26 +-
+ engineoutput.c                        |   28 +-
  engineoutput.h                        |   25 +-
  evalgraph.c                           |    4 +-
  evalgraph.h                           |   12 +-
  filebrowser/README                    |    3 -
  filebrowser/dir.c                     |  169 -
- filebrowser/draw.c                    |  981 ------
+ filebrowser/draw.c                    |  981 -----
  filebrowser/path.c                    |  905 -----
  filebrowser/selfile.c                 |  902 -----
  filebrowser/selfile.h                 |  170 -
  filebrowser/xstat.h                   |   23 -
  frontend.h                            |   34 +-
- gamelist.c                            |    3 +-
+ gamelist.c                            |    5 +-
  gettext.h                             |    6 +-
  gtk/.dirstamp                         |    0
- gtk/xboard.c                          | 2163 ++++++++++++
- gtk/xboard.h                          |  175 +
+ gtk/xboard.c                          | 2126 +++++++++++
+ gtk/xboard.h                          |  177 +
  gtk/xengineoutput.c                   |  137 +
- gtk/xoptions.c                        | 1563 +++++++++
+ gtk/xoptions.c                        | 1587 ++++++++
  gtk/xtimer.c                          |  237 ++
  history.c                             |    3 +-
  install-sh                            |    0
  lists.c                               |    2 +-
  lists.h                               |   18 +-
- menus.c                               | 1222 +++++++
- menus.h                               |  196 ++
+ menus.c                               | 1213 ++++++
+ menus.h                               |  197 +
  moves.c                               |   13 +-
  moves.h                               |    2 +-
- nengineoutput.c                       |  194 ++
- nevalgraph.c                          |  189 ++
- ngamelist.c                           |  377 +++
+ nengineoutput.c                       |  194 +
+ nevalgraph.c                          |  189 +
+ ngamelist.c                           |  377 ++
  nhistory.c                            |  124 +
  parser.c                              |    6 +-
  parser.h                              |    2 +-
@@ -706,6 +706,8 @@
  pixmaps/hll33.xpm                     |   42 -
  pixmaps/hll49.xpm                     |   58 -
  pixmaps/hll72.xpm                     |   81 -
+ pixmaps/ini32.xpm                     |   41 +
+ pixmaps/ini48.xpm                     |   57 +
  pixmaps/kdd108.xpm                    |  117 -
  pixmaps/kdd116.xpm                    |  125 -
  pixmaps/kdd129.xpm                    |  138 -
@@ -948,7 +950,7 @@
  pixmaps/pdl80.xpm                     |   88 -
  pixmaps/pdl87.xpm                     |   95 -
  pixmaps/pdl95.xpm                     |  103 -
- pixmaps/pixmaps.h                     | 1349 --------
+ pixmaps/pixmaps.h                     | 1349 -------
  pixmaps/pld108.xpm                    |  117 -
  pixmaps/pld116.xpm                    |  125 -
  pixmaps/pld129.xpm                    |  138 -
@@ -1187,7 +1189,7 @@
  pixmaps/wnll49.xpm                    |   58 -
  pixmaps/wnll72.xpm                    |   81 -
  pixmaps/wood_d.xpm                    |  239 --
- pixmaps/wood_l.xpm                    |  192 --
+ pixmaps/wood_l.xpm                    |  192 -
  pixmaps/wpdd49.xpm                    |   58 -
  pixmaps/wpdd72.xpm                    |   81 -
  pixmaps/wpdl49.xpm                    |   58 -
@@ -1205,7 +1207,7 @@
  pixmaps/wsll49.xpm                    |   58 -
  pixmaps/wsll72.xpm                    |   81 -
  pixmaps/xqboard.xpm                   |  498 ---
- pixmaps/xqwood.xpm                    |  597 ----
+ pixmaps/xqwood.xpm                    |  597 ---
  png/BlackAdvisor.png                  |  Bin 0 -> 1928 bytes
  png/BlackArchbishop.png               |  Bin 0 -> 1856 bytes
  png/BlackBishop.png                   |  Bin 0 -> 1478 bytes
@@ -1266,33 +1268,19 @@
  png/xqboard.png                       |  Bin 0 -> 4423 bytes
  png/xqwood.png                        |  Bin 0 -> 359345 bytes
  po/POTFILES.in                        |   25 +-
- po/da.po                              | 3812 +++++++++++----------
- po/de.po                              | 3798 +++++++++++----------
- po/es.po                              | 3338 +++++++++---------
- po/it.po                              | 3330 +++++++++---------
+ po/da.po                              | 3791 ++++++++++---------
+ po/de.po                              | 3806 ++++++++++---------
+ po/es.po                              | 3341 ++++++++--------
+ po/it.po                              | 3331 ++++++++--------
  po/lng2po.sh                          |    2 +-
- po/ru.po                              | 3342 +++++++++---------
- po/tr.po                              | 3006 ++++++++--------
- po/uk.po                              | 3795 +++++++++++----------
- po/vi.po                              | 3115 +++++++++--------
- po/xboard.pot                         | 2606 +++++++-------
- po/zh_CN.po                           | 3331 +++++++++---------
- po/zh_HK.po                           | 3313 +++++++++---------
- po/zh_TW.po                           | 3299 +++++++++---------
- shogi/WhiteAdvisor.svg                |  163 +
- shogi/WhiteBishop.svg                 |  119 +
- shogi/WhiteCrownedBishop.svg          |   83 +
- shogi/WhiteCrownedRook.svg            |  112 +
- shogi/WhiteGold.svg                   |  153 +
- shogi/WhiteGoldKnight.svg             |   65 +
- shogi/WhiteGoldLance.svg              |   65 +
- shogi/WhiteGoldPawn.svg               |   54 +
- shogi/WhiteGoldSilver.svg             |   73 +
- shogi/WhiteKing.svg                   |  125 +
- shogi/WhiteKnight.svg                 |  138 +
- shogi/WhiteLance.svg                  |  134 +
- shogi/WhitePawn.svg                   |  108 +
- shogi/WhiteRook.svg                   |  137 +
+ po/ru.po                              | 3343 ++++++++--------
+ po/tr.po                              | 3017 ++++++++-------
+ po/uk.po                              | 3831 ++++++++++---------
+ po/vi.po                              | 3120 ++++++++-------
+ po/xboard.pot                         | 2609 +++++++------
+ po/zh_CN.po                           | 3332 ++++++++--------
+ po/zh_HK.po                           | 3316 ++++++++--------
+ po/zh_TW.po                           | 3302 ++++++++--------
  shogipixmaps/bdd64.xpm                |   73 -
  shogipixmaps/bdl64.xpm                |   73 -
  shogipixmaps/bld64.xpm                |   74 -
@@ -1371,9 +1359,6 @@
  svg/BlackQueen.svg                    |   58 +
  svg/BlackRook.svg                     |   78 +
  svg/BlackUnicorn.svg                  |   63 +
- svg/DarkSquare.svg                    |   36 +
- svg/LightSquare.svg                   |   36 +
- svg/NeutralSquare.svg                 |   39 +
  svg/WhiteAdvisor.svg                  |   65 +
  svg/WhiteArchbishop.svg               |   86 +
  svg/WhiteBishop.svg                   |   72 +
@@ -1435,9 +1420,6 @@
  themes/Mono/BlackQueen.svg            |   80 +
  themes/Mono/BlackRook.svg             |  106 +
  themes/Mono/BlackUnicorn.svg          |   81 +
- themes/Mono/DarkSquare.svg            |   59 +
- themes/Mono/LightSquare.svg           |   59 +
- themes/Mono/NeutralSquare.svg         |   93 +
  themes/Mono/WhiteAdvisor.svg          |   89 +
  themes/Mono/WhiteArchbishop.svg       |  112 +
  themes/Mono/WhiteBishop.svg           |   97 +
@@ -1487,9 +1469,52 @@
  themes/Mono/shogi_rook_promoted.svg   |  112 +
  themes/Mono/shogi_silver.svg          |  163 +
  themes/Mono/shogi_silver_promoted.svg |   73 +
+ themes/shogi/BlackAdvisor.svg         |  187 +
+ themes/shogi/BlackBishop.svg          |  143 +
+ themes/shogi/BlackCrownedBishop.svg   |  107 +
+ themes/shogi/BlackCrownedRook.svg     |  136 +
+ themes/shogi/BlackGold.svg            |  177 +
+ themes/shogi/BlackGoldKnight.svg      |   89 +
+ themes/shogi/BlackGoldLance.svg       |   89 +
+ themes/shogi/BlackGoldPawn.svg        |   78 +
+ themes/shogi/BlackGoldSilver.svg      |   97 +
+ themes/shogi/BlackKing.svg            |  149 +
+ themes/shogi/BlackKnight.svg          |  162 +
+ themes/shogi/BlackLance.svg           |  158 +
+ themes/shogi/BlackPawn.svg            |  132 +
+ themes/shogi/BlackRook.svg            |  161 +
+ themes/shogi/WhiteAdvisor.svg         |  163 +
+ themes/shogi/WhiteBishop.svg          |  119 +
+ themes/shogi/WhiteCrownedBishop.svg   |   83 +
+ themes/shogi/WhiteCrownedRook.svg     |  112 +
+ themes/shogi/WhiteGold.svg            |  153 +
+ themes/shogi/WhiteGoldKnight.svg      |   65 +
+ themes/shogi/WhiteGoldLance.svg       |   65 +
+ themes/shogi/WhiteGoldPawn.svg        |   54 +
+ themes/shogi/WhiteGoldSilver.svg      |   73 +
+ themes/shogi/WhiteKing.svg            |  125 +
+ themes/shogi/WhiteKnight.svg          |  138 +
+ themes/shogi/WhiteLance.svg           |  134 +
+ themes/shogi/WhitePawn.svg            |  108 +
+ themes/shogi/WhiteRook.svg            |  137 +
+ themes/xiangqi/.DS_Store              |  Bin 0 -> 6148 bytes
+ themes/xiangqi/BlackAdvisor.svg       |   86 +
+ themes/xiangqi/BlackCanon.svg         |   81 +
+ themes/xiangqi/BlackElephant.svg      |   80 +
+ themes/xiangqi/BlackGold.svg          |   80 +
+ themes/xiangqi/BlackKnight.svg        |   81 +
+ themes/xiangqi/BlackPawn.svg          |   83 +
+ themes/xiangqi/BlackRook.svg          |   80 +
+ themes/xiangqi/WhiteAdvisor.svg       |   90 +
+ themes/xiangqi/WhiteCanon.svg         |   85 +
+ themes/xiangqi/WhiteElephant.svg      |   85 +
+ themes/xiangqi/WhiteGold.svg          |   85 +
+ themes/xiangqi/WhiteKnight.svg        |   85 +
+ themes/xiangqi/WhitePawn.svg          |   85 +
+ themes/xiangqi/WhiteRook.svg          |   86 +
  uci.c                                 |    2 +-
  usounds.c                             |  174 +
- usystem.c                             |  792 +++++
+ usystem.c                             |  792 ++++
  usystem.h                             |   75 +
  winboard/config.h                     |    6 +-
  winboard/defaults.h                   |    2 +-
@@ -1512,7 +1537,7 @@
  winboard/wengineoutput.c              |    4 +-
  winboard/wevalgraph.c                 |    4 +-
  winboard/wgamelist.c                  |   23 +-
- winboard/winboard.c                   |  258 +-
+ winboard/winboard.c                   |  259 +-
  winboard/winboard.h                   |    6 +-
  winboard/winboard.rc                  |   28 +-
  winboard/wlayout.c                    |   12 +-
@@ -1522,35 +1547,36 @@
  winboard/wsockerr.c                   |    2 +-
  winboard/wsockerr.h                   |    2 +-
  xaw/.dirstamp                         |    0
- xaw/xboard.c                          | 2530 ++++++++++++++
+ xaw/xboard.c                          | 2600 +++++++++++++
  xaw/xboard.h                          |  176 +
  xaw/xengineoutput.c                   |  285 ++
  xaw/xgamelist.c                       |  117 +
  xaw/xgamelist.h                       |   31 +
  xaw/xhistory.c                        |  111 +
  xaw/xhistory.h                        |   30 +
- xaw/xoptions.c                        | 1236 +++++++
- xboard.c                              | 8845 ------------------------------------------------
- xboard.conf.in                        |   17 +-
+ xaw/xoptions.c                        | 1365 +++++++
+ xboard-config.desktop                 |   52 +
+ xboard.c                              | 8845 -------------------------------------------
+ xboard.conf.in                        |   19 +-
  xboard.h                              |  177 -
- xboard.texi                           |  261 +-
+ xboard.texi                           |  289 +-
  xboard.xml                            |    6 +
  xboard2.h                             |    9 +
  xedittags.c                           |  128 -
  xedittags.h                           |   31 -
- xengineoutput.c                       |  617 ----
+ xengineoutput.c                       |  617 ---
  xevalgraph.c                          |  443 ---
  xevalgraph.h                          |   29 -
  xgamelist.c                           |  930 -----
  xgamelist.h                           |   35 -
  xhistory.c                            |  168 -
  xhistory.h                            |   32 -
- xoptions.c                            | 1912 -----------
+ xoptions.c                            | 1912 ----------
  zic2xpm.c                             |    2 +-
  zic2xpm.man                           |    2 +-
  zippy.c                               |   12 +-
  zippy.h                               |    2 +-
- 1548 files changed, 53654 insertions(+), 114094 deletions(-)
+ 1574 files changed, 63046 insertions(+), 113777 deletions(-)
  delete mode 100644 bitmaps/README.bitmaps
  delete mode 100644 bitmaps/a33o.bm
  delete mode 100644 bitmaps/a33s.bm
@@ -2219,6 +2245,8 @@
  delete mode 100644 pixmaps/hll33.xpm
  delete mode 100644 pixmaps/hll49.xpm
  delete mode 100644 pixmaps/hll72.xpm
+ create mode 100644 pixmaps/ini32.xpm
+ create mode 100644 pixmaps/ini48.xpm
  delete mode 100644 pixmaps/kdd108.xpm
  delete mode 100644 pixmaps/kdd116.xpm
  delete mode 100644 pixmaps/kdd129.xpm
@@ -2778,20 +2806,6 @@
  create mode 100644 png/wood_l.png
  create mode 100644 png/xqboard.png
  create mode 100644 png/xqwood.png
- create mode 100644 shogi/WhiteAdvisor.svg
- create mode 100644 shogi/WhiteBishop.svg
- create mode 100644 shogi/WhiteCrownedBishop.svg
- create mode 100644 shogi/WhiteCrownedRook.svg
- create mode 100644 shogi/WhiteGold.svg
- create mode 100644 shogi/WhiteGoldKnight.svg
- create mode 100644 shogi/WhiteGoldLance.svg
- create mode 100644 shogi/WhiteGoldPawn.svg
- create mode 100644 shogi/WhiteGoldSilver.svg
- create mode 100644 shogi/WhiteKing.svg
- create mode 100644 shogi/WhiteKnight.svg
- create mode 100644 shogi/WhiteLance.svg
- create mode 100644 shogi/WhitePawn.svg
- create mode 100644 shogi/WhiteRook.svg
  delete mode 100644 shogipixmaps/bdd64.xpm
  delete mode 100644 shogipixmaps/bdl64.xpm
  delete mode 100644 shogipixmaps/bld64.xpm
@@ -2870,9 +2884,6 @@
  create mode 100644 svg/BlackQueen.svg
  create mode 100644 svg/BlackRook.svg
  create mode 100644 svg/BlackUnicorn.svg
- create mode 100644 svg/DarkSquare.svg
- create mode 100644 svg/LightSquare.svg
- create mode 100644 svg/NeutralSquare.svg
  create mode 100644 svg/WhiteAdvisor.svg
  create mode 100644 svg/WhiteArchbishop.svg
  create mode 100644 svg/WhiteBishop.svg
@@ -2934,9 +2945,6 @@
  create mode 100644 themes/Mono/BlackQueen.svg
  create mode 100644 themes/Mono/BlackRook.svg
  create mode 100644 themes/Mono/BlackUnicorn.svg
- create mode 100644 themes/Mono/DarkSquare.svg
- create mode 100644 themes/Mono/LightSquare.svg
- create mode 100644 themes/Mono/NeutralSquare.svg
  create mode 100644 themes/Mono/WhiteAdvisor.svg
  create mode 100644 themes/Mono/WhiteArchbishop.svg
  create mode 100644 themes/Mono/WhiteBishop.svg
@@ -2986,6 +2994,49 @@
  create mode 100644 themes/Mono/shogi_rook_promoted.svg
  create mode 100644 themes/Mono/shogi_silver.svg
  create mode 100644 themes/Mono/shogi_silver_promoted.svg
+ create mode 100644 themes/shogi/BlackAdvisor.svg
+ create mode 100644 themes/shogi/BlackBishop.svg
+ create mode 100644 themes/shogi/BlackCrownedBishop.svg
+ create mode 100644 themes/shogi/BlackCrownedRook.svg
+ create mode 100644 themes/shogi/BlackGold.svg
+ create mode 100644 themes/shogi/BlackGoldKnight.svg
+ create mode 100644 themes/shogi/BlackGoldLance.svg
+ create mode 100644 themes/shogi/BlackGoldPawn.svg
+ create mode 100644 themes/shogi/BlackGoldSilver.svg
+ create mode 100644 themes/shogi/BlackKing.svg
+ create mode 100644 themes/shogi/BlackKnight.svg
+ create mode 100644 themes/shogi/BlackLance.svg
+ create mode 100644 themes/shogi/BlackPawn.svg
+ create mode 100644 themes/shogi/BlackRook.svg
+ create mode 100644 themes/shogi/WhiteAdvisor.svg
+ create mode 100644 themes/shogi/WhiteBishop.svg
+ create mode 100644 themes/shogi/WhiteCrownedBishop.svg
+ create mode 100644 themes/shogi/WhiteCrownedRook.svg
+ create mode 100644 themes/shogi/WhiteGold.svg
+ create mode 100644 themes/shogi/WhiteGoldKnight.svg
+ create mode 100644 themes/shogi/WhiteGoldLance.svg
+ create mode 100644 themes/shogi/WhiteGoldPawn.svg
+ create mode 100644 themes/shogi/WhiteGoldSilver.svg
+ create mode 100644 themes/shogi/WhiteKing.svg
+ create mode 100644 themes/shogi/WhiteKnight.svg
+ create mode 100644 themes/shogi/WhiteLance.svg
+ create mode 100644 themes/shogi/WhitePawn.svg
+ create mode 100644 themes/shogi/WhiteRook.svg
+ create mode 100644 themes/xiangqi/.DS_Store
+ create mode 100644 themes/xiangqi/BlackAdvisor.svg
+ create mode 100644 themes/xiangqi/BlackCanon.svg
+ create mode 100644 themes/xiangqi/BlackElephant.svg
+ create mode 100644 themes/xiangqi/BlackGold.svg
+ create mode 100644 themes/xiangqi/BlackKnight.svg
+ create mode 100644 themes/xiangqi/BlackPawn.svg
+ create mode 100644 themes/xiangqi/BlackRook.svg
+ create mode 100644 themes/xiangqi/WhiteAdvisor.svg
+ create mode 100644 themes/xiangqi/WhiteCanon.svg
+ create mode 100644 themes/xiangqi/WhiteElephant.svg
+ create mode 100644 themes/xiangqi/WhiteGold.svg
+ create mode 100644 themes/xiangqi/WhiteKnight.svg
+ create mode 100644 themes/xiangqi/WhitePawn.svg
+ create mode 100644 themes/xiangqi/WhiteRook.svg
  create mode 100644 usounds.c
  create mode 100644 usystem.c
  create mode 100644 usystem.h
@@ -2998,6 +3049,7 @@
  create mode 100644 xaw/xhistory.c
  create mode 100644 xaw/xhistory.h
  create mode 100644 xaw/xoptions.c
+ create mode 100644 xboard-config.desktop
  delete mode 100644 xboard.c
  delete mode 100644 xboard.h
  create mode 100644 xboard2.h
@@ -3011,7 +3063,6 @@
  delete mode 100644 xhistory.c
  delete mode 100644 xhistory.h
  delete mode 100644 xoptions.c
-
 
 ** Version 4.6.2 **
 

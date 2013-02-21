@@ -79,6 +79,7 @@
     * WinBoard did not always start in its installation folder
     * Initialization of 'Twice' checkbox in Tournament dialog (WB)
     * Clearing of marker dots after mode or settings change
+    * some smaller bugfixes
 
 ** Version 4.6.2 **
    (for a more detailed list with screenshots see http://www.gnu.org/software/xboard/whats_new/4.6.2/ )

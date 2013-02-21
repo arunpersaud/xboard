@@ -1,9 +1,8 @@
-
 ** Version 4.7.0 **
 
 (git log --pretty=short --cherry-pick --left-only v4.7.x...v4.6.2^   |git shortlog --no-merges)
 
-Arun Persaud (34):
+Arun Persaud (50):
       added some documentation about what's need to be done for a release and a bash-release script
       Merge branch 'v4.6.x' into tmp
       new version number for developer release
@@ -38,6 +37,22 @@ Arun Persaud (34):
       fix configure bug that showed up on OS X (couldn't find X11/Dialog.h)
       Updated German translation
       new version number for release of 4.7.0
+      updated Changelog, NEWS, etc.
+      updated po files for new release (make distcheck)
+      Merge remote-tracking branch 'origin/master' into v4.7.x
+      add test for pkg-config
+      Merge branch 'master' into v4.7.x
+      added rotated shogi pieces for -flipback option and moved them to the themes directory
+      keyboard accelerators for both front ends.
+      add close buttons to gtk windows
+      in debug mode also print the git-version if available during build
+      add keyboard shortcuts back into Xaw version
+      removed some translation calls for messages in the debug log
+      fixed gtk-warning
+      fixed segfault of g_markup_printf_escaped which needs utf-8 strings
+      removed two more translations from debug output
+      fix OK-response in gtk dialogs, see c7f8df124
+      Merge branch 'master' into v4.7.x
 
 Byrial Jensen (10):
       Fix typo (seach) in string. It is already fixed in branch v4.6.x
@@ -57,7 +72,7 @@ Daniel Dugovic (1):
 Daniel Macks (1):
       bug #37210: Mishandling of X11 -I flags (tiny change)
 
-H.G. Muller (348):
+H.G. Muller (381):
       Fix suspected bug in Makefile
       Merge branch 'v4.6.x' of git.sv.gnu.org:/srv/git/xboard
       Fix fall-back on -ncp mode
@@ -406,8 +421,39 @@ H.G. Muller (348):
       Fix warnings of build server
       Put GTK warning in about-box
       Let initial setting of Twice checkbox reflect current state
-
-
+      Draw both coords in a1
+      Add boolean -autoBox option
+      Update NEWS file
+      Add desktop stuff for .xop MIME type.
+      Remove empty-square SVG images from project
+      Revive -flipBlack option
+      Add Xiangqi piece images to project
+      Fix Makefile for install of Xiangqi pieces
+      Connect Ctrl key in WinBoard
+      Better fix of feature timeout
+      Unreserve tourney game on exit during engine load
+      Only perform e.p. capture if there are rights
+      Warn about experimental nature of dual board
+      Make switching between board windows absolute
+      Remove checkbox for 'Move Sound'
+      Don't add PV moves on board clicking in AnalyzeMode
+      Add new vertical pixel fudge
+      Allow display of 50-move counter in zippy mode
+      Add -onlyOwnGames option
+      Fix graying of Revert menu item
+      Cure GTK warning in top-level windows
+      Fix title of top-level windows
+      Print game-list timing messages only in debug mode
+      Fix repairing of arrow damage
+      Remember window params of slave board
+      Fix repositioning of GTK windows
+      Limit debug print to debug mode
+      Better handling of undefined window parameters
+      Fix sizing of slave board GTK
+      Suppress printing of status line in dual-board mode
+      Fix testing for valid window placement Xaw
+      Fix -topLevel option
+      Try to make life more bearable in Xaw menus
 
 ** Version 4.6.2 **
 
