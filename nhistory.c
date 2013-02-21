@@ -106,7 +106,7 @@ MoveHistoryDialogExists ()
 void
 HistoryPopUp ()
 {
-    if(GenericPopUp(historyOptions, _("Move list"), HistoryDlg, BoardWindow, NONMODAL, 1))
+    if(GenericPopUp(historyOptions, _("Move list"), HistoryDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&historyOptions[0], HistoryDlg, 0);
     MarkMenu("View.MoveHistory", HistoryDlg);
 }

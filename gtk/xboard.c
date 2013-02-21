@@ -226,6 +226,9 @@ static GdkPixbuf       *mainwindowIcon=NULL;
 static GdkPixbuf       *WhiteIcon=NULL;
 static GdkPixbuf       *BlackIcon=NULL;
 
+/* key board accelerators */
+GtkAccelGroup *GtkAccelerators;
+
 typedef unsigned int BoardSize;
 BoardSize boardSize;
 Boolean chessProgram;
@@ -253,6 +256,7 @@ WindowPlacement wpEvalGraph;
 WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
 WindowPlacement wpTags;
+WindowPlacement wpDualBoard;
 
 /* This magic number is the number of intermediate frames used
    in each half of the animation. For short moves it's reduced
@@ -282,73 +286,10 @@ XtResource clientResources[] = {
 };
 #endif
 
+/* keyboard shortcuts not yet transistioned int menuitem @ menu.c */
 char globalTranslations[] =
-  ":<Key>F9: MenuItem(Actions.Resign) \n \
-   :Ctrl<Key>n: MenuItem(File.NewGame) \n \
-   :Meta<Key>V: MenuItem(File.NewVariant) \n \
-   :Ctrl<Key>o: MenuItem(File.LoadGame) \n \
-   :Meta<Key>Next: MenuItem(LoadNextGameProc) \n \
-   :Meta<Key>Prior: MenuItem(LoadPrevGameProc) \n \
-   :Ctrl<Key>Down: LoadSelectedProc(3) \n \
+  ":Ctrl<Key>Down: LoadSelectedProc(3) \n \
    :Ctrl<Key>Up: LoadSelectedProc(-3) \n \
-   :Ctrl<Key>s: MenuItem(File.SaveGame) \n \
-   :Ctrl<Key>c: MenuItem(Edit.CopyGame) \n \
-   :Ctrl<Key>v: MenuItem(Edit.PasteGame) \n \
-   :Ctrl<Key>O: MenuItem(File.LoadPosition) \n \
-   :Shift<Key>Next: MenuItem(LoadNextPositionProc) \n \
-   :Shift<Key>Prior: MenuItem(LoadPrevPositionProc) \n \
-   :Ctrl<Key>S: MenuItem(File.SavePosition) \n \
-   :Ctrl<Key>C: MenuItem(Edit.CopyPosition) \n \
-   :Ctrl<Key>V: MenuItem(Edit.PastePosition) \n \
-   :Ctrl<Key>q: MenuItem(File.Quit) \n \
-   :Ctrl<Key>w: MenuItem(Mode.MachineWhite) \n \
-   :Ctrl<Key>b: MenuItem(Mode.MachineBlack) \n \
-   :Ctrl<Key>t: MenuItem(Mode.TwoMachines) \n \
-   :Ctrl<Key>a: MenuItem(Mode.AnalysisMode) \n \
-   :Ctrl<Key>g: MenuItem(Mode.AnalyzeFile) \n \
-   :Ctrl<Key>e: MenuItem(Mode.EditGame) \n \
-   :Ctrl<Key>E: MenuItem(Mode.EditPosition) \n \
-   :Meta<Key>O: MenuItem(View.EngineOutput) \n \
-   :Meta<Key>E: MenuItem(View.EvaluationGraph) \n \
-   :Meta<Key>G: MenuItem(View.GameList) \n \
-   :Meta<Key>H: MenuItem(View.MoveHistory) \n \
-   :<Key>Pause: MenuItem(Mode.Pause) \n \
-   :<Key>F3: MenuItem(Action.Accept) \n \
-   :<Key>F4: MenuItem(Action.Decline) \n \
-   :<Key>F12: MenuItem(Action.Rematch) \n \
-   :<Key>F5: MenuItem(Action.CallFlag) \n \
-   :<Key>F6: MenuItem(Action.Draw) \n \
-   :<Key>F7: MenuItem(Action.Adjourn) \n \
-   :<Key>F8: MenuItem(Action.Abort) \n \
-   :<Key>F10: MenuItem(Action.StopObserving) \n \
-   :<Key>F11: MenuItem(Action.StopExamining) \n \
-   :Ctrl<Key>d: MenuItem(DebugProc) \n \
-   :Meta Ctrl<Key>F12: MenuItem(DebugProc) \n \
-   :Meta<Key>End: MenuItem(Edit.ForwardtoEnd) \n \
-   :Meta<Key>Right: MenuItem(Edit.Forward) \n \
-   :Meta<Key>Home: MenuItem(Edit.BacktoStart) \n \
-   :Meta<Key>Left: MenuItem(Edit.Backward) \n \
-   :<Key>Left: MenuItem(Edit.Backward) \n \
-   :<Key>Right: MenuItem(Edit.Forward) \n \
-   :<Key>Home: MenuItem(Edit.Revert) \n \
-   :<Key>End: MenuItem(Edit.TruncateGame) \n \
-   :Ctrl<Key>m: MenuItem(Engine.MoveNow) \n \
-   :Ctrl<Key>x: MenuItem(Engine.RetractMove) \n \
-   :Meta<Key>J: MenuItem(Options.Adjudications) \n \
-   :Meta<Key>U: MenuItem(Options.CommonEngine) \n \
-   :Meta<Key>T: MenuItem(Options.TimeControl) \n \
-   :Ctrl<Key>P: MenuItem(PonderNextMove) \n "
-#ifndef OPTIONSDIALOG
-    "\
-   :Ctrl<Key>Q: MenuItem(AlwaysQueenProc) \n \
-   :Ctrl<Key>F: MenuItem(AutoflagProc) \n \
-   :Ctrl<Key>A: MenuItem(AnimateMovingProc) \n \
-   :Ctrl<Key>L: MenuItem(TestLegalityProc) \n \
-   :Ctrl<Key>H: MenuItem(HideThinkingProc) \n "
-#endif
-   "\
-   :<Key>F1: MenuItem(Help.ManXBoard) \n \
-   :<Key>F2: MenuItem(View.FlipView) \n \
    :<KeyDown>Return: TempBackwardProc() \n \
    :<KeyUp>Return: TempForwardProc() \n";
 
@@ -750,6 +691,21 @@ PrintOptions ()
   if(len) buf[len] = NULLCHAR, printf("%s\n", buf);
 }
 
+void
+SlaveResize (Option *opt)
+{
+    static int slaveW, slaveH, w, h;
+    GtkAllocation a;
+    if(!slaveH) {
+	gtk_widget_get_allocation(shells[DummyDlg], &a);
+	w = a.width; h = a.height;
+	gtk_widget_get_allocation(opt->handle, &a);
+	slaveW =  w - opt->max; // [HGM] needed to set new shellWidget size when we resize board
+	slaveH =  h - a.height + 13;
+   }
+  gtk_window_resize(GTK_WINDOW(shells[DummyDlg]), slaveW + opt->max, slaveH + opt->value);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -777,6 +733,9 @@ main (int argc, char **argv)
     /* set up GTK */
     gtk_init (&argc, &argv);
 
+    /* set up keyboard accelerators group */
+    GtkAccelerators = gtk_accel_group_new();
+
     programName = strrchr(argv[0], '/');
     if (programName == NULL)
       programName = argv[0];
@@ -789,6 +748,7 @@ main (int argc, char **argv)
 //    }
 
     bindtextdomain(PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset(PACKAGE, "UTF-8"); // needed when creating markup for the clocks
     textdomain(PACKAGE);
 #endif
 
@@ -994,6 +954,9 @@ main (int argc, char **argv)
 
     InitMenuMarkers();
 
+    // add accelerators to main shell
+    gtk_window_add_accel_group(GTK_WINDOW(shellWidget), GtkAccelerators);
+
     /*
      * Create an icon. (Use two icons, to indicate whther it is white's or black's turn.)
      */
@@ -1030,7 +993,7 @@ main (int argc, char **argv)
 //printf("start size (%d,%d), %dx%d\n", a.x, a.y, w, h);
 	gtk_widget_get_allocation(boardWidget, &a);
 	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
-	marginH =  h - a.height - 25; // subtract 25, because GTK seems to insert this amount of extra empty space
+	marginH =  h - a.height + 13;
 	gtk_window_resize(GTK_WINDOW(shellWidget), marginW + boardWidth, marginH + boardHeight);
 //printf("margins h=%d v=%d\n", marginW, marginH);
     }
@@ -1289,7 +1252,7 @@ FindFont (char *pattern, int targetPxlSize)
         safeStrCpy(p, best, strlen(best)+1 );
     }
     if (appData.debugMode) {
-        fprintf(debugFP, _("resolved %s at pixel size %d\n  to %s\n"),
+        fprintf(debugFP, "resolved %s at pixel size %d\n  to %s\n",
 		pattern, targetPxlSize, p);
     }
     XFreeFontNames(fonts);

@@ -92,7 +92,7 @@ void SetDragPiece P((AnimNr anr, ChessSquare piece));
 void DragPieceMove P((int x, int y));
 void DrawBorder P((int x, int y, int type, int odd));
 void FlashDelay P((int flash_delay));
-void SwitchWindow P((void));
+void SwitchWindow P((int main));
 
 extern int damage[2][BOARD_RANKS][BOARD_FILES];
 extern Option *currBoard;

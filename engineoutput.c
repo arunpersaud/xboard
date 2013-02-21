@@ -113,7 +113,7 @@ MakeEngineOutputTitle ()
 	if( count == backwardMostMove ) count -= initialRulePlies;
 	count = currentMove - count;
 	if(!rule) rule = 100;
-	if(count >= rule - 40 && (!appData.icsActive || gameMode == IcsObserving)) {
+	if(count >= rule - 40 && (!appData.icsActive || gameMode == IcsObserving || appData.zippyPlay)) {
 		snprintf(buf, MSG_SIZ, ngettext("%s (%d reversible ply)", "%s (%d reversible plies)", count), title, count);
 		safeStrCpy(title, buf, MSG_SIZ);
 	}

@@ -59,7 +59,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 SUBDIRS = po
 xboard_LDADD = -lm @FRONTEND_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
 
-EXTRA_DIST = pixmaps shogi png sounds winboard \
+EXTRA_DIST = pixmaps themes png sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop xboard-config.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
@@ -67,8 +67,9 @@ EXTRA_DIST = pixmaps shogi png sounds winboard \
 
 DISTCLEANFILES = stamp-h
 
+GITVERSION=$(shell sh -c 'git describe --dirty --always 2>/dev/null')
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@ @CAIRO_CFLAGS@ @FRONTEND_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' $(headers)
+	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -D__GIT_VERSION='"$(GITVERSION)"' $(headers)
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -134,13 +135,21 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/eo_White.svg
 
 shogidir = $(datadir)/games/xboard/themes/shogi
-dist_shogi_DATA = shogi/WhiteGold.svg shogi/WhiteCrownedBishop.svg\
-           shogi/WhiteBishop.svg      shogi/WhiteKing.svg\
-           shogi/WhiteKnight.svg      shogi/WhiteGoldKnight.svg\
-           shogi/WhiteLance.svg       shogi/WhiteGoldLance.svg\
-           shogi/WhitePawn.svg        shogi/WhiteGoldPawn.svg\
-           shogi/WhiteRook.svg        shogi/WhiteCrownedRook.svg\
-           shogi/WhiteAdvisor.svg     shogi/WhiteGoldSilver.svg
+dist_shogi_DATA = \
+           themes/shogi/WhiteGold.svg        themes/shogi/WhiteCrownedBishop.svg\
+           themes/shogi/WhiteBishop.svg      themes/shogi/WhiteKing.svg\
+           themes/shogi/WhiteKnight.svg      themes/shogi/WhiteGoldKnight.svg\
+           themes/shogi/WhiteLance.svg       themes/shogi/WhiteGoldLance.svg\
+           themes/shogi/WhitePawn.svg        themes/shogi/WhiteGoldPawn.svg\
+           themes/shogi/WhiteRook.svg        themes/shogi/WhiteCrownedRook.svg\
+           themes/shogi/WhiteAdvisor.svg     themes/shogi/WhiteGoldSilver.svg\
+           themes/shogi/BlackGold.svg        themes/shogi/BlackCrownedBishop.svg\
+           themes/shogi/BlackBishop.svg      themes/shogi/BlackKing.svg\
+           themes/shogi/BlackKnight.svg      themes/shogi/BlackGoldKnight.svg\
+           themes/shogi/BlackLance.svg       themes/shogi/BlackGoldLance.svg\
+           themes/shogi/BlackPawn.svg        themes/shogi/BlackGoldPawn.svg\
+           themes/shogi/BlackRook.svg        themes/shogi/BlackCrownedRook.svg\
+           themes/shogi/BlackAdvisor.svg     themes/shogi/BlackGoldSilver.svg
 
 xiangqidir = $(datadir)/games/xboard/themes/xiangqi
 dist_xiangqi_DATA = themes/xiangqi/BlackAdvisor.svg  themes/xiangqi/WhiteAdvisor.svg \

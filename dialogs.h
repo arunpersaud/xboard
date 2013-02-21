@@ -125,7 +125,7 @@ extern int dialogError;
 extern ButtonCallback *comboCallback;
 extern void *userLogo;
 
-extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain;
+extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain, wpDualBoard;
 extern char *marked[];
 extern Boolean shellUp[];
 extern Option textOptions[], typeOptions[], dualOptions[], mainOptions[];
@@ -180,6 +180,7 @@ void DisplayTimerLabel P((Option *opt, char *color, long timer, int highlight));
 void SetWindowTitle P((char *text, char *title, char *icon));
 void SetupDropMenu P((void));
 Option *BoardPopUp P((int squareSize, int lineGap, void *clockFontThingy));
+void SlaveResize P((Option *opt));
 
 int  SetCurrentComboSelection P((Option *opt));
 void BoxAutoPopUp P((char *buf));

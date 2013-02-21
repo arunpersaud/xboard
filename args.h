@@ -196,6 +196,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondDirectory", ArgFilename, (void *) &appData.secondDirectory, FALSE, (ArgIniType) SECOND_DIRECTORY },
   { "sd", ArgFilename, (void *) &appData.secondDirectory, FALSE, INVALID },
   { "variations", ArgBoolean, (void *) &appData.variations, TRUE, (ArgIniType) FALSE },
+  { "appendPV", ArgBoolean, (void *) &appData.autoExtend, TRUE, (ArgIniType) FALSE },
   { "theme", ArgString, (void *) &theme, FALSE, (ArgIniType) "" },
 
   /* some options only used by the XBoard front end, and ignored in WinBoard         */
@@ -271,6 +272,7 @@ ArgDescriptor argDescriptors[] = {
   { "autosave", ArgTrue, (void *) &appData.autoSaveGames, FALSE, INVALID },
   { "xautosave", ArgFalse, (void *) &appData.autoSaveGames, FALSE, INVALID },
   { "-autosave", ArgFalse, (void *) &appData.autoSaveGames, FALSE, INVALID },
+  { "onlyOwnGames", ArgBoolean, (void *) &appData.onlyOwn, TRUE, (ArgIniType) FALSE },
   { "loadPositionFile", ArgFilename, (void *) &appData.loadPositionFile, FALSE, (ArgIniType) "" },
   { "lpf", ArgFilename, (void *) &appData.loadPositionFile, FALSE, INVALID },
   { "loadPositionIndex", ArgInt, (void *) &appData.loadPositionIndex, FALSE, (ArgIniType) 1 },
@@ -770,6 +772,12 @@ ArgDescriptor argDescriptors[] = {
   { "gameListY", ArgY,   (void *) &wpGameList.y, TRUE, (ArgIniType) CW_USEDEFAULT },
   { "gameListW", ArgInt, (void *) &wpGameList.width, TRUE, (ArgIniType) CW_USEDEFAULT },
   { "gameListH", ArgInt, (void *) &wpGameList.height, TRUE, (ArgIniType) CW_USEDEFAULT },
+#if XBOARD
+  { "slaveX", ArgX,   (void *) &wpDualBoard.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "slaveY", ArgY,   (void *) &wpDualBoard.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "slaveW", ArgInt, (void *) &wpDualBoard.width, FALSE, (ArgIniType) CW_USEDEFAULT },
+  { "slaveH", ArgInt, (void *) &wpDualBoard.height, FALSE, (ArgIniType) CW_USEDEFAULT },
+#endif
   /* [AS] Layout stuff */
   { "moveHistoryUp", ArgBoolean, (void *) &wpMoveHistory.visible, TRUE, (ArgIniType) TRUE },
   { "moveHistoryX", ArgX,   (void *) &wpMoveHistory.x, TRUE, (ArgIniType) CW_USEDEFAULT },

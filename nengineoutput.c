@@ -152,7 +152,7 @@ EngineOutputPopUp ()
     static int  needInit = TRUE;
     static char *title = N_("Engine output");
 
-    if (GenericPopUp(engoutOptions, _(title), EngOutDlg, BoardWindow, NONMODAL, 1)) {
+    if (GenericPopUp(engoutOptions, _(title), EngOutDlg, BoardWindow, NONMODAL, appData.topLevel)) {
 	if(engoutOptions[STRIDE-1].type != Break)
 	    DisplayFatalError(_("Mismatch of STRIDE in nengineoutput.c\nChange and recompile!"), 0, 2);
 	AddHandler(&engoutOptions[MEMO], EngOutDlg, 6);

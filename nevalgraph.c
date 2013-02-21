@@ -132,7 +132,7 @@ EvalCallback (int button, int x, int y)
 void
 EvalGraphPopUp ()
 {
-    if (GenericPopUp(graphOptions, _(title), EvalGraphDlg, BoardWindow, NONMODAL, 1)) {
+    if (GenericPopUp(graphOptions, _(title), EvalGraphDlg, BoardWindow, NONMODAL, appData.topLevel)) {
 	InitializeEvalGraph(&graphOptions[0], wpEvalGraph.width, wpEvalGraph.height); // first time: add callbacks and initialize pens
 	disp = graphOptions;
     } else {

@@ -449,6 +449,7 @@ typedef struct {
     int loadGameIndex;      /* game # within file */
     char *saveGameFile;
     Boolean autoSaveGames;
+    Boolean onlyOwn;        /* [HGM] suppress auto-saving of observed games */
     char *loadPositionFile;
     int loadPositionIndex;  /* position # within file */
     char *savePositionFile;
@@ -553,6 +554,7 @@ typedef struct {
     Boolean showButtonBar;
     Boolean icsEngineAnalyze;
     Boolean variations;         /* [HGM] enable variation-tree walking */
+    Boolean autoExtend;         /* [HGM] enable playing move(s) of right-clicked PV in analysis mode */
 
     /* [AS] New properties (down to the "ZIPPY" part) */
     Boolean scoreIsAbsolute[ENGINES];  /* If true, engine score is always from white side */

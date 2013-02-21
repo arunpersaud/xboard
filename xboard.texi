@@ -1097,6 +1097,13 @@ will pop up a menu to drop a piece on the clicked square
 (old, deprecated behavior)
 or allow you to step through an engine PV
 (new, recommended behavior).
+@itemx Enable Variation Trees
+@cindex Enable Variation Trees, Menu Item
+If this option is on, playing a move in Edit Game or Analyze mode
+while keeping the Shift key pressed will start a new variation.
+You can then recall the previous line through the @samp{Revert} menu item.
+When off, playing a move will truncate the game and append the move
+irreversibly.
 @itemx Hide Thinking
 @cindex Hide Thinking, Menu Item
 If this option is off, the chess engine's notion of the score and best
@@ -1148,6 +1155,14 @@ you are using a chess engine that does not support periodic updates),
 the analysis window
 will only be updated when the analysis changes. If this option is
 on, the Analysis Window will be updated every two seconds.
+@itemx Play Move(s) of Clicked PV
+@cindex Play Move(s) of Clicked PV, Menu Item
+If this option is on, right-clicking a PV in the Engine Output window
+during Analyze mode will cause the first move of that PV to be played.
+You could also play more than one (or no) PV move by moving the mouse
+to engage in the PV walk such a right-click will start,
+to seek out another position along the PV where you want to continue
+the analysis, before releasing the mouse button.
 @itemx Ponder Next Move
 @cindex Ponder Next Move, Menu Item
 If this option is off, the chess engine will think only when it is on
@@ -1594,11 +1609,13 @@ have expired (or in Xiangqi).
 @item Save Game Options
 @cindex Save Game Options, Menu Item
 Summons a dialog where you can specify the files on which XBoard should
-automtically save any played or entered games, 
+automatically save any played or entered games, 
 (the @code{saveGameFile} option), 
 or the final position of such games (the @code{savePositionfile} option).
 You can also select 'auto-save' without a file name,
 in which case XBoard will prompt the user for a file name after each game.
+In ICS mode you can limit the auto-saving to your own games
+(i.e. suppress saving of observed games).
 You can also set the default value for the PGN Event tag that will
 be used for each new game you start.
 Various options for the format of the game can be specified as well,
@@ -2746,6 +2763,9 @@ standard output.
 @cindex autoSaveGames, option
 Sets the Auto Save menu option.  @xref{Options Menu}.  Default: false.
 Ignored if @code{saveGameFile} is set.
+@item -onlyOwnGames true/false
+@cindex onlyOwnGames, option
+Suppresses auto-saving of ICS observed games. Default: false.
 @item -lpf or -loadPositionFile file
 @itemx -lpi or -loadPositionIndex index
 @cindex lpf, option
@@ -3242,6 +3262,12 @@ or give the move to @kbd{black} or @kbd{white}.
 When this option is on, you can start new variations in Edit Game or
 Analyze mode by holding the Shift key down while entering a move.
 When it is off, the Shift key will be ignored.
+Default: False.
+@item -appendPV true|false
+@cindex appendPV, option
+When this option is on, right-clicking a PV in the Engine Output window
+will play the first move of that PV in Analyze mode,
+or as many moves as you walk through by moving the mouse.
 Default: False.
 @item -absoluteAnalysisScores true|false
 @cindex absoluteAnalysisScores, option

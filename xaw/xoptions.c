@@ -373,6 +373,100 @@ CreateMenuItem (Widget menu, char *msg, XtCallbackProc CB, int n)
     return entry;
 }
 
+char *
+format_accel (char *input)
+{
+  char *output;
+  char *key,*test;
+
+  output = strdup("");
+
+  if( strstr(input, "<Ctrl>") )
+    {
+      output = realloc(output, strlen(output) + strlen(_("Ctrl"))+2);
+      strncat(output, _("Ctrl"), strlen(_("Ctrl")) +1);
+      strncat(output, "+", 1);
+    };
+  if( strstr(input, "<Alt>") )
+    {
+      output = realloc(output, strlen(output) + strlen(_("Alt"))+2);
+      strncat(output, _("Alt"), strlen(_("Alt")) +1);
+      strncat(output, "+", 1);
+    };
+  if( strstr(input, "<Shift>") )
+    {
+      output = realloc(output, strlen(output) + strlen(_("Shift"))+2);
+      strncat(output, _("Shift"), strlen(_("Shift")) +1);
+      strncat(output, "+", 1);
+    };
+
+  test = strrchr(input, '>');
+  if ( test==NULL )
+    key = strdup(input);
+  else
+    key = strdup(++test); // remove ">"
+  if(strlen(key) == 1) key[0] = ToUpper(key[0]);
+
+  output = realloc(output, strlen(output) + strlen(_(key))+2);
+  strncat(output, _(key), strlen(_(key)) +1);
+
+  free(key);
+  return output;
+}
+
+int
+pixlen (char *s)
+{
+#if 0
+    int dummy;
+    XCharStruct overall;
+    XTextExtents(messageFontStruct, s, strlen(s), &dummy, &dummy, &dummy, &overall);
+    return overall.width;
+#else
+    float tot = 0;
+    while(*s) switch(*s++) {
+	case '.': tot += 0.45; break;
+	case ' ': tot += 0.55; break;
+	case 'i': tot += 0.45; break;
+	case 'l': tot += 0.45; break;
+	case 'j': tot += 0.45; break;
+	case 'f': tot += 0.45; break;
+	case 'I': tot += 0.45; break;
+	case 't': tot += 0.45; break;
+	case 'k': tot += 0.83; break;
+	case 's': tot += 0.83; break;
+	case 'x': tot += 0.83; break;
+	case 'z': tot += 0.83; break;
+	case 'r': tot += 0.55; break;
+	case 'w': tot += 1.3; break;
+	case 'm': tot += 1.3; break;
+	case 'A': tot += 1.3; break;
+	case 'C': tot += 1.3; break;
+	case 'D': tot += 1.3; break;
+	case 'G': tot += 1.3; break;
+	case 'H': tot += 1.3; break;
+	case 'N': tot += 1.3; break;
+	case 'V': tot += 1.3; break;
+	case 'X': tot += 1.3; break;
+	case 'Y': tot += 1.3; break;
+	case 'Z': tot += 1.3; break;
+	case 'M': tot += 1.6; break;
+	case 'W': tot += 1.6; break;
+	case 'B': tot += 1.1; break;
+	case 'E': tot += 1.1; break;
+	case 'F': tot += 1.1; break;
+	case 'K': tot += 1.1; break;
+	case 'P': tot += 1.1; break;
+	case 'R': tot += 1.1; break;
+	case 'S': tot += 1.1; break;
+	case 'O': tot += 1.4; break;
+	case 'Q': tot += 1.4; break;
+	default:  tot++;
+    }
+    return tot;
+#endif
+}
+
 static Widget
 CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
 {   // fromList determines if the item texts are taken from a list of strings, or from a menu table
@@ -381,20 +475,51 @@ CreateComboPopup (Widget parent, Option *opt, int n, int fromList, int def)
     Arg arg;
     MenuItem *mb = (MenuItem *) opt->choice;
     char **list = (char **) opt->choice;
+    int maxlength=0, menuLen[1000];
+
 
     if(list[0] == NULL) return NULL; // avoid empty menus, as they cause crash
     menu = XtCreatePopupShell(opt->name, simpleMenuWidgetClass, parent, NULL, 0);
 
+    if(!fromList)
+      for (i=0; mb[i].string; i++) if(mb[i].accel) {
+	int len = pixlen(_(mb[i].string));
+	menuLen[i] = len;
+	if (maxlength < len )
+	  maxlength = len;
+      }
+
     for (i=0; 1; i++)
       {
 	char *msg = fromList ? list[i] : mb[i].string;
+	char *label=NULL;
+
 	if(!msg) break;
-	entry = CreateMenuItem(menu, opt->min & NO_GETTEXT ? msg : _(msg), (XtCallbackProc) ComboSelect, (n<<16)+i);
+
+	if(!fromList && mb[i].accel)
+	  {
+	    char *menuname = opt->min & NO_GETTEXT ? msg : _(msg);
+	    char *accel = format_accel(mb[i].accel);
+	    size_t len;
+//	    int fill = maxlength - strlen(menuname) +2+strlen(accel);
+	    int fill = (maxlength - menuLen[i] + 3)*1.8;
+
+	    len = strlen(menuname)+fill+strlen(accel)+1;
+	    label = malloc(len);
+
+	    snprintf(label,len,"%s%*s%s",menuname,fill," ",accel);
+	    free(accel);
+	  }
+	else
+	  label = strdup(opt->min & NO_GETTEXT ? msg : _(msg));
+
+	entry = CreateMenuItem(menu, label, (XtCallbackProc) ComboSelect, (n<<16)+i);
 	if(!fromList) mb[i].handle = (void*) entry; // save item ID, for enabling / checkmarking
 	if(i==def) {
 	    XtSetArg(arg, XtNpopupOnEntry, entry);
 	    XtSetValues(menu, &arg, 1);
 	}
+	free(label);
       }
       return menu;
 }
@@ -1158,13 +1283,17 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     shellUp[dlgNr]++; // count rather than flag
     previous = NULL;
     if(textField) SetFocus(textField, popup, (XEvent*) NULL, False);
-    if(dlgNr && wp[dlgNr] && wp[dlgNr]->width > 0) { // if persistent window-info available, reposition
+    if(dlgNr && wp[dlgNr]) { // if persistent window-info available, reposition
 	j = 0;
-	XtSetArg(args[j], XtNheight, (Dimension) (wp[dlgNr]->height));  j++;
-	XtSetArg(args[j], XtNwidth,  (Dimension) (wp[dlgNr]->width));  j++;
-	XtSetArg(args[j], XtNx, (Position) (wp[dlgNr]->x));  j++;
-	XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
-	XtSetValues(popup, args, j);
+	if(wp[dlgNr]->width > 0 && wp[dlgNr]->height > 0) {
+	  XtSetArg(args[j], XtNheight, (Dimension) (wp[dlgNr]->height));  j++;
+	  XtSetArg(args[j], XtNwidth,  (Dimension) (wp[dlgNr]->width));  j++;
+	}
+	if(wp[dlgNr]->x > 0 && wp[dlgNr]->y > 0) {
+	  XtSetArg(args[j], XtNx, (Position) (wp[dlgNr]->x));  j++;
+	  XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
+	}
+	if(j) XtSetValues(popup, args, j);
     }
     RaiseWindow(dlgNr);
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)

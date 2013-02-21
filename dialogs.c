@@ -368,13 +368,14 @@ static Option generalOptions[] = {
 { 0,  0, 0, NULL, (void*) &appData.autoFlipView, "", NULL, CheckBox, N_("Auto Flip View") },
 { 0,  0, 0, NULL, (void*) &appData.blindfold, "", NULL, CheckBox, N_("Blindfold") },
 { 0,  0, 0, NULL, (void*) &appData.dropMenu, "", NULL, CheckBox, N_("Drop Menu") },
+{ 0,  0, 0, NULL, (void*) &appData.variations, "", NULL, CheckBox, N_("Enable Variation Trees") },
 { 0,  0, 0, NULL, (void*) &appData.hideThinkingFromHuman, "", NULL, CheckBox, N_("Hide Thinking from Human") },
 { 0,  0, 0, NULL, (void*) &appData.highlightLastMove, "", NULL, CheckBox, N_("Highlight Last Move") },
 { 0,  0, 0, NULL, (void*) &appData.highlightMoveWithArrow, "", NULL, CheckBox, N_("Highlight with Arrow") },
-{ 0,  0, 0, NULL, (void*) &appData.ringBellAfterMoves, "", NULL, CheckBox, N_("Move Sound") },
 { 0,  0, 0, NULL, (void*) &appData.oneClick, "", NULL, CheckBox, N_("One-Click Moving") },
 { 0,  0, 0, NULL, (void*) &appData.periodicUpdates, "", NULL, CheckBox, N_("Periodic Updates (in Analysis Mode)") },
 { 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, "" },
+{ 0,  0, 0, NULL, (void*) &appData.autoExtend, "", NULL, CheckBox, N_("Play Move(s) of Clicked PV (Analysis)") },
 { 0,  0, 0, NULL, (void*) &appData.ponderNextMove, "", NULL, CheckBox, N_("Ponder Next Move") },
 { 0,  0, 0, NULL, (void*) &appData.popupExitMessage, "", NULL, CheckBox, N_("Popup Exit Messages") },
 { 0,  0, 0, NULL, (void*) &appData.popupMoveErrors, "", NULL, CheckBox, N_("Popup Move Errors") },
@@ -654,6 +655,7 @@ LoadOptionsProc ()
 
 static Option saveOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.autoSaveGames, "", NULL, CheckBox, N_("Auto-Save Games") },
+{ 0, 0, 0, NULL, (void*) &appData.onlyOwn, "", NULL, CheckBox, N_("Own Games Only") },
 { 0, 0, 0, NULL, (void*) &appData.saveGameFile, ".pgn", NULL, FileName,  N_("Save Games on File:") },
 { 0, 0, 0, NULL, (void*) &appData.savePositionFile, ".fen", NULL, FileName,  N_("Save Final Positions on File:") },
 { 0, 0, 0, NULL, (void*) &appData.pgnEventHeader, "", NULL, TextBox,  N_("PGN Event Header:") },
@@ -920,7 +922,7 @@ IcsTextProc ()
    textOptions[i].target = NULL;
    textOptions[i].min = 2;
    MarkMenu("View.ICStextmenu", TextMenuDlg);
-   GenericPopUp(textOptions, _("ICS text menu"), TextMenuDlg, BoardWindow, NONMODAL, 1);
+   GenericPopUp(textOptions, _("ICS text menu"), TextMenuDlg, BoardWindow, NONMODAL, appData.topLevel);
 }
 
 //---------------------------------------------------- Edit Comment -----------------------------------
@@ -980,7 +982,7 @@ NewCommentPopup (char *title, char *text, int index)
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
     MarkMenu("View.Comments", CommentDlg);
-    if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL, 1))
+    if(GenericPopUp(commentOptions, title, CommentDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&commentOptions[0], CommentDlg, 1);
 }
 
@@ -1055,7 +1057,7 @@ NewTagsPopup (char *text, char *msg)
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].name = msg;
     MarkMenu("View.Tags", TagsDlg);
-    GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL, 1);
+    GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL, appData.topLevel);
 }
 
 void
@@ -2197,7 +2199,7 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
     if(!appData.showButtonBar) for(i=W_BUTTON; i<W_BOARD; i++) mainOptions[i].type = -1;
     for(i=0; i<8; i++) mainOptions[i+1].choice = (char**) menuBar[i].mi;
     AppendEnginesToMenu(appData.recentEngineList);
-    GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1);
+    GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1); // allways top-level
     return mainOptions;
 }
 
@@ -2215,7 +2217,7 @@ SlaveExp (int n, int x, int y)
 Option dualOptions[] = { // auxiliary board window
 { 0, L2L|T2T,              198, NULL, NULL, NULL, NULL, Label, "White" }, // white clock
 { 0, R2R|T2T|SAME_ROW,     198, NULL, NULL, NULL, NULL, Label, "Black" }, // black clock
-{ 0, LR|T2T|BORDER,        401, NULL, NULL, NULL, NULL, Label, "message" }, // message field
+{ 0, LR|T2T|BORDER,        401, NULL, NULL, NULL, NULL, Label, "This feature is experimental" }, // message field
 { 401, LR|TT, 401, NULL, (char*) &SlaveExp, NULL, NULL, Graph, "shadow board" }, // board
 { 0,  NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
@@ -2230,7 +2232,8 @@ SlavePopUp ()
     dualOptions[3].value = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
     dualOptions[3].max = dualOptions[2].max = size; // board width
     dualOptions[0].max = dualOptions[1].max = size/2 - 3; // clock width
-    GenericPopUp(dualOptions, "XBoard", DummyDlg, BoardWindow, NONMODAL, 1);
+    GenericPopUp(dualOptions, "XBoard", DummyDlg, BoardWindow, NONMODAL, appData.topLevel);
+    SlaveResize(dualOptions+3);
 }
 
 void

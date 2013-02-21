@@ -918,7 +918,7 @@ DrawPosition (int repaint, Board board)
 	MarkMenuItem("View.Flip View", flipView);
     }
 
-    if(nr) { SlavePopUp(); SwitchWindow(); } // [HGM] popup board if not yet popped up, and switch drawing to it.
+    if(nr) { SlavePopUp(); SwitchWindow(0); } // [HGM] popup board if not yet popped up, and switch drawing to it.
 
     /*
      * It would be simpler to clear the window with XClearWindow()
@@ -1029,12 +1029,12 @@ DrawPosition (int repaint, Board board)
 			GraphExpose(currBoard, x - lineGap, y - lineGap, squareSize + 2*lineGap, squareSize  + 2*lineGap);
 		    else
 			GraphExpose(currBoard, x, y, squareSize, squareSize);
-		    damage[nr][i][j] &= ~2; // remember damage by newly drawn error in '2' bit, to schedule it for erasure next draw
+		    damage[nr][i][j] &= 2; // remember damage by newly drawn error in '2' bit, to schedule it for erasure next draw
 		}
     }
 
     FlashDelay(0); // this flushes drawing queue;
-    if(nr) SwitchWindow();
+    if(nr) SwitchWindow(1);
 }
 
 /* [AS] Arrow highlighting support */

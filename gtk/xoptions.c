@@ -428,6 +428,14 @@ CreateMenuPopup (Option *opt, int n, int def)
 	  } else
 	    entry = gtk_menu_item_new_with_label(msg);
 	  gtk_signal_connect_object (GTK_OBJECT (entry), "activate", GTK_SIGNAL_FUNC(MenuSelect), (gpointer) (intptr_t) ((n<<16)+i));
+	  if(mb[i].accel) {
+	    guint accelerator_key;
+	    GdkModifierType accelerator_mods;
+
+	    gtk_accelerator_parse(mb[i].accel, &accelerator_key, &accelerator_mods);
+	    gtk_widget_add_accelerator (GTK_WIDGET(entry), "activate",GtkAccelerators,
+					accelerator_key, accelerator_mods, GTK_ACCEL_VISIBLE);
+	  };
 	  gtk_widget_show(entry);
 	} else entry = gtk_separator_menu_item_new();
 	gtk_menu_append(GTK_MENU (menu), entry);
@@ -626,7 +634,7 @@ AddHandler (Option *opt, DialogClass dlg, int nr)
 GtkWidget *shells[NrOfDialogs];
 DialogClass parents[NrOfDialogs];
 WindowPlacement *wp[NrOfDialogs] = { // Beware! Order must correspond to DialogClass enum
-    NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
+    NULL, &wpComment, &wpTags, NULL, NULL, NULL, &wpDualBoard, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
     NULL, NULL, NULL, NULL, &wpMain
 };
 
@@ -1097,6 +1105,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     if(dlgNr && dlgNr < PromoDlg && shells[dlgNr]) { // reusable, and used before (but popped down)
         gtk_widget_show(shells[dlgNr]);
         shellUp[dlgNr] = True;
+	if(wp[dlgNr]) gtk_window_move(GTK_WINDOW(shells[dlgNr]), wp[dlgNr]->x, wp[dlgNr]->y);
         return 0;
     }
 
@@ -1110,7 +1119,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 //        if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
 	width = n / 20 + 1;
         height = n / width + 1;
-printf("n=%d, h=%d, w=%d\n",n,height,width);
+if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 //	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = SAME_ROW; // OK on same line
         currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }
@@ -1124,16 +1133,27 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
       XtCreatePopupShell(title, !top || !appData.topLevel ? transientShellWidgetClass : topLevelShellWidgetClass,
                                                            shells[parent], args, i);
 #endif
-    dialog = gtk_dialog_new_with_buttons( title,
-                                      GTK_WINDOW(shells[parent]),
-				      GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR |
-                                          (modal ? GTK_DIALOG_MODAL : 0),
-                                      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-                                      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-                                      NULL );
+
+    if(topLevel)
+      {
+	dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(dialog), title);
+	box = gtk_vbox_new(FALSE,0);
+	gtk_container_add (GTK_CONTAINER (dialog), box);
+      }
+    else
+      {
+	dialog = gtk_dialog_new_with_buttons( title,
+					      GTK_WINDOW(shells[parent]),
+					      GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR |
+					      (modal ? GTK_DIALOG_MODAL : 0),
+					      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+					      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+					      NULL );
+	box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
+      }
 
     shells[dlgNr] = dialog;
-    box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
 //    gtk_box_set_spacing(GTK_BOX(box), 5);
 
     arraysize = 0;
@@ -1481,31 +1501,35 @@ printf("n=%d, h=%d, w=%d\n",n,height,width);
     option[i].handle = (void *) table; // remember last table in EndMark handle (for hiding Engine-Output pane).
 
     gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_NONE);
+
     /* Show dialog */
     gtk_widget_show_all( dialog );
 
     /* hide OK/cancel buttons */
-    if((option[i].min & NO_OK)) {
-        actionarea = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
-        gtk_widget_hide(actionarea);
-    } else if((option[i].min & NO_CANCEL)) {
-        button = gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_REJECT);
-        gtk_widget_hide(button);
-    }
-
-    g_signal_connect (dialog, "response",
+    if(!topLevel)
+      {
+	if((option[i].min & NO_OK)) {
+	  actionarea = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
+	  gtk_widget_hide(actionarea);
+	} else if((option[i].min & NO_CANCEL)) {
+	  button = gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_REJECT);
+	  gtk_widget_hide(button);
+	}
+        g_signal_connect (dialog, "response",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
+      }
+
     g_signal_connect (dialog, "delete-event",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr]++;
 
-    if(dlgNr && wp[dlgNr] && wp[dlgNr]->width > 0) { // if persistent window-info available, reposition
+    if(dlgNr && wp[dlgNr]) { // if persistent window-info available, reposition
+      if(wp[dlgNr]->x > 0 && wp[dlgNr]->y > 0)
 	gtk_window_move(GTK_WINDOW(dialog), wp[dlgNr]->x, wp[dlgNr]->y);
-//printf("moved %d to (%d,%d)\n", dlgNr, wp[dlgNr]->x, wp[dlgNr]->y);
+      if(wp[dlgNr]->width > 0 && wp[dlgNr]->height > 0)
 	gtk_window_resize(GTK_WINDOW(dialog), wp[dlgNr]->width, wp[dlgNr]->height);
-//printf("resized %d to %dx%d\n", dlgNr, wp[dlgNr]->width, wp[dlgNr]->height);
     }
 
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
