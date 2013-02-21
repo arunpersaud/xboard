@@ -7,8 +7,6 @@
 <h2>What is new in WinBoard / XBoard 4.7.0?</h2>
 <table cellpadding="20"><tbody><tr valign="top"><td>
 
-<h3>So far the development version has:</h3>
-
 <h3>Interactive Analysis</h3>
 <ul><li>
 <a href="#tag-A1">Excluding analysis moves</a>
@@ -20,6 +18,8 @@
 <a href="#tag-A6">Analyzing with two engines</a>
 </li><li>
 <a href="#tag-A7">Annotating an entire muti-game file</a>
+</li><li>
+<a href="#tag-A13">Analysing by Monte-Carlo play</a>
 </li></ul>
 
 <h3>Other New Functionality</h3>
@@ -34,24 +34,40 @@
 </li><li>
 <a href="#tag-A8">Starting WinBoard through drag & drop</a>
 </li><li>
-<a href="#tag-A9">Recalling configured engines and ICS from the command line</a>
+<a href="#tag-A9">Recalling configured engines and ICS</a>
+</li><li>
+<a href="#tag-A12">Creating an opening book</a>
+</li><li>
+<a href="#tag-A14">Pausing a game</a>
 </li></ul>
+
+</td><td>
 
 <h3>Interface Improvements</h3>
 <ul><li>
-<a href="#tag-B1">Scrolling listboxes</a>
+<a href="#tag-B1">Scrolling listboxes (XB)</a>
 </li><li>
-<a href="#tag-B2">Tabbing through dialogs</a>
+<a href="#tag-B2">Tabbing through dialogs (XB)</a>
 </li><li>
 <a href="#tag-B6">List boxes for engine selection</a>
 </li><li>
 <a href="#tag-B7">Grouping engines</a>
 </li><li>
-<a href="#tag-B4">A separate board window for observing ICS games</a>
+<a href="#tag-B4">A separate board for observing ICS games (XB)</a>
 </li><li>
-<a href="#tag-B3">Adding graphics to the repertoire of the dialog creator</a>
+<a href="#tag-B3">Handling graphics with the dialog creator (XB)</a>
 </li><li>
-<a href="#tag-B5">A rejuvenated file browser</a>
+<a href="#tag-B5">A rejuvenated file browser (XB)</a>
+</li><li>
+<a href="#tag-A15">External piece bitmaps (WB)</a>
+</li><li>
+<a href="#tag-A10">Border around the board (WB)</a>
+</li><li>
+<a href="#tag-A11">Saving settings as themes (WB)</a>
+</li><li>
+<a href="#tag-C0">Smoother graphics and a resizable board (XB)</a>
+</li><li>
+<a href="#tag-C1">An experimental port to the GTK widget set (XB)</a>
 </li></ul>
 
 </td><td>
@@ -452,6 +468,133 @@ it normally assumes it is a game file, imagining the -lgf option for it.
 But an exception is now made for names that correspond to the (nick)name of an ICS.
 This would imply the -is option.
 So you can connectto FICS by simply typing "xboard fics".
+</p>
+
+<h3><a name="tag-A15">Pieces from external bitmap files</a></h3>
+<table cellpadding="20"><tr><td valign="top">
+<p>
+WinBoard supports user-supplied pieces through piece fonts, which are scalable to any board size.
+In addition it is now possible to load bitmaps from an external file.
+Because bitmaps are not scalable, this needs a separate set for each square size.
+Like the built-in piece bitmaps, it furthermore needs three bitmaps per piece type:
+outline (o) for the white pieces, solid (s) for the black pieces, and a mask (w) to indicate the interior.
+A difference with the built-ins is that the solid and outline bitmaps can be in full color.
+By specifying the folder containing the complete set of bitmaps with the -pieceImageDirectory option,
+WinBoard can be made to use them.
+Piece bitmaps in this format are available in the Alex Guerrero's WinBoard-Zeta distribution.
+Missing bitmaps will automatically be replaced by built-ins.
+</p>
+<h3><a name="tag-A10">Border around the board</a></h3>
+<p>
+The option -useBorder true|false can be used to switch a half-square-wide border around the board,
+filled in from an external bitmap specified with the -border option.
+Specifying a non-existing file will produce a border in the -whitePieceColor.
+When a border is specified, the board coordinates will be drawn in that region.
+</p>
+</td><td valign="top">
+<img src="Border.png">
+<br>
+<i>Using WinBoard Zeta's Maya pieces and Wood_2 border</i>
+</td></tr></table>
+
+<table cellpadding="20"><tr><td valign="top">
+<img src="Themes.png">
+</td><td valign="top">
+<h3><a name="tag-A11">Themes</a></h3>
+<p>
+WinBoard now allows combinations of graphics settings to be stored and recalled as 'themes'.
+A new menu dialog View -> Themes is added to control the settings for board and pieces
+that are new, or could not be controlled by the View->Board dialog.
+It also contains a 'Theme name' field, and by typing a name there,
+the current graphics settings will be added as a theme with that name in the theme list,
+displayed in the listbox on the left.
+The settings can then be recalled at any time by double-clicking the theme name in that listbox.
+</p><p>
+The themes are stored as the -themeNames option in the settings file.
+This is a multi-line option similar to the list of engines or ICS,
+one line per theme, starting with the theme name,
+and containing all option settings for that theme.
+Only relevant options are included with the theme;
+e.g. when the theme uses board textures, there is no need to store square colors.
+</p>
+</td></tr></table>
+
+<h3><a name="tag-A12">Creating an opening book from a PGN file</a></h3>
+<p>
+It is now possible to 'compile' an opening book (in Polyglot format) from one or more game files.
+A new menu item File -> Create Opening Book will add the positions (upto the given -bookDepth) of all games in the file
+to a memory buffer.
+After all games have been added, the buffer is saved as a Polyglot book of the name specified for GUI book.
+The buffer is not cleared afterwards,
+so this process could be repeated a number of times,
+to accumulate the positions from several game files.
+The importance of this feature is that it also works in any of the variants;
+for Chess there already existed other oftware that could do this.
+</p>
+
+<h3><a name="tag-A13">Analyzing a position by playing many fast games</a></h3>
+<p>
+Another way to create or refine a book is by 'Monte-Carlo' game play.
+With the option -mcBookMode the book-probing algorithm is altered:
+probing is not done from a book file, but from the memory buffer that is used to create a book.
+Games that are played are added to this memory buffer as soon as they finish.
+Probing is done in a way to promote diversity,
+although moves that on average produce better results are chosen much more frequently than moves with a poor performance record.
+When the moves are played in the ratio they deserve, a book miss is reported, so that the choice is left to the engine.
+This can then also provide moves that were so far not in the book.
+By playing matches with randomizing engines,
+or tourneys with many different, approximately equally strong engines in this mode,
+a book can be built from scratch.
+Of course these match and tourneys could use an arbitrary starting position.
+After having collected enough games, a Polyglot book can be made from the resulting PGN file.
+</p>
+
+<h3><a name="tag-A14">Pausing a game</a></h3>
+<p>
+The Pause (P) button in the button bar, as well as 'Pause' menu item,
+now also function when the engine is thinking.
+The pause / resume commands defined in WB protocol will be used to suspend all activity of the engine
+(be it thinking or pondering),
+for engines that support those commands.
+If the currently thinking engine doesn't support them,
+the effect of pressing Pause will only commence once the engine moves.
+The pondering engine will be suspended with the aid of easy / hard commands if it does not support pause / resume.
+</p>
+
+<h3><a name="tag-C0">Resizable board with anti-aliased pieces</a></h3>
+<table cellpadding="20"><tr><td valign="top">
+<img src="Transpa.png">
+</td><td valign="top">
+<p>
+The graphics code of XBoard now has been re-written to us the Cairo graphics library.
+Apart from being a huge cosmetic improvement, this change will affect the user in several ways.
+For one, pixmaps (.xpm) and bitmaps (.bm) are no longer supported as formats for user-supplied piece images.
+As a consequence the options -bitmapDirectory and -pixmapDirectory have been abolished.
+The new XBoard supports two image formats: *.png and *.svg.
+The user can specify a piece set of either format through the new option -pieceImageDirectory (short form: -pid).
+The naming convention of the piece images has also been changed,
+and the image files must now have names like WhiteBishop.png or BlackKnight.svg.
+</p>
+</td></tr></table>
+<p>
+The SVG images are scalable, and this has opened the possibility to allow continuous resizing of the board window.
+The Cairo library provides good anti-aliasing, and even PNG graphics can be resized to a certain degree before it starts to look ugly.
+Note that the new XBoard no longer contains built-in piece images in its binary,
+but relies on a default set of external piece images (stored with its data files) even when you don't specify a -pieceImageDirectory.
+</p><p>
+The Cairo library also supports transparency, and the background of the supplied piece images has to be fully transparent.
+XBoard also uses trasparency when dragging pieces for entering moves to exclude from analysis;
+in this case the 'ghost' of the piece that you are dragging will be redered semi-transparently.
+</p>
+
+<h3><a name="tag-C1">An experimental GTK port of XBoard</a></h3>
+<p>
+The new source code can optionally be built using the GTK widget set in stead of the (by now very obsolete) Athena widget set.
+A simple switch option during configure can be used to request this.
+The only difference should be that the dialogs <a href="http://hgm.nubati.net/gtk/index.html">look prettier</a>.
+Note that the GTK build is still in an experimental stage,
+and could contain many bugs and imperfections, including some things that are simply not implemented yet (such as key bindings).
+This holds even for GTK builds made from versions for which the Xaw build is declared stable.
 </p>
 
 <h3><a name="tag-B0">Fixed bugs</a></h3>
