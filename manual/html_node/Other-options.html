@@ -32,18 +32,40 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <h3 class="section">4.8 Other options</h3>
 
-<p><a name="index-Options_002c-miscellaneous-520"></a>
+<p><a name="index-Options_002c-miscellaneous-536"></a>
      <dl>
-<dt>-ncp/-xncp or -noChessProgram true/false<dd><a name="index-ncp_002c-option-521"></a><a name="index-noChessProgram_002c-option-522"></a>If this option is true, XBoard acts as a passive chessboard; it
+<dt>-ncp/-xncp or -noChessProgram true/false<dd><a name="index-ncp_002c-option-537"></a><a name="index-noChessProgram_002c-option-538"></a>If this option is true, XBoard acts as a passive chessboard; it
 does not start a chess engine at all. Turning on this option
 also turns off clockMode. Default: false. 
-<br><dt>-mode or -initialMode modename<dd><a name="index-mode_002c-option-523"></a><a name="index-initalMode_002c-option-524"></a>If this option is given, XBoard selects the given modename
+<br><dt>-viewer<dt>-viewerOptions string<dd><a name="index-viewer_002c-option-539"></a><a name="index-viewerOptions_002c-option-540"></a>Presence of the volatile option <code>viewer</code> on the command line
+will cause the value of the persistent option <code>viewerOptions</code>
+as stored in the settings file to be appended to the command line. 
+The <code>view</code> option will be used by desktop associations with
+game or position file types, so that <code>viewerOptions</code> can be
+used to configure the exact mode XBoard will start in when it
+should act on such a file (e.g. in -ncp mode, or analyzing
+with your favorite engine). The options are also automatically
+appended when Board is invoked with a single argument not being
+an option name, which is then assumed to be the name of a
+<code>loadGameFile</code> or (when the name ends in .fen) a
+<code>loadPositionFile</code>. 
+Default: "-ncp -engineOutputUp false -saveSettingsOnExit false". 
+<br><dt>-tourneyOptions string<dd><a name="index-tourneyOptions_002c-option-541"></a>When XBoard is invoked with a single argument that is a file
+with .trn extension, it will assume this argument to be the value
+of a <code>tourneyFile</code> option,
+and apped the value of the persistent option <code>tourneyOptions</code>
+as stored in the settings file to the command line. 
+Thus the value of <code>tourneyOptions</code> can be
+used to configure XBoard to automatically start running a
+tournament when it should act on such a file. 
+Default: "-ncp -mm -saveSettingsOnExit false". 
+<br><dt>-mode or -initialMode modename<dd><a name="index-mode_002c-option-542"></a><a name="index-initalMode_002c-option-543"></a>If this option is given, XBoard selects the given modename
 from the Mode menu after starting and (if applicable) processing the
 loadGameFile or loadPositionFile option. Default: "" (no selection). 
 Other supported values are
 MachineWhite, MachineBlack, TwoMachines, Analysis,
 AnalyzeFile, EditGame, EditPosition, and Training. 
-<br><dt>-variant varname<dd><a name="index-variant_002c-option-525"></a>Activates preliminary, partial support for playing chess variants
+<br><dt>-variant varname<dd><a name="index-variant_002c-option-544"></a>Activates preliminary, partial support for playing chess variants
 against a local engine or editing variant games.  This flag is not
 needed in ICS mode.  Recognized variant names are:
 
@@ -100,25 +122,25 @@ Berolina and cylinder chess can only be played with legality testing off.
 In crazyhouse, XBoard now does keep
 track of off-board pieces.  In shatranj it does implement the baring
 rule when mate detection is switched on. 
-<br><dt>-boardHeight N<dd><a name="index-boardHeight_002c-option-526"></a>Allows you to set a non-standard number of board ranks in any variant. 
+<br><dt>-boardHeight N<dd><a name="index-boardHeight_002c-option-545"></a>Allows you to set a non-standard number of board ranks in any variant. 
 If the height is given as -1, the default height for the variant is used. 
 Default: -1
-<br><dt>-boardWidth N<dd><a name="index-boardWidth_002c-option-527"></a>Allows you to set a non-standard number of board files in any variant. 
+<br><dt>-boardWidth N<dd><a name="index-boardWidth_002c-option-546"></a>Allows you to set a non-standard number of board files in any variant. 
 If the width is given as -1, the default width for the variant is used. 
 With a non-standard width, the initial position will always be an empty board,
 as the usual opening array will not fit. 
 Default: -1
-<br><dt>-holdingsSize N<dd><a name="index-holdingsSize_002c-option-528"></a>Allows you to set a non-standard size for the holdings in any variant. 
+<br><dt>-holdingsSize N<dd><a name="index-holdingsSize_002c-option-547"></a>Allows you to set a non-standard size for the holdings in any variant. 
 If the size is given as -1, the default holdings size for the variant is used. 
 The first N piece types will go into the holdings on capture, and you will be
 able to drop them on the board in stead of making a normal move. If size equals 0,
 there will be no holdings. 
 Default: -1
-<br><dt>-defaultFrcPosition N<dd><a name="index-defaultFrcPosition_002c-option-529"></a>Specifies the number of the opening position in shuffle games like Chess960. 
+<br><dt>-defaultFrcPosition N<dd><a name="index-defaultFrcPosition_002c-option-548"></a>Specifies the number of the opening position in shuffle games like Chess960. 
 A value of -1 means the position is randomly generated by XBoard
 at the beginning of every game. 
 Default: -1
-<br><dt>-pieceToCharTable string<dd><a name="index-pieceToCharTable_002c-option-530"></a>The characters that are used to represent the piece types XBoard knows in FEN
+<br><dt>-pieceToCharTable string<dd><a name="index-pieceToCharTable_002c-option-549"></a>The characters that are used to represent the piece types XBoard knows in FEN
 diagrams and SAN moves. The string argument has to have an even length
 (or it will be ignored), as white and black pieces have to be given separately
 (in that order). The last letter for each color will be the King. 
@@ -138,26 +160,26 @@ Note that promoted pieces are represented by pieces 11 further in the list.
 You should not have to use this option often: each variant has its own default
 setting for the piece representation in FEN, which should be sufficient in normal use. 
 Default: ""
-<br><dt>-pieceNickNames string<dd><a name="index-pieceNickNames_002c-option-531"></a>The characters in the string are interpreted the same way as in the
+<br><dt>-pieceNickNames string<dd><a name="index-pieceNickNames_002c-option-550"></a>The characters in the string are interpreted the same way as in the
 <code>pieceToCharTable</code> option. But on input, piece-ID letters are
 first looked up in the nicknames, and only if not defined there,
 in the normal pieceToCharTable. This allows you to have two letters
 designate the same piece, (e.g. N as an alternative to H for Horse
 in Xiangqi), to make reading of non-compliant notations easier. 
 Default: ""
-<br><dt>-colorNickNames string<dd><a name="index-colorNickNames_002c-option-532"></a>The side-to-move field in a FEN will be first matched against the letters
+<br><dt>-colorNickNames string<dd><a name="index-colorNickNames_002c-option-551"></a>The side-to-move field in a FEN will be first matched against the letters
 in the string (first character for white, second for black),
 before it is matched to the regular 'w' and 'b'. 
 This makes it easier to read non-compliant FENs,
 which, say, use 'r' for white. 
 Default: ""
-<br><dt>-debug/-xdebug or -debugMode true/false<dd><a name="index-debug_002c-option-533"></a><a name="index-debugMode_002c-option-534"></a>Turns on debugging printout. 
-<br><dt>-debugFile filename or -nameOfDebugFile filename<dd><a name="index-debugFile_002c-option-535"></a><a name="index-nameOfDebugFile_002c-option-536"></a>Sets the name of the file to which XBoard saves debug information
+<br><dt>-debug/-xdebug or -debugMode true/false<dd><a name="index-debug_002c-option-552"></a><a name="index-debugMode_002c-option-553"></a>Turns on debugging printout. 
+<br><dt>-debugFile filename or -nameOfDebugFile filename<dd><a name="index-debugFile_002c-option-554"></a><a name="index-nameOfDebugFile_002c-option-555"></a>Sets the name of the file to which XBoard saves debug information
 (including all communication to and from the engines). 
 A <kbd>%d</kbd> in the given file name (e.g. game%d.debug) will be replaced
 by the unique sequence number of a tournament game,
 so that the debug output of each game will be written on a separate file. 
-<br><dt>-engineDebugOutput number<dd><a name="index-engineDebugOutput_002c-option-537"></a>Specifies how XBoard should handle unsolicited output from the engine,
+<br><dt>-engineDebugOutput number<dd><a name="index-engineDebugOutput_002c-option-556"></a>Specifies how XBoard should handle unsolicited output from the engine,
 with respect to saving it in the debug file. 
 The output is further (hopefully) ignored. 
 If number=0, XBoard refrains from writing such spurious output to the debug file. 
@@ -167,20 +189,20 @@ as the engine itself should have done if it wanted to submit info for inclusion 
 This option is provided for the benefit of applications that use the debug file
 as a source of information, such as the broadcaster of live games TLCV / TLCS. 
 Such applications can be protected from spurious engine output that might otherwise confuse them. 
-<br><dt>-rsh or -remoteShell shell-name<dd><a name="index-rsh_002c-option-538"></a><a name="index-remoteShell_002c-option-539"></a>Name of the command used to run programs remotely. The default
+<br><dt>-rsh or -remoteShell shell-name<dd><a name="index-rsh_002c-option-557"></a><a name="index-remoteShell_002c-option-558"></a>Name of the command used to run programs remotely. The default
 is <samp><span class="file">rsh</span></samp> or <samp><span class="file">remsh</span></samp>, determined when XBoard is
 configured and compiled. 
-<br><dt>-ruser or -remoteUser user-name<dd><a name="index-ruser_002c-option-540"></a><a name="index-remoteUser_002c-option-541"></a>User name on the remote system when running programs with the
+<br><dt>-ruser or -remoteUser user-name<dd><a name="index-ruser_002c-option-559"></a><a name="index-remoteUser_002c-option-560"></a>User name on the remote system when running programs with the
 <code>remoteShell</code>. The default is your local user name. 
-<br><dt>-userName username<dd><a name="index-userName_002c-option-542"></a>Name under which the Human player will be listed in the PGN file. 
+<br><dt>-userName username<dd><a name="index-userName_002c-option-561"></a>Name under which the Human player will be listed in the PGN file. 
 Default is the login name on your local computer. 
-<br><dt>-delayBeforeQuit number<dt>-delayAfterQuit number<dd><a name="index-delayBeforeQuit_002c-option-543"></a><a name="index-delayAfterQuit_002c-option-544"></a>These options specify how long XBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies. 
-<br><dt>-searchMode n<dd><a name="index-searchMode_002c-option-545"></a>The integer n encodes the mode for the &lsquo;<samp><span class="samp">find position</span></samp>&rsquo; function. 
+<br><dt>-delayBeforeQuit number<dt>-delayAfterQuit number<dd><a name="index-delayBeforeQuit_002c-option-562"></a><a name="index-delayAfterQuit_002c-option-563"></a>These options specify how long XBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies. 
+<br><dt>-searchMode n<dd><a name="index-searchMode_002c-option-564"></a>The integer n encodes the mode for the &lsquo;<samp><span class="samp">find position</span></samp>&rsquo; function. 
 Default: 1 (= Exact position match)
-<br><dt>-eloThresholdBoth elo<dt>-eloThresholdAny elo<dd><a name="index-eloThresholdBoth_002c-option-546"></a><a name="index-eloThresholdAny_002c-option-547"></a>Defines a lower limit for the Elo rating, which has to be surpassed
+<br><dt>-eloThresholdBoth elo<dt>-eloThresholdAny elo<dd><a name="index-eloThresholdBoth_002c-option-565"></a><a name="index-eloThresholdAny_002c-option-566"></a>Defines a lower limit for the Elo rating, which has to be surpassed
 before a game will be considered when searching for a board position. 
 Default: 0
-<br><dt>-dateThreshold year<dd><a name="index-dateThreshold_002c-option-548"></a>Only games not played before the given year will be considered when
+<br><dt>-dateThreshold year<dd><a name="index-dateThreshold_002c-option-567"></a>Only games not played before the given year will be considered when
 searching for a board position
 
    </dl>

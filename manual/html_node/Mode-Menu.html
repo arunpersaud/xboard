@@ -34,15 +34,15 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Menus.html#Menus">Menus</a>
 
 <h3 class="section">3.4 Mode Menu</h3>
 
-<p><a name="index-Menu_002c-Mode-54"></a><a name="index-Mode-Menu-55"></a>
+<p><a name="index-Menu_002c-Mode-56"></a><a name="index-Mode-Menu-57"></a>
      <dl>
-<dt>Machine White<dd><a name="index-Machine-White_002c-Menu-Item-56"></a>Tells the chess engine to play White. 
+<dt>Machine White<dd><a name="index-Machine-White_002c-Menu-Item-58"></a>Tells the chess engine to play White. 
 The <kbd>Ctrl-W</kbd> key is a keyboard equivalent. 
-<br><dt>Machine Black<dd><a name="index-Machine-Black_002c-Menu-Item-57"></a>Tells the chess engine to play Black. 
+<br><dt>Machine Black<dd><a name="index-Machine-Black_002c-Menu-Item-59"></a>Tells the chess engine to play Black. 
 The <kbd>Ctrl-B</kbd> key is a keyboard equivalent. 
-<br><dt>Two Machines<dd><a name="index-Two-Machines_002c-Menu-Item-58"></a>Plays a game between two chess engines. 
+<br><dt>Two Machines<dd><a name="index-Two-Machines_002c-Menu-Item-60"></a>Plays a game between two chess engines. 
 The <kbd>Ctrl-T</kbd> key is a keyboard equivalent. 
-<br><dt>Analysis Mode<dd><a name="index-Analysis-Mode_002c-Menu-Item-59"></a><a name="index-null-move-60"></a>XBoard tells the chess engine to start analyzing the current game/position
+<br><dt>Analysis Mode<dd><a name="index-Analysis-Mode_002c-Menu-Item-61"></a><a name="index-null-move-62"></a>XBoard tells the chess engine to start analyzing the current game/position
 and shows you the analysis as you move pieces around. 
 The <kbd>Ctrl-A</kbd> key is a keyboard equivalent. 
 Note: Some chess engines do not support Analysis mode.
@@ -65,26 +65,57 @@ and then step backward through this game to take the moves back.
 Note that you can also click on the clocks to set the opposite
 side to move (adding a so-called &lsquo;<samp><span class="samp">null move</span></samp>&rsquo; to the game).
 
-     <p>The analysis function can also be used when observing games on an ICS
+     <p>You can also tell the engine to exclude some moves from analysis. 
+(Engines that do not support the exclude-moves feature will
+ignore this, however.) 
+The general way to do this is to play the move you want to exclude
+starting with a double click on the piece. 
+When you use drag-drop moving, the piece you grab with a double click
+will also remain on its square, to show you that you are not really
+making the move, but just forbid it from the current position. 
+Playing a thus excluded move a second time will include it again. 
+Excluded moves will be listed as text in a header line in the
+Engine Output window, and you can also re-include them by
+right-clicking them there. 
+This header line will also contain the words 'best' and 'tail';
+right-clicking those will exclude the currently best move,
+or all moves not explicitly listed in the header line. 
+Once you leave the current position all memory of excluded
+moves will be lost when you return there.
+
+     <p>Selecting this menu item while already in &lsquo;<samp><span class="samp">Analysis Mode</span></samp>&rsquo; will
+toggle the participation of the second engine in the analysis. 
+The output of this engine will then be shown in the lower pane
+of the Engine Output window. 
+The analysis function can also be used when observing games on an ICS
 with an engine loaded (zippy mode); the engine then will analyse
-the positions as they occur in the observed game. 
-<br><dt>Analyze Game<dd><a name="index-Analyze-Game_002c-Menu-Item-61"></a>This option subjects the currently loaded game to automatic
+the positions as they occur in the observed game.
+
+     <br><dt>Analyze Game<dd><a name="index-Analyze-Game_002c-Menu-Item-63"></a>This option subjects the currently loaded game to automatic
 analysis by the loaded engine. 
 The <kbd>Ctrl-G</kbd> key is a keyboard equivalent. 
 XBoard will start auto-playing the game from the currently displayed position,
 while the engine is analyzing the current position. 
 The game will be annotated with the results of these analyses. 
 In particlar, the score and depth will be added as a comment,
-and the PV will be added as a variation. 
-The time the engine spends on analyzing each move can be controlled
-through the command-line option &lsquo;<samp><span class="samp">-timeDelay</span></samp>&rsquo;. 
+and the PV will be added as a variation.
+
+     <p>Normally the analysis would stop after reaching the end of the game. 
+But when a game is loaded from a multi-game file
+while &lsquo;<samp><span class="samp">Analyze Game</span></samp>&rsquo; was already switched on,
+the analysis will continue with the next game in the file
+until the end of the file is reached (or you switch to another mode).
+
+     <p>The time the engine spends on analyzing each move can be controlled
+through the command-line option &lsquo;<samp><span class="samp">-timeDelay</span></samp>&rsquo;,
+which can also be set from the &lsquo;<samp><span class="samp">Load Game Options</span></samp>&rsquo; menu dialog. 
 Note: Some chess engines do not support Analysis mode. 
 <br><dt>Edit Game<dd>Duplicate of the item in the Edit menu. 
 Note that &lsquo;<samp><span class="samp">Edit Game</span></samp>&rsquo; is the idle mode of XBoard, and can be used
 to get you out of other modes. E.g. to stop analyzing, stop a game
 between two engines or stop editing a position. 
 <br><dt>Edit Position<dd>Duplicate of the item in the Edit menu. 
-<br><dt>Training<dd><a name="index-Training_002c-Menu-Item-62"></a>Training mode lets you interactively guess the moves of a game for one
+<br><dt>Training<dd><a name="index-Training_002c-Menu-Item-64"></a>Training mode lets you interactively guess the moves of a game for one
 of the players. You guess the next move of the game by playing the
 move on the board. If the move played matches the next move of the
 game, the move is accepted and the opponent's response is auto-played. 
@@ -92,7 +123,7 @@ If the move played is incorrect, an error message is displayed.  You
 can select this mode only while loading a game (that is, after
 selecting &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; from the File menu).  While XBoard is in
 &lsquo;<samp><span class="samp">Training</span></samp>&rsquo; mode, the navigation buttons are disabled. 
-<br><dt>ICS Client<dd><a name="index-ICS-Client_002c-Menu-Item-63"></a>This is the normal mode when XBoard
+<br><dt>ICS Client<dd><a name="index-ICS-Client_002c-Menu-Item-65"></a>This is the normal mode when XBoard
 is connected to a chess server.  If you have moved into
 Edit Game or Edit Position mode, you can select this option to get out.
 
@@ -114,12 +145,12 @@ drag pieces to arbitrary squares while examining on ICC, but you can
 do so in <kbd>bsetup</kbd> mode on FICS.  In addition, the menu commands
 &lsquo;<samp><span class="samp">Forward</span></samp>&rsquo;, &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo;, &lsquo;<samp><span class="samp">Pause</span></samp>&rsquo;, and &lsquo;<samp><span class="samp">Stop Examining</span></samp>&rsquo;
 have special functions in this mode; see below. 
-<br><dt>Machine Match<dd><a name="index-Machine-match_002c-Menu-Item-64"></a>Starts a match between two chess programs,
+<br><dt>Machine Match<dd><a name="index-Machine-match_002c-Menu-Item-66"></a>Starts a match between two chess programs,
 with a number of games and other parameters set through
 the &lsquo;<samp><span class="samp">Match Options</span></samp>&rsquo; menu dialog. 
 When a match is already running, selecting this item will make
 XBoard drop out of match mode after the current game finishes. 
-<br><dt>Pause<dd><a name="index-Pause_002c-Menu-Item-65"></a>Pauses updates to the board, and if you are playing against a chess engine,
+<br><dt>Pause<dd><a name="index-Pause_002c-Menu-Item-67"></a>Pauses updates to the board, and if you are playing against a chess engine,
 also pauses your clock. To continue, select &lsquo;<samp><span class="samp">Pause</span></samp>&rsquo; again, and the
 display will automatically update to the latest position. 
 The &lsquo;<samp><span class="samp">P</span></samp>&rsquo; button and keyboard <kbd>Pause</kbd> key are equivalents.

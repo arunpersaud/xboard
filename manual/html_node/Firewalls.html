@@ -48,11 +48,6 @@ command-line options as follows:
 
 <pre class="example">     xboard -ics -icshost firewall.example.com -icsport 23
 </pre>
-   <p class="noindent">Or in your <samp><span class="file">.Xresources</span></samp> file:
-
-<pre class="example">     XBoard*internetChessServerHost: firewall.example.com
-     XBoard*internetChessServerPort: 23
-</pre>
    <p class="noindent">Then when you run XBoard in ICS mode, you will be prompted
 to log in to the firewall host. This works because port 23 is the
 standard telnet login service. Do so, then telnet to ICS, using a
@@ -81,12 +76,7 @@ command-line options as follows:
 
 <pre class="example">     xboard -ics -gateway rsh.example.com -icshost chessclub.com
 </pre>
-   <p class="noindent">Or in your <samp><span class="file">.Xresources</span></samp> file:
-
-<pre class="example">     XBoard*gateway: rsh.example.com
-     XBoard*internetChessServerHost: chessclub.com
-</pre>
-   <p>Then when you run XBoard in ICS mode, it will connect to
+   <p class="noindent">Then when you run XBoard in ICS mode, it will connect to
 the ICS by using <samp><span class="file">rsh</span></samp> to run the command
 &lsquo;<samp><span class="samp">telnet chessclub.com 5000</span></samp>&rsquo; on host &lsquo;<samp><span class="samp">rsh.example.com</span></samp>&rsquo;.
 
@@ -99,11 +89,6 @@ In this case set command line options as follows:
 
 <pre class="example">     xboard -ics -telnet -telnetProgram ptelnet
 </pre>
-   <p class="noindent">Or in your <samp><span class="file">.Xresources</span></samp> file:
-
-<pre class="example">     XBoard*useTelnet: true
-     XBoard*telnetProgram: ptelnet
-</pre>
    <p class="noindent">Then when you run XBoard in ICS mode, it will issue the
 command &lsquo;<samp><span class="samp">ptelnet chessclub.com 5000</span></samp>&rsquo; to connect to the ICS.
 
@@ -111,21 +96,13 @@ command &lsquo;<samp><span class="samp">ptelnet chessclub.com 5000</span></samp>
 that is, your <samp><span class="file">ptelnet</span></samp> program doesn't let you connect to
 alternative ports. As noted above, your chess server may allow you to
 connect on port 23 instead.  In that case, just add the option
-&lsquo;<samp><span class="samp">-icsport ""</span></samp>&rsquo; to the above command, or add
-&lsquo;<samp><span class="samp">XBoard*internetChessServerPort:</span></samp>&rsquo; to your <samp><span class="file">.Xresources</span></samp> file. 
+&lsquo;<samp><span class="samp">-icsport ""</span></samp>&rsquo; to the above command. 
 But if your chess server doesn't let you connect on port 23, you will have
 to find some other host outside the firewall and hop through it. For
 instance, suppose you have a shell account at &lsquo;<samp><span class="samp">foo.edu</span></samp>&rsquo;. Set
 command line options as follows:
 
 <pre class="example">     xboard -ics -telnet -telnetProgram ptelnet -icshost foo.edu -icsport ""
-</pre>
-   <p class="noindent">Or in your <samp><span class="file">.Xresources</span></samp> file:
-
-<pre class="example">     XBoard*useTelnet: true
-     XBoard*telnetProgram: ptelnet
-     XBoard*internetChessServerHost: foo.edu
-     XBoard*internetChessServerPort:
 </pre>
    <p class="noindent">Then when you run XBoard in ICS mode, it will issue the
 command &lsquo;<samp><span class="samp">ptelnet foo.edu</span></samp>&rsquo; to connect to your account at

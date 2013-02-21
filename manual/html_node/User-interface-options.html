@@ -34,14 +34,24 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <h3 class="section">4.6 User interface options</h3>
 
-<p><a name="index-User-interface-options-418"></a><a name="index-Options_002c-User-interface-419"></a>
+<p><a name="index-User-interface-options-429"></a><a name="index-Options_002c-User-interface-430"></a>
      <dl>
-<dt>-display<dt>-geometry<dt>-iconic<dt>-name<dd><a name="index-display_002c-option-420"></a><a name="index-geometry_002c-option-421"></a><a name="index-iconic_002c-option-422"></a><a name="index-resource-name_002c-option-423"></a>These and most other standard Xt options are accepted. 
-<br><dt>-noGUI<dd><a name="index-noGUI_002c-option-424"></a>Suppresses all GUI functions of XBoard
+<dt>-display<dt>-geometry<dt>-iconic<dt>-name<dd><a name="index-display_002c-option-431"></a><a name="index-geometry_002c-option-432"></a><a name="index-iconic_002c-option-433"></a><a name="index-resource-name_002c-option-434"></a>These and most other standard Xt options are accepted. 
+<br><dt>-noGUI<dd><a name="index-noGUI_002c-option-435"></a>Suppresses all GUI functions of XBoard
 (to speed up automated ultra-fast engine-engine games, which you don't want to watch). 
 There will be no board or clock updates, no printing of moves,
 and no update of the icon on the task bar in this mode. 
-<br><dt>-recentEngines number<dt>-recentEngineList list<dd><a name="index-recentEngines_002c-option-425"></a><a name="index-recentEngineList_002c-option-426"></a>When the number is larger than zero, it determines how many recently
+<br><dt>-logoSize N<dd><a name="index-logoSize_002c-option-436"></a>This option controls the drawing of player logos next to the clocks. 
+The integer N specifies the width of the logo in pixels;
+the logo height will always be half the width. 
+When N = 0, no logos will be diplayed. 
+Default: 0. 
+<br><dt>-firstLogo imagefile<dt>-secondLogo imagefile<dd><a name="index-firstLogo_002c-option-437"></a><a name="index-secondLogo_002c-option-438"></a>Specify the images to be used as player logos when <code>logoSize</code>
+is non-zero, next to the white and black clocks, respectively. 
+<br><dt>-autoLogo true/false<br><dt>-logoDir filename<dd><a name="index-autoLogo_002c-option-439"></a><a name="index-logoDir_002c-option-440"></a>When <code>autoLogo</code> is set, XBoard will search for a PNG image file
+with the name of the engine or ICS in the directory specified
+by <code>logoDir</code>. 
+<br><dt>-recentEngines number<dt>-recentEngineList list<dd><a name="index-recentEngines_002c-option-441"></a><a name="index-recentEngineList_002c-option-442"></a>When the number is larger than zero, it determines how many recently
 used engines will be appended at the bottom of the &lsquo;<samp><span class="samp">Engines</span></samp>&rsquo; menu. 
 The engines will be saved in your settings file as the option
 <code>recentEngineList</code>, by their nicknames,
@@ -51,37 +61,34 @@ the last one is discarded.
 Changes in the list will only become visible the next session,
 provided you saved the settings. 
 Default: 6. 
-<br><dt>-oneClickMove true/false<dd><a name="index-oneClickMove_002c-option-427"></a>When set, this option allows you to enter moves by only clicking the to-
+<br><dt>-oneClickMove true/false<dd><a name="index-oneClickMove_002c-option-443"></a>When set, this option allows you to enter moves by only clicking the to-
 or from-square, when only a single legal move to or from that square
 is possible. 
 Double-clicking a piece (or clicking an already selected piece)
 will instruct that piece to make the only capture it can legally do. 
 Default: false. 
-<br><dt>-movesound/-xmovesound or -ringBellAfterMoves true/false<dd><a name="index-movesound_002c-option-428"></a><a name="index-bell_002c-option-429"></a><a name="index-ringBellAfterMoves_002c-option-430"></a>Sets the Move Sound menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
+<br><dt>-movesound/-xmovesound or -ringBellAfterMoves true/false<dd><a name="index-movesound_002c-option-444"></a><a name="index-bell_002c-option-445"></a><a name="index-ringBellAfterMoves_002c-option-446"></a>Sets the Move Sound menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
 For compatibility with old XBoard versions, -bell/-xbell are also
 accepted as abbreviations for this option. 
-<br><dt>-exit/-xexit or -popupExitMessage true/false<dd><a name="index-exit_002c-option-431"></a><a name="index-popupExitMessage_002c-option-432"></a>Sets the Popup Exit Message menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
-<br><dt>-popup/-xpopup or -popupMoveErrors true/false<dd><a name="index-popup_002c-option-433"></a><a name="index-popupMoveErrors_002c-option-434"></a>Sets the Popup Move Errors menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
-<br><dt>-queen/-xqueen or -alwaysPromoteToQueen true/false<dd><a name="index-queen_002c-option-435"></a><a name="index-alwaysPromoteToQueen_002c-option-436"></a>Sets the Always Queen menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
-<br><dt>-sweepPromotions true/false<dd><a name="index-sweepPromotion_002c-option-437"></a>Sets the &lsquo;<samp><span class="samp">Almost Always Promote to Queen</span></samp>&rsquo; menu option. 
+<br><dt>-exit/-xexit or -popupExitMessage true/false<dd><a name="index-exit_002c-option-447"></a><a name="index-popupExitMessage_002c-option-448"></a>Sets the Popup Exit Message menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
+<br><dt>-popup/-xpopup or -popupMoveErrors true/false<dd><a name="index-popup_002c-option-449"></a><a name="index-popupMoveErrors_002c-option-450"></a>Sets the Popup Move Errors menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
+<br><dt>-queen/-xqueen or -alwaysPromoteToQueen true/false<dd><a name="index-queen_002c-option-451"></a><a name="index-alwaysPromoteToQueen_002c-option-452"></a>Sets the Always Queen menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
+<br><dt>-sweepPromotions true/false<dd><a name="index-sweepPromotion_002c-option-453"></a>Sets the &lsquo;<samp><span class="samp">Almost Always Promote to Queen</span></samp>&rsquo; menu option. 
 See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
-<br><dt>-legal/-xlegal or -testLegality true/false<dd><a name="index-legal_002c-option-438"></a><a name="index-testLegality_002c-option-439"></a>Sets the Test Legality menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
-<br><dt>-size or -boardSize (sizeName | n1,n2,n3,n4,n5,n6,n7)<dd><a name="index-size_002c-option-440"></a><a name="index-boardSize_002c-option-441"></a><a name="index-board-size-442"></a>Determines how large the board will be, by selecting the pixel size
+<br><dt>-legal/-xlegal or -testLegality true/false<dd><a name="index-legal_002c-option-454"></a><a name="index-testLegality_002c-option-455"></a>Sets the Test Legality menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
+<br><dt>-size or -boardSize (sizeName | n1,n2,n3,n4,n5,n6,n7)<dd><a name="index-size_002c-option-456"></a><a name="index-boardSize_002c-option-457"></a><a name="index-board-size-458"></a>Determines how large the board will be, by selecting the pixel size
 of the pieces and setting a few related parameters. 
 The sizeName can be one of: Titanic, giving 129x129 pixel pieces,
 Colossal 116x116, Giant 108x108, Huge 95x95, Big 87x87, Large 80x80, Bulky 72x72,
 Medium 64x64, Moderate 58x58, Average 54x54, Middling 49x49, Mediocre
 45x45, Small 40x40, Slim 37x37, Petite 33x33, Dinky 29x29, Teeny 25x25,
 or Tiny 21x21. 
-Orthodox pieces of all these sizes are built into XBoard. 
-Other sizes can
-be used if you have them; see the pixmapDirectory and bitmapDirectory
-options. 
-Complete sets of un-orthodox pieces are only provided in sizes
-Bulky, Middling and (to a lesser extent) Petite;
-Archbishop, Marshall and Amazon are also available in all sizes between
-Bulky and Petite. 
-When no bitmap is available, the piece will be displayed as Amazon or King. 
+Xboard installs with a set of scalable (svg) piece images,
+which it scales to any of the requested sizes. 
+The square size can further be continuously scaled by sizing the board window,
+but this only adapts the size of the pieces,
+and has no effect on the width of the grid lines or the font choice
+(both of which would depend on he selected boardSize). 
 The default depends on the size of your screen; it is approximately the
 largest size that will fit without clipping.
 
@@ -103,16 +110,16 @@ If smallLayout is 1 and <code>titleInWindow</code> is true,
 the window layout is rearranged to make more room for the title. 
 If tinyLayout is 1, the labels on the menu bar are abbreviated
 to one character each and the buttons in the button bar are made narrower. 
-<br><dt>-overrideLineGap n<dd><a name="index-overrideLineGap_002c-option-443"></a>When n &gt;= 0, this forces the width of the black border between squares
+<br><dt>-overrideLineGap n<dd><a name="index-overrideLineGap_002c-option-459"></a>When n &gt;= 0, this forces the width of the black border between squares
 to n pixels for any board size. Mostly used to suppress the grid
 entirely by setting n = 0, e.g. in xiangqi or just getting a prettier
 picture. When n &lt; 0 this the size-dependent width of the grid lines
 is used. Default: -1. 
-<br><dt>-coords/-xcoords or -showCoords true/false<dd><a name="index-coords_002c-option-444"></a><a name="index-showCoords_002c-option-445"></a>Sets the Show Coords menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
+<br><dt>-coords/-xcoords or -showCoords true/false<dd><a name="index-coords_002c-option-460"></a><a name="index-showCoords_002c-option-461"></a>Sets the Show Coords menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
 The <code>coordFont</code> option specifies what font to use. 
-<br><dt>-autoraise/-xautoraise or -autoRaiseBoard true/false<dd><a name="index-autoraise_002c-option-446"></a><a name="index-autoRaiseBoard_002c-option-447"></a>Sets the Auto Raise Board menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
-<br><dt>-autoflip/-xautoflip or -autoFlipView true/false<dd><a name="index-autoflip_002c-option-448"></a><a name="index-autoFlipView_002c-option-449"></a>Sets the Auto Flip View menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
-<br><dt>-flip/-xflip or -flipView true/false<dd><a name="index-flip_002c-option-450"></a><a name="index-flipView_002c-option-451"></a>If Auto Flip View is not set, or if you are observing but not participating
+<br><dt>-autoraise/-xautoraise or -autoRaiseBoard true/false<dd><a name="index-autoraise_002c-option-462"></a><a name="index-autoRaiseBoard_002c-option-463"></a>Sets the Auto Raise Board menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
+<br><dt>-autoflip/-xautoflip or -autoFlipView true/false<dd><a name="index-autoflip_002c-option-464"></a><a name="index-autoFlipView_002c-option-465"></a>Sets the Auto Flip View menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
+<br><dt>-flip/-xflip or -flipView true/false<dd><a name="index-flip_002c-option-466"></a><a name="index-flipView_002c-option-467"></a>If Auto Flip View is not set, or if you are observing but not participating
 in a game, then the positioning of the board at the start of each game
 depends on the flipView option.  If flipView is false (the default),
 the board is positioned so that the white pawns move from the bottom to the
@@ -120,28 +127,28 @@ top; if true, the black pawns move from the bottom to the top.
 In any case, the Flip menu option (see <a href="Options-Menu.html#Options-Menu">Options Menu</a>)
 can be used to flip the board after
 the game starts. 
-<br><dt>-title/-xtitle or -titleInWindow true/false<dd><a name="index-title_002c-option-452"></a><a name="index-titleInWindow_002c-option-453"></a>If this option is true, XBoard displays player names (for ICS
+<br><dt>-title/-xtitle or -titleInWindow true/false<dd><a name="index-title_002c-option-468"></a><a name="index-titleInWindow_002c-option-469"></a>If this option is true, XBoard displays player names (for ICS
 games) and game file names (for &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo;) inside its main
 window. If the option is false (the default), this information is
 displayed only in the window banner. You probably won't want to
 set this option unless the information is not showing up in the
 banner, as happens with a few X window managers. 
-<br><dt>-buttons/-xbuttons or -showButtonBar True/False<dd><a name="index-buttons_002c-option-454"></a><a name="index-showButtonBar_002c-option-455"></a>If this option is False, xboard omits the [&lt;&lt;] [&lt;] [P] [&gt;] [&gt;&gt;] button
+<br><dt>-buttons/-xbuttons or -showButtonBar True/False<dd><a name="index-buttons_002c-option-470"></a><a name="index-showButtonBar_002c-option-471"></a>If this option is False, xboard omits the [&lt;&lt;] [&lt;] [P] [&gt;] [&gt;&gt;] button
 bar from the window, allowing the message line to be wider.  You can
 still get the functions of these buttons using the menus or their keyboard
 shortcuts.  Default: true. 
-<br><dt>-evalZoom factor<dd><a name="index-evalZoom_002c-option-456"></a>The score interval (-1,1) is blown up on the vertical axis of
+<br><dt>-evalZoom factor<dd><a name="index-evalZoom_002c-option-472"></a>The score interval (-1,1) is blown up on the vertical axis of
 the Evaluation Graph by the given factor. 
 Default: 1
-<br><dt>-evalThreshold n<dd><a name="index-evalThreshold_002c-option-457"></a>Score below n (centiPawn) are plotted as 0 in the Evaluation Graph. 
+<br><dt>-evalThreshold n<dd><a name="index-evalThreshold_002c-option-473"></a>Score below n (centiPawn) are plotted as 0 in the Evaluation Graph. 
 Default: 25
-<br><dt>-mono/-xmono or -monoMode true/false<dd><a name="index-mono_002c-option-458"></a><a name="index-monoMode_002c-option-459"></a>Determines whether XBoard displays its pieces and squares with
+<br><dt>-mono/-xmono or -monoMode true/false<dd><a name="index-mono_002c-option-474"></a><a name="index-monoMode_002c-option-475"></a>Determines whether XBoard displays its pieces and squares with
 two colors (true) or four (false). You shouldn't have to
 specify <code>monoMode</code>; XBoard will determine if it is necessary. 
-<br><dt>-showTargetSquares true/false<dd><a name="index-showTargetSquares_002c-option-460"></a>Determines whether XBoard can highlight the squares a piece has
+<br><dt>-showTargetSquares true/false<dd><a name="index-showTargetSquares_002c-option-476"></a>Determines whether XBoard can highlight the squares a piece has
 legal moves to, when you grab that piece with the mouse. 
 Default: false. 
-<br><dt>-flashCount count<dt>-flashRate rate<dt>-flash/-xflash<dd><a name="index-flashCount_002c-option-461"></a><a name="index-flashRate_002c-option-462"></a><a name="index-flash_002c-option-463"></a><a name="index-xflash_002c-option-464"></a>These options enable flashing of pieces when they
+<br><dt>-flashCount count<dt>-flashRate rate<dt>-flash/-xflash<dd><a name="index-flashCount_002c-option-477"></a><a name="index-flashRate_002c-option-478"></a><a name="index-flash_002c-option-479"></a><a name="index-xflash_002c-option-480"></a>These options enable flashing of pieces when they
 land on their destination square. 
 <code>flashCount</code>
 tells XBoard how many times to flash a piece after it
@@ -154,33 +161,33 @@ sets flashCount to 3.
 <code>xflash</code>
 sets flashCount to 0. 
 Defaults:  flashCount=0 (no flashing), flashRate=5. 
-<br><dt>-highlight/-xhighlight or -highlightLastMove true/false<dd><a name="index-highlight_002c-option-465"></a><a name="index-highlightLastMove_002c-option-466"></a>Sets the Highlight Last Move menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
-<br><dt>-highlightMoveWithArrow true/false<dd><a name="index-highlight-Arrow_002c-option-467"></a><a name="index-highlightMoveWithArrow_002c-option-468"></a>Sets the Highlight with Arrow menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
-<br><dt>-blind/-xblind or -blindfold true/false<dd><a name="index-blind_002c-option-469"></a><a name="index-blindfold_002c-option-470"></a>Sets the Blindfold menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
-<br><dt>-periodic/-xperiodic or -periodicUpdates true/false<dd><a name="index-periodic_002c-option-471"></a><a name="index-periodicUpdates_002c-option-472"></a>Controls updating of current move andnode counts in analysis mode. Default: true. 
-<br><dt>-fSAN<dt>-sSAN<dd><a name="index-fSAN_002c-option-473"></a><a name="index-sSAN_002c-option-474"></a>Causes the PV in thinking output of the mentioned engine to be converted
+<br><dt>-highlight/-xhighlight or -highlightLastMove true/false<dd><a name="index-highlight_002c-option-481"></a><a name="index-highlightLastMove_002c-option-482"></a>Sets the Highlight Last Move menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
+<br><dt>-highlightMoveWithArrow true/false<dd><a name="index-highlight-Arrow_002c-option-483"></a><a name="index-highlightMoveWithArrow_002c-option-484"></a>Sets the Highlight with Arrow menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
+<br><dt>-blind/-xblind or -blindfold true/false<dd><a name="index-blind_002c-option-485"></a><a name="index-blindfold_002c-option-486"></a>Sets the Blindfold menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
+<br><dt>-periodic/-xperiodic or -periodicUpdates true/false<dd><a name="index-periodic_002c-option-487"></a><a name="index-periodicUpdates_002c-option-488"></a>Controls updating of current move andnode counts in analysis mode. Default: true. 
+<br><dt>-fSAN<dt>-sSAN<dd><a name="index-fSAN_002c-option-489"></a><a name="index-sSAN_002c-option-490"></a>Causes the PV in thinking output of the mentioned engine to be converted
 to SAN before it is further processed. 
 Warning: this might lose engine output not understood by the parser,
 and uses a lot of CPU power. 
 Default: the PV is displayed exactly as the engine produced it. 
-<br><dt>-showEvalInMoveHistory true/false<dd><a name="index-showEvalInMoveHistory_002c-option-475"></a>Controls whether the evaluation scores and search depth of engine moves
+<br><dt>-showEvalInMoveHistory true/false<dd><a name="index-showEvalInMoveHistory_002c-option-491"></a>Controls whether the evaluation scores and search depth of engine moves
 are displayed with the move in the move-history window. 
 Default: true. 
-<br><dt>-clockFont font<dd><a name="index-clockFont_002c-option-476"></a><a name="index-Font_002c-clock-477"></a>The font used for the clocks. If the option value is a pattern
+<br><dt>-clockFont font<dd><a name="index-clockFont_002c-option-492"></a><a name="index-Font_002c-clock-493"></a>The font used for the clocks. If the option value is a pattern
 that does not specify the font size, XBoard tries to choose an
 appropriate font for the board size being used. 
 Default: -*-helvetica-bold-r-normal&ndash;*-*-*-*-*-*-*-*. 
-<br><dt>-coordFont font<dd><a name="index-coordFont_002c-option-478"></a><a name="index-Font_002c-coordinates-479"></a>The font used for rank and file coordinate labels if <code>showCoords</code>
+<br><dt>-coordFont font<dd><a name="index-coordFont_002c-option-494"></a><a name="index-Font_002c-coordinates-495"></a>The font used for rank and file coordinate labels if <code>showCoords</code>
 is true. If the option value is a pattern that does not specify
 the font size, XBoard tries to choose an appropriate font for
 the board size being used. 
 Default: -*-helvetica-bold-r-normal&ndash;*-*-*-*-*-*-*-*. 
-<br><dt>-messageFont font<dd><a name="index-messageFont_002c-option-480"></a><a name="index-Font_002c-message-481"></a>The font used for popup dialogs, menus, comments, etc. 
+<br><dt>-messageFont font<dd><a name="index-messageFont_002c-option-496"></a><a name="index-Font_002c-message-497"></a>The font used for popup dialogs, menus, comments, etc. 
 If the option value is a pattern that does not specify
 the font size, XBoard tries to choose an appropriate font for
 the board size being used. 
 Default: -*-helvetica-medium-r-normal&ndash;*-*-*-*-*-*-*-*. 
-<br><dt>-fontSizeTolerance tol<dd><a name="index-fontSizeTolerance_002c-option-482"></a>In the font selection algorithm, a nonscalable font will be preferred
+<br><dt>-fontSizeTolerance tol<dd><a name="index-fontSizeTolerance_002c-option-498"></a>In the font selection algorithm, a nonscalable font will be preferred
 over a scalable font if the nonscalable font's size differs
 by <code>tol</code> pixels
 or less from the desired size.  A value of -1 will force
@@ -188,50 +195,17 @@ a scalable font to always be used if available; a value of 0 will
 use a nonscalable font only if it is exactly the right size;
 a large value (say 1000) will force a nonscalable font to always be
 used if available.  Default: 4. 
-<br><dt>-bm or -bitmapDirectory dir<dt>-pixmap or -pixmapDirectory dir<dd><a name="index-bm_002c-option-483"></a><a name="index-bitmapDirectory_002c-option-484"></a><a name="index-pixmap_002c-option-485"></a><a name="index-pixmapDirectory_002c-option-486"></a>These options control what piece images xboard uses.  The XBoard
-distribution includes one set of pixmap pieces in xpm format, in the
-directory <samp><span class="file">pixmaps</span></samp>, and one set of bitmap pieces in xbm format,
-in the directory <samp><span class="file">bitmaps</span></samp>.  Pixmap
-pieces give a better appearance on the screen: the white pieces have
-dark borders, and the black pieces have opaque internal details.  With
-bitmaps, neither piece color has a border, and the internal details
-are transparent; you see the square color or other background color
-through them.
+<br><dt>-pid or -pieceImageDirectory dir<dd><a name="index-pid_002c-option-499"></a><a name="index-pieceImageDirectory_002c-option-500"></a>This options control what piece images xboard uses. 
+XBoard will look in the specified directory for an image in png
+or svg format for every piece type, with names like BlackQueen.svg,
+WhiteKnight.svg etc. 
+When neither of these is found (or no valid directory is specified)
+XBoard will use the svg piece that was installed with it
+(from the source-tree directory &lsquo;<samp><span class="samp">svg</span></samp>&rsquo;). 
+Both svg and png images will be scaled by XBoard to the required size,
+but the png pieces lose much in quality when scaled too much.
 
-     <p>If XBoard is configured and compiled on a system that includes libXpm,
-the X pixmap library, the xpm pixmap pieces are compiled in as the
-default.  A different xpm piece set can be selected at runtime with
-the <code>pixmapDirectory</code> option, or a bitmap piece set can be selected
-with the <code>bitmapDirectory</code> option.
-
-     <p>If XBoard is configured and compiled on a system that does not include
-libXpm (or the <code>--disable-xpm</code> option is given to the configure
-program), the bitmap pieces are compiled in as the default.  It is not
-possible to use xpm pieces in this case, but pixmap pieces in another
-format called "xim" can be used by giving the <code>pixmapDirectory</code> option. 
-Or again, a different bitmap piece set can be selected with the
-<code>bitmapDirectory</code> option.
-
-     <p>Files in the <code>bitmapDirectory</code> must be named as follows:
-The first character of a piece bitmap name gives the piece it
-represents (&lsquo;<samp><span class="samp">p</span></samp>&rsquo;, &lsquo;<samp><span class="samp">n</span></samp>&rsquo;, &lsquo;<samp><span class="samp">b</span></samp>&rsquo;, &lsquo;<samp><span class="samp">r</span></samp>&rsquo;, &lsquo;<samp><span class="samp">q</span></samp>&rsquo;, or &lsquo;<samp><span class="samp">k</span></samp>&rsquo;),
-the next characters give the size in pixels, the
-following character indicates whether the piece is
-solid or outline (&lsquo;<samp><span class="samp">s</span></samp>&rsquo; or &lsquo;<samp><span class="samp">o</span></samp>&rsquo;),
-and the extension is &lsquo;<samp><span class="samp">.bm</span></samp>&rsquo;. 
-For example, a solid 80x80 knight would be named <samp><span class="file">n80s.bm</span></samp>. 
-The outline bitmaps are used only in monochrome mode. 
-If bitmap pieces are compiled in and the bitmapDirectory is missing
-some files, the compiled in pieces are used instead.
-
-     <p>If the bitmapDirectory option is given,
-it is also possible to replace xboard's icons and menu checkmark,
-by supplying files named <samp><span class="file">icon_white.bm</span></samp>, <samp><span class="file">icon_black.bm</span></samp>, and
-<samp><span class="file">checkmark.bm</span></samp>.
-
-     <p>For more information about pixmap pieces and how to get additional
-sets, see <a href="zic2xpm.html#zic2xpm">zic2xpm</a> below. 
-<br><dt>-whitePieceColor color<dt>-blackPieceColor color<dt>-lightSquareColor color<dt>-darkSquareColor color<dt>-highlightSquareColor color<dt>-preoveHighlightColor color<dt>-lowTimeWarningColor color<dd><a name="index-Colors-487"></a><a name="index-whitePieceColor_002c-option-488"></a><a name="index-blackPieceColor_002c-option-489"></a><a name="index-lightSquareColor_002c-option-490"></a><a name="index-darkSquareColor_002c-option-491"></a><a name="index-highlightSquareColor_002c-option-492"></a><a name="index-premoveHighlightColor_002c-option-493"></a><a name="index-lowTimeWarningColor_002c-option-494"></a>Colors to use for the pieces, squares, and square highlights. 
+     <br><dt>-whitePieceColor color<dt>-blackPieceColor color<dt>-lightSquareColor color<dt>-darkSquareColor color<dt>-highlightSquareColor color<dt>-preoveHighlightColor color<dt>-lowTimeWarningColor color<dd><a name="index-Colors-501"></a><a name="index-whitePieceColor_002c-option-502"></a><a name="index-blackPieceColor_002c-option-503"></a><a name="index-lightSquareColor_002c-option-504"></a><a name="index-darkSquareColor_002c-option-505"></a><a name="index-highlightSquareColor_002c-option-506"></a><a name="index-premoveHighlightColor_002c-option-507"></a><a name="index-lowTimeWarningColor_002c-option-508"></a>Colors to use for the pieces, squares, and square highlights. 
 Defaults:
 
      <pre class="example">          -whitePieceColor       #FFFFCC
@@ -252,33 +226,44 @@ Defaults:
           -premoveHighlightColor gray70
           -lowTimeWarningColor   gray70
 </pre>
-     <br><dt>-useBoardTexture true/false<dt>-liteBackTextureFile filename<dt>-darkBackTextureFile filename<dd><a name="index-useBoardTexture_002c-option-495"></a><a name="index-liteBackTextureFile_002c-option-496"></a><a name="index-darkBackTextureFile_002c-option-497"></a>Indicate the pixmap files to be used for drawing the board squares,
+     <p>The PieceColor options only work properly if the image files
+defining the pieces were pure black &amp; white
+(possibly anti-aliased to produce gray scales
+and semi-transparancy),
+like the pieces images that come with the install. 
+Their effect on colored pieces is undefined. 
+The SquareColor option only have an effect
+when no board textures are used. 
+<br><dt>-trueColors true/false<dd><a name="index-trueColors_002c-option-509"></a>When set, this option suppresses the effect  of the
+PieceColor options mentioned above. 
+This is recommended for images that are already colored. 
+<br><dt>-useBoardTexture true/false<dt>-liteBackTextureFile filename<dt>-darkBackTextureFile filename<dd><a name="index-useBoardTexture_002c-option-510"></a><a name="index-liteBackTextureFile_002c-option-511"></a><a name="index-darkBackTextureFile_002c-option-512"></a>Indicate the png image files to be used for drawing the board squares,
 and if they should be used rather than using simple colors. 
 The algorithm for cutting squares out of a given bitmap is such that
 the picture is perfectly reproduced when a bitmap the size of
 the complete board is given. 
 Default: false and ""
-<br><dt>-drag/-xdrag or -animateDragging true/false<dd><a name="index-drag_002c-option-498"></a><a name="index-animateDragging_002c-option-499"></a>Sets the Animate Dragging menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
-<br><dt>-animate/-xanimate or -animateMoving true/false<dd><a name="index-animate_002c-option-500"></a><a name="index-animateMoving_002c-option-501"></a>Sets the Animate Moving menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
-<br><dt>-animateSpeed n<dd><a name="index-g_t_002danimateSpeed_002c-option-502"></a>Number of milliseconds delay between each animation frame when Animate
+<br><dt>-drag/-xdrag or -animateDragging true/false<dd><a name="index-drag_002c-option-513"></a><a name="index-animateDragging_002c-option-514"></a>Sets the Animate Dragging menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
+<br><dt>-animate/-xanimate or -animateMoving true/false<dd><a name="index-animate_002c-option-515"></a><a name="index-animateMoving_002c-option-516"></a>Sets the Animate Moving menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
+<br><dt>-animateSpeed n<dd><a name="index-g_t_002danimateSpeed_002c-option-517"></a>Number of milliseconds delay between each animation frame when Animate
 Moves is on. 
-<br><dt>-autoDisplayComment true/false<dt>-autoDisplayTags true/false<dd><a name="index-g_t_002dautoDisplayComment_002c-option-503"></a><a name="index-g_t_002dautoDisplayTags_002c-option-504"></a>If set to true, these options cause the window with the move comments,
+<br><dt>-autoDisplayComment true/false<dt>-autoDisplayTags true/false<dd><a name="index-g_t_002dautoDisplayComment_002c-option-518"></a><a name="index-g_t_002dautoDisplayTags_002c-option-519"></a>If set to true, these options cause the window with the move comments,
 and the window with PGN tags, respectively, to pop up automatically when
 such tags or comments are encountered during the replaying a stored or
 loaded game.  Default: true. 
-<br><dt>-pasteSelection true/false<dd><a name="index-g_t_002dpasteSelection_002c-option-505"></a>If this option is set to true, the Paste Position and Paste Game
+<br><dt>-pasteSelection true/false<dd><a name="index-g_t_002dpasteSelection_002c-option-520"></a>If this option is set to true, the Paste Position and Paste Game
 options paste from the currently selected text.  If false, they paste
 from the clipboard.  Default: false. 
-<br><dt>-autoCopyPV true|false<dd><a name="index-autoCopyPV_002c-option-506"></a>When this option is set, the position displayed on the board when
+<br><dt>-autoCopyPV true|false<dd><a name="index-autoCopyPV_002c-option-521"></a>When this option is set, the position displayed on the board when
 you terminate a PV walk
 (initiated by a right-click on board or engine-output window)
 will be automatically put on the clipboard as FEN. 
 Default: false. 
-<br><dt>-dropMenu true|false<dd><a name="index-dropMenu_002c-option-507"></a>This option allows you to emulate old behavior,
+<br><dt>-dropMenu true|false<dd><a name="index-dropMenu_002c-option-522"></a>This option allows you to emulate old behavior,
 where the right mouse button brings up the (now deprecated) drop menu
 rather than displaying the position at the end of the principal variation. 
 Default: False. 
-<br><dt>-pieceMenu true|false<dd><a name="index-pieceMenu_002c-option-508"></a>This option allows you to emulate old behavior,
+<br><dt>-pieceMenu true|false<dd><a name="index-pieceMenu_002c-option-523"></a>This option allows you to emulate old behavior,
 where the right mouse button brings up the (now deprecated) piece menu
 in Edit Position mode. 
 From this menu you can select the piece to put on the square you
@@ -287,15 +272,19 @@ or select items such as <kbd>clear board</kbd>.
 You can also <kbd>promote</kbd> or <kbd>demote</kbd> a clicked piece to convert
 it into an unorthodox piece that is not directly in the menu,
 or give the move to <kbd>black</kbd> or <kbd>white</kbd>. 
-<br><dt>-variations true|false<dd><a name="index-variations_002c-option-509"></a>When this option is on, you can start new variations in Edit Game or
+<br><dt>-variations true|false<dd><a name="index-variations_002c-option-524"></a>When this option is on, you can start new variations in Edit Game or
 Analyze mode by holding the Shift key down while entering a move. 
 When it is off, the Shift key will be ignored. 
 Default: False. 
-<br><dt>-absoluteAnalysisScores true|false<dd><a name="index-absoluteAnalysisScores_002c-option-510"></a>When true, scores on the Engine Output window during analysis
+<br><dt>-appendPV true|false<dd><a name="index-appendPV_002c-option-525"></a>When this option is on, right-clicking a PV in the Engine Output window
+will play the first move of that PV in Analyze mode,
+or as many moves as you walk through by moving the mouse. 
+Default: False. 
+<br><dt>-absoluteAnalysisScores true|false<dd><a name="index-absoluteAnalysisScores_002c-option-526"></a>When true, scores on the Engine Output window during analysis
 will be printed from the white point-of-view, rather than the
 side-to-move point-of-view. 
 Default: False. 
-<br><dt>-scoreWhite true|false<dd><a name="index-scoreWhite_002c-option-511"></a>When true, scores will always be printed from the white point-of-view,
+<br><dt>-scoreWhite true|false<dd><a name="index-scoreWhite_002c-option-527"></a>When true, scores will always be printed from the white point-of-view,
 rather than the side-to-move point-of-view. 
 Default: False. 
 </dl>
