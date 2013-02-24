@@ -1,3 +1,521 @@
+** Version 4.7.0 **
+
+(git log --pretty=short --cherry-pick --left-only v4.7.x...v4.6.2^   |git shortlog --no-merges)
+
+Arun Persaud (50):
+      added some documentation about what's need to be done for a release and a bash-release script
+      Merge branch 'v4.6.x' into tmp
+      new version number for developer release
+      updated po/pot files
+      removed unused variables (-Wunused-variable)
+      enable -Wall -Wno-parentheses for all compilers that understand them
+      new version number for developer release
+      Updated German translation
+      fix bug #36228: reserved identifier violation
+      bug #36229: changed PEN_* from define to enum
+      bug #36229: changed STATE_* from define to enum
+      bug #36229: changed ICS_* from define to enum
+      new version number for developer release
+      added SVGs
+      added cairo and librsvg to configure process
+      initial svg rendering
+      added SVGs to dist files in automake
+      added a black and white theme to replace the mono option
+      we still need a few bitmaps, so the directory needs to be included in Makefile.am
+      new version number for developer release
+      update po/pot files
+      updated some icons to SVG
+      new version number for developer release
+      fix configure script for --with-Xaw and --with-gtk
+      updated po/pot files; added new frontend files
+      don't define X_LIBS when using gtk-frontend
+      new version number for developer release
+      updated po/pot files
+      Updated copyright notice to 2013
+      removed trailing whitespace
+      Updated Ukrainian translations
+      fix configure bug that showed up on OS X (couldn't find X11/Dialog.h)
+      Updated German translation
+      new version number for release of 4.7.0
+      updated Changelog, NEWS, etc.
+      updated po files for new release (make distcheck)
+      Merge remote-tracking branch 'origin/master' into v4.7.x
+      add test for pkg-config
+      Merge branch 'master' into v4.7.x
+      added rotated shogi pieces for -flipback option and moved them to the themes directory
+      keyboard accelerators for both front ends.
+      add close buttons to gtk windows
+      in debug mode also print the git-version if available during build
+      add keyboard shortcuts back into Xaw version
+      removed some translation calls for messages in the debug log
+      fixed gtk-warning
+      fixed segfault of g_markup_printf_escaped which needs utf-8 strings
+      removed two more translations from debug output
+      fix OK-response in gtk dialogs, see c7f8df124
+      Merge branch 'master' into v4.7.x
+
+Byrial Jensen (10):
+      Fix typo (seach) in string. It is already fixed in branch v4.6.x
+      Mark new text "Click clock to clear board" for translation
+      Change some double literals to floats.
+      Remove unused variable pdown from function UserMoveEvent
+      Remove unused variable delayedKing from function QuickScan
+      Remove unused variable tm from function SaveGamePGN
+      Remove unused variable first_entry from function find_key
+      Remove unused static function MenuBarSelect
+      Remove unused static function ShowTC
+      Remove 5 unused variables from zippy code
+
+Daniel Dugovic (1):
+      Fix configure script for --enable-zippy  (tiny change)
+
+Daniel Macks (1):
+      bug #37210: Mishandling of X11 -I flags (tiny change)
+
+H.G. Muller (381):
+      Fix suspected bug in Makefile
+      Merge branch 'v4.6.x' of git.sv.gnu.org:/srv/git/xboard
+      Fix fall-back on -ncp mode
+      Inform user in EditPosition mode how to clear board
+      More thorough switch to -ncp on engine failure
+      Implement exclude moves
+      Add exclude and setscore to protocol specs
+      Fix focus of Game List
+      Keep list of excluded moves in Engine Output header
+      Let clicking on header line exclude moves
+      Fix memory corruption through InitString and second-engine loading
+      Silence unjust warning
+      Implement Narrow button in WB Game List
+      Switch to using listboxes for engine-selection in WinBoard
+      Install engine within current group
+      Remove some unused (exclude-moves) variables
+      Refactor menu code, and move it to menu.c
+      Switch to use of short menu references
+      Move more back-endish menu-related stuff from xboard.c to menus.c
+      Contract some awful code replication
+      Split back-endish part off drawing code and move to board.c
+      Declare some shared global variables in backend.h
+      Split back-endish part off xoptions.c, and move to dialogs.c
+      Move some back-endish routines from xboard.c to dialogs.c
+      Cleanup of xboard.c
+      Remove one level of indirection on ICSInputBoxPopUp
+      Make routine to probe shift keys
+      Split usounds.c and usystem.c from xboard.c
+      Prevent double PopDowns
+      Major refactoring of GenericPopUp
+      Redo AskQuestion dialog with generic popup
+      Redo PromotionPopUp with generic dialog
+      Redo ErrorPopUp with generic dialog
+      Add -topLevel option
+      Add -dialogColor and -buttonColor options
+      Redo Game List Options with generic popup
+      Redo Game List with generic popup
+      Redo Engine Output window with generic popup
+      Redo Eval Graph with generic popup
+      Split sync-after options in Match dialog into checkbox + label
+      Remove unnecessary menu unmarking for Edit Tags
+      Redo main board window with generic popup
+      Switch back two two-part menu names
+      Fix recent-engines menu
+      Correct texi file for use of .Xresources
+      Fix switching debug option during session.
+      Move DisplayMessage to dialogs.c
+      Move LoadGamePopUp to menus.c
+      Add message about enabling in New Variant dialog
+      Use ListBox in stead of ComboBox in Load Engine dialog
+      Use ListBox in stead of ComboBox in Match-Options dialog
+      New browser
+      Fix default file types for browse buttons
+      Port grouping to XBoard Load Engine
+      Change default directory in Load Engine to "."
+      Port engine grouping to Match Options dialog
+      Give the dual-board option a separate board window
+      Reorganize main() a bit
+      Add 'Narrow' function to position search
+      Fix bug in FRC castling for position search
+      Use Ctrl key in EditPosition mode to copy pieces
+      Fix Makefile EXTRA_DIST
+      Update POTFILES.in
+      new version number for developer release
+      updated po/pot files
+      Fix auto-play
+      Fix vertical chaining of Buttons and browser ListBoxes
+      Make reference to board widgets symbolic
+      Fix internationalization
+      Fix Engine Output icon heights in international versions
+      Add New Directory button to file browser
+      Add sound files to browser menu
+      Fix 3 forgotten symbolic widget references
+      Let clocks of secondary board count down
+      Fix redraw of secondary board on flipping view
+      Allow clearing of marker dots in any mode
+      Fix promotion popup
+      Fix double promotion popup
+      Move clearing of target squares to after drag end
+      Fix click-click sweep promotions to empty square
+      Also do selective redraw with showTargetSquares on
+      Improve arrow drawing
+      Use in-place sweep-selection for click-click under-promotion
+      Fix promotionPopDown on new move entry
+      Fix some compile errors / warnings
+      Implement automatic partner observe
+      Fix ArrowDamage out-of-bounds access on drop moves
+      Remove debug printf
+      Fix clearing of ICS input box after send
+      Fix click-click under-promotion animation save
+      Fix MenuNameToItem
+      Shuffle prototypes to correct header, or add them there
+      Fix readout of numeric combobox
+      Move FileNamePopUp to dialogs.c
+      Move ManProc to xboard.c
+      Fix warnings about character index
+      Fix warning about signedness
+      Add pixmap as file type known to browser
+      Offer primitive paging in file browser
+      Solve WinBoard name clashes, fix zippy-analyze menu graying
+      Fix crash on time forfeit with -st option
+      Add logo widgets in main board window
+      Allow chaining of single-line text-edits to top
+      Port chat boxes to XBoard
+      Fix disabling of Load Engine menu
+      Fix ICS Text Menu popup
+      Fix key binding of DebugProc
+      Fix WB Engine Settings window
+      Keep track of virginity of back-rank pieces in variant seirawan
+      Decapitalize promoChar in move parser
+      Fix bug in Edit Position
+      Round board size to one where piece images available (WB)
+      Let windows stick to right display edge (WB)
+      Pay attention to extension of 'positional' arguments
+      Define XOP mime type for XBoard
+      Workaround for FICS bug
+      Implement variant seirawan in -serverMoves option
+      Implement --help option
+      Add check on validity of tourney participants
+      Add options -fe, -se, -is to load installed engines/ics from list
+      Allow second engine to analyze too
+      Let second engine move in lockstep during dual analysis
+      Allow Analyze Game to auto-step through entire game file
+      Cure some sick behavior in XBoard Engine Output right-clicks
+      Allow ICS nickname as positional argument
+      Preconfigure -icsNames in xboard.conf
+      Allow entry of fractional increment in WB time-control dialog
+      Resolve conflict between -mps and -inc options
+      Update texi file
+      Fix broken -ics and -cp options
+      Use Pause state in AnalyzeMode to imply move exclusion
+      Fix browsing for path
+      Fix non-NLS compile error for XFontStruct
+      Fix WinBoard compile errors
+      Reserve more space for button bar
+      Fix button-border-width bug in monoMode
+      Redo Eval Graph drawing with cairo
+      Fix Eval Graph resolution problems
+      Redo logos with cairo
+      Redo seek graph with cairo
+      Redo arrow highlighting with cairo
+      Redo grid with cairo
+      Make convenience routine SetPen globally available
+      Redo highlights with cairo
+      Redo marker dots with cairo
+      Add mode to draw PNG piece images through cairo
+      Add png pieces
+      Allow back-texture files to be PNG, (drawn with cairo)
+      Do animation with cairo
+      Maintain in-memory copy of the board image
+      Switch to using 64x64 png images
+      Allow resizing of board window
+      Specify proper condition for using cairo animation
+      Cure flashing of piece on from-square
+      Also use cairo on slave board
+      Redo coordinate / piece-count printing ith cairo
+      Fix DrawSeekText
+      Make dragged piece for excluding moves transparent
+      Let cairo also do evenly colored squares.
+      Remove debug print
+      Also render coordinates to backup board
+      Fix clearing of markers dots with promo popup
+      Implement variant-dependent png piece symbols
+      Remove acceleration trick
+      Fix highlight clearing
+      Draw arrow also on backup image
+      Cleanup CairoOverlayPiece
+      Fix erasing dots in seek graph
+      Separate off drawing routines from xboard.c
+      Remove all bitmap & pixmap drawing
+      Check in draw.c, draw.h
+      Clean up drawing code
+      Some cleanup
+      Do coordinate text alignment with cairo
+      Fall back on built-in pixmaps if png pieces unreadable
+      Plug resource leak on rezising with pixmaps
+      Make Piececolor options work on png pieces
+      Fix bug in resize trigger
+      Suppress redraw during sizing
+      Reload piece images when pngDirectory is changed
+      Make expose handler generic
+      remove NewSurfaces
+      Fix alignment of highlight expose
+      Fix initial display of logos
+      Let expose requests pay proper attenton to widget
+      Make draw handle for board globally available
+      Fix expose requests seek graph
+      Adapt Eval Graph code to new drawing system
+      Fix rsvg version in configure.ac
+      Always render svg pieces anew on size change
+      Add -trueColors option
+      Solve odd lineGap problem
+      Fix 1-pixel offset of grid lines on some cairo implementations
+      Fix animation with textures off
+      Fix exposure of atomic captures
+      Add hatched board texture
+      Install the wood textures as png
+      Remove bitmaps from project
+      Install svg pieces in themes/default
+      Cache svg handles
+      Implement proper fallback cascade
+      Remove piece pixmaps from project
+      Suppress anti-aliasing in -monoMode
+      Fix segfault on faulty command-line option
+      Increase drag delay too 200 msec
+      Make fallbackPieceImageDirectory hardcoded
+      Suppress warning for InitDrawingHandle
+      Code cleanup: move expose redraw to draw.c
+      Remove unnecessary Xt colors and call to MakeColors
+      Move Shogi svg pieces to own directory
+      Spontaeous changes in gettext stuff
+      Adapt docs for svg/png in stead of bitmap/pixmap
+      Trim board-window size
+      Fix garbage pixels on the right of the board
+      Print missing-pieces error message to console
+      Prevent odd-width line shift in length direction
+      Fix bug in resizing
+      Remove some unused images from png directory
+      Remove caveat on available pieces fromNew Variant dialog
+      Fix variant-dependent pieces
+      Get svg error message
+      Fix bug in fallback mechanism
+      Fix bug in resizing on variant switch
+      Rename svg shogi pieces, so they become usable
+      Fix re-rendering of svg on resize
+      Remove the texture pixmaps from project
+      Replace xiangqi board pixmaps by png images
+      Replace marble texture pixmaps by png
+      Fix variant-dependent pieces
+      Fix crash on animation after resizing
+      Fix message in New Variant dialog
+      Fix crash in promotion popup
+      Fix WinBoard compile error on enum PEN
+      Fix image extension used for browsing to .pgn
+      Fix initial enables in TC dialog
+      Move X11 front-end to directory xaw
+      Preserve copies of the X11 front-end in xboard directory
+      Prepare xoptions.c for middle-end changes
+      Add configure switches for Xaw vs GTK.
+      Move ICS-engine analyze and AnalyzeGame code to shared back-end
+      Remove some unnecessary header includes
+      move testing for no options to back-end
+      Move MarkMenuItem to xoptions.c
+      Split xhistory.c in front-end and middle-end part
+      Remove inclusion of frontend.h from backendz.h
+      Remove xedittags.c, .h from project
+      Cleanse back-end code of all references to X11 types
+      Make xevalgraph.c backend
+      Move timer functions to new file xtimer.c
+      Remove all X11 code by #ifdeffing it out
+      Give LoadListBox two extra parameters
+      Transfer most available gtk-xt code to xoptions.c
+      Attach expose handler and connect to mouse events
+      Implement menu checkmarking and enabling
+      Connect dialog Browse buttons to GTK browser
+      Transfer more gtk-xt code, and add some new
+      Append recent engines to engine menu
+      Add text insertion in engine-output memos
+      Better cleansing of xboard.c from X11 types
+      Highlight Pause button
+      Add key-handler for ICS Input Box
+      Make generic memo-event handler, and connect history callback
+      Add highlighting in move list
+      Add scrolling of Move History
+      Let engine-output memos use new generic callback
+      Implement highlighting in engine output by through generic method
+      Fix animation
+      Connect CommentClick handler
+      Fix ListBox, and add some support routines
+      Add file browser
+      Remove some unneeded low-level X11 code
+      Add Shift detection
+      Add type-in event to board for popping up box
+      Add optional callback to Label Options
+      Add game-list callbacks
+      Add access routines to checkboxes and FocusOnWidget
+      Close Move Type-in on Enter
+      Deselect first char in Move Type-in and ICS Input Box
+      Use different tables for different dialog columns
+      Add hiding / showing second Engine Output pane
+      Add listbox double-click callback
+      Add BarBegin, BarEnd options
+      Fix button bar
+      Add displaying of icons
+      Make some tall dialogs multi-column
+      Add task-bar icon
+      Some experimenting with sizing
+      Add copy-paste
+      Delete emptied front-end files, and move rest to gtk directory
+      Fix warnings
+      Make board sizing work through subtracting fixed height
+      Add window positioning
+      Fix logo placement
+      Fix clock clicking with GtkEventBox
+      Pay attention to NO_CANCEL dialog flag
+      Fix Chat Box
+      Fix clock highlighting
+      Adapt lineGap during sizing
+      Draw frames around memos and listboxes
+      Load opponent logo based on handle in ICS play (WB)
+      Add 'Continue Later' button in Tournament dialog (WB)
+      Allow external piece bitmaps and board border (WB)
+      Add Themes dialog (WB)
+      Implement auto-creation of ICS logon file
+      Use colors in Board-Options dialog also for font pieces (WB)
+      Implement book-creation functions
+      Start browsing in currently-selected folder (WB)
+      Fix move highlighting with animation off
+      Fix Loop-Chess promotions
+      Implement use of pause / resume protocol commands
+      Improve scaling of border bitmap (WB)
+      Fix -fSAN in AnalyzeFile mode
+      Do not clear PGN tags on Analyze File
+      Fix min-Shogi promotion zone
+      Update WinBoard translation template
+      Prefer pause mode on pondering engine over 'easy'
+      Fix rep-draw detection in drop games
+      Implement insufficient mating material for Knightmate
+      Use Ctrl key in AnalyzeMode to exclude entered move
+      Do not move to forwadMostMove when unpausing AnalyzeMode
+      Do not automatically save aborted games in tourney PGN
+      Store some more tourney params in tourney file
+      Implement aborting of games on engine request.
+      Resend engine-defined options after reuse=0 reload
+      Allow use of ~ in pieceToChar for shadow pieces in any variant
+      Let tellothers command add comment to PGN in local mode
+      Do delayed board draw also with -stickyWindows false
+      Fix some warnings
+      Update texi file
+      Enforce -popupMoveErrors
+      Fix engine timeout problem in match mode
+      Stalemate is a win in Shogi
+      Adjudicate perpetual checks as loss also in Shogi
+      Adjudicate pawn-drop mate as loss in Shogi
+      Catch unknown engine in tourney games
+      Preserve mode on engine loading (sometimes)
+      Preserve PGN tags when loading engine
+      Fix library order
+      Fix expose of to-square with grid off
+      Fix warning in WinBoard
+      Let WinBoard start in its installation folder
+      Assign shortcut char to WB menu item
+      Add some new strings to WB translation template
+      Update Dutch WB translation
+      Fix GTK error auto-raising board
+      Fix warnings of build server
+      Put GTK warning in about-box
+      Let initial setting of Twice checkbox reflect current state
+      Draw both coords in a1
+      Add boolean -autoBox option
+      Update NEWS file
+      Add desktop stuff for .xop MIME type.
+      Remove empty-square SVG images from project
+      Revive -flipBlack option
+      Add Xiangqi piece images to project
+      Fix Makefile for install of Xiangqi pieces
+      Connect Ctrl key in WinBoard
+      Better fix of feature timeout
+      Unreserve tourney game on exit during engine load
+      Only perform e.p. capture if there are rights
+      Warn about experimental nature of dual board
+      Make switching between board windows absolute
+      Remove checkbox for 'Move Sound'
+      Don't add PV moves on board clicking in AnalyzeMode
+      Add new vertical pixel fudge
+      Allow display of 50-move counter in zippy mode
+      Add -onlyOwnGames option
+      Fix graying of Revert menu item
+      Cure GTK warning in top-level windows
+      Fix title of top-level windows
+      Print game-list timing messages only in debug mode
+      Fix repairing of arrow damage
+      Remember window params of slave board
+      Fix repositioning of GTK windows
+      Limit debug print to debug mode
+      Better handling of undefined window parameters
+      Fix sizing of slave board GTK
+      Suppress printing of status line in dual-board mode
+      Fix testing for valid window placement Xaw
+      Fix -topLevel option
+      Try to make life more bearable in Xaw menus
+
+** Version 4.6.2 **
+
+(git shortlog --no-merges v4.6.1..HEAD)
+
+Arun Persaud (1):
+      new version number for release of 4.6.2
+
+H.G. Muller (5):
+      Fix second-engine variant test
+      Add two new strings to WinBoard language file
+      Define TOPLEVEL in winboard.c
+      Fix faking of castling rights after editing position with holdings
+      Suppress clear-board message after pasting FEN
+
+** Version 4.6.1 **
+
+(git shortlog --no-merges v4.6.0..HEAD)
+
+Arun Persaud (5):
+      updated Changelog, etc. for developer release
+      added m4 directory to search path for aclocal. As suggested by Michel Van den Bergh
+      removed unused variables (-Wunused-variable)
+      new version number for release of 4.6.1
+      updated Changelog, NEWS, etc.
+
+Byrial Jensen (2):
+      New Danish translation (fixes a minor error in one string)
+      Translate "NPS" also in engine output window
+
+H.G. Muller (30):
+      Fix fall-back on -ncp mode
+      Install engines as ./exefile in XBoard
+      Inform user in EditPosition mode how to clear board
+      Fix clock stop after dragging
+      Fix taking effect of some option changes
+      Fix bug in FRC castling for position search
+      Fix bug on loading engine
+      Fix browsing for save file in WB
+      Fix parsing crazyhouse promotions with legality testing off
+      Fix TOPLEVEL stuff
+      Make variant-unsupported-by-second error non-fatal
+      Let Game List scroll to keep highlighted item in view
+      Extend smallLayout regime up to size Medium
+      Fix switching of debug mode
+      Correct texi file for use of .Xresources
+      Fix texi bug
+      Fix PV sorting during fail low
+      Fix memory corruption through InitString
+      Change default value for diretory to . in Load Engine dialog
+      Swap all engine-related options during engine loading
+      new version number for developer release
+      updated po/pot files
+      Don't strip path from engine name if directory given
+      Updated Danish and Ukranian translations
+      Suppress popup for fatal error after tellusererror
+      Detect engine exit during startup
+      Fix click-click sweep promotions to empty square
+      Suppress testing for availability in bughouse drops
+      Fix crash due to empty PV
+      Fix Eval Graph scale in drop games
+
 ** Version 4.6.0 **
 
 (git log --pretty=short --cherry-pick --left-only v4.6.x...v4.5.x^   |git shortlog --no-merges)
