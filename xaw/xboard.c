@@ -418,7 +418,7 @@ char ICSInputTranslations[] =
 
 // [HGM] vari: another hideous kludge: call extend-end first so we can be sure select-start works,
 //             as the widget is destroyed before the up-click can call extend-end
-char commentTranslations[] = "<Btn3Down>: extend-end() select-start() CommentClick() \n";
+char commentTranslations[] = "<Btn3Down>: extend-end(PRIMARY) select-start() CommentClick() \n";
 
 String xboardResources[] = {
     "*Error*translations: #override\\n <Key>Return: ErrorPopDown()",

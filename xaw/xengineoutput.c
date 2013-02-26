@@ -165,8 +165,8 @@ InsertIntoMemo (int which, char * text, int where)
 char memoTranslations[] =
 ":Ctrl<Key>c: CopyMemoProc() \n \
 <Btn3Motion>: HandlePV() \n \
-Shift<Btn3Down>: select-start() extend-end() SelectPV(1) \n \
-Any<Btn3Down>: select-start() extend-end() SelectPV(0) \n \
+Shift<Btn3Down>: select-start() extend-end(PRIMARY) SelectPV(1) \n \
+Any<Btn3Down>: select-start() extend-end(PRIMARY) SelectPV(0) \n \
 <Btn3Up>: StopPV() \n";
 
 void

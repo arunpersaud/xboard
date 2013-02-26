@@ -99,7 +99,7 @@ ScrollToCursor (Option *opt, int caretPos)
 char *historyText;
 char historyTranslations[] =
 "<Btn3Down>: select-start() \n \
-<Btn3Up>: extend-end() SelectMove() \n";
+<Btn3Up>: extend-end(PRIMARY) SelectMove() \n";
 
 void
 SelectMoveX (Widget w, XEvent * event, String * params, Cardinal * nParams)
