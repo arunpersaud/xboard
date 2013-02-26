@@ -60,7 +60,7 @@
 typedef enum {
   ArgString, ArgInt, ArgFloat, ArgBoolean, ArgTrue, ArgFalse, ArgNone,
   ArgColor, ArgAttribs, ArgFilename, ArgBoardSize, ArgFont, ArgCommSettings,
-  ArgSettingsFilename, ArgTwo,
+  ArgSettingsFilename, ArgBackupSettingsFile, ArgTwo,
   ArgX, ArgY, ArgZ // [HGM] placement: for window-placement options stored relative to main window
 } ArgType;
 
@@ -490,6 +490,7 @@ ArgDescriptor argDescriptors[] = {
   { "at", ArgSettingsFilename, (void *) NULL, FALSE, INVALID },
   { "opt", ArgSettingsFilename, (void *) NULL, FALSE, INVALID },
   { "saveSettingsFile", ArgFilename, (void *) &settingsFileName, FALSE, INVALID },
+  { "backupSettingsFile", ArgBackupSettingsFile, (void *) &settingsFileName, FALSE, INVALID },
   { "saveSettingsOnExit", ArgBoolean, (void *) &saveSettingsOnExit, TRUE, (ArgIniType) TRUE },
   { "chessProgram", ArgBoolean, (void *) &chessProgram, FALSE, (ArgIniType) FALSE },
   { "cp", ArgTrue, (void *) &chessProgram, FALSE, INVALID },
@@ -1105,6 +1106,8 @@ ParseArgs(GetFunc get, void *cl)
       ASSIGN(*(char **) ad->argLoc, argValue);
       break;
 
+    case ArgBackupSettingsFile: // no-op if non-default settings-file already successfully read
+	if(strcmp(*(char**)ad->argLoc, SETTINGS_FILE)) break;
     case ArgSettingsFilename:
       {
 	if (ParseSettingsFile(argValue, (char**)ad->argLoc)) {
@@ -1537,6 +1540,7 @@ SaveSettings(char* name)
       PrintCommPortSettings(f, ad->argName);
     case ArgTwo:
     case ArgNone:
+    case ArgBackupSettingsFile:
     case ArgSettingsFilename: ;
     }
   }

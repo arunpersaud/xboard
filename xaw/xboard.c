@@ -934,6 +934,7 @@ PrintArg (ArgType t)
     case ArgString:   p = " STR"; break;
     case ArgBoolean:  p = " TF"; break;
     case ArgSettingsFilename:
+    case ArgBackupSettingsFile:
     case ArgFilename: p = " FILE"; break;
     case ArgX:        p = " Nx"; break;
     case ArgY:        p = " Ny"; break;
