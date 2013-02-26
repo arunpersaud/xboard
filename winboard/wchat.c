@@ -361,14 +361,21 @@ void ChatPopUp(char *icsHandle)
 {
   FARPROC lpProc;
   int i, partner = -1;
+  char buf[MSG_SIZ];
+  static int first = 1;
 
   CheckMenuItem(GetMenu(hwndMain), IDM_NewChat, MF_CHECKED);
   for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] == NULL) { partner = i; break; }
   if(partner == -1) { DisplayError("You first have to close a Chat Box\nbefore you can open a new one", 0); return; }
-  if(icsHandle) // [HGM] clickbox set handle in advance
+  if(icsHandle) { // [HGM] clickbox set handle in advance
     safeStrCpy(chatPartner[partner], icsHandle,
 	       sizeof(chatPartner[partner])/sizeof(chatPartner[partner][0]) );
-  else chatPartner[partner][0] = NULLCHAR;
+    if(sscanf(icsHandle, "%d", &i) == 1) { // make sure channel is on
+	snprintf(buf, MSG_SIZ, "addlist ch %d\n", i);
+	SendToICS(buf);
+	if(first) first=0, SendToICS(buf); // work-around for weirdness: On public FICS code first attempt on login is completely ignored
+    }
+  } else chatPartner[partner][0] = NULLCHAR;
   chatCount++;
 
     lpProc = MakeProcInstance( (FARPROC) ChatProc, hInst );
