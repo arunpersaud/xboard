@@ -919,8 +919,9 @@ ParseArgs(GetFunc get, void *cl)
       for (ad = argDescriptors; ad->argName != NULL; ad++)
 	if (strcmp(ad->argName, argName + 1) == 0) break;
       if (ad->argName == NULL) {
+	char endChar = (ch && ch != '\n' && (ch = get(cl)) == '{' ? '}' : '\n');
 	ExitArgError(_("Unrecognized argument %s"), argName, get != &FileGet); // [HGM] make unknown argument non-fatal
-	while (ch != '\n' && ch != NULLCHAR) ch = get(cl); // but skip rest of line it is on
+	while (ch != endChar && ch != NULLCHAR) ch = get(cl); // but skip rest of line it is on (or until closing '}' )
 	continue; // so that when it is in a settings file, it is the only setting that will be purged from it
       }
     } else if (ch == '@') {
