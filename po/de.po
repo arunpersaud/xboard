@@ -136,8 +136,7 @@ msgstr "Konnte Kommunikationsport %s nicht öffnen"
 #: backend.c:1536
 #, c-format
 msgid "Could not connect to host %s, port %s"
-msgstr ""
-"Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
+msgstr "Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
 
 #: backend.c:1592
 #, c-format
@@ -586,8 +585,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Die CMail-Nachricht wurde noch nicht geladen.\n"
-"Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut "
-"aus."
+"Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut aus."
 
 #: backend.c:13252
 msgid "No unfinished games"
@@ -918,9 +916,7 @@ msgstr "Klone Turnier"
 
 #: dialogs.c:316
 msgid "First you must specify an existing tourney file to clone"
-msgstr ""
-"Bitte geben Sie zuerst eine existierende Turnierdatei, die geklont werden "
-"kann"
+msgstr "Bitte geben Sie zuerst eine existierende Turnierdatei, die geklont werden kann"
 
 #: dialogs.c:332 dialogs.c:1319
 msgid "# no engines are installed"
@@ -2203,9 +2199,7 @@ msgstr "Fehler beim Öffnen der Datei '%s'\n"
 
 #: gtk/xboard.c:805 xaw/xboard.c:1178
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe "
-"zu unterstützen"
+msgstr "Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe zu unterstützen"
 
 #: gtk/xboard.c:824 xaw/xboard.c:1210
 #, c-format
@@ -2269,13 +2263,11 @@ msgid ""
 "Enhancements Copyright 1992-2013 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "The GTK build of this version is experimental and unstable\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2287,6 +2279,7 @@ msgstr "Über XBoard"
 
 #: menus.c:582
 #, fuzzy
+#| msgid "New Shuffle Game"
 msgid "New Game"
 msgstr "Neue Shuffle-Partie"
 
@@ -2296,36 +2289,43 @@ msgstr "Neue Shuffle Partie… "
 
 #: menus.c:584
 #, fuzzy
+#| msgid "New Variant"
 msgid "New Variant ..."
 msgstr "Neue Variante"
 
 #: menus.c:586
 #, fuzzy
+#| msgid "Load Game ..."
 msgid "Load Game"
 msgstr "Partie laden…"
 
 #: menus.c:587
 #, fuzzy
+#| msgid "Load Next Position"
 msgid "Load Position"
 msgstr "Nächste Stellung laden"
 
 #: menus.c:588
 #, fuzzy
+#| msgid "Load Next Position"
 msgid "Next Position"
 msgstr "Nächste Stellung laden"
 
 #: menus.c:589
 #, fuzzy
+#| msgid "Load Previous Position"
 msgid "Prev Position"
 msgstr "Vorherige Stellung laden"
 
 #: menus.c:591
 #, fuzzy
+#| msgid "Save Game ..."
 msgid "Save Game"
 msgstr "Partie speichern…"
 
 #: menus.c:592
 #, fuzzy
+#| msgid "Saving position"
 msgid "Save Position"
 msgstr "Speichere Stellung "
 
@@ -2347,11 +2347,13 @@ msgstr ""
 
 #: menus.c:603
 #, fuzzy
+#| msgid "Copy Game List"
 msgid "Copy Game"
 msgstr "Partieliste kopieren"
 
 #: menus.c:604
 #, fuzzy
+#| msgid "Copy Position Ctrl+Shift+C"
 msgid "Copy Position"
 msgstr "Stellung kopieren Strg+Umschalt+C"
 
@@ -2361,21 +2363,25 @@ msgstr "Partieliste kopieren"
 
 #: menus.c:607
 #, fuzzy
+#| msgid "Reset Game"
 msgid "Paste Game"
 msgstr "Spiel zurücksetzen"
 
 #: menus.c:608
 #, fuzzy
+#| msgid "Load Next Position"
 msgid "Paste Position"
 msgstr "Nächste Stellung laden"
 
 #: menus.c:610 menus.c:652
 #, fuzzy
+#| msgid "Edit comment"
 msgid "Edit Game"
 msgstr "Editiere Kommentar"
 
 #: menus.c:611 menus.c:653
 #, fuzzy
+#| msgid "Load Next Position"
 msgid "Edit Position"
 msgstr "Nächste Stellung laden"
 
@@ -2401,6 +2407,7 @@ msgstr "Annotieren"
 
 #: menus.c:618
 #, fuzzy
+#| msgid "Truncate Game  End"
 msgid "Truncate Game"
 msgstr "Partie abbrechen         End"
 
@@ -2414,31 +2421,37 @@ msgstr "Vorwärts"
 
 #: menus.c:622
 #, fuzzy
+#| msgid "Black to play"
 msgid "Back to Start"
 msgstr "Schwarz am Zug"
 
 #: menus.c:623
 #, fuzzy
+#| msgid "Forward to End Alt+End"
 msgid "Forward to End"
 msgstr "Vorwärts zum Ende  Alt+End"
 
 #: menus.c:628
 #, fuzzy
+#| msgid "Auto Flip View"
 msgid "Flip View"
 msgstr "Brett automatisch drehen"
 
 #: menus.c:631
 #, fuzzy
+#| msgid "Move list"
 msgid "Move History"
 msgstr "Zugliste"
 
 #: menus.c:632
 #, fuzzy
+#| msgid "Evaluation graph"
 msgid "Evaluation Graph"
 msgstr "Auswertungsgraph"
 
 #: menus.c:633
 #, fuzzy
+#| msgid "Game List ..."
 msgid "Game List"
 msgstr "Partieliste…"
 
@@ -2464,26 +2477,31 @@ msgstr "Partie Markierungen…"
 
 #: menus.c:647
 #, fuzzy
+#| msgid "Machine White  Ctrl+W"
 msgid "Machine White"
 msgstr "Schachprogramm weiß   Strg+W"
 
 #: menus.c:648
 #, fuzzy
+#| msgid "Machine Match"
 msgid "Machine Black"
 msgstr "Schachprogramm Partie"
 
 #: menus.c:649
 #, fuzzy
+#| msgid "Two Machines   Ctrl+T"
 msgid "Two Machines"
 msgstr "Zwei Schachprogramme   Strg+T"
 
 #: menus.c:650
 #, fuzzy
+#| msgid "Analysis Mode  Ctrl+A"
 msgid "Analysis Mode"
 msgstr "Analyse-Modus   Strg+A"
 
 #: menus.c:651
 #, fuzzy
+#| msgid "Analyze Game   Ctrl+G"
 msgid "Analyze Game"
 msgstr "Spiel analysieren   Strg+G"
 
@@ -2517,11 +2535,13 @@ msgstr ""
 
 #: menus.c:667
 #, fuzzy
+#| msgid "Call Flag          F5"
 msgid "Call Flag"
 msgstr "Zeit reklamieren    F5"
 
 #: menus.c:668
 #, fuzzy
+#| msgid "Draw:"
 msgid "Draw"
 msgstr "Remi:"
 
@@ -2539,11 +2559,13 @@ msgstr "Aufgeben"
 
 #: menus.c:673
 #, fuzzy
+#| msgid "Stop Observing  F10"
 msgid "Stop Observing"
 msgstr "Beobachtung beenden    F10"
 
 #: menus.c:674
 #, fuzzy
+#| msgid "Stop Examining  F11"
 msgid "Stop Examining"
 msgstr "Untersuchen beenden   F11"
 
@@ -2589,11 +2611,13 @@ msgstr "Buch"
 
 #: menus.c:693
 #, fuzzy
+#| msgid "Move Sound"
 msgid "Move Now"
 msgstr "Klang für Zug"
 
 #: menus.c:694
 #, fuzzy
+#| msgid "Retract Move  Ctrl+X"
 msgid "Retract Move"
 msgstr "Zug zurücknehmen  Strg+X"
 
@@ -2603,16 +2627,19 @@ msgstr "Allgemein…"
 
 #: menus.c:702
 #, fuzzy
+#| msgid "Time Control"
 msgid "Time Control ..."
 msgstr "Zeitkontrolle"
 
 #: menus.c:703
 #, fuzzy
+#| msgid "Common Engine ...  Alt+Shift+U"
 msgid "Common Engine ..."
 msgstr "Allemein Schachprogramme…    Alt+Umschalt+U"
 
 #: menus.c:704
 #, fuzzy
+#| msgid "Adjudications ...      Alt+Shift+J"
 msgid "Adjudications ..."
 msgstr "Zuerkennung…        Alt+Umschalt+J"
 
@@ -2690,6 +2717,7 @@ msgstr "Info XBoard"
 
 #: menus.c:743
 #, fuzzy
+#| msgid "Man XBoard   F1"
 msgid "Man XBoard"
 msgstr "Man XBoard   F1"
 
@@ -2849,8 +2877,7 @@ msgid ""
 "   Include system type & operating system in message.\n"
 msgstr ""
 "Warnung: Keine DIR-Struktur auf dem Rechner gefunden --\n"
-"         wählen einer automatischen Größe für XPM/XIM Figuren "
-"fehlgeschlagen.\n"
+"         wählen einer automatischen Größe für XPM/XIM Figuren fehlgeschlagen.\n"
 "  Bitte schicken Sie einen Bug-report and %s.\n"
 "  Geben Sie dabei den Rechnertyp und das Betriebsystem an.\n"
 
