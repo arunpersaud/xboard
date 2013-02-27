@@ -5,19 +5,18 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard-4.6.0.20121211\n"
+"Project-Id-Version: GNU xboard-4.7.0.20130224\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2013-02-24 09:09-0800\n"
-"PO-Revision-Date: 2013-01-18 15:02+0200\n"
+"PO-Revision-Date: 2013-02-26 22:30+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.4\n"
-"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
-"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: args.h:819
 #, c-format
@@ -175,9 +174,7 @@ msgstr "Робота режиму гри комп’ютером білими р
 
 #: backend.c:1684
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
-"Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено "
-"шаховий рушій"
+msgstr "Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено шаховий рушій"
 
 #: backend.c:1689
 msgid "TwoMachines mode does not work with ICS mode"
@@ -250,8 +247,7 @@ msgstr ""
 
 #: backend.c:4247 backend.c:9745
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
+msgstr "Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
 
 #: backend.c:4366
 msgid "Error gathering move list: extra board"
@@ -273,8 +269,7 @@ msgstr "Ця дія неможлива у режимі гри або спост�
 
 #: backend.c:6023
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
-"Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
+msgstr "Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
 
 #: backend.c:6485
 msgid "You are playing Black"
@@ -339,8 +334,7 @@ msgstr "У %s не передбачено аналізу"
 #: backend.c:8656
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
-"Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
+msgstr "Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
 
 #: backend.c:8683
 #, c-format
@@ -592,8 +586,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Повідомлення cmail не завантажено.\n"
-"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш "
-"хід."
+"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш хід."
 
 #: backend.c:13252
 msgid "No unfinished games"
@@ -904,8 +897,7 @@ msgstr "Номер позиції (-1 або -2 = автоматичне збі�
 
 #: dialogs.c:282
 msgid "Rewind Index after this many Games (0 = never):"
-msgstr ""
-"Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
+msgstr "Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
 
 #: dialogs.c:283
 msgid "Disable own engine books by default"
@@ -969,7 +961,7 @@ msgstr "Спадне меню"
 
 #: dialogs.c:371
 msgid "Enable Variation Trees"
-msgstr ""
+msgstr "Увімкнути дерево варіантів"
 
 #: dialogs.c:372
 msgid "Hide Thinking from Human"
@@ -993,7 +985,7 @@ msgstr "Періодичні оновлення (у режимі аналізу)
 
 #: dialogs.c:378
 msgid "Play Move(s) of Clicked PV (Analysis)"
-msgstr ""
+msgstr "Грати ходи натиснутих PV (аналіз)"
 
 #: dialogs.c:379 dialogs.c:514 menus.c:728
 msgid "Ponder Next Move"
@@ -1356,7 +1348,7 @@ msgstr "Автоматичне оновлення графу пошуків"
 
 #: dialogs.c:580
 msgid "Auto-InputBox PopUp"
-msgstr ""
+msgstr "Автоматичне вікно введення"
 
 #: dialogs.c:581
 msgid "Premove"
@@ -1528,7 +1520,7 @@ msgstr "Автозбереження ігор"
 
 #: dialogs.c:658
 msgid "Own Games Only"
-msgstr ""
+msgstr "Лише власні ігри"
 
 #: dialogs.c:659
 msgid "Save Games on File:"
@@ -1848,8 +1840,7 @@ msgstr "Команда рушія:"
 
 #: dialogs.c:1285
 msgid "(Directory will be derived from engine path when empty)"
-msgstr ""
-"(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
+msgstr "(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
 
 #: dialogs.c:1286
 msgid "UCI"
@@ -2219,9 +2210,7 @@ msgstr "Не вдалося відкрити файл «%s»\n"
 
 #: gtk/xboard.c:805 xaw/xboard.c:1178
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з "
-"більшими значеннями BOARD_RANKS або BOARD_FILES"
+msgstr "Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з більшими значеннями BOARD_RANKS або BOARD_FILES"
 
 #: gtk/xboard.c:824 xaw/xboard.c:1210
 #, c-format
@@ -2277,7 +2266,7 @@ msgid " (with Zippy code)"
 msgstr " (з кодом Zippy)"
 
 #: menus.c:363
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -2285,13 +2274,11 @@ msgid ""
 "Enhancements Copyright 1992-2013 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "The GTK build of this version is experimental and unstable\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2302,13 +2289,11 @@ msgstr ""
 "© Free Software Foundation, 1992–2012\n"
 "© Alessandro Scotti, 2005\n"
 "\n"
-"%s є вільним програмним забезпеченням, його працездатність не гарантується. "
-"Докладніше про це у файлі COPYING.\n"
+"%s є вільним програмним забезпеченням, його працездатність не гарантується. Докладніше про це у файлі COPYING.\n"
+"Збірка з GTK цієї версії є експериментальною і нестабільною\n"
 "\n"
-"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/"
-"xboard/\n"
-"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/"
-"software/xboard/whats_new.html\n"
+"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/xboard/\n"
+"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Надішліть повідомлення про ваду на адресу: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2318,48 +2303,40 @@ msgid "About XBoard"
 msgstr "Про XBoard"
 
 #: menus.c:582
-#, fuzzy
 msgid "New Game"
-msgstr "Нова випадкова гра"
+msgstr "Нова гра"
 
 #: menus.c:583
 msgid "New Shuffle Game ..."
 msgstr "Нова випадкова гра…"
 
 #: menus.c:584
-#, fuzzy
 msgid "New Variant ..."
-msgstr "Новий варіант"
+msgstr "Новий варіант…"
 
 #: menus.c:586
-#, fuzzy
 msgid "Load Game"
-msgstr "Завантажити гру…"
+msgstr "Завантажити гру"
 
 #: menus.c:587
-#, fuzzy
 msgid "Load Position"
-msgstr "знайти позицію"
+msgstr "Завантажити позицію"
 
 #: menus.c:588
-#, fuzzy
 msgid "Next Position"
-msgstr "Наступна позиція  Shift+PgDn"
+msgstr "Наступна позиція"
 
 #: menus.c:589
-#, fuzzy
 msgid "Prev Position"
-msgstr "Збереження позиції"
+msgstr "Попередня позиція"
 
 #: menus.c:591
-#, fuzzy
 msgid "Save Game"
-msgstr "Зберегти гру…"
+msgstr "Зберегти гру"
 
 #: menus.c:592
-#, fuzzy
 msgid "Save Position"
-msgstr "Збереження позиції"
+msgstr "Зберегти позицію"
 
 #: menus.c:593
 msgid "Save Games as Book"
@@ -2375,41 +2352,35 @@ msgstr "Перезавантажити повідомлення CMail"
 
 #: menus.c:598
 msgid "Quit "
-msgstr ""
+msgstr "Вийти "
 
 #: menus.c:603
-#, fuzzy
 msgid "Copy Game"
-msgstr "Копіювати список ігор"
+msgstr "Копіювати гру"
 
 #: menus.c:604
-#, fuzzy
 msgid "Copy Position"
-msgstr "Копіювати позицію Ctrl+Shift+C"
+msgstr "Копіювати позицію"
 
 #: menus.c:605
 msgid "Copy Game List"
 msgstr "Копіювати список ігор"
 
 #: menus.c:607
-#, fuzzy
 msgid "Paste Game"
-msgstr "Вставити гру  Ctrl+V"
+msgstr "Вставити гру"
 
 #: menus.c:608
-#, fuzzy
 msgid "Paste Position"
-msgstr "Вставити позицію Ctrl+Shift+V"
+msgstr "Вставити позицію"
 
 #: menus.c:610 menus.c:652
-#, fuzzy
 msgid "Edit Game"
-msgstr "Редагувати коментар"
+msgstr "Редагувати гру"
 
 #: menus.c:611 menus.c:653
-#, fuzzy
 msgid "Edit Position"
-msgstr "знайти позицію"
+msgstr "Редагувати позицію"
 
 #: menus.c:612
 msgid "Edit Tags"
@@ -2425,54 +2396,47 @@ msgstr "Змінити книгу"
 
 #: menus.c:616
 msgid "Revert"
-msgstr ""
+msgstr "Повернути"
 
 #: menus.c:617
 msgid "Annotate"
 msgstr "Анотувати"
 
 #: menus.c:618
-#, fuzzy
 msgid "Truncate Game"
-msgstr "Обрізати гру   End"
+msgstr "Обрізати гру"
 
 #: menus.c:620
 msgid "Backward"
-msgstr ""
+msgstr "Назад"
 
 #: menus.c:621
 msgid "Forward"
-msgstr ""
+msgstr "Вперед"
 
 #: menus.c:622
-#, fuzzy
 msgid "Back to Start"
-msgstr "Хід чорних"
+msgstr "Повернутися до початку"
 
 #: menus.c:623
-#, fuzzy
 msgid "Forward to End"
-msgstr "Вперед до кінця Alt+End"
+msgstr "Вперед до кінця"
 
 #: menus.c:628
-#, fuzzy
 msgid "Flip View"
-msgstr "Автоматичне обертання дошки"
+msgstr "Повернути дошку"
 
 #: menus.c:631
-#, fuzzy
 msgid "Move History"
-msgstr "Список ходів"
+msgstr "Журнал ходів"
 
 #: menus.c:632
-#, fuzzy
 msgid "Evaluation Graph"
 msgstr "Граф оцінки позиції"
 
 #: menus.c:633
-#, fuzzy
 msgid "Game List"
-msgstr "Список ігор…"
+msgstr "Список ігор"
 
 #: menus.c:637
 msgid "Comments"
@@ -2495,29 +2459,24 @@ msgid "Game List Tags..."
 msgstr "Мітки списку ігор…"
 
 #: menus.c:647
-#, fuzzy
 msgid "Machine White"
-msgstr "Комп’ютер-білими Ctrl+W"
+msgstr "Комп’ютер-білими"
 
 #: menus.c:648
-#, fuzzy
 msgid "Machine Black"
 msgstr "Матч ком’ютерів"
 
 #: menus.c:649
-#, fuzzy
 msgid "Two Machines"
-msgstr "Два комп’ютера Ctrl+T"
+msgstr "Два комп’ютера"
 
 #: menus.c:650
-#, fuzzy
 msgid "Analysis Mode"
-msgstr "Режим аналізу  Ctrl+A"
+msgstr "Режим аналізу"
 
 #: menus.c:651
-#, fuzzy
 msgid "Analyze Game"
-msgstr "Аналізувати гру Ctrl+G"
+msgstr "Аналізувати гру"
 
 #: menus.c:654
 msgid "Training"
@@ -2533,51 +2492,47 @@ msgstr "Матч ком’ютерів"
 
 #: menus.c:658
 msgid "Pause"
-msgstr ""
+msgstr "Пауза"
 
 #: menus.c:663
 msgid "Accept"
-msgstr ""
+msgstr "Прийняти"
 
 #: menus.c:664
 msgid "Decline"
-msgstr ""
+msgstr "Відхилити"
 
 #: menus.c:665
 msgid "Rematch"
-msgstr ""
+msgstr "Перегравання"
 
 #: menus.c:667
-#, fuzzy
 msgid "Call Flag"
-msgstr "Перевірити прапорець F5"
+msgstr "Погодитися з програшем"
 
 #: menus.c:668
-#, fuzzy
 msgid "Draw"
-msgstr "Нічиїх:"
+msgstr "Нічия"
 
 #: menus.c:669
 msgid "Adjourn"
-msgstr ""
+msgstr "Відкласти"
 
 #: menus.c:670
 msgid "Abort"
-msgstr ""
+msgstr "Перервати"
 
 #: menus.c:671
 msgid "Resign"
-msgstr ""
+msgstr "Здатись"
 
 #: menus.c:673
-#, fuzzy
 msgid "Stop Observing"
-msgstr "Припинити спостереження  F10"
+msgstr "Припинити спостереження"
 
 #: menus.c:674
-#, fuzzy
 msgid "Stop Examining"
-msgstr "Припинити аналіз F11"
+msgstr "Припинити аналіз"
 
 #: menus.c:675
 msgid "Upload to Examine"
@@ -2620,33 +2575,28 @@ msgid "Book"
 msgstr "Книга"
 
 #: menus.c:693
-#, fuzzy
 msgid "Move Now"
-msgstr "Звук ходу"
+msgstr "Ходити зараз"
 
 #: menus.c:694
-#, fuzzy
 msgid "Retract Move"
-msgstr "Відкликати хід Ctrl+X"
+msgstr "Відкликати хід"
 
 #: menus.c:700
 msgid "General ..."
 msgstr "Загальне…"
 
 #: menus.c:702
-#, fuzzy
 msgid "Time Control ..."
-msgstr "Керування часом"
+msgstr "Керування часом…"
 
 #: menus.c:703
-#, fuzzy
 msgid "Common Engine ..."
-msgstr "Загальний рушій…   Alt+Shift+U"
+msgstr "Загальний рушій…"
 
 #: menus.c:704
-#, fuzzy
 msgid "Adjudications ..."
-msgstr "Визначення…            Alt+Shift+J"
+msgstr "Визначення…"
 
 #: menus.c:705
 msgid "ICS ..."
@@ -2674,7 +2624,7 @@ msgstr "Звуки…"
 
 #: menus.c:713
 msgid "Always Queen"
-msgstr ""
+msgstr "Завжди королева"
 
 #: menus.c:719
 msgid "Flash Moves"
@@ -2705,9 +2655,8 @@ msgid "Show Coords"
 msgstr "Показати координати"
 
 #: menus.c:732
-#, fuzzy
 msgid "Hide Thinking"
-msgstr "Приховувати обмірковування від людини"
+msgstr "Приховувати обмірковування"
 
 #: menus.c:736
 msgid "Save Settings Now"
@@ -2722,9 +2671,8 @@ msgid "Info XBoard"
 msgstr "Інформація з XBoard"
 
 #: menus.c:743
-#, fuzzy
 msgid "Man XBoard"
-msgstr "Підручник з XBoard F1"
+msgstr "Підручник з XBoard"
 
 #: menus.c:745
 msgid "XBoard Home Page"
@@ -2904,15 +2852,15 @@ msgstr "вибрати"
 
 #: xaw/xoptions.c:386 xaw/xoptions.c:387
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #: xaw/xoptions.c:392 xaw/xoptions.c:393
 msgid "Alt"
-msgstr ""
+msgstr "Alt"
 
 #: xaw/xoptions.c:398 xaw/xoptions.c:399
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: xaw/xoptions.c:1261
 msgid "OK"
@@ -3074,8 +3022,7 @@ msgstr "скасувати"
 #~ msgstr "XsraSelFile: не вдалося отримати назву поточного каталогу"
 
 #~ msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
-#~ msgstr ""
-#~ "%s: помилка у геометричних параметрах titleWidget — %d %d %d %d %d\n"
+#~ msgstr "%s: помилка у геометричних параметрах titleWidget — %d %d %d %d %d\n"
 
 #~ msgid "Error expanding path name \"%s\"\n"
 #~ msgstr "Помилка під час спроби розгортання адреси каталогу «%s»\n"
@@ -3091,8 +3038,7 @@ msgstr "скасувати"
 #~ msgstr "Найближчий розмір %s: %d\n"
 
 #~ msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
-#~ msgstr ""
-#~ "%s: помилка у геометричних параметрах messageWidget — %d %d %d %d %d\n"
+#~ msgstr "%s: помилка у геометричних параметрах messageWidget — %d %d %d %d %d\n"
 
 #~ msgid "%s: error loading XIM!\n"
 #~ msgstr "%s: помилка завантаження XIM!\n"
@@ -3148,8 +3094,7 @@ msgstr "скасувати"
 #~ msgstr "Некоректне растрове зображення у файлі %s"
 
 #~ msgid "Ran out of memory reading bitmap file %s"
-#~ msgstr ""
-#~ "Під час читання растрового зображення %s було вичерпано обсяг пам’яті"
+#~ msgstr "Під час читання растрового зображення %s було вичерпано обсяг пам’яті"
 
 #~ msgid "Unknown XReadBitmapFile error %d on file %s"
 #~ msgstr "Невідома помилка XReadBitmapFile %d під час обробки файла %s"
@@ -3158,9 +3103,7 @@ msgstr "скасувати"
 #~ msgstr "%s: %s… використовуємо вбудоване\n"
 
 #~ msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
-#~ msgstr ""
-#~ "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… "
-#~ "використовуємо вбудоване\n"
+#~ msgstr "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… використовуємо вбудоване\n"
 
 #~ msgid "----"
 #~ msgstr "----"
