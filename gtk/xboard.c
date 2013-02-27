@@ -563,11 +563,16 @@ ConvertToLine (int argc, char **argv)
 
 //--------------------------------------------------------------------------------------------
 
+int clockKludge;
+
 void
 ResizeBoardWindow (int w, int h, int inhibit)
 {
+    GtkAllocation a;
+    if(clockKludge) return; // ignore as long as clock does not have final height
+    gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
-    h += marginH;
+    h += marginH + a.height + 1;
     gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
 }
 
@@ -921,6 +926,7 @@ main (int argc, char **argv)
 	layoutName = "normalLayout";
     }
 
+    wpMain.width = -1; // prevent popup sizes window
     optList = BoardPopUp(squareSize, lineGap, (void*)
 #ifdef TODO_GTK
 #if ENABLE_NLS
@@ -988,15 +994,21 @@ main (int argc, char **argv)
 //    XtSetValues(shellWidget, &shellArgs[2], 4);
 #endif
     {
+	// Note: We cannot do sensible sizing here, because the height of the clock widget is not yet known
+	// It wil only become known asynchronously, when we first write a string into it.
+	// This will then change the clock widget height, which triggers resizing the top-level window
+	// and a configure event. Only then can we know the total height of the top-level window,
+	// and calculate the height we need. The clockKludge flag suppresses all resizing until
+	// that moment comes, after which the configure event-handler handles it through a (delayed) DragProg.
+	int hc;
 	GtkAllocation a;
 	gtk_widget_get_allocation(shells[BoardWindow], &a);
 	w = a.width; h = a.height;
-//printf("start size (%d,%d), %dx%d\n", a.x, a.y, w, h);
+	gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
+	clockKludge = hc = a.height;
 	gtk_widget_get_allocation(boardWidget, &a);
 	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
-	marginH =  h - a.height + 13;
-	gtk_window_resize(GTK_WINDOW(shellWidget), marginW + boardWidth, marginH + boardHeight);
-//printf("margins h=%d v=%d\n", marginW, marginH);
+	marginH =  h - a.height - hc; // subtract current clock height, so it can be added back dynamically
     }
 
     CreateAnyPieces();
@@ -1417,15 +1429,23 @@ CoDrag (GtkWidget *sh, WindowPlacement *wp)
 void
 ReSize (WindowPlacement *wp)
 {
-	int sqx, sqy, w, h, lg = lineGap;
+	GtkAllocation a;
+	int sqx, sqy, w, h, hc, lg = lineGap;
+	gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
+	hc = a.height; // clock height can depend on single / double line clock text!
+        if(clockKludge == a.height) return; // wait for clock to get final size at startup
+	if(clockKludge) { // clock height OK now; calculate desired initial board height
+	    clockKludge = 0;
+	    wp->height = BOARD_HEIGHT * (squareSize + lineGap) + lineGap + marginH + hc;
+	}
 	if(wp->width == wpMain.width && wp->height == wpMain.height) return; // not sized
 	sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
-	sqy = (wp->height - lg - marginH) / BOARD_HEIGHT - lg;
+	sqy = (wp->height - lg - marginH - hc) / BOARD_HEIGHT - lg;
 	if(sqy < sqx) sqx = sqy;
 	if(appData.overrideLineGap < 0) { // do second iteration with adjusted lineGap
 	    lg = lineGap = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
 	    sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
-	    sqy = (wp->height - lg - marginH) / BOARD_HEIGHT - lg;
+	    sqy = (wp->height - lg - marginH - hc) / BOARD_HEIGHT - lg;
 	    if(sqy < sqx) sqx = sqy;
 	}
 	if(sqx != squareSize) {
@@ -1450,7 +1470,6 @@ DragProc ()
 
 	busy = 1;
 //	GetActualPlacement(shellWidget, &wpNew);
-//printf("drag proc (%d,%d) %dx%d\n", wpNew.x, wpNew.y, wpNew.width, wpNew.height);
 	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
 	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) { // not sized
 	    busy = 0; return; // false alarm
