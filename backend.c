@@ -780,9 +780,10 @@ InitEngine (ChessProgramState *cps, int n)
     cps->sendName = appData.icsActive;
     cps->sdKludge = FALSE;
     cps->stKludge = FALSE;
+    if(cps->tidy == NULL) cps->tidy = (char*) malloc(MSG_SIZ);
     TidyProgramName(cps->program, cps->host, cps->tidy);
     cps->matchWins = 0;
-    safeStrCpy(cps->variants, appData.variant, MSG_SIZ);
+    ASSIGN(cps->variants, appData.variant);
     cps->analysisSupport = 2; /* detect */
     cps->analyzing = FALSE;
     cps->initDone = FALSE;
@@ -807,7 +808,7 @@ InitEngine (ChessProgramState *cps, int n)
     cps->supportsNPS = UNKNOWN;
     cps->memSize = FALSE;
     cps->maxCores = FALSE;
-    cps->egtFormats[0] = NULLCHAR;
+    ASSIGN(cps->egtFormats, "");
 
     /* [HGM] options */
     cps->optionSettings  = appData.engOptions[n];
@@ -15947,14 +15948,15 @@ IntFeature (char **p, char *name, int *loc, ChessProgramState *cps)
 }
 
 int
-StringFeature (char **p, char *name, char loc[], ChessProgramState *cps)
+StringFeature (char **p, char *name, char **loc, ChessProgramState *cps)
 {
   char buf[MSG_SIZ];
   int len = strlen(name);
   if (strncmp((*p), name, len) == 0
       && (*p)[len] == '=' && (*p)[len+1] == '\"') {
     (*p) += len + 2;
-    sscanf(*p, "%[^\"]", loc);
+    ASSIGN(*loc, *p); // kludge alert: assign rest of line just to be sure allocation is large enough so that sscanf below always fits
+    sscanf(*p, "%[^\"]", *loc);
     while (**p && **p != '\"') (*p)++;
     if (**p == '\"') (*p)++;
     snprintf(buf, MSG_SIZ, "accepted %s\n", name);
@@ -16075,7 +16077,7 @@ void
 ParseFeatures (char *args, ChessProgramState *cps)
 {
   char *p = args;
-  char *q;
+  char *q = NULL;
   int val;
   char buf[MSG_SIZ];
 
@@ -16095,7 +16097,7 @@ ParseFeatures (char *args, ChessProgramState *cps)
       continue;
     }
     if (BoolFeature(&p, "analyze", &cps->analysisSupport, cps)) continue;
-    if (StringFeature(&p, "myname", cps->tidy, cps)) {
+    if (StringFeature(&p, "myname", &cps->tidy, cps)) {
       if (gameMode == TwoMachinesPlay) {
 	DisplayTwoMachinesTitle();
       } else {
@@ -16103,7 +16105,7 @@ ParseFeatures (char *args, ChessProgramState *cps)
       }
       continue;
     }
-    if (StringFeature(&p, "variants", cps->variants, cps)) continue;
+    if (StringFeature(&p, "variants", &cps->variants, cps)) continue;
     if (BoolFeature(&p, "san", &cps->useSAN, cps)) continue;
     if (BoolFeature(&p, "ping", &cps->usePing, cps)) continue;
     if (BoolFeature(&p, "playother", &cps->usePlayother, cps)) continue;
@@ -16128,12 +16130,11 @@ ParseFeatures (char *args, ChessProgramState *cps)
     if (IntFeature(&p, "level", &cps->maxNrOfSessions, cps)) continue;
     if (BoolFeature(&p, "memory", &cps->memSize, cps)) continue;
     if (BoolFeature(&p, "smp", &cps->maxCores, cps)) continue;
-    if (StringFeature(&p, "egt", cps->egtFormats, cps)) continue;
-    if (StringFeature(&p, "option", buf, cps)) {
-	if(cps->reload) continue; // we are reloading because of xreuse
+    if (StringFeature(&p, "egt", &cps->egtFormats, cps)) continue;
+    if (StringFeature(&p, "option", &q, cps)) { // read to freshly allocated temp buffer first
+	if(cps->reload) { FREE(q); q = NULL; continue; } // we are reloading because of xreuse
 	FREE(cps->option[cps->nrOptions].name);
-	cps->option[cps->nrOptions].name = malloc(MSG_SIZ);
-	safeStrCpy(cps->option[cps->nrOptions].name, buf, MSG_SIZ);
+	cps->option[cps->nrOptions].name = q; q = NULL;
 	if(!ParseOption(&(cps->option[cps->nrOptions++]), cps)) { // [HGM] options: add option feature
 	  snprintf(buf, MSG_SIZ, "rejected option %s\n", cps->option[--cps->nrOptions].name);
 	    SendToProgram(buf, cps);

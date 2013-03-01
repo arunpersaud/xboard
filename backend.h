@@ -369,9 +369,9 @@ typedef struct XB_CPS {
     int sdKludge;    /* 0=use "sd DEPTH" command; 1=use "depth\nDEPTH" */
     int stKludge;    /* 0=use "st TIME" command; 1=use "level 1 TIME" */
     int excludeMoves;/* 0=don't use "exclude" command; 1=do */
-    char tidy[MSG_SIZ];
+    char *tidy;
     int matchWins;
-    char variants[MSG_SIZ];
+    char *variants;
     int analysisSupport;
     int analyzing;
     int protocolVersion;
@@ -396,7 +396,7 @@ typedef struct XB_CPS {
     int alphaRank;    /* [HGM] shogi: engine uses shogi-type coordinates    */
     int maxCores;     /* [HGM] SMP: engine understands cores command        */
     int memSize;      /* [HGM] memsize: engine understands memory command   */
-    char egtFormats[MSG_SIZ];     /* [HGM] EGT: supported tablebase formats */
+    char *egtFormats; /* [HGM] EGT: supported tablebase formats             */
     int bookSuspend;  /* [HGM] book: go was deferred because of book hit    */
     int pause;        /* [HGM] pause: 1=supports it, 2=actually paused      */
     int nrOptions;    /* [HGM] options: remembered option="..." features    */
