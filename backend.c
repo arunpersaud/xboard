@@ -225,6 +225,7 @@ void DisplayTwoMachinesTitle P(());
 static void ExcludeClick P((int index));
 void ToggleSecond P((void));
 void PauseEngine P((ChessProgramState *cps));
+static int NonStandardBoardSize P((void));
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -8428,8 +8429,9 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
       return; // [HGM] This return was missing, causing option features to be recognized as non-compliant commands!
     }
 
-    if ((!appData.testLegality || gameInfo.variant == VariantFairy) &&
-					!strncmp(message, "setup ", 6)) { // [HGM] allow first engine to define opening position
+    if (!strncmp(message, "setup ", 6) && 
+	(!appData.testLegality || gameInfo.variant == VariantFairy || NonStandardBoardSize())
+					) { // [HGM] allow first engine to define opening position
       int dummy, s=6; char buf[MSG_SIZ];
       if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
       if(sscanf(message, "setup (%s", buf) == 1) s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
@@ -9850,11 +9852,38 @@ SendEgtPath (ChessProgramState *cps)
 	}
 }
 
+static int
+NonStandardBoardSize ()
+{
+      /* [HGM] Awkward testing. Should really be a table */
+      int overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
+      if( gameInfo.variant == VariantXiangqi )
+           overruled = gameInfo.boardWidth != 9 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 0;
+      if( gameInfo.variant == VariantShogi )
+           overruled = gameInfo.boardWidth != 9 || gameInfo.boardHeight != 9 || gameInfo.holdingsSize != 7;
+      if( gameInfo.variant == VariantBughouse || gameInfo.variant == VariantCrazyhouse )
+           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 5;
+      if( gameInfo.variant == VariantCapablanca || gameInfo.variant == VariantCapaRandom ||
+          gameInfo.variant == VariantGothic || gameInfo.variant == VariantFalcon || gameInfo.variant == VariantJanus )
+           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
+      if( gameInfo.variant == VariantCourier )
+           overruled = gameInfo.boardWidth != 12 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
+      if( gameInfo.variant == VariantSuper )
+           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 8;
+      if( gameInfo.variant == VariantGreat )
+           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 8;
+      if( gameInfo.variant == VariantSChess )
+           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 7;
+      if( gameInfo.variant == VariantGrand )
+           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 7;
+      return overruled;
+}
+
 void
 InitChessProgram (ChessProgramState *cps, int setup)
 /* setup needed to setup FRC opening position */
 {
-    char buf[MSG_SIZ], b[MSG_SIZ]; int overruled;
+    char buf[MSG_SIZ], b[MSG_SIZ];
     if (appData.noChessProgram) return;
     hintRequested = FALSE;
     bookRequested = FALSE;
@@ -9886,29 +9915,7 @@ InitChessProgram (ChessProgramState *cps, int setup)
 	return;
       }
 
-      /* [HGM] make prefix for non-standard board size. Awkward testing... */
-      overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantXiangqi )
-           overruled = gameInfo.boardWidth != 9 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantShogi )
-           overruled = gameInfo.boardWidth != 9 || gameInfo.boardHeight != 9 || gameInfo.holdingsSize != 7;
-      if( gameInfo.variant == VariantBughouse || gameInfo.variant == VariantCrazyhouse )
-           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 5;
-      if( gameInfo.variant == VariantCapablanca || gameInfo.variant == VariantCapaRandom ||
-          gameInfo.variant == VariantGothic || gameInfo.variant == VariantFalcon || gameInfo.variant == VariantJanus )
-           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantCourier )
-           overruled = gameInfo.boardWidth != 12 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantSuper )
-           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 8;
-      if( gameInfo.variant == VariantGreat )
-           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 8;
-      if( gameInfo.variant == VariantSChess )
-           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 7;
-      if( gameInfo.variant == VariantGrand )
-           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 7;
-
-      if(overruled) {
+      if(NonStandardBoardSize()) { /* [HGM] make prefix for non-standard board size. */
 	snprintf(b, MSG_SIZ, "%dx%d+%d_%s", gameInfo.boardWidth, gameInfo.boardHeight,
 		 gameInfo.holdingsSize, VariantName(gameInfo.variant)); // cook up sized variant name
            /* [HGM] varsize: try first if this defiant size variant is specifically known */
