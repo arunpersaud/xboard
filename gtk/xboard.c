@@ -1694,7 +1694,7 @@ void MoveTypeInProc(eventkey)
 
     buf[0]=eventkey->keyval;
     buf[1]='\0';
-    if (*buf >= 32)
+    if (eventkey->keyval > 32 && eventkey->keyval < 256)
 	BoxAutoPopUp (buf);
 }
 
