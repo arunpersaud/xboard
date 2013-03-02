@@ -1229,8 +1229,8 @@ PopUpMoveDialog (char firstchar)
 void
 BoxAutoPopUp (char *buf)
 {
+	if(!appData.autoBox) return;
 	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
-	    if(!appData.autoBox) return;
 	    if(DialogExists(InputBoxDlg)) { // box already exists: append to current contents
 		char *p, newText[MSG_SIZ];
 		GetWidgetText(&boxOptions[0], &p);
