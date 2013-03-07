@@ -8436,6 +8436,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
       if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
       if(sscanf(message, "setup (%s", buf) == 1) s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
       if(startedFromSetupPosition) return;
+      if(sscanf(message+s, "%dx%d+%d", &dummy, &dummy, &dummy) == 3) while(message[s] && message[s++] != ' '); // for compatibility with Alien Edition
       ParseFEN(boards[0], &dummy, message+s);
       DrawPosition(TRUE, boards[0]);
       startedFromSetupPosition = TRUE;
