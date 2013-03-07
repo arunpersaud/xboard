@@ -12043,7 +12043,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	    gn = 1;
 	}
 	else {
-	    if(gameMode == AnalyzeFile && appData.loadGameIndex == -1)
+	    if(oldGameMode == AnalyzeFile && appData.loadGameIndex == -1)
 	      appData.loadGameIndex = 0; // [HGM] suppress error message if we reach file end after auto-stepping analysis
 	    else
 	    DisplayError(_("Game number out of range"), 0);
