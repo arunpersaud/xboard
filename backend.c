@@ -11193,7 +11193,7 @@ AutoPlayOneMove ()
     if (currentMove >= forwardMostMove) {
       if(gameMode == AnalyzeFile) {
 	  if(appData.loadGameIndex == -1) {
-	    GameEnds(EndOfFile, NULL, GE_FILE);
+	    GameEnds(gameInfo.result, gameInfo.resultDetails ? gameInfo.resultDetails : "", GE_FILE);
           ScheduleDelayedEvent(AnalyzeNextGame, 10);
 	  } else {
           ExitAnalyzeMode(); SendToProgram("force\n", &first);
@@ -12439,9 +12439,11 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
 
-    if (oldGameMode == AnalyzeFile ||
-	oldGameMode == AnalyzeMode) {
+    if (oldGameMode == AnalyzeFile) {
       appData.loadGameIndex = -1; // [HGM] order auto-stepping through games
+      AnalyzeFileEvent();
+    } else
+    if (oldGameMode == AnalyzeMode) {
       AnalyzeFileEvent();
     }
 
