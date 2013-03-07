@@ -11184,11 +11184,17 @@ AutoPlayOneMove ()
     if (gameMode != PlayFromGameFile && gameMode != AnalyzeFile)
       return FALSE;
 
-    if (gameMode == AnalyzeFile && currentMove > backwardMostMove) {
+    if (gameMode == AnalyzeFile && currentMove > backwardMostMove && programStats.depth) {
       pvInfoList[currentMove].depth = programStats.depth;
       pvInfoList[currentMove].score = programStats.score;
       pvInfoList[currentMove].time  = 0;
       if(currentMove < forwardMostMove) AppendComment(currentMove+1, lastPV[0], 2);
+      else { // append analysis of final position as comment
+	char buf[MSG_SIZ];
+	snprintf(buf, MSG_SIZ, "{final score %+4.2f/%d}", programStats.score/100., programStats.depth);
+	AppendComment(currentMove, buf, 3); // the 3 prevents stripping of the score/depth!
+      }
+      programStats.depth = 0;
     }
 
     if (currentMove >= forwardMostMove) {
@@ -15526,7 +15532,8 @@ AppendComment (int index, char *text, Boolean addBraces)
     int oldlen, len;
     char *old;
 
-if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces); fflush(debugFP);
+if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
+    if(addBraces == 3) addBraces = 0; else // force appending literally
     text = GetInfoFromComment( index, text ); /* [HGM] PV time: strip PV info from comment */
 
     CrushCRs(text);
@@ -15627,6 +15634,7 @@ GetInfoFromComment (int index, char * text)
             }
 
             p = text;
+            if(!strncmp(p+1, "final score ", 12)) p += 12, index++; else
             if(p[1] == '(') { // comment starts with PV
                p = strchr(p, ')'); // locate end of PV
                if(p == NULL || sep < p+5) return text;
