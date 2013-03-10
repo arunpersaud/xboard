@@ -1874,7 +1874,7 @@ DisplayMoveError (String message)
 {
     fromX = fromY = -1;
     ClearHighlights();
-    DrawPosition(FALSE, NULL);
+    DrawPosition(TRUE, NULL); // selective redraw would miss the from-square of the rejected move, displayed empty after drag, but not marked damaged!
     if (appData.debugMode || appData.matchMode) {
 	fprintf(stderr, "%s: %s\n", programName, message);
     }
