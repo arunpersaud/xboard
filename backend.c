@@ -15593,8 +15593,11 @@ GetInfoFromComment (int index, char * text)
         int time = -1, sec = 0, deci;
         char * s_eval = FindStr( text, "[%eval " );
         char * s_emt = FindStr( text, "[%emt " );
-
+#if 0
         if( s_eval != NULL || s_emt != NULL ) {
+#else
+        if(0) { // [HGM] this code is not finished, and could actually be detrimental
+#endif
             /* New style */
             char delim;
 
@@ -15647,7 +15650,7 @@ GetInfoFromComment (int index, char * text)
             if(sec >= 0) time = 600*time + 10*sec; else
             if(deci >= 0) time = 10*time + deci; else time *= 10; // deci-sec
 
-            score = score >= 0 ? score*100 + score_lo : score*100 - score_lo;
+            score = score > 0 || !score & p[1] != '-' ? score*100 + score_lo : score*100 - score_lo;
 
             /* [HGM] PV time: now locate end of PV info */
             while( *++sep >= '0' && *sep <= '9'); // strip depth
