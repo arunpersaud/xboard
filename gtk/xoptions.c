@@ -1571,13 +1571,8 @@ SendText (int n)
 void
 SetInsertPos (Option *opt, int pos)
 {
-#ifdef TODO_GTK
-    Arg args[16];
-    XtSetArg(args[0], XtNinsertPosition, pos);
-    XtSetValues(opt->handle, args, 1);
-//    SetFocus(opt->handle, shells[InputBoxDlg], NULL, False); // No idea why this does not work, and the following is needed:
-//    XSetInputFocus(xDisplay, XtWindow(opt->handle), RevertToPointerRoot, CurrentTime);
-#endif
+    if(opt->value > 80) ScrollToCursor(opt, pos);
+    else gtk_editable_set_position(GTK_EDITABLE(opt->handle), pos);
 }
 
 void

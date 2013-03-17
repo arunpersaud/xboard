@@ -1167,7 +1167,8 @@ IcsKey (int n)
       case -1:
 	val = NextInHistory();
     }
-    SetWidgetText(&boxOptions[0], val ? val : "", InputBoxDlg);
+    SetWidgetText(&boxOptions[0], val = val ? val : "", InputBoxDlg);
+    SetInsertPos(&boxOptions[0], strlen(val));
 }
 
 static void
