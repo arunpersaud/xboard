@@ -317,8 +317,13 @@ void
 ScrollToCursor (Option *opt, int caretPos)
 {
     static GtkTextIter iter;
+    static GtkTextMark *mark;
+    if(!mark) mark = gtk_text_mark_new(NULL, 0);
     gtk_text_buffer_get_iter_at_offset((GtkTextBuffer *) opt->handle, &iter, caretPos);
-    gtk_text_view_scroll_to_iter((GtkTextView *) opt->textValue, &iter, 0.0, 0, 0.5, 0.5);
+    gtk_text_buffer_add_mark((GtkTextBuffer *) opt->handle, mark, &iter);
+    gtk_text_view_scroll_to_mark((GtkTextView *) opt->textValue, mark, 0.0, 0, 0.5, 0.5);
+//    gtk_text_view_scroll_to_iter((GtkTextView *) opt->textValue, &iter, 0.0, 0, 0.5, 0.5);
+    gtk_text_buffer_delete_mark((GtkTextBuffer *) opt->handle, mark);
 }
 
 int
