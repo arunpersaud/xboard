@@ -10133,7 +10133,7 @@ WriteTourneyFile (char *results, FILE *f)
 	fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
 	fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
 	fprintf(f, "-usePolyglotBook %s\n", appData.usePolyglotBook ? "true" : "false");
-	fprintf(f, "-polyglotBook %s\n", appData.polyglotBook);
+	fprintf(f, "-polyglotBook \"%s\"\n", appData.polyglotBook);
 	fprintf(f, "-bookDepth %d\n", appData.bookDepth);
 	fprintf(f, "-bookVariation %d\n", appData.bookStrength);
 	fprintf(f, "-discourageOwnBooks %s\n", appData.defNoBook ? "true" : "false");
