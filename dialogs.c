@@ -1698,7 +1698,7 @@ ChatSwitch (int n)
 void
 ChatProc ()
 {
-    if(GenericPopUp(chatOptions, _("Chat box"), ChatDlg, BoardWindow, NONMODAL, 0))
+    if(GenericPopUp(chatOptions, _("Chat box"), ChatDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&chatOptions[0], ChatDlg, 2), AddHandler(&chatOptions[6], ChatDlg, 2); // treats return as OK
     MarkMenu("View.OpenChatWindow", ChatDlg);
 }
