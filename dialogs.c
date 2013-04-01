@@ -2470,12 +2470,12 @@ ListDir (int pathFlag)
 		ASSIGN(fileList[filePtr], s); filePtr++;
 	    }
 	}
-	if(filePtr == MAXFILES-2) { ASSIGN(fileList[filePtr], _("\177 next page")); filePtr++; }
+	if(filePtr == MAXFILES-2) { ASSIGN(fileList[filePtr], _("  next page")); filePtr++; }
 	FREE(folderList[folderPtr]); folderList[folderPtr] = NULL;
 	FREE(fileList[filePtr]); fileList[filePtr] = NULL;
 	closedir(dir);
 	extFlag = 0;         qsort((void*)folderList, folderPtr, sizeof(char*), &Comp);
-	extFlag = byExtension; qsort((void*)fileList, filePtr, sizeof(char*), &Comp);
+	extFlag = byExtension; qsort((void*)fileList, filePtr < MAXFILES-2 ? filePtr : MAXFILES-2, sizeof(char*), &Comp);
 }
 
 void
@@ -2506,7 +2506,7 @@ Switch (int n)
 {
     if(byExtension == (n == 4)) return;
     extFlag = byExtension = (n == 4);
-    qsort((void*)fileList, filePtr, sizeof(char*), &Comp);
+    qsort((void*)fileList, filePtr < MAXFILES-2 ? filePtr : MAXFILES-2, sizeof(char*), &Comp);
     LoadListBox(&browseOptions[6], "", -1, -1);
 }
 
@@ -2526,7 +2526,7 @@ SetTypeFilter (int n)
 void
 FileSelProc (int n, int sel)
 {
-    if(sel<0) return;
+    if(sel < 0 || fileList[sel] == NULL) return;
     if(sel == MAXFILES-2) { pageStart = cnt; Refresh(-1); return; }
     ASSIGN(fileName, fileList[sel]);
     if(BrowseOK(0)) PopDown(BrowserDlg);

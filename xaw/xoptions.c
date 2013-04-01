@@ -201,7 +201,8 @@ LoadListBox (Option *opt, char *emptyText, int n1, int n2)
 {
     static char *dummyList[2];
     dummyList[0] = emptyText; // empty listboxes tend to crash X, so display user-supplied warning string instead
-    XawListChange(opt->handle, *(char*)opt->target ? opt->target : dummyList, 0, 0, True);
+    XawListChange(opt->handle, *(char**)opt->target ? opt->target : dummyList, 0, 0, True);
+//printf("listbox data = %x\n", opt->target);
 }
 
 int
