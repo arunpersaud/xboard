@@ -223,9 +223,12 @@ NEW OPTIONS
         does not work.  Instead, use the -zippyGameEnd option to have
         a string of several commands sent, with newlines in between.
         For example, you could give WinBoard the command line option
-          -zippyGameEnd='say thanks\nseek 5 0\nseek 2 12\n'
-        You could give xboard the command line option
-          -xrm '*zippyGameEnd: say thanks\nseek 5 0\nseek 2 12\n'
+          -zippyGameEnd=\"say thanks\\nseek 5 0\\nseek 2 12\\n\"
+        Note the extra backslashes: these are essential, because the
+        shell will strip them from the command before passing it to
+        XBoard, and XBoard needs to see the quotes (which would
+        otherwise be stripped by the shell as well), because only within
+        quotes it will recognize the \n as a linefeed.
 
   -zippyAdjourn True/False or -zadj/-xzadj
 	Zippy will allow its opponent to adjourn if this option is
