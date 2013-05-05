@@ -1,3 +1,37 @@
+** Version 4.7.1 **
+
+(git diff -b --stat --summary -M v4.7.0 HEAD)
+
+ args.h              |  10 ++-
+ backend.c           | 120 +++++++++++++++++------------
+ backend.h           |   6 +-
+ configure.ac        |   2 +-
+ dialogs.c           |  19 ++---
+ gtk/xboard.c        |  40 +++++++---
+ gtk/xoptions.c      |  16 ++--
+ po/da.po            |   2 +-
+ po/de.po            |  61 ++++++++++-----
+ po/es.po            |   2 +-
+ po/it.po            |   2 +-
+ po/ru.po            |   2 +-
+ po/tr.po            |   2 +-
+ po/uk.po            | 213 +++++++++++++++++++---------------------------------
+ po/vi.po            |   2 +-
+ po/xboard.pot       |   4 +-
+ po/zh_CN.po         |   2 +-
+ po/zh_HK.po         |   2 +-
+ po/zh_TW.po         |   2 +-
+ winboard/config.h   |   6 +-
+ winboard/wchat.c    |  11 ++-
+ xaw/xboard.c        |   3 +-
+ xaw/xengineoutput.c |   4 +-
+ xaw/xhistory.c      |   2 +-
+ xaw/xoptions.c      |   3 +-
+ xboard.texi         | 145 ++++++++++++++++++-----------------
+ zippy.README        |   9 ++-
+ 27 files changed, 368 insertions(+), 324 deletions(-)
+
+
 ** Version 4.7.0 **
 
 (git diff -b --stat --summary -M v4.6.2 HEAD)
