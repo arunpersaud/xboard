@@ -728,6 +728,8 @@ BEGIN
                     94,70,10
     CONTROL         "&makruk",OPT_VariantMakruk,"Button",BS_AUTORADIOBUTTON,80,
                     104,70,10
+    CONTROL         "&ASEAN",OPT_VariantASEAN,"Button",BS_AUTORADIOBUTTON,80,
+                    114,70,10
     CONTROL         "&gothic",OPT_VariantGothic,"Button",BS_AUTORADIOBUTTON,154,14,
                     70,10
     CONTROL         "&capablanca",OPT_VariantCapablanca,"Button",BS_AUTORADIOBUTTON,154,

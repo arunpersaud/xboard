@@ -338,6 +338,7 @@ typedef enum {
     VariantGreat,
     VariantTwilight,
     VariantMakruk,
+    VariantASEAN,
     VariantSChess,
     VariantGrand,
     VariantSpartan,
@@ -384,6 +385,7 @@ typedef enum {
   "great",\
   "twilight",\
   "makruk",\
+  "asean",\
   "seirawan",\
   "grand",\
   "spartan",\

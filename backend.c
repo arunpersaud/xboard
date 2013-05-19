@@ -388,6 +388,7 @@ PosFlags (index)
   case VariantShatranj:
   case VariantCourier:
   case VariantMakruk:
+  case VariantASEAN:
   case VariantGrand:
     flags &= ~F_ALL_CASTLE_OK;
     break;
@@ -553,6 +554,13 @@ ChessSquare ShatranjArray[2][BOARD_FILES] = { /* [HGM] (movGen knows about Shatr
 ChessSquare makrukArray[2][BOARD_FILES] = { /* [HGM] (movGen knows about Shatranj Q and P) */
     { WhiteRook, WhiteKnight, WhiteMan, WhiteKing,
         WhiteFerz, WhiteMan, WhiteKnight, WhiteRook },
+    { BlackRook, BlackKnight, BlackMan, BlackFerz,
+        BlackKing, BlackMan, BlackKnight, BlackRook }
+};
+
+ChessSquare aseanArray[2][BOARD_FILES] = { /* [HGM] (movGen knows about Shatranj Q and P) */
+    { WhiteRook, WhiteKnight, WhiteMan, WhiteFerz,
+        WhiteKing, WhiteMan, WhiteKnight, WhiteRook },
     { BlackRook, BlackKnight, BlackMan, BlackFerz,
         BlackKing, BlackMan, BlackKnight, BlackRook }
 };
@@ -1158,6 +1166,7 @@ InitBackEnd1 ()
       case Variant3Check:     /* should work except for win condition */
       case VariantShatranj:   /* should work except for all win conditions */
       case VariantMakruk:     /* should work except for draw countdown */
+      case VariantASEAN :     /* should work except for draw countdown */
       case VariantBerolina:   /* might work if TestLegality is off */
       case VariantCapaRandom: /* should work */
       case VariantJanus:      /* should work */
@@ -5090,7 +5099,8 @@ SendMoveToICS (ChessMove moveType, int fromX, int fromY, int toX, int toY, char 
         break;
       case WhitePromotion:
       case BlackPromotion:
-        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
+        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
+           gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN)
 	  snprintf(user_move, MSG_SIZ, "%c%c%c%c=%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY,
 		PieceToChar(WhiteFerz));
@@ -5902,6 +5912,12 @@ InitPosition (int redraw)
       startedFromSetupPosition = TRUE;
       SetCharTable(pieceToChar, "PN.R.M....SKpn.r.m....sk");
       break;
+    case VariantASEAN:
+      pieces = aseanArray;
+      nrCastlingRights = 0;
+      startedFromSetupPosition = TRUE;
+      SetCharTable(pieceToChar, "PN.R.Q....BKpn.r.q....bk");
+      break;
     case VariantTwoKings:
       pieces = twoKingsArray;
       break;
@@ -6030,7 +6046,7 @@ InitPosition (int redraw)
 
     pawnRow = gameInfo.boardHeight - 7; /* seems to work in all common variants */
     if(pawnRow < 1) pawnRow = 1;
-    if(gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand) pawnRow = 2;
+    if(gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN || gameInfo.variant == VariantGrand) pawnRow = 2;
 
     /* User pieceToChar list overrules defaults */
     if(appData.pieceToCharTable != NULL)
@@ -6322,7 +6338,8 @@ ChessSquare
 DefaultPromoChoice (int white)
 {
     ChessSquare result;
-    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
+    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
+       gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN)
 	result = WhiteFerz; // no choice
     else if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway)
 	result= WhiteKing; // in Suicide Q is the last thing we want
@@ -6407,7 +6424,8 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     }
 
     // we either have a choice what to promote to, or (in Shogi) whether to promote
-    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk) {
+    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
+       gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN) {
 	*promoChoice = PieceToChar(BlackFerz);  // no choice
 	return FALSE;
     }
@@ -7053,7 +7071,7 @@ CanPromote (ChessSquare piece, int y)
 	if(gameInfo.variant == VariantShogi    || gameInfo.variant == VariantXiangqi ||
 	   gameInfo.variant == VariantSuper    || gameInfo.variant == VariantGreat   ||
 	   gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
-					          gameInfo.variant == VariantMakruk) return FALSE;
+         gameInfo.variant == VariantMakruk   || gameInfo.variant == VariantASEAN) return FALSE;
 	return (piece == BlackPawn && y == 1 ||
 		piece == WhitePawn && y == BOARD_HEIGHT-2 ||
 		piece == BlackLance && y == 1 ||
@@ -14508,6 +14526,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
         if(gameInfo.variant == VariantShatranj ||
            gameInfo.variant == VariantXiangqi  ||
            gameInfo.variant == VariantCourier  ||
+           gameInfo.variant == VariantASEAN    ||
            gameInfo.variant == VariantMakruk     )
             selection = (ChessSquare)((int)selection - (int)WhiteQueen + (int)WhiteFerz);
         goto defaultlabel;
@@ -17131,7 +17150,8 @@ PositionToFEN (int move, char *overrideCastling)
   }
 
   if(gameInfo.variant != VariantShogi    && gameInfo.variant != VariantXiangqi &&
-     gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier && gameInfo.variant != VariantMakruk ) {
+     gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier &&
+     gameInfo.variant != VariantMakruk   && gameInfo.variant != VariantASEAN ) {
     /* En passant target square */
     if (move > backwardMostMove) {
         fromX = moveList[move - 1][0] - AAA;
@@ -17415,7 +17435,8 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
 
     /* read e.p. field in games that know e.p. capture */
     if(gameInfo.variant != VariantShogi    && gameInfo.variant != VariantXiangqi &&
-       gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier && gameInfo.variant != VariantMakruk ) {
+       gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier &&
+       gameInfo.variant != VariantMakruk && gameInfo.variant != VariantASEAN ) {
       if(*p=='-') {
         p++; board[EP_STATUS] = EP_NONE;
       } else {

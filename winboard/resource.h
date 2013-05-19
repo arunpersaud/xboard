@@ -504,6 +504,7 @@
 #define OPT_VariantMakruk               1529
 #define OPT_VariantSChess               1530
 #define OPT_VariantSpartan              1531
+#define OPT_VariantASEAN                1532
 #define OPT_VariantGrand                1534
 #define IDC_Files                       1550
 #define IDC_Ranks                       1551

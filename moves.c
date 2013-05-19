@@ -573,7 +573,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             /* Shogi Pawn and Silver General: first the Pawn move,    */
             /* then the General continues like a Ferz                 */
             case WhiteMan:
-                if(gameInfo.variant != VariantMakruk) goto commoner;
+                if(gameInfo.variant != VariantMakruk && gameInfo.variant != VariantASEAN) goto commoner;
             case SHOGI WhitePawn:
             case SHOGI WhiteFerz:
                   if (rf < BOARD_HEIGHT-1 &&
@@ -584,7 +584,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
               break;
 
             case BlackMan:
-                if(gameInfo.variant != VariantMakruk) goto commoner;
+                if(gameInfo.variant != VariantMakruk && gameInfo.variant != VariantASEAN) goto commoner;
             case SHOGI BlackPawn:
             case SHOGI BlackFerz:
                   if (rf > 0 &&
@@ -1400,7 +1400,8 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
     } else
     if (closure->kind == WhitePromotion || closure->kind == BlackPromotion) {
         if(c == NULLCHAR) { // missing promoChar on mandatory promotion; use default for variant
-            if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
+            if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
+               gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN)
                 c = PieceToChar(BlackFerz);
             else if(gameInfo.variant == VariantGreat)
                 c = PieceToChar(BlackMan);

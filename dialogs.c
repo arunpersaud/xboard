@@ -426,7 +426,7 @@ static Option variantDescriptors[] = {
 { 0, 0, 275, NULL, NULL, NULL, NULL, Label, warning },
 { 0, 0, 275, NULL, NULL, NULL, NULL, Label, "Variants marked with * can only be played\nwith legality testing off"},
 { 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, ""},
-{ VariantFairy,         0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
+{ VariantASEAN,         0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("ASEAN")},
 { VariantGreat,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Great Shatranj (10x8)")},
 { VariantSChess,        0, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("Seirawan")},
 { VariantFalcon, SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("falcon (10x8)")},
@@ -444,7 +444,8 @@ static Option variantDescriptors[] = {
 { VariantShogi,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("shogi (9x9)")},
 { VariantSpartan,       0, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
 { VariantXiangqi, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("xiangqi (9x10)")},
-{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
+{ VariantFairy,         0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
+//{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
 { VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
 { 0, NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };

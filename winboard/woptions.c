@@ -853,6 +853,7 @@ int radioButton[] = {
     OPT_VariantGreat,
     -1, // Twilight,
     OPT_VariantMakruk,
+    OPT_VariantASEAN,
     OPT_VariantSChess,
     OPT_VariantGrand,
     OPT_VariantSpartan, // Spartan
