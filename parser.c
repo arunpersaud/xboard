@@ -353,7 +353,7 @@ badMove:// we failed to find algebraic move
 	}
 
 	// ********* SAN Castings *************************************
-	if(**p == 'O' || **p == 'o' || **p == '0') {
+	if(**p == 'O' || **p == 'o' || **p == '0' && !Match("00:", p)) { // exclude 00 in time stamps
 	    int castlingType = 0;
 	    if(Match("O-O-O", p) || Match("o-o-o", p) || Match("0-0-0", p) ||
 	       Match("OOO", p) || Match("ooo", p) || Match("000", p)) castlingType = 2;
@@ -532,6 +532,8 @@ badMove:// we failed to find algebraic move
 	    return Nothing;
 	}
 
+	// ********* Prevent 00 in unprotected time stamps to be mistaken for castling *******
+	if(Match(":00", p)) return Nothing;
 
 	// ********* Could not match to anything. Return offending character ****
 	(*p)++;
