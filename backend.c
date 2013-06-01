@@ -5909,13 +5909,11 @@ InitPosition (int redraw)
     case VariantMakruk:
       pieces = makrukArray;
       nrCastlingRights = 0;
-      startedFromSetupPosition = TRUE;
       SetCharTable(pieceToChar, "PN.R.M....SKpn.r.m....sk");
       break;
     case VariantASEAN:
       pieces = aseanArray;
       nrCastlingRights = 0;
-      startedFromSetupPosition = TRUE;
       SetCharTable(pieceToChar, "PN.R.Q....BKpn.r.q....bk");
       break;
     case VariantTwoKings:
