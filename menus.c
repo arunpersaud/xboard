@@ -215,7 +215,7 @@ CopyPositionProc ()
     static char *selected_fen_position=NULL;
     if(gameMode == EditPosition) EditPositionDone(TRUE);
     if (selected_fen_position) free(selected_fen_position);
-    selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
+    selected_fen_position = (char *)PositionToFEN(currentMove, NULL, 1);
     if (!selected_fen_position) return;
     CopySomething(selected_fen_position);
 }

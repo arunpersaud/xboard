@@ -5164,7 +5164,7 @@ UploadGameEvent ()
 	SendToICS(ics_prefix);
 	SendToICS(buf);
 	if(startedFromSetupPosition || backwardMostMove != 0) {
-	  fen = PositionToFEN(backwardMostMove, NULL);
+	  fen = PositionToFEN(backwardMostMove, NULL, 1);
 	  if(ics_type == ICS_ICC) { // on ICC we can simply send a complete FEN to set everything
 	    snprintf(buf, MSG_SIZ,"loadfen %s\n", fen);
 	    SendToICS(buf);
@@ -6155,7 +6155,7 @@ SendBoard (ChessProgramState *cps, int moveNum)
     char message[MSG_SIZ];
 
     if (cps->useSetboard) {
-      char* fen = PositionToFEN(moveNum, cps->fenOverride);
+      char* fen = PositionToFEN(moveNum, cps->fenOverride, 1);
       snprintf(message, MSG_SIZ,"setboard %s\n", fen);
       SendToProgram(message, cps);
       free(fen);
@@ -12836,7 +12836,7 @@ SaveGamePGN (FILE *f)
     if(appData.numberTag && matchMode) fprintf(f, "[Number \"%d\"]\n", nextGame+1); // [HGM] number tag
 
     if (backwardMostMove > 0 || startedFromSetupPosition) {
-        char *fen = PositionToFEN(backwardMostMove, NULL);
+        char *fen = PositionToFEN(backwardMostMove, NULL, 1);
         fprintf(f, "[FEN \"%s\"]\n[SetUp \"1\"]\n", fen);
 	fprintf(f, "\n{--------------\n");
 	PrintPosition(f, backwardMostMove);
@@ -13105,7 +13105,7 @@ SavePosition (FILE *f, int dummy, char *dummy2)
 	PrintPosition(f, currentMove);
 	fprintf(f, "--------------]\n");
     } else {
-	fen = PositionToFEN(currentMove, NULL);
+	fen = PositionToFEN(currentMove, NULL, 1);
 	fprintf(f, "%s\n", fen);
 	free(fen);
     }
@@ -17020,7 +17020,7 @@ PGNDate ()
 
 
 char *
-PositionToFEN (int move, char *overrideCastling)
+PositionToFEN (int move, char *overrideCastling, int moveCounts)
 {
     int i, j, fromX, fromY, toX, toY;
     int whiteToPlay;
@@ -17183,9 +17183,10 @@ PositionToFEN (int move, char *overrideCastling)
   }
   }
 
-    /* [HGM] find reversible plies */
+    if(moveCounts)
     {   int i = 0, j=move;
 
+        /* [HGM] find reversible plies */
         if (appData.debugMode) { int k;
             fprintf(debugFP, "write FEN 50-move: %d %d %d\n", initialRulePlies, forwardMostMove, backwardMostMove);
             for(k=backwardMostMove; k<=forwardMostMove; k++)
@@ -17197,9 +17198,10 @@ PositionToFEN (int move, char *overrideCastling)
         if( j == backwardMostMove ) i += initialRulePlies;
         sprintf(p, "%d ", i);
         p += i>=100 ? 4 : i >= 10 ? 3 : 2;
-    }
-    /* Fullmove number */
-    sprintf(p, "%d", (move / 2) + 1);
+
+        /* Fullmove number */
+        sprintf(p, "%d", (move / 2) + 1);
+    } else *--p = NULLCHAR;
 
     return StrSave(buf);
 }

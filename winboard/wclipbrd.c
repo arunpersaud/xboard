@@ -54,7 +54,7 @@ CopyFENToClipboard()
   char *fen = NULL;
 
   if(gameMode == EditPosition) EditPositionDone(TRUE); // [HGM] mak sure castling rights are set consistently
-  fen = PositionToFEN(currentMove, NULL);
+  fen = PositionToFEN(currentMove, NULL, 1);
   if (!fen) {
     DisplayError(_("Unable to convert position to FEN."), 0);
     return;

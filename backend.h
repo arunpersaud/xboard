@@ -119,7 +119,7 @@ extern Boolean mcMode;
 void MarkMenuItem P((char *menuRef, int state));
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */
-char *PositionToFEN P((int move, char* useFEN960));
+char *PositionToFEN P((int move, char* useFEN960, int moveCounts));
 void AlphaRank P((char *s, int n)); /* [HGM] Shogi move preprocessor */
 void EditPositionPasteFEN P((char *fen));
 void TimeDelay P((long ms));
