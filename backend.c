@@ -8305,6 +8305,17 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 
 	MakeMove(fromX, fromY, toX, toY, promoChar);/*updates forwardMostMove*/
 
+        /* Test suites abort the 'game' after one move */
+        if(*appData.finger) {
+           static FILE *f;
+           char *fen = PositionToFEN(backwardMostMove, NULL, 0); // no counts in EPD
+           if(!f) f = fopen(appData.finger, "w");
+           if(f) fprintf(f, "%s bm %s;\n", fen, parseList[backwardMostMove]), fflush(f);
+           else { DisplayFatalError("Bad output file", errno, 0); return; }
+           free(fen);
+           GameEnds(GameUnfinished, NULL, GE_XBOARD);
+        }
+
         /* [AS] Adjudicate game if needed (note: remember that forwardMostMove now points past the last move) */
         if( gameMode == TwoMachinesPlay && adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
             int count = 0;

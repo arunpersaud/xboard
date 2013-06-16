@@ -597,6 +597,7 @@ ArgDescriptor argDescriptors[] = {
   { "useBorder", ArgBoolean, (void *) &appData.useBorder, TRUE, (ArgIniType) FALSE },
   { "ub", ArgBoolean, (void *) &appData.useBorder, FALSE, INVALID },
   { "border", ArgFilename, (void *) &appData.border, TRUE, (ArgIniType) "" },
+  { "finger", ArgFilename, (void *) &appData.finger, FALSE, (ArgIniType) "" },
 
   // [HGM] tournament options
   { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },

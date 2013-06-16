@@ -657,6 +657,7 @@ typedef struct {
 
     char *serverFileName;
     char *serverMovesName;
+    char *finger;
     Boolean suppressLoadMoves;
     int serverPause;
     int timeOdds[ENGINES];
