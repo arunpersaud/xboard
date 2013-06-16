@@ -10861,6 +10861,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 		    PlayIcsUnfinishedSound();
 		}
 	    }
+	    if(appData.quitNext) { ExitEvent(0); return; }
 	} else if (gameMode == EditGame ||
 	           gameMode == PlayFromGameFile ||
 	           gameMode == AnalyzeMode ||

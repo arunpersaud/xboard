@@ -579,6 +579,7 @@ Option icsOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.seekGraph, "",   NULL, CheckBox, N_("Seek Graph") },
 { 0, 0, 0, NULL, (void*) &appData.autoRefresh, "", NULL, CheckBox, N_("Auto-Refresh Seek Graph") },
 { 0, 0, 0, NULL, (void*) &appData.autoBox, "", NULL, CheckBox, N_("Auto-InputBox PopUp") },
+{ 0, 0, 0, NULL, (void*) &appData.quitNext, "", NULL, CheckBox, N_("Quit after game") },
 { 0, 0, 0, NULL, (void*) &appData.premove, "",     NULL, CheckBox, N_("Premove") },
 { 0, 0, 0, NULL, (void*) &appData.premoveWhite, "", NULL, CheckBox, N_("Premove for White") },
 { 0, 0, 0, NULL, (void*) &appData.premoveWhiteText, "", NULL, TextBox, N_("First White Move:") },

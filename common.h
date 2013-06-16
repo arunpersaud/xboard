@@ -653,6 +653,7 @@ typedef struct {
     int zippyShortGame; /* [HGM] aborter   */
 #endif
     Boolean lowTimeWarning; /* [HGM] low time */
+    Boolean quitNext;
     char *lowTimeWarningColor;
 
     char *serverFileName;
