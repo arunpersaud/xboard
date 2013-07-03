@@ -5239,7 +5239,8 @@ ProcessICSInitScript (FILE *f)
 }
 
 
-static int lastX, lastY, selectFlag, dragging;
+static int lastX, lastY, lastLeftX, lastLeftY, selectFlag, dragging;
+static ClickType lastClickType;
 
 void
 Sweep (int step)
@@ -7160,6 +7161,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     prevClickTime = lastClickTime; GetTimeMark(&lastClickTime);
 
     if (clickType == Press) ErrorPopDown();
+    lastClickType = clickType, lastLeftX = xPix, lastLeftY = yPix; // [HGM] alien: remember state
 
     x = EventToSquare(xPix, BOARD_WIDTH);
     y = EventToSquare(yPix, BOARD_HEIGHT);
@@ -8663,6 +8665,23 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
     if(!strncmp(message, "highlight ", 10)) {
 	if(appData.testLegality && appData.markers) return;
 	MarkByFEN(message+10); // [HGM] alien: allow engine to mark board squares
+	return;
+    }
+    if(!strncmp(message, "click ", 6)) {
+	char f, c=0; int x, y; // [HGM] alien: allow engine to finish user moves (i.e. engine-driven one-click moving)
+	if(appData.testLegality || !appData.oneClick) return;
+	sscanf(message+6, "%c%d%c", &f, &y, &c);
+	x = f - 'a' + BOARD_LEFT, y -= ONE - '0';
+	if(flipView) x = BOARD_WIDTH-1 - x; else y = BOARD_HEIGHT-1 - y;
+	x = x*squareSize + (x+1)*lineGap + squareSize/2;
+	y = y*squareSize + (y+1)*lineGap + squareSize/2;
+	f = first.highlight; first.highlight = 0; // kludge to suppress lift/put in response to own clicks
+	if(lastClickType == Press) // if button still down, fake release on same square, to be ready for next click
+	    LeftClick(Release, lastLeftX, lastLeftY);
+	controlKey  = (c == ',');
+	LeftClick(Press, x, y);
+	LeftClick(Release, x, y);
+	first.highlight = f;
 	return;
     }
     /*
