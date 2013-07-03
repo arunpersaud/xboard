@@ -269,6 +269,7 @@ char chatPartner[MAX_CHAT][MSG_SIZ]; /* [HGM] chat: list of chatting partners */
 extern int chatCount;
 int chattingPartner;
 char marker[BOARD_RANKS][BOARD_FILES]; /* [HGM] marks for target squares */
+char legal[BOARD_RANKS][BOARD_FILES];  /* [HGM] legal target squares */
 char lastMsg[MSG_SIZ];
 ChessSquare pieceSweep = EmptySquare;
 ChessSquare promoSweep = EmptySquare, defaultPromoChoice;
@@ -7019,12 +7020,15 @@ MarkByFEN(char *fen)
 {
 	int r, f;
 	if(!appData.markers || !appData.highlightDragging) return;
-	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) marker[r][f] = 0;
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) marker[r][f] = legal[r][f] = 0;
 	r=BOARD_HEIGHT-1; f=BOARD_LEFT;
 	while(*fen) {
 	    int s = 0;
 	    marker[r][f] = 0;
+	    if(*fen >= 'A' && *fen <= 'Z') legal[r][f] = 1; else
+	    if(*fen >= 'a' && *fen <= 'z') *fen += 'A' - 'a';
 	    if(*fen == '/' && f > BOARD_LEFT) f = BOARD_LEFT, r--; else
+	    if(*fen == 'T') marker[r][f++] = 0; else
 	    if(*fen == 'Y') marker[r][f++] = 1; else
 	    if(*fen == 'R') marker[r][f++] = 2; else {
 		while(*fen <= '9' && *fen >= '0') s = 10*s + *fen++ - '0';
@@ -7104,6 +7108,9 @@ CanPromote (ChessSquare piece, int y)
 void ReportClick(char *action, int x, int y)
 {
 	char buf[MSG_SIZ]; // Inform engine of what user does
+	int r, f;
+	if(action[0] == 'l') // mark any target square of a lifted piece as legal to-square
+	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = 1;
 	if(!first.highlight || gameMode == EditPosition) return;
 	snprintf(buf, MSG_SIZ, "%s %c%d%s\n", action, x+AAA, y+ONE-'0', controlKey && action[0]=='p' ? "," : "");
 	SendToProgram(buf, &first);
@@ -7320,6 +7327,13 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     }
 
     clearFlag = 0;
+
+    if(gameMode != EditPosition && !appData.testLegality && !legal[y][x]) {
+	if(dragging) DragPieceEnd(xPix, yPix), dragging = 0;
+	DisplayMessage(_("only marked squares are legal"),"");
+	DrawPosition(TRUE, NULL);
+	return; // ignore to-click
+    }
 
     /* we now have a different from- and (possibly off-board) to-square */
     /* Completed move */
