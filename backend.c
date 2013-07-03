@@ -825,6 +825,7 @@ InitEngine (ChessProgramState *cps, int n)
     cps->scoreIsAbsolute = appData.scoreIsAbsolute[n]; /* [AS] */
     cps->isUCI = appData.isUCI[n]; /* [AS] */
     cps->hasOwnBookUCI = appData.hasOwnBookUCI[n]; /* [AS] */
+    cps->highlight = 0;
 
     if (appData.protocolVersion[n] > PROTOVER
 	|| appData.protocolVersion[n] < 1)
@@ -7014,6 +7015,29 @@ FinishMove (ChessMove moveType, int fromX, int fromY, int toX, int toY, int prom
 }
 
 void
+MarkByFEN(char *fen)
+{
+	int r, f;
+	if(!appData.markers || !appData.highlightDragging) return;
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) marker[r][f] = 0;
+	r=BOARD_HEIGHT-1; f=BOARD_LEFT;
+	while(*fen) {
+	    int s = 0;
+	    marker[r][f] = 0;
+	    if(*fen == '/' && f > BOARD_LEFT) f = BOARD_LEFT, r--; else
+	    if(*fen == 'Y') marker[r][f++] = 1; else
+	    if(*fen == 'R') marker[r][f++] = 2; else {
+		while(*fen <= '9' && *fen >= '0') s = 10*s + *fen++ - '0';
+	      f += s; fen -= s>0;
+	    }
+	    while(f >= BOARD_RGHT) f -= BOARD_RGHT - BOARD_LEFT, r--;
+	    if(r < 0) break;
+	    fen++;
+	}
+	DrawPosition(TRUE, NULL);
+}
+
+void
 Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
     typedef char Markers[BOARD_RANKS][BOARD_FILES];
@@ -7028,13 +7052,14 @@ Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VO
 void
 MarkTargetSquares (int clear)
 {
-  int x, y;
-  if(clear) // no reason to ever suppress clearing
-    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) marker[y][x] = 0;
-  if(!appData.markers || !appData.highlightDragging || appData.icsActive && gameInfo.variant < VariantShogi ||
-     !appData.testLegality || gameMode == EditPosition) return;
-  if(!clear) {
+  int x, y, sum=0;
+  if(clear) { // no reason to ever suppress clearing
+    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) sum += marker[y][x], marker[y][x] = 0;
+    if(!sum) return; // nothing was cleared,no redraw needed
+  } else {
     int capt = 0;
+    if(!appData.markers || !appData.highlightDragging || appData.icsActive && gameInfo.variant < VariantShogi ||
+       !appData.testLegality || gameMode == EditPosition) return;
     GenLegal(boards[currentMove], PosFlags(currentMove), Mark, (void*) marker, EmptySquare);
     if(PosFlags(0) & F_MANDATORY_CAPTURE) {
       for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) if(marker[y][x]>1) capt++;
@@ -7074,6 +7099,14 @@ CanPromote (ChessSquare piece, int y)
 		piece == WhitePawn && y == BOARD_HEIGHT-2 ||
 		piece == BlackLance && y == 1 ||
 		piece == WhiteLance && y == BOARD_HEIGHT-2 );
+}
+
+void ReportClick(char *action, int x, int y)
+{
+	char buf[MSG_SIZ]; // Inform engine of what user does
+	if(!first.highlight || gameMode == EditPosition) return;
+	snprintf(buf, MSG_SIZ, "%s %c%d%s\n", action, x+AAA, y+ONE-'0', controlKey && action[0]=='p' ? "," : "");
+	SendToProgram(buf, &first);
 }
 
 void
@@ -7175,6 +7208,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    /* First square */
 	    if (OKToStartUserMove(fromX, fromY)) {
 		second = 0;
+		ReportClick("lift", x, y);
 		MarkTargetSquares(0);
 		if(gameMode == EditPosition && controlKey) gatingPiece = boards[currentMove][fromY][fromX];
 		DragPieceBegin(xPix, yPix, FALSE); dragging = 1;
@@ -7237,6 +7271,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 		else gatingPiece = doubleClick ? fromP : EmptySquare;
 		fromX = x;
 		fromY = y; dragging = 1;
+		ReportClick("lift", x, y);
 		MarkTargetSquares(0);
 		DragPieceBegin(xPix, yPix, FALSE);
 		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][y][x], y)) {
@@ -7365,6 +7400,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 
     // off-board moves should not be highlighted
     if(x < 0 || y < 0) ClearHighlights();
+    else ReportClick("put", x, y);
 
     if(gatingPiece != EmptySquare && gameInfo.variant == VariantSChess) promoChoice = ToLower(PieceToChar(gatingPiece));
 
@@ -8579,6 +8615,11 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	}
     }
     if (sscanf(message, "pong %d", &cps->lastPong) == 1) {
+	return;
+    }
+    if(!strncmp(message, "highlight ", 10)) {
+	if(appData.testLegality && appData.markers) return;
+	MarkByFEN(message+10); // [HGM] alien: allow engine to mark board squares
 	return;
     }
     /*
@@ -16177,6 +16218,7 @@ ParseFeatures (char *args, ChessProgramState *cps)
     /* End of additions by Tord */
 
     /* [HGM] added features: */
+    if (BoolFeature(&p, "highlight", &cps->highlight, cps)) continue;
     if (BoolFeature(&p, "debug", &cps->debug, cps)) continue;
     if (BoolFeature(&p, "nps", &cps->supportsNPS, cps)) continue;
     if (IntFeature(&p, "level", &cps->maxNrOfSessions, cps)) continue;
