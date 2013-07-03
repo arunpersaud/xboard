@@ -641,6 +641,8 @@ pngDrawPiece (cairo_surface_t *dest, ChessSquare piece, int square_color, int x,
     cairo_destroy (cr);
 }
 
+static char *markerColor[8] = { "#FFFF00", "#FF0000", "#00FF00", "#0000FF", "#00FFFF", "#FF00FF", "#FFFFFF", "#000000" };
+
 void
 DoDrawDot (cairo_surface_t *cs, int marker, int x, int y, int r)
 {
@@ -653,7 +655,7 @@ DoDrawDot (cairo_surface_t *cs, int marker, int x, int y, int r)
 	    cairo_stroke_preserve(cr);
 	    SetPen(cr, 2, marker == 2 ? "#FFFFFF" : "#000000", 0);
 	} else {
-	    SetPen(cr, 2, marker == 2 ? "#FF0000" : "#FFFF00", 0);
+	    SetPen(cr, 2, markerColor[marker-1], 0);
 	}
 	cairo_fill(cr);
 

@@ -187,6 +187,7 @@ Boolean alwaysOnTop = FALSE;
 RECT boardRect;
 COLORREF lightSquareColor, darkSquareColor, whitePieceColor, 
   blackPieceColor, highlightSquareColor, premoveHighlightColor;
+COLORREF markerColor[8] = { 0x00FFFF, 0x0000FF, 0x00FF00, 0xFF0000, 0xFFFF00, 0xFF00FF, 0xFFFFFF, 0x000000 };
 HPALETTE hPal;
 ColorClass currentColorClass;
 
@@ -197,7 +198,7 @@ static HBITMAP pieceBitmap[3][(int) BlackPawn]; /* [HGM] nr of bitmaps referred 
 static HBRUSH lightSquareBrush, darkSquareBrush,
   blackSquareBrush, /* [HGM] for band between board and holdings */
   explodeBrush,     /* [HGM] atomic */
-  markerBrush,      /* [HGM] markers */
+  markerBrush[8],   /* [HGM] markers */
   whitePieceBrush, blackPieceBrush, iconBkgndBrush /*, outlineBrush*/;
 static POINT gridEndpoints[(BOARD_RANKS + BOARD_FILES + 2) * 2];
 static DWORD gridVertexCounts[BOARD_RANKS + BOARD_FILES + 2];
@@ -2164,6 +2165,7 @@ InsertInPalette(COLORREF color)
 VOID
 InitDrawingColors()
 {
+  int i;
   if (pLogPal == NULL) {
     /* Allocate enough memory for a logical palette with
      * PALETTESIZE entries and set the size and version fields
@@ -2195,8 +2197,9 @@ InitDrawingColors()
   blackPieceBrush = CreateSolidBrush(blackPieceColor);
   iconBkgndBrush = CreateSolidBrush(GetSysColor(COLOR_BACKGROUND));
   explodeBrush = CreateSolidBrush(highlightSquareColor); // [HGM] atomic
-  markerBrush = CreateSolidBrush(premoveHighlightColor); // [HGM] markers
-  /* [AS] Force rendering of the font-based pieces */
+    for(i=0; i<8;i++) markerBrush[i] = CreateSolidBrush(markerColor[i]); // [HGM] markers
+
+   /* [AS] Force rendering of the font-based pieces */
   if( fontBitmapSquareSize > 0 ) {
     fontBitmapSquareSize = 0;
   }
@@ -3620,7 +3623,7 @@ void DrawSeekDot(int x, int y, int color)
 {
 	int square = color & 0x80;
 	HBRUSH oldBrush = SelectObject(hdcSeek, 
-			color == 0 ? markerBrush : color == 1 ? darkSquareBrush : explodeBrush);
+			color == 0 ? markerBrush[1] : color == 1 ? darkSquareBrush : explodeBrush);
 	color &= 0x7F;
 	if(square)
 	    Rectangle(hdcSeek, boardRect.left+x - squareSize/9, boardRect.top+y - squareSize/9,
@@ -3913,8 +3916,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   for (row = 0; row < BOARD_HEIGHT; row++) {
     for (column = 0; column < BOARD_WIDTH; column++) {
 	if (marker[row][column]) { // marker changes only occur with full repaint!
-	    HBRUSH oldBrush = SelectObject(hdcmem, 
-			marker[row][column] == 2 ? markerBrush : explodeBrush);
+	    HBRUSH oldBrush = SelectObject(hdcmem, markerBrush[marker[row][column]-1]);
 	    SquareToPos(row, column, &x, &y);
 	    Ellipse(hdcmem, x + squareSize/4, y + squareSize/4,
 		  	  x + 3*squareSize/4, y + 3*squareSize/4);

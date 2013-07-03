@@ -7020,7 +7020,7 @@ MarkByFEN(char *fen)
 {
 	int r, f;
 	if(!appData.markers || !appData.highlightDragging) return;
-	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) marker[r][f] = legal[r][f] = 0;
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = 0;
 	r=BOARD_HEIGHT-1; f=BOARD_LEFT;
 	while(*fen) {
 	    int s = 0;
@@ -7030,6 +7030,12 @@ MarkByFEN(char *fen)
 	    if(*fen == '/' && f > BOARD_LEFT) f = BOARD_LEFT, r--; else
 	    if(*fen == 'T') marker[r][f++] = 0; else
 	    if(*fen == 'Y') marker[r][f++] = 1; else
+	    if(*fen == 'G') marker[r][f++] = 3; else
+	    if(*fen == 'B') marker[r][f++] = 4; else
+	    if(*fen == 'C') marker[r][f++] = 5; else
+	    if(*fen == 'M') marker[r][f++] = 6; else
+	    if(*fen == 'W') marker[r][f++] = 7; else
+	    if(*fen == 'D') marker[r][f++] = 8; else
 	    if(*fen == 'R') marker[r][f++] = 2; else {
 		while(*fen <= '9' && *fen >= '0') s = 10*s + *fen++ - '0';
 	      f += s; fen -= s>0;
@@ -7109,8 +7115,8 @@ void ReportClick(char *action, int x, int y)
 {
 	char buf[MSG_SIZ]; // Inform engine of what user does
 	int r, f;
-	if(action[0] == 'l') // mark any target square of a lifted piece as legal to-square
-	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = 1;
+	if(action[0] == 'l') // mark any target square of a lifted piece as legal to-square, clear markers
+	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = 1, marker[r][f] = 0;
 	if(!first.highlight || gameMode == EditPosition) return;
 	snprintf(buf, MSG_SIZ, "%s %c%d%s\n", action, x+AAA, y+ONE-'0', controlKey && action[0]=='p' ? "," : "");
 	SendToProgram(buf, &first);
