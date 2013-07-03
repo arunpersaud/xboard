@@ -7111,6 +7111,28 @@ CanPromote (ChessSquare piece, int y)
 		piece == WhiteLance && y == BOARD_HEIGHT-2 );
 }
 
+void
+HoverEvent (int hiX, int hiY, int x, int y)
+{
+	static char baseMarker[BOARD_RANKS][BOARD_FILES], baseLegal[BOARD_RANKS][BOARD_FILES];
+	int r, f;
+	if(!first.highlight) return;
+	if(hiX == -1 && hiY == -1 && x == fromX && y == fromY) // record markings 
+	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
+	    baseMarker[r][f] = marker[r][f], baseLegal[r][f] = legal[r][f];
+	else if(hiX != x || hiY != y) {
+	  // [HGM] lift: entered new to-square; redraw arrow, and inform engine
+	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
+	    marker[r][f] = baseMarker[r][f], legal[r][f] = baseLegal[r][f];
+	  if(marker[y][x] == 2 && legal[y][x] == 1) {
+	    char buf[MSG_SIZ];
+	    snprintf(buf, MSG_SIZ, "hover %c%d\n", x + AAA, y + ONE - '0');
+	    SendToProgram(buf, &first);
+	  }
+	  SetHighlights(fromX, fromY, x, y);
+	}
+}
+
 void ReportClick(char *action, int x, int y)
 {
 	char buf[MSG_SIZ]; // Inform engine of what user does

@@ -4302,7 +4302,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	dragInfo.pos = pt;
       }
       if (appData.highlightDragging) {
-	SetHighlights(fromX, fromY, x, y);
+	HoverEvent(highlightInfo.sq[1].x, highlightInfo.sq[1].y, x, y);
         if( IsDrawArrowEnabled() && (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) ) {
             full_repaint = TRUE;
         }
