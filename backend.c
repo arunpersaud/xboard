@@ -7025,6 +7025,7 @@ MarkByFEN(char *fen)
 	while(*fen) {
 	    int s = 0;
 	    marker[r][f] = 0;
+	    if(*fen == 'M') legal[r][f] = 2; else // request promotion choice
 	    if(*fen >= 'A' && *fen <= 'Z') legal[r][f] = 1; else
 	    if(*fen >= 'a' && *fen <= 'z') *fen += 'A' - 'a';
 	    if(*fen == '/' && f > BOARD_LEFT) f = BOARD_LEFT, r--; else
@@ -7124,8 +7125,8 @@ HoverEvent (int hiX, int hiY, int x, int y)
 	  // [HGM] lift: entered new to-square; redraw arrow, and inform engine
 	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
 	    marker[r][f] = baseMarker[r][f], legal[r][f] = baseLegal[r][f];
-	  if(marker[y][x] == 2 && legal[y][x] == 1) {
-	    char buf[MSG_SIZ];
+	  if((marker[y][x] == 2 || marker[y][x] == 6) && legal[y][x]) {
+ 	    char buf[MSG_SIZ];
 	    snprintf(buf, MSG_SIZ, "hover %c%d\n", x + AAA, y + ONE - '0');
 	    SendToProgram(buf, &first);
 	  }
@@ -7378,7 +7379,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    if(x >= BOARD_LEFT && x < BOARD_RGHT) clearFlag = 1; // and defer click-click move of empty-square to up-click
 	    return;
 	}
-	if(HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
+	if(legal[y][x] == 2 || HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
 	  if(appData.sweepSelect) {
 	    ChessSquare piece = boards[currentMove][fromY][fromX];
 	    promoSweep = defaultPromoChoice;
