@@ -15253,7 +15253,7 @@ void
 CreateBookEvent ()
 {
     ListGame * lg = (ListGame *) gameList.head;
-    FILE *f;
+    FILE *f, *g;
     int nItem;
     static int secondTime = FALSE;
 
@@ -15262,8 +15262,8 @@ CreateBookEvent ()
         return;
     }
 
-    if(!secondTime && (f = fopen(appData.polyglotBook, "r"))) {
-        fclose(f);
+    if(!secondTime && (g = fopen(appData.polyglotBook, "r"))) {
+        fclose(g);
 	secondTime++;
 	DisplayNote(_("Book file exists! Try again for overwrite."));
 	return;
