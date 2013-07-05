@@ -2144,7 +2144,11 @@ Exp (int n, int x, int y)
 	if(SeekGraphClick(Press, x, y, 1)) return NULL;
 	if(but1 && !PromoScroll(x, y)) DragPieceMove(x, y);
 	if(but3) MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
-	if(appData.highlightDragging) HoverEvent(hi2X, hi2Y, x, y);
+	if(appData.highlightDragging) {
+	    x = EventToSquare(x, BOARD_WIDTH);  if ( flipView && x >= 0) x = BOARD_WIDTH - 1 - x;
+	    y = EventToSquare(y, BOARD_HEIGHT); if (!flipView && y >= 0) y = BOARD_HEIGHT - 1 - y;
+	    HoverEvent(hi2X, hi2Y, x, y);
+	}
 	return NULL;
     }
     if(n != 10 && PopDown(PromoDlg)) fromX = fromY = -1; // user starts fiddling with board when promotion dialog is up
