@@ -8029,6 +8029,7 @@ SendMoveToBookUser (int moveNr, ChessProgramState *cps, int initial)
 	SendToProgram("force\n", cps);
 	cps->bookSuspend = TRUE; // flag indicating it has to be restarted
     }
+    if(bookHit) setboardSpoiledMachineBlack = FALSE; // suppress 'go' in SendMoveToProgram
     if(!initial) SendMoveToProgram(moveNr, cps); // with hit on initial position there is no move
     // now arrange restart after book miss
     if(bookHit) {
