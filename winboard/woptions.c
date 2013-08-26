@@ -3009,6 +3009,13 @@ BOOL BrowseForFolder( const char * title, char * path )
     return result;
 }
 
+int
+IsMultiFormat(char *s)
+{
+  char *p = strchr(s, ':');
+  return p && p != s+1;
+}
+
 LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   char buf[MAX_PATH];
@@ -3024,7 +3031,10 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
     /* Initialize the dialog items */
     SetDlgItemText( hDlg, IDC_PolyglotDir, appData.polyglotDir );
     SetDlgItemInt( hDlg, IDC_HashSize, appData.defaultHashSize, TRUE );
+    if(appData.defaultPathEGTB[0])
     SetDlgItemText( hDlg, IDC_PathToEGTB, appData.defaultPathEGTB );
+    else
+    SetDlgItemText( hDlg, IDC_PathToEGTB, appData.egtFormats );
     SetDlgItemInt( hDlg, IDC_SizeOfEGTB, appData.defaultCacheSizeEGTB, TRUE );
     CheckDlgButton( hDlg, IDC_UseBook, (BOOL) appData.usePolyglotBook );
     SetDlgItemText( hDlg, IDC_BookFile, appData.polyglotBook );
@@ -3049,7 +3059,11 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
       appData.defaultHashSize = GetDlgItemInt(hDlg, IDC_HashSize, NULL, FALSE );
       appData.defaultCacheSizeEGTB = GetDlgItemInt(hDlg, IDC_SizeOfEGTB, NULL, FALSE );
       GetDlgItemText( hDlg, IDC_PathToEGTB, buf, sizeof(buf) );
-      appData.defaultPathEGTB = strdup(buf);
+      if(IsMultiFormat(buf)) {
+        ASSIGN(appData.egtFormats, buf);
+      } else {
+        ASSIGN(appData.defaultPathEGTB, buf);
+      }
       GetDlgItemText( hDlg, IDC_BookFile, buf, sizeof(buf) );
       appData.polyglotBook = strdup(buf);
       appData.usePolyglotBook = (Boolean) IsDlgButtonChecked( hDlg, IDC_UseBook );
