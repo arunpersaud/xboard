@@ -7223,7 +7223,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    }
 	    promoDefaultAltered = FALSE;
 	    MarkTargetSquares(1);
-	   if(!second || appData.oneClick && !OnlyMove(&x, &y, TRUE)) {
+	   if(!(second && appData.oneClick && OnlyMove(&x, &y, TRUE))) {
 	    if (appData.highlightDragging) {
 		SetHighlights(x, y, -1, -1);
 	    } else {
@@ -7273,6 +7273,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    second = sweepSelecting = 0;
 	    fromX = fromY = -1;
 	    gatingPiece = EmptySquare;
+	    MarkTargetSquares(1);
 	    ClearHighlights();
 	    gotPremove = 0;
 	    ClearPremoveHighlights();
