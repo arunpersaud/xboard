@@ -210,6 +210,8 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_HighlightMoveArrow, appData.highlightMoveWithArrow);
     CHECK_BOX(OPT_AutoLogo, appData.autoLogo); // [HGM] logo
     CHECK_BOX(OPT_SmartMove, appData.oneClick); // [HGM] one-click
+    CHECK_BOX(OPT_AutoTags, appData.autoDisplayTags); // [HGM]
+    CHECK_BOX(OPT_AutoComment, appData.autoDisplayComment); // [HGM]
 
 #undef CHECK_BOX
 
@@ -259,6 +261,8 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.highlightMoveWithArrow=IS_CHECKED(OPT_HighlightMoveArrow);
       appData.autoLogo             =IS_CHECKED(OPT_AutoLogo); // [HGM] logo
       appData.oneClick             =IS_CHECKED(OPT_SmartMove); // [HGM] one-click
+      appData.autoDisplayTags      =IS_CHECKED(OPT_AutoTags); // [HGM]
+      appData.autoDisplayComment   =IS_CHECKED(OPT_AutoComment); // [HGM]
 
 #undef IS_CHECKED
 
@@ -695,6 +699,7 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       }
       DeleteObject(pieces[0]);
       DeleteObject(pieces[1]);
+
       DeleteObject(pieces[2]);
       return TRUE;
 

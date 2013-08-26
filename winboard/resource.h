@@ -443,6 +443,7 @@
 #define OPT_ExtraInfoInMoveHistory      1437
 #define OPT_HighlightMoveArrow          1438
 #define OPT_AutoLogo			1439
+#define OPT_AutoTags                    1440
 #define IDC_BUTTON1                     1440
 #define IDC_BrowseForPolyglotDir        1440
 #define IDC_BrowseForEGTB               1441
