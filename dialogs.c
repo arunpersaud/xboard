@@ -1028,7 +1028,7 @@ static char *tagsText;
 static int
 NewTagsCallback (int n)
 {
-    ReplaceTags(tagsText, &gameInfo);
+    if(!bookUp) ReplaceTags(tagsText, &gameInfo);
     return 1;
 }
 
@@ -1043,7 +1043,7 @@ static void
 changeTags (int n)
 {
     GenericReadout(tagsOptions, 1);
-    if(bookUp) SaveToBook(tagsText); else
+    if(bookUp) SaveToBook(tagsText), DisplayBook(currentMove); else
     ReplaceTags(tagsText, &gameInfo);
 }
 

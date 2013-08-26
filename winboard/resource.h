@@ -216,6 +216,7 @@
 #define IDC_NFG_Edit                    1023
 #define IDC_EpDrawMoveCount             1023
 #define IDC_PolyglotDir                 1023
+#define OPT_TagsSave                    1023
 #define OPT_ConsoleText                 1024
 #define OPT_LightSquareColor            1024
 #define OPT_CommandInput                1025

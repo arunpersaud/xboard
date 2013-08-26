@@ -118,6 +118,7 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND:
     switch (LOWORD(wParam)) {
     case IDOK:
+    case OPT_TagsSave:
       if (canEditTags) {
 	char *p, *q;
 	/* Read changed options from the dialog box */
@@ -133,13 +134,13 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	*p = NULLCHAR; err = 0;
         if(resPtr) *resPtr = strdup(str); else
-	if(bookUp) SaveToBook(str); else
+	if(bookUp) SaveToBook(str), DisplayBook(currentMove); else
 	err = ReplaceTags(str, &gameInfo);
 	if (err) DisplayError(_("Error replacing tags."), err);
 
 	free(str);
       }
-      TagsPopDown();
+      if(LOWORD(wParam) == IDOK) TagsPopDown();
       return TRUE;
       
     case IDCANCEL:
