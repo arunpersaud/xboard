@@ -757,7 +757,9 @@ TextToMoves (char *text, int moveNum, entry_t *entries)
 	    if(w == 1) text = strstr(text, "1 ") + 2; // skip weight that could be recognized as move number one
 	    valid = ParseOneMove(text, moveNum, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
 	    text = strstr(text, yy_textstr) + strlen(yy_textstr); // skip what we parsed
-	    if(!valid || moveType != NormalMove) continue;
+	    if(!valid || moveType != NormalMove && moveType != WhiteDrop && moveType != BlackDrop
+                                                && moveType != WhitePromotion && moveType != BlackPromotion
+                                                && moveType != WhiteNonPromotion && moveType != BlackNonPromotion) continue;
 	    if(*text == ' ' && sscanf(text+1, "{%hd/%hd}", &entries[count].learnPoints, &entries[count].learnCount) == 2) {
 		text = strchr(text+1, '}') + 1;
 	    } else {
