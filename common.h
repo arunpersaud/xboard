@@ -132,7 +132,7 @@ typedef char *String;
    outside world in ASCII. In a similar way, the different rank numbering
    systems (starting at rank 0 or 1) are implemented by redefining '1'.
 */
-#define BOARD_RANKS             11             /* [HGM] for in declarations  */
+#define BOARD_RANKS             17            /* [HGM] for in declarations  */
 #define BOARD_FILES             16             /* [HGM] for in declarations  */
 #define BOARD_HEIGHT (gameInfo.boardHeight)    /* [HGM] made user adjustable */
 #define BOARD_WIDTH  (gameInfo.boardWidth + 2*gameInfo.holdingsWidth)
