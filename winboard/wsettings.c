@@ -551,13 +551,15 @@ void AddControl(int x, int y, int w, int h, int type, int style, int n)
 
 void AddOption(int x, int y, Control type, int i)
 {
-    int extra;
+    int extra, num = ES_NUMBER;
 
     switch(type) {
+	case Slider+100:
+	    num = 0; // needs text control for accepting negative numbers
 	case Slider:
 	case Spin:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
-	    AddControl(x+95, y, 50, 11, 0x0081, ES_AUTOHSCROLL | ES_NUMBER | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
+	    AddControl(x+95, y, 50, 11, 0x0081, ES_AUTOHSCROLL | num | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
 	    break;
 	case TextBox:
 	    extra = 13*activeList[layoutList[i/2]].min; // when extra high, left-align and put description text above it
@@ -625,7 +627,8 @@ CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 	}
 	j = layoutList[i];
 	if(j >= 0) {
-	    AddOption(x+155-150*(i&1), y+13*(i>>1)+5, optionList[j].type, 2*i);
+	    int neg = (optionList[j].type == Spin && optionList[j].min < 0 ? 100 : 0); // flags spin with negative range
+	    AddOption(x+155-150*(i&1), y+13*(i>>1)+5, optionList[j].type + neg, 2*i);
 	    // listboxes have the special power to adjust the width of the column they are in
 	    if(optionList[j].type == ListBox) x -= optionList[j].value, template.header.cx -= optionList[j].value;
 	}
