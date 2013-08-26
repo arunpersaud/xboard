@@ -222,6 +222,8 @@ static struct { int x; int y; int mode; } backTextureSquareInfo[BOARD_RANKS][BOA
 #if __GNUC__ && !defined(_winmajor)
 #define oldDialog 0 /* cygwin doesn't define _winmajor; mingw does */
 #else
+
+
 #if defined(_winmajor)
 #define oldDialog (_winmajor < 4)
 #else
@@ -1117,6 +1119,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   InitDrawingColors();
   screenHeight = GetSystemMetrics(SM_CYSCREEN);
   screenWidth = GetSystemMetrics(SM_CXSCREEN);
+  InitPosition(0); // to set nr of ranks and files, which might be non-default through command-line args
   for (ibs = (int) NUM_SIZES - 1; ibs >= 0; ibs--) {
     /* Compute window size for each board size, and use the largest
        size that fits on this screen as the default. */
@@ -2259,6 +2262,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
   /* [HGM] call with -2 uses old size (for if nr of files, ranks changes) */
   if(boardSize == (BoardSize)(-2) ) boardSize = oldBoardSize;
+  if(boardSize == -1) return;     // no size defined yet; abort (to allow early call of InitPosition)
   oldBoardSize = boardSize;
 
   if(boardSize != SizeMiddling && boardSize != SizePetite && boardSize != SizeBulky && !appData.useFont)
@@ -2273,7 +2277,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
                                    boardSize = SizeMiddling;
     }
   }
-  if(!appData.useFont && boardSize == SizePetite && (v == VariantShogi || v == VariantKnightmate)) boardSize = SizeMiddling; // no Unicorn in Petite
+  if(!appData.useFont && boardSize == SizePetite && (v == VariantKnightmate)) boardSize = SizeMiddling; // no Unicorn in Petite
 
   oldRect.left = wpMain.x; //[HGM] placement: remember previous window params
   oldRect.top = wpMain.y;
@@ -10033,6 +10037,6 @@ ActivateTheme (int new)
    InitTextures();
    if(new) InitDrawingColors();
    fontBitmapSquareSize = 0; // request creation of new font pieces
-   InitDrawingSizes(-2, 0);
+   InitDrawingSizes(boardSize, 0);
    InvalidateRect(hwndMain, NULL, TRUE);
 }
