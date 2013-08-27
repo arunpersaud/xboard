@@ -200,7 +200,7 @@ ZippyInit ()
     if (p != NULL) {
       appData.zippyVariants = p;
     }
-    safeStrCpy(first.variants, appData.zippyVariants, sizeof(first.variants)/sizeof(first.variants[0]));
+    ASSIGN(first.variants, appData.zippyVariants);
 
     srandom(time(NULL));
 }
