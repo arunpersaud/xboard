@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xboard 4.6.0.20121211\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2013-05-05 08:01-0700\n"
+"POT-Creation-Date: 2013-08-28 21:49-0700\n"
 "PO-Revision-Date: 2013-01-20 18:51-0800\n"
 "Last-Translator: Arun Persaud <arun@nubati.net>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -219,8 +219,8 @@ msgid "Error gathering move list: nested"
 msgstr "Fehler beim Erstellen der Zugliste: verschachtelt"
 
 #: backend.c:3699 backend.c:4117 backend.c:4321 backend.c:4880 backend.c:4884
-#: backend.c:6900 backend.c:12080 backend.c:13795 backend.c:13872
-#: backend.c:13918 backend.c:13924 backend.c:13929 backend.c:13934
+#: backend.c:6900 backend.c:12082 backend.c:13797 backend.c:13874
+#: backend.c:13920 backend.c:13926 backend.c:13931 backend.c:13936
 msgid "vs."
 msgstr "gegen"
 
@@ -245,7 +245,7 @@ msgstr ""
 "Konnte Schachbrettzeichenkette nicht parsen:\n"
 "»%s«"
 
-#: backend.c:4253 backend.c:9753
+#: backend.c:4253 backend.c:9755
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr "Partie zu lang; erhöhe MAX_MOVES und kompiliere neu"
 
@@ -280,12 +280,12 @@ msgid "You are playing White"
 msgstr "Sie spielen Weiß"
 
 #: backend.c:6509 backend.c:6535 backend.c:6655 backend.c:6680 backend.c:6696
-#: backend.c:14571
+#: backend.c:14573
 msgid "It is White's turn"
 msgstr "Weiß ist am Zug"
 
 #: backend.c:6513 backend.c:6539 backend.c:6663 backend.c:6686 backend.c:6717
-#: backend.c:14563
+#: backend.c:14565
 msgid "It is Black's turn"
 msgstr "Schwarz ist am Zug"
 
@@ -305,48 +305,48 @@ msgstr "Ende des Spiels"
 msgid "Incorrect move"
 msgstr "Ungültiger Zug"
 
-#: backend.c:7169 backend.c:7295
+#: backend.c:7169 backend.c:7296
 msgid "Pull pawn backwards to under-promote"
 msgstr "Bewege Bauern rückwärts zum Unterverwandeln"
 
-#: backend.c:7526
+#: backend.c:7527
 msgid "Swiss tourney finished"
 msgstr "Turnier im Schweizer System beendet"
 
-#: backend.c:8100
+#: backend.c:8102
 msgid "Invalid pairing from pairing engine"
 msgstr "Ungültige Paarungen vom Paarungsprogramm"
 
-#: backend.c:8233
+#: backend.c:8235
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr "Illegaler Zug »%s« vom Schachprogramm %s"
 
-#: backend.c:8454
+#: backend.c:8456
 msgid "Bad FEN received from engine"
 msgstr "Schlechte FEN vom Schachprogramm erhalten"
 
-#: backend.c:8598 backend.c:13660 backend.c:13725
+#: backend.c:8600 backend.c:13662 backend.c:13727
 #, c-format
 msgid "%s does not support analysis"
 msgstr "%s unterstützt keine Analyse"
 
-#: backend.c:8664
+#: backend.c:8666
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr "Illegaler Zug »%s« (abgelehnt vom Schachprogram %s)"
 
-#: backend.c:8691
+#: backend.c:8693
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr "Konnte %s Schachprogram %s auf %s nicht starten: %s\n"
 
-#: backend.c:8712
+#: backend.c:8714
 #, c-format
 msgid "Hint: %s"
 msgstr "Hinweis: %s"
 
-#: backend.c:8717
+#: backend.c:8719
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
@@ -355,11 +355,11 @@ msgstr ""
 "Illegaler Zughinweis »%s«\n"
 "vom Schachprogramm %s"
 
-#: backend.c:8892
+#: backend.c:8894
 msgid "Machine accepts your draw offer"
 msgstr "Das Schachprogramm akzeptiert dein Remiangebot"
 
-#: backend.c:8895
+#: backend.c:8897
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
@@ -367,47 +367,47 @@ msgstr ""
 "Das Schachprogramm bietet Remi an\n"
 "Wähle Aktion/Remi, um anzunehmen"
 
-#: backend.c:8974
+#: backend.c:8976
 msgid "failed writing PV"
 msgstr "schreiben des PV fehlgeschlagen"
 
-#: backend.c:9272
+#: backend.c:9274
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr "Nicht eindeutiger Zug in der ICS-Ausgabe: »%s«"
 
-#: backend.c:9282
+#: backend.c:9284
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr "Illegaler Zug in der ICS-Ausgabe: \"%s\""
 
-#: backend.c:9293
+#: backend.c:9295
 msgid "Gap in move list"
 msgstr "Lücke in Zugliste"
 
-#: backend.c:9914 dialogs.c:460
+#: backend.c:9916 dialogs.c:460
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "Variante %s wird von %s nicht unterstützt"
 
-#: backend.c:10035
+#: backend.c:10037
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr "Fehler beim Starten »%s«"
 
-#: backend.c:10066
+#: backend.c:10068
 msgid "Waiting for first chess program"
 msgstr "Warte auf erstes Schachprogramm"
 
-#: backend.c:10071 backend.c:13943
+#: backend.c:10073 backend.c:13945
 msgid "Waiting for second chess program"
 msgstr "Warte auf zweites Schachprogramm"
 
-#: backend.c:10120
+#: backend.c:10122
 msgid "Could not write on tourney file"
 msgstr "Schreibzugriff auf Turnierdatei nicht möglich"
 
-#: backend.c:10194
+#: backend.c:10196
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
@@ -415,11 +415,11 @@ msgstr ""
 "Ersetzen eines Schachprogramms während es läuft nicht möglich!\n"
 "Beenden Sie das Spiel zuerst."
 
-#: backend.c:10208
+#: backend.c:10210
 msgid "No engine with the name you gave is installed"
 msgstr "Ein Schachprogram mit dem angegebenen Namen ist nicht installiert"
 
-#: backend.c:10210
+#: backend.c:10212
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
@@ -427,16 +427,16 @@ msgstr ""
 "Ändern Sie ein Schachprogramm indem Sie die Liste der Teilnehmner\n"
 "im Turnieroptionendialog editieren"
 
-#: backend.c:10211
+#: backend.c:10213
 msgid "You can only change one engine at the time"
 msgstr "Sie können immer nur ein Schachprogramm ändern"
 
-#: backend.c:10226 backend.c:10373
+#: backend.c:10228 backend.c:10375
 #, c-format
 msgid "No engine %s is installed"
 msgstr "Das Schachprogram %s ist nicht installiert"
 
-#: backend.c:10246
+#: backend.c:10248
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
@@ -444,115 +444,115 @@ msgstr ""
 "Sie müssen eine Turnierdatei zum Speichern\n"
 "der Turnierdaten angeben"
 
-#: backend.c:10256
+#: backend.c:10258
 msgid "Not enough participants"
 msgstr "Nicht genügend Teilnehmer"
 
-#: backend.c:10457
+#: backend.c:10459
 msgid "Bad tournament file"
 msgstr "Fehler in Turnierdatei"
 
-#: backend.c:10469
+#: backend.c:10471
 msgid "Waiting for other game(s)"
 msgstr "Warte auf weiter Spiele"
 
-#: backend.c:10482
+#: backend.c:10484
 msgid "No pairing engine specified"
 msgstr "Kein Paarungsprogram angegeben"
 
-#: backend.c:10959
+#: backend.c:10961
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr "Partie %s gegen %s: Endergebnis %d-%d-%d"
 
-#: backend.c:11421 backend.c:11452
+#: backend.c:11423 backend.c:11454
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr "Illegaler Zug: %d.%s%s"
 
-#: backend.c:11441
+#: backend.c:11443
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr "Nicht eindeutiger Zug: %d.%s%s"
 
-#: backend.c:11494 backend.c:12503 backend.c:12696 backend.c:13057
+#: backend.c:11496 backend.c:12505 backend.c:12698 backend.c:13059
 #, c-format
 msgid "Can't open \"%s\""
 msgstr "Kann »%s« nicht öffnen"
 
-#: backend.c:11506 menus.c:116
+#: backend.c:11508 menus.c:116
 msgid "Cannot build game list"
 msgstr "Kann Zugliste nicht erstellen"
 
-#: backend.c:11591
+#: backend.c:11593
 msgid "No more games in this message"
 msgstr "Keine weiteren Partien in dieser Nachricht"
 
-#: backend.c:11631
+#: backend.c:11633
 msgid "No game has been loaded yet"
 msgstr "Noch keine Partie geladen"
 
-#: backend.c:11635 backend.c:12484 ngamelist.c:129
+#: backend.c:11637 backend.c:12486 ngamelist.c:129
 msgid "Can't back up any further"
 msgstr "Kann nicht weiter zurückgehen"
 
-#: backend.c:12056
+#: backend.c:12058
 msgid "Game number out of range"
 msgstr "Partienummer außerhalb des Bereichs"
 
-#: backend.c:12067
+#: backend.c:12069
 msgid "Can't seek on game file"
 msgstr "Kann nicht in der Partiedatei suchen"
 
-#: backend.c:12125
+#: backend.c:12127
 msgid "Game not found in file"
 msgstr "Spiel in Datei nicht gefunden"
 
-#: backend.c:12253 backend.c:12580
+#: backend.c:12255 backend.c:12582
 msgid "Bad FEN position in file"
 msgstr "Schlechte FEN-Stellung in Datei"
 
-#: backend.c:12405
+#: backend.c:12407
 msgid "No moves in game"
 msgstr "Keine Züge in dem Spiel"
 
-#: backend.c:12480
+#: backend.c:12482
 msgid "No position has been loaded yet"
 msgstr "Noch keine Stellung geladen"
 
-#: backend.c:12541 backend.c:12552
+#: backend.c:12543 backend.c:12554
 msgid "Can't seek on position file"
 msgstr "Kann nicht in Stellungsdatei suchen"
 
-#: backend.c:12559 backend.c:12571
+#: backend.c:12561 backend.c:12573
 msgid "Position not found in file"
 msgstr "Stellung in Datei nicht gefunden"
 
-#: backend.c:12611
+#: backend.c:12613
 msgid "Black to play"
 msgstr "Schwarz am Zug"
 
-#: backend.c:12614
+#: backend.c:12616
 msgid "White to play"
 msgstr "Weiß am Zug"
 
-#: backend.c:12701 backend.c:13062
+#: backend.c:12703 backend.c:13064
 msgid "Waiting for access to save file"
 msgstr "Warte auf Zugriff zur Datei zum Speichern"
 
-#: backend.c:12703
+#: backend.c:12705
 msgid "Saving game"
 msgstr "Speichere Spiel"
 
-#: backend.c:12704
+#: backend.c:12706
 msgid "Bad Seek"
 msgstr "Fehlerhafte Suche"
 
-#: backend.c:13064
+#: backend.c:13066
 msgid "Saving position"
 msgstr "Speichere Stellung "
 
-#: backend.c:13190
+#: backend.c:13192
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
@@ -560,7 +560,7 @@ msgstr ""
 "Sie haben die Partieentwicklung verändert.\n"
 "Benutzen Sie »Spiel erneut laden« und führen Sie ihren Zug erneut aus."
 
-#: backend.c:13195
+#: backend.c:13197
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
@@ -568,7 +568,7 @@ msgstr ""
 "Sie haben zu viele Züge eingegeben.\n"
 "Gehen Sie zur richtigen Stellung zurück und versuchen Sie es erneut."
 
-#: backend.c:13200
+#: backend.c:13202
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
@@ -576,11 +576,11 @@ msgstr ""
 "Die angezeigt Stellung ist nicht die aktuelle.\n"
 "Gehen Sie vorwärts zur richtigen Stellung und versuchen Sie es erneut."
 
-#: backend.c:13247
+#: backend.c:13249
 msgid "You have not made a move yet"
 msgstr "Sie haben noch keinen Zug gemacht"
 
-#: backend.c:13268
+#: backend.c:13270
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
@@ -589,11 +589,11 @@ msgstr ""
 "Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut "
 "aus."
 
-#: backend.c:13273
+#: backend.c:13275
 msgid "No unfinished games"
 msgstr "Keine laufenden Partien"
 
-#: backend.c:13279
+#: backend.c:13281
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -608,78 +608,78 @@ msgstr ""
 "»cmail -remail -game %s«\n"
 "in die Kommandozeile."
 
-#: backend.c:13294
+#: backend.c:13296
 msgid "Failed to invoke cmail"
 msgstr "Fehler beim Aufruf von cmail"
 
-#: backend.c:13356
+#: backend.c:13358
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr "Warte auf Antwort des Gegners\n"
 
-#: backend.c:13378
+#: backend.c:13380
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr "Sie müssen noch einen Zug für die Partie machen\n"
 
-#: backend.c:13382
+#: backend.c:13384
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr "Sie müssen noch Züge für beide Partien machen\n"
 
-#: backend.c:13386
+#: backend.c:13388
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr "Sie müssen noch Züge für alle %d Partien machen\n"
 
-#: backend.c:13393
+#: backend.c:13395
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr "Sie müssen noch einen Zug für Partie %s machen\n"
 
-#: backend.c:13399
+#: backend.c:13401
 #, c-format
 msgid "No unfinished games\n"
 msgstr "Keine laufenden Partien\n"
 
-#: backend.c:13401
+#: backend.c:13403
 #, c-format
 msgid "Ready to send mail\n"
 msgstr "Bereit zum Versenden der Mail\n"
 
-#: backend.c:13406
+#: backend.c:13408
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr "Sie müssen noch Züge für Partie %s machen\n"
 
-#: backend.c:13610
+#: backend.c:13612
 msgid "Edit comment"
 msgstr "Editiere Kommentar"
 
-#: backend.c:13612
+#: backend.c:13614
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr "Editiere Kommentar für %d.%s%s"
 
-#: backend.c:13667
+#: backend.c:13669
 #, c-format
 msgid "You are not observing a game"
 msgstr "Sie schauen keiner Partie zu"
 
-#: backend.c:13775
+#: backend.c:13777
 msgid "It is not White's turn"
 msgstr "Weiß ist nicht am Zug"
 
-#: backend.c:13856
+#: backend.c:13858
 msgid "It is not Black's turn"
 msgstr "Schwarz ist nicht am Zug"
 
-#: backend.c:13964
+#: backend.c:13966
 #, c-format
 msgid "Starting %s chess program"
 msgstr "Starte %s Schachprogramm"
 
-#: backend.c:13992 backend.c:15106
+#: backend.c:13994 backend.c:15108
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
@@ -687,136 +687,136 @@ msgstr ""
 "Warte bis Sie am Zug sind\n"
 "oder wähle »Ziehe jetzt«"
 
-#: backend.c:14126
+#: backend.c:14128
 msgid "Training mode off"
 msgstr "Trainier-Modus aus"
 
-#: backend.c:14134
+#: backend.c:14136
 msgid "Training mode on"
 msgstr "Trainier-Modus ein"
 
-#: backend.c:14137
+#: backend.c:14139
 msgid "Already at end of game"
 msgstr "Schon am Ende der Partie"
 
-#: backend.c:14217
+#: backend.c:14219
 msgid "Warning: You are still playing a game"
 msgstr "Warnung: Sie spielen noch eine Partie"
 
-#: backend.c:14220
+#: backend.c:14222
 msgid "Warning: You are still observing a game"
 msgstr "Warnung: Sie schauen noch einer Partie zu"
 
-#: backend.c:14223
+#: backend.c:14225
 msgid "Warning: You are still examining a game"
 msgstr "Warnung: Sie untersuchen noch eine Partie"
 
-#: backend.c:14290
+#: backend.c:14292
 msgid "Click clock to clear board"
 msgstr "Klicke auf eine Uhr, um das Brett zu leeren"
 
-#: backend.c:14300
+#: backend.c:14302
 msgid "Close ICS engine analyze..."
 msgstr "Schließe ICS Programmanalyse…"
 
-#: backend.c:14588
+#: backend.c:14590
 msgid "That square is occupied"
 msgstr "Dieses Feld ist besetzt"
 
-#: backend.c:14612 backend.c:14638
+#: backend.c:14614 backend.c:14640
 msgid "There is no pending offer on this move"
 msgstr "Es liegt kein unbeantwortes Angebot für diesen Zug vor"
 
-#: backend.c:14674 backend.c:14685
+#: backend.c:14676 backend.c:14687
 msgid "Your opponent is not out of time"
 msgstr "Ihr Gegner hat die Zeit noch nicht überschritten"
 
-#: backend.c:14751
+#: backend.c:14753
 msgid "You must make your move before offering a draw"
 msgstr "Sie müssem erst ziehen bevor Sie Remi anbieten können"
 
-#: backend.c:15088
+#: backend.c:15090
 msgid "You are not examining a game"
 msgstr "Sie untersuchen keine Partie"
 
-#: backend.c:15092
+#: backend.c:15094
 msgid "You can't revert while pausing"
 msgstr "Sie können nicht zurücknehmen solange die Partie pausiert"
 
-#: backend.c:15146 backend.c:15153
+#: backend.c:15148 backend.c:15155
 msgid "It is your turn"
 msgstr "Sie sind am Zug"
 
-#: backend.c:15204 backend.c:15211 backend.c:15264 backend.c:15271
+#: backend.c:15206 backend.c:15213 backend.c:15266 backend.c:15273
 msgid "Wait until your turn"
 msgstr "Warten Sie bis Sie am Zug sind"
 
-#: backend.c:15216
+#: backend.c:15218
 msgid "No hint available"
 msgstr "Kein Hinweis erhältlich"
 
-#: backend.c:15232 ngamelist.c:355
+#: backend.c:15234 ngamelist.c:355
 msgid "Game list not loaded or empty"
 msgstr "Noch keine Partie geladen"
 
-#: backend.c:15239
+#: backend.c:15241
 msgid "Book file exists! Try again for overwrite."
 msgstr "Buchdatei existiert! Versuche erneut zum Überschreiben."
 
-#: backend.c:15717
+#: backend.c:15719
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr "Fehler beim Schreiben zum Schachprogramm %s"
 
-#: backend.c:15720 backend.c:15751
+#: backend.c:15722 backend.c:15753
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr "%s Schachprogramm beendet in Remistellung (%s)"
 
-#: backend.c:15746
+#: backend.c:15748
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr "Fehler: %s Schachprogramm (%s) unerwartet beendet"
 
-#: backend.c:15764
+#: backend.c:15766
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr "Fehler beim Lesen vom Schachprogramm %s (%s)"
 
-#: backend.c:16166
+#: backend.c:16168
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr "Schachprogramm %s hat zu viele Optionen\n"
 
-#: backend.c:16322
+#: backend.c:16324
 msgid "Displayed move is not current"
 msgstr "Angezeigter Zug ist nicht aktuell"
 
-#: backend.c:16331
+#: backend.c:16333
 msgid "Could not parse move"
 msgstr "Konnte Zug nicht parsen"
 
-#: backend.c:16456 backend.c:16478
+#: backend.c:16458 backend.c:16480
 msgid "Both flags fell"
 msgstr "Beide Zeitkontrollen überschritten"
 
-#: backend.c:16458
+#: backend.c:16460
 msgid "White's flag fell"
 msgstr "Weiß überschritt die Zeitkontrolle"
 
-#: backend.c:16480
+#: backend.c:16482
 msgid "Black's flag fell"
 msgstr "Schwarz überschritt die Zeitkontrolle"
 
-#: backend.c:16611
+#: backend.c:16613
 msgid "Clock adjustment not allowed in auto-flag mode"
 msgstr "Veränderungen an der Uhr sind im »Auto-flag«-Modus nicht erlaubt"
 
-#: backend.c:17446
+#: backend.c:17448
 msgid "Bad FEN position in clipboard"
 msgstr "Schlechte FEN-Stellung in der Zwischenablage"
 
-#: book.c:577 book.c:828
+#: book.c:577 book.c:830
 msgid "Polyglot book not valid"
 msgstr "Polyglot-buch nicht zulässig"
 
@@ -824,11 +824,11 @@ msgstr "Polyglot-buch nicht zulässig"
 msgid "Book Fault"
 msgstr "Buchfehler"
 
-#: book.c:831
+#: book.c:833
 msgid "Hash keys are different"
 msgstr "Hash-schlüssel verschieden"
 
-#: book.c:998
+#: book.c:1000
 msgid "Could not create book"
 msgstr "Konnte Buch nicht erzeugen"
 
