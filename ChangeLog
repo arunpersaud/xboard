@@ -3,6 +3,302 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2013-08-27 22:55:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix -zippyVariants option
+
+Due to the change of cps->variants from (char []) to (char *), copying
+zippyVariants to it on behalf of v1 engines would no longer work. This
+is fixed by using ASSIGN() in stead of safeStrCpy().
+
+2013-08-26 18:25:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix initial board sizing WB
+
+The initial board size was based on the assumption the board would be 8x8.
+This could push auxiliary windows off screen if the board was smaller,
+after which EnsureOnScreen would undock them and park them in the upper-
+right corner before the board assumed its true size. InitPos() is now called
+before the initial sizing to et the board format correctly, InitDrawingSizes()
+had to be made resitant to calling before a board size was picked for this
+(because InitPos() might call that too).
+  ActivateTheme() now uses the new board size, not the previous one (as was
+indicated by size -2), so that -boardSize specifications inside a theme
+will take effect.
+  Board size petite should not be forbidden for Shogi; all pieces exist there.
+
+2013-08-26 14:40:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix grabbing of selected piece
+
+A second static click on a selected piece should deselect it, but an attempt
+to drag an already selected piece should not 'bounce off'. It was already
+possible to move a selected piece to another square, but the dragging was
+not animated. This is now fixed, by only skipping the code to start dragging
+when the second click is part of the only-move double-click for only capture.
+(Before it was skipped on any second click.)
+
+2013-08-26 13:35:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow entry of negative numbers in spin control (WB)
+
+Windows numeric controls do not accept negative numbers, so in case the
+range of a spin option can go negative, the style ES_NUMBER should not be
+set on the control.
+
+2013-08-26 11:37:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow drops / promotions/ deferrals to be edited into book
+
+For no real reason only NormalMove would be accepted when parsing the list
+of book moves.
+
+2013-08-26 11:28:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix GUI book after setup position
+
+The routine to send move to the engine would automatically append a 'go'
+is a preious setboard had put the engine in force mode, but this should
+not happen on a book hit, where the engine should even be put in force mode
+if it was not yet there.
+
+2013-07-05 18:32:46 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix book creation
+
+Due to duplicate use of the same file pointer variable the game file would be
+closed before any games were read from it.
+
+2013-05-20 11:14:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make PGN parser immune to unprotected time stamps
+
+The parser choked on time stamps of the form dd:dd or dd:dd:dd if one
+of the fields happened to be 00, because it wouldmistake that for a
+non-compliant king-side castling. By excluding this interpretation when
+the 00 is immediately preceded or followed by ':' this is now prevented.
+
+2013-05-05 08:03:00 -0700 Arun Persaud <arun@nubati.net>:
+updated po files for new release (make distcheck)
+
+
+2013-05-05 07:57:22 -0700 Arun Persaud <arun@nubati.net>:
+new version number for release 4.7.1
+
+
+2013-05-05 07:53:54 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
+
+2013-05-02 22:47:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update zippy.README
+
+It is explained how to generate multi-line commands for -zipyGameEnd.
+
+2013-04-01 20:43:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Xaw file browser
+
+The 'next page' entry of the Xaw file browser contained a \177 character
+to keep at sorted at the bottom. This caused trouble for gettext.
+Now the sorting range is adapted so the 'next page' is never part of it.
+  More seriously, the listbox fill code had a wrong cast when testing for
+an empty listbox on the first element, so that it only tested the low byte
+of the pointer, in stead of the entire pointer for NULLness. As a result
+the contents of the listboxes could suddenly disappear when even when it
+was non-empty, because the first filename was allocated at an unlucky address.
+
+2013-03-22 19:23:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make Chat Box window obey -topLevel option
+
+It was always popping up as a dialog of the main board, covering it.
+One could argue it should always be to-level.
+
+2013-03-19 13:20:24 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix scrolling of Chat Box
+
+Seems the problem is that scroll_to_iter does not work until after some time,
+needed to calculate line heights. Use scroll_to_mark instead, after clumsily
+adding a text_mark.
+
+2013-03-17 10:33:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix GTK SetInsertPos
+
+SetInsertPos() was not yet ported to GTK, with as a result that the cursor
+was positioned at the start of a line recalled in the ICS Input Box,
+rather than at the end. The code also called SetInsertPos to force scrolling
+to that point in the text (which in Xaw is an automatic side effect). So for
+multi-line text edits this function calls ScrollToCursor(). For some reason
+this does not work when replacing texts in the Chat Box memo, when switching
+chat, although it does work in the same memo when a line is added to the
+existing text.
+
+2013-03-07 21:38:43 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Print score of final position in Analyze Game
+
+The score/depth of the final position of the analyed game is added
+(as an explicit comment) behind the PV of the forelast position.
+To make this work, a new 'addBraces' mode (3) had to be added to
+AppendComment, which suppresses stripping of the score/depth from
+the comment.
+
+2013-03-12 18:50:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix horrible bug in reading scores from PGN
+
+Reading scores like -0.94 flipped the sign, because the integer part
+-0 would read as 0, and thus was no reason for sign flipping.
+
+2013-03-10 12:43:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix disappearence of pieces that were moved illegally
+
+Dragging damages the from-square, but it is not marked as such, because
+selective board redraws to update highlights and such would draw the piece
+that is really still there, making it flash on the from-square before
+the position after the move is drawn. This, however, backfires when the
+move was illegal, as then there is no draw of a new position, and the
+from-square stays empty. For now this is solved by making DisplayMoveError()
+order a total redraw. (As this is rare, only done in case of an error,
+and might even throw up a pop-up, the performance cost of this is acceptable.)
+
+2013-03-20 17:50:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix quoting of book name in tourney file
+
+The argument of -polyglotBook was written to the tourney file unquoted,
+which effectively made it disappear if it was an empty or blank string.
+
+2013-03-07 18:11:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Provide compatibility with Alien Edition setup command
+
+The setup command of the Alien Edition has a board-size specifier
+(possibly as prefix on a parent-variant name) between pieceToCharTable
+and FEN. The regular version would choke on that, precluding engines
+designed for the Alien protocol extension to have their setup processed
+when running under regular XBoard. This patch makes it skip the extra info.
+
+2013-03-07 17:52:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix saving of analyzed game
+
+Anotated games after batch-mode Analyze Game were not auto-saved,
+because the GameEnds() call supposed to do that was called with a NULL
+argument for resultDetails. Now it is called with the resultDetails as
+pre-existing in the gameInfo, or an empty string if none exist. This bug
+was masked by the fact that in standard game ends (mate, etc.) the
+analyzing engine would declare game end and supply a message.
+ Also makes a distinction between Analyze Game and regular Analyze mode
+when resuming analysis after loading a game; only the former now would
+trigger a batch analysis.
+
+2013-03-07 17:48:45 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix spurious popup after batch-mode Analyze Game
+
+A batch analysis of games was not properly terminated, because the game
+mode was tested after it had already been changed. No oldGameMode is
+tested in stead.
+
+2013-03-02 22:21:29 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let XBoard -autoBox option also affect move type-in
+
+
+2013-03-02 22:17:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix GTK box popup
+
+Key values > 255 are used for PgUp, PgDown etc., so to pop up only on
+printables needs a two-sided test.
+
+2013-03-01 12:50:06 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix fatal error on unsupported board size
+
+When a board size unsupported by the engine was requested through the
+New Variant dialog, this was discovered while the dialog was still up,
+causing the error message to pop up as a child of the New Variant dialog,
+so that it would immediately be taken down as the latter closed.
+As a result it could not be confirmed, so that XBoard would not exit, and
+was left in a pathologic state (ignoring window-close). This is fixed
+by performing Reset (which detects the error) after PopDown of New Variant.
+
+2013-03-01 12:39:40 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Accept setup command for non-standard board size
+
+The code to test if board-size is standard for the current variant
+has been moved to a subroutine, to allow its calling when receiving
+a "setup" command from the engine.
+
+2013-03-01 11:57:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix buffer overflow in feature parsing
+
+String features (variants, egt, myname and option) relied on a buf[MSG_SIZ]
+for processing their value. The Nebiyu engine had combobox options that
+required more than that. All string features are now stored in allocated
+memory rather than in static arrays, and StringFeature allocates a buffer
+of sufficient size for them. Only limitation now is the low-level input
+buffer in the InputSource threads, whih is a static buffer of 4096
+(=INPUT_SOURCE_BUF_SIZE) characters.
+
+2013-02-27 23:44:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix vertical sizing of GTK board
+
+The clipping of the boad at the bottom was due to resizing of the clock
+height when we first write it with a big font. This patch delays calculation
+of the final size until after the clock height changes.
+
+2013-02-26 21:13:32 -0800 Arun Persaud <arun@nubati.net>:
+Updated German translation
+
+
+2013-02-26 20:27:24 -0800 Arun Persaud <arun@nubati.net>:
+Updated Ukrainian translations
+
+
+2013-02-26 17:59:43 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix of argument error
+
+Oops. Pevious patch for skipping unknown multi-line arguments
+was still buggy.
+
+2013-02-26 17:44:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let popping up of WinBoard chatbox for channel open it
+
+WinBoard now issues a +ch command for a channel when you pop up a chatbox
+for that channel. A work-around is added for the fact that the public
+FICS seems to ignore the first such command.
+
+2013-02-26 17:27:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make skipping of unknown option smarter
+
+To make XBoard better resistant to the presence of disbanded or future
+options in its settings file, encountering those is no longer a fatal error.
+But the error recovery only consisted of skipping the rest of the line.
+This fails badly on string options with a multi-line value, which is
+enclosed by {braces}. We now detect that case, to skip to } instead.
+
+2013-02-26 17:15:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -backupSettingsFile option
+
+For better configurability of WinBoard, an option is added to optionally
+read a settings file, namely if no other settings file (other than the
+master file) was read so far. This can be used to import settings from
+a previous version, without destroying its settings file.
+
+2013-02-26 16:55:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Repair WinBoard compile error
+
+__GITVERSION was not defined in WinBoard, as it was only defined with a
+compiler flag by ./configure, which WinBoard does not use.
+
+2013-02-26 16:47:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Work-around for Xt selection bug
+
+In some Xt implementations calling extend-end with 0 params causes a crash,
+although the mmanual specifies this should default to a call with 'PRIMARY'.
+The default selection is now explicitly mentioned in all extend-end calls.
+
+2013-02-24 09:31:57 -0800 Christoph Moench-Tegeder <cmt@burggraben.net>:
+fix bug #38401: xboard.texi doesn't build with texinfo-5.0 (tiny change)
+
+xboard-4.7.0's documentation is not buildable with texinfo-5.0, it fails with a lot of error messages from makeinfo like
+./xboard.texi:1026: @itemx must follow @item
+makeinfo seems right, @itemx is not used as described in the texinfo manual.
+Attached patch puts each item of the "Options" menu in it's own @subsection and formats the description of each item as a @table as neccessary. This way, xboard builds again and the manual doesn't look too bad.
+
+2013-02-24 09:09:54 -0800 Arun Persaud <arun@nubati.net>:
+updated po/pot files
+
+
+2013-02-24 09:04:48 -0800 Arun Persaud <arun@nubati.net>:
+new version number for developer release
+
+
 2013-02-20 21:28:36 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
 Try to make life more bearable in Xaw menus
 

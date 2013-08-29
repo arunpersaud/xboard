@@ -1,3 +1,51 @@
+** Version 4.7.2 **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.7.2/ )
+
+   bugfix release for 4.7.1
+
+   * Make PGN parser immune to unprotected time stamps
+   * Fix book creation
+   * Fix GUI book after setup position
+   * Allow drops / promotions/ deferrals to be edited into book
+   * Allow entry of negative numbers in spin control (WB)
+   * Fix grabbing of selected piece
+   * Fix initial board sizing WB
+   * Fix -zippyVariants option
+
+
+** Version 4.7.1 **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.7.1/ )
+
+   bugfix release for 4.7.0
+
+   * updated translations
+   * fixed texinfo 5.0 problems
+   * Work-around for Xt selection bug
+   * Add -backupSettingsFile option
+   * Make skipping of unknown option smarter
+   * Let popping up of WinBoard chatbox for channel open it
+   * Fix vertical sizing of GTK board
+   * Fix buffer overflow in feature parsing
+   * Accept setup command for non-standard board size
+   * Fix fatal error on unsupported board size
+   * Fix GTK box popup
+   * Let XBoard -autoBox option also affect move type-in
+   * Fix spurious popup after batch-mode Analyze Game
+   * Fix saving of analyzed game
+   * Provide compatibility with Alien Edition setup command
+   * Fix quoting of book name in tourney file
+   * Fix disappearence of pieces that were moved illegally
+   * Fix horrible bug in reading scores from PGN
+   * Print score of final position in Analyze Game
+   * Fix GTK SetInsertPos
+   * Fix scrolling of Chat Box
+   * Make Chat Box window obey -topLevel option
+   * Fix Xaw file browser
+   * Update zippy.README
+
+
 ** Version 4.7.0 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.7.0/ )

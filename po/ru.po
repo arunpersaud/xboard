@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard master-20110507\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2013-02-24 09:09-0800\n"
+"POT-Creation-Date: 2013-08-28 22:03-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,560 +18,564 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: args.h:819
+#: args.h:821
 #, c-format
 msgid "%s in settings file\n"
 msgstr ""
 
-#: args.h:829
+#: args.h:831
 #, c-format
 msgid "Bad integer value %s"
 msgstr ""
 
-#: args.h:921 args.h:1159
+#: args.h:924 args.h:1165
 #, c-format
 msgid "Unrecognized argument %s"
 msgstr ""
 
-#: args.h:951
+#: args.h:955
 #, c-format
 msgid "No value provided for argument %s"
 msgstr ""
 
-#: args.h:1011
+#: args.h:1015
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
 msgstr ""
 
-#: args.h:1114
+#: args.h:1120
 #, c-format
 msgid "Failed to open indirection file %s"
 msgstr ""
 
-#: args.h:1131
+#: args.h:1137
 #, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr ""
 
 #. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
-#: backend.c:743
+#: backend.c:753
 msgid "first"
 msgstr ""
 
 #. TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
-#: backend.c:746
+#: backend.c:756
 msgid "second"
 msgstr ""
 
-#: backend.c:825
+#: backend.c:837
 #, c-format
 msgid "protocol version %d not supported"
 msgstr "версия протокола %d не поддерживается"
 
-#: backend.c:931
+#: backend.c:943
 msgid "You did not specify the engine executable"
 msgstr ""
 
-#: backend.c:987
+#: backend.c:999
 #, c-format
 msgid "bad timeControl option %s"
 msgstr "timeControl: неверный параметр %s"
 
-#: backend.c:1002
+#: backend.c:1014
 #, c-format
 msgid "bad searchTime option %s"
 msgstr "searchTime: неверный параметр %s"
 
-#: backend.c:1108
+#: backend.c:1120
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr "Вариант %s поддерживается только в режиме ICS"
 
-#: backend.c:1126
+#: backend.c:1138
 #, c-format
 msgid "Unknown variant name %s"
 msgstr "Неизвестный вариант %s"
 
-#: backend.c:1369
+#: backend.c:1386
 msgid "Starting chess program"
 msgstr "Запускается шахматная программа"
 
-#: backend.c:1392
+#: backend.c:1409
 msgid "Bad game file"
 msgstr "Неправильный формат файла"
 
-#: backend.c:1399
+#: backend.c:1416
 msgid "Bad position file"
 msgstr "Неправильный формат файла позиции"
 
-#: backend.c:1413
+#: backend.c:1430
 msgid "Pick new game"
 msgstr ""
 
-#: backend.c:1482
+#: backend.c:1499
 msgid ""
 "You restarted an already completed tourney\n"
 "One more cycle will now be added to it\n"
 "Games commence in 10 sec"
 msgstr ""
 
-#: backend.c:1489
+#: backend.c:1506
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
 msgstr ""
 
-#: backend.c:1496
+#: backend.c:1513
 msgid "Can't have a match with no chess programs"
 msgstr "Не подключено ни одной шахматной программы"
 
-#: backend.c:1533
+#: backend.c:1550
 #, c-format
 msgid "Could not open comm port %s"
 msgstr "Не могу открыть COM-порт %s"
 
-#: backend.c:1536
+#: backend.c:1553
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr "Не могу установить связь с %s, порт %s"
 
-#: backend.c:1592
+#: backend.c:1609
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr "initialMode: неизвестный режим %s"
 
-#: backend.c:1618
+#: backend.c:1635
 msgid "AnalyzeFile mode requires a game file"
 msgstr "Режим анализа: не указан файл для анализа"
 
-#: backend.c:1645
+#: backend.c:1662
 msgid "Analysis mode requires a chess engine"
 msgstr "Для анализа необходима шахматная программа"
 
-#: backend.c:1649
+#: backend.c:1666
 msgid "Analysis mode does not work with ICS mode"
 msgstr "Режим анализа не совместим с режимом ICS"
 
-#: backend.c:1660
+#: backend.c:1677
 msgid "MachineWhite mode requires a chess engine"
 msgstr "В режиме \"Компьютер белыми\" нужна шахматная программа"
 
-#: backend.c:1665
+#: backend.c:1682
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr "Режим \"Компьютер белыми\" не совместим с режимом ICS"
 
-#: backend.c:1672
+#: backend.c:1689
 msgid "MachineBlack mode requires a chess engine"
 msgstr "В режиме \"Компьютер черными\" нужна шахматная программа (движок)"
 
-#: backend.c:1677
+#: backend.c:1694
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr "Режим \"Компьютер черными\" не совместим с режимом ICS"
 
-#: backend.c:1684
+#: backend.c:1701
 msgid "TwoMachines mode requires a chess engine"
 msgstr "В режиме \"Два движка\" нужна шахматная программа"
 
-#: backend.c:1689
+#: backend.c:1706
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr "Режим \"Два движка\" не совместим с режимом ICS"
 
-#: backend.c:1700
+#: backend.c:1717
 msgid "Training mode requires a game file"
 msgstr "Для тренировки необходимо загрузить шахматную партию из файла"
 
-#: backend.c:1863 backend.c:1918 backend.c:1941 backend.c:2340
+#: backend.c:1880 backend.c:1935 backend.c:1958 backend.c:2357
 msgid "Error writing to ICS"
 msgstr "Ошибка записи на вход сервера ICS"
 
-#: backend.c:1878
+#: backend.c:1895
 msgid "Error reading from keyboard"
 msgstr "Ошибка клавиатуры"
 
-#: backend.c:1881
+#: backend.c:1898
 msgid "Got end of file from keyboard"
 msgstr "Получен символ конца файла с клавиатуры"
 
-#: backend.c:2186
+#: backend.c:2203
 #, c-format
 msgid "Unknown wild type %d"
 msgstr ""
 
-#: backend.c:2257 usystem.c:329
+#: backend.c:2274 usystem.c:329
 msgid "Error writing to display"
 msgstr "Ошибка записи на дисплей"
 
-#: backend.c:3013
+#: backend.c:3030
 #, c-format
 msgid "your opponent kibitzes: %s"
 msgstr ""
 
-#: backend.c:3542
+#: backend.c:3559
 msgid "Error gathering move list: two headers"
 msgstr "Ошибка чтения списка ходов: два заголовка"
 
-#: backend.c:3589
+#: backend.c:3606
 msgid "Error gathering move list: nested"
 msgstr "Ошибка чтения списка ходов: вложенные списки"
 
-#: backend.c:3693 backend.c:4111 backend.c:4315 backend.c:4874 backend.c:4878
-#: backend.c:6894 backend.c:12061 backend.c:13774 backend.c:13851
-#: backend.c:13897 backend.c:13903 backend.c:13908 backend.c:13913
+#: backend.c:3710 backend.c:4128 backend.c:4332 backend.c:4891 backend.c:4895
+#: backend.c:6919 backend.c:12213 backend.c:13928 backend.c:14005
+#: backend.c:14051 backend.c:14057 backend.c:14062 backend.c:14067
 msgid "vs."
 msgstr ""
 
-#: backend.c:3821
+#: backend.c:3838
 msgid "Illegal move (rejected by ICS)"
 msgstr ""
 
-#: backend.c:4159
+#: backend.c:4176
 msgid "Connection closed by ICS"
 msgstr "Сервер ICS разорвал соединение"
 
-#: backend.c:4161
+#: backend.c:4178
 msgid "Error reading from ICS"
 msgstr "Ошибка чтения с сервера ICS"
 
-#: backend.c:4238
+#: backend.c:4255
 #, c-format
 msgid ""
 "Failed to parse board string:\n"
 "\"%s\""
 msgstr ""
 
-#: backend.c:4247 backend.c:9745
+#: backend.c:4264 backend.c:9885
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr ""
 "Слишком длинная партия: увеличьте значение MAX_MOVES и перекомпилируйте "
 "программу"
 
-#: backend.c:4366
+#: backend.c:4383
 msgid "Error gathering move list: extra board"
 msgstr "Ошибка чтения списка ходов: лишняя доска"
 
-#: backend.c:4798 backend.c:4820
+#: backend.c:4815 backend.c:4837
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
 msgstr "Странный ход \"%s\" получен с сервера ICS"
 
-#: backend.c:5057
+#: backend.c:5074
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
 msgstr ""
 
-#: backend.c:5127
+#: backend.c:5145
 msgid "You cannot do this while you are playing or observing"
 msgstr ""
 
-#: backend.c:6023
+#: backend.c:6046
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
 msgstr ""
 
-#: backend.c:6485
+#: backend.c:6510
 msgid "You are playing Black"
 msgstr "Вы играете черными"
 
-#: backend.c:6494 backend.c:6521
+#: backend.c:6519 backend.c:6546
 msgid "You are playing White"
 msgstr "Вы играете белыми"
 
-#: backend.c:6503 backend.c:6529 backend.c:6649 backend.c:6674 backend.c:6690
-#: backend.c:14550
+#: backend.c:6528 backend.c:6554 backend.c:6674 backend.c:6699 backend.c:6715
+#: backend.c:14705
 msgid "It is White's turn"
 msgstr "Ход белых"
 
-#: backend.c:6507 backend.c:6533 backend.c:6657 backend.c:6680 backend.c:6711
-#: backend.c:14542
+#: backend.c:6532 backend.c:6558 backend.c:6682 backend.c:6705 backend.c:6736
+#: backend.c:14697
 msgid "It is Black's turn"
 msgstr "Ход черных"
 
-#: backend.c:6546
+#: backend.c:6571
 msgid "Displayed position is not current"
 msgstr "Показанная позиция не соответствует положению в игре"
 
-#: backend.c:6784
+#: backend.c:6809
 msgid "Illegal move"
 msgstr "Неправильный ход"
 
-#: backend.c:6851
+#: backend.c:6876
 msgid "End of game"
 msgstr "Сыгран последний записанный ход"
 
-#: backend.c:6854
+#: backend.c:6879
 msgid "Incorrect move"
 msgstr "Неверный ход"
 
-#: backend.c:7163 backend.c:7289
+#: backend.c:7257 backend.c:7392
 msgid "Pull pawn backwards to under-promote"
 msgstr ""
 
-#: backend.c:7520
+#: backend.c:7364
+msgid "only marked squares are legal"
+msgstr ""
+
+#: backend.c:7624
 msgid "Swiss tourney finished"
 msgstr ""
 
-#: backend.c:8094
+#: backend.c:8199
 msgid "Invalid pairing from pairing engine"
 msgstr ""
 
-#: backend.c:8227
+#: backend.c:8332
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr "Неправильный ход \"%s\" пытается выполнить движок %s"
 
-#: backend.c:8446
+#: backend.c:8564
 msgid "Bad FEN received from engine"
 msgstr ""
 
-#: backend.c:8590 backend.c:13639 backend.c:13704
+#: backend.c:8730 backend.c:13793 backend.c:13858
 #, c-format
 msgid "%s does not support analysis"
 msgstr "%s не поддерживает режим анализа"
 
-#: backend.c:8656
+#: backend.c:8796
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr "Неправильный ход \"%s\" (не принят движком %s)"
 
-#: backend.c:8683
+#: backend.c:8823
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr "Не удалось запустить %s движок %s на %s: %s\n"
 
-#: backend.c:8704
+#: backend.c:8844
 #, c-format
 msgid "Hint: %s"
 msgstr "Подсказка: %s"
 
-#: backend.c:8709
+#: backend.c:8849
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
 "from %s chess program"
 msgstr ""
 
-#: backend.c:8884
+#: backend.c:9024
 msgid "Machine accepts your draw offer"
 msgstr "Компьютер согласился на ничью"
 
-#: backend.c:8887
+#: backend.c:9027
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
 
-#: backend.c:8966
+#: backend.c:9106
 msgid "failed writing PV"
 msgstr ""
 
-#: backend.c:9264
+#: backend.c:9404
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr "Неоднозначный ход с сервера ICS: \"%s\""
 
-#: backend.c:9274
+#: backend.c:9414
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr "Неправильный ход с сервера ICS: \"%s\""
 
-#: backend.c:9285
+#: backend.c:9425
 msgid "Gap in move list"
 msgstr "Пропуск в записи ходов"
 
-#: backend.c:9879 dialogs.c:460
+#: backend.c:10046 dialogs.c:461
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "Вариант %s не поддерживается %s"
 
-#: backend.c:10022
+#: backend.c:10167
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr "Ошибка при запуске программы '%s'"
 
-#: backend.c:10053
+#: backend.c:10198
 msgid "Waiting for first chess program"
 msgstr "Ждем первую шахматную программу"
 
-#: backend.c:10058 backend.c:13922
+#: backend.c:10203 backend.c:14076
 msgid "Waiting for second chess program"
 msgstr "Ждем вторую шахматную программу"
 
-#: backend.c:10107
+#: backend.c:10252
 msgid "Could not write on tourney file"
 msgstr ""
 
-#: backend.c:10181
+#: backend.c:10326
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
 msgstr ""
 
-#: backend.c:10195
+#: backend.c:10340
 msgid "No engine with the name you gave is installed"
 msgstr ""
 
-#: backend.c:10197
+#: backend.c:10342
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
 
-#: backend.c:10198
+#: backend.c:10343
 msgid "You can only change one engine at the time"
 msgstr ""
 
-#: backend.c:10213 backend.c:10360
+#: backend.c:10358 backend.c:10505
 #, c-format
 msgid "No engine %s is installed"
 msgstr ""
 
-#: backend.c:10233
+#: backend.c:10378
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
 msgstr ""
 
-#: backend.c:10243
+#: backend.c:10388
 msgid "Not enough participants"
 msgstr ""
 
-#: backend.c:10444
+#: backend.c:10589
 msgid "Bad tournament file"
 msgstr ""
 
-#: backend.c:10456
+#: backend.c:10601
 msgid "Waiting for other game(s)"
 msgstr ""
 
-#: backend.c:10469
+#: backend.c:10614
 msgid "No pairing engine specified"
 msgstr ""
 
-#: backend.c:10946
+#: backend.c:11092
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr "Матч %s против %s: финальный результат %d-%d-%d"
 
-#: backend.c:11402 backend.c:11433
+#: backend.c:11554 backend.c:11585
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr "Неправильный ход: %d.%s%s"
 
-#: backend.c:11422
+#: backend.c:11574
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr "Неоднозначный ход: %d.%s%s"
 
-#: backend.c:11475 backend.c:12482 backend.c:12675 backend.c:13036
+#: backend.c:11627 backend.c:12636 backend.c:12829 backend.c:13190
 #, c-format
 msgid "Can't open \"%s\""
 msgstr "Не могу открыть файл \"%s\""
 
-#: backend.c:11487 menus.c:116
+#: backend.c:11639 menus.c:116
 msgid "Cannot build game list"
 msgstr "Не удалось создать список партий"
 
-#: backend.c:11572
+#: backend.c:11724
 msgid "No more games in this message"
 msgstr "В этом сообщении больше нет шахматных партий"
 
-#: backend.c:11612
+#: backend.c:11764
 msgid "No game has been loaded yet"
 msgstr "Нет загруженных шахматных партий"
 
-#: backend.c:11616 backend.c:12463 ngamelist.c:129
+#: backend.c:11768 backend.c:12617 ngamelist.c:129
 msgid "Can't back up any further"
 msgstr "Достигнуто начало списка"
 
-#: backend.c:12037
+#: backend.c:12189
 msgid "Game number out of range"
 msgstr "Номер партии - вне диапазона"
 
-#: backend.c:12048
+#: backend.c:12200
 msgid "Can't seek on game file"
 msgstr "Поиск в файлах записей партий не предусмотрен"
 
-#: backend.c:12106
+#: backend.c:12258
 msgid "Game not found in file"
 msgstr "Партия не найдена в файле"
 
-#: backend.c:12234 backend.c:12559
+#: backend.c:12386 backend.c:12713
 msgid "Bad FEN position in file"
 msgstr "Неправильная позиция формата FEN в файле"
 
-#: backend.c:12386
+#: backend.c:12538
 msgid "No moves in game"
 msgstr "Нет записанных ходов"
 
-#: backend.c:12459
+#: backend.c:12613
 msgid "No position has been loaded yet"
 msgstr "Нет загруженных позиций"
 
-#: backend.c:12520 backend.c:12531
+#: backend.c:12674 backend.c:12685
 msgid "Can't seek on position file"
 msgstr "Поиск в файлах позиций не предусмотрен"
 
-#: backend.c:12538 backend.c:12550
+#: backend.c:12692 backend.c:12704
 msgid "Position not found in file"
 msgstr "Позиция не найдена в файле"
 
-#: backend.c:12590
+#: backend.c:12744
 msgid "Black to play"
 msgstr "Ход черных"
 
-#: backend.c:12593
+#: backend.c:12747
 msgid "White to play"
 msgstr "Ход белых"
 
-#: backend.c:12680 backend.c:13041
+#: backend.c:12834 backend.c:13195
 msgid "Waiting for access to save file"
 msgstr ""
 
-#: backend.c:12682
+#: backend.c:12836
 msgid "Saving game"
 msgstr ""
 
-#: backend.c:12683
+#: backend.c:12837
 msgid "Bad Seek"
 msgstr ""
 
-#: backend.c:13043
+#: backend.c:13197
 msgid "Saving position"
 msgstr ""
 
-#: backend.c:13169
+#: backend.c:13323
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
 msgstr ""
 
-#: backend.c:13174
+#: backend.c:13328
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
 msgstr ""
 
-#: backend.c:13179
+#: backend.c:13333
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
 msgstr ""
 
-#: backend.c:13226
+#: backend.c:13380
 msgid "You have not made a move yet"
 msgstr "Вы еще не сделали ход"
 
-#: backend.c:13247
+#: backend.c:13401
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
 msgstr ""
 
-#: backend.c:13252
+#: backend.c:13406
 msgid "No unfinished games"
 msgstr "Нет неоконченных партий"
 
-#: backend.c:13258
+#: backend.c:13412
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -581,214 +585,214 @@ msgid ""
 "on the command line."
 msgstr ""
 
-#: backend.c:13273
+#: backend.c:13427
 msgid "Failed to invoke cmail"
 msgstr "Ошибка запуска cmail"
 
-#: backend.c:13335
+#: backend.c:13489
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr "Ожидание ответного хода\n"
 
-#: backend.c:13357
+#: backend.c:13511
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr "Все еще ваша очередь ходить в этой партии\n"
 
-#: backend.c:13361
+#: backend.c:13515
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr "Все еще ваша очередь ходить в обеих партиях\n"
 
-#: backend.c:13365
+#: backend.c:13519
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr "Все еще ваш ход во всех %d партиях\n"
 
-#: backend.c:13372
+#: backend.c:13526
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr "Все еще ваш ход в партии %s\n"
 
-#: backend.c:13378
+#: backend.c:13532
 #, c-format
 msgid "No unfinished games\n"
 msgstr "Нет неоконченных партий\n"
 
-#: backend.c:13380
+#: backend.c:13534
 #, c-format
 msgid "Ready to send mail\n"
 msgstr "Можно отсылать почту\n"
 
-#: backend.c:13385
+#: backend.c:13539
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr "Все еще ваша очередь ходить в партиях %s\n"
 
-#: backend.c:13589
+#: backend.c:13743
 msgid "Edit comment"
 msgstr "Правка комментария"
 
-#: backend.c:13591
+#: backend.c:13745
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr "Правка комментария к %d.%s%s"
 
-#: backend.c:13646
+#: backend.c:13800
 #, c-format
 msgid "You are not observing a game"
 msgstr ""
 
-#: backend.c:13754
+#: backend.c:13908
 msgid "It is not White's turn"
 msgstr "Сейчас не ход белых"
 
-#: backend.c:13835
+#: backend.c:13989
 msgid "It is not Black's turn"
 msgstr "Сейчас не ход черных"
 
-#: backend.c:13943
+#: backend.c:14097
 #, c-format
 msgid "Starting %s chess program"
 msgstr ""
 
-#: backend.c:13971 backend.c:15085
+#: backend.c:14125 backend.c:15240
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
 msgstr ""
 
-#: backend.c:14105
+#: backend.c:14259
 msgid "Training mode off"
 msgstr "Тренировка окончена"
 
-#: backend.c:14113
+#: backend.c:14267
 msgid "Training mode on"
 msgstr "Тренировка"
 
-#: backend.c:14116
+#: backend.c:14270
 msgid "Already at end of game"
 msgstr "Сыграны все ходы данной партии"
 
-#: backend.c:14196
+#: backend.c:14350
 msgid "Warning: You are still playing a game"
 msgstr "Предупреждение: вы все еще продолжаете играть"
 
-#: backend.c:14199
+#: backend.c:14353
 msgid "Warning: You are still observing a game"
 msgstr "Предупреждение: вы все еще наблюдаете за игрой"
 
-#: backend.c:14202
+#: backend.c:14356
 msgid "Warning: You are still examining a game"
 msgstr "Предупреждение: вы все еще изучаете игру"
 
-#: backend.c:14269
+#: backend.c:14423
 msgid "Click clock to clear board"
 msgstr ""
 
-#: backend.c:14279
+#: backend.c:14433
 msgid "Close ICS engine analyze..."
 msgstr ""
 
-#: backend.c:14567
+#: backend.c:14722
 msgid "That square is occupied"
 msgstr "Это поле занято"
 
-#: backend.c:14591 backend.c:14617
+#: backend.c:14746 backend.c:14772
 msgid "There is no pending offer on this move"
 msgstr "К данному ходу никаких предложений не сделано"
 
-#: backend.c:14653 backend.c:14664
+#: backend.c:14808 backend.c:14819
 msgid "Your opponent is not out of time"
 msgstr "У вашего соперника еще есть время"
 
-#: backend.c:14730
+#: backend.c:14885
 msgid "You must make your move before offering a draw"
 msgstr "Вы должны сделать свой ход прежде, чем предлагать ничью"
 
-#: backend.c:15067
+#: backend.c:15222
 msgid "You are not examining a game"
 msgstr "Не включен режим изучения шахматных партий"
 
-#: backend.c:15071
+#: backend.c:15226
 msgid "You can't revert while pausing"
 msgstr "Нельзя вернуться к началу пока выбрана \"Пауза\""
 
-#: backend.c:15125 backend.c:15132
+#: backend.c:15280 backend.c:15287
 msgid "It is your turn"
 msgstr "Ваш ход"
 
-#: backend.c:15183 backend.c:15190 backend.c:15243 backend.c:15250
+#: backend.c:15338 backend.c:15345 backend.c:15398 backend.c:15405
 msgid "Wait until your turn"
 msgstr "Подождите своей очереди ходить"
 
-#: backend.c:15195
+#: backend.c:15350
 msgid "No hint available"
 msgstr "Подсказок нет"
 
-#: backend.c:15211 ngamelist.c:355
+#: backend.c:15366 ngamelist.c:355
 #, fuzzy
 msgid "Game list not loaded or empty"
 msgstr "Нет загруженных шахматных партий"
 
-#: backend.c:15218
+#: backend.c:15373
 msgid "Book file exists! Try again for overwrite."
 msgstr ""
 
-#: backend.c:15691
+#: backend.c:15851
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr "Ошибка записи на вход движка %s"
 
-#: backend.c:15694 backend.c:15725
+#: backend.c:15854 backend.c:15885
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr ""
 
-#: backend.c:15720
+#: backend.c:15880
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr "Ошибка: движок %s (%s) завершил работу"
 
-#: backend.c:15738
+#: backend.c:15898
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr "Ошибка чтения с выхода движка %s (%s)"
 
-#: backend.c:16140
+#: backend.c:16301
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr ""
 
-#: backend.c:16296
+#: backend.c:16457
 msgid "Displayed move is not current"
 msgstr "Позиция не отвечает положению в игре"
 
-#: backend.c:16305
+#: backend.c:16466
 msgid "Could not parse move"
 msgstr "Невозможно интерпретировать ход"
 
-#: backend.c:16430 backend.c:16452
+#: backend.c:16591 backend.c:16613
 msgid "Both flags fell"
 msgstr "У обоих игроков время вышло"
 
-#: backend.c:16432
+#: backend.c:16593
 msgid "White's flag fell"
 msgstr "У белых упал флажок"
 
-#: backend.c:16454
+#: backend.c:16615
 msgid "Black's flag fell"
 msgstr "У черных упал флажок"
 
-#: backend.c:16585
+#: backend.c:16746
 msgid "Clock adjustment not allowed in auto-flag mode"
 msgstr ""
 
-#: backend.c:17420
+#: backend.c:17585
 msgid "Bad FEN position in clipboard"
 msgstr "Позиция в буфере обмена не соответствует формату FEN"
 
-#: book.c:577 book.c:828
+#: book.c:577 book.c:830
 msgid "Polyglot book not valid"
 msgstr ""
 
@@ -796,11 +800,11 @@ msgstr ""
 msgid "Book Fault"
 msgstr ""
 
-#: book.c:831
+#: book.c:833
 msgid "Hash keys are different"
 msgstr ""
 
-#: book.c:998
+#: book.c:1000
 #, fuzzy
 msgid "Could not create book"
 msgstr "Невозможно интерпретировать ход"
@@ -896,7 +900,7 @@ msgstr ""
 msgid "First you must specify an existing tourney file to clone"
 msgstr ""
 
-#: dialogs.c:332 dialogs.c:1319
+#: dialogs.c:332 dialogs.c:1322
 msgid "# no engines are installed"
 msgstr ""
 
@@ -964,7 +968,7 @@ msgstr "Периодически обновлять (в режиме анали�
 msgid "Play Move(s) of Clicked PV (Analysis)"
 msgstr ""
 
-#: dialogs.c:379 dialogs.c:514 menus.c:728
+#: dialogs.c:379 dialogs.c:515 menus.c:728
 msgid "Ponder Next Move"
 msgstr "Думать всегда"
 
@@ -1088,7 +1092,7 @@ msgid "Holdings Size:"
 msgstr ""
 
 #: dialogs.c:429
-msgid "fairy"
+msgid "ASEAN"
 msgstr ""
 
 #: dialogs.c:430
@@ -1160,995 +1164,999 @@ msgid "xiangqi (9x10)"
 msgstr ""
 
 #: dialogs.c:447
-msgid " "
+msgid "fairy"
 msgstr ""
 
-#: dialogs.c:448
+#: dialogs.c:449
 msgid "courier (12x8)"
 msgstr ""
 
-#: dialogs.c:465
+#: dialogs.c:466
 #, c-format
 msgid "Warning: second engine (%s) does not support this!"
 msgstr "Предупреждение: второй движок (%s) не поддерживает это!"
 
-#: dialogs.c:488
+#: dialogs.c:489
 #, c-format
 msgid "Only bughouse is not available in viewer mode"
 msgstr ""
 
-#: dialogs.c:489
+#: dialogs.c:490
 #, c-format
 msgid ""
 "All variants not supported by first engine\n"
 "(currently %s) are disabled"
 msgstr ""
 
-#: dialogs.c:490
+#: dialogs.c:491
 msgid "New Variant"
 msgstr "Варианты"
 
-#: dialogs.c:515
+#: dialogs.c:516
 msgid "Maximum Number of CPUs per Engine:"
 msgstr "Max число CPU:"
 
-#: dialogs.c:516
+#: dialogs.c:517
 msgid "Polygot Directory:"
 msgstr ""
 
-#: dialogs.c:517
+#: dialogs.c:518
 msgid "Hash-Table Size (MB):"
 msgstr "Размер хеша (МБ):"
 
-#: dialogs.c:518
+#: dialogs.c:519
 msgid "Nalimov EGTB Path:"
 msgstr "Путь к ЭБД:"
 
-#: dialogs.c:519
+#: dialogs.c:520
 msgid "EGTB Cache Size (MB):"
 msgstr "Кеш ЭБД (МБ):"
 
-#: dialogs.c:520
+#: dialogs.c:521
 msgid "Use GUI Book"
 msgstr ""
 
-#: dialogs.c:521
+#: dialogs.c:522
 msgid "Opening-Book Filename:"
 msgstr ""
 
-#: dialogs.c:522
+#: dialogs.c:523
 msgid "Book Depth (moves):"
 msgstr "Глубина книги:"
 
-#: dialogs.c:523
+#: dialogs.c:524
 msgid "Book Variety (0) vs. Strength (100):"
 msgstr "Варьирование:"
 
-#: dialogs.c:524
+#: dialogs.c:525
 msgid "Engine #1 Has Own Book"
 msgstr "Своя книга у движка 1"
 
-#: dialogs.c:525
+#: dialogs.c:526
 msgid "Engine #2 Has Own Book          "
 msgstr ""
 
-#: dialogs.c:534
+#: dialogs.c:535
 msgid "Common Engine Settings"
 msgstr "Общие настройки движков"
 
-#: dialogs.c:540
+#: dialogs.c:541
 msgid "Detect all Mates"
 msgstr "Определять мат"
 
-#: dialogs.c:541
+#: dialogs.c:542
 msgid "Verify Engine Result Claims"
 msgstr "Проверять требования движка"
 
-#: dialogs.c:542
+#: dialogs.c:543
 msgid "Draw if Insufficient Mating Material"
 msgstr "Ничья при нехватке материала"
 
-#: dialogs.c:543
+#: dialogs.c:544
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
 msgstr "Ничья в технич. окончаниях"
 
-#: dialogs.c:544
+#: dialogs.c:545
 msgid "N-Move Rule:"
 msgstr ""
 
-#: dialogs.c:545
+#: dialogs.c:546
 msgid "N-fold Repeats:"
 msgstr ""
 
-#: dialogs.c:546
+#: dialogs.c:547
 msgid "Draw after N Moves Total:"
 msgstr "Присудить ничью после"
 
-#: dialogs.c:547
+#: dialogs.c:548
 msgid "Win / Loss Threshold:"
 msgstr "Победа/поражение при перевесе в"
 
-#: dialogs.c:548
+#: dialogs.c:549
 msgid "Negate Score of Engine #1"
 msgstr "Оценка движка 1 - абсолютная"
 
-#: dialogs.c:549
+#: dialogs.c:550
 msgid "Negate Score of Engine #2"
 msgstr "Оценка движка 2 - абсолютная"
 
-#: dialogs.c:556
+#: dialogs.c:557
 #, fuzzy
 msgid "Adjudicate non-ICS Games"
 msgstr "Присудить победу белым"
 
-#: dialogs.c:569
+#: dialogs.c:570
 msgid "Auto-Kibitz"
 msgstr ""
 
-#: dialogs.c:570
+#: dialogs.c:571
 msgid "Auto-Comment"
 msgstr "Комментарии"
 
-#: dialogs.c:571
+#: dialogs.c:572
 msgid "Auto-Observe"
 msgstr "Следить за игрой"
 
-#: dialogs.c:572
+#: dialogs.c:573
 msgid "Auto-Raise Board"
 msgstr "Раскрывать доску"
 
-#: dialogs.c:573
+#: dialogs.c:574
 msgid "Auto-Create Logon Script"
 msgstr ""
 
-#: dialogs.c:574
+#: dialogs.c:575
 msgid "Background Observe while Playing"
 msgstr "Следить в фоне"
 
-#: dialogs.c:575
+#: dialogs.c:576
 msgid "Dual Board for Background-Observed Game"
 msgstr "Двойная доска"
 
-#: dialogs.c:576
+#: dialogs.c:577
 msgid "Get Move List"
 msgstr "Запрашивать запись ходов"
 
-#: dialogs.c:577
+#: dialogs.c:578
 msgid "Quiet Play"
 msgstr "Спокойная игра"
 
-#: dialogs.c:578
+#: dialogs.c:579
 msgid "Seek Graph"
 msgstr "График поиска"
 
-#: dialogs.c:579
+#: dialogs.c:580
 msgid "Auto-Refresh Seek Graph"
 msgstr "Автообновление"
 
-#: dialogs.c:580
+#: dialogs.c:581
 msgid "Auto-InputBox PopUp"
 msgstr ""
 
-#: dialogs.c:581
-msgid "Premove"
-msgstr "Предварительный ход"
-
 #: dialogs.c:582
-msgid "Premove for White"
+msgid "Quit after game"
 msgstr ""
 
 #: dialogs.c:583
-msgid "First White Move:"
-msgstr "1-й ход белых"
+msgid "Premove"
+msgstr "Предварительный ход"
 
 #: dialogs.c:584
-msgid "Premove for Black"
+msgid "Premove for White"
 msgstr ""
 
 #: dialogs.c:585
+msgid "First White Move:"
+msgstr "1-й ход белых"
+
+#: dialogs.c:586
+msgid "Premove for Black"
+msgstr ""
+
+#: dialogs.c:587
 msgid "First Black Move:"
 msgstr "1-й ход черных"
 
-#: dialogs.c:587
+#: dialogs.c:589
 msgid "Alarm"
 msgstr "Звонок"
 
-#: dialogs.c:588
+#: dialogs.c:590
 msgid "Alarm Time (msec):"
 msgstr ""
 
-#: dialogs.c:590
+#: dialogs.c:592
 msgid "Colorize Messages"
 msgstr ""
 
-#: dialogs.c:591
+#: dialogs.c:593
 msgid "Shout Text Colors:"
 msgstr ""
 
-#: dialogs.c:592
+#: dialogs.c:594
 msgid "S-Shout Text Colors:"
 msgstr ""
 
-#: dialogs.c:593
+#: dialogs.c:595
 msgid "Channel #1 Text Colors:"
 msgstr ""
 
-#: dialogs.c:594
+#: dialogs.c:596
 msgid "Other Channel Text Colors:"
 msgstr ""
 
-#: dialogs.c:595
+#: dialogs.c:597
 msgid "Kibitz Text Colors:"
 msgstr ""
 
-#: dialogs.c:596
+#: dialogs.c:598
 msgid "Tell Text Colors:"
 msgstr ""
 
-#: dialogs.c:597
+#: dialogs.c:599
 msgid "Challenge Text Colors:"
 msgstr ""
 
-#: dialogs.c:598
+#: dialogs.c:600
 msgid "Request Text Colors:"
 msgstr ""
 
-#: dialogs.c:599
+#: dialogs.c:601
 msgid "Seek Text Colors:"
 msgstr ""
 
-#: dialogs.c:606
+#: dialogs.c:608
 msgid "ICS Options"
 msgstr "Настройки соединения с ICS"
 
-#: dialogs.c:611
+#: dialogs.c:613
 msgid "Exact position match"
 msgstr ""
 
-#: dialogs.c:611
+#: dialogs.c:613
 msgid "Shown position is subset"
 msgstr ""
 
-#: dialogs.c:611
+#: dialogs.c:613
 msgid "Same material with exactly same Pawn chain"
 msgstr ""
 
-#: dialogs.c:612
+#: dialogs.c:614
 msgid "Same material"
 msgstr ""
 
-#: dialogs.c:612
+#: dialogs.c:614
 msgid "Material range (top board half optional)"
 msgstr ""
 
-#: dialogs.c:612
+#: dialogs.c:614
 msgid "Material difference (optional stuff balanced)"
 msgstr ""
 
-#: dialogs.c:624
+#: dialogs.c:626
 msgid "Auto-Display Tags"
 msgstr ""
 
-#: dialogs.c:625
+#: dialogs.c:627
 msgid "Auto-Display Comment"
 msgstr ""
 
-#: dialogs.c:626
+#: dialogs.c:628
 msgid ""
 "Auto-Play speed of loaded games\n"
 "(0 = instant, -1 = off):"
 msgstr ""
 
-#: dialogs.c:627
+#: dialogs.c:629
 msgid "Seconds per Move:"
-msgstr ""
-
-#: dialogs.c:628
-msgid ""
-"\n"
-"options to use in game-viewer mode:"
 msgstr ""
 
 #: dialogs.c:630
 msgid ""
 "\n"
-"Thresholds for position filtering in game list:"
-msgstr ""
-
-#: dialogs.c:631
-msgid "Elo of strongest player at least:"
+"options to use in game-viewer mode:"
 msgstr ""
 
 #: dialogs.c:632
-msgid "Elo of weakest player at least:"
+msgid ""
+"\n"
+"Thresholds for position filtering in game list:"
 msgstr ""
 
 #: dialogs.c:633
+msgid "Elo of strongest player at least:"
+msgstr ""
+
+#: dialogs.c:634
+msgid "Elo of weakest player at least:"
+msgstr ""
+
+#: dialogs.c:635
 #, fuzzy
 msgid "No games before year:"
 msgstr "Нет загруженных шахматных партий"
 
-#: dialogs.c:634
+#: dialogs.c:636
 msgid "Minimum nr consecutive positions:"
 msgstr ""
 
-#: dialogs.c:635
+#: dialogs.c:637
 msgid "Search mode:"
 msgstr ""
 
-#: dialogs.c:636
+#: dialogs.c:638
 msgid "Also match reversed colors"
 msgstr ""
 
-#: dialogs.c:637
+#: dialogs.c:639
 msgid "Also match left-right flipped position"
 msgstr ""
 
-#: dialogs.c:645
+#: dialogs.c:647
 msgid "Load Game Options"
 msgstr "Параметры загрузки"
 
-#: dialogs.c:657
+#: dialogs.c:659
 msgid "Auto-Save Games"
 msgstr ""
 
-#: dialogs.c:658
+#: dialogs.c:660
 msgid "Own Games Only"
 msgstr ""
 
-#: dialogs.c:659
+#: dialogs.c:661
 msgid "Save Games on File:"
 msgstr ""
 
-#: dialogs.c:660
+#: dialogs.c:662
 msgid "Save Final Positions on File:"
 msgstr ""
 
-#: dialogs.c:661
+#: dialogs.c:663
 msgid "PGN Event Header:"
 msgstr ""
 
-#: dialogs.c:662
+#: dialogs.c:664
 msgid "Old Save Style (as opposed to PGN)"
 msgstr ""
 
-#: dialogs.c:663
+#: dialogs.c:665
 msgid "Include Number Tag in tourney PGN"
 msgstr ""
 
-#: dialogs.c:664
+#: dialogs.c:666
 msgid "Save Score/Depth Info in PGN"
 msgstr ""
 
-#: dialogs.c:665
+#: dialogs.c:667
 msgid "Save Out-of-Book Info in PGN           "
 msgstr ""
 
-#: dialogs.c:672
+#: dialogs.c:674
 msgid "Save Game Options"
 msgstr "Настройки сохранения"
 
-#: dialogs.c:681
+#: dialogs.c:683
 msgid "No Sound"
 msgstr "Без звука"
 
-#: dialogs.c:682
+#: dialogs.c:684
 msgid "Default Beep"
 msgstr "Простой сигнал"
 
-#: dialogs.c:683
+#: dialogs.c:685
 msgid "Above WAV File"
 msgstr ""
 
-#: dialogs.c:684
+#: dialogs.c:686
 msgid "Car Horn"
 msgstr ""
 
-#: dialogs.c:685
+#: dialogs.c:687
 msgid "Cymbal"
 msgstr ""
 
-#: dialogs.c:686
+#: dialogs.c:688
 msgid "Ding"
 msgstr ""
 
-#: dialogs.c:687
+#: dialogs.c:689
 msgid "Gong"
 msgstr ""
 
-#: dialogs.c:688
+#: dialogs.c:690
 msgid "Laser"
 msgstr ""
 
-#: dialogs.c:689
+#: dialogs.c:691
 msgid "Penalty"
 msgstr ""
 
-#: dialogs.c:690
+#: dialogs.c:692
 msgid "Phone"
 msgstr ""
 
-#: dialogs.c:691
+#: dialogs.c:693
 msgid "Pop"
 msgstr ""
 
-#: dialogs.c:692
+#: dialogs.c:694
 msgid "Slap"
 msgstr ""
 
-#: dialogs.c:693
+#: dialogs.c:695
 msgid "Wood Thunk"
 msgstr ""
 
-#: dialogs.c:695
+#: dialogs.c:697
 msgid "User File"
 msgstr ""
 
-#: dialogs.c:717
+#: dialogs.c:719
 msgid "User WAV File:"
 msgstr ""
 
-#: dialogs.c:718
+#: dialogs.c:720
 msgid "Sound Program:"
 msgstr ""
 
-#: dialogs.c:719
+#: dialogs.c:721
 msgid "Try-Out Sound:"
 msgstr ""
 
-#: dialogs.c:720
+#: dialogs.c:722
 msgid "Play"
 msgstr "Послушать"
 
-#: dialogs.c:721
+#: dialogs.c:723
 msgid "Move:"
 msgstr ""
 
-#: dialogs.c:722
+#: dialogs.c:724
 msgid "Win:"
 msgstr ""
 
-#: dialogs.c:723
+#: dialogs.c:725
 msgid "Lose:"
 msgstr ""
 
-#: dialogs.c:724
+#: dialogs.c:726
 msgid "Draw:"
 msgstr ""
 
-#: dialogs.c:725
+#: dialogs.c:727
 msgid "Unfinished:"
 msgstr ""
 
-#: dialogs.c:726
+#: dialogs.c:728
 msgid "Alarm:"
 msgstr ""
 
-#: dialogs.c:727
+#: dialogs.c:729
 msgid "Challenge:"
 msgstr ""
 
-#: dialogs.c:729
+#: dialogs.c:731
 msgid "Sounds Directory:"
 msgstr ""
 
-#: dialogs.c:730
+#: dialogs.c:732
 msgid "Shout:"
 msgstr ""
 
-#: dialogs.c:731
+#: dialogs.c:733
 msgid "S-Shout:"
 msgstr ""
 
-#: dialogs.c:732
+#: dialogs.c:734
 msgid "Channel:"
 msgstr ""
 
-#: dialogs.c:733
+#: dialogs.c:735
 msgid "Channel 1:"
 msgstr ""
 
-#: dialogs.c:734
+#: dialogs.c:736
 msgid "Tell:"
 msgstr ""
 
-#: dialogs.c:735
+#: dialogs.c:737
 msgid "Kibitz:"
 msgstr ""
 
-#: dialogs.c:736
+#: dialogs.c:738
 msgid "Request:"
 msgstr ""
 
-#: dialogs.c:737
+#: dialogs.c:739
 msgid "Seek:"
 msgstr ""
 
-#: dialogs.c:753
+#: dialogs.c:755
 msgid "Sound Options"
 msgstr "Звуки"
 
-#: dialogs.c:774
+#: dialogs.c:776
 msgid "White Piece Color:"
 msgstr ""
 
 #. TRANSLATORS: R = single letter for the color red
-#: dialogs.c:777 dialogs.c:786 dialogs.c:792 dialogs.c:798 dialogs.c:804
-#: dialogs.c:810
+#: dialogs.c:779 dialogs.c:788 dialogs.c:794 dialogs.c:800 dialogs.c:806
+#: dialogs.c:812
 msgid "R"
 msgstr ""
 
 #. TRANSLATORS: G = single letter for the color green
-#: dialogs.c:779 dialogs.c:787 dialogs.c:793 dialogs.c:799 dialogs.c:805
-#: dialogs.c:811
+#: dialogs.c:781 dialogs.c:789 dialogs.c:795 dialogs.c:801 dialogs.c:807
+#: dialogs.c:813
 msgid "G"
 msgstr ""
 
 #. TRANSLATORS: B = single letter for the color blue
-#: dialogs.c:781 dialogs.c:788 dialogs.c:794 dialogs.c:800 dialogs.c:806
-#: dialogs.c:812
+#: dialogs.c:783 dialogs.c:790 dialogs.c:796 dialogs.c:802 dialogs.c:808
+#: dialogs.c:814
 msgid "B"
 msgstr ""
 
 #. TRANSLATORS: D = single letter to make a color darker
-#: dialogs.c:783 dialogs.c:789 dialogs.c:795 dialogs.c:801 dialogs.c:807
-#: dialogs.c:813
+#: dialogs.c:785 dialogs.c:791 dialogs.c:797 dialogs.c:803 dialogs.c:809
+#: dialogs.c:815
 msgid "D"
 msgstr ""
 
-#: dialogs.c:784
+#: dialogs.c:786
 msgid "Black Piece Color:"
 msgstr "Черные фигуры"
 
-#: dialogs.c:790
+#: dialogs.c:792
 msgid "Light Square Color:"
 msgstr "Белые поля"
 
-#: dialogs.c:796
+#: dialogs.c:798
 msgid "Dark Square Color:"
 msgstr "Черные поля"
 
-#: dialogs.c:802
+#: dialogs.c:804
 msgid "Highlight Color:"
 msgstr "Выделенное поле"
 
-#: dialogs.c:808
+#: dialogs.c:810
 msgid "Premove Highlight Color:"
 msgstr "Предварит. ход"
 
-#: dialogs.c:814
+#: dialogs.c:816
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
 msgstr ""
 
-#: dialogs.c:816
+#: dialogs.c:818
 msgid "Mono Mode"
 msgstr "Монохромная"
 
-#: dialogs.c:817
+#: dialogs.c:819
 msgid "Line Gap ( -1 = default for board size):"
 msgstr ""
 
-#: dialogs.c:818
+#: dialogs.c:820
 msgid "Use Board Textures"
 msgstr ""
 
-#: dialogs.c:819
+#: dialogs.c:821
 msgid "Light-Squares Texture File:"
 msgstr ""
 
-#: dialogs.c:820
+#: dialogs.c:822
 msgid "Dark-Squares Texture File:"
 msgstr ""
 
-#: dialogs.c:821
+#: dialogs.c:823
 msgid "Use external piece bitmaps with their own colors"
 msgstr ""
 
-#: dialogs.c:822
+#: dialogs.c:824
 msgid "Directory with Pieces Images:"
 msgstr ""
 
-#: dialogs.c:872
+#: dialogs.c:874
 msgid "Board Options"
 msgstr "Настройки доски"
 
-#: dialogs.c:925 menus.c:634
+#: dialogs.c:927 menus.c:634
 msgid "ICS text menu"
 msgstr ""
 
-#: dialogs.c:947
+#: dialogs.c:949
 msgid "clear"
 msgstr ""
 
-#: dialogs.c:948 dialogs.c:1036
+#: dialogs.c:950 dialogs.c:1038
 msgid "save changes"
 msgstr ""
 
-#: dialogs.c:1051
+#: dialogs.c:1053
 #, fuzzy
 msgid "Edit book"
 msgstr "Правка"
 
-#: dialogs.c:1051 menus.c:636
+#: dialogs.c:1053 menus.c:636
 msgid "Tags"
 msgstr "Описание"
 
-#: dialogs.c:1192
+#: dialogs.c:1195
 msgid "ICS input box"
 msgstr ""
 
-#: dialogs.c:1224
+#: dialogs.c:1227
 msgid "Type a move"
 msgstr ""
 
-#: dialogs.c:1250
+#: dialogs.c:1253
 msgid "Engine has no options"
 msgstr ""
 
-#: dialogs.c:1252
+#: dialogs.c:1255
 msgid "Engine Settings"
 msgstr ""
 
-#: dialogs.c:1277
+#: dialogs.c:1280
 msgid "Select engine from list:"
 msgstr ""
 
-#: dialogs.c:1280
+#: dialogs.c:1283
 msgid "or specify one below:"
 msgstr ""
 
-#: dialogs.c:1281
+#: dialogs.c:1284
 msgid "Nickname (optional):"
 msgstr ""
 
-#: dialogs.c:1282
+#: dialogs.c:1285
 msgid "Use nickname in PGN player tags of engine-engine games"
 msgstr ""
 
-#: dialogs.c:1283
+#: dialogs.c:1286
 msgid "Engine Directory:"
 msgstr ""
 
-#: dialogs.c:1284
+#: dialogs.c:1287
 msgid "Engine Command:"
 msgstr ""
 
-#: dialogs.c:1285
+#: dialogs.c:1288
 msgid "(Directory will be derived from engine path when empty)"
 msgstr ""
 
-#: dialogs.c:1286
+#: dialogs.c:1289
 msgid "UCI"
 msgstr ""
 
-#: dialogs.c:1287
+#: dialogs.c:1290
 msgid "WB protocol v1 (do not wait for engine features)"
 msgstr ""
 
-#: dialogs.c:1288
+#: dialogs.c:1291
 msgid "Must not use GUI book"
 msgstr ""
 
-#: dialogs.c:1289
+#: dialogs.c:1292
 msgid "Add this engine to the list"
 msgstr ""
 
-#: dialogs.c:1290
+#: dialogs.c:1293
 msgid "Force current variant with this engine"
 msgstr ""
 
-#: dialogs.c:1340
+#: dialogs.c:1343
 msgid "Load first engine"
 msgstr ""
 
-#: dialogs.c:1346
+#: dialogs.c:1349
 msgid "Load second engine"
 msgstr ""
 
-#: dialogs.c:1369
+#: dialogs.c:1372
 msgid "shuffle"
 msgstr ""
 
-#: dialogs.c:1370
+#: dialogs.c:1373
 msgid "Start-position number:"
 msgstr "Номер позиции:"
 
-#: dialogs.c:1371
+#: dialogs.c:1374
 #, fuzzy
 msgid "randomize"
 msgstr "Случайно"
 
-#: dialogs.c:1372
+#: dialogs.c:1375
 msgid "pick fixed"
 msgstr ""
 
-#: dialogs.c:1389
+#: dialogs.c:1392
 msgid "New Shuffle Game"
 msgstr "Новая в смешанные шахматы..."
 
-#: dialogs.c:1408
+#: dialogs.c:1411
 msgid "classical"
 msgstr ""
 
-#: dialogs.c:1409
+#: dialogs.c:1412
 msgid "incremental"
 msgstr ""
 
-#: dialogs.c:1410
+#: dialogs.c:1413
 msgid "fixed max"
 msgstr ""
 
-#: dialogs.c:1411
+#: dialogs.c:1414
 msgid "Moves per session:"
 msgstr ""
 
-#: dialogs.c:1412
+#: dialogs.c:1415
 msgid "Initial time (min):"
 msgstr ""
 
-#: dialogs.c:1413
+#: dialogs.c:1416
 msgid "Increment or max (sec/move):"
 msgstr ""
 
-#: dialogs.c:1414
+#: dialogs.c:1417
 #, fuzzy
 msgid "Time-Odds factors:"
 msgstr "Фактор времени движков:"
 
-#: dialogs.c:1415
+#: dialogs.c:1418
 #, fuzzy
 msgid "Engine #1"
 msgstr "Движок"
 
-#: dialogs.c:1416
+#: dialogs.c:1419
 #, fuzzy
 msgid "Engine #2 / Human"
 msgstr "Своя книга у движка 1"
 
-#: dialogs.c:1456 dialogs.c:1459 dialogs.c:1464 dialogs.c:1465
+#: dialogs.c:1459 dialogs.c:1462 dialogs.c:1467 dialogs.c:1468
 #: gtk/xoptions.c:191
 msgid "Unused"
 msgstr ""
 
-#: dialogs.c:1477
+#: dialogs.c:1480
 msgid "Time Control"
 msgstr ""
 
-#: dialogs.c:1506
+#: dialogs.c:1509
 msgid "Error writing to chess program"
 msgstr "Ошибка подключения к шахматной программе"
 
-#: dialogs.c:1573
+#: dialogs.c:1576
 #, fuzzy
 msgid "Cancel"
 msgstr "Отмена"
 
-#: dialogs.c:1578 dialogs.c:1970 dialogs.c:1974
+#: dialogs.c:1581 dialogs.c:1973 dialogs.c:1977
 msgid "King"
 msgstr "Король"
 
-#: dialogs.c:1581
+#: dialogs.c:1584
 msgid "Captain"
 msgstr ""
 
-#: dialogs.c:1582
+#: dialogs.c:1585
 msgid "Lieutenant"
 msgstr ""
 
-#: dialogs.c:1583
+#: dialogs.c:1586
 msgid "General"
 msgstr "Общие..."
 
-#: dialogs.c:1584
+#: dialogs.c:1587
 msgid "Warlord"
 msgstr ""
 
-#: dialogs.c:1586 dialogs.c:1969 dialogs.c:1973 dialogs.c:1992
+#: dialogs.c:1589 dialogs.c:1972 dialogs.c:1976 dialogs.c:1995
 msgid "Knight"
 msgstr "Конь"
 
-#: dialogs.c:1587 dialogs.c:1969 dialogs.c:1973 dialogs.c:1992
+#: dialogs.c:1590 dialogs.c:1972 dialogs.c:1976 dialogs.c:1995
 msgid "Bishop"
 msgstr "Слон"
 
-#: dialogs.c:1588 dialogs.c:1969 dialogs.c:1973 dialogs.c:1992
+#: dialogs.c:1591 dialogs.c:1972 dialogs.c:1976 dialogs.c:1995
 msgid "Rook"
 msgstr "Ладья"
 
-#: dialogs.c:1592 dialogs.c:1971 dialogs.c:1975
+#: dialogs.c:1595 dialogs.c:1974 dialogs.c:1978
 msgid "Archbishop"
 msgstr "Архиепископ"
 
-#: dialogs.c:1593 dialogs.c:1971 dialogs.c:1975
+#: dialogs.c:1596 dialogs.c:1974 dialogs.c:1978
 msgid "Chancellor"
 msgstr "Канцлер"
 
-#: dialogs.c:1595 dialogs.c:1970 dialogs.c:1974 dialogs.c:1992
+#: dialogs.c:1598 dialogs.c:1973 dialogs.c:1977 dialogs.c:1995
 msgid "Queen"
 msgstr "Ферзь"
 
-#: dialogs.c:1599
+#: dialogs.c:1602
 msgid "Defer"
 msgstr ""
 
-#: dialogs.c:1600 dialogs.c:1971 dialogs.c:1975
+#: dialogs.c:1603 dialogs.c:1974 dialogs.c:1978
 msgid "Promote"
 msgstr "Превратить"
 
-#: dialogs.c:1615
+#: dialogs.c:1618
 msgid "Chat partner:"
 msgstr ""
 
-#: dialogs.c:1700
+#: dialogs.c:1703
 msgid "Chat box"
 msgstr ""
 
-#: dialogs.c:1741
+#: dialogs.c:1744
 msgid "factory"
 msgstr "Стандарт"
 
-#: dialogs.c:1742
+#: dialogs.c:1745
 msgid "up"
 msgstr "Вверх"
 
-#: dialogs.c:1743
+#: dialogs.c:1746
 msgid "down"
 msgstr "Вниз"
 
-#: dialogs.c:1761
+#: dialogs.c:1764
 msgid "No tag selected"
 msgstr ""
 
-#: dialogs.c:1792
+#: dialogs.c:1795
 #, fuzzy
 msgid "Game-list options"
 msgstr "Параметры загрузки"
 
-#: dialogs.c:1868 dialogs.c:1882
+#: dialogs.c:1871 dialogs.c:1885
 msgid "Error"
 msgstr "Ошибка"
 
-#: dialogs.c:1905
+#: dialogs.c:1908
 msgid "Fatal Error"
 msgstr "Неисправимая ошибка"
 
-#: dialogs.c:1905
+#: dialogs.c:1908
 msgid "Exiting"
 msgstr "Выход"
 
-#: dialogs.c:1916
+#: dialogs.c:1919
 msgid "Information"
 msgstr "Информация"
 
-#: dialogs.c:1923
+#: dialogs.c:1926
 msgid "Note"
 msgstr "Примечание"
 
-#: dialogs.c:1969 dialogs.c:2244 dialogs.c:2247
+#: dialogs.c:1972 dialogs.c:2252 dialogs.c:2255
 msgid "White"
 msgstr "Белые"
 
-#: dialogs.c:1969 dialogs.c:1973 dialogs.c:1992
+#: dialogs.c:1972 dialogs.c:1976 dialogs.c:1995
 msgid "Pawn"
 msgstr "Пешка"
 
-#: dialogs.c:1970 dialogs.c:1974
+#: dialogs.c:1973 dialogs.c:1977
 msgid "Elephant"
 msgstr "Слон (стар.)"
 
-#: dialogs.c:1970 dialogs.c:1974
+#: dialogs.c:1973 dialogs.c:1977
 msgid "Cannon"
 msgstr "Пушка"
 
-#: dialogs.c:1971 dialogs.c:1975
+#: dialogs.c:1974 dialogs.c:1978
 msgid "Demote"
 msgstr "Разжаловать"
 
-#: dialogs.c:1972 dialogs.c:1976
+#: dialogs.c:1975 dialogs.c:1979
 msgid "Empty square"
 msgstr "Пустое поле"
 
-#: dialogs.c:1972 dialogs.c:1976
+#: dialogs.c:1975 dialogs.c:1979
 msgid "Clear board"
 msgstr "Очистить доску"
 
-#: dialogs.c:1973 dialogs.c:2256 dialogs.c:2259
+#: dialogs.c:1976 dialogs.c:2264 dialogs.c:2267
 msgid "Black"
 msgstr "Черные"
 
-#: dialogs.c:2072 menus.c:787
+#: dialogs.c:2075 menus.c:787
 msgid "File"
 msgstr "Файл"
 
-#: dialogs.c:2073 menus.c:788
+#: dialogs.c:2076 menus.c:788
 msgid "Edit"
 msgstr "Правка"
 
-#: dialogs.c:2074 menus.c:789
+#: dialogs.c:2077 menus.c:789
 msgid "View"
 msgstr "Вид"
 
-#: dialogs.c:2075 menus.c:790
+#: dialogs.c:2078 menus.c:790
 msgid "Mode"
 msgstr "Режим"
 
-#: dialogs.c:2076 menus.c:791
+#: dialogs.c:2079 menus.c:791
 msgid "Action"
 msgstr "Игра"
 
-#: dialogs.c:2077 menus.c:792
+#: dialogs.c:2080 menus.c:792
 msgid "Engine"
 msgstr "Движок"
 
-#: dialogs.c:2078 menus.c:793
+#: dialogs.c:2081 menus.c:793
 msgid "Options"
 msgstr "Настройки"
 
-#: dialogs.c:2079 menus.c:794
+#: dialogs.c:2082 menus.c:794
 msgid "Help"
 msgstr "Справка"
 
-#: dialogs.c:2089
+#: dialogs.c:2092
 msgid "<<"
 msgstr ""
 
-#: dialogs.c:2090
+#: dialogs.c:2093
 msgid "<"
 msgstr ""
 
-#: dialogs.c:2092
+#: dialogs.c:2095
 msgid ">"
 msgstr ""
 
-#: dialogs.c:2093
+#: dialogs.c:2096
 msgid ">>"
 msgstr ""
 
-#: dialogs.c:2363
+#: dialogs.c:2371
 msgid "Directories:"
 msgstr ""
 
-#: dialogs.c:2364
+#: dialogs.c:2372
 #, fuzzy
 msgid "Files:"
 msgstr "Файл"
 
-#: dialogs.c:2365
+#: dialogs.c:2373
 msgid "by name"
 msgstr ""
 
-#: dialogs.c:2366
+#: dialogs.c:2374
 msgid "by type"
 msgstr ""
 
-#: dialogs.c:2369
+#: dialogs.c:2377
 #, fuzzy
 msgid "Filename:"
 msgstr "Фильтр"
 
-#: dialogs.c:2370
+#: dialogs.c:2378
 msgid "New directory"
 msgstr ""
 
-#: dialogs.c:2371
+#: dialogs.c:2379
 #, fuzzy
 msgid "File type:"
 msgstr "Фильтр"
 
-#: dialogs.c:2446
+#: dialogs.c:2454
 #, fuzzy
 msgid "Contents of"
 msgstr "Комментарии"
 
-#: dialogs.c:2472
-msgid " next page"
+#: dialogs.c:2480
+msgid "  next page"
 msgstr ""
 
-#: dialogs.c:2494
+#: dialogs.c:2502
 msgid "FIRST TYPE DIRECTORY NAME HERE"
 msgstr ""
 
-#: dialogs.c:2495
+#: dialogs.c:2503
 msgid "TRY ANOTHER NAME"
 msgstr ""
 
@@ -2179,50 +2187,50 @@ msgstr "NPS (Узл./сек.)"
 msgid "Reading game file (%d)"
 msgstr "Неправильный формат файла"
 
-#: gtk/xboard.c:781 xaw/xboard.c:1160
+#: gtk/xboard.c:787 xaw/xboard.c:1161
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr ""
 
-#: gtk/xboard.c:790 xaw/xboard.c:1169
+#: gtk/xboard.c:796 xaw/xboard.c:1170
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr ""
 
-#: gtk/xboard.c:805 xaw/xboard.c:1178
+#: gtk/xboard.c:811 xaw/xboard.c:1179
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
 
-#: gtk/xboard.c:824 xaw/xboard.c:1210
+#: gtk/xboard.c:830 xaw/xboard.c:1211
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr ""
 
-#: gtk/xboard.c:864 xaw/xboard.c:1247
+#: gtk/xboard.c:870 xaw/xboard.c:1248
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr ""
 
-#: gtk/xboard.c:905 xaw/xboard.c:1284
+#: gtk/xboard.c:911 xaw/xboard.c:1285
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr ""
 
-#: gtk/xboard.c:1188 xaw/xboard.c:1566
+#: gtk/xboard.c:1201 xaw/xboard.c:1567
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr ""
 
-#: gtk/xboard.c:1213 xaw/xboard.c:1589
+#: gtk/xboard.c:1226 xaw/xboard.c:1590
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr ""
 
-#: gtk/xboard.c:1645 xaw/xboard.c:2079
+#: gtk/xboard.c:1665 xaw/xboard.c:2080
 msgid "Can't open temp file"
 msgstr ""
 
-#: gtk/xboard.c:2108
+#: gtk/xboard.c:2128
 #, fuzzy
 msgid "Failed to open file"
 msgstr "Ошибка запуска cmail"
@@ -2841,7 +2849,7 @@ msgid ""
 "   Include system type & operating system in message.\n"
 msgstr ""
 
-#: xaw/xboard.c:1290
+#: xaw/xboard.c:1291
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
 msgstr ""
@@ -2851,27 +2859,27 @@ msgstr ""
 msgid "Error %d loading icon image\n"
 msgstr ""
 
-#: xaw/xoptions.c:320 xaw/xoptions.c:1014
+#: xaw/xoptions.c:321 xaw/xoptions.c:1015
 msgid "browse"
 msgstr ""
 
-#: xaw/xoptions.c:386 xaw/xoptions.c:387
+#: xaw/xoptions.c:387 xaw/xoptions.c:388
 msgid "Ctrl"
 msgstr ""
 
-#: xaw/xoptions.c:392 xaw/xoptions.c:393
+#: xaw/xoptions.c:393 xaw/xoptions.c:394
 msgid "Alt"
 msgstr ""
 
-#: xaw/xoptions.c:398 xaw/xoptions.c:399
+#: xaw/xoptions.c:399 xaw/xoptions.c:400
 msgid "Shift"
 msgstr ""
 
-#: xaw/xoptions.c:1261
+#: xaw/xoptions.c:1262
 msgid "OK"
 msgstr "OK"
 
-#: xaw/xoptions.c:1265
+#: xaw/xoptions.c:1266
 msgid "cancel"
 msgstr "Отмена"
 

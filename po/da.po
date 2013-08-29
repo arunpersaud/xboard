@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard 4.6.0.20120304\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2013-02-24 09:09-0800\n"
+"POT-Creation-Date: 2013-08-28 22:03-0700\n"
 "PO-Revision-Date: 2012-03-06 12:27+0100\n"
 "Last-Translator: Byrial Ole Jensen <byrial@vip.cybercity.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -32,100 +32,100 @@ msgstr ""
 "X-Generator: Lokalize 1.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: args.h:819
+#: args.h:821
 #, c-format
 msgid "%s in settings file\n"
 msgstr "%s i indstillingsfil\n"
 
-#: args.h:829
+#: args.h:831
 #, c-format
 msgid "Bad integer value %s"
 msgstr "Forkert heltalsværdi %s"
 
-#: args.h:921 args.h:1159
+#: args.h:924 args.h:1165
 #, c-format
 msgid "Unrecognized argument %s"
 msgstr "Ikke genkendt argument %s"
 
-#: args.h:951
+#: args.h:955
 #, c-format
 msgid "No value provided for argument %s"
 msgstr "Ingen værdi givet for argumentet %s"
 
-#: args.h:1011
+#: args.h:1015
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
 msgstr "Ukomplet \\-undvigesekvens i værdi for %s"
 
-#: args.h:1114
+#: args.h:1120
 #, c-format
 msgid "Failed to open indirection file %s"
 msgstr "Åbning af inkluderet fil \"%s\" mislykkedes"
 
-#: args.h:1131
+#: args.h:1137
 #, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr "Ikke genkendt boolesk argumentværdi %s"
 
 #. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
-#: backend.c:743
+#: backend.c:753
 msgid "first"
 msgstr "første"
 
 #. TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
-#: backend.c:746
+#: backend.c:756
 msgid "second"
 msgstr "det andet"
 
-#: backend.c:825
+#: backend.c:837
 #, c-format
 msgid "protocol version %d not supported"
 msgstr "protokolversion %d er ikke understøttet"
 
-#: backend.c:931
+#: backend.c:943
 msgid "You did not specify the engine executable"
 msgstr "Du angav ikke et kørbart skakprogram"
 
-#: backend.c:987
+#: backend.c:999
 #, c-format
 msgid "bad timeControl option %s"
 msgstr "forkert timeControl-tilvalg %s"
 
-#: backend.c:1002
+#: backend.c:1014
 #, c-format
 msgid "bad searchTime option %s"
 msgstr "forkert searchTime-tilvalg %s"
 
-#: backend.c:1108
+#: backend.c:1120
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr "Varianten %s er kun understøttet i ICS-tilstand"
 
-#: backend.c:1126
+#: backend.c:1138
 #, c-format
 msgid "Unknown variant name %s"
 msgstr "Ukendt variantnavn %s"
 
-#: backend.c:1369
+#: backend.c:1386
 msgid "Starting chess program"
 msgstr "Starter skakprogram"
 
-#: backend.c:1392
+#: backend.c:1409
 msgid "Bad game file"
 msgstr "Fejl i partifil"
 
-#: backend.c:1399
+#: backend.c:1416
 msgid "Bad position file"
 msgstr "Fejl i stillingsfil"
 
-#: backend.c:1413
+#: backend.c:1430
 msgid "Pick new game"
 msgstr "Vælg nyt spil"
 
 # cycle = runde?
-#: backend.c:1482
+#: backend.c:1499
 msgid ""
 "You restarted an already completed tourney\n"
 "One more cycle will now be added to it\n"
@@ -135,123 +135,123 @@ msgstr ""
 "En mere cyklus vil nu blive tilføjet\n"
 "Partierne starter om 10 sekunder"
 
-#: backend.c:1489
+#: backend.c:1506
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
 msgstr "Alle partier i turneringen \"%s\" er allerede færdige eller i gang"
 
-#: backend.c:1496
+#: backend.c:1513
 msgid "Can't have a match with no chess programs"
 msgstr "Kan ikke have en match uden skakprogrammer"
 
-#: backend.c:1533
+#: backend.c:1550
 #, c-format
 msgid "Could not open comm port %s"
 msgstr "Kunne ikke åbne seriel port %s"
 
-#: backend.c:1536
+#: backend.c:1553
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr "Kunne ikke forbinde til vært %s, port %s"
 
-#: backend.c:1592
+#: backend.c:1609
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr "Ukendt initialMode %s"
 
-#: backend.c:1618
+#: backend.c:1635
 msgid "AnalyzeFile mode requires a game file"
 msgstr "AnalyzeFile-tilstand kræver en partifil"
 
-#: backend.c:1645
+#: backend.c:1662
 msgid "Analysis mode requires a chess engine"
 msgstr "Analysetilstand kræver et skakprogram"
 
-#: backend.c:1649
+#: backend.c:1666
 msgid "Analysis mode does not work with ICS mode"
 msgstr "Analysetilstand virker ikke sammen med ICS-tilstand"
 
-#: backend.c:1660
+#: backend.c:1677
 msgid "MachineWhite mode requires a chess engine"
 msgstr "MachineWhite-tilstand kræver et skakprogram"
 
-#: backend.c:1665
+#: backend.c:1682
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr "MachineWhite-tilstand virker ikke sammen med ICS-tilstand"
 
-#: backend.c:1672
+#: backend.c:1689
 msgid "MachineBlack mode requires a chess engine"
 msgstr "MachineBlack-tilstand kræver et skakprogram"
 
-#: backend.c:1677
+#: backend.c:1694
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr "MachineBlack-tilstand virker ikke sammen med ICS-tilstand"
 
-#: backend.c:1684
+#: backend.c:1701
 msgid "TwoMachines mode requires a chess engine"
 msgstr "TwoMachines-tilstand kræver et skakprogram"
 
-#: backend.c:1689
+#: backend.c:1706
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr "TwoMachines-tilstand virker ikke sammen med ICS-tilstand"
 
-#: backend.c:1700
+#: backend.c:1717
 msgid "Training mode requires a game file"
 msgstr "Træningstilstand kræver en partifil"
 
-#: backend.c:1863 backend.c:1918 backend.c:1941 backend.c:2340
+#: backend.c:1880 backend.c:1935 backend.c:1958 backend.c:2357
 msgid "Error writing to ICS"
 msgstr "Fejl ved skrivning til ICS"
 
-#: backend.c:1878
+#: backend.c:1895
 msgid "Error reading from keyboard"
 msgstr "Fejl ved læsning fra tastatur"
 
-#: backend.c:1881
+#: backend.c:1898
 msgid "Got end of file from keyboard"
 msgstr "Fik filafslutning fra tastatur"
 
-#: backend.c:2186
+#: backend.c:2203
 #, c-format
 msgid "Unknown wild type %d"
 msgstr "Ukendt vild type %d"
 
-#: backend.c:2257 usystem.c:329
+#: backend.c:2274 usystem.c:329
 msgid "Error writing to display"
 msgstr "Fejl ved skrivning til skærm"
 
-#: backend.c:3013
+#: backend.c:3030
 #, c-format
 msgid "your opponent kibitzes: %s"
 msgstr "din modstander kommenterer: %s"
 
-#: backend.c:3542
+#: backend.c:3559
 msgid "Error gathering move list: two headers"
 msgstr "Fejl ved tolkning af trækliste: to teksthoveder"
 
-#: backend.c:3589
+#: backend.c:3606
 msgid "Error gathering move list: nested"
 msgstr "Fejl ved tolkning af trækliste: indlejret"
 
-#: backend.c:3693 backend.c:4111 backend.c:4315 backend.c:4874 backend.c:4878
-#: backend.c:6894 backend.c:12061 backend.c:13774 backend.c:13851
-#: backend.c:13897 backend.c:13903 backend.c:13908 backend.c:13913
+#: backend.c:3710 backend.c:4128 backend.c:4332 backend.c:4891 backend.c:4895
+#: backend.c:6919 backend.c:12213 backend.c:13928 backend.c:14005
+#: backend.c:14051 backend.c:14057 backend.c:14062 backend.c:14067
 msgid "vs."
 msgstr "–"
 
-#: backend.c:3821
+#: backend.c:3838
 msgid "Illegal move (rejected by ICS)"
 msgstr "Ulovligt træk (afvist af ICS)"
 
-#: backend.c:4159
+#: backend.c:4176
 msgid "Connection closed by ICS"
 msgstr "Forbindelse lukket af ICS"
 
-#: backend.c:4161
+#: backend.c:4178
 msgid "Error reading from ICS"
 msgstr "Fejl ved læsning fra ICS"
 
-#: backend.c:4238
+#: backend.c:4255
 #, c-format
 msgid ""
 "Failed to parse board string:\n"
@@ -260,108 +260,112 @@ msgstr ""
 "Fortolkning af brætstreng mislykkedes:\n"
 "\"%s\""
 
-#: backend.c:4247 backend.c:9745
+#: backend.c:4264 backend.c:9885
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr "Parti for langt; forøg MAX_MOVES og genoversæt"
 
-#: backend.c:4366
+#: backend.c:4383
 msgid "Error gathering move list: extra board"
 msgstr "Fejl ved tolkning af trækliste: ekstra bræt"
 
-#: backend.c:4798 backend.c:4820
+#: backend.c:4815 backend.c:4837
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
 msgstr "Kunne ikke fortolke \"%s\" fra ICS"
 
-#: backend.c:5057
+#: backend.c:5074
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
 msgstr "say Intern fejl; forkert moveType%d (%d,%d-%d,%d)"
 
-#: backend.c:5127
+#: backend.c:5145
 msgid "You cannot do this while you are playing or observing"
 msgstr "Du kan ikke gøre dette, mens du spiller eller observerer"
 
-#: backend.c:6023
+#: backend.c:6046
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
 msgstr "Genoversæt for at understøtte denne BOARD_RANKS eller BOARD_FILES!"
 
-#: backend.c:6485
+#: backend.c:6510
 msgid "You are playing Black"
 msgstr "Du spiller sort"
 
-#: backend.c:6494 backend.c:6521
+#: backend.c:6519 backend.c:6546
 msgid "You are playing White"
 msgstr "Du spiller hvid"
 
-#: backend.c:6503 backend.c:6529 backend.c:6649 backend.c:6674 backend.c:6690
-#: backend.c:14550
+#: backend.c:6528 backend.c:6554 backend.c:6674 backend.c:6699 backend.c:6715
+#: backend.c:14705
 msgid "It is White's turn"
 msgstr "Det er hvids tur"
 
-#: backend.c:6507 backend.c:6533 backend.c:6657 backend.c:6680 backend.c:6711
-#: backend.c:14542
+#: backend.c:6532 backend.c:6558 backend.c:6682 backend.c:6705 backend.c:6736
+#: backend.c:14697
 msgid "It is Black's turn"
 msgstr "Det er sorts tur"
 
-#: backend.c:6546
+#: backend.c:6571
 msgid "Displayed position is not current"
 msgstr "Den viste stilling er ikke den aktuelle"
 
-#: backend.c:6784
+#: backend.c:6809
 msgid "Illegal move"
 msgstr "Ulovligt træk"
 
-#: backend.c:6851
+#: backend.c:6876
 msgid "End of game"
 msgstr "Slutningen af partiet"
 
-#: backend.c:6854
+#: backend.c:6879
 msgid "Incorrect move"
 msgstr "Ukorrekt træk"
 
-#: backend.c:7163 backend.c:7289
+#: backend.c:7257 backend.c:7392
 msgid "Pull pawn backwards to under-promote"
 msgstr "Træk bonde baglæns for at underforvandle"
 
-#: backend.c:7520
+#: backend.c:7364
+msgid "only marked squares are legal"
+msgstr ""
+
+#: backend.c:7624
 msgid "Swiss tourney finished"
 msgstr "Svejtserturnering afsluttet"
 
-#: backend.c:8094
+#: backend.c:8199
 msgid "Invalid pairing from pairing engine"
 msgstr "Ikke tilladt parring fra parringsprogram"
 
-#: backend.c:8227
+#: backend.c:8332
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr "Ulovligt træk \"%s\" fra %s skakprogram"
 
-#: backend.c:8446
+#: backend.c:8564
 msgid "Bad FEN received from engine"
 msgstr "Fejl i FEN modtaget fra skakprogram"
 
-#: backend.c:8590 backend.c:13639 backend.c:13704
+#: backend.c:8730 backend.c:13793 backend.c:13858
 #, c-format
 msgid "%s does not support analysis"
 msgstr "%s understøtter ikke analyse"
 
-#: backend.c:8656
+#: backend.c:8796
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr "Ulovligt træk \"%s\" (afvist af %s skakprogram)"
 
-#: backend.c:8683
+#: backend.c:8823
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr "Fejl ved start af %s skakprogram %s på %s: %s\n"
 
-#: backend.c:8704
+#: backend.c:8844
 #, c-format
 msgid "Hint: %s"
 msgstr "Tip: %s"
 
-#: backend.c:8709
+#: backend.c:8849
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
@@ -370,11 +374,11 @@ msgstr ""
 "Ulovligt tip om træk \"%s\"\n"
 "fra %s skakprogram"
 
-#: backend.c:8884
+#: backend.c:9024
 msgid "Machine accepts your draw offer"
 msgstr "Skakprogrammet accepterer dit remistilbud"
 
-#: backend.c:8887
+#: backend.c:9027
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
@@ -382,47 +386,47 @@ msgstr ""
 "Skakprogrammet tilbyder remis\n"
 "Vælg Handlinger / Remis for at acceptere"
 
-#: backend.c:8966
+#: backend.c:9106
 msgid "failed writing PV"
 msgstr "skrivning af analysevariant mislykkedes"
 
-#: backend.c:9264
+#: backend.c:9404
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr "Flertydigt træk i ICS-output: \"%s\""
 
-#: backend.c:9274
+#: backend.c:9414
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr "Ulovligt træk i ICS-output: \"%s\""
 
-#: backend.c:9285
+#: backend.c:9425
 msgid "Gap in move list"
 msgstr "Hul i trækliste"
 
-#: backend.c:9879 dialogs.c:460
+#: backend.c:10046 dialogs.c:461
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "Variant %s understøttes ikke af %s"
 
-#: backend.c:10022
+#: backend.c:10167
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr "Opstartsfejl på \"%s\""
 
-#: backend.c:10053
+#: backend.c:10198
 msgid "Waiting for first chess program"
 msgstr "Venter på første skakprogram"
 
-#: backend.c:10058 backend.c:13922
+#: backend.c:10203 backend.c:14076
 msgid "Waiting for second chess program"
 msgstr "Venter på andet skakprogram"
 
-#: backend.c:10107
+#: backend.c:10252
 msgid "Could not write on tourney file"
 msgstr "Kunne ikke skrive turneringsfil"
 
-#: backend.c:10181
+#: backend.c:10326
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
@@ -430,11 +434,11 @@ msgstr ""
 "Du kan ikke udskifte et skakprogram, mens det bruges!\n"
 "Afslut dets parti først."
 
-#: backend.c:10195
+#: backend.c:10340
 msgid "No engine with the name you gave is installed"
 msgstr "Der er ikke installeret et skakprogram med det angivne navn"
 
-#: backend.c:10197
+#: backend.c:10342
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
@@ -442,16 +446,16 @@ msgstr ""
 "Ændr først skakprogram ved at redigere deltagerlisten\n"
 "i turneringsindstillingerne"
 
-#: backend.c:10198
+#: backend.c:10343
 msgid "You can only change one engine at the time"
 msgstr "Du kan kun ændre et skakprogram ad gangen"
 
-#: backend.c:10213 backend.c:10360
+#: backend.c:10358 backend.c:10505
 #, fuzzy, c-format
 msgid "No engine %s is installed"
 msgstr "Der er ikke installeret et skakprogram med det angivne navn"
 
-#: backend.c:10233
+#: backend.c:10378
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
@@ -459,115 +463,115 @@ msgstr ""
 "Du skal angive en turneringsfil\n"
 "til at gemme turneringens afvikling"
 
-#: backend.c:10243
+#: backend.c:10388
 msgid "Not enough participants"
 msgstr "Der er ikke nok deltagere"
 
-#: backend.c:10444
+#: backend.c:10589
 msgid "Bad tournament file"
 msgstr "Fejl i turneringsfil"
 
-#: backend.c:10456
+#: backend.c:10601
 msgid "Waiting for other game(s)"
 msgstr "Venter på andet parti/andre partier"
 
-#: backend.c:10469
+#: backend.c:10614
 msgid "No pairing engine specified"
 msgstr "Der er ikke noget parringsprogram specificeret"
 
-#: backend.c:10946
+#: backend.c:11092
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr "Match %s - %s: slutscore %d-%d-%d"
 
-#: backend.c:11402 backend.c:11433
+#: backend.c:11554 backend.c:11585
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr "Ulovligt træk: %d.%s%s"
 
-#: backend.c:11422
+#: backend.c:11574
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr "Flertydigt træk: %d.%s%s"
 
-#: backend.c:11475 backend.c:12482 backend.c:12675 backend.c:13036
+#: backend.c:11627 backend.c:12636 backend.c:12829 backend.c:13190
 #, c-format
 msgid "Can't open \"%s\""
 msgstr "Kan ikke åbne \"%s\""
 
-#: backend.c:11487 menus.c:116
+#: backend.c:11639 menus.c:116
 msgid "Cannot build game list"
 msgstr "Kan ikke konstruere partiliste"
 
-#: backend.c:11572
+#: backend.c:11724
 msgid "No more games in this message"
 msgstr "Der er ikke flere partier i denne besked"
 
-#: backend.c:11612
+#: backend.c:11764
 msgid "No game has been loaded yet"
 msgstr "Der er endnu ingen indlæste partier"
 
-#: backend.c:11616 backend.c:12463 ngamelist.c:129
+#: backend.c:11768 backend.c:12617 ngamelist.c:129
 msgid "Can't back up any further"
 msgstr "Kan ikke gå længere tilbage"
 
-#: backend.c:12037
+#: backend.c:12189
 msgid "Game number out of range"
 msgstr "Partinummer findes ikke"
 
-#: backend.c:12048
+#: backend.c:12200
 msgid "Can't seek on game file"
 msgstr "Kan ikke spole i partifil"
 
-#: backend.c:12106
+#: backend.c:12258
 msgid "Game not found in file"
 msgstr "Parti ikke fundet i fil"
 
-#: backend.c:12234 backend.c:12559
+#: backend.c:12386 backend.c:12713
 msgid "Bad FEN position in file"
 msgstr "Fejl i FEN-stilling i fil"
 
-#: backend.c:12386
+#: backend.c:12538
 msgid "No moves in game"
 msgstr "Ingen træk i partiet"
 
-#: backend.c:12459
+#: backend.c:12613
 msgid "No position has been loaded yet"
 msgstr "Ingen stilling er endnu indlæst"
 
-#: backend.c:12520 backend.c:12531
+#: backend.c:12674 backend.c:12685
 msgid "Can't seek on position file"
 msgstr "Kan ikke spole i stillingsfil"
 
-#: backend.c:12538 backend.c:12550
+#: backend.c:12692 backend.c:12704
 msgid "Position not found in file"
 msgstr "Stilling er ikke fundet i fil"
 
-#: backend.c:12590
+#: backend.c:12744
 msgid "Black to play"
 msgstr "Sort i trækket"
 
-#: backend.c:12593
+#: backend.c:12747
 msgid "White to play"
 msgstr "Hvid i trækket"
 
-#: backend.c:12680 backend.c:13041
+#: backend.c:12834 backend.c:13195
 msgid "Waiting for access to save file"
 msgstr "Venter på adgang til gemmefil"
 
-#: backend.c:12682
+#: backend.c:12836
 msgid "Saving game"
 msgstr "Gemmer parti"
 
-#: backend.c:12683
+#: backend.c:12837
 msgid "Bad Seek"
 msgstr "Søgning mislykkedes"
 
-#: backend.c:13043
+#: backend.c:13197
 msgid "Saving position"
 msgstr "Gemmer stilling"
 
-#: backend.c:13169
+#: backend.c:13323
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
@@ -575,7 +579,7 @@ msgstr ""
 "Du har redigeret i parti-historikken.\n"
 "Genindlæs partiet og udfør trækket igen."
 
-#: backend.c:13174
+#: backend.c:13328
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
@@ -583,7 +587,7 @@ msgstr ""
 "Du har indtastet for mange træk.\n"
 "Gå tilbage til den aktuelle stilling og prøv igen."
 
-#: backend.c:13179
+#: backend.c:13333
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
@@ -591,11 +595,11 @@ msgstr ""
 "Den viste stilling er ikke den aktuelle.\n"
 "Gå fremad til den korrekte stilling og prøv igen."
 
-#: backend.c:13226
+#: backend.c:13380
 msgid "You have not made a move yet"
 msgstr "Du har ikke trukket endnu"
 
-#: backend.c:13247
+#: backend.c:13401
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
@@ -603,11 +607,11 @@ msgstr ""
 "Cmail-beskeden er ikke indlæst.\n"
 "Brug Genindlæs CMail-besked og lav dit træk igen."
 
-#: backend.c:13252
+#: backend.c:13406
 msgid "No unfinished games"
 msgstr "Der er ingen uafsluttede partier"
 
-#: backend.c:13258
+#: backend.c:13412
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -622,78 +626,78 @@ msgstr ""
 "\"cmail -remail -game %s\"\n"
 "på kommandolinjen."
 
-#: backend.c:13273
+#: backend.c:13427
 msgid "Failed to invoke cmail"
 msgstr "Start af cmail mislykkedes"
 
-#: backend.c:13335
+#: backend.c:13489
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr "Venter på svar fra modstander\n"
 
-#: backend.c:13357
+#: backend.c:13511
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr "Der er stadig nødvendigt at trække i partiet\n"
 
-#: backend.c:13361
+#: backend.c:13515
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr "Der er stadig nødvendigt at trække i begge partier\n"
 
-#: backend.c:13365
+#: backend.c:13519
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr "Der er stadig nødvendigt at trække i alle %d partier\n"
 
-#: backend.c:13372
+#: backend.c:13526
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr "Der er stadig nødvendigt at trække i partiet %s\n"
 
-#: backend.c:13378
+#: backend.c:13532
 #, c-format
 msgid "No unfinished games\n"
 msgstr "Der er ingen uafsluttede partier\n"
 
-#: backend.c:13380
+#: backend.c:13534
 #, c-format
 msgid "Ready to send mail\n"
 msgstr "Klar til at sende e-mail\n"
 
-#: backend.c:13385
+#: backend.c:13539
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr "Der er stadig nødvendigt at trække i partierne %s\n"
 
-#: backend.c:13589
+#: backend.c:13743
 msgid "Edit comment"
 msgstr "Redigér kommentar"
 
-#: backend.c:13591
+#: backend.c:13745
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr "Redigér kommentar til %d.%s%s"
 
-#: backend.c:13646
+#: backend.c:13800
 #, c-format
 msgid "You are not observing a game"
 msgstr "Du observerer ikke et parti"
 
-#: backend.c:13754
+#: backend.c:13908
 msgid "It is not White's turn"
 msgstr "Hvid er ikke i trækket"
 
-#: backend.c:13835
+#: backend.c:13989
 msgid "It is not Black's turn"
 msgstr "Sort er ikke i trækket"
 
-#: backend.c:13943
+#: backend.c:14097
 #, c-format
 msgid "Starting %s chess program"
 msgstr "Starter %s skakprogram"
 
-#: backend.c:13971 backend.c:15085
+#: backend.c:14125 backend.c:15240
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
@@ -701,136 +705,136 @@ msgstr ""
 "Vent på din tur,\n"
 "eller vælg Træk nu"
 
-#: backend.c:14105
+#: backend.c:14259
 msgid "Training mode off"
 msgstr "Træningstilstand fra"
 
-#: backend.c:14113
+#: backend.c:14267
 msgid "Training mode on"
 msgstr "Træningstilstand til"
 
-#: backend.c:14116
+#: backend.c:14270
 msgid "Already at end of game"
 msgstr "Allerede ved slutningen af partiet"
 
-#: backend.c:14196
+#: backend.c:14350
 msgid "Warning: You are still playing a game"
 msgstr "Advarsel: Du spiller stadig et parti"
 
-#: backend.c:14199
+#: backend.c:14353
 msgid "Warning: You are still observing a game"
 msgstr "Advarsel: Du observerer stadig et parti"
 
-#: backend.c:14202
+#: backend.c:14356
 msgid "Warning: You are still examining a game"
 msgstr "Advarsel: Du undersøger stadig et parti"
 
-#: backend.c:14269
+#: backend.c:14423
 msgid "Click clock to clear board"
 msgstr ""
 
-#: backend.c:14279
+#: backend.c:14433
 msgid "Close ICS engine analyze..."
 msgstr "Lukker skakprogram til ICS-analyse ..."
 
-#: backend.c:14567
+#: backend.c:14722
 msgid "That square is occupied"
 msgstr "Det felt er besat"
 
-#: backend.c:14591 backend.c:14617
+#: backend.c:14746 backend.c:14772
 msgid "There is no pending offer on this move"
 msgstr "Der er ingen aktuelle tilbud ved dette træk"
 
-#: backend.c:14653 backend.c:14664
+#: backend.c:14808 backend.c:14819
 msgid "Your opponent is not out of time"
 msgstr "Din modstander har ikke overskredet tiden"
 
-#: backend.c:14730
+#: backend.c:14885
 msgid "You must make your move before offering a draw"
 msgstr "Du skal trække før du tilbyder remis"
 
-#: backend.c:15067
+#: backend.c:15222
 msgid "You are not examining a game"
 msgstr "Du undersøger ikke et parti"
 
-#: backend.c:15071
+#: backend.c:15226
 msgid "You can't revert while pausing"
 msgstr "Du kan ikke annullere variantlinje under pause"
 
-#: backend.c:15125 backend.c:15132
+#: backend.c:15280 backend.c:15287
 msgid "It is your turn"
 msgstr "Det er dig som er i trækket"
 
-#: backend.c:15183 backend.c:15190 backend.c:15243 backend.c:15250
+#: backend.c:15338 backend.c:15345 backend.c:15398 backend.c:15405
 msgid "Wait until your turn"
 msgstr "Vent til du kommer i trækket"
 
-#: backend.c:15195
+#: backend.c:15350
 msgid "No hint available"
 msgstr "Tip er ikke tilgængeligt"
 
-#: backend.c:15211 ngamelist.c:355
+#: backend.c:15366 ngamelist.c:355
 msgid "Game list not loaded or empty"
 msgstr "Partiliste ikke indlæst eller tom"
 
-#: backend.c:15218
+#: backend.c:15373
 msgid "Book file exists! Try again for overwrite."
 msgstr ""
 
-#: backend.c:15691
+#: backend.c:15851
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr "Fejl ved skrivning til %s skakprogram"
 
-#: backend.c:15694 backend.c:15725
+#: backend.c:15854 backend.c:15885
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr "%s program afslutter i remisstilling (%s)"
 
-#: backend.c:15720
+#: backend.c:15880
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr "Fejl: %s skakprogram (%s) afsluttede uventet"
 
-#: backend.c:15738
+#: backend.c:15898
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr "Fejl ved læsning fra %s skakprogram (%s)"
 
-#: backend.c:16140
+#: backend.c:16301
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr "%s skakprogram har for mange tilvalg\n"
 
-#: backend.c:16296
+#: backend.c:16457
 msgid "Displayed move is not current"
 msgstr "Det viste træk er ikke det aktuelle"
 
-#: backend.c:16305
+#: backend.c:16466
 msgid "Could not parse move"
 msgstr "Kunne ikke fortolke træk"
 
-#: backend.c:16430 backend.c:16452
+#: backend.c:16591 backend.c:16613
 msgid "Both flags fell"
 msgstr "Begge flag er faldet"
 
-#: backend.c:16432
+#: backend.c:16593
 msgid "White's flag fell"
 msgstr "Hvids flag er faldet"
 
-#: backend.c:16454
+#: backend.c:16615
 msgid "Black's flag fell"
 msgstr "Sorts flag er faldet"
 
-#: backend.c:16585
+#: backend.c:16746
 msgid "Clock adjustment not allowed in auto-flag mode"
 msgstr "Det er ikke tilladt er stille på uret i auto-flag-tilstand"
 
-#: backend.c:17420
+#: backend.c:17585
 msgid "Bad FEN position in clipboard"
 msgstr "Fejl i FEN-stilling i udklipsholder"
 
-#: book.c:577 book.c:828
+#: book.c:577 book.c:830
 msgid "Polyglot book not valid"
 msgstr "Fejl i polyglyt-åbningsbog"
 
@@ -838,11 +842,11 @@ msgstr "Fejl i polyglyt-åbningsbog"
 msgid "Book Fault"
 msgstr "Fejl i åbningsbog"
 
-#: book.c:831
+#: book.c:833
 msgid "Hash keys are different"
 msgstr "Hashnøgler er forskellige"
 
-#: book.c:998
+#: book.c:1000
 #, fuzzy
 msgid "Could not create book"
 msgstr "Kunne ikke fortolke træk"
@@ -938,7 +942,7 @@ msgstr "Kopiér turnering"
 msgid "First you must specify an existing tourney file to clone"
 msgstr "Du skal angive en eksisterende turneringsfil til at kopiere"
 
-#: dialogs.c:332 dialogs.c:1319
+#: dialogs.c:332 dialogs.c:1322
 msgid "# no engines are installed"
 msgstr ""
 
@@ -1008,7 +1012,7 @@ msgid "Play Move(s) of Clicked PV (Analysis)"
 msgstr ""
 
 # ... mens modstanderen er i trækket
-#: dialogs.c:379 dialogs.c:514 menus.c:728
+#: dialogs.c:379 dialogs.c:515 menus.c:728
 msgid "Ponder Next Move"
 msgstr "Spekulér på næste træk"
 
@@ -1129,7 +1133,7 @@ msgid "Holdings Size:"
 msgstr "Depotstørrelse:"
 
 #: dialogs.c:429
-msgid "fairy"
+msgid "ASEAN"
 msgstr ""
 
 #: dialogs.c:430
@@ -1201,279 +1205,284 @@ msgid "xiangqi (9x10)"
 msgstr ""
 
 #: dialogs.c:447
-msgid " "
+msgid "fairy"
 msgstr ""
 
-#: dialogs.c:448
+#: dialogs.c:449
 msgid "courier (12x8)"
 msgstr ""
 
-#: dialogs.c:465
+#: dialogs.c:466
 #, c-format
 msgid "Warning: second engine (%s) does not support this!"
 msgstr "Advarsel: det andet skakprogram (%s) understøtter ikke dette!"
 
-#: dialogs.c:488
+#: dialogs.c:489
 #, c-format
 msgid "Only bughouse is not available in viewer mode"
 msgstr ""
 
-#: dialogs.c:489
+#: dialogs.c:490
 #, c-format
 msgid ""
 "All variants not supported by first engine\n"
 "(currently %s) are disabled"
 msgstr ""
 
-#: dialogs.c:490
+#: dialogs.c:491
 msgid "New Variant"
 msgstr "Ny variant"
 
-#: dialogs.c:515
+#: dialogs.c:516
 msgid "Maximum Number of CPUs per Engine:"
 msgstr "Maksimalt antal CPU'er pr. skakprogram:"
 
-#: dialogs.c:516
+#: dialogs.c:517
 msgid "Polygot Directory:"
 msgstr "Polyglot-katalog:"
 
-#: dialogs.c:517
+#: dialogs.c:518
 msgid "Hash-Table Size (MB):"
 msgstr "Hashtabel-størrelse (MB):"
 
-#: dialogs.c:518
+#: dialogs.c:519
 msgid "Nalimov EGTB Path:"
 msgstr "Sti til Nalimov-EGTB:"
 
-#: dialogs.c:519
+#: dialogs.c:520
 msgid "EGTB Cache Size (MB):"
 msgstr "EGTB-cachestørrelse (MB):"
 
-#: dialogs.c:520
+#: dialogs.c:521
 msgid "Use GUI Book"
 msgstr "Brug GUI's åbningsbog"
 
-#: dialogs.c:521
+#: dialogs.c:522
 msgid "Opening-Book Filename:"
 msgstr "Åbningsbogsfilnavn:"
 
-#: dialogs.c:522
+#: dialogs.c:523
 msgid "Book Depth (moves):"
 msgstr "Åbningsbogsdybde (træk):"
 
-#: dialogs.c:523
+#: dialogs.c:524
 msgid "Book Variety (0) vs. Strength (100):"
 msgstr "Åbningsbogvariation (0) vs. styrke (100):"
 
-#: dialogs.c:524
+#: dialogs.c:525
 msgid "Engine #1 Has Own Book"
 msgstr "Skakprogram nr. 1 har egen åbningsbog"
 
-#: dialogs.c:525
+#: dialogs.c:526
 msgid "Engine #2 Has Own Book          "
 msgstr "Skakprogram nr. 2 har egen åbningsbog"
 
-#: dialogs.c:534
+#: dialogs.c:535
 msgid "Common Engine Settings"
 msgstr "Indstillinger for skakprogrammer"
 
-#: dialogs.c:540
+#: dialogs.c:541
 msgid "Detect all Mates"
 msgstr "Find alle matter"
 
-#: dialogs.c:541
+#: dialogs.c:542
 msgid "Verify Engine Result Claims"
 msgstr "Efterprøv resultatangivelser fra skakprogrammer"
 
-#: dialogs.c:542
+#: dialogs.c:543
 msgid "Draw if Insufficient Mating Material"
 msgstr "Remis ved utilstrækkeligt matsættende materiale"
 
-#: dialogs.c:543
+#: dialogs.c:544
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
 msgstr "Døm trivielle remiser (3-træks forsinkelse)"
 
-#: dialogs.c:544
+#: dialogs.c:545
 msgid "N-Move Rule:"
 msgstr "N-træksregel:"
 
-#: dialogs.c:545
+#: dialogs.c:546
 msgid "N-fold Repeats:"
 msgstr "N-gange gentagelser:"
 
-#: dialogs.c:546
+#: dialogs.c:547
 msgid "Draw after N Moves Total:"
 msgstr "Remis efter i alt N træk:"
 
-#: dialogs.c:547
+#: dialogs.c:548
 msgid "Win / Loss Threshold:"
 msgstr "Gevinst/tabs-tærskel:"
 
-#: dialogs.c:548
+#: dialogs.c:549
 msgid "Negate Score of Engine #1"
 msgstr "Negér skakprogram nr. 1's score"
 
-#: dialogs.c:549
+#: dialogs.c:550
 msgid "Negate Score of Engine #2"
 msgstr "Negér skakprogram nr. 2's score"
 
-#: dialogs.c:556
+#: dialogs.c:557
 msgid "Adjudicate non-ICS Games"
 msgstr "Døm ikke-ICS partier"
 
-#: dialogs.c:569
+#: dialogs.c:570
 msgid "Auto-Kibitz"
 msgstr "Send kommentarer fra skakprogram"
 
-#: dialogs.c:570
+#: dialogs.c:571
 msgid "Auto-Comment"
 msgstr "Gem kommentarer til træk"
 
-#: dialogs.c:571
+#: dialogs.c:572
 msgid "Auto-Observe"
 msgstr "Observér automatisk"
 
-#: dialogs.c:572
+#: dialogs.c:573
 msgid "Auto-Raise Board"
 msgstr "Bræt øverst ved partistart"
 
-#: dialogs.c:573
+#: dialogs.c:574
 msgid "Auto-Create Logon Script"
 msgstr ""
 
-#: dialogs.c:574
+#: dialogs.c:575
 msgid "Background Observe while Playing"
 msgstr "Obsevér i baggrunden når der spilles"
 
-#: dialogs.c:575
+#: dialogs.c:576
 msgid "Dual Board for Background-Observed Game"
 msgstr "Andet bræt til baggrundsobservede partier"
 
-#: dialogs.c:576
+#: dialogs.c:577
 msgid "Get Move List"
 msgstr "Hent trækliste"
 
-#: dialogs.c:577
+#: dialogs.c:578
 msgid "Quiet Play"
 msgstr "Stille spil"
 
-#: dialogs.c:578
+#: dialogs.c:579
 msgid "Seek Graph"
 msgstr "Søgegraf"
 
-#: dialogs.c:579
+#: dialogs.c:580
 msgid "Auto-Refresh Seek Graph"
 msgstr "Automatisk opdatering af søgegraf"
 
-#: dialogs.c:580
+#: dialogs.c:581
 msgid "Auto-InputBox PopUp"
 msgstr ""
 
-#: dialogs.c:581
+#: dialogs.c:582
+#, fuzzy
+msgid "Quit after game"
+msgstr "Venter på andet parti/andre partier"
+
+#: dialogs.c:583
 msgid "Premove"
 msgstr "Forhåndstræk"
 
-#: dialogs.c:582
+#: dialogs.c:584
 msgid "Premove for White"
 msgstr "Forhåndstræk for hvid"
 
-#: dialogs.c:583
+#: dialogs.c:585
 msgid "First White Move:"
 msgstr "Hvids første træk:"
 
-#: dialogs.c:584
+#: dialogs.c:586
 msgid "Premove for Black"
 msgstr "Forhåndstræk for sort"
 
-#: dialogs.c:585
+#: dialogs.c:587
 msgid "First Black Move:"
 msgstr "Sorts første træk:"
 
-#: dialogs.c:587
+#: dialogs.c:589
 msgid "Alarm"
 msgstr "Alarm"
 
-#: dialogs.c:588
+#: dialogs.c:590
 msgid "Alarm Time (msec):"
 msgstr "Alarmtid (millisekunder):"
 
-#: dialogs.c:590
+#: dialogs.c:592
 msgid "Colorize Messages"
 msgstr "Farv meddelelser"
 
-#: dialogs.c:591
+#: dialogs.c:593
 msgid "Shout Text Colors:"
 msgstr "Tekstfarver for råb:"
 
-#: dialogs.c:592
+#: dialogs.c:594
 msgid "S-Shout Text Colors:"
 msgstr "Tekstfarver for s-råb:"
 
-#: dialogs.c:593
+#: dialogs.c:595
 msgid "Channel #1 Text Colors:"
 msgstr "Tekstfarver for kanal nr. 1:"
 
-#: dialogs.c:594
+#: dialogs.c:596
 msgid "Other Channel Text Colors:"
 msgstr "Tekstfarver for andre kanaler:"
 
-#: dialogs.c:595
+#: dialogs.c:597
 msgid "Kibitz Text Colors:"
 msgstr "Tekstfarver for kommentar:"
 
-#: dialogs.c:596
+#: dialogs.c:598
 msgid "Tell Text Colors:"
 msgstr "Tekstfarver for tale:"
 
-#: dialogs.c:597
+#: dialogs.c:599
 msgid "Challenge Text Colors:"
 msgstr "Tekstfarver for udfordring:"
 
-#: dialogs.c:598
+#: dialogs.c:600
 msgid "Request Text Colors:"
 msgstr "Tekstfarver for forespørgsel:"
 
-#: dialogs.c:599
+#: dialogs.c:601
 msgid "Seek Text Colors:"
 msgstr "Tekstfarver for søgning:"
 
-#: dialogs.c:606
+#: dialogs.c:608
 msgid "ICS Options"
 msgstr "ICS-indstillinger"
 
-#: dialogs.c:611
+#: dialogs.c:613
 msgid "Exact position match"
 msgstr "Eksakt stilling"
 
-#: dialogs.c:611
+#: dialogs.c:613
 msgid "Shown position is subset"
 msgstr "Viste stilling er en delmængde"
 
-#: dialogs.c:611
+#: dialogs.c:613
 msgid "Same material with exactly same Pawn chain"
 msgstr "Samme materiale med samme bondestruktur"
 
-#: dialogs.c:612
+#: dialogs.c:614
 msgid "Same material"
 msgstr "Samme materiale"
 
-#: dialogs.c:612
+#: dialogs.c:614
 msgid "Material range (top board half optional)"
 msgstr "Materiale-interval (øverste halvdel af brættet valgfrit)"
 
-#: dialogs.c:612
+#: dialogs.c:614
 msgid "Material difference (optional stuff balanced)"
 msgstr "Materiale-forskel (balanceret valgfrit materiale)"
 
-#: dialogs.c:624
+#: dialogs.c:626
 msgid "Auto-Display Tags"
 msgstr "Automatisk visning af partidata"
 
-#: dialogs.c:625
+#: dialogs.c:627
 msgid "Auto-Display Comment"
 msgstr "Automatisk visning af kommentarer"
 
-#: dialogs.c:626
+#: dialogs.c:628
 msgid ""
 "Auto-Play speed of loaded games\n"
 "(0 = instant, -1 = off):"
@@ -1481,12 +1490,12 @@ msgstr ""
 "Hastighed af gennemspilning af indlæste partier\n"
 "(0 = øjeblikkeligt, -1 fra):"
 
-#: dialogs.c:627
+#: dialogs.c:629
 msgid "Seconds per Move:"
 msgstr "Sekunder pr. træk:"
 
 # Ingen grund til ikke at bruge stort begyndelsesbogstav her.
-#: dialogs.c:628
+#: dialogs.c:630
 msgid ""
 "\n"
 "options to use in game-viewer mode:"
@@ -1494,7 +1503,7 @@ msgstr ""
 "\n"
 "Indstillinger til brug ved gennemkigning af partier:"
 
-#: dialogs.c:630
+#: dialogs.c:632
 msgid ""
 "\n"
 "Thresholds for position filtering in game list:"
@@ -1502,701 +1511,701 @@ msgstr ""
 "\n"
 "Grænseværdier for stillingsfiltrering i partiliste:"
 
-#: dialogs.c:631
+#: dialogs.c:633
 msgid "Elo of strongest player at least:"
 msgstr "Stærkeste spillers rating er mindst:"
 
-#: dialogs.c:632
+#: dialogs.c:634
 msgid "Elo of weakest player at least:"
 msgstr "Svageste spillers rating er mindst:"
 
-#: dialogs.c:633
+#: dialogs.c:635
 msgid "No games before year:"
 msgstr "Ingen partier før år:"
 
-#: dialogs.c:634
+#: dialogs.c:636
 msgid "Minimum nr consecutive positions:"
 msgstr "Mindste antal stillinger i følge ad gangen:"
 
-#: dialogs.c:635
+#: dialogs.c:637
 msgid "Search mode:"
 msgstr "Søgemetode:"
 
-#: dialogs.c:636
+#: dialogs.c:638
 msgid "Also match reversed colors"
 msgstr "Match også omvendte farver"
 
-#: dialogs.c:637
+#: dialogs.c:639
 msgid "Also match left-right flipped position"
 msgstr "Match også spejlvendt stilling"
 
-#: dialogs.c:645
+#: dialogs.c:647
 msgid "Load Game Options"
 msgstr "Indstillinger for indlæsning af parti"
 
-#: dialogs.c:657
+#: dialogs.c:659
 msgid "Auto-Save Games"
 msgstr "Gem partier automatisk"
 
-#: dialogs.c:658
+#: dialogs.c:660
 msgid "Own Games Only"
 msgstr ""
 
-#: dialogs.c:659
+#: dialogs.c:661
 msgid "Save Games on File:"
 msgstr "Gem partier i filen:"
 
-#: dialogs.c:660
+#: dialogs.c:662
 msgid "Save Final Positions on File:"
 msgstr "Gem slutstillinger i filen:"
 
-#: dialogs.c:661
+#: dialogs.c:663
 msgid "PGN Event Header:"
 msgstr "Event-tekst i PGN-fil:"
 
-#: dialogs.c:662
+#: dialogs.c:664
 msgid "Old Save Style (as opposed to PGN)"
 msgstr "Gammel gemmestil (i modsætning til PGN)"
 
-#: dialogs.c:663
+#: dialogs.c:665
 msgid "Include Number Tag in tourney PGN"
 msgstr "Brug partinumre i PGN-fil for turnering"
 
-#: dialogs.c:664
+#: dialogs.c:666
 msgid "Save Score/Depth Info in PGN"
 msgstr "Gem score/dybde-information i PGN"
 
-#: dialogs.c:665
+#: dialogs.c:667
 msgid "Save Out-of-Book Info in PGN           "
 msgstr "Gem ud af åbningsbog-info i PGN      "
 
-#: dialogs.c:672
+#: dialogs.c:674
 msgid "Save Game Options"
 msgstr "Indstillinger for gemning af parti"
 
-#: dialogs.c:681
+#: dialogs.c:683
 msgid "No Sound"
 msgstr "Ingen lyd"
 
-#: dialogs.c:682
+#: dialogs.c:684
 msgid "Default Beep"
 msgstr "Standard bip"
 
-#: dialogs.c:683
+#: dialogs.c:685
 msgid "Above WAV File"
 msgstr "WAV-filen ovenfor"
 
-#: dialogs.c:684
+#: dialogs.c:686
 msgid "Car Horn"
 msgstr "Bilhorn"
 
-#: dialogs.c:685
+#: dialogs.c:687
 msgid "Cymbal"
 msgstr "Bækken"
 
-#: dialogs.c:686
+#: dialogs.c:688
 msgid "Ding"
 msgstr "Ding"
 
-#: dialogs.c:687
+#: dialogs.c:689
 msgid "Gong"
 msgstr "Gongon"
 
-#: dialogs.c:688
+#: dialogs.c:690
 msgid "Laser"
 msgstr "Laser"
 
-#: dialogs.c:689
+#: dialogs.c:691
 msgid "Penalty"
 msgstr "Straffe"
 
-#: dialogs.c:690
+#: dialogs.c:692
 msgid "Phone"
 msgstr "Telefon"
 
-#: dialogs.c:691
+#: dialogs.c:693
 msgid "Pop"
 msgstr "Plop"
 
-#: dialogs.c:692
+#: dialogs.c:694
 msgid "Slap"
 msgstr "Slag"
 
-#: dialogs.c:693
+#: dialogs.c:695
 msgid "Wood Thunk"
 msgstr "Dunk"
 
-#: dialogs.c:695
+#: dialogs.c:697
 msgid "User File"
 msgstr "Brugerfil"
 
-#: dialogs.c:717
+#: dialogs.c:719
 msgid "User WAV File:"
 msgstr "Bruger WAV-fil:"
 
-#: dialogs.c:718
+#: dialogs.c:720
 msgid "Sound Program:"
 msgstr "Lydprogram:"
 
-#: dialogs.c:719
+#: dialogs.c:721
 msgid "Try-Out Sound:"
 msgstr "Afprøv lyd:"
 
-#: dialogs.c:720
+#: dialogs.c:722
 msgid "Play"
 msgstr "Afspil"
 
-#: dialogs.c:721
+#: dialogs.c:723
 msgid "Move:"
 msgstr "Træk:"
 
-#: dialogs.c:722
+#: dialogs.c:724
 msgid "Win:"
 msgstr "Gevinst:"
 
-#: dialogs.c:723
+#: dialogs.c:725
 msgid "Lose:"
 msgstr "Tab:"
 
-#: dialogs.c:724
+#: dialogs.c:726
 msgid "Draw:"
 msgstr "Remis:"
 
-#: dialogs.c:725
+#: dialogs.c:727
 msgid "Unfinished:"
 msgstr "Uafsluttet:"
 
-#: dialogs.c:726
+#: dialogs.c:728
 msgid "Alarm:"
 msgstr "Alarm:"
 
-#: dialogs.c:727
+#: dialogs.c:729
 msgid "Challenge:"
 msgstr "Udfodring:"
 
-#: dialogs.c:729
+#: dialogs.c:731
 msgid "Sounds Directory:"
 msgstr "Lydkatalog:"
 
-#: dialogs.c:730
+#: dialogs.c:732
 msgid "Shout:"
 msgstr "Råb:"
 
-#: dialogs.c:731
+#: dialogs.c:733
 msgid "S-Shout:"
 msgstr "S-råb:"
 
-#: dialogs.c:732
+#: dialogs.c:734
 msgid "Channel:"
 msgstr "Kanal:"
 
-#: dialogs.c:733
+#: dialogs.c:735
 msgid "Channel 1:"
 msgstr "Kanal 1:"
 
-#: dialogs.c:734
+#: dialogs.c:736
 msgid "Tell:"
 msgstr "Tale:"
 
-#: dialogs.c:735
+#: dialogs.c:737
 msgid "Kibitz:"
 msgstr "Kommentar:"
 
-#: dialogs.c:736
+#: dialogs.c:738
 msgid "Request:"
 msgstr "Forespøgsel:"
 
-#: dialogs.c:737
+#: dialogs.c:739
 msgid "Seek:"
 msgstr "Søgning:"
 
-#: dialogs.c:753
+#: dialogs.c:755
 msgid "Sound Options"
 msgstr "Lydindstillinger"
 
-#: dialogs.c:774
+#: dialogs.c:776
 msgid "White Piece Color:"
 msgstr "Farve for hvide brikker:"
 
 #. TRANSLATORS: R = single letter for the color red
-#: dialogs.c:777 dialogs.c:786 dialogs.c:792 dialogs.c:798 dialogs.c:804
-#: dialogs.c:810
+#: dialogs.c:779 dialogs.c:788 dialogs.c:794 dialogs.c:800 dialogs.c:806
+#: dialogs.c:812
 msgid "R"
 msgstr "R"
 
 #. TRANSLATORS: G = single letter for the color green
-#: dialogs.c:779 dialogs.c:787 dialogs.c:793 dialogs.c:799 dialogs.c:805
-#: dialogs.c:811
+#: dialogs.c:781 dialogs.c:789 dialogs.c:795 dialogs.c:801 dialogs.c:807
+#: dialogs.c:813
 msgid "G"
 msgstr "G"
 
 #. TRANSLATORS: B = single letter for the color blue
-#: dialogs.c:781 dialogs.c:788 dialogs.c:794 dialogs.c:800 dialogs.c:806
-#: dialogs.c:812
+#: dialogs.c:783 dialogs.c:790 dialogs.c:796 dialogs.c:802 dialogs.c:808
+#: dialogs.c:814
 msgid "B"
 msgstr "B"
 
 #. TRANSLATORS: D = single letter to make a color darker
-#: dialogs.c:783 dialogs.c:789 dialogs.c:795 dialogs.c:801 dialogs.c:807
-#: dialogs.c:813
+#: dialogs.c:785 dialogs.c:791 dialogs.c:797 dialogs.c:803 dialogs.c:809
+#: dialogs.c:815
 msgid "D"
 msgstr "M"
 
-#: dialogs.c:784
+#: dialogs.c:786
 msgid "Black Piece Color:"
 msgstr "Farve for sorte brikker:"
 
-#: dialogs.c:790
+#: dialogs.c:792
 msgid "Light Square Color:"
 msgstr "Farve for lyse felter:"
 
-#: dialogs.c:796
+#: dialogs.c:798
 msgid "Dark Square Color:"
 msgstr "Farve for mørke felter:"
 
-#: dialogs.c:802
+#: dialogs.c:804
 msgid "Highlight Color:"
 msgstr "Farve til fremhævelse:"
 
-#: dialogs.c:808
+#: dialogs.c:810
 msgid "Premove Highlight Color:"
 msgstr "Farve til forhåndstræk:"
 
-#: dialogs.c:814
+#: dialogs.c:816
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
 msgstr "Ombyt brikker som i shogi    (Farvede knapper gendanner standard)"
 
-#: dialogs.c:816
+#: dialogs.c:818
 msgid "Mono Mode"
 msgstr "Monokrom-tilstand"
 
-#: dialogs.c:817
+#: dialogs.c:819
 msgid "Line Gap ( -1 = default for board size):"
 msgstr "Mellemrum mellem felter (-1 = standard for brætstørrelsen):"
 
-#: dialogs.c:818
+#: dialogs.c:820
 msgid "Use Board Textures"
 msgstr "Brug brætteksturer"
 
-#: dialogs.c:819
+#: dialogs.c:821
 msgid "Light-Squares Texture File:"
 msgstr "Teksturfil for lyse felter:"
 
-#: dialogs.c:820
+#: dialogs.c:822
 msgid "Dark-Squares Texture File:"
 msgstr "Teksturfil for mørke felter:"
 
-#: dialogs.c:821
+#: dialogs.c:823
 msgid "Use external piece bitmaps with their own colors"
 msgstr ""
 
-#: dialogs.c:822
+#: dialogs.c:824
 #, fuzzy
 msgid "Directory with Pieces Images:"
 msgstr "Katalog med bitmap-brikker:"
 
-#: dialogs.c:872
+#: dialogs.c:874
 msgid "Board Options"
 msgstr "Brætindstillinger"
 
-#: dialogs.c:925 menus.c:634
+#: dialogs.c:927 menus.c:634
 msgid "ICS text menu"
 msgstr "ICS-tekstmenu"
 
-#: dialogs.c:947
+#: dialogs.c:949
 msgid "clear"
 msgstr "ryd"
 
-#: dialogs.c:948 dialogs.c:1036
+#: dialogs.c:950 dialogs.c:1038
 msgid "save changes"
 msgstr "gem ændringer"
 
-#: dialogs.c:1051
+#: dialogs.c:1053
 msgid "Edit book"
 msgstr "Redigér åbningsbog"
 
-#: dialogs.c:1051 menus.c:636
+#: dialogs.c:1053 menus.c:636
 msgid "Tags"
 msgstr "Partidata"
 
-#: dialogs.c:1192
+#: dialogs.c:1195
 msgid "ICS input box"
 msgstr "ICS-inputboks"
 
-#: dialogs.c:1224
+#: dialogs.c:1227
 msgid "Type a move"
 msgstr "Tast et træk"
 
-#: dialogs.c:1250
+#: dialogs.c:1253
 msgid "Engine has no options"
 msgstr "Skakprogrammet har ingen tilvalg"
 
-#: dialogs.c:1252
+#: dialogs.c:1255
 msgid "Engine Settings"
 msgstr "Indstillinger for skakprogram"
 
-#: dialogs.c:1277
+#: dialogs.c:1280
 msgid "Select engine from list:"
 msgstr "Vælg skakprogram fra liste:"
 
-#: dialogs.c:1280
+#: dialogs.c:1283
 msgid "or specify one below:"
 msgstr "eller specificér en herunder:"
 
-#: dialogs.c:1281
+#: dialogs.c:1284
 msgid "Nickname (optional):"
 msgstr "Kaldenavn (ikke nødvendigt):"
 
-#: dialogs.c:1282
+#: dialogs.c:1285
 msgid "Use nickname in PGN player tags of engine-engine games"
 msgstr "Brug kaldenavnet som spillerbetegnelse i PGN-filer"
 
-#: dialogs.c:1283
+#: dialogs.c:1286
 msgid "Engine Directory:"
 msgstr "Skakprogramkatalog:"
 
-#: dialogs.c:1284
+#: dialogs.c:1287
 msgid "Engine Command:"
 msgstr "Skakprogramkommando:"
 
-#: dialogs.c:1285
+#: dialogs.c:1288
 msgid "(Directory will be derived from engine path when empty)"
 msgstr "(Katalog vil blive udledt fra programstien hvis ikke udfyldt)"
 
-#: dialogs.c:1286
+#: dialogs.c:1289
 msgid "UCI"
 msgstr "UCI"
 
-#: dialogs.c:1287
+#: dialogs.c:1290
 msgid "WB protocol v1 (do not wait for engine features)"
 msgstr "WB-protokol v1 (brug ikke særlige skakprogramfunktioner)"
 
-#: dialogs.c:1288
+#: dialogs.c:1291
 msgid "Must not use GUI book"
 msgstr "Må ikke bruge GUI's åbningsbog"
 
-#: dialogs.c:1289
+#: dialogs.c:1292
 msgid "Add this engine to the list"
 msgstr "Tilføj dette skakprogram til listen"
 
-#: dialogs.c:1290
+#: dialogs.c:1293
 msgid "Force current variant with this engine"
 msgstr "Brug aktuel variant med dette skakprogram"
 
-#: dialogs.c:1340
+#: dialogs.c:1343
 #, fuzzy
 msgid "Load first engine"
 msgstr "Indlæs skakprogram"
 
-#: dialogs.c:1346
+#: dialogs.c:1349
 #, fuzzy
 msgid "Load second engine"
 msgstr "Indlæs skakprogrammet som"
 
-#: dialogs.c:1369
+#: dialogs.c:1372
 msgid "shuffle"
 msgstr "bland brikker"
 
-#: dialogs.c:1370
+#: dialogs.c:1373
 msgid "Start-position number:"
 msgstr "Startstillingsnummer:"
 
-#: dialogs.c:1371
+#: dialogs.c:1374
 msgid "randomize"
 msgstr "vælg tilfældigt"
 
-#: dialogs.c:1372
+#: dialogs.c:1375
 msgid "pick fixed"
 msgstr "vælg bestemt"
 
-#: dialogs.c:1389
+#: dialogs.c:1392
 msgid "New Shuffle Game"
 msgstr "Nyt blandet parti"
 
 # Stort begyndelsesbogstav med vilje
-#: dialogs.c:1408
+#: dialogs.c:1411
 msgid "classical"
 msgstr "Klassisk"
 
 # Stort begyndelsesbogstav med vilje
-#: dialogs.c:1409
+#: dialogs.c:1412
 msgid "incremental"
 msgstr "Tillægstid"
 
 # Stort begyndelsesbogstav med vilje
-#: dialogs.c:1410
+#: dialogs.c:1413
 msgid "fixed max"
 msgstr "Maks. pr. træk"
 
-#: dialogs.c:1411
+#: dialogs.c:1414
 msgid "Moves per session:"
 msgstr "Træk pr.  tidsperiode:"
 
-#: dialogs.c:1412
+#: dialogs.c:1415
 msgid "Initial time (min):"
 msgstr "Tid fra start (minutter):"
 
-#: dialogs.c:1413
+#: dialogs.c:1416
 msgid "Increment or max (sec/move):"
 msgstr "Tillægstid eller maks. pr. træk (sekunder):"
 
-#: dialogs.c:1414
+#: dialogs.c:1417
 msgid "Time-Odds factors:"
 msgstr "Tidsforkortelses-faktorer:"
 
-#: dialogs.c:1415
+#: dialogs.c:1418
 msgid "Engine #1"
 msgstr "Skakprogram nr. 1"
 
-#: dialogs.c:1416
+#: dialogs.c:1419
 msgid "Engine #2 / Human"
 msgstr "Skakprogram nr. 2 / menneske"
 
-#: dialogs.c:1456 dialogs.c:1459 dialogs.c:1464 dialogs.c:1465
+#: dialogs.c:1459 dialogs.c:1462 dialogs.c:1467 dialogs.c:1468
 #: gtk/xoptions.c:191
 msgid "Unused"
 msgstr "Ubrugt"
 
-#: dialogs.c:1477
+#: dialogs.c:1480
 msgid "Time Control"
 msgstr "Betænkningstid"
 
-#: dialogs.c:1506
+#: dialogs.c:1509
 msgid "Error writing to chess program"
 msgstr "Fejl ved skrivning til skakprogram"
 
-#: dialogs.c:1573
+#: dialogs.c:1576
 msgid "Cancel"
 msgstr "Annullér"
 
-#: dialogs.c:1578 dialogs.c:1970 dialogs.c:1974
+#: dialogs.c:1581 dialogs.c:1973 dialogs.c:1977
 msgid "King"
 msgstr "Konge"
 
-#: dialogs.c:1581
+#: dialogs.c:1584
 msgid "Captain"
 msgstr ""
 
-#: dialogs.c:1582
+#: dialogs.c:1585
 msgid "Lieutenant"
 msgstr ""
 
-#: dialogs.c:1583
+#: dialogs.c:1586
 msgid "General"
 msgstr ""
 
-#: dialogs.c:1584
+#: dialogs.c:1587
 msgid "Warlord"
 msgstr ""
 
-#: dialogs.c:1586 dialogs.c:1969 dialogs.c:1973 dialogs.c:1992
+#: dialogs.c:1589 dialogs.c:1972 dialogs.c:1976 dialogs.c:1995
 msgid "Knight"
 msgstr "Springer"
 
-#: dialogs.c:1587 dialogs.c:1969 dialogs.c:1973 dialogs.c:1992
+#: dialogs.c:1590 dialogs.c:1972 dialogs.c:1976 dialogs.c:1995
 msgid "Bishop"
 msgstr "Løber"
 
-#: dialogs.c:1588 dialogs.c:1969 dialogs.c:1973 dialogs.c:1992
+#: dialogs.c:1591 dialogs.c:1972 dialogs.c:1976 dialogs.c:1995
 msgid "Rook"
 msgstr "Tårn"
 
-#: dialogs.c:1592 dialogs.c:1971 dialogs.c:1975
+#: dialogs.c:1595 dialogs.c:1974 dialogs.c:1978
 msgid "Archbishop"
 msgstr ""
 
-#: dialogs.c:1593 dialogs.c:1971 dialogs.c:1975
+#: dialogs.c:1596 dialogs.c:1974 dialogs.c:1978
 msgid "Chancellor"
 msgstr ""
 
-#: dialogs.c:1595 dialogs.c:1970 dialogs.c:1974 dialogs.c:1992
+#: dialogs.c:1598 dialogs.c:1973 dialogs.c:1977 dialogs.c:1995
 msgid "Queen"
 msgstr "Dronning"
 
-#: dialogs.c:1599
+#: dialogs.c:1602
 msgid "Defer"
 msgstr ""
 
-#: dialogs.c:1600 dialogs.c:1971 dialogs.c:1975
+#: dialogs.c:1603 dialogs.c:1974 dialogs.c:1978
 msgid "Promote"
 msgstr "Bondeforvandling"
 
-#: dialogs.c:1615
+#: dialogs.c:1618
 msgid "Chat partner:"
 msgstr ""
 
-#: dialogs.c:1700
+#: dialogs.c:1703
 msgid "Chat box"
 msgstr ""
 
-#: dialogs.c:1741
+#: dialogs.c:1744
 msgid "factory"
 msgstr "standard"
 
-#: dialogs.c:1742
+#: dialogs.c:1745
 msgid "up"
 msgstr "op"
 
-#: dialogs.c:1743
+#: dialogs.c:1746
 msgid "down"
 msgstr "ned"
 
-#: dialogs.c:1761
+#: dialogs.c:1764
 msgid "No tag selected"
 msgstr "Ingen overskrift valgt"
 
-#: dialogs.c:1792
+#: dialogs.c:1795
 msgid "Game-list options"
 msgstr "Indstillinger for partiliste"
 
-#: dialogs.c:1868 dialogs.c:1882
+#: dialogs.c:1871 dialogs.c:1885
 msgid "Error"
 msgstr "Fejl"
 
-#: dialogs.c:1905
+#: dialogs.c:1908
 msgid "Fatal Error"
 msgstr "Fatal fejl"
 
-#: dialogs.c:1905
+#: dialogs.c:1908
 msgid "Exiting"
 msgstr "Afslutter"
 
-#: dialogs.c:1916
+#: dialogs.c:1919
 msgid "Information"
 msgstr "Meddelelse"
 
-#: dialogs.c:1923
+#: dialogs.c:1926
 msgid "Note"
 msgstr "Notits"
 
-#: dialogs.c:1969 dialogs.c:2244 dialogs.c:2247
+#: dialogs.c:1972 dialogs.c:2252 dialogs.c:2255
 msgid "White"
 msgstr "Hvid"
 
-#: dialogs.c:1969 dialogs.c:1973 dialogs.c:1992
+#: dialogs.c:1972 dialogs.c:1976 dialogs.c:1995
 msgid "Pawn"
 msgstr "Bonde"
 
-#: dialogs.c:1970 dialogs.c:1974
+#: dialogs.c:1973 dialogs.c:1977
 msgid "Elephant"
 msgstr ""
 
-#: dialogs.c:1970 dialogs.c:1974
+#: dialogs.c:1973 dialogs.c:1977
 msgid "Cannon"
 msgstr ""
 
-#: dialogs.c:1971 dialogs.c:1975
+#: dialogs.c:1974 dialogs.c:1978
 msgid "Demote"
 msgstr ""
 
-#: dialogs.c:1972 dialogs.c:1976
+#: dialogs.c:1975 dialogs.c:1979
 msgid "Empty square"
 msgstr "Tomt felt"
 
-#: dialogs.c:1972 dialogs.c:1976
+#: dialogs.c:1975 dialogs.c:1979
 msgid "Clear board"
 msgstr "Ryd bræt"
 
-#: dialogs.c:1973 dialogs.c:2256 dialogs.c:2259
+#: dialogs.c:1976 dialogs.c:2264 dialogs.c:2267
 msgid "Black"
 msgstr "Sort"
 
-#: dialogs.c:2072 menus.c:787
+#: dialogs.c:2075 menus.c:787
 msgid "File"
 msgstr "Fil"
 
-#: dialogs.c:2073 menus.c:788
+#: dialogs.c:2076 menus.c:788
 msgid "Edit"
 msgstr "Redigér"
 
-#: dialogs.c:2074 menus.c:789
+#: dialogs.c:2077 menus.c:789
 msgid "View"
 msgstr "Vis"
 
-#: dialogs.c:2075 menus.c:790
+#: dialogs.c:2078 menus.c:790
 msgid "Mode"
 msgstr "Tilstand"
 
-#: dialogs.c:2076 menus.c:791
+#: dialogs.c:2079 menus.c:791
 msgid "Action"
 msgstr "Handlinger"
 
-#: dialogs.c:2077 menus.c:792
+#: dialogs.c:2080 menus.c:792
 msgid "Engine"
 msgstr "Skakprogram"
 
-#: dialogs.c:2078 menus.c:793
+#: dialogs.c:2081 menus.c:793
 msgid "Options"
 msgstr "Indstillinger"
 
-#: dialogs.c:2079 menus.c:794
+#: dialogs.c:2082 menus.c:794
 msgid "Help"
 msgstr "Hjælp"
 
-#: dialogs.c:2089
+#: dialogs.c:2092
 msgid "<<"
 msgstr ""
 
-#: dialogs.c:2090
+#: dialogs.c:2093
 msgid "<"
 msgstr ""
 
-#: dialogs.c:2092
+#: dialogs.c:2095
 msgid ">"
 msgstr ""
 
-#: dialogs.c:2093
+#: dialogs.c:2096
 msgid ">>"
 msgstr ""
 
-#: dialogs.c:2363
+#: dialogs.c:2371
 #, fuzzy
 msgid "Directories:"
 msgstr "Lydkatalog:"
 
-#: dialogs.c:2364
+#: dialogs.c:2372
 #, fuzzy
 msgid "Files:"
 msgstr "Fil"
 
-#: dialogs.c:2365
+#: dialogs.c:2373
 msgid "by name"
 msgstr ""
 
-#: dialogs.c:2366
+#: dialogs.c:2374
 msgid "by type"
 msgstr ""
 
-#: dialogs.c:2369
+#: dialogs.c:2377
 #, fuzzy
 msgid "Filename:"
 msgstr "Filter:"
 
-#: dialogs.c:2370
+#: dialogs.c:2378
 #, fuzzy
 msgid "New directory"
 msgstr "Skakprogramkatalog:"
 
-#: dialogs.c:2371
+#: dialogs.c:2379
 #, fuzzy
 msgid "File type:"
 msgstr "Filter:"
 
-#: dialogs.c:2446
+#: dialogs.c:2454
 #, fuzzy
 msgid "Contents of"
 msgstr "Kommentarer"
 
-#: dialogs.c:2472
+#: dialogs.c:2480
 #, fuzzy
-msgid " next page"
+msgid "  next page"
 msgstr "næste side"
 
-#: dialogs.c:2494
+#: dialogs.c:2502
 msgid "FIRST TYPE DIRECTORY NAME HERE"
 msgstr ""
 
-#: dialogs.c:2495
+#: dialogs.c:2503
 msgid "TRY ANOTHER NAME"
 msgstr ""
 
@@ -2229,52 +2238,52 @@ msgstr "SPS"
 msgid "Reading game file (%d)"
 msgstr "Læser partifil (%d)"
 
-#: gtk/xboard.c:781 xaw/xboard.c:1160
+#: gtk/xboard.c:787 xaw/xboard.c:1161
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr "%s: kan ikke cd til CHESSDIR: "
 
-#: gtk/xboard.c:790 xaw/xboard.c:1169
+#: gtk/xboard.c:796 xaw/xboard.c:1170
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr "Åbning af filen \"%s\" mislykkedes\n"
 
-#: gtk/xboard.c:805 xaw/xboard.c:1178
+#: gtk/xboard.c:811 xaw/xboard.c:1179
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
 "Genoversæt med større BOARD_RANKS eller BOARD_FILES for at understøtte denne "
 "størrelse"
 
-#: gtk/xboard.c:824 xaw/xboard.c:1210
+#: gtk/xboard.c:830 xaw/xboard.c:1211
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr "%s: forkert boardSize-syntaks %s\n"
 
-#: gtk/xboard.c:864 xaw/xboard.c:1247
+#: gtk/xboard.c:870 xaw/xboard.c:1248
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr "%s: ikke genkendt boardSize-navn %s\n"
 
-#: gtk/xboard.c:905 xaw/xboard.c:1284
+#: gtk/xboard.c:911 xaw/xboard.c:1285
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr "%s: for få farver tilgængelige; prøver monokrom tilstand\n"
 
-#: gtk/xboard.c:1188 xaw/xboard.c:1566
+#: gtk/xboard.c:1201 xaw/xboard.c:1567
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr "Kan ikke lave skrifttypegruppe for %s.\n"
 
-#: gtk/xboard.c:1213 xaw/xboard.c:1589
+#: gtk/xboard.c:1226 xaw/xboard.c:1590
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr "%s: Ingen skrifttyper matcher mønstret %s\n"
 
-#: gtk/xboard.c:1645 xaw/xboard.c:2079
+#: gtk/xboard.c:1665 xaw/xboard.c:2080
 msgid "Can't open temp file"
 msgstr "Kan ikke åbne midlertidig fil"
 
-#: gtk/xboard.c:2108
+#: gtk/xboard.c:2128
 msgid "Failed to open file"
 msgstr "Åbning af fil mislykkedes"
 
@@ -2914,7 +2923,7 @@ msgstr ""
 "  Rappotér venligst denne fejl til %s.\n"
 "  Inkludér systemtype og styresystem i beskeden.\n"
 
-#: xaw/xboard.c:1290
+#: xaw/xboard.c:1291
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
 msgstr "hvid pixel = 0x%lx, sort pixel = 0x%lx\n"
@@ -2924,27 +2933,27 @@ msgstr "hvid pixel = 0x%lx, sort pixel = 0x%lx\n"
 msgid "Error %d loading icon image\n"
 msgstr "Fejl %d ved indlæsning af ikonbillede\n"
 
-#: xaw/xoptions.c:320 xaw/xoptions.c:1014
+#: xaw/xoptions.c:321 xaw/xoptions.c:1015
 msgid "browse"
 msgstr "gennemse"
 
-#: xaw/xoptions.c:386 xaw/xoptions.c:387
+#: xaw/xoptions.c:387 xaw/xoptions.c:388
 msgid "Ctrl"
 msgstr ""
 
-#: xaw/xoptions.c:392 xaw/xoptions.c:393
+#: xaw/xoptions.c:393 xaw/xoptions.c:394
 msgid "Alt"
 msgstr ""
 
-#: xaw/xoptions.c:398 xaw/xoptions.c:399
+#: xaw/xoptions.c:399 xaw/xoptions.c:400
 msgid "Shift"
 msgstr ""
 
-#: xaw/xoptions.c:1261
+#: xaw/xoptions.c:1262
 msgid "OK"
 msgstr "o.k."
 
-#: xaw/xoptions.c:1265
+#: xaw/xoptions.c:1266
 msgid "cancel"
 msgstr "annullér"
 
