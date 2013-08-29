@@ -3,6 +3,85 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2013-08-27 22:55:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix -zippyVariants option
+
+Due to the change of cps->variants from (char []) to (char *), copying
+zippyVariants to it on behalf of v1 engines would no longer work. This
+is fixed by using ASSIGN() in stead of safeStrCpy().
+
+2013-08-26 18:25:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix initial board sizing WB
+
+The initial board size was based on the assumption the board would be 8x8.
+This could push auxiliary windows off screen if the board was smaller,
+after which EnsureOnScreen would undock them and park them in the upper-
+right corner before the board assumed its true size. InitPos() is now called
+before the initial sizing to et the board format correctly, InitDrawingSizes()
+had to be made resitant to calling before a board size was picked for this
+(because InitPos() might call that too).
+  ActivateTheme() now uses the new board size, not the previous one (as was
+indicated by size -2), so that -boardSize specifications inside a theme
+will take effect.
+  Board size petite should not be forbidden for Shogi; all pieces exist there.
+
+2013-08-26 14:40:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix grabbing of selected piece
+
+A second static click on a selected piece should deselect it, but an attempt
+to drag an already selected piece should not 'bounce off'. It was already
+possible to move a selected piece to another square, but the dragging was
+not animated. This is now fixed, by only skipping the code to start dragging
+when the second click is part of the only-move double-click for only capture.
+(Before it was skipped on any second click.)
+
+2013-08-26 13:35:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow entry of negative numbers in spin control (WB)
+
+Windows numeric controls do not accept negative numbers, so in case the
+range of a spin option can go negative, the style ES_NUMBER should not be
+set on the control.
+
+2013-08-26 11:37:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow drops / promotions/ deferrals to be edited into book
+
+For no real reason only NormalMove would be accepted when parsing the list
+of book moves.
+
+2013-08-26 11:28:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix GUI book after setup position
+
+The routine to send move to the engine would automatically append a 'go'
+is a preious setboard had put the engine in force mode, but this should
+not happen on a book hit, where the engine should even be put in force mode
+if it was not yet there.
+
+2013-07-05 18:32:46 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix book creation
+
+Due to duplicate use of the same file pointer variable the game file would be
+closed before any games were read from it.
+
+2013-05-20 11:14:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make PGN parser immune to unprotected time stamps
+
+The parser choked on time stamps of the form dd:dd or dd:dd:dd if one
+of the fields happened to be 00, because it wouldmistake that for a
+non-compliant king-side castling. By excluding this interpretation when
+the 00 is immediately preceded or followed by ':' this is now prevented.
+
+2013-05-05 08:03:00 -0700 Arun Persaud <arun@nubati.net>:
+updated po files for new release (make distcheck)
+
+
+2013-05-05 07:57:22 -0700 Arun Persaud <arun@nubati.net>:
+new version number for release 4.7.1
+
+
+2013-05-05 07:53:54 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
+
 2013-05-02 22:47:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Update zippy.README
 

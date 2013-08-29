@@ -1,3 +1,19 @@
+** Version 4.7.2 **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.7.2/ )
+
+   bugfix release for 4.7.1
+
+   * Make PGN parser immune to unprotected time stamps
+   * Fix book creation
+   * Fix GUI book after setup position
+   * Allow drops / promotions/ deferrals to be edited into book
+   * Allow entry of negative numbers in spin control (WB)
+   * Fix grabbing of selected piece
+   * Fix initial board sizing WB
+   * Fix -zippyVariants option
+
+
 ** Version 4.7.1 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.7.1/ )

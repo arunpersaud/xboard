@@ -1,3 +1,16 @@
+** Version 4.7.2 **
+
+(git diff -b --stat --summary -M v4.7.1 HEAD)
+
+ backend.c            | 10 ++++++----
+ book.c               |  4 +++-
+ parser.c             |  4 +++-
+ winboard/winboard.c  |  8 ++++++--
+ winboard/wsettings.c |  9 ++++++---
+ zippy.c              |  2 +-
+ 6 files changed, 25 insertions(+), 12 deletions(-)
+
+
 ** Version 4.7.1 **
 
 (git diff -b --stat --summary -M v4.7.0 HEAD)
