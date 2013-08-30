@@ -174,6 +174,10 @@ NextUnit (char **p)
 	    if(fromString) return 0; // we are parsing string, so the end is really the end
 	    *p = inPtr = inputBuf;
 	    if(!ReadLine()) return 0; // EOF
+	} else if(inPtr > inputBuf + PARSEBUFSIZE/2) { // buffer fills up with already parsed stuff
+	    char *q = *p, *r = inputBuf;
+	    while(*r++ = *q++);
+	    *p = inputBuf; inPtr = r - 1;
 	}
 	parseStart = oldp = *p; // remember where we begin
 

@@ -55,7 +55,7 @@
 #define PACKAGE_VERSION "4.7.2"
 
 /* Define the Windows-specific FILE version info.  this *MUST* be four comma separated 16-bit integers */
-#define PACKAGE_FILEVERSION 4,7,2013,0828
+#define PACKAGE_FILEVERSION 4,7,2013,828
 
 #define PTY_ITERATION
 
