@@ -228,6 +228,7 @@ GenericReadout (Option *opts, int selected)
 		case SaveButton:
 		case Label:
 		case Break:
+		case -1:
 	      break;
 	    }
 	    if(opts[i].type == EndMark) break;
@@ -447,6 +448,13 @@ static Option variantDescriptors[] = {
 { VariantFairy,         0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
 //{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
 { VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
+// optional buttons for engine-defined variants
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
 { 0, NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
@@ -454,6 +462,7 @@ static void
 Pick (int n)
 {
 	VariantClass v = variantDescriptors[n].value;
+	if(v == VariantUnknown) safeStrCpy(engineVariant, variantDescriptors[n].name, MSG_SIZ);
 	if(!appData.noChessProgram) {
 	    char *name = VariantName(v), buf[MSG_SIZ];
 	    if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
@@ -486,8 +495,24 @@ Pick (int n)
 void
 NewVariantProc ()
 {
+   static int start;
+   int i, last;
    if(appData.noChessProgram) sprintf(warning, _("Only bughouse is not available in viewer mode")); else
    sprintf(warning, _("All variants not supported by first engine\n(currently %s) are disabled"), first.tidy);
+   if(!start) while(variantDescriptors[start].type != -1) start++; // locate first spare
+   last = -1;
+   for(i=0; i<6; i++) { // create buttons for engine-defined variants
+     char *v = EngineDefinedVariant(&first, i);
+     if(v) {
+	last =  i;
+	ASSIGN(variantDescriptors[start+i].name, v);
+	variantDescriptors[start+i].type = Button;
+     } else variantDescriptors[start+i].type = -1;
+     if(!(last&1)) { // odd number, add filler
+	ASSIGN(variantDescriptors[start+last+1].name, " ");
+	variantDescriptors[start+last+1].type = Button;
+     }
+   }
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
 }
 

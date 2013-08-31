@@ -874,6 +874,12 @@ VariantWhichRadio(HWND hDlg)
 	if(IsDlgButtonChecked(hDlg, j) &&
 	   (appData.noChessProgram || strstr(first.variants, VariantName(i-1)))) return (VariantClass) i-1;
   }
+  for(i=0; i<9; i++) { // check for engine-defined variants
+    if(IsDlgButtonChecked(hDlg, OPT_EngineVariant+i) ) {
+	GetDlgItemText(hDlg, OPT_EngineVariant+i, engineVariant, MSG_SIZ); // remember name, so we can resolve it later
+	return VariantUnknown;
+    }
+  }
   return gameInfo.variant; // If no button checked, keep old
 }
 
@@ -885,6 +891,13 @@ VariantShowRadio(HWND hDlg)
   while((j = radioButton[i++]) != -2) {
 	if(j == -1) continue; // no menu button
 	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || strstr(first.variants, VariantName(i-1)));
+  }
+  for(i=0; i<9; i++) { // initialize engine-defined variants
+    char *v = EngineDefinedVariant(&first, i); // get name of #i
+    if(v) { // there is such a variant
+	EnableWindow(GetDlgItem(hDlg, OPT_EngineVariant+i), TRUE);     // and enable the button
+	SetDlgItemText(hDlg, OPT_EngineVariant+i, v);                  // put its name on button
+    } else EnableWindow(GetDlgItem(hDlg, OPT_EngineVariant+i), FALSE); // no such variant; disable button
   }
 }
 
@@ -1402,6 +1415,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       ColorizeTextPopup(hDlg, ColorSeek);
       UpdateSampleText(hDlg, OPT_SampleSeek, &mca[ColorSeek]);
       break;
+
 
     case OPT_ChooseNormalColor:
       ColorizeTextPopup(hDlg, ColorNormal);

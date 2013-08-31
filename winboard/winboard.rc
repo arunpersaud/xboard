@@ -757,16 +757,25 @@ BEGIN
                     10
     CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,154,114,70,
                     10
-    GROUPBOX        "Variant",GPB_Variant,4,4,215,125
-    LTEXT           "Board size:",GPB_Board,10,165,40,8,WS_TABSTOP
-    LTEXT           "ranks",IDC_Height,77,165,38,8
-    EDITTEXT        IDC_Ranks,60,161,14,14,ES_AUTOHSCROLL
-    LTEXT           "files",IDC_Width,133,165,80,8
-    EDITTEXT        IDC_Files,116,161,14,14,ES_AUTOHSCROLL
-    LTEXT           "Holdings with room for:",IDC_Hand,10,183,90,8
-    EDITTEXT        IDC_Holdings,93,179,14,14,ES_AUTOHSCROLL
-    LTEXT           "pieces",IDC_Pieces,110,183,100,8
-    LTEXT           "('-1' means defaults for selected variant)",IDC_Def,10,201,210,8
+    CONTROL         "",OPT_EngineVariant+0,"Button",BS_AUTORADIOBUTTON,9,134,70,10
+    CONTROL         "",OPT_EngineVariant+1,"Button",BS_AUTORADIOBUTTON,80,134,70,10
+    CONTROL         "",OPT_EngineVariant+2,"Button",BS_AUTORADIOBUTTON,154,134,70,10
+    CONTROL         "",OPT_EngineVariant+3,"Button",BS_AUTORADIOBUTTON,9,144,70,10
+    CONTROL         "",OPT_EngineVariant+4,"Button",BS_AUTORADIOBUTTON,80,144,70,10
+    CONTROL         "",OPT_EngineVariant+5,"Button",BS_AUTORADIOBUTTON,154,144,70,10
+    CONTROL         "",OPT_EngineVariant+6,"Button",BS_AUTORADIOBUTTON,9,154,70,10
+    CONTROL         "",OPT_EngineVariant+7,"Button",BS_AUTORADIOBUTTON,80,154,70,10
+    CONTROL         "",OPT_EngineVariant+8,"Button",BS_AUTORADIOBUTTON,154,154,70,10
+    GROUPBOX        "Variant",GPB_Variant,4,4,215,165
+    LTEXT           "Board size:",GPB_Board,10,183,40,8,WS_TABSTOP
+    LTEXT           "ranks",IDC_Height,77,183,38,8
+    EDITTEXT        IDC_Ranks,60,179,14,14,ES_AUTOHSCROLL
+    LTEXT           "files",IDC_Width,133,183,80,8
+    EDITTEXT        IDC_Files,116,179,14,14,ES_AUTOHSCROLL
+    LTEXT           "Holdings with room for:",IDC_Hand,10,201,90,8
+    EDITTEXT        IDC_Holdings,93,197,14,14,ES_AUTOHSCROLL
+    LTEXT           "pieces",IDC_Pieces,110,201,100,8
+    LTEXT           "('-1' means defaults for selected variant)",IDC_Def,10,217,210,8
     DEFPUSHBUTTON   "OK",IDOK,114,232,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,170,232,50,14
 END

@@ -2006,10 +2006,12 @@ StripHighlight (char *s)
     return retbuf;
 }
 
+char engineVariant[MSG_SIZ];
 char *variantNames[] = VARIANT_NAMES;
 char *
 VariantName (VariantClass v)
 {
+    if(v == VariantUnknown) return engineVariant;
     return variantNames[v];
 }
 
@@ -8540,13 +8542,24 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
     }
 
     if (!strncmp(message, "setup ", 6) && 
-	(!appData.testLegality || gameInfo.variant == VariantFairy || NonStandardBoardSize())
+	(!appData.testLegality || gameInfo.variant == VariantFairy || gameInfo.variant == VariantUnknown || NonStandardBoardSize())
 					) { // [HGM] allow first engine to define opening position
-      int dummy, s=6; char buf[MSG_SIZ];
+      int dummy, w, h, hand, s=6; char buf[MSG_SIZ], varName[MSG_SIZ];
       if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
+      *buf = NULLCHAR;
       if(sscanf(message, "setup (%s", buf) == 1) s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
       if(startedFromSetupPosition) return;
-      if(sscanf(message+s, "%dx%d+%d", &dummy, &dummy, &dummy) == 3) while(message[s] && message[s++] != ' '); // for compatibility with Alien Edition
+      dummy = sscanf(message+s, "%dx%d+%d_%s", &w, &h, &hand, varName);
+      if(dummy >= 3) {
+        while(message[s] && message[s++] != ' ');
+        if(BOARD_HEIGHT != h || BOARD_WIDTH != w + 4*(hand != 0) || gameInfo.holdingsSize != hand ||
+           dummy == 4 && gameInfo.variant != StringToVariant(varName) ) { // engine wants to change board format or variant
+	    appData.NrFiles = w; appData.NrRanks = h; appData.holdingsSize = hand;
+	    if(dummy == 4) gameInfo.variant = StringToVariant(varName);     // parent variant
+          InitPosition(1); // calls InitDrawingSizes to let new parameters take effect
+          if(*buf) SetCharTable(pieceToChar, buf); // do again, for it was spoiled by InitPosition
+        }
+      }
       ParseFEN(boards[0], &dummy, message+s);
       DrawPosition(TRUE, boards[0]);
       startedFromSetupPosition = TRUE;
@@ -11226,6 +11239,7 @@ Reset (int redraw, int init)
     lastHint[0] = NULLCHAR;
     ClearGameInfo(&gameInfo);
     gameInfo.variant = StringToVariant(appData.variant);
+    if(gameInfo.variant == VariantNormal && strcmp(appData.variant, "normal")) gameInfo.variant = VariantUnknown;
     ics_user_moved = ics_clock_paused = FALSE;
     ics_getting_history = H_FALSE;
     ics_gamenum = -1;
@@ -16064,6 +16078,27 @@ SendTimeRemaining (ChessProgramState *cps, int machineWhite)
 
     snprintf(message, MSG_SIZ, "otim %ld\n", otime);
     SendToProgram(message, cps);
+}
+
+char *
+EngineDefinedVariant (ChessProgramState *cps, int n)
+{   // return name of n-th unknown variant that engine supports
+    static char buf[MSG_SIZ];
+    char *p, *s = cps->variants;
+    if(!s) return NULL;
+    do { // parse string from variants feature
+      VariantClass v;
+	p = strchr(s, ',');
+	if(p) *p = NULLCHAR;
+      v = StringToVariant(s);
+      if(v == VariantNormal && strcmp(s, "normal") && !strstr(s, "_normal")) v = VariantUnknown; // garbage is recognized as normal
+	if(v == VariantUnknown) { // non-standard variant in list of engine-supported variants
+	    if(--n < 0) safeStrCpy(buf, s, MSG_SIZ);
+	}
+	if(p) *p++ = ',';
+	if(n < 0) return buf;
+    } while(s = p);
+    return NULL;
 }
 
 int
