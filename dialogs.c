@@ -468,7 +468,7 @@ static void
 Pick (int n)
 {
 	VariantClass v = variantDescriptors[n].value;
-	if(v == VariantUnknown) safeStrCpy(engineVariant, variantDescriptors[n].name, MSG_SIZ);
+	if(v == VariantUnknown) safeStrCpy(engineVariant, variantDescriptors[n].name, MSG_SIZ); else *engineVariant = NULLCHAR;
 	if(!appData.noChessProgram) {
 	    char *name = VariantName(v), buf[MSG_SIZ];
 	    if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {

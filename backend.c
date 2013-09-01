@@ -2011,7 +2011,7 @@ char *variantNames[] = VARIANT_NAMES;
 char *
 VariantName (VariantClass v)
 {
-    if(v == VariantUnknown) return engineVariant;
+    if(v == VariantUnknown || *engineVariant) return engineVariant;
     return variantNames[v];
 }
 
@@ -10003,7 +10003,7 @@ NonStandardBoardSize ()
 {
       /* [HGM] Awkward testing. Should really be a table */
       int overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantUnknown ) return 0; // engine-defined name never needs prefix
+      if( gameInfo.variant == VariantUnknown || *engineVariant) return 0; // engine-defined name never needs prefix
       if( gameInfo.variant == VariantXiangqi )
            overruled = gameInfo.boardWidth != 9 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 0;
       if( gameInfo.variant == VariantShogi )
