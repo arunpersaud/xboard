@@ -10003,6 +10003,7 @@ NonStandardBoardSize ()
 {
       /* [HGM] Awkward testing. Should really be a table */
       int overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
+      if( gameInfo.variant == VariantUnknown ) return 0; // engine-defined name never needs prefix
       if( gameInfo.variant == VariantXiangqi )
            overruled = gameInfo.boardWidth != 9 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 0;
       if( gameInfo.variant == VariantShogi )

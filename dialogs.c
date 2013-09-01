@@ -455,6 +455,12 @@ static Option variantDescriptors[] = {
 { VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
 { VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
 { VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
 { 0, NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
@@ -501,17 +507,17 @@ NewVariantProc ()
    sprintf(warning, _("All variants not supported by first engine\n(currently %s) are disabled"), first.tidy);
    if(!start) while(variantDescriptors[start].type != -1) start++; // locate first spare
    last = -1;
-   for(i=0; i<6; i++) { // create buttons for engine-defined variants
+   for(i=0; variantDescriptors[start+i].type != EndMark; i++) { // create buttons for engine-defined variants
      char *v = EngineDefinedVariant(&first, i);
      if(v) {
 	last =  i;
 	ASSIGN(variantDescriptors[start+i].name, v);
 	variantDescriptors[start+i].type = Button;
      } else variantDescriptors[start+i].type = -1;
-     if(!(last&1)) { // odd number, add filler
+   }
+   if(!(last&1)) { // odd number, add filler
 	ASSIGN(variantDescriptors[start+last+1].name, " ");
 	variantDescriptors[start+last+1].type = Button;
-     }
    }
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
 }
