@@ -253,7 +253,7 @@ typedef enum {
     BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan,
     BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
     BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
-    EmptySquare,
+    EmptySquare, DarkSquare,
     NoRights, // [HGM] gamestate: for castling rights hidden in board[CASTLING]
     ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
   } ChessSquare;

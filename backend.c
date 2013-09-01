@@ -17204,7 +17204,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
                     *p++ = '+';
                     piece = (ChessSquare)(DEMOTED piece);
                 }
-                *p++ = PieceToChar(piece);
+                *p++ = (piece == DarkSquare ? '*' : PieceToChar(piece));
                 if(p[-1] == '~') {
                     /* [HGM] flag promoted pieces as '<promoted>~' (Crazyhouse) */
                     p[-1] = PieceToChar((ChessSquare)(DEMOTED piece));
@@ -17395,6 +17395,8 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
                 while (emptycount--)
                         board[i][(j++)+gameInfo.holdingsWidth] = EmptySquare;
 #endif
+            } else if (*p == '*') {
+		board[i][(j++)+gameInfo.holdingsWidth] = DarkSquare; p++;
             } else if (isdigit(*p)) {
 		emptycount = *p++ - '0';
                 while(isdigit(*p)) emptycount = 10*emptycount + *p++ - '0'; /* [HGM] allow > 9 */

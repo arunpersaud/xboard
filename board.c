@@ -817,6 +817,7 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
 	snprintf(tString, 3, "%d", piece);
 	align = 4; // holdings count in upper-left corner
     }
+    if(piece == DarkSquare) square_color = 2;
     if(square_color == 2 || appData.blindfold) piece = EmptySquare;
 
     if (do_flash && piece != EmptySquare && appData.flashCount > 0) {

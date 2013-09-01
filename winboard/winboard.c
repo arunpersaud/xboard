@@ -3250,6 +3250,7 @@ BOOL HasHighlightInfo()
     }
 
     return result;
+
 }
 
 BOOL IsDrawArrowEnabled()
@@ -3441,6 +3442,7 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
             DisplayHoldingsCount(hdc, x, y, flipView, (int) board[row][column]);
       else if( column == BOARD_RGHT) /* right align */
             DisplayHoldingsCount(hdc, x, y, !flipView, (int) board[row][column]);
+      else if( piece == DarkSquare) DisplayHoldingsCount(hdc, x, y, 0, 0);
       else
       if (appData.monoMode) {
         if (piece == EmptySquare) {

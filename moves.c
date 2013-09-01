@@ -98,7 +98,7 @@ SameColor (ChessSquare piece1, ChessSquare piece2)
             (int) piece2 <  (int) EmptySquare);
 }
 #else
-#define SameColor(piece1, piece2) (piece1 < EmptySquare && piece2 < EmptySquare && (piece1 < BlackPawn) == (piece2 < BlackPawn))
+#define SameColor(piece1, piece2) (piece1 < EmptySquare && piece2 < EmptySquare && (piece1 < BlackPawn) == (piece2 < BlackPawn) || piece1 == DarkSquare || piece2 == DarkSquare)
 #endif
 
 char pieceToChar[] = {
