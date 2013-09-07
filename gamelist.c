@@ -305,7 +305,7 @@ GameListBuild (FILE *f)
 	    } while (cm == PGNTag || cm == Comment);
 	    if(1) {
 		int btm=0;
-		if(currentListGame->gameInfo.fen) ParseFEN(boards[scratch], &btm, currentListGame->gameInfo.fen);
+		if(currentListGame->gameInfo.fen) ParseFEN(boards[scratch], &btm, currentListGame->gameInfo.fen, FALSE);
 		else CopyBoard(boards[scratch], initialPosition);
 		plyNr = (btm != 0);
 		currentListGame->moves = PackGame(boards[scratch]);

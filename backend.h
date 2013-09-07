@@ -243,7 +243,7 @@ Boolean DisplayBook P((int moveNr));
 void SaveToBook P((char *text));
 void HoverEvent P((int hiX, int hiY, int x, int y));
 int PackGame P((Board board));
-Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
+Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen, Boolean autoSize));
 void ApplyMove P((int fromX, int fromY, int toX, int toY, int promoChar, Board board));
 void PackMove P((int fromX, int fromY, int toX, int toY, ChessSquare promoPiece));
 void ics_printf P((char *format, ...));

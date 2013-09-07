@@ -8564,7 +8564,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
           if(*buf) SetCharTable(pieceToChar, buf); // do again, for it was spoiled by InitPosition
         }
       }
-      ParseFEN(boards[0], &dummy, message+s);
+      ParseFEN(boards[0], &dummy, message+s, FALSE);
       DrawPosition(TRUE, boards[0]);
       startedFromSetupPosition = TRUE;
       return;
@@ -8577,7 +8577,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
         GameEnds(GameUnfinished, "Engine aborts game", GE_XBOARD);
 
-        if (!ParseFEN(initial_position, &blackPlaysFirst, message + 9)) {
+        if (!ParseFEN(initial_position, &blackPlaysFirst, message + 9, FALSE)) {
             DisplayError(_("Bad FEN received from engine"), 0);
             return ;
         } else {
@@ -12081,7 +12081,7 @@ GameContainsPosition (FILE *f, ListGame *lg)
 	for(next = WhitePawn; next<EmptySquare; next++) keys[next] = random()>>8 ^ random()<<6 ^random()<<20;
 	initDone = TRUE;
     }
-    if(lg->gameInfo.fen) ParseFEN(boards[scratch], &btm, lg->gameInfo.fen);
+    if(lg->gameInfo.fen) ParseFEN(boards[scratch], &btm, lg->gameInfo.fen, FALSE);
     else CopyBoard(boards[scratch], initialPosition); // default start position
     if(lg->moves) {
 	turn = btm + 1;
@@ -12403,7 +12403,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	if (gameInfo.fen != NULL) {
 	  Board initial_position;
 	  startedFromSetupPosition = TRUE;
-	  if (!ParseFEN(initial_position, &blackPlaysFirst, gameInfo.fen)) {
+	  if (!ParseFEN(initial_position, &blackPlaysFirst, gameInfo.fen, TRUE)) {
 	    Reset(TRUE, TRUE);
 	    DisplayError(_("Bad FEN position in file"), 0);
 	    return FALSE;
@@ -12740,7 +12740,7 @@ LoadPosition (FILE *f, int positionNumber, char *title)
     }
 
     if (fenMode) {
-	if (!ParseFEN(initial_position, &blackPlaysFirst, line)) {
+	if (!ParseFEN(initial_position, &blackPlaysFirst, line, TRUE)) {
 	    DisplayError(_("Bad FEN position in file"), 0);
 	    return FALSE;
 	}
@@ -16518,7 +16518,7 @@ TypeInDoneEvent (char *move)
 	ChessMove moveType;
 
 	// [HGM] FENedit
-	if(gameMode == EditPosition && ParseFEN(board, &n, move) ) {
+	if(gameMode == EditPosition && ParseFEN(board, &n, move, TRUE) ) {
 		EditPositionPasteFEN(move);
 		return;
 	}
@@ -17407,34 +17407,31 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
 }
 
 Boolean
-ParseFEN (Board board, int *blackPlaysFirst, char *fen)
+ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 {
-    int i, j;
+    int i, j, k, w=0;
     char *p, c;
     int emptycount, virgin[BOARD_FILES];
     ChessSquare piece;
 
     p = fen;
 
-    /* [HGM] by default clear Crazyhouse holdings, if present */
-    if(gameInfo.holdingsWidth) {
-       for(i=0; i<BOARD_HEIGHT; i++) {
-           board[i][0]             = EmptySquare; /* black holdings */
-           board[i][BOARD_WIDTH-1] = EmptySquare; /* white holdings */
-           board[i][1]             = (ChessSquare) 0; /* black counts */
-           board[i][BOARD_WIDTH-2] = (ChessSquare) 0; /* white counts */
-       }
-    }
-
     /* Piece placement data */
     for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
 	j = 0;
 	for (;;) {
-            if (*p == '/' || *p == ' ' || (*p == '[' && i == 0) ) {
-                if (*p == '/') p++;
+            if (*p == '/' || *p == ' ' || *p == '[' ) {
+		if(j > w) w = j;
                 emptycount = gameInfo.boardWidth - j;
                 while (emptycount--)
                         board[i][(j++)+gameInfo.holdingsWidth] = EmptySquare;
+                if (*p == '/') p++;
+		else if(autoSize) { // we stumbled unexpectedly into end of board
+                    for(k=i; k<BOARD_HEIGHT; k++) { // too few ranks; shift towards bottom
+		        for(j=0; j<BOARD_WIDTH; j++) board[k-i][j] = board[k][j];
+                    }
+		    appData.NrRanks = gameInfo.boardHeight - i; i=0;
+                }
 		break;
 #if(BOARD_FILES >= 10)
             } else if(*p=='x' || *p=='X') { /* [HGM] X means 10 */
@@ -17473,6 +17470,18 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen)
 	}
     }
     while (*p == '/' || *p == ' ') p++;
+
+    if(autoSize) appData.NrFiles = w, InitPosition(TRUE);
+
+    /* [HGM] by default clear Crazyhouse holdings, if present */
+    if(gameInfo.holdingsWidth) {
+       for(i=0; i<BOARD_HEIGHT; i++) {
+           board[i][0]             = EmptySquare; /* black holdings */
+           board[i][BOARD_WIDTH-1] = EmptySquare; /* white holdings */
+           board[i][1]             = (ChessSquare) 0; /* black counts */
+           board[i][BOARD_WIDTH-2] = (ChessSquare) 0; /* white counts */
+       }
+    }
 
     /* [HGM] look for Crazyhouse holdings here */
     while(*p==' ') p++;
@@ -17667,7 +17676,7 @@ EditPositionPasteFEN (char *fen)
   if (fen != NULL) {
     Board initial_position;
 
-    if (!ParseFEN(initial_position, &blackPlaysFirst, fen)) {
+    if (!ParseFEN(initial_position, &blackPlaysFirst, fen, TRUE)) {
       DisplayError(_("Bad FEN position in clipboard"), 0);
       return ;
     } else {
