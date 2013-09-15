@@ -215,7 +215,7 @@ void EnableNamedMenuItem P((char *menuRef, int state));
 typedef struct FrontEndProgramStats_TAG {
     int which;
     int depth;
-    unsigned long nodes;
+    u64 nodes;
     int score;
     int time;
     char * pv;
