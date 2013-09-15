@@ -217,3 +217,5 @@ extern HWND gameListDialog;
 VOID EditTagsProc(void);
 extern HWND editTagsDialog;
 extern int screenWidth, screenHeight;
+extern RECT screenGeometry; // Top-left coordiate of the screen can be different from (0,0)
+
