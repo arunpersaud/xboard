@@ -7762,6 +7762,7 @@ Adjudicate (ChessProgramState *cps)
 	      case MT_NONE:
 	      default:
 		break;
+	      case MT_STEALMATE:
 	      case MT_STALEMATE:
 	      case MT_STAINMATE:
 		reason = "Xboard adjudication: Stalemate";
