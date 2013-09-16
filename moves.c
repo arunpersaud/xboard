@@ -911,6 +911,7 @@ GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, Ches
             if(ff <= BOARD_LEFT+2) { left = ff+1; right = BOARD_LEFT+3; }
             for(k=left; k<=right && ft != NoRights; k++) /* first test if blocked */
                 if(k != ft && board[0][k] != EmptySquare) ft = NoRights;
+            if(ft == 0 && ff != 1 && board[0][1] != EmptySquare) ft = NoRights; /* Rook can be blocked on b1 */
             if(ff > BOARD_LEFT+2)
             for(k=left+1; k<=right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = NoRights;
@@ -937,6 +938,7 @@ GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, Ches
             if(ff <= BOARD_LEFT+2) { left = ff+1; right = BOARD_LEFT+3; }
             for(k=left; k<=right && ft != NoRights; k++) /* first test if blocked */
                 if(k != ft && board[BOARD_HEIGHT-1][k] != EmptySquare) ft = NoRights;
+            if(ft == 0 && ff != 1 && board[BOARD_HEIGHT-1][1] != EmptySquare) ft = NoRights; /* Rook can be blocked on b8 */
             if(ff > BOARD_LEFT+2)
             for(k=left+1; k<=right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = NoRights;
