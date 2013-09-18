@@ -84,24 +84,26 @@ sysconf_DATA = xboard.conf
 
 ### icon files
 
-icondir = $(datadir)/icons/hicolor/48x48/apps
+icondir = @ICONSDIR@
 dist_icon_DATA = xboard.png
-svgicondir = $(datadir)/icons/hicolor/scalable/apps
+svgicondir = @SVGICONSDIR@
 dist_svgicon_DATA = xboard.svg
 
 
 ### desktop files for KDE and gnome
 
-Applicationsdir = $(datadir)/applications
+Applicationsdir = @DESKTOPDIR@
 Applications_DATA = xboard.desktop xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop  xboard-config.desktop
 
 ### mime file
-mimedir = $(datadir)/mime/packages
+mimedir = @MIMEDIR@
 mime_DATA = xboard.xml
+
+gamedatadir = @GAMEDATADIR@
 
 ### directory and files for svgs
 
-svgdir = $(datadir)/games/xboard/themes/default
+svgdir = $(gamedatadir)/themes/default
 dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/BlackAdvisor.svg       svg/WhiteAdvisor.svg    \
            svg/BlackArchbishop.svg    svg/WhiteArchbishop.svg  \
@@ -134,7 +136,7 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/eo_Thinking.svg      svg/eo_Unknown.svg        \
            svg/eo_White.svg
 
-shogidir = $(datadir)/games/xboard/themes/shogi
+shogidir = $(gamedatadir)/themes/shogi
 dist_shogi_DATA = \
            themes/shogi/WhiteGold.svg        themes/shogi/WhiteCrownedBishop.svg\
            themes/shogi/WhiteBishop.svg      themes/shogi/WhiteKing.svg\
@@ -151,7 +153,7 @@ dist_shogi_DATA = \
            themes/shogi/BlackRook.svg        themes/shogi/BlackCrownedRook.svg\
            themes/shogi/BlackAdvisor.svg     themes/shogi/BlackGoldSilver.svg
 
-xiangqidir = $(datadir)/games/xboard/themes/xiangqi
+xiangqidir = $(gamedatadir)/themes/xiangqi
 dist_xiangqi_DATA = themes/xiangqi/BlackAdvisor.svg  themes/xiangqi/WhiteAdvisor.svg \
            themes/xiangqi/BlackCanon.svg    themes/xiangqi/WhiteCanon.svg    \
            themes/xiangqi/BlackElephant.svg themes/xiangqi/WhiteElephant.svg \
@@ -162,17 +164,17 @@ dist_xiangqi_DATA = themes/xiangqi/BlackAdvisor.svg  themes/xiangqi/WhiteAdvisor
 
 ### directory and files for pixmaps
 
-pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
+pixmapsdir = $(gamedatadir)/pixmaps/textures
 dist_pixmaps_DATA = pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm pixmaps/board48.xpm pixmaps/ini32.xpm pixmaps/ini48.xpm
 
 ### directory and files for pngs
 
-pngdir = $(datadir)/games/xboard/themes/textures
+pngdir = $(gamedatadir)/themes/textures
 dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png png/xqboard.png
 
 ### directory and files for sound files
 
-soundsdir = $(datadir)/games/xboard/sounds
+soundsdir = $(gamedatadir)/sounds
 dist_sounds_DATA = \
   sounds/cymbal.wav     sounds/pop2.wav   sounds/slap.wav     sounds/ding1.wav      sounds/laser.wav \
   sounds/woodthunk.wav  sounds/gong.wav   sounds/penalty.wav  sounds/honkhonk.wav   sounds/phone.wav

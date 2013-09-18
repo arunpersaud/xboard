@@ -151,6 +151,42 @@ AC_ARG_WITH([Xaw],
             [with_Xaw=yes],
             [with_Xaw=no])
 
+AC_ARG_WITH([iconsdir],
+			[AS_HELP_STRING([--with-iconsdir=DIR],
+							[path where icons get installed (default: $datadir/icons/hicolor/48x48/apps)])],
+			[ICONSDIR="$withval"],
+			[ICONSDIR='$(datadir)/icons/hicolor/48x48/apps'])
+
+AC_ARG_WITH([svgiconsdir],
+			[AS_HELP_STRING([--with-svgiconsdir=DIR],
+							[path where svg icons get installed (default: $datadir/icons/hicolor/scalable/apps)])],
+			[SVGICONSDIR="$withval"],
+			[SVGICONSDIR='$(datadir)/icons/hicolor/scalable/apps'])
+
+AC_ARG_WITH([desktopdir],
+			[AS_HELP_STRING([--with-desktopdir=DIR],
+							[path where desktop files get installed (default: $datadir/applications)])],
+			[DESKTOPDIR="$withval"],
+			[DESKTOPDIR='$(datadir)/applications'])
+
+AC_ARG_WITH([mimedir],
+			[AS_HELP_STRING([--with-mimedir=DIR],
+							[path where mime files get installed (default: $datadir/mime/packages)])],
+			[MIMEDIR="$withval"],
+			[MIMEDIR='$(datadir)/mime/packages'])
+
+AC_ARG_WITH([gamedatadir],
+			[AS_HELP_STRING([--with-gamedatadir=DIR],
+							[path where game data files get installed (default: $datadir/games/xboard)])],
+			[GAMEDATADIR="$withval"],
+			[GAMEDATADIR='$(datadir)/games/xboard'])
+
+AC_SUBST(ICONSDIR)
+AC_SUBST(SVGICONSDIR)
+AC_SUBST(DESKTOPDIR)
+AC_SUBST(MIMEDIR)
+AC_SUBST(GAMEDATADIR)
+
 dnl | check for libraries
 if test x"$with_GTK" = x"yes" ; then
   PKG_CHECK_MODULES([GTK], [ gtk+-2.0 >= 2.16.0 gmodule-2.0 ])
@@ -515,8 +551,12 @@ echo " Configurations summary:"
 echo ""
 echo "        prefix:          $prefix       "
 echo "        datarootdir:     $datarootdir  "
-echo "        datadir:         $datadir   (icons will go in \$datadir/icons/hicolor/...)"
-echo "                                    (bitmaps will go in \$datadir/games/xboard/...)"
+echo "        datadir:         $datadir      "
+echo "        gamedatadir:     $GAMEDATADIR  "
+echo "        desktopdir:      $DESKTOPDIR   "
+echo "        mimedir:         $MIMEDIR      "
+echo "        iconsdir:        $ICONSDIR     "
+echo "        svgiconsdir:     $SVGICONSDIR  "
 echo "        infodir:         $infodir   (info files will go here)"
 echo "        sysconfdir:      $sysconfdir   (xboard.conf will go here)"
 echo ""
