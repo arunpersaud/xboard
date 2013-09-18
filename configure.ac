@@ -248,8 +248,7 @@ fi
 
 dnl | make results available in Makefile.am
 AM_CONDITIONAL([withGTK],   [test x"$with_GTK" = x"yes"])
-AM_CONDITIONAL([withXaw],   [test x"$with_Xaw3d" = x"yes"])
-AM_CONDITIONAL([withXaw],   [test x"$with_Xaw" = x"yes"])
+AM_CONDITIONAL([withXaw],   [test x"$with_Xaw3d" = x"yes" || test x"$with_Xaw" = x"yes"])
 
 
 AC_SUBST(FRONTEND_CFLAGS)
