@@ -149,7 +149,7 @@ AC_ARG_WITH([Xaw3d],
 AC_ARG_WITH([Xaw],
             [AS_HELP_STRING([--with-Xaw],[use Xaw front-end (default)])],
             [with_Xaw="$withval"],
-            [with_Xaw="no"])
+            [with_Xaw="yes"])
 
 AC_ARG_WITH([iconsdir],
 			[AS_HELP_STRING([--with-iconsdir=DIR],
