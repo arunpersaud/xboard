@@ -248,17 +248,17 @@ typedef enum {
     WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen,
     WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan,
     WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
-    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteNothing,
+    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteLion,
     WhiteTokin, WhiteDagger, WhitePCardinal, WhitePDragon, WhiteCat,
-    WhitePSword, WhiteMonarch, WhiteMother, WhiteLion, WhitePRook, WhitePDagger,
+    WhitePSword, WhiteMonarch, WhiteMother, WhiteNothing, WhitePRook, WhitePDagger,
     WhiteDolphin, WhiteVacant, WhiteHorned, WhiteEagle, WhiteSword,
     WhiteSkip, WhiteCrown, WhiteHorse, WhiteDrunk, WhitePBishop, WhiteKing,
     BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
     BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan,
     BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
-    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackNothing,
+    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackLion,
     BlackTokin, BlackDagger, BlackPCardinal, BlackPDragon, BlackCat,
-    BlackPSword, BlackMonarch, BlackMother, BlackLion, BlackPRook, BlackPDagger,
+    BlackPSword, BlackMonarch, BlackMother, BlackNothin, BlackPRook, BlackPDagger,
     BlackDolphin, BlackVacant, BlackHorned, BlackEagle, BlackSword,
     BlackSkip, BlackCrown, BlackHorse, BlackDrunk, BlackPBishop, BlackKing,
     EmptySquare, DarkSquare,
@@ -272,6 +272,8 @@ typedef enum {
 #define PROMOTED       (int)WhiteDragon - (int)WhiteRook + (int)
 #define DEMOTED        (int)WhiteRook - (int)WhiteDragon + (int)
 #define SHOGI          (int)EmptySquare + (int)
+#define CHUPROMOTED    ((int)WhitePDragon - (int)WhiteDragon)*(gameInfo.variant == VariantChu) + PROMOTED
+#define IS_SHOGI(V)    ((V) == VariantShogi || (V) == VariantChu)
 
 
 typedef ChessSquare Board[BOARD_RANKS][BOARD_FILES];

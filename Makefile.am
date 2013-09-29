@@ -139,7 +139,7 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/BlackPromoBishop.svg svg/WhitePromoBishop.svg  \
            svg/BlackPromoRook.svg   svg/WhitePromoRook.svg    \
            svg/BlackPromoHorse.svg  svg/WhitePromoHorse.svg   \
-           svg/BlackPromodragon.svg svg/WhitePromoDragon.svg  \
+           svg/BlackPromoDragon.svg svg/WhitePromoDragon.svg  \
            svg/BlackPromoSword.svg  svg/WhitePromoSword.svg   \
            svg/BlackPromoHSword.svg svg/WhitePromoHSword.svg  \
            svg/BlackHCrown.svg	    svg/WhiteHCrown.svg       \

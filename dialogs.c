@@ -444,10 +444,11 @@ static Option variantDescriptors[] = {
 { VariantLosers,        0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("Losers")},
 { VariantShogi,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("Shogi (9x9)")},
 { VariantSpartan,       0, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
-{ VariantXiangqi, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("Xiangqi (9x10)")},
-{ VariantFairy,         0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("Fairy")},
-//{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, " "}, // dummy, to have good alignment
-{ VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("Courier (12x8)")},
+{ VariantXiangqi, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("xiangqi (9x10)")},
+{ VariantFairy,         0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
+{ VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
+{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
+{ VariantChu,    SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("chu shogi (12x12)")},
 // optional buttons for engine-defined variants
 { VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
 { VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
@@ -2169,16 +2170,16 @@ static Option *
 Exp (int n, int x, int y)
 {
     static int but1, but3, oldW, oldH;
-    int menuNr = -3, sizing;
+    int menuNr = -3, sizing, f, r;
 
     if(n == 0) { // motion
 	if(SeekGraphClick(Press, x, y, 1)) return NULL;
 	if(but1 && !PromoScroll(x, y)) DragPieceMove(x, y);
 	if(but3) MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 	if(appData.highlightDragging) {
-	    x = EventToSquare(x, BOARD_WIDTH);  if ( flipView && x >= 0) x = BOARD_WIDTH - 1 - x;
-	    y = EventToSquare(y, BOARD_HEIGHT); if (!flipView && y >= 0) y = BOARD_HEIGHT - 1 - y;
-	    HoverEvent(hi2X, hi2Y, x, y);
+	    f = EventToSquare(x, BOARD_WIDTH);  if ( flipView && f >= 0) f = BOARD_WIDTH - 1 - f;
+	    r = EventToSquare(y, BOARD_HEIGHT); if (!flipView && r >= 0) r = BOARD_HEIGHT - 1 - r;
+	    HoverEvent(x, y, f, r);
 	}
 	return NULL;
     }

@@ -151,7 +151,7 @@ PromoSuffix (char **p)
 {
     char *start = *p;
     if(**p == 'e' && (Match("ep", p) || Match("e.p.", p))) { *p = start; return NULLCHAR; } // non-compliant e.p. suffix is no promoChar!
-    if(**p == '+' && gameInfo.variant == VariantShogi) { (*p)++; return '+'; }
+    if(**p == '+' && IS_SHOGI(gameInfo.variant)) { (*p)++; return '+'; }
     if(**p == '=' || (gameInfo.variant == VariantSChess) && **p == '/') (*p)++; // optional = (or / for Seirawan gating)
     if(**p == '(' && (*p)[2] == ')' && isalpha( (*p)[1] )) { (*p) += 3; return ToLower((*p)[-2]); }
     if(isalpha(**p)) return ToLower(*(*p)++);
@@ -236,7 +236,7 @@ NextUnit (char **p)
 	} else if(n == 1 && type[0] == NUMERIC && coord[0] > 1) { while(**p == '.') (*p)++; return Nothing; } // fast exit for move numbers
 	if(n == 4 && type[2] != type[3] && // we have a valid to-square (kludge: type[3] can be NOTHING on fxg type move)
 		     (piece || !promoted) && // promoted indicator only valid on named piece type
-	             (type[2] == ALPHABETIC || gameInfo.variant == VariantShogi)) { // in Shogi also allow alphabetic rank
+	             (type[2] == ALPHABETIC || IS_SHOGI(gameInfo.variant))) { // in Shogi also allow alphabetic rank
 	    DisambiguateClosure cl;
 	    int fromX, fromY, toX, toY;
 

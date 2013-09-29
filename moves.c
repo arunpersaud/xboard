@@ -1136,7 +1136,7 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
             if(board[BOARD_HEIGHT-1-PieceToNumber(CharToPiece(ToLower(promoChar)))][1] == 0) return ImpossibleMove;
         }
     } else
-    if(gameInfo.variant == VariantShogi) {
+    if(IS_SHOGI(gameInfo.variant)) {
         /* [HGM] Shogi promotions. '=' means defer */
         if(rf != DROP_RANK && cl.kind == NormalMove) {
             ChessSquare piece = board[rf][ff];
@@ -1367,6 +1367,9 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
             if(board[BOARD_HEIGHT-1-PieceToNumber(CharToPiece(ToLower(c)))][1] == 0) closure->kind = ImpossibleMove;
         }
     } else
+    if(gameInfo.variant == VariantChu) {
+        if(c == '+') closure->kind = (flags & F_WHITE_ON_MOVE ? WhitePromotion : BlackPromotion); // for now, accept any
+    } else
     if(gameInfo.variant == VariantShogi) {
         /* [HGM] Shogi promotions. On input, '=' means defer, '+' promote. Afterwards, c is set to '+' for promotions, NULL other */
         if(closure->rfIn != DROP_RANK && closure->kind == NormalMove) {
@@ -1528,7 +1531,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 	/* Use promotion suffix style "=Q" */
 	*outp = NULLCHAR;
         if (promoChar != NULLCHAR) {
-            if(gameInfo.variant == VariantShogi) {
+            if(IS_SHOGI(gameInfo.variant)) {
                 /* [HGM] ... but not in Shogi! */
                 *outp++ = promoChar == '=' ? '=' : '+';
             } else {
@@ -1626,7 +1629,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
         if(rt+ONE <= '9')
            *outp++ = rt + ONE;
         else { *outp++ = (rt+ONE-'0')/10 + '0';*outp++ = (rt+ONE-'0')%10 + '0'; }
-        if (gameInfo.variant == VariantShogi) {
+        if (IS_SHOGI(gameInfo.variant)) {
             /* [HGM] in Shogi non-pawns can promote */
             *outp++ = promoChar; // Don't bother to correct move type, return value is never used!
         }

@@ -5055,6 +5055,11 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
 	  if(moveList[moveNum][0]== '@') snprintf(buf, MSG_SIZ, "@@@@\n"); else
 	  snprintf(buf, MSG_SIZ, "%c@%c%d%s", moveList[moveNum][0],
 					      moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
+	} else if(moveList[moveNum][4] == ';') { // [HGM] lion: move is double-step over intermediate square
+	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", moveList[moveNum][0], moveList[moveNum][1] - '0', // convert to two moves
+					       moveList[moveNum][5], moveList[moveNum][6] - '0',
+					       moveList[moveNum][5], moveList[moveNum][6] - '0',
+					       moveList[moveNum][2], moveList[moveNum][3] - '0');
 	} else
 	  snprintf(buf, MSG_SIZ, "%c%d%c%d%s", moveList[moveNum][0], moveList[moveNum][1] - '0',
 					       moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
@@ -5230,6 +5235,8 @@ UploadGameEvent ()
     SendToICS(ics_type == ICS_ICC ? "tag result Game in progress\n" : "commit\n");
 }
 
+static int killX = -1, killY = -1; // [HGM] lion: used for passing e.p. capture square to MakeMove
+
 void
 CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char move[7])
 {
@@ -5241,6 +5248,7 @@ CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char 
 	if (promoChar == 'x' || promoChar == NULLCHAR) {
 	  sprintf(move, "%c%c%c%c\n",
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt);
+	  if(killX >= 0 && killY >= 0) sprintf(move+4, ";%c%c\n", AAA + killX, ONE + killY);
 	} else {
 	    sprintf(move, "%c%c%c%c%c\n",
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt, promoChar);
@@ -5282,7 +5290,7 @@ Sweep (int step)
 	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
 	    appData.testLegality && (promoSweep == king ||
-	    gameInfo.variant == VariantShogi && promoSweep != PROMOTED last && last != PROMOTED promoSweep && last != promoSweep));
+	    IS_SHOGI(gameInfo.variant) && promoSweep != CHUPROMOTED last && last != CHUPROMOTED promoSweep && last != promoSweep));
     if(toX >= 0) {
 	int victim = boards[currentMove][toY][toX];
 	boards[currentMove][toY][toX] = promoSweep;
@@ -6006,8 +6014,8 @@ InitPosition (int redraw)
       gameInfo.boardWidth  = 12;
       gameInfo.boardHeight = 12;
       nrCastlingRights = 0;
-      SetCharTable(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN+.+++++++++++++.+++++K"
-                                "p.brqsexogcathd.vmlifn+.+++++++++++++.+++++k");
+      SetCharTable(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN+.++.++++++++++.+++++K"
+                                "p.brqsexogcathd.vmlifn+.++.++++++++++.+++++k");
       break;
     case VariantCourier:
       pieces = CourierArray;
@@ -6411,9 +6419,13 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
 	return FALSE;
 
     piece = boards[currentMove][fromY][fromX];
-    if(gameInfo.variant == VariantShogi) {
+    if(gameInfo.variant == VariantChu) {
+        int p = piece >= BlackPawn ? BLACK_TO_WHITE piece : piece;
         promotionZoneSize = BOARD_HEIGHT/3;
-        highestPromotingPiece = (int)WhiteFerz;
+        highestPromotingPiece = (p >= WhiteLion || PieceToChar(piece + 22) == '.') ? WhitePawn : WhiteKing;
+    } else if(gameInfo.variant == VariantShogi) {
+        promotionZoneSize = BOARD_HEIGHT/3;
+        highestPromotingPiece = (int)WhiteAlfil;
     } else if(gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand) {
         promotionZoneSize = 3;
     }
@@ -6477,7 +6489,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     }
     // give caller the default choice even if we will not make it
     *promoChoice = ToLower(PieceToChar(defaultPromoChoice));
-    if(gameInfo.variant == VariantShogi) *promoChoice = (defaultPromoChoice == piece ? '=' : '+');
+    if(IS_SHOGI(gameInfo.variant)) *promoChoice = (defaultPromoChoice == piece ? '=' : '+');
     if(        sweepSelect && gameInfo.variant != VariantGreat
 			   && gameInfo.variant != VariantGrand
 			   && gameInfo.variant != VariantSuper) return FALSE;
@@ -6488,7 +6500,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
 	      gameMode == IcsPlayingBlack &&  WhiteOnMove(currentMove);
     if(appData.testLegality && !premove) {
 	moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
-			fromY, fromX, toY, toX, gameInfo.variant == VariantShogi ? '+' : NULLCHAR);
+			fromY, fromX, toY, toX, IS_SHOGI(gameInfo.variant) ? '+' : NULLCHAR);
 	if(moveType != WhitePromotion && moveType  != BlackPromotion)
 	    return FALSE;
     }
@@ -7143,7 +7155,7 @@ CanPromote (ChessSquare piece, int y)
 {
 	if(gameMode == EditPosition) return FALSE; // no promotions when editing position
 	// some variants have fixed promotion piece, no promotion at all, or another selection mechanism
-	if(gameInfo.variant == VariantShogi    || gameInfo.variant == VariantXiangqi ||
+	if(IS_SHOGI(gameInfo.variant)          || gameInfo.variant == VariantXiangqi ||
 	   gameInfo.variant == VariantSuper    || gameInfo.variant == VariantGreat   ||
 	   gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
          gameInfo.variant == VariantMakruk   || gameInfo.variant == VariantASEAN) return FALSE;
@@ -7154,10 +7166,11 @@ CanPromote (ChessSquare piece, int y)
 }
 
 void
-HoverEvent (int hiX, int hiY, int x, int y)
+HoverEvent (int xPix, int yPix, int x, int y)
 {
 	static char baseMarker[BOARD_RANKS][BOARD_FILES], baseLegal[BOARD_RANKS][BOARD_FILES];
 	int r, f;
+	if(dragging == 2) DragPieceMove(xPix, yPix); // [HGM] lion: drag without button for second leg
 	if(!first.highlight) return;
 	if(hiX == -1 && hiY == -1 && x == fromX && y == fromY) // record markings 
 	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
@@ -7307,7 +7320,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     }
 
     /* fromX != -1 */
-    if (clickType == Press && gameMode != EditPosition) {
+    if (clickType == Press && gameMode != EditPosition && killX < 0) {
 	ChessSquare fromP;
 	ChessSquare toP;
 	int frc;
@@ -7366,7 +7379,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;
     }
 
-    if (clickType == Release && x == fromX && y == fromY) {
+    if (clickType == Release && x == fromX && y == fromY && killX < 0) {
 	DragPieceEnd(xPix, yPix); dragging = 0;
 	if(clearFlag) {
 	    // a deferred attempt to click-click move an empty square on top of a piece
@@ -7399,7 +7412,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 
     clearFlag = 0;
 
-    if(gameMode != EditPosition && !appData.testLegality && !legal[y][x]) {
+    if(gameMode != EditPosition && !appData.testLegality && !legal[y][x] && (x != killX || y != killY)) {
 	if(dragging) DragPieceEnd(xPix, yPix), dragging = 0;
 	DisplayMessage(_("only marked squares are legal"),"");
 	DrawPosition(TRUE, NULL);
@@ -7421,11 +7434,19 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    if(x >= BOARD_LEFT && x < BOARD_RGHT) clearFlag = 1; // and defer click-click move of empty-square to up-click
 	    return;
 	}
+	if(dragging == 2) {  // [HGM] lion: just turn buttonless drag into normal drag, and let release to the job
+	    dragging = 1;
+	    return;
+	}
+	if(x == killX && y == killY) {              // second click on this square, which was selected as first-leg target
+	    killX = killY = -1;                     // this informs us no second leg is coming, so treat as to-click without intermediate
+	} else
+	if(marker[y][x] == 5) return; // [HGM] lion: to-click on cyan square; defer action to release
 	if(legal[y][x] == 2 || HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
 	  if(appData.sweepSelect) {
 	    ChessSquare piece = boards[currentMove][fromY][fromX];
 	    promoSweep = defaultPromoChoice;
-	    if(PieceToChar(PROMOTED piece) == '+') promoSweep = PROMOTED piece;
+	    if(PieceToChar(CHUPROMOTED piece) == '+') promoSweep = CHUPROMOTED piece;
 	    selectFlag = 0; lastX = xPix; lastY = yPix;
 	    Sweep(0); // Pawn that is going to promote: preview promotion piece
 	    sweepSelecting = 1;
@@ -7450,6 +7471,16 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    ClearHighlights();
 	}
 #endif
+	if(!dragging || marker[y][x] == 5) { // [HGM] lion: this was the release of a to-click or drag on a cyan square
+	  dragging *= 2;            // flag button-less dragging if we are dragging
+	  MarkTargetSquares(1);
+	  if(x == killX && y == killY) killX = killY = -1; else {
+	    killX = x; killY = y;     //remeber this square as intermediate
+	    ReportClick("put", x, y); // and inform engine
+	    ReportClick("lift", x, y);
+	    return;
+	  }
+	}
 	DragPieceEnd(xPix, yPix); dragging = 0;
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
@@ -8224,6 +8255,7 @@ static char stashedInputMove[MSG_SIZ];
 void
 HandleMachineMove (char *message, ChessProgramState *cps)
 {
+    static char firstLeg[20];
     char machineMove[MSG_SIZ], buf1[MSG_SIZ*10], buf2[MSG_SIZ];
     char realname[MSG_SIZ];
     int fromX, fromY, toX, toY;
@@ -8366,6 +8398,24 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	}
 
         if(cps->alphaRank) AlphaRank(machineMove, 4);
+
+	// [HGM] lion: (some very limited) support for Alien protocol
+	killX = killY = -1;
+	if(machineMove[strlen(machineMove)-1] == ',') { // move ends in coma: non-final leg of composite move
+	    safeStrCpy(firstLeg, machineMove, 20); // just remember it for processing when second leg arrives
+	    return;
+	} else if(firstLeg[0]) { // there was a previous leg;
+	    // only support case where same piece makes two step (and don't even test that!)
+	    char buf[20], *p = machineMove+1, *q = buf+1, f;
+	    safeStrCpy(buf, machineMove, 20);
+	    while(isdigit(*q)) q++; // find start of to-square
+	    safeStrCpy(machineMove, firstLeg, 20);
+	    while(isdigit(*p)) p++;
+	    safeStrCpy(p, q, 20); // glue to-square of second leg to from-square of first, to process over-all move
+	    sscanf(buf, "%c%d", &f, &killY); killX = f - AAA; killY -= ONE - '0'; // pass intermediate square to MakeMove in global
+	    firstLeg[0] = NULLCHAR;
+	}
+
         if (!ParseOneMove(machineMove, forwardMostMove, &moveType,
                               &fromX, &fromY, &toX, &toY, &promoChar)) {
 	    /* Machine move could not be parsed; ignore it. */
@@ -9579,6 +9629,10 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
   } else {
       int i;
 
+      if( killX >= 0 && killY >= 0 ) // [HGM] lion: Lion trampled over something
+           board[killY][killX] = EmptySquare,
+           board[EP_STATUS] = EP_CAPTURE;
+
       if( board[toY][toX] != EmptySquare )
            board[EP_STATUS] = EP_CAPTURE;
 
@@ -9762,8 +9816,9 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 		board[fromY][fromX+1] = EmptySquare;
 	}
     } else {
-	board[toY][toX] = board[fromY][fromX];
+	ChessSquare piece = board[fromY][fromX]; // [HGM] lion: allow for igui (where from == to)
 	board[fromY][fromX] = EmptySquare;
+	board[toY][toX] = piece;
     }
   }
 
@@ -9846,7 +9901,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     } else
     if(promoChar == '+') {
         /* [HGM] Shogi-style promotions, to piece implied by original (Might overwrite ordinary Pawn promotion) */
-        board[toY][toX] = (ChessSquare) (PROMOTED piece);
+        board[toY][toX] = (ChessSquare) (CHUPROMOTED piece);
     } else if(!appData.testLegality && promoChar != NULLCHAR && promoChar != '=') { // without legality testing, unconditionally believe promoChar
         ChessSquare newPiece = CharToPiece(piece < BlackPawn ? ToUpper(promoChar) : ToLower(promoChar));
 	if((newPiece <= WhiteMan || newPiece >= BlackPawn && newPiece <= BlackMan) // unpromoted piece specified
@@ -9872,12 +9927,18 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 void
 MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
 {
+    int x = toX, y = toY;
+    char *s = parseList[forwardMostMove];
+    ChessSquare p = boards[forwardMostMove][toY][toX];
 //    forwardMostMove++; // [HGM] bare: moved downstream
 
+    if(killX >= 0 && killY >= 0) x = killX, y = killY; // [HGM] lion: make SAN move to intermediate square, if there is one
     (void) CoordsToAlgebraic(boards[forwardMostMove],
 			     PosFlags(forwardMostMove),
-			     fromY, fromX, toY, toX, promoChar,
-			     parseList[forwardMostMove]);
+			     fromY, fromX, y, x, promoChar,
+			     s);
+    if(killX >= 0 && killY >= 0)
+        sprintf(s + strlen(s), "%c%c%d", p == EmptySquare || toX == fromX && toY == fromY ? '-' : 'x', toX + AAA, toY + ONE - '0');
 
     if(serverMoves != NULL) { /* [HGM] write moves on file for broadcasting (should be separate routine, really) */
         int timeLeft; static int lastLoadFlag=0; int king, piece;
@@ -9973,6 +10034,7 @@ MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
 	break;
     }
 
+    killX = killY = -1; // [HGM] lion: used up
 }
 
 /* Updates currentMove if not pausing */
@@ -17489,7 +17551,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                 if(*p=='+') {
                     piece = CharToPiece(*++p);
                     if(piece == EmptySquare) return FALSE; /* unknown piece */
-                    piece = (ChessSquare) (PROMOTED piece ); p++;
+                    piece = (ChessSquare) (CHUPROMOTED piece ); p++;
                     if(PieceToChar(piece) != '+') return FALSE; /* unpromotable piece */
                 } else piece = CharToPiece(*p++);
 
