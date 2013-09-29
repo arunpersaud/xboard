@@ -4147,7 +4147,6 @@ Here are some other programs you can use with XBoard
 * Fairy-Max::        The Fairy-Max chess engine.
 * HoiChess::         The HoiChess chess engine.
 * Crafty::           The Crafty chess engine.
-* zic2xpm::          The program used to import chess sets from ZIICS.
 @end menu
 
 @node GNU Chess
@@ -4203,45 +4202,6 @@ ftp://ftp.cis.uab.edu/hyatt/.
 To use Crafty with XBoard, give the -fcp and -fd options as follows, where
 <crafty's directory> is the directory in which you installed Crafty
 and placed its book and other support files.
-
-@node zic2xpm
-@section zic2xpm
-
-The ``zic2xpm'' program is used to import chess sets from the ZIICS(*)
-program into XBoard. ``zic2xpm'' is part of the XBoard distribution.
-ZIICS is available from:
-
-ftp://ftp.freechess.org/pub/chess/DOS/ziics131.exe
-
-To import ZIICS pieces, do this:
-@table @asis
-@item 1. Unzip ziics131.exe into a directory:
-
-@example
-unzip -L ziics131.exe -d ~/ziics
-@end example
-@item 2. Use zic2xpm to convert a set of pieces to XBoard format.
-
-For example, let's say you want to use the
-FRITZ4 set. These files are named ``fritz4.*'' in the ZIICS distribution.
-
-@example
-mkdir ~/fritz4
-cd ~/fritz4
-zic2xpm ~/ziics/fritz4.*
-@end example
-@item 3. Give XBoard the ``-pixmap'' option when starting up, e.g.:
-
-@example
-xboard -pixmap ~/fritz4
-@end example
-@end table
-
-(*) ZIICS is a separate copyrighted work of Andy McFarland.
-The ``ZIICS pieces'' are copyrighted works of their respective
-creators. Files produced by ``zic2xpm'' are for PERSONAL USE ONLY
-and may NOT be redistributed without explicit permission from
-the original creator(s) of the pieces.
 
 @ifnottex
 @node Copyright

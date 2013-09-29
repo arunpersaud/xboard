@@ -2377,7 +2377,6 @@ static char *Extensions[] = {
 ".trn",
 ".bin",
 ".wav",
-".xpm",
 ".ini",
 ".log",
 "",

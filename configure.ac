@@ -56,7 +56,6 @@ AH_TEMPLATE([USE_PTYS],[template])
 AH_TEMPLATE([X_WCHAR],[template])
 AH_TEMPLATE([ATTENTION],[template])
 AH_TEMPLATE([DEFINED_SYS_ERRLIST],[template])
-AH_TEMPLATE([HAVE_LIBXPM],[template])
 AH_TEMPLATE([USE_XAW3D],[template])
 AH_TEMPLATE([X_LOCALE],[template])
 
@@ -436,29 +435,6 @@ dnl| add some libs for OS X
   ;;
 esac
 
-AC_ARG_ENABLE(	[xpm],
-		[AS_HELP_STRING([--enable-xpm],[libXpm will be used if found (default)])],
-		[enable_xpm="$enableval"],
-		[enable_xpm="yes"])
-
-if test x"$enable_xpm" != "xno"; then
-  save_cflags="$CFLAGS"
-  save_cppflags="$CPPFLAGS"
-  CFLAGS="$CFLAGS $X_CFLAGS"
-  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-  AC_CHECK_HEADERS(X11/xpm.h)
-  CFLAGS="$save_cflags"
-  CPPFLAGS="$save_cppflags"
-  if test "$ac_cv_header_X11_xpm_h" = "yes"; then
-    save_ldflags="$LDFLAGS"
-    LDFLAGS="$LDFLAGS $X_LIBS"
-    AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
-                 [X_PRE_LIBS="-lXpm $X_PRE_LIBS"; AC_DEFINE(HAVE_LIBXPM)], [],
-                 [$X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
-    LDFLAGS="$save_ldflags"
-  fi
-fi
-
 AC_SUBST(PRE_XMULIB)
 AC_SUBST(POST_XMULIB)
 AC_SUBST(CONF_CFLAGS)
@@ -543,7 +519,7 @@ CONFIGURE_OPTIONS="prefix=$prefix; datarootdir=$datarootdir; \
 datadir=$datadir; gamedatadir=$GAMEDATADIR; desktopdir=$DESKTOPDIR; \
 mimedir=$MIMEDIR; iconsdir=$ICONSDIR; svgiconsdir=$SVGICONSDIR; infodir=$infodir; \
 sysconfigdir=$sysconfigdir; update_mimedb=$enable_mimedb; NLS=$USE_NLS; \
-GKT=$with_GTK; Xaw3d=$with_Xaw3d; Xaw=$with_Xaw; xpm=$enable_xpm; \
+GKT=$with_GTK; Xaw3d=$with_Xaw3d; Xaw=$with_Xaw; \
 ptys=$enable_ptys; zippy=$enable_zippy; sigint=$enable_sigint"
 
 AC_SUBST(CONFIGURE_OPTIONS)
@@ -579,7 +555,6 @@ echo "        GTK:             $with_GTK"
 echo "        Xaw3d:           $with_Xaw3d"
 echo "        Xaw:             $with_Xaw"
 echo ""
-echo "        xpm:             $enable_xpm"
 echo "        ptys:            $enable_ptys"
 echo "        zippy:           $enable_zippy"
 echo "        sigint:          $enable_sigint"
