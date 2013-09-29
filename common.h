@@ -248,11 +248,19 @@ typedef enum {
     WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen,
     WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan,
     WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
-    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
+    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteNothing,
+    WhiteTokin, WhiteDagger, WhitePCardinal, WhitePDragon, WhiteCat,
+    WhitePSword, WhiteMonarch, WhiteMother, WhiteLion, WhitePRook, WhitePDagger,
+    WhiteDolphin, WhiteVacant, WhiteHorned, WhiteEagle, WhiteSword,
+    WhiteSkip, WhiteCrown, WhiteHorse, WhiteDrunk, WhitePBishop, WhiteKing,
     BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
     BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan,
     BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
-    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
+    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackNothing,
+    BlackTokin, BlackDagger, BlackPCardinal, BlackPDragon, BlackCat,
+    BlackPSword, BlackMonarch, BlackMother, BlackLion, BlackPRook, BlackPDagger,
+    BlackDolphin, BlackVacant, BlackHorned, BlackEagle, BlackSword,
+    BlackSkip, BlackCrown, BlackHorse, BlackDrunk, BlackPBishop, BlackKing,
     EmptySquare, DarkSquare,
     NoRights, // [HGM] gamestate: for castling rights hidden in board[CASTLING]
     ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
@@ -323,6 +331,7 @@ typedef enum {
     Variant35,           /* Temporary name for possible future ICC wild 35 */
     Variant36,           /* Temporary name for possible future ICC wild 36 */
     VariantShogi,        /* [HGM] added variants */
+    VariantChu,
     VariantXiangqi,
     VariantCourier,
     VariantGothic,
@@ -370,6 +379,7 @@ typedef enum {
   "wild35", \
   "wild36", \
   "shogi", \
+  "chu", \
   "xiangqi", \
   "courier", \
   "gothic", \

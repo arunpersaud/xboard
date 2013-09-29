@@ -155,6 +155,11 @@ SelectPieces(VariantClass v)
 	   pngPieceBitmaps[i][(int)WhiteAngel]    = pngPieceBitmaps2[i][(int)WhiteFalcon];
 	   pngPieceBitmaps[i][(int)WhiteMarshall] = pngPieceBitmaps2[i][(int)WhiteAlfil];
 	}
+	if(v == VariantChu) {
+	   pngPieceBitmaps[i][(int)WhiteUnicorn] = pngPieceBitmaps2[i][(int)WhiteCat];
+	   pngPieceBitmaps[i][(int)WhiteSilver]  = pngPieceBitmaps2[i][(int)WhiteSword];
+	   pngPieceBitmaps[i][(int)WhiteFalcon]  = pngPieceBitmaps2[i][(int)WhiteDagger];
+	}
     }
 }
 
@@ -228,7 +233,9 @@ CreatePNGBoard (char *s, int kind)
 
 char *pngPieceNames[] = // must be in same order as internal piece encoding
 { "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
-  "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "King",
+  "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
+  "GoldPawn", "HSword", "PromoHorse", "PromoDragon", "Leopard", "PromoSword", "King", "Queen", "Lion", "PromoRook", "PromoHSword",
+  "Dolphin", "Chancellor", "Unicorn", "Hawk", "Sword", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
   "GoldKnight", "GoldLance", "GoldPawn", "GoldSilver", NULL
 };
 

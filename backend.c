@@ -646,8 +646,23 @@ ChessSquare CourierArray[2][BOARD_FILES] = {
     { BlackRook, BlackKnight, BlackAlfil, BlackBishop, BlackMan, BlackKing,
         BlackFerz, BlackWazir, BlackBishop, BlackAlfil, BlackKnight, BlackRook }
 };
+ChessSquare ChuArray[6][BOARD_FILES] = {
+    { WhiteLance, WhiteUnicorn, WhiteMan, WhiteFerz, WhiteWazir, WhiteKing,
+      WhiteAlfil, WhiteWazir, WhiteFerz, WhiteMan, WhiteUnicorn, WhiteLance },
+    { BlackLance, BlackUnicorn, BlackMan, BlackFerz, BlackWazir, BlackAlfil,
+      BlackKing, BlackWazir, BlackFerz, BlackMan, BlackUnicorn, BlackLance },
+    { WhiteCannon, EmptySquare, WhiteBishop, EmptySquare, WhiteNightrider, WhiteMarshall,
+      WhiteAngel, WhiteNightrider, EmptySquare, WhiteBishop, EmptySquare, WhiteCannon },
+    { BlackCannon, EmptySquare, BlackBishop, EmptySquare, BlackNightrider, BlackAngel,
+      BlackMarshall, BlackNightrider, EmptySquare, BlackBishop, EmptySquare, BlackCannon },
+    { WhiteFalcon, WhiteSilver, WhiteRook, WhiteCardinal, WhiteDragon, WhiteLion,
+      WhiteQueen, WhiteDragon, WhiteCardinal, WhiteRook, WhiteSilver, WhiteFalcon },
+    { BlackFalcon, BlackSilver, BlackRook, BlackCardinal, BlackDragon, BlackQueen,
+      BlackLion, BlackDragon, BlackCardinal, BlackRook, BlackSilver, BlackFalcon }
+};
 #else // !(BOARD_FILES>=12)
 #define CourierArray CapablancaArray
+#define ChuArray CapablancaArray
 #endif // !(BOARD_FILES>=12)
 
 
@@ -1150,6 +1165,7 @@ InitBackEnd1 ()
       case VariantCapablanca: /* [HGM] should work */
       case VariantCourier:    /* [HGM] initial forced moves not implemented */
       case VariantShogi:      /* [HGM] could still mate with pawn drop */
+      case VariantChu:        /* [HGM] experimental */
       case VariantKnightmate: /* [HGM] should work */
       case VariantCylinder:   /* [HGM] untested */
       case VariantFalcon:     /* [HGM] untested */
@@ -5861,7 +5877,7 @@ void
 InitPosition (int redraw)
 {
     ChessSquare (* pieces)[BOARD_FILES];
-    int i, j, pawnRow, overrule,
+    int i, j, pawnRow=1, pieceRows=1, overrule,
     oldx = gameInfo.boardWidth,
     oldy = gameInfo.boardHeight,
     oldh = gameInfo.holdingsWidth;
@@ -5985,6 +6001,14 @@ InitPosition (int redraw)
       nrCastlingRights = 0;
       SetCharTable(pieceToChar, "PNBRLS...G.++++++Kpnbrls...g.++++++k");
       break;
+    case VariantChu:
+      pieces = ChuArray; pieceRows = 3;
+      gameInfo.boardWidth  = 12;
+      gameInfo.boardHeight = 12;
+      nrCastlingRights = 0;
+      SetCharTable(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN+.+++++++++++++.+++++K"
+                                "p.brqsexogcathd.vmlifn+.+++++++++++++.+++++k");
+      break;
     case VariantCourier:
       pieces = CourierArray;
       gameInfo.boardWidth  = 12;
@@ -6054,6 +6078,7 @@ InitPosition (int redraw)
     pawnRow = gameInfo.boardHeight - 7; /* seems to work in all common variants */
     if(pawnRow < 1) pawnRow = 1;
     if(gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN || gameInfo.variant == VariantGrand) pawnRow = 2;
+    if(gameInfo.variant == VariantChu) pawnRow = 3;
 
     /* User pieceToChar list overrules defaults */
     if(appData.pieceToCharTable != NULL)
@@ -6079,6 +6104,15 @@ InitPosition (int redraw)
                    initialPosition[BOARD_HEIGHT-3][j] = BlackCannon;
                 }
             }
+        }
+        if(gameInfo.variant == VariantChu) {
+             if(j == (BOARD_WIDTH-2)/3 || j == BOARD_WIDTH - (BOARD_WIDTH+1)/3)
+               initialPosition[pawnRow+1][j] = WhiteCobra,
+               initialPosition[BOARD_HEIGHT-pawnRow-2][j] = BlackCobra;
+             for(i=1; i<pieceRows; i++) {
+               initialPosition[i][j] = pieces[2*i][j-gameInfo.holdingsWidth];
+               initialPosition[BOARD_HEIGHT-1-i][j] =  pieces[2*i+1][j-gameInfo.holdingsWidth];
+             }
         }
         if(gameInfo.variant == VariantGrand) {
             if(j==BOARD_LEFT || j>=BOARD_RGHT-1) {
@@ -10030,6 +10064,8 @@ NonStandardBoardSize ()
            overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 7;
       if( gameInfo.variant == VariantGrand )
            overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 7;
+      if( gameInfo.variant == VariantChu )
+           overruled = gameInfo.boardWidth != 12 || gameInfo.boardHeight != 12 || gameInfo.holdingsSize != 0;
       return overruled;
 }
 
