@@ -84,8 +84,6 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-#include <X11/xpm.h>
-
 // [HGM] bitmaps of some ICONS used in the engine-outut window
 
 static unsigned char CLEAR_14[28];
