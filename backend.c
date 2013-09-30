@@ -5289,8 +5289,8 @@ Sweep (int step)
 	else if(promoSweep == WhiteKing && step > 0) promoSweep = BlackKing;
 	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
-	    appData.testLegality && (promoSweep == king ||
-	    IS_SHOGI(gameInfo.variant) && promoSweep != CHUPROMOTED last && last != CHUPROMOTED promoSweep && last != promoSweep));
+	    appData.testLegality && promoSweep == king ||
+	    IS_SHOGI(gameInfo.variant) && promoSweep != CHUPROMOTED last && last != CHUPROMOTED promoSweep && last != promoSweep);
     if(toX >= 0) {
 	int victim = boards[currentMove][toY][toX];
 	boards[currentMove][toY][toX] = promoSweep;
@@ -7417,7 +7417,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 
     clearFlag = 0;
 
-    if(gameMode != EditPosition && !appData.testLegality && !legal[y][x] && (x != killX || y != killY)) {
+    if(gameMode != EditPosition && !appData.testLegality && !legal[y][x] && (x != killX || y != killY) && !sweepSelecting) {
 	if(dragging) DragPieceEnd(xPix, yPix), dragging = 0;
 	DisplayMessage(_("only marked squares are legal"),"");
 	DrawPosition(TRUE, NULL);
@@ -7429,7 +7429,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     if(!sweepSelecting) {
 	toX = x;
 	toY = y;
-    } else sweepSelecting = 0; // this must be the up-click corresponding to the down-click that started the sweep
+    }
 
     saveAnimate = appData.animate;
     if (clickType == Press) {
@@ -7461,6 +7461,13 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	  return; // promo popup appears on up-click
 	}
 	/* Finish clickclick move */
+	if (appData.animate || appData.highlightLastMove) {
+	    SetHighlights(fromX, fromY, toX, toY);
+	} else {
+	    ClearHighlights();
+	}
+    } else if(sweepSelecting) { // this must be the up-click corresponding to the down-click that started the sweep
+	sweepSelecting = 0;
 	if (appData.animate || appData.highlightLastMove) {
 	    SetHighlights(fromX, fromY, toX, toY);
 	} else {
