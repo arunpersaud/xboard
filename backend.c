@@ -566,6 +566,13 @@ ChessSquare aseanArray[2][BOARD_FILES] = { /* [HGM] (movGen knows about Shatranj
         BlackKing, BlackMan, BlackKnight, BlackRook }
 };
 
+ChessSquare  lionArray[2][BOARD_FILES] = {
+    { WhiteRook, WhiteLion, WhiteBishop, WhiteQueen,
+	WhiteKing, WhiteBishop, WhiteKnight, WhiteRook },
+    { BlackRook, BlackLion, BlackBishop, BlackQueen,
+	BlackKing, BlackBishop, BlackKnight, BlackRook }
+};
+
 
 #if (BOARD_FILES>=10)
 ChessSquare ShogiArray[2][BOARD_FILES] = {
@@ -1195,6 +1202,7 @@ InitBackEnd1 ()
       case VariantSChess:     /* S-Chess, should work */
       case VariantGrand:      /* should work */
       case VariantSpartan:    /* should work */
+      case VariantLion:       /* should work */
 	break;
       }
     }
@@ -5235,7 +5243,7 @@ UploadGameEvent ()
     SendToICS(ics_type == ICS_ICC ? "tag result Game in progress\n" : "commit\n");
 }
 
-static int killX = -1, killY = -1; // [HGM] lion: used for passing e.p. capture square to MakeMove
+int killX = -1, killY = -1; // [HGM] lion: used for passing e.p. capture square to MakeMove
 
 void
 CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char move[7])
@@ -5289,7 +5297,7 @@ Sweep (int step)
 	else if(promoSweep == WhiteKing && step > 0) promoSweep = BlackKing;
 	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
-	    appData.testLegality && promoSweep == king ||
+	    appData.testLegality && (promoSweep == king || promoSweep == WhiteLion || promoSweep == BlackLion) ||
 	    IS_SHOGI(gameInfo.variant) && promoSweep != CHUPROMOTED last && last != CHUPROMOTED promoSweep && last != promoSweep);
     if(toX >= 0) {
 	int victim = boards[currentMove][toY][toX];
@@ -6030,6 +6038,10 @@ InitPosition (int redraw)
     case VariantSpartan:
       pieces = SpartanArray;
       SetCharTable(pieceToChar, "PNBRQ................K......lwg.....c...h..k");
+      break;
+    case VariantLion:
+      pieces = lionArray;
+      SetCharTable(pieceToChar, "PNBRQ................LKpnbrq................lk");
       break;
     case VariantFairy:
       pieces = fairyArray;
@@ -7106,10 +7118,10 @@ Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VO
 {
     typedef char Markers[BOARD_RANKS][BOARD_FILES];
     Markers *m = (Markers *) closure;
-    if(rf == fromY && ff == fromX)
+    if(rf == fromY && ff == fromX && (killX < 0 && !(rt == rf && ft == ff) || abs(ft-killX) < 2 && abs(rt-killY) < 2))
 	(*m)[rt][ft] = 1 + (board[rt][ft] != EmptySquare
 			 || kind == WhiteCapturesEnPassant
-			 || kind == BlackCapturesEnPassant);
+			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && killX < 0);
     else if(flags & F_MANDATORY_CAPTURE && board[rt][ft] != EmptySquare) (*m)[rt][ft] = 3;
 }
 
@@ -7488,6 +7500,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	  MarkTargetSquares(1);
 	  if(x == killX && y == killY) killX = killY = -1; else {
 	    killX = x; killY = y;     //remeber this square as intermediate
+	    MarkTargetSquares(0);
 	    ReportClick("put", x, y); // and inform engine
 	    ReportClick("lift", x, y);
 	    return;
@@ -9639,14 +9652,22 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	}
         piece = board[toY][toX] = (ChessSquare) fromX;
   } else {
+      ChessSquare victim;
       int i;
 
       if( killX >= 0 && killY >= 0 ) // [HGM] lion: Lion trampled over something
+           victim = board[killY][killX],
            board[killY][killX] = EmptySquare,
            board[EP_STATUS] = EP_CAPTURE;
 
-      if( board[toY][toX] != EmptySquare )
+      if( board[toY][toX] != EmptySquare ) {
            board[EP_STATUS] = EP_CAPTURE;
+           if( (fromX != toX || fromY != toY) && // not igui!
+               (captured == WhiteLion && board[fromY][fromX] != BlackLion ||
+                captured == BlackLion && board[fromY][fromX] != WhiteLion   ) ) { // [HGM] lion: Chu Lion-capture rules
+               board[EP_STATUS] = EP_IRON_LION; // non-Lion x Lion: no counter-strike allowed
+           }
+      }
 
       if( board[fromY][fromX] == WhiteLance || board[fromY][fromX] == BlackLance ) {
            if( gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi )
@@ -9932,7 +9953,6 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 		board[BOARD_HEIGHT-1-k][0] = EmptySquare;
 	}
     }
-
 }
 
 /* Updates forwardMostMove */

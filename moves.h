@@ -83,10 +83,12 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 #define F_MANDATORY_CAPTURE 0x200
 
 /* Special epfile values. [HGM] positive values are non-reversible moves! */
-#define EP_NONE (-4)           /* [HGM] Tricky! order matters:            */
-#define EP_UNKNOWN (-1)        /*       >= EP_UNKNOWN spils rep-draw      */
+#define EP_NONE (-6)           /* [HGM] Tricky! order matters:            */
+#define EP_UNKNOWN (-1)        /*       >= EP_UNKNOWN spoils rep-draw     */
 #define EP_CAPTURE (-2)        /*       <= EP_NONE is reversible move     */
 #define EP_PAWN_MOVE (-3)
+#define EP_IRON_LION (-4)
+#define EP_ROYAL_LION (-5)
 #define EP_REP_DRAW   (-15)
 #define EP_RULE_DRAW  (-14)
 #define EP_INSUF_DRAW  (-13)
@@ -172,4 +174,4 @@ ChessMove CoordsToAlgebraic P((Board board, int flags,
 			       int rf, int ff, int rt, int ft,
 			       int promoChar, char out[MOVE_LEN]));
 
-extern int quickFlag;
+extern int quickFlag, killX, killY;

@@ -289,7 +289,7 @@ typedef enum {
     WhitePromotion, WhiteNonPromotion,
     BlackPromotion, BlackNonPromotion,
     WhiteCapturesEnPassant, BlackCapturesEnPassant,
-    WhiteDrop, BlackDrop,
+    WhiteDrop, BlackDrop, FirstLeg,
     NormalMove, AmbiguousMove, IllegalMove, ImpossibleMove,
     WhiteWins, BlackWins, GameIsDrawn, GameUnfinished,
     GNUChessGame, XBoardGame, MoveNumberOne, Open, Close, Nothing,
@@ -353,6 +353,7 @@ typedef enum {
     VariantSChess,
     VariantGrand,
     VariantSpartan,
+    VariantLion,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
@@ -401,6 +402,7 @@ typedef enum {
   "seirawan",\
   "grand",\
   "spartan",\
+  "lion",\
   "unknown" \
 }
 

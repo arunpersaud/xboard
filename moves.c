@@ -697,6 +697,16 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 	      }
             break;
 
+            case WhiteLion:
+            case BlackLion:
+              for(rt = rf - 2; rt <= rf + 2; rt++) for(ft = ff - 2; ft <= ff + 2; ft++) {
+                if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
+                if (!(ff == ft && rf == rt) && SameColor(board[rf][ff], board[rt][ft])) continue;
+                callback(board, flags, (rt-rf)*(rt-rf) + (ff-ft)*(ff-ft) < 3 && board[rt][ft] != EmptySquare ? FirstLeg : NormalMove,
+                         rf, ff, rt, ft, closure);
+              }
+              break;
+
 	    case WhiteFalcon: // [HGM] wild: for wildcards, self-capture symbolizes move to anywhere
 	    case BlackFalcon:
 	    case WhiteCobra:
@@ -727,6 +737,8 @@ GenLegalCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt
     register GenLegalClosure *cl = (GenLegalClosure *) closure;
 
     if(rFilter >= 0 && rFilter != rt || fFilter >= 0 && fFilter != ft) return; // [HGM] speed: ignore moves with wrong to-square
+
+    if (board[EP_STATUS] == EP_IRON_LION && (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion)) return; //[HGM] lion
 
     if (!(flags & F_IGNORE_CHECK) ) {
       int check, promo = (gameInfo.variant == VariantSpartan && kind == BlackPromotion);
@@ -972,6 +984,9 @@ CheckTestCallback (Board board, int flags, ChessMove kind, int rf, int ff, int r
 	cl->check++;
 	xqCheckers[rf][ff] = xqCheckers[EP_STATUS] & 1; // remember who is checking (if status == 1)
     }
+    if( board[EP_STATUS] == EP_ROYAL_LION && (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion)
+	&& (gameInfo.variant != VariantLion || board[rf][ff] != WhiteKing && board[rf][ff] != BlackKing) )
+	cl->check++; // [HGM] lion: forbidden counterstrike against Lion equated to putting yourself in check
 }
 
 
@@ -987,7 +1002,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 {
     CheckTestClosure cl;
     ChessSquare king = flags & F_WHITE_ON_MOVE ? WhiteKing : BlackKing;
-    ChessSquare captured = EmptySquare;
+    ChessSquare captured = EmptySquare, ep;
     /*  Suppress warnings on uninitialized variables    */
 
     if(gameInfo.variant == VariantXiangqi)
@@ -1005,6 +1020,14 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	if(rf == DROP_RANK) board[rt][ft] = ff; else { // [HGM] drop
 	    board[rt][ft] = board[rf][ff];
 	    board[rf][ff] = EmptySquare;
+	}
+	ep = board[EP_STATUS];
+	if( captured == WhiteLion || captured == BlackLion ) { // [HGM] lion: Chu Lion-capture rules
+	    ChessSquare victim = killX < 0 ? EmptySquare : board[killY][killX];
+	    if( (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion) &&           // capturer is Lion
+		(ff - ft > 1 || ft - ff > 1 || rf - rt > 1 || rt - rf > 1) &&           // captures from a distance
+		(victim == EmptySquare || victim == WhitePawn || victim == BlackPawn) ) // no or worthless 'bridge'
+		     board[EP_STATUS] = EP_ROYAL_LION; // on distant Lion x Lion victim must not be pseudo-legally protected
 	}
     }
 
@@ -1042,6 +1065,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	} else {
 	    board[rt][ft] = captured;
 	}
+	board[EP_STATUS] = ep;
     }
 
     return cl.fking < BOARD_RGHT ? cl.check : 1000; // [HGM] atomic: return 1000 if we have no king
