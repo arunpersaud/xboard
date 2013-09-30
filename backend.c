@@ -7169,13 +7169,17 @@ void
 HoverEvent (int xPix, int yPix, int x, int y)
 {
 	static char baseMarker[BOARD_RANKS][BOARD_FILES], baseLegal[BOARD_RANKS][BOARD_FILES];
+	static int oldX = -1, oldY = -1, oldFromX = -1, oldFromY = -1;
 	int r, f;
 	if(dragging == 2) DragPieceMove(xPix, yPix); // [HGM] lion: drag without button for second leg
 	if(!first.highlight) return;
-	if(hiX == -1 && hiY == -1 && x == fromX && y == fromY) // record markings 
+	if(fromX != oldFromX || fromY != oldFromY)  oldX = oldY = -1; // kludge to fake entry on from-click
+	if(x == oldX && y == oldY) return; // only do something if we enter new square
+	oldFromX = fromX; oldFromY = fromY;
+	if(oldX == -1 && oldY == -1 && x == fromX && y == fromY) // record markings after from-change
 	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
 	    baseMarker[r][f] = marker[r][f], baseLegal[r][f] = legal[r][f];
-	else if(hiX != x || hiY != y) {
+	else if(oldX != x || oldY != y) {
 	  // [HGM] lift: entered new to-square; redraw arrow, and inform engine
 	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
 	    marker[r][f] = baseMarker[r][f], legal[r][f] = baseLegal[r][f];
@@ -7184,7 +7188,8 @@ HoverEvent (int xPix, int yPix, int x, int y)
 	    snprintf(buf, MSG_SIZ, "hover %c%d\n", x + AAA, y + ONE - '0');
 	    SendToProgram(buf, &first);
 	  }
-	  SetHighlights(fromX, fromY, x, y);
+	  oldX = x; oldY = y;
+//	  SetHighlights(fromX, fromY, x, y);
 	}
 }
 
