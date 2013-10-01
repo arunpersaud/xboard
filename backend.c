@@ -7309,7 +7309,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
       if(gameMode == AnalyzeMode && (pausing || controlKey) && first.excludeMoves) { // use pause state to exclude moves
 	doubleClick = TRUE; gatingPiece = boards[currentMove][y][x];
       }
-      fromX = x; fromY = y; toX = toY = -1;
+      fromX = x; fromY = y; toX = toY = killX = killY = -1;
       if(!appData.oneClick || !OnlyMove(&x, &y, FALSE) ||
 	 // even if only move, we treat as normal when this would trigger a promotion popup, to allow sweep selection
 	 appData.sweepSelect && CanPromote(boards[currentMove][fromY][fromX], fromY) && originalY != y) {
@@ -7337,7 +7337,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     }
 
     /* fromX != -1 */
-    if (clickType == Press && gameMode != EditPosition && killX < 0) {
+    if (clickType == Press && gameMode != EditPosition) {
 	ChessSquare fromP;
 	ChessSquare toP;
 	int frc;
@@ -7349,16 +7349,18 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	fromP = boards[currentMove][fromY][fromX];
 	toP = boards[currentMove][y][x];
 	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom || gameInfo.variant == VariantSChess;
- 	if ((WhitePawn <= fromP && fromP <= WhiteKing &&
+ 	if( (killX < 0 || x != fromX || y != fromY) && // [HGM] lion: do not interpret igui as deselect!
+	   ((WhitePawn <= fromP && fromP <= WhiteKing &&
 	     WhitePawn <= toP && toP <= WhiteKing &&
 	     !(fromP == WhiteKing && toP == WhiteRook && frc) &&
 	     !(fromP == WhiteRook && toP == WhiteKing && frc)) ||
 	    (BlackPawn <= fromP && fromP <= BlackKing &&
 	     BlackPawn <= toP && toP <= BlackKing &&
 	     !(fromP == BlackRook && toP == BlackKing && frc) && // allow also RxK as FRC castling
-	     !(fromP == BlackKing && toP == BlackRook && frc))) {
+	     !(fromP == BlackKing && toP == BlackRook && frc)))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
+	    killX = killY = -1;
 	    if(second && gameMode == AnalyzeMode && SubtractTimeMarks(&lastClickTime, &prevClickTime) < 200) {
 		second = FALSE; // first double-click rather than scond click
 		doubleClick = first.excludeMoves; // used by UserMoveEvent to recognize exclude moves
