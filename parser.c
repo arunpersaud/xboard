@@ -154,7 +154,7 @@ PromoSuffix (char **p)
     if(**p == '+' && IS_SHOGI(gameInfo.variant)) { (*p)++; return '+'; }
     if(**p == '=' || (gameInfo.variant == VariantSChess) && **p == '/') (*p)++; // optional = (or / for Seirawan gating)
     if(**p == '(' && (*p)[2] == ')' && isalpha( (*p)[1] )) { (*p) += 3; return ToLower((*p)[-2]); }
-    if(isalpha(**p)) return ToLower(*(*p)++);
+    if(isalpha(**p) && **p != 'x') return ToLower(*(*p)++); // reserve 'x' for multi-leg captures? 
     if(*p != start) return '='; // must be the optional =
     return NULLCHAR; // no suffix detected
 }
@@ -275,6 +275,15 @@ NextUnit (char **p)
 		fromY = (currentMoveString[1] = coord[1] + '0') - ONE;
 		currentMoveString[4] = cl.promoCharIn = PromoSuffix(p);
 		currentMoveString[5] = NULLCHAR;
+		if(!cl.promoCharIn && (**p == '-' || **p == 'x')) { // Lion-type multi-leg move
+		    currentMoveString[5] = (killX = toX) + AAA; // what we thought was to-square is in fact kill-square
+		    currentMoveString[6] = (killY = toY) + ONE; // append it as suffix behind long algebraic move
+		    currentMoveString[4] = ';';
+		    currentMoveString[7] = NULLCHAR;
+		    // read new to-square (VERY non-robust! Assumes correct (non-alpha-rank) syntax, and messes up on errors)
+		    toX = cl.ftIn = (currentMoveString[2] = *++*p) - AAA; ++*p;
+		    toY = cl.rtIn = (currentMoveString[3] = Number(p) + '0') - ONE;
+		}
 		if(type[0] != NOTHING && type[1] != NOTHING && type[3] != NOTHING) { // fully specified.
 		    // Note that Disambiguate does not work for illegal moves, but flags them as impossible
 		    if(piece) { // check if correct piece indicated
@@ -317,6 +326,7 @@ NextUnit (char **p)
 		currentMoveString[0] = cl.ff + AAA;
 		currentMoveString[1] = cl.rf + ONE;
 		currentMoveString[3] = cl.rt + ONE;
+		if(killX < 0) // [HGM] lion: do not overwrite kill-square suffix
 		currentMoveString[4] = cl.promoChar;
 
 		if((cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) && (Match("ep", p) || Match("e.p.", p)));

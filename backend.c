@@ -5402,6 +5402,7 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
       case WhiteNonPromotion:
       case BlackNonPromotion:
       case NormalMove:
+      case FirstLeg:
       case WhiteCapturesEnPassant:
       case BlackCapturesEnPassant:
       case WhiteKingSideCastle:
@@ -9497,6 +9498,7 @@ ParseGameHistory (char *game)
 	  case WhiteNonPromotion:
 	  case BlackNonPromotion:
 	  case NormalMove:
+	  case FirstLeg:
 	  case WhiteCapturesEnPassant:
 	  case BlackCapturesEnPassant:
 	  case WhiteKingSideCastle:
@@ -10897,7 +10899,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	      result, resultDetails ? resultDetails : "(null)", whosays);
     }
 
-    fromX = fromY = -1; // [HGM] abort any move the user is entering.
+    fromX = fromY = killX = killY = -1; // [HGM] abort any move the user is entering. // [HGM] lion
 
     if(pausing) PauseEvent(); // can happen when we abort a paused game (New Game or Quit)
 
@@ -11393,6 +11395,7 @@ Reset (int redraw, int init)
     ClearPremoveHighlights();
     gotPremove = FALSE;
     alarmSounded = FALSE;
+    killX = killY = -1; // [HGM] lion
 
     GameEnds(EndOfFile, NULL, GE_PLAYER);
     if(appData.serverMovesName != NULL) {
@@ -11573,6 +11576,7 @@ LoadGameOneMove (ChessMove readAhead)
       case WhiteNonPromotion:
       case BlackNonPromotion:
       case NormalMove:
+      case FirstLeg:
       case WhiteKingSideCastle:
       case WhiteQueenSideCastle:
       case BlackKingSideCastle:
@@ -12257,6 +12261,7 @@ GameContainsPosition (FILE *f, ListGame *lg)
 	    case WhiteNonPromotion:
 	    case BlackNonPromotion:
 	    case NormalMove:
+	    case FirstLeg:
 	    case WhiteKingSideCastle:
 	    case WhiteQueenSideCastle:
 	    case BlackKingSideCastle:
@@ -12321,6 +12326,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
     if (gameMode != BeginningOfGame) {
       Reset(FALSE, TRUE);
     }
+    killX = killY = -1; // [HGM] lion: in case we did not Reset
 
     gameFileFP = f;
     if (lastLoadGameFP != NULL && lastLoadGameFP != f) {
@@ -12474,6 +12480,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	    break;
 
 	  case NormalMove:
+	  case FirstLeg:
 	    /* Only a NormalMove can be at the start of a game
 	     * without a position diagram. */
 	    if (lastLoadGameStart == EndOfFile ) {
