@@ -1160,7 +1160,14 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
             if(board[BOARD_HEIGHT-1-PieceToNumber(CharToPiece(ToLower(promoChar)))][1] == 0) return ImpossibleMove;
         }
     } else
-    if(IS_SHOGI(gameInfo.variant)) {
+    if(gameInfo.variant == VariantChu) {
+        if(cl.kind != NormalMove || promoChar == NULLCHAR || promoChar == '=') return cl.kind;
+        if(promoChar != '+')
+            return CharToPiece(promoChar) == EmptySquare ? ImpossibleMove : IllegalMove;
+        if(PieceToChar(CHUPROMOTED board[rf][ff]) != '+') return ImpossibleMove;
+        return flags & F_WHITE_ON_MOVE ? WhitePromotion : BlackPromotion;
+    } else
+    if(gameInfo.variant == VariantShogi) {
         /* [HGM] Shogi promotions. '=' means defer */
         if(rf != DROP_RANK && cl.kind == NormalMove) {
             ChessSquare piece = board[rf][ff];

@@ -6434,7 +6434,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     if(gameInfo.variant == VariantChu) {
         int p = piece >= BlackPawn ? BLACK_TO_WHITE piece : piece;
         promotionZoneSize = BOARD_HEIGHT/3;
-        highestPromotingPiece = (p >= WhiteLion || PieceToChar(piece + 22) == '.') ? WhitePawn : WhiteKing;
+        highestPromotingPiece = (p >= WhiteLion || PieceToChar(piece + 22) == '.') ? WhitePawn : WhiteLion;
     } else if(gameInfo.variant == VariantShogi) {
         promotionZoneSize = BOARD_HEIGHT/3;
         highestPromotingPiece = (int)WhiteAlfil;
@@ -7497,7 +7497,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    ClearHighlights();
 	}
 #endif
-	if(!dragging || marker[y][x] == 5) { // [HGM] lion: this was the release of a to-click or drag on a cyan square
+	if(marker[y][x] == 5) { // [HGM] lion: this was the release of a to-click or drag on a cyan square
 	  dragging *= 2;            // flag button-less dragging if we are dragging
 	  MarkTargetSquares(1);
 	  if(x == killX && y == killY) killX = killY = -1; else {

@@ -1607,7 +1607,7 @@ PromotionPopUp ()
 { // choice depends on variant: prepare dialog acordingly
   count = 8;
   SetPromo(_("Cancel"), --count, 0); // Beware: GenericPopUp cannot handle user buttons named "cancel" (lowe case)!
-  if(gameInfo.variant != VariantShogi) {
+  if(!IS_SHOGI(gameInfo.variant)) {
     if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
         gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
         gameInfo.variant == VariantGiveaway) {
