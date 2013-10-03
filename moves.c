@@ -165,6 +165,207 @@ CompareBoards (Board board1, Board board2)
     return TRUE;
 }
 
+// [HGM] move generation now based on hierarchy of subroutines for rays and combinations of rays
+
+void
+SlideForward (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int i, rt, ft = ff;
+  for (i = 1;; i++) {
+      rt = rf + i;
+      if (rt >= BOARD_HEIGHT) break;
+      if (SameColor(board[rf][ff], board[rt][ft])) break;
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+      if (board[rt][ft] != EmptySquare) break;
+  }
+}
+
+void
+SlideBackward (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int i, rt, ft = ff;
+  for (i = 1;; i++) {
+      rt = rf - i;
+      if (rt < 0) break;
+      if (SameColor(board[rf][ff], board[rt][ft])) break;
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+      if (board[rt][ft] != EmptySquare) break;
+  }
+}
+
+void
+SlideVertical (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  SlideForward(board, flags, rf, ff, callback, closure);
+  SlideBackward(board, flags, rf, ff, callback, closure);
+}
+
+void
+SlideSideways (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int i, s, rt = rf, ft;
+  for(s = -1; s <= 1; s+= 2) {
+    for (i = 1;; i++) {
+      ft = ff + i*s;
+      if (ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
+      if (SameColor(board[rf][ff], board[rt][ft])) break;
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+      if (board[rt][ft] != EmptySquare) break;
+    }
+  }
+}
+
+void
+SlideDiagForward (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int i, s, rt, ft;
+  for(s = -1; s <= 1; s+= 2) {
+    for (i = 1;; i++) {
+      rt = rf + i;
+      ft = ff + i * s;
+      if (rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
+      if (SameColor(board[rf][ff], board[rt][ft])) break;
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+      if (board[rt][ft] != EmptySquare) break;
+    }
+  }
+}
+
+void
+SlideDiagBackward (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int i, s, rt, ft;
+  for(s = -1; s <= 1; s+= 2) {
+    for (i = 1;; i++) {
+      rt = rf - i;
+      ft = ff + i * s;
+      if (rt < 0 || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
+      if (SameColor(board[rf][ff], board[rt][ft])) break;
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+      if (board[rt][ft] != EmptySquare) break;
+    }
+  }
+}
+
+void
+Rook (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  SlideVertical(board, flags, rf, ff, callback, closure);
+  SlideSideways(board, flags, rf, ff, callback, closure);
+}
+
+void
+Bishop (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  SlideDiagForward(board, flags, rf, ff, callback, closure);
+  SlideDiagBackward(board, flags, rf, ff, callback, closure);
+}
+
+void
+Sting (Board board, int flags, int rf, int ff, int dy, int dx, MoveCallback callback, VOIDSTAR closure)
+{ // Lion-like move of Horned Falcon and Souring Eagle
+  int ft = ff + dx, rt = rf + dy;
+  if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) return;
+  if (!SameColor(board[rf][ff], board[rt][ft]))
+    callback(board, flags, board[rt][ft] != EmptySquare ? FirstLeg : NormalMove, rf, ff, rt, ft, closure);
+  ft += dx; rt += dy;
+  if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) return;
+  if (!SameColor(board[rf][ff], board[rt][ft]))
+    callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+}
+
+void
+StepForward (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int ft = ff, rt = rf + 1;
+  if (rt >= BOARD_HEIGHT) return;
+  if (SameColor(board[rf][ff], board[rt][ft])) return;
+  callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+}
+
+void
+StepBackward (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int ft = ff, rt = rf - 1;
+  if (rt < 0) return;
+  if (SameColor(board[rf][ff], board[rt][ft])) return;
+  callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+}
+
+void
+StepSideways (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int ft, rt = rf;
+  ft = ff + 1;
+  if (!(rt >= BOARD_HEIGHT || ft >= BOARD_RGHT) && !SameColor(board[rf][ff], board[rt][ft]))
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+  ft = ff - 1;
+  if (!(rt >= BOARD_HEIGHT || ft < BOARD_LEFT) && !SameColor(board[rf][ff], board[rt][ft]))
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+}
+
+void
+StepDiagForward (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int ft, rt = rf + 1;
+  if (rt >= BOARD_HEIGHT) return;
+  ft = ff + 1;
+  if (!(rt >= BOARD_HEIGHT || ft >= BOARD_RGHT) && !SameColor(board[rf][ff], board[rt][ft]))
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+  ft = ff - 1;
+  if (!(rt >= BOARD_HEIGHT || ft < BOARD_LEFT) && !SameColor(board[rf][ff], board[rt][ft]))
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+}
+
+void
+StepDiagBackward (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  int ft, rt = rf - 1;
+  if(rt < 0) return;
+  ft = ff + 1;
+  if (!(rt < 0 || ft >= BOARD_RGHT) && !SameColor(board[rf][ff], board[rt][ft]))
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+  ft = ff - 1;
+  if (!(rt < 0 || ft < BOARD_LEFT) && !SameColor(board[rf][ff], board[rt][ft]))
+      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+}
+
+void
+StepVertical (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  StepForward(board, flags, rf, ff, callback, closure);
+  StepBackward(board, flags, rf, ff, callback, closure);
+}
+
+void
+Ferz (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  StepDiagForward(board, flags, rf, ff, callback, closure);
+  StepDiagBackward(board, flags, rf, ff, callback, closure);
+}
+
+void
+Wazir (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+  StepVertical(board, flags, rf, ff, callback, closure);
+  StepSideways(board, flags, rf, ff, callback, closure);
+}
+
+void
+Knight (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR closure)
+{
+    int i, j, s, rt, ft;
+    for (i = -1; i <= 1; i += 2)
+	for (j = -1; j <= 1; j += 2)
+	    for (s = 1; s <= 2; s++) {
+		rt = rf + i*s;
+		ft = ff + j*(3-s);
+		if (!(rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT)
+		    && ( gameInfo.variant != VariantXiangqi || board[rf+i*(s-1)][ff+j*(2-s)] == EmptySquare)
+		    && !SameColor(board[rf][ff], board[rt][ft]))
+		    callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+	    }
+}
 
 /* Call callback once for each pseudo-legal move in the given
    position, except castling moves. A move is pseudo-legal if it is
@@ -195,7 +396,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
           if(PieceToChar(piece) == '~')
                  piece = (ChessSquare) ( DEMOTED piece );
           if(filter != EmptySquare && piece != filter) continue;
-          if(gameInfo.variant == VariantShogi)
+          if(IS_SHOGI(gameInfo.variant))
                  piece = (ChessSquare) ( SHOGI piece );
 
           switch ((int)piece) {
@@ -309,7 +510,6 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             case BlackUnicorn:
 	    case WhiteKnight:
 	    case BlackKnight:
-            mounted:
 	      for (i = -1; i <= 1; i += 2)
 		for (j = -1; j <= 1; j += 2)
 		  for (s = 1; s <= 2; s++) {
@@ -366,47 +566,77 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 
             /* Gold General (and all its promoted versions) . First do the */
             /* diagonal forward steps, then proceed as normal Wazir        */
-            case SHOGI WhiteWazir:
             case SHOGI (PROMOTED WhitePawn):
-            case SHOGI (PROMOTED WhiteKnight):
-            case SHOGI (PROMOTED WhiteQueen):
-            case SHOGI (PROMOTED WhiteFerz):
-	      for (s = -1; s <= 1; s += 2) {
-                  if (rf < BOARD_HEIGHT-1 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
-                      !SameColor(board[rf][ff], board[rf + 1][ff + s])) {
-                      callback(board, flags, NormalMove,
-			       rf, ff, rf + 1, ff + s, closure);
-		  }
-              }
-              goto finishGold;
-
-            case SHOGI BlackWazir:
+		if(gameInfo.variant == VariantShogi) goto WhiteGold;
             case SHOGI (PROMOTED BlackPawn):
+		if(gameInfo.variant == VariantShogi) goto BlackGold;
+		SlideVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI (PROMOTED WhiteKnight):
+		if(gameInfo.variant == VariantShogi) goto WhiteGold;
+            case SHOGI BlackDrunk:
+            case SHOGI BlackAlfil:
+		Ferz(board, flags, rf, ff, callback, closure);
+		StepSideways(board, flags, rf, ff, callback, closure);
+		StepBackward(board, flags, rf, ff, callback, closure);
+		break;
+
             case SHOGI (PROMOTED BlackKnight):
+		if(gameInfo.variant == VariantShogi) goto BlackGold;
+            case SHOGI WhiteDrunk:
+            case SHOGI WhiteAlfil:
+		Ferz(board, flags, rf, ff, callback, closure);
+		StepSideways(board, flags, rf, ff, callback, closure);
+		StepForward(board, flags, rf, ff, callback, closure);
+		break;
+
+
+            case SHOGI WhiteStag:
+            case SHOGI BlackStag:
+		if(gameInfo.variant == VariantShogi) goto BlackGold;
+		SlideVertical(board, flags, rf, ff, callback, closure);
+		Ferz(board, flags, rf, ff, callback, closure);
+		StepSideways(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI (PROMOTED WhiteQueen):
+            case SHOGI WhiteTokin:
+            case SHOGI WhiteWazir:
+	    WhiteGold:
+		StepDiagForward(board, flags, rf, ff, callback, closure);
+		Wazir(board, flags, rf, ff, callback, closure);
+		break;
+
             case SHOGI (PROMOTED BlackQueen):
-            case SHOGI (PROMOTED BlackFerz):
-	      for (s = -1; s <= 1; s += 2) {
-                  if (rf > 0 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
-                      !SameColor(board[rf][ff], board[rf - 1][ff + s])) {
-                      callback(board, flags, NormalMove,
-			       rf, ff, rf - 1, ff + s, closure);
-		  }
-	      }
+            case SHOGI BlackTokin:
+            case SHOGI BlackWazir:
+            BlackGold:
+		StepDiagBackward(board, flags, rf, ff, callback, closure);
+		Wazir(board, flags, rf, ff, callback, closure);
+		break;
 
             case WhiteWazir:
             case BlackWazir:
-            finishGold:
-              for (d = 0; d <= 1; d++)
-                for (s = -1; s <= 1; s += 2) {
-                      rt = rf + s * d;
-                      ft = ff + s * (1 - d);
-                      if (!(rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT)
-                          && !SameColor(board[rf][ff], board[rt][ft]) &&
-                          (gameInfo.variant != VariantXiangqi || InPalace(rt, ft) ) )
-                               callback(board, flags, NormalMove,
-                                        rf, ff, rt, ft, closure);
-                      }
-	      break;
+		Wazir(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteMarshall:
+            case SHOGI BlackMarshall:
+		Ferz(board, flags, rf, ff, callback, closure);
+		for (d = 0; d <= 1; d++)
+		    for (s = -2; s <= 2; s += 4) {
+			rt = rf + s * d;
+			ft = ff + s * (1 - d);
+			if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
+			if (!SameColor(board[rf][ff], board[rt][ft]) )
+			    callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+		    }
+		break;
+
+            case SHOGI WhiteAngel:
+            case SHOGI BlackAngel:
+		Wazir(board, flags, rf, ff, callback, closure);
 
             case WhiteAlfil:
             case BlackAlfil:
@@ -422,8 +652,8 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
                           && !SameColor(board[rf][ff], board[rt][ft]))
                                callback(board, flags, NormalMove,
                                         rf, ff, rt, ft, closure);
-                      if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier
-                                                             || gameInfo.variant == VariantXiangqi) continue; // classical Alfil
+                      if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
+                         gameInfo.variant == VariantChu      || gameInfo.variant == VariantXiangqi) continue; // classical Alfil
                       rt = rf + rs; // in unknown variant we assume Modern Elephant, which can also do one step
                       ft = ff + fs;
                       if (!(rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT)
@@ -454,36 +684,30 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             /* Shogi Dragon Horse has to continue with Wazir after Bishop */
             case SHOGI WhiteCardinal:
             case SHOGI BlackCardinal:
-              m++;
+            case SHOGI WhitePCardinal:
+            case SHOGI BlackPCardinal:
+		Bishop(board, flags, rf, ff, callback, closure);
+		Wazir(board, flags, rf, ff, callback, closure);
+		break;
 
             /* Capablanca Archbishop continues as Knight                  */
             case WhiteAngel:
             case BlackAngel:
-              m++;
+		Knight(board, flags, rf, ff, callback, closure);
 
             /* Shogi Bishops are ordinary Bishops */
             case SHOGI WhiteBishop:
             case SHOGI BlackBishop:
+            case SHOGI WhitePBishop:
+            case SHOGI BlackPBishop:
 	    case WhiteBishop:
 	    case BlackBishop:
-	      for (rs = -1; rs <= 1; rs += 2)
-                for (fs = -1; fs <= 1; fs += 2)
-		  for (i = 1;; i++) {
-		      rt = rf + (i * rs);
-		      ft = ff + (i * fs);
-                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
-		      if (SameColor(board[rf][ff], board[rt][ft])) break;
-		      callback(board, flags, NormalMove,
-			       rf, ff, rt, ft, closure);
-		      if (board[rt][ft] != EmptySquare) break;
-		  }
-                if(m==1) goto mounted;
-                if(m==2) goto finishGold;
-                /* Bishop falls through */
-	      break;
+		Bishop(board, flags, rf, ff, callback, closure);
+		break;
 
             /* Shogi Lance is unlike anything, and asymmetric at that */
             case SHOGI WhiteQueen:
+              if(gameInfo.variant == VariantChu) goto doQueen;
               for(i = 1;; i++) {
                       rt = rf + i;
                       ft = ff;
@@ -496,6 +720,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
               break;
 
             case SHOGI BlackQueen:
+              if(gameInfo.variant == VariantChu) goto doQueen;
               for(i = 1;; i++) {
                       rt = rf - i;
                       ft = ff;
@@ -524,112 +749,83 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             /* Shogi Dragon King has to continue as Ferz after Rook moves */
             case SHOGI WhiteDragon:
             case SHOGI BlackDragon:
+            case SHOGI WhitePDragon:
+            case SHOGI BlackPDragon:
+		Rook(board, flags, rf, ff, callback, closure);
+		Ferz(board, flags, rf, ff, callback, closure);
+		break;
               m++;
 
             /* Capablanca Chancellor sets flag to continue as Knight      */
             case WhiteMarshall:
             case BlackMarshall:
-              m++;
-              m += (gameInfo.variant == VariantSpartan); // in Spartan Chess Chancellor is used for Dragon King.
+		Rook(board, flags, rf, ff, callback, closure);
+		if(gameInfo.variant == VariantSpartan) // in Spartan Chess Chancellor is used for Dragon King.
+		    Ferz(board, flags, rf, ff, callback, closure);
+		else
+		    Knight(board, flags, rf, ff, callback, closure);
+		break;
 
             /* Shogi Rooks are ordinary Rooks */
             case SHOGI WhiteRook:
             case SHOGI BlackRook:
+            case SHOGI WhitePRook:
+            case SHOGI BlackPRook:
 	    case WhiteRook:
 	    case BlackRook:
           doRook:
-              for (d = 0; d <= 1; d++)
-                for (s = -1; s <= 1; s += 2)
-		  for (i = 1;; i++) {
-		      rt = rf + (i * s) * d;
-		      ft = ff + (i * s) * (1 - d);
-                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
-		      if (SameColor(board[rf][ff], board[rt][ft])) break;
-		      callback(board, flags, NormalMove,
-			       rf, ff, rt, ft, closure);
-		      if (board[rt][ft] != EmptySquare || i == rookRange) break;
-		  }
-                if(m==1) goto mounted;
-                if(m==2) goto finishSilver;
-	      break;
+		Rook(board, flags, rf, ff, callback, closure);
+		break;
 
 	    case WhiteQueen:
 	    case BlackQueen:
-	      for (rs = -1; rs <= 1; rs++)
-		for (fs = -1; fs <= 1; fs++) {
-		    if (rs == 0 && fs == 0) continue;
-		    for (i = 1;; i++) {
-			rt = rf + (i * rs);
-			ft = ff + (i * fs);
-                        if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
-			if (SameColor(board[rf][ff], board[rt][ft])) break;
-			callback(board, flags, NormalMove,
-				 rf, ff, rt, ft, closure);
-			if (board[rt][ft] != EmptySquare) break;
-		    }
-		}
-	      break;
+            case SHOGI WhiteMother:
+            case SHOGI BlackMother:
+	    doQueen:
+		Rook(board, flags, rf, ff, callback, closure);
+		Bishop(board, flags, rf, ff, callback, closure);
+		break;
 
-            /* Shogi Pawn and Silver General: first the Pawn move,    */
-            /* then the General continues like a Ferz                 */
+           case SHOGI WhitePawn:
+		StepForward(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI BlackPawn:
+		StepBackward(board, flags, rf, ff, callback, closure);
+		break;
+
             case WhiteMan:
                 if(gameInfo.variant != VariantMakruk && gameInfo.variant != VariantASEAN) goto commoner;
-            case SHOGI WhitePawn:
             case SHOGI WhiteFerz:
-                  if (rf < BOARD_HEIGHT-1 &&
-                           !SameColor(board[rf][ff], board[rf + 1][ff]) )
-                           callback(board, flags, NormalMove,
-                                    rf, ff, rf + 1, ff, closure);
-              if(piece != SHOGI WhitePawn) goto finishSilver;
-              break;
+		Ferz(board, flags, rf, ff, callback, closure);
+		StepForward(board, flags, rf, ff, callback, closure);
+		break;
 
             case BlackMan:
                 if(gameInfo.variant != VariantMakruk && gameInfo.variant != VariantASEAN) goto commoner;
-            case SHOGI BlackPawn:
             case SHOGI BlackFerz:
-                  if (rf > 0 &&
-                           !SameColor(board[rf][ff], board[rf - 1][ff]) )
-                           callback(board, flags, NormalMove,
-                                    rf, ff, rf - 1, ff, closure);
-              if(piece == SHOGI BlackPawn) break;
+		StepBackward(board, flags, rf, ff, callback, closure);
 
             case WhiteFerz:
             case BlackFerz:
-            finishSilver:
                 /* [HGM] support Shatranj pieces */
-                for (rs = -1; rs <= 1; rs += 2)
-                  for (fs = -1; fs <= 1; fs += 2) {
-                      rt = rf + rs;
-                      ft = ff + fs;
-                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
-                      if (!SameColor(board[rf][ff], board[rt][ft]) &&
-                          (gameInfo.variant != VariantXiangqi || InPalace(rt, ft) ) )
-                               callback(board, flags, NormalMove,
-                                        rf, ff, rt, ft, closure);
-		  }
-                break;
+		Ferz(board, flags, rf, ff, callback, closure);
+		break;
 
 	    case WhiteSilver:
 	    case BlackSilver:
-		m++; // [HGM] superchess: use for Centaur
+		Knight(board, flags, rf, ff, callback, closure); // [HGM] superchess: use for Centaur
+
             commoner:
+            case SHOGI WhiteMonarch:
+            case SHOGI BlackMonarch:
             case SHOGI WhiteKing:
             case SHOGI BlackKing:
 	    case WhiteKing:
 	    case BlackKing:
-//            walking:
-	      for (i = -1; i <= 1; i++)
-		for (j = -1; j <= 1; j++) {
-		    if (i == 0 && j == 0) continue;
-		    rt = rf + i;
-		    ft = ff + j;
-                    if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
-		    if (SameColor(board[rf][ff], board[rt][ft])) continue;
-		    callback(board, flags, NormalMove,
-			     rf, ff, rt, ft, closure);
-		}
-		if(m==1) goto mounted;
-	      break;
+		Ferz(board, flags, rf, ff, callback, closure);
+		Wazir(board, flags, rf, ff, callback, closure);
+		break;
 
 	    case WhiteNightrider:
 	    case BlackNightrider:
@@ -649,20 +845,10 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 	      break;
 
 	    Amazon:
-	      /* First do Bishop,then continue like Chancellor */
-	      for (rs = -1; rs <= 1; rs += 2)
-                for (fs = -1; fs <= 1; fs += 2)
-		  for (i = 1;; i++) {
-		      rt = rf + (i * rs);
-		      ft = ff + (i * fs);
-                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
-		      if (SameColor(board[rf][ff], board[rt][ft])) break;
-		      callback(board, flags, NormalMove,
-			       rf, ff, rt, ft, closure);
-		      if (board[rt][ft] != EmptySquare) break;
-		  }
-	      m++;
-	      goto doRook;
+		Bishop(board, flags, rf, ff, callback, closure);
+		Rook(board, flags, rf, ff, callback, closure);
+		Knight(board, flags, rf, ff, callback, closure);
+		break;
 
 	    // Use Lance as Berolina / Spartan Pawn.
 	    case WhiteLance:
@@ -697,6 +883,10 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 	      }
             break;
 
+            case SHOGI WhiteNothing:
+            case SHOGI BlackNothing:
+            case SHOGI WhiteLion:
+            case SHOGI BlackLion:
             case WhiteLion:
             case BlackLion:
               for(rt = rf - 2; rt <= rf + 2; rt++) for(ft = ff - 2; ft <= ff + 2; ft++) {
@@ -706,6 +896,113 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
                          rf, ff, rt, ft, closure);
               }
               break;
+
+            case SHOGI WhiteFalcon:
+            case SHOGI BlackFalcon:
+            case SHOGI WhitePDagger:
+            case SHOGI BlackPDagger:
+		SlideSideways(board, flags, rf, ff, callback, closure);
+		StepVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteCobra:
+            case SHOGI BlackCobra:
+		StepVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI (PROMOTED WhiteFerz):
+		if(gameInfo.variant == VariantShogi) goto WhiteGold;
+            case SHOGI (PROMOTED BlackFerz):
+		if(gameInfo.variant == VariantShogi) goto BlackGold;
+            case SHOGI WhitePSword:
+            case SHOGI BlackPSword:
+		SlideVertical(board, flags, rf, ff, callback, closure);
+		StepSideways(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteUnicorn:
+            case SHOGI BlackUnicorn:
+		Ferz(board, flags, rf, ff, callback, closure);
+		StepVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteMan:
+		StepDiagForward(board, flags, rf, ff, callback, closure);
+		StepVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI BlackMan:
+		StepDiagBackward(board, flags, rf, ff, callback, closure);
+		StepVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteHCrown:
+            case SHOGI BlackHCrown:
+		Bishop(board, flags, rf, ff, callback, closure);
+		SlideSideways(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteCrown:
+            case SHOGI BlackCrown:
+		Bishop(board, flags, rf, ff, callback, closure);
+		SlideVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteHorned:
+		Sting(board, flags, rf, ff, 1, 0, callback, closure);
+		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
+		if(killX >= 0) break;
+		Bishop(board, flags, rf, ff, callback, closure);
+		SlideSideways(board, flags, rf, ff, callback, closure);
+		SlideBackward(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI BlackHorned:
+		Sting(board, flags, rf, ff, -1, 0, callback, closure);
+		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
+		if(killX >= 0) break;
+		Bishop(board, flags, rf, ff, callback, closure);
+		SlideSideways(board, flags, rf, ff, callback, closure);
+		SlideForward(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteEagle:
+		Sting(board, flags, rf, ff, 1,  1, callback, closure);
+		Sting(board, flags, rf, ff, 1, -1, callback, closure);
+		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
+		if(killX >= 0) break;
+		Rook(board, flags, rf, ff, callback, closure);
+		SlideDiagBackward(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI BlackEagle:
+		Sting(board, flags, rf, ff, -1,  1, callback, closure);
+		Sting(board, flags, rf, ff, -1, -1, callback, closure);
+		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
+		if(killX >= 0) break;
+		Rook(board, flags, rf, ff, callback, closure);
+		SlideDiagForward(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteDolphin:
+            case SHOGI BlackHorse:
+		SlideDiagBackward(board, flags, rf, ff, callback, closure);
+		SlideVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI BlackDolphin:
+            case SHOGI WhiteHorse:
+		SlideDiagForward(board, flags, rf, ff, callback, closure);
+		SlideVertical(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI WhiteLance:
+		SlideForward(board, flags, rf, ff, callback, closure);
+		break;
+
+            case SHOGI BlackLance:
+		SlideBackward(board, flags, rf, ff, callback, closure);
+		break;
 
 	    case WhiteFalcon: // [HGM] wild: for wildcards, self-capture symbolizes move to anywhere
 	    case BlackFalcon:

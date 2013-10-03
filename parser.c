@@ -257,7 +257,7 @@ NextUnit (char **p)
 	    if(piece) {
 		cl.pieceIn = CharToPiece(wom ? piece : ToLower(piece));
 		if(cl.pieceIn == EmptySquare) return ImpossibleMove; // non-existent piece
-		if(promoted) cl.pieceIn = (ChessSquare) (PROMOTED cl.pieceIn);
+		if(promoted) cl.pieceIn = (ChessSquare) (CHUPROMOTED cl.pieceIn);
 	    } else cl.pieceIn = EmptySquare;
 	    if(separator == '@' || separator == '*') { // drop move. We only get here without from-square or promoted piece
 		fromY = DROP_RANK; fromX = cl.pieceIn;
