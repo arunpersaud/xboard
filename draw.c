@@ -140,7 +140,7 @@ SelectPieces(VariantClass v)
 	for(p=0; p<=(int)WhiteKing; p++)
 	   pngPieceBitmaps[i][p] = pngPieceBitmaps2[i][p]; // defaults
 	if(v == VariantShogi) {
-	   pngPieceBitmaps[i][(int)WhiteCannon] = pngPieceBitmaps2[i][(int)WhiteKing+1];
+	   pngPieceBitmaps[i][(int)WhiteCannon] = pngPieceBitmaps2[i][(int)WhiteTokin];
 	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteKing+2];
 	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+3];
 	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhiteKing+4];
@@ -156,6 +156,7 @@ SelectPieces(VariantClass v)
 	   pngPieceBitmaps[i][(int)WhiteMarshall] = pngPieceBitmaps2[i][(int)WhiteAlfil];
 	}
 	if(v == VariantChu) {
+	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteKing+1];
 	   pngPieceBitmaps[i][(int)WhiteUnicorn] = pngPieceBitmaps2[i][(int)WhiteCat];
 	   pngPieceBitmaps[i][(int)WhiteSilver]  = pngPieceBitmaps2[i][(int)WhiteSword];
 	   pngPieceBitmaps[i][(int)WhiteFalcon]  = pngPieceBitmaps2[i][(int)WhiteDagger];
@@ -236,7 +237,7 @@ char *pngPieceNames[] = // must be in same order as internal piece encoding
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
   "GoldPawn", "HSword", "PromoHorse", "PromoDragon", "Leopard", "PromoSword", "King", "Queen", "Lion", "PromoRook", "PromoHSword",
   "Dolphin", "Chancellor", "Unicorn", "Hawk", "Sword", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
-  "GoldPawn", "GoldKnight", "GoldLance", "GoldSilver", NULL
+  "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
 RsvgHandle *
