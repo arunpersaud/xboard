@@ -142,8 +142,8 @@ SelectPieces(VariantClass v)
 	if(v == VariantShogi) {
 	   pngPieceBitmaps[i][(int)WhiteCannon] = pngPieceBitmaps2[i][(int)WhiteKing+1];
 	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteKing+2];
-	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhiteKing+3];
-	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+4];
+	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+3];
+	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhiteKing+4];
 	   pngPieceBitmaps[i][(int)WhiteQueen] = pngPieceBitmaps2[i][(int)WhiteLance];
 	}
 #ifdef GOTHIC
@@ -236,7 +236,7 @@ char *pngPieceNames[] = // must be in same order as internal piece encoding
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
   "GoldPawn", "HSword", "PromoHorse", "PromoDragon", "Leopard", "PromoSword", "King", "Queen", "Lion", "PromoRook", "PromoHSword",
   "Dolphin", "Chancellor", "Unicorn", "Hawk", "Sword", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
-  "GoldKnight", "GoldLance", "GoldPawn", "GoldSilver", NULL
+  "GoldPawn", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
 RsvgHandle *
