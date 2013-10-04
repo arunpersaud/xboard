@@ -11598,6 +11598,7 @@ LoadGameOneMove (ChessMove readAhead)
         toX = currentMoveString[2] - AAA;
         toY = currentMoveString[3] - ONE;
 	promoChar = currentMoveString[4];
+	if(promoChar == ';') promoChar = NULLCHAR;
 	break;
 
       case WhiteDrop:
