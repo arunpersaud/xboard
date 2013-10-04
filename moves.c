@@ -1936,7 +1936,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 	*/
         if( c == '~' || c == '+') {
            /* [HGM] print nonexistent piece as its demoted version */
-           piece = (ChessSquare) (DEMOTED piece);
+           piece = (ChessSquare) (DEMOTED piece - 11*(gameInfo.variant == VariantChu));
         }
         if(c=='+') *outp++ = c;
         *outp++ = ToUpper(PieceToChar(piece));
