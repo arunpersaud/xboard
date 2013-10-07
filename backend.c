@@ -10069,8 +10069,6 @@ MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
 	strcat(parseList[forwardMostMove - 1], "#");
 	break;
     }
-
-    killX = killY = -1; // [HGM] lion: used up
 }
 
 /* Updates currentMove if not pausing */
@@ -10089,6 +10087,8 @@ ShowMove (int fromX, int fromY, int toX, int toY)
 	}
 	currentMove = forwardMostMove;
     }
+
+    killX = killY = -1; // [HGM] lion: used up
 
     if (instant) return;
 
@@ -11765,6 +11765,7 @@ LoadGameOneMove (ChessMove readAhead)
 
 	thinkOutput[0] = NULLCHAR;
 	MakeMove(fromX, fromY, toX, toY, promoChar);
+	killX = killY = -1; // [HGM] lion: used up
 	currentMove = forwardMostMove;
 	return TRUE;
     }

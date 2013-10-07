@@ -599,7 +599,7 @@ void
 AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
 {
   ChessSquare piece;
-  int hop;
+  int hop, x = toX, y = toY;
   Pnt      start, finish, mid;
   Pnt      frames[kFactor * 2 + 1];
   int	      nFrames, startColor, endColor;
@@ -615,6 +615,10 @@ AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
   if (fromY < 0 || fromX < 0 || toX < 0 || toY < 0) return;
   piece = board[fromY][fromX];
   if (piece >= EmptySquare) return;
+
+  if(killX >= 0) toX = killX, toY = killY; // [HGM] lion: first to kill square
+
+again:
 
 #if DONT_HOP
   hop = FALSE;
@@ -653,6 +657,8 @@ AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
 
   /* Be sure end square is redrawn */
   damage[0][toY][toX] |= True;
+
+  if(toX != x || toY != y) { fromX = toX; fromY = toY; toX = x; toY = y; goto again; } // second leg
 }
 
 void
