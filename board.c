@@ -604,6 +604,8 @@ AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
   Pnt      frames[kFactor * 2 + 1];
   int	      nFrames, startColor, endColor;
 
+  if(killX >= 0 && IS_LION(board[fromY][fromX])) Roar();
+
   /* Are we animating? */
   if (!appData.animate || appData.blindfold)
     return;

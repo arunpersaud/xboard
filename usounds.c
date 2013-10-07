@@ -76,21 +76,22 @@ extern char *getenv();
 #include "frontend.h"
 
 
-void
+int
 PlaySoundFile (char *name)
 {
   if (*name == NULLCHAR) {
-    return;
+    return 0;
   } else if (strcmp(name, "$") == 0) {
     putc(BELLCHAR, stderr);
   } else {
     char buf[2048];
     char *prefix = "", *sep = "";
-    if(appData.soundProgram[0] == NULLCHAR) return;
+    if(appData.soundProgram[0] == NULLCHAR) return 1;
     if(!strchr(name, '/')) { prefix = appData.soundDirectory; sep = "/"; }
     snprintf(buf, sizeof(buf), "%s '%s%s%s' &", appData.soundProgram, prefix, sep, name);
     system(buf);
   }
+  return 1;
 }
 
 void
@@ -133,6 +134,12 @@ void
 PlayTellSound ()
 {
   PlaySoundFile(appData.soundTell);
+}
+
+int
+Roar ()
+{
+  return PlaySoundFile(appData.soundRoar);
 }
 
 void

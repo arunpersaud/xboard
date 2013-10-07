@@ -93,13 +93,14 @@ void DrawSeekDot P((int x, int y, int color));
 void PopUpMoveDialog P((char first));
 
 void RingBell P((void));
+int  Roar P((void));
 void PlayIcsWinSound P((void));
 void PlayIcsLossSound P((void));
 void PlayIcsDrawSound P((void));
 void PlayIcsUnfinishedSound P((void));
 void PlayAlarmSound P((void));
 void PlayTellSound P((void));
-void PlaySoundFile P((char *name));
+int  PlaySoundFile P((char *name));
 void PlaySoundByColor P((void));
 void EchoOn P((void));
 void EchoOff P((void));

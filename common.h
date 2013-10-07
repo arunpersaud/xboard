@@ -274,6 +274,7 @@ typedef enum {
 #define SHOGI          (int)EmptySquare + (int)
 #define CHUPROMOTED    ((int)WhitePDragon - (int)WhiteDragon)*(gameInfo.variant == VariantChu) + PROMOTED
 #define IS_SHOGI(V)    ((V) == VariantShogi || (V) == VariantChu)
+#define IS_LION(V)     ((V) == WhiteLion || (V) == BlackLion)
 
 
 typedef ChessSquare Board[BOARD_RANKS][BOARD_FILES];
@@ -538,6 +539,7 @@ typedef struct {
     char *soundSeek;
     char *soundMove;     // [HGM] IMPORTANT: order must be as in SoundClass
     char *soundBell;
+    char *soundRoar;
     char *soundIcsAlarm;
     char *soundIcsWin;
     char *soundIcsLoss;

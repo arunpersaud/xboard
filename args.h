@@ -468,6 +468,7 @@ ArgDescriptor argDescriptors[] = {
   { "soundSeek", ArgFilename, (void *) &appData.soundSeek, TRUE, (ArgIniType) "" },
   { "soundMove", ArgFilename, (void *) &appData.soundMove, TRUE, (ArgIniType) "" },
   { "soundBell", ArgFilename, (void *) &appData.soundBell, TRUE, (ArgIniType) SOUND_BELL },
+  { "soundRoar", ArgFilename, (void *) &appData.soundRoar, TRUE, (ArgIniType) "" },
   { "soundIcsWin", ArgFilename, (void *) &appData.soundIcsWin, TRUE, (ArgIniType) "" },
   { "soundIcsLoss", ArgFilename, (void *) &appData.soundIcsLoss, TRUE, (ArgIniType) "" },
   { "soundIcsDraw", ArgFilename, (void *) &appData.soundIcsDraw, TRUE, (ArgIniType) "" },

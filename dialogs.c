@@ -724,6 +724,7 @@ static char *soundNames[] = {
 	N_("Penalty"),
 	N_("Phone"),
 	N_("Pop"),
+	N_("Roar"),
 	N_("Slap"),
 	N_("Wood Thunk"),
 	NULL,
@@ -742,6 +743,7 @@ static char *soundFiles[] = { // sound files corresponding to above names
 	"penalty.wav",
 	"phone.wav",
 	"pop2.wav",
+	"roar.wav",
 	"slap.wav",
 	"woodthunk.wav",
 	NULL,
@@ -769,6 +771,7 @@ static Option soundOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.soundTell, (char*) soundFiles, soundNames, ComboBox, N_("Tell:") },
 { 0, 0, 0, NULL, (void*) &appData.soundKibitz, (char*) soundFiles, soundNames, ComboBox, N_("Kibitz:") },
 { 0, 0, 0, NULL, (void*) &appData.soundRequest, (char*) soundFiles, soundNames, ComboBox, N_("Request:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundRoar, (char*) soundFiles, soundNames, ComboBox, N_("Lion roar:") },
 { 0, 0, 0, NULL, (void*) &appData.soundSeek, (char*) soundFiles, soundNames, ComboBox, N_("Seek:") },
 { 0, SAME_ROW, 0, NULL, NULL, "", NULL, EndMark , "" }
 };

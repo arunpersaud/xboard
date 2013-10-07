@@ -43,6 +43,7 @@
 -soundTell phone.wav
 -soundChallenge gong.wav
 -soundMove woodthunk.wav
+-soundRoar roar.wav
 -soundIcsAlarm penalty.wav
 -pasteSelection false
 -keepLineBreaksICS false

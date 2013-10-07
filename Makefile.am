@@ -191,7 +191,7 @@ dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png png/xqboard.png
 soundsdir = $(gamedatadir)/sounds
 dist_sounds_DATA = \
   sounds/cymbal.wav     sounds/pop2.wav   sounds/slap.wav     sounds/ding1.wav      sounds/laser.wav \
-  sounds/woodthunk.wav  sounds/gong.wav   sounds/penalty.wav  sounds/honkhonk.wav   sounds/phone.wav
+  sounds/woodthunk.wav  sounds/gong.wav   sounds/penalty.wav  sounds/honkhonk.wav   sounds/phone.wav  sounds/roar.wav
 
 
 ### set correct dir in xboard.conf

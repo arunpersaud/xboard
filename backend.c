@@ -8288,7 +8288,7 @@ HandleMachineMove (char *message, ChessProgramState *cps)
     char realname[MSG_SIZ];
     int fromX, fromY, toX, toY;
     ChessMove moveType;
-    char promoChar;
+    char promoChar, roar;
     char *p, *pv=buf1;
     int machineWhite, oldError;
     char *bookHit;
@@ -8604,10 +8604,12 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	    cps->other->maybeThinking = TRUE;
 	}
 
+	roar = (killX >= 0 && IS_LION(boards[forwardMostMove][toY][toX]));
+
 	ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
 
         if (!pausing && appData.ringBellAfterMoves) {
-	    RingBell();
+	    if(!roar) RingBell();
 	}
 
 	/*
