@@ -5058,16 +5058,18 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
 	}
 	else SendToProgram(moveList[moveNum], cps);
       } else
+      if(moveList[moveNum][4] == ';') { // [HGM] lion: move is double-step over intermediate square
+	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", moveList[moveNum][0], moveList[moveNum][1] - '0', // convert to two moves
+					       moveList[moveNum][5], moveList[moveNum][6] - '0',
+					       moveList[moveNum][5], moveList[moveNum][6] - '0',
+					       moveList[moveNum][2], moveList[moveNum][3] - '0');
+	  SendToProgram(buf, cps);
+      } else
       if(BOARD_HEIGHT > 10) { // [HGM] big: convert ranks to double-digit where needed
 	if(moveList[moveNum][1] == '@' && (BOARD_HEIGHT < 16 || moveList[moveNum][0] <= 'Z')) { // drop move
 	  if(moveList[moveNum][0]== '@') snprintf(buf, MSG_SIZ, "@@@@\n"); else
 	  snprintf(buf, MSG_SIZ, "%c@%c%d%s", moveList[moveNum][0],
 					      moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
-	} else if(moveList[moveNum][4] == ';') { // [HGM] lion: move is double-step over intermediate square
-	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", moveList[moveNum][0], moveList[moveNum][1] - '0', // convert to two moves
-					       moveList[moveNum][5], moveList[moveNum][6] - '0',
-					       moveList[moveNum][5], moveList[moveNum][6] - '0',
-					       moveList[moveNum][2], moveList[moveNum][3] - '0');
 	} else
 	  snprintf(buf, MSG_SIZ, "%c%d%c%d%s", moveList[moveNum][0], moveList[moveNum][1] - '0',
 					       moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
@@ -5437,6 +5439,7 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
 	  return (*moveType != IllegalMove);
 	} else {
 	  return !(*fromX == *toX && *fromY == *toY) && boards[moveNum][*fromY][*fromX] != EmptySquare &&
+			killX < 0 && // [HGM] lion: if this is a double move we are less critical
 			WhiteOnMove(moveNum) == (boards[moveNum][*fromY][*fromX] < BlackPawn);
 	}
 
