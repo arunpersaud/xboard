@@ -5016,6 +5016,11 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
     char buf[MSG_SIZ];
 
     if(moveList[moveNum][1] == '@' && moveList[moveNum][0] == '@') {
+	if(gameInfo.variant == VariantLion || gameInfo.variant == VariantChu) {
+	    sprintf(buf, "%s@@@@\n", cps->useUsermove ? "usermove " : "");
+	    SendToProgram(buf, cps);
+	    return;
+	}
 	// null move in variant where engine does not understand it (for analysis purposes)
 	SendBoard(cps, moveNum + 1); // send position after move in stead.
 	return;
@@ -5438,8 +5443,8 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
 	if (appData.testLegality) {
 	  return (*moveType != IllegalMove);
 	} else {
-	  return !(*fromX == *toX && *fromY == *toY) && boards[moveNum][*fromY][*fromX] != EmptySquare &&
-			killX < 0 && // [HGM] lion: if this is a double move we are less critical
+	  return !(*fromX == *toX && *fromY == *toY && killX < 0) && boards[moveNum][*fromY][*fromX] != EmptySquare &&
+			 // [HGM] lion: if this is a double move we are less critical
 			WhiteOnMove(moveNum) == (boards[moveNum][*fromY][*fromX] < BlackPawn);
 	}
 
@@ -8454,8 +8459,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  snprintf(buf1, MSG_SIZ*10, _("Illegal move \"%s\" from %s machine"),
 		    machineMove, _(cps->which));
 	    DisplayMoveError(buf1);
-            snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d",
-                    machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, moveType);
+            snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c via %c%c) res=%d",
+                    machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, killX+AAA, killY+ONE, moveType);
 	    if (gameMode == TwoMachinesPlay) {
 	      GameEnds(machineWhite ? BlackWins : WhiteWins,
                        buf1, GE_XBOARD);
