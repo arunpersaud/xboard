@@ -7114,6 +7114,8 @@ MarkByFEN(char *fen)
 	DrawPosition(TRUE, NULL);
 }
 
+static char baseMarker[BOARD_RANKS][BOARD_FILES], baseLegal[BOARD_RANKS][BOARD_FILES];
+
 void
 Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR closure)
 {
@@ -7131,7 +7133,7 @@ MarkTargetSquares (int clear)
 {
   int x, y, sum=0;
   if(clear) { // no reason to ever suppress clearing
-    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) sum += marker[y][x], marker[y][x] = 0;
+    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) sum += marker[y][x], marker[y][x] = baseMarker[y][x] = 0;
     if(!sum) return; // nothing was cleared,no redraw needed
   } else {
     int capt = 0;
@@ -7181,7 +7183,6 @@ CanPromote (ChessSquare piece, int y)
 void
 HoverEvent (int xPix, int yPix, int x, int y)
 {
-	static char baseMarker[BOARD_RANKS][BOARD_FILES], baseLegal[BOARD_RANKS][BOARD_FILES];
 	static int oldX = -1, oldY = -1, oldFromX = -1, oldFromY = -1;
 	int r, f;
 	if(dragging == 2) DragPieceMove(xPix, yPix); // [HGM] lion: drag without button for second leg
