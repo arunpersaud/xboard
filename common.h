@@ -304,7 +304,7 @@ typedef enum {
 } ColorClass;
 
 typedef enum {
-    SoundMove, SoundBell, SoundAlarm, SoundIcsWin, SoundIcsLoss,
+    SoundMove, SoundBell, SoundRoar, SoundAlarm, SoundIcsWin, SoundIcsLoss,
     SoundIcsDraw, SoundIcsUnfinished, NSoundClasses
 } SoundClass;
 

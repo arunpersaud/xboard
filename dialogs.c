@@ -2178,7 +2178,7 @@ Exp (int n, int x, int y)
 
     if(n == 0) { // motion
 	if(SeekGraphClick(Press, x, y, 1)) return NULL;
-	if(but1 && !PromoScroll(x, y)) DragPieceMove(x, y);
+	if((but1 || dragging == 2) && !PromoScroll(x, y)) DragPieceMove(x, y);
 	if(but3) MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 	if(appData.highlightDragging) {
 	    f = EventToSquare(x, BOARD_WIDTH);  if ( flipView && f >= 0) f = BOARD_WIDTH - 1 - f;

@@ -5284,7 +5284,8 @@ ProcessICSInitScript (FILE *f)
 }
 
 
-static int lastX, lastY, lastLeftX, lastLeftY, selectFlag, dragging;
+static int lastX, lastY, lastLeftX, lastLeftY, selectFlag;
+int dragging;
 static ClickType lastClickType;
 
 void
@@ -7193,7 +7194,6 @@ HoverEvent (int xPix, int yPix, int x, int y)
 {
 	static int oldX = -1, oldY = -1, oldFromX = -1, oldFromY = -1;
 	int r, f;
-	if(dragging == 2) DragPieceMove(xPix, yPix); // [HGM] lion: drag without button for second leg
 	if(!first.highlight) return;
 	if(fromX != oldFromX || fromY != oldFromY)  oldX = oldY = -1; // kludge to fake entry on from-click
 	if(x == oldX && y == oldY) return; // only do something if we enter new square
@@ -7464,7 +7464,6 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    return;
 	}
 	if(dragging == 2) {  // [HGM] lion: just turn buttonless drag into normal drag, and let release to the job
-	    dragging = 1;
 	    return;
 	}
 	if(x == killX && y == killY) {              // second click on this square, which was selected as first-leg target

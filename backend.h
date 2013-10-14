@@ -115,6 +115,7 @@ extern char lastMsg[MSG_SIZ];
 extern Boolean bookUp;
 extern int tinyLayout, smallLayout;
 extern Boolean mcMode;
+extern int dragging;
 
 void MarkMenuItem P((char *menuRef, int state));
 char *CmailMsg P((void));

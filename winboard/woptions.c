@@ -843,6 +843,7 @@ int radioButton[] = {
     -1,
     -1,
     OPT_VariantShogi,
+    -1, // Chu
     OPT_VariantXiangqi,
     OPT_VariantCourier,
     OPT_VariantGothic,
@@ -862,6 +863,7 @@ int radioButton[] = {
     OPT_VariantSChess,
     OPT_VariantGrand,
     OPT_VariantSpartan, // Spartan
+    OPT_VariantLion,
     -2 // sentinel
 };
 
@@ -1418,6 +1420,8 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
 
+
+
     case OPT_ChooseNormalColor:
       ColorizeTextPopup(hDlg, ColorNormal);
       UpdateSampleText(hDlg, OPT_SampleNormal, &mca[ColorNormal]);
@@ -1796,6 +1800,7 @@ FontsOptionsPopup(HWND hwnd)
 SoundComboData soundComboData[] = {
   {N_("Move"), NULL},
   {N_("Bell"), NULL},
+  {N_("Roar"), NULL},
   {N_("ICS Alarm"), NULL},
   {N_("ICS Win"), NULL},
   {N_("ICS Loss"), NULL},

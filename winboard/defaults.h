@@ -205,7 +205,7 @@
 #define BUILT_IN_SOUND_NAMES {\
   "Beepbeep", "Ching", "Click", "Cymbal", "Ding", "Drip", \
   "Gong", "Laser", "Move", "Penalty", "Phone", "Pop", "Pop2", \
-  "Slap", "Squeak", "Swish", "Thud", "Whipcrack", \
+  "Roar", "Slap", "Squeak", "Swish", "Thud", "Whipcrack", \
   "Alarm", "Challenge", "Channel", "Channel1", "Draw", "Kibitz", \
   "Lose", "Request", "Seek", "Shout", "SShout", "Tell", "Unfinished", \
   "Win", NULL \

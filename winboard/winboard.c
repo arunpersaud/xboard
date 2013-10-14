@@ -109,7 +109,6 @@ VOID NewVariantPopup(HWND hwnd);
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 		   /*char*/int promoChar));
 void DisplayMove P((int moveNumber));
-Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
 void ChatPopUp P((char *s));
 typedef struct {
   ChessSquare piece;  
@@ -2273,7 +2272,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
        && (boardSize < SizePetite || boardSize > SizeBulky) // Archbishop and Chancellor available in entire middle range
       || (v == VariantShogi && boardSize != SizeModerate)   // Japanese-style Shogi
       ||  v == VariantKnightmate || v == VariantSChess || v == VariantXiangqi || v == VariantSpartan
-      ||  v == VariantShatranj || v == VariantMakruk || v == VariantGreat || v == VariantFairy ) {
+      ||  v == VariantShatranj || v == VariantMakruk || v == VariantGreat || v == VariantFairy || v == VariantLion ) {
       if(boardSize < SizeMediocre) boardSize = SizePetite; else
       if(boardSize > SizeModerate) boardSize = SizeBulky;  else
                                    boardSize = SizeMiddling;
@@ -2629,6 +2628,9 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     pieceBitmap[0][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "s");
     pieceBitmap[1][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "o");
     pieceBitmap[2][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "w");
+    pieceBitmap[0][WhiteLion] = DoLoadBitmap(hInst, "ln", squareSize, "s");
+    pieceBitmap[1][WhiteLion] = DoLoadBitmap(hInst, "ln", squareSize, "o");
+    pieceBitmap[2][WhiteLion] = DoLoadBitmap(hInst, "ln", squareSize, "w");
 
     if(gameInfo.variant == VariantShogi) { /* promoted Gold represemtations */
       pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "wp", squareSize, "s");
@@ -3250,6 +3252,8 @@ BOOL HasHighlightInfo()
     }
 
     return result;
+
+
 
 }
 
@@ -4274,8 +4278,10 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
 	ClockClick(!flipClock); break;
       }
+    if(dragging) { // [HGM] lion: don't destroy dragging info if we are already dragging
       dragInfo.start.x = dragInfo.start.y = -1;
       dragInfo.from = dragInfo.start;
+    }
     if(fromX == -1 && frozen) { // not sure where this is for
 		fromX = fromY = -1; 
       DrawPosition(forceFullRepaint || FALSE, NULL); /* [AS] */
@@ -4295,7 +4301,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     if(PromoScroll(pt.x - boardRect.left, pt.y - boardRect.top)) break;
     MovePV(pt.x - boardRect.left, pt.y - boardRect.top, boardRect.bottom - boardRect.top);
     if ((appData.animateDragging || appData.highlightDragging)
-	&& (wParam & MK_LBUTTON)
+	&& (wParam & MK_LBUTTON || dragging == 2)
 	&& dragInfo.from.x >= 0) 
     {
       BOOL full_repaint = FALSE;
@@ -5105,6 +5111,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_Rematch:
+
       RematchEvent();
       break;
 
@@ -6262,6 +6269,7 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	SwapEngines(singleList); // temporarily swap first and second, to load a second 'first', ...
 	ParseArgs(StringGet, &p);
 	SwapEngines(singleList); // ... and then make it 'second'
+
 	appData.noChessProgram = FALSE;
 	appData.icsActive = FALSE;
       } else if (IsDlgButtonChecked(hDlg, OPT_ChessServer)) {
@@ -6851,6 +6859,7 @@ SaveInHistory(char *cmd)
   histIn = (histIn + 1) % HISTORY_SIZE;
   if (history[histIn] != NULL) {
     free(history[histIn]);
+
     history[histIn] = NULL;
   }
   histP = histIn;
@@ -8717,6 +8726,13 @@ EditCommentPopUp(int index, char *title, char *str)
 }
 
 
+int
+Roar()
+{
+  MyPlaySound(&sounds[(int)SoundRoar]);
+  return 1;
+}
+
 VOID
 RingBell()
 {
@@ -8873,6 +8889,7 @@ DisplayBlackClock(long timeRemaining, int highlight)
 {
   HDC hdc;
   char *flag = blackFlag && gameMode == TwoMachinesPlay ? "(!)" : "";
+
 
   if(appData.noGUI) return;
   hdc = GetDC(hwndMain);
@@ -9892,15 +9909,22 @@ AnimateMove(board, fromX, fromY, toX, toY)
      int toY;
 {
   ChessSquare piece;
+  int x = toX, y = toY;
   POINT start, finish, mid;
   POINT frames[kFactor * 2 + 1];
   int nFrames, n;
+
+  if(killX >= 0 && IS_LION(board[fromY][fromX])) Roar();
 
   if (!appData.animate) return;
   if (doingSizing) return;
   if (fromY < 0 || fromX < 0) return;
   piece = board[fromY][fromX];
   if (piece >= EmptySquare) return;
+
+  if(killX >= 0) toX = killX, toY = killY; // [HGM] lion: first to kill square
+
+again:
 
   ScreenSquare(fromX, fromY, &start);
   ScreenSquare(toX, toY, &finish);
@@ -9940,6 +9964,9 @@ AnimateMove(board, fromX, fromY, toX, toY)
   }
   animInfo.pos = finish;
   DrawPosition(FALSE, NULL);
+
+  if(toX != x || toY != y) { fromX = toX; fromY = toY; toX = x; toY = y; goto again; } // second leg
+
   animInfo.piece = EmptySquare;
   Explode(board, fromX, fromY, toX, toY);
 }
