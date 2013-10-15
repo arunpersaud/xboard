@@ -7512,9 +7512,9 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	  MarkTargetSquares(1);
 	  if(x == killX && y == killY) killX = killY = -1; else {
 	    killX = x; killY = y;     //remeber this square as intermediate
-	    MarkTargetSquares(0);
 	    ReportClick("put", x, y); // and inform engine
 	    ReportClick("lift", x, y);
+	    MarkTargetSquares(0);
 	    return;
 	  }
 	}
