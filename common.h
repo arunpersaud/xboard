@@ -355,6 +355,7 @@ typedef enum {
     VariantGrand,
     VariantSpartan,
     VariantLion,
+    VariantChuChess,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
@@ -404,6 +405,7 @@ typedef enum {
   "grand",\
   "spartan",\
   "lion",\
+  "chuchess",\
   "unknown" \
 }
 

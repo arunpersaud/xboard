@@ -420,10 +420,12 @@ static Option variantDescriptors[] = {
 { VariantNoCastle,      0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("No castle")},
 { VariantCylinder,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Cylinder *")},
 { Variant3Check,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("3-checks")},
-{ VariantBerolina,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Berolina *")},
-{ VariantAtomic,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Atomic")},
-{ VariantTwoKings,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Two kings")},
-{ 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size (-1 = default for selected variant):")},
+{ VariantBerolina,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("berolina *")},
+{ VariantAtomic,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("atomic")},
+{ VariantTwoKings,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("two kings")},
+{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
+{ VariantSpartan,SAME_ROW, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
+{ 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size ( -1 = default for selected variant):")},
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &ranksTmp, "", NULL, Spin, N_("Number of Board Ranks:") },
 { 0, -1, BOARD_FILES,   NULL, (void*) &filesTmp, "", NULL, Spin, N_("Number of Board Files:") },
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &sizeTmp,  "", NULL, Spin, N_("Holdings Size:") },
@@ -442,17 +444,17 @@ static Option variantDescriptors[] = {
 { VariantJanus,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Janus (10x8)")},
 { VariantSuicide,       0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("Suicide")},
 { VariantCapaRandom,SAME_ROW,135,NULL,(void*) &Pick, "#BFBFFF", NULL, Button, N_("CRC (10x8)")},
-{ VariantGiveaway,      0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("Give-away")},
-{ VariantGrand,  SAME_ROW, 135, NULL, (void*) &Pick, "#5070FF", NULL, Button, N_("Grand (10x10)")},
-{ VariantLosers,        0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("Losers")},
-{ VariantShogi,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("Shogi (9x9)")},
-{ VariantSpartan,       0, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
-{ VariantXiangqi, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("xiangqi (9x10)")},
+{ VariantGiveaway,      0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("give-away")},
+{ VariantGrand,  SAME_ROW, 135, NULL, (void*) &Pick, "#5070FF", NULL, Button, N_("grand (10x10)")},
+{ VariantLosers,        0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("losers")},
+{ VariantShogi,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("shogi (9x9)")},
 { VariantFairy,         0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
-{ VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
-//{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
+{ VariantXiangqi, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("xiangqi (9x10)")},
 { VariantLion,          0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("mighty lion")},
+{ VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
+{ VariantChuChess,      0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("chu chess (10x10)")},
 { VariantChu,    SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("chu shogi (12x12)")},
+//{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
 // optional buttons for engine-defined variants
 { VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
 { VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
@@ -1640,6 +1642,8 @@ PromotionPopUp ()
         SetPromo(_("Chancellor"), --count, 'c');
       }
       SetPromo(_("Queen"), --count, 'q');
+      if(gameInfo.variant == VariantChuChess)
+        SetPromo(_("Lion"), --count, 'l');
     }
   } else // [HGM] shogi
   {

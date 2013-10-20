@@ -382,7 +382,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
     int rf, ff;
     int i, j, d, s, fs, rs, rt, ft, m;
     int epfile = (signed char)board[EP_STATUS]; // [HGM] gamestate: extract ep status from board
-    int promoRank = gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand ? 3 : 1;
+    int promoRank = gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand || gameInfo.variant == VariantChuChess ? 3 : 1;
 
     for (rf = 0; rf < BOARD_HEIGHT; rf++)
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
@@ -672,6 +672,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             /* Make Dragon-Horse also do Dababba moves outside Shogi, for better disambiguation in variant Fairy */
 	    case WhiteCardinal:
 	    case BlackCardinal:
+              if(gameInfo.variant == VariantChuChess) goto DragonHorse;
               for (d = 0; d <= 1; d++) // Dababba moves that Rook cannot do
                 for (s = -2; s <= 2; s += 4) {
 		      rt = rf + s * d;
@@ -686,6 +687,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             case SHOGI BlackCardinal:
             case SHOGI WhitePCardinal:
             case SHOGI BlackPCardinal:
+            DragonHorse:
 		Bishop(board, flags, rf, ff, callback, closure);
 		Wazir(board, flags, rf, ff, callback, closure);
 		break;
@@ -735,6 +737,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             /* Make Dragon-King Dababba & Rook-like outside Shogi, for better disambiguation in variant Fairy */
 	    case WhiteDragon:
 	    case BlackDragon:
+              if(gameInfo.variant == VariantChuChess) goto DragonKing;
               for (d = 0; d <= 1; d++) // Dababba moves that Rook cannot do
                 for (s = -2; s <= 2; s += 4) {
 		      rt = rf + s * d;
@@ -751,6 +754,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             case SHOGI BlackDragon:
             case SHOGI WhitePDragon:
             case SHOGI BlackPDragon:
+            DragonKing:
 		Rook(board, flags, rf, ff, callback, closure);
 		Ferz(board, flags, rf, ff, callback, closure);
 		break;
@@ -1370,6 +1374,16 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
     return cl.fking < BOARD_RGHT ? cl.check : 1000; // [HGM] atomic: return 1000 if we have no king
 }
 
+int
+HasLion (Board board, int flags)
+{
+    int lion = F_WHITE_ON_MOVE & flags ? WhiteLion : BlackLion;
+    int r, f;
+    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
+        if(board[r][f] == lion) return 1;
+    return 0;
+}
+
 ChessMove
 LegalDrop (Board board, int flags, ChessSquare piece, int rt, int ft)
 {   // [HGM] put drop legality testing in separate routine for clarity
@@ -1500,6 +1514,13 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
         }
     } else
     if (promoChar != NULLCHAR) {
+	if(cl.kind == NormalMove && promoChar == '+') { // allow shogi-style promotion is pieceToChar specifies them
+            ChessSquare piece = board[rf][ff];
+            if(piece < BlackPawn ? piece > WhiteMan : piece > BlackMan) return ImpossibleMove; // already promoted
+            // should test if in zone, really
+            if(gameInfo.variant == VariantChuChess && (piece == WhiteKnight || piece == BlackKnight)) return !HasLion(board, flags);
+            if(PieceToChar(PROMOTED piece) == '+') return flags & F_WHITE_ON_MOVE ? WhitePromotion : BlackPromotion;
+        } else
 	if(promoChar == '=') cl.kind = IllegalMove; else // [HGM] shogi: no deferred promotion outside Shogi
 	if (cl.kind == WhitePromotion || cl.kind == BlackPromotion) {
 	    ChessSquare piece = CharToPiece(flags & F_WHITE_ON_MOVE ? ToUpper(promoChar) : ToLower(promoChar));
