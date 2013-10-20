@@ -5298,6 +5298,17 @@ static int lastX, lastY, lastLeftX, lastLeftY, selectFlag;
 int dragging;
 static ClickType lastClickType;
 
+int
+Partner (ChessSquare *p)
+{ // change piece into promotion partner if one shogi-promotes to the other
+  int stride = gameInfo.variant == VariantChu ? 22 : 11;
+  ChessSquare partner;
+  partner = (*p/stride & 1 ? *p - stride : *p + stride);
+  if(PieceToChar(*p) != '+' && PieceToChar(partner) != '+') return 0;
+  *p = partner;
+  return 1;
+}
+
 void
 Sweep (int step)
 {
@@ -5308,15 +5319,14 @@ Sweep (int step)
     if(gameInfo.variant == VariantSpartan && pawn == BlackPawn) pawn = BlackLance, king = EmptySquare;
     if(fromY != BOARD_HEIGHT-2 && fromY != 1) pawn = EmptySquare;
     do {
-	promoSweep -= step;
+	if(step && !Partner(&promoSweep)) promoSweep -= step;
 	if(promoSweep == EmptySquare) promoSweep = BlackPawn; // wrap
 	else if((int)promoSweep == -1) promoSweep = WhiteKing;
 	else if(promoSweep == BlackPawn && step < 0) promoSweep = WhitePawn;
 	else if(promoSweep == WhiteKing && step > 0) promoSweep = BlackKing;
 	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
-	    appData.testLegality && (promoSweep == king || promoSweep == WhiteLion || promoSweep == BlackLion) ||
-	    IS_SHOGI(gameInfo.variant) && promoSweep != CHUPROMOTED last && last != CHUPROMOTED promoSweep && last != promoSweep);
+	    appData.testLegality && (promoSweep == king || promoSweep == WhiteLion || promoSweep == BlackLion));
     if(toX >= 0) {
 	int victim = boards[currentMove][toY][toX];
 	boards[currentMove][toY][toX] = promoSweep;
