@@ -145,6 +145,7 @@ SelectPieces(VariantClass v)
 	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+3];
 	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhiteKing+4];
 	   pngPieceBitmaps[i][(int)WhiteQueen] = pngPieceBitmaps2[i][(int)WhiteLance];
+	   pngPieceBitmaps[i][(int)WhiteFalcon] = pngPieceBitmaps2[i][(int)WhiteKing]; // for Sho Shogi
 	}
 #ifdef GOTHIC
 	if(v == VariantGothic) {
