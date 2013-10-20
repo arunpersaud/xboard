@@ -116,6 +116,7 @@ extern Boolean bookUp;
 extern int tinyLayout, smallLayout;
 extern Boolean mcMode;
 extern int dragging;
+extern char variantError[];
 
 void MarkMenuItem P((char *menuRef, int state));
 char *CmailMsg P((void));
@@ -451,6 +452,7 @@ void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int cu
 void MakeEngineOutputTitle P((void));
 void LoadTheme P((void));
 void CreateBookEvent P((void));
+char *SupportedVariant P((char *list, VariantClass v, int w, int h, int s, int proto, char *engine));
 
 /* A point in time */
 typedef struct {

@@ -225,7 +225,7 @@ void DisplayTwoMachinesTitle P(());
 static void ExcludeClick P((int index));
 void ToggleSecond P((void));
 void PauseEngine P((ChessProgramState *cps));
-static int NonStandardBoardSize P((void));
+static int NonStandardBoardSize P((VariantClass v, int w, int h, int s));
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -275,6 +275,7 @@ ChessSquare pieceSweep = EmptySquare;
 ChessSquare promoSweep = EmptySquare, defaultPromoChoice;
 int promoDefaultAltered;
 int keepInfo = 0; /* [HGM] to protect PGN tags in auto-step game analysis */
+static int initPing = -1;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -8668,7 +8669,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
     }
 
     if (!strncmp(message, "setup ", 6) && 
-	(!appData.testLegality || gameInfo.variant == VariantFairy || gameInfo.variant == VariantUnknown || NonStandardBoardSize())
+	(!appData.testLegality || gameInfo.variant == VariantFairy || gameInfo.variant == VariantUnknown ||
+          NonStandardBoardSize(gameInfo.variant, gameInfo.boardWidth, gameInfo.boardHeight, gameInfo.holdingsSize))
 					) { // [HGM] allow first engine to define opening position
       int dummy, w, h, hand, s=6; char buf[MSG_SIZ], varName[MSG_SIZ];
       if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
@@ -8799,6 +8801,14 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	}
     }
     if (sscanf(message, "pong %d", &cps->lastPong) == 1) {
+	if(initPing == cps->lastPong) {
+	    if(gameInfo.variant == VariantUnknown) {
+		DisplayError(_("Engine did not send setup for non-standard variant"), 0);
+		*engineVariant = NULLCHAR; appData.variant = VariantNormal; // back to normal as error recovery?
+		GameEnds(GameUnfinished, NULL, GE_XBOARD);
+	    }
+	    initPing = -1;
+        }
 	return;
     }
     if(!strncmp(message, "highlight ", 10)) {
@@ -10148,40 +10158,74 @@ SendEgtPath (ChessProgramState *cps)
 }
 
 static int
-NonStandardBoardSize ()
+NonStandardBoardSize (VariantClass v, int boardWidth, int boardHeight, int holdingsSize)
 {
-      /* [HGM] Awkward testing. Should really be a table */
-      int overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantUnknown || *engineVariant) return 0; // engine-defined name never needs prefix
-      if( gameInfo.variant == VariantXiangqi )
-           overruled = gameInfo.boardWidth != 9 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantShogi )
-           overruled = gameInfo.boardWidth != 9 || gameInfo.boardHeight != 9 || gameInfo.holdingsSize != 7;
-      if( gameInfo.variant == VariantBughouse || gameInfo.variant == VariantCrazyhouse )
-           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 5;
-      if( gameInfo.variant == VariantCapablanca || gameInfo.variant == VariantCapaRandom ||
-          gameInfo.variant == VariantGothic || gameInfo.variant == VariantFalcon || gameInfo.variant == VariantJanus )
-           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantCourier )
-           overruled = gameInfo.boardWidth != 12 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
-      if( gameInfo.variant == VariantSuper )
-           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 8;
-      if( gameInfo.variant == VariantGreat )
-           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 8;
-      if( gameInfo.variant == VariantSChess )
-           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 7;
-      if( gameInfo.variant == VariantGrand )
-           overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 10 || gameInfo.holdingsSize != 7;
-      if( gameInfo.variant == VariantChu )
-           overruled = gameInfo.boardWidth != 12 || gameInfo.boardHeight != 12 || gameInfo.holdingsSize != 0;
-      return overruled;
+      int width = 8, height = 8, holdings = 0;             // most common sizes
+      if( v == VariantUnknown || *engineVariant) return 0; // engine-defined name never needs prefix
+      // correct the deviations default for each variant
+      if( v == VariantXiangqi ) width = 9,  height = 10;
+      if( v == VariantShogi )   width = 9,  height = 9,  holdings = 7;
+      if( v == VariantBughouse || v == VariantCrazyhouse) holdings = 5;
+      if( v == VariantCapablanca || v == VariantCapaRandom ||
+          v == VariantGothic || v == VariantFalcon || v == VariantJanus )
+                                width = 10;
+      if( v == VariantCourier ) width = 12;
+      if( v == VariantSuper )                            holdings = 8;
+      if( v == VariantGreat )   width = 10,              holdings = 8;
+      if( v == VariantSChess )                           holdings = 7;
+      if( v == VariantGrand )   width = 10, height = 10, holdings = 7;
+      if( v == VariantChu )     width = 12, height = 12;
+      return boardWidth >= 0   && boardWidth   != width  || // -1 is default,
+             boardHeight >= 0  && boardHeight  != height || // and thus by definition OK
+             holdingsSize >= 0 && holdingsSize != holdings;
+}
+
+char variantError[MSG_SIZ];
+
+char *
+SupportedVariant (char *list, VariantClass v, int boardWidth, int boardHeight, int holdingsSize, int proto, char *engine)
+{     // returns error message (recognizable by upper-case) if engine does not support the variant
+      char *p, *variant = VariantName(v);
+      static char b[MSG_SIZ];
+      if(NonStandardBoardSize(v, boardWidth, boardHeight, holdingsSize)) { /* [HGM] make prefix for non-standard board size. */
+	   snprintf(b, MSG_SIZ, "%dx%d+%d_%s", boardWidth, boardHeight,
+                                               holdingsSize, variant); // cook up sized variant name
+           /* [HGM] varsize: try first if this deviant size variant is specifically known */
+           if(StrStr(list, b) == NULL) {
+               // specific sized variant not known, check if general sizing allowed
+               if(proto != 1 && StrStr(list, "boardsize") == NULL) {
+                   snprintf(variantError, MSG_SIZ, "Board size %dx%d+%d not supported by %s",
+                            boardWidth, boardHeight, holdingsSize, engine);
+                   return NULL;
+               }
+               /* [HGM] here we really should compare with the maximum supported board size */
+           }
+      } else snprintf(b, MSG_SIZ,"%s", variant);
+      if(proto == 1) return b; // for protocol 1 we cannot check and hope for the best
+      p = StrStr(list, b);
+      while(p && (p != list && p[-1] != ',' || p[strlen(b)] && p[strlen(b)] != ',') ) p = StrStr(p+1, b);
+      if(p == NULL) {
+          // occurs not at all in list, or only as sub-string
+          snprintf(variantError, MSG_SIZ, _("Variant %s not supported by %s"), b, engine);
+          if(p = StrStr(list, b)) { // handle requesting parent variant when only size-overridden is supported
+              int l = strlen(variantError);
+              char *q;
+              while(p != list && p[-1] != ',') p--;
+              q = strchr(p, ',');
+              if(q) *q = NULLCHAR;
+              snprintf(variantError + l, MSG_SIZ - l,  _(", but %s is"), p);
+              if(q) *q= ',';
+          }
+          return NULL;
+      }
+      return b;
 }
 
 void
 InitChessProgram (ChessProgramState *cps, int setup)
 /* setup needed to setup FRC opening position */
 {
-    char buf[MSG_SIZ], b[MSG_SIZ];
+    char buf[MSG_SIZ], *b;
     if (appData.noChessProgram) return;
     hintRequested = FALSE;
     bookRequested = FALSE;
@@ -10203,33 +10247,15 @@ InitChessProgram (ChessProgramState *cps, int setup)
     if (gameInfo.variant != VariantNormal &&
 	gameInfo.variant != VariantLoadable
         /* [HGM] also send variant if board size non-standard */
-        || gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0
-                                            ) {
-      char *v = VariantName(gameInfo.variant);
-      if (cps->protocolVersion != 1 && StrStr(cps->variants, v) == NULL) {
-        /* [HGM] in protocol 1 we have to assume all variants valid */
-	snprintf(buf, MSG_SIZ, _("Variant %s not supported by %s"), v, cps->tidy);
-	DisplayFatalError(buf, 0, 1);
+        || gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0) {
+
+      b = SupportedVariant(cps->variants, gameInfo.variant, gameInfo.boardWidth,
+                           gameInfo.boardHeight, gameInfo.holdingsSize, cps->protocolVersion, cps->tidy);
+      if (b == NULL) {
+	DisplayFatalError(variantError, 0, 1);
 	return;
       }
 
-      if(NonStandardBoardSize()) { /* [HGM] make prefix for non-standard board size. */
-	snprintf(b, MSG_SIZ, "%dx%d+%d_%s", gameInfo.boardWidth, gameInfo.boardHeight,
-		 gameInfo.holdingsSize, VariantName(gameInfo.variant)); // cook up sized variant name
-           /* [HGM] varsize: try first if this defiant size variant is specifically known */
-           if(StrStr(cps->variants, b) == NULL) {
-               // specific sized variant not known, check if general sizing allowed
-               if (cps->protocolVersion != 1) { // for protocol 1 we cannot check and hope for the best
-                   if(StrStr(cps->variants, "boardsize") == NULL) {
-		     snprintf(buf, MSG_SIZ, "Board size %dx%d+%d not supported by %s",
-                            gameInfo.boardWidth, gameInfo.boardHeight, gameInfo.holdingsSize, cps->tidy);
-                       DisplayFatalError(buf, 0, 1);
-                       return;
-                   }
-                   /* [HGM] here we really should compare with the maximum supported board size */
-               }
-           }
-      } else snprintf(b, MSG_SIZ,"%s", VariantName(gameInfo.variant));
       snprintf(buf, MSG_SIZ, "variant %s\n", b);
       SendToProgram(buf, cps);
     }
@@ -10269,7 +10295,7 @@ InitChessProgram (ChessProgramState *cps, int setup)
 	SendToProgram("easy\n", cps);
     }
     if (cps->usePing) {
-      snprintf(buf, MSG_SIZ, "ping %d\n", ++cps->lastPing);
+      snprintf(buf, MSG_SIZ, "ping %d\n", initPing = ++cps->lastPing);
       SendToProgram(buf, cps);
     }
     cps->initDone = TRUE;
@@ -11308,7 +11334,8 @@ FeedMovesToProgram (ChessProgramState *cps, int upto)
     if(currentlyInitializedVariant != gameInfo.variant) {
       char buf[MSG_SIZ];
         // [HGM] variantswitch: make engine aware of new variant
-	if(cps->protocolVersion > 1 && StrStr(cps->variants, VariantName(gameInfo.variant)) == NULL)
+	if(!SupportedVariant(cps->variants, gameInfo.variant, gameInfo.boardWidth,
+                             gameInfo.boardHeight, gameInfo.holdingsSize, cps->protocolVersion, ""))
 		return; // [HGM] refrain from feeding moves altogether if variant is unsupported!
 	snprintf(buf, MSG_SIZ, "variant %s\n", VariantName(gameInfo.variant));
 	SendToProgram(buf, cps);
@@ -14342,7 +14369,8 @@ TwoMachinesEvent P((void))
     }
     if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
 
-    if(second.protocolVersion >= 2 && !strstr(second.variants, VariantName(gameInfo.variant))) {
+    if(!SupportedVariant(second.variants, gameInfo.variant, gameInfo.boardWidth,
+                         gameInfo.boardHeight, gameInfo.holdingsSize, second.protocolVersion, second.tidy)) {
 	startingEngine = FALSE;
 	DisplayError("second engine does not play this", 0);
 	return;

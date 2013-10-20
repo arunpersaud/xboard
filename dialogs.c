@@ -184,12 +184,14 @@ GenericReadout (Option *opts, int selected)
 		    if(x < opts[i].min) x = opts[i].min;
 		    if(opts[i].type == Fractional)
 			*(float*) opts[i].target = x; // engines never have float options!
-		    else if(opts[i].value != x) {
-			opts[i].value = x;
+		    else {
 			if(currentCps) {
+			  if(opts[i].value != x) { // only to engine if changed
 			    snprintf(buf, MSG_SIZ,  "option %s=%.0f\n", opts[i].name, x);
 			    SendToProgram(buf, currentCps);
+			  }
 			} else *(int*) opts[i].target = x;
+			opts[i].value = x;
 		    }
 		    break;
 		case CheckBox:
@@ -406,6 +408,7 @@ OptionsProc ()
 static void Pick P((int n));
 
 static char warning[MSG_SIZ];
+static int ranksTmp, filesTmp, sizeTmp;
 
 static Option variantDescriptors[] = {
 { VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Normal")},
@@ -421,9 +424,9 @@ static Option variantDescriptors[] = {
 { VariantAtomic,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Atomic")},
 { VariantTwoKings,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Two kings")},
 { 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size (-1 = default for selected variant):")},
-{ 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.NrRanks, "", NULL, Spin, N_("Number of Board Ranks:") },
-{ 0, -1, BOARD_FILES, NULL, (void*) &appData.NrFiles, "", NULL, Spin, N_("Number of Board Files:") },
-{ 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.holdingsSize, "", NULL, Spin, N_("Holdings Size:") },
+{ 0, -1, BOARD_RANKS-1, NULL, (void*) &ranksTmp, "", NULL, Spin, N_("Number of Board Ranks:") },
+{ 0, -1, BOARD_FILES,   NULL, (void*) &filesTmp, "", NULL, Spin, N_("Number of Board Files:") },
+{ 0, -1, BOARD_RANKS-1, NULL, (void*) &sizeTmp,  "", NULL, Spin, N_("Holdings Size:") },
 { 0, 0, 275, NULL, NULL, NULL, NULL, Label, warning },
 { 0, 0, 275, NULL, NULL, NULL, NULL, Label, N_("Variants marked with * can only be played\nwith legality testing off.")},
 { 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, ""},
@@ -471,27 +474,28 @@ Pick (int n)
 {
 	VariantClass v = variantDescriptors[n].value;
 	if(v == VariantUnknown) safeStrCpy(engineVariant, variantDescriptors[n].name, MSG_SIZ); else *engineVariant = NULLCHAR;
+	GenericReadout(variantDescriptors, -1); // read new ranks and file settings
 	if(!appData.noChessProgram) {
-	    char *name = VariantName(v), buf[MSG_SIZ];
-	    if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
-		/* [HGM] in protocol 2 we check if variant is suported by engine */
-	      snprintf(buf, MSG_SIZ,  _("Variant %s not supported by %s"), name, first.tidy);
-		DisplayError(buf, 0);
+	    char buf[MSG_SIZ];
+	    if (!SupportedVariant(first.variants, v, filesTmp, ranksTmp, sizeTmp, first.protocolVersion, first.tidy)) {
+		DisplayError(variantError, 0);
 		return; /* ignore OK if first engine does not support it */
 	    } else
-	    if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
-	      snprintf(buf, MSG_SIZ,  _("Warning: second engine (%s) does not support this!"), second.tidy);
+	    if (second.initDone &&
+		!SupportedVariant(second.variants, v, filesTmp, ranksTmp, sizeTmp, second.protocolVersion, second.tidy)) {
+                snprintf(buf, MSG_SIZ,  _("Warning: second engine (%s) does not support this!"), second.tidy);
 		DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
 	    }
 	}
-
-	GenericReadout(variantDescriptors, -1); // make sure ranks and file settings are read
 
 	gameInfo.variant = v;
 	appData.variant = VariantName(v);
 
 	shuffleOpenings = FALSE; /* [HGM] shuffle: possible shuffle reset when we switch */
 	startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
+	appData.NrRanks = ranksTmp;
+	appData.NrFiles = filesTmp;
+	appData.holdingsSize = sizeTmp;
 	appData.pieceToCharTable = NULL;
 	appData.pieceNickNames = "";
 	appData.colorNickNames = "";
@@ -505,6 +509,8 @@ NewVariantProc ()
 {
    static int start;
    int i, last;
+   char buf[MSG_SIZ];
+   ranksTmp = filesTmp = sizeTmp = -1; // prefer defaults over actual settings
    if(appData.noChessProgram) sprintf(warning, _("Only bughouse is not available in viewer mode.")); else
    sprintf(warning, _("All variants not supported by the first engine\n(currently %s) are disabled."), first.tidy);
    if(!start) while(variantDescriptors[start].type != -1) start++; // locate first spare
@@ -521,7 +527,9 @@ NewVariantProc ()
 	ASSIGN(variantDescriptors[start+last+1].name, " ");
 	variantDescriptors[start+last+1].type = Button;
    }
+   safeStrCpy(buf, engineVariant, MSG_SIZ); *engineVariant = NULLCHAR; // yeghh...
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
+   safeStrCpy(engineVariant, buf, MSG_SIZ); // must temporarily clear to avoid enabling all variant buttons
 }
 
 //------------------------------------------- Common Engine Options -------------------------------------
