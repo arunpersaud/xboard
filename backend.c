@@ -5318,7 +5318,7 @@ Sweep (int step)
     if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway) king = EmptySquare;
     if(promoSweep >= BlackPawn) king = WHITE_TO_BLACK king, pawn = WHITE_TO_BLACK pawn;
     if(gameInfo.variant == VariantSpartan && pawn == BlackPawn) pawn = BlackLance, king = EmptySquare;
-    if(fromY != BOARD_HEIGHT-2 && fromY != 1) pawn = EmptySquare;
+    if(fromY != BOARD_HEIGHT-2 && fromY != 1 && gameInfo.variant != VariantChuChess) pawn = EmptySquare;
     if(!step) toggleFlag = Partner(&last); // piece has shogi-promotion
     do {
 	if(step && !(toggleFlag && Partner(&promoSweep))) promoSweep -= step;
@@ -5329,7 +5329,8 @@ Sweep (int step)
 	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
 	    !toggleFlag && PieceToChar(promoSweep) == '+' || // skip promoted versions of other
-	    appData.testLegality && (promoSweep == king || promoSweep == WhiteLion || promoSweep == BlackLion));
+	    appData.testLegality && (promoSweep == king || gameInfo.variant != VariantChuChess &&
+            (promoSweep == WhiteLion || promoSweep == BlackLion)));
     if(toX >= 0) {
 	int victim = boards[currentMove][toY][toX];
 	boards[currentMove][toY][toX] = promoSweep;
