@@ -1764,6 +1764,10 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
             else
                 c = PieceToChar(BlackQueen);
         } else if(c == '=') closure->kind = IllegalMove; // no deferral outside Shogi
+    } else if (c == '+') { // '+' outside shogi, check if pieceToCharTable enabled it
+        ChessSquare p = closure->piece;
+        if(p > WhiteMan && p < BlackPawn || p > BlackMan || PieceToChar(PROMOTED p) != '+')
+            closure->kind = ImpossibleMove; // used on non-promotable piece
     } else if (c != NULLCHAR) closure->kind = IllegalMove;
 
     closure->promoChar = ToLower(c); // this can be NULLCHAR! Note we keep original promoChar even if illegal.
