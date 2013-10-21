@@ -1984,7 +1984,8 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
             /* [HGM] in Shogi non-pawns can promote */
             *outp++ = promoChar; // Don't bother to correct move type, return value is never used!
         }
-        else if (gameInfo.variant != VariantSuper && promoChar &&
+        else if (gameInfo.variant == VariantChuChess && promoChar ||
+                 gameInfo.variant != VariantSuper && promoChar &&
                  (piece == WhiteLance || piece == BlackLance) ) { // Lance sometimes represents Pawn
             *outp++ = '=';
             *outp++ = ToUpper(promoChar);

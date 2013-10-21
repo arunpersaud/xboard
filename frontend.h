@@ -129,7 +129,7 @@ DelayedEventCallback GetDelayedEvent P((void));
 void CancelDelayedEvent P((void));
 // [HGM] mouse: next six used by mouse handler, which was moved to backend
 extern int fromX, fromY, toX, toY;
-void PromotionPopUp P((void));
+void PromotionPopUp P((char choice));
 void DragPieceBegin P((int x, int y, Boolean instantly));
 void DragPieceEnd P((int x, int y));
 void DragPieceMove P((int x, int y));

@@ -4445,6 +4445,8 @@ ButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   return CallWindowProc(buttonDesc[i].wndproc, hwnd, message, wParam, lParam);
 }
 
+static int promoStyle;
+
 /* Process messages for Promotion dialog box */
 LRESULT CALLBACK
 Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -4475,13 +4477,9 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
          PieceToChar(BlackMarshall) != '~')   ) ?
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Hide B & R button in Shogi, use Q as promote, N as defer */
-    ShowWindow(GetDlgItem(hDlg, PB_Rook),
-       gameInfo.variant != VariantShogi ?
-	       SW_SHOW : SW_HIDE);
-    ShowWindow(GetDlgItem(hDlg, PB_Bishop), 
-       gameInfo.variant != VariantShogi ?
-	       SW_SHOW : SW_HIDE);
-    if(gameInfo.variant == VariantShogi) {
+    ShowWindow(GetDlgItem(hDlg, PB_Rook),   !style ? SW_SHOW : SW_HIDE);
+    ShowWindow(GetDlgItem(hDlg, PB_Bishop), !style ? SW_SHOW : SW_HIDE);
+    if(style) {
         SetDlgItemText(hDlg, PB_Queen, "YES");
         SetDlgItemText(hDlg, PB_Knight, "NO");
         SetWindowText(hDlg, "Promote?");
@@ -4502,7 +4500,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       promoChar = gameInfo.variant == VariantSuper ? PieceToChar(BlackSilver) : PieceToChar(BlackKing);
       break;
     case PB_Queen:
-      promoChar = gameInfo.variant == VariantShogi ? '+' : ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteQueen : BlackQueen));
+      promoChar = style ? '+' : ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteQueen : BlackQueen));
       break;
     case PB_Rook:
       promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteRook : BlackRook));
@@ -4519,7 +4517,8 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteAngel : BlackAngel));
       break;
     case PB_Knight:
-      promoChar = gameInfo.variant == VariantShogi ? '=' : PieceToChar(WhiteOnMove(currentMove) ? WhiteKnight : BlackKnight);
+      promoChar = gameInfo.variant == VariantShogi ? '=' : style ? NULLCHAR : 
+                  ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteKnight : BlackKnight));
       break;
     default:
       return FALSE;
@@ -4550,8 +4549,9 @@ PromotionPopup(HWND hwnd)
 }
 
 void
-PromotionPopUp()
+PromotionPopUp(char choice)
 {
+  promoStyle = (choice == '+');
   DrawPosition(TRUE, NULL);
   PromotionPopup(hwndMain);
 }
@@ -6846,6 +6846,7 @@ GothicPopUp(char *title, VariantClass variant)
 #define HISTORY_SIZE 64
 static char *history[HISTORY_SIZE];
 int histIn = 0, histP = 0;
+
 
 VOID
 SaveInHistory(char *cmd)

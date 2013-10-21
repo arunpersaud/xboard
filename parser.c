@@ -155,7 +155,7 @@ PromoSuffix (char **p)
     if(**p == '=' || (gameInfo.variant == VariantSChess) && **p == '/') (*p)++; // optional = (or / for Seirawan gating)
     if(**p == '(' && (*p)[2] == ')' && isalpha( (*p)[1] )) { (*p) += 3; return ToLower((*p)[-2]); }
     if(isalpha(**p) && **p != 'x') return ToLower(*(*p)++); // reserve 'x' for multi-leg captures? 
-    if(*p != start) return '='; // must be the optional =
+    if(*p != start) return **p == '+' ? *(*p)++ : '='; // must be the optional = (or =+)
     return NULLCHAR; // no suffix detected
 }
 
@@ -285,12 +285,15 @@ NextUnit (char **p)
 		    toY = cl.rtIn = (currentMoveString[3] = Number(p) + '0') - ONE;
 		}
 		if(type[0] != NOTHING && type[1] != NOTHING && type[3] != NOTHING) { // fully specified.
+		    ChessSquare realPiece = boards[yyboardindex][fromY][fromX];
 		    // Note that Disambiguate does not work for illegal moves, but flags them as impossible
 		    if(piece) { // check if correct piece indicated
-			ChessSquare realPiece = boards[yyboardindex][fromY][fromX];
 			if(PieceToChar(realPiece) == '~') realPiece = (ChessSquare) (DEMOTED realPiece);
 			if(!(appData.icsActive && PieceToChar(realPiece) == '+') && // trust ICS if it moves promoted pieces
 			   piece && realPiece != cl.pieceIn) return ImpossibleMove;
+		    } else if(!separator && **p == '+') { // could be a protocol move, where bare '+' suffix means shogi-style promotion
+			if(realPiece < (wom ?  WhiteCannon : BlackCannon) && PieceToChar(PROMOTED realPiece) == '+') // seems to be that
+			   currentMoveString[4] = cl.promoCharIn = *(*p)++; // append promochar after all
 		    }
 		    result = LegalityTest(boards[yyboardindex], PosFlags(yyboardindex), fromY, fromX, toY, toX, cl.promoCharIn);
 		    if (currentMoveString[4] == NULLCHAR) { // suppy missing mandatory promotion character

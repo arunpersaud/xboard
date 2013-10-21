@@ -5313,13 +5313,15 @@ void
 Sweep (int step)
 {
     ChessSquare king = WhiteKing, pawn = WhitePawn, last = promoSweep;
+    static int toggleFlag;
     if(gameInfo.variant == VariantKnightmate) king = WhiteUnicorn;
     if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway) king = EmptySquare;
     if(promoSweep >= BlackPawn) king = WHITE_TO_BLACK king, pawn = WHITE_TO_BLACK pawn;
     if(gameInfo.variant == VariantSpartan && pawn == BlackPawn) pawn = BlackLance, king = EmptySquare;
     if(fromY != BOARD_HEIGHT-2 && fromY != 1) pawn = EmptySquare;
+    if(!step) toggleFlag = Partner(&last); // piece has shogi-promotion
     do {
-	if(step && !Partner(&promoSweep)) promoSweep -= step;
+	if(step && !(toggleFlag && Partner(&promoSweep))) promoSweep -= step;
 	if(promoSweep == EmptySquare) promoSweep = BlackPawn; // wrap
 	else if((int)promoSweep == -1) promoSweep = WhiteKing;
 	else if(promoSweep == BlackPawn && step < 0) promoSweep = WhitePawn;
@@ -6457,7 +6459,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     /* [HGM] rewritten IsPromotion to only flag promotions that offer a choice */
     /* [HGM] add Shogi promotions */
     int promotionZoneSize=1, highestPromotingPiece = (int)WhitePawn;
-    ChessSquare piece;
+    ChessSquare piece, partner;
     ChessMove moveType;
     Boolean premove;
 
@@ -6542,8 +6544,9 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     }
     // give caller the default choice even if we will not make it
     *promoChoice = ToLower(PieceToChar(defaultPromoChoice));
-    if(IS_SHOGI(gameInfo.variant)) *promoChoice = (defaultPromoChoice == piece ? '=' : '+');
-    if(gameInfo.variant == VariantChuChess) *promoChoice = (piece == WhitePawn || piece == BlackPawn ? 'q' : '+');
+    partner = piece; // pieces can promote if the pieceToCharTable says so
+    if(IS_SHOGI(gameInfo.variant)) *promoChoice = (defaultPromoChoice == piece && sweepSelect ? '=' : '+'); // obsolete?
+    else if(Partner(&partner))     *promoChoice = (defaultPromoChoice == piece && sweepSelect ? NULLCHAR : '+');
     if(        sweepSelect && gameInfo.variant != VariantGreat
 			   && gameInfo.variant != VariantGrand
 			   && gameInfo.variant != VariantSuper) return FALSE;
@@ -7209,14 +7212,15 @@ ChessSquare gatingPiece = EmptySquare; // exported to front-end, for dragging
 int
 CanPromote (ChessSquare piece, int y)
 {
+        int zone = (gameInfo.variant == VariantChuChess ? 3 : 1);
 	if(gameMode == EditPosition) return FALSE; // no promotions when editing position
 	// some variants have fixed promotion piece, no promotion at all, or another selection mechanism
 	if(IS_SHOGI(gameInfo.variant)          || gameInfo.variant == VariantXiangqi ||
 	   gameInfo.variant == VariantSuper    || gameInfo.variant == VariantGreat   ||
 	   gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
          gameInfo.variant == VariantMakruk   || gameInfo.variant == VariantASEAN) return FALSE;
-	return (piece == BlackPawn && y == 1 ||
-		piece == WhitePawn && y == BOARD_HEIGHT-2 ||
+	return (piece == BlackPawn && y <= zone ||
+		piece == WhitePawn && y >= BOARD_HEIGHT-1-zone ||
 		piece == BlackLance && y == 1 ||
 		piece == WhiteLance && y == BOARD_HEIGHT-2 );
 }
@@ -7506,6 +7510,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	  if(appData.sweepSelect) {
 	    ChessSquare piece = boards[currentMove][fromY][fromX];
 	    promoSweep = defaultPromoChoice;
+	    if(gameInfo.variant == VariantChuChess && piece != WhitePawn && piece != BlackPawn) promoSweep = piece; else
 	    if(PieceToChar(CHUPROMOTED piece) == '+') promoSweep = CHUPROMOTED piece;
 	    selectFlag = 0; lastX = xPix; lastY = yPix;
 	    Sweep(0); // Pawn that is going to promote: preview promotion piece
@@ -7522,7 +7527,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    ClearHighlights();
 	}
     } else if(sweepSelecting) { // this must be the up-click corresponding to the down-click that started the sweep
-	sweepSelecting = 0;
+	sweepSelecting = 0; appData.animate = FALSE; // do not animate, a selected piece already on to-square
 	if (appData.animate || appData.highlightLastMove) {
 	    SetHighlights(fromX, fromY, toX, toY);
 	} else {
@@ -7604,7 +7609,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    DisplayMessage("Click in holdings to choose piece", "");
 	    return;
 	}
-	PromotionPopUp();
+	PromotionPopUp(promoChoice);
     } else {
 	int oldMove = currentMove;
 	UserMoveEvent(fromX, fromY, toX, toY, promoChoice);

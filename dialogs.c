@@ -1600,6 +1600,7 @@ PromoPick (int n)
 	ClearHighlights();
 	return;
     }
+    if(promoChar == '=' && !IS_SHOGI(gameInfo.variant)) promoChar = NULLCHAR;
     UserMoveEvent(fromX, fromY, toX, toY, promoChar);
 
     if (!appData.highlightLastMove || gotPremove) ClearHighlights();
@@ -1616,11 +1617,11 @@ SetPromo (char *name, int nr, char promoChar)
 }
 
 void
-PromotionPopUp ()
+PromotionPopUp (char choice)
 { // choice depends on variant: prepare dialog acordingly
   count = 8;
-  SetPromo(_("Cancel"), --count, 0); // Beware: GenericPopUp cannot handle user buttons named "cancel" (lowe case)!
-  if(!IS_SHOGI(gameInfo.variant)) {
+  SetPromo(_("Cancel"), --count, -1); // Beware: GenericPopUp cannot handle user buttons named "cancel" (lowe case)!
+  if(choice != '+') {
     if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
         gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
         gameInfo.variant == VariantGiveaway) {
