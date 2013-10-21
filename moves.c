@@ -1299,7 +1299,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 {
     CheckTestClosure cl;
     ChessSquare king = flags & F_WHITE_ON_MOVE ? WhiteKing : BlackKing;
-    ChessSquare captured = EmptySquare, ep;
+    ChessSquare captured = EmptySquare, ep, trampled;
     /*  Suppress warnings on uninitialized variables    */
 
     if(gameInfo.variant == VariantXiangqi)
@@ -1312,7 +1312,8 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    captured = board[rf][ft];
 	    board[rf][ft] = EmptySquare;
 	} else {
-	    captured = board[rt][ft];
+ 	    captured = board[rt][ft];
+	    if(killX >= 0) { trampled = board[killY][killX]; board[killY][killX] = EmptySquare; }
 	}
 	if(rf == DROP_RANK) board[rt][ft] = ff; else { // [HGM] drop
 	    board[rt][ft] = board[rf][ff];
@@ -1320,7 +1321,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	}
 	ep = board[EP_STATUS];
 	if( captured == WhiteLion || captured == BlackLion ) { // [HGM] lion: Chu Lion-capture rules
-	    ChessSquare victim = killX < 0 ? EmptySquare : board[killY][killX];
+	    ChessSquare victim = killX < 0 ? EmptySquare : trampled;
 	    if( (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion) &&           // capturer is Lion
 		(ff - ft > 1 || ft - ff > 1 || rf - rt > 1 || rt - rf > 1) &&           // captures from a distance
 		(victim == EmptySquare || victim == WhitePawn || victim == BlackPawn) ) // no or worthless 'bridge'
@@ -1360,6 +1361,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    board[rf][ft] = captured;
 	    board[rt][ft] = EmptySquare;
 	} else {
+	    if(killX >= 0) board[killY][killX] = trampled;
 	    board[rt][ft] = captured;
 	}
 	board[EP_STATUS] = ep;
