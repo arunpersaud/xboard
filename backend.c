@@ -6558,6 +6558,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     if(appData.testLegality && !premove) {
 	moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
 			fromY, fromX, toY, toX, IS_SHOGI(gameInfo.variant) || gameInfo.variant == VariantChuChess ? '+' : NULLCHAR);
+        if(moveType == IllegalMove) *promoChoice = NULLCHAR; // could be the fact we promoted was illegal
 	if(moveType != WhitePromotion && moveType  != BlackPromotion)
 	    return FALSE;
     }
@@ -7491,8 +7492,11 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	toY = y;
     }
 
+    piece = boards[currentMove][fromY][fromX];
+
     saveAnimate = appData.animate;
     if (clickType == Press) {
+	if(gameInfo.variant == VariantChuChess && piece != WhitePawn && piece != BlackPawn) defaultPromoChoice = piece;
 	if(gameMode == EditPosition && boards[currentMove][fromY][fromX] == EmptySquare) {
 	    // must be Edit Position mode with empty-square selected
 	    fromX = x; fromY = y; DragPieceBegin(xPix, yPix, FALSE); dragging = 1; // consider this a new attempt to drag
@@ -7508,10 +7512,8 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	if(marker[y][x] == 5) return; // [HGM] lion: to-click on cyan square; defer action to release
 	if(legal[y][x] == 2 || HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
 	  if(appData.sweepSelect) {
-	    ChessSquare piece = boards[currentMove][fromY][fromX];
 	    promoSweep = defaultPromoChoice;
-	    if(gameInfo.variant == VariantChuChess && piece != WhitePawn && piece != BlackPawn) promoSweep = piece; else
-	    if(PieceToChar(CHUPROMOTED piece) == '+') promoSweep = CHUPROMOTED piece;
+	    if(gameInfo.variant != VariantChuChess && PieceToChar(CHUPROMOTED piece) == '+') promoSweep = CHUPROMOTED piece;
 	    selectFlag = 0; lastX = xPix; lastY = yPix;
 	    Sweep(0); // Pawn that is going to promote: preview promotion piece
 	    sweepSelecting = 1;
@@ -7543,6 +7545,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    ClearHighlights();
 	}
 #endif
+	if(gameInfo.variant == VariantChuChess && piece != WhitePawn && piece != BlackPawn) defaultPromoChoice = piece;
 	if(marker[y][x] == 5) { // [HGM] lion: this was the release of a to-click or drag on a cyan square
 	  dragging *= 2;            // flag button-less dragging if we are dragging
 	  MarkTargetSquares(1);

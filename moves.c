@@ -1518,7 +1518,8 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
             ChessSquare piece = board[rf][ff];
             if(piece < BlackPawn ? piece > WhiteMan : piece > BlackMan) return ImpossibleMove; // already promoted
             // should test if in zone, really
-            if(gameInfo.variant == VariantChuChess && (piece == WhiteKnight || piece == BlackKnight)) return !HasLion(board, flags);
+            if(gameInfo.variant == VariantChuChess && (piece == WhiteKnight || piece == BlackKnight) && HasLion(board, flags))
+                return IllegalMove;
             if(PieceToChar(PROMOTED piece) == '+') return flags & F_WHITE_ON_MOVE ? WhitePromotion : BlackPromotion;
         } else
 	if(promoChar == '=') cl.kind = IllegalMove; else // [HGM] shogi: no deferred promotion outside Shogi
@@ -1526,11 +1527,13 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
 	    ChessSquare piece = CharToPiece(flags & F_WHITE_ON_MOVE ? ToUpper(promoChar) : ToLower(promoChar));
 	    if(piece == EmptySquare)
                 cl.kind = ImpossibleMove; // non-existing piece
-	    if(gameInfo.variant == VariantSpartan && cl.kind == BlackPromotion ) {
+	    if(gameInfo.variant == VariantChuChess && promoChar == 'l' && HasLion(board, flags)) {
+                cl.kind = IllegalMove; // no two Lions
+	    } else if(gameInfo.variant == VariantSpartan && cl.kind == BlackPromotion ) {
 		if(promoChar != PieceToChar(BlackKing)) {
 		    if(CheckTest(board, flags, rf, ff, rt, ft, FALSE)) cl.kind = IllegalMove; // [HGM] spartan: only promotion to King was possible
 		    if(piece == BlackLance) cl.kind = ImpossibleMove;
-		} else { // promotion to King allowed only if we do not haave two yet
+		} else { // promotion to King allowed only if we do not have two yet
 		    int r, f, kings = 0;
 		    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) kings += (board[r][f] == BlackKing);
 		    if(kings == 2) cl.kind = IllegalMove;
@@ -1764,10 +1767,12 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
             else
                 c = PieceToChar(BlackQueen);
         } else if(c == '=') closure->kind = IllegalMove; // no deferral outside Shogi
+        else if(c == 'l' && gameInfo.variant == VariantChuChess && HasLion(board, flags)) closure->kind = IllegalMove;
     } else if (c == '+') { // '+' outside shogi, check if pieceToCharTable enabled it
         ChessSquare p = closure->piece;
         if(p > WhiteMan && p < BlackPawn || p > BlackMan || PieceToChar(PROMOTED p) != '+')
             closure->kind = ImpossibleMove; // used on non-promotable piece
+        else if(gameInfo.variant == VariantChuChess && HasLion(board, flags)) closure->kind = IllegalMove;
     } else if (c != NULLCHAR) closure->kind = IllegalMove;
 
     closure->promoChar = ToLower(c); // this can be NULLCHAR! Note we keep original promoChar even if illegal.
