@@ -5328,6 +5328,7 @@ Sweep (int step)
 	else if(promoSweep == WhiteKing && step > 0) promoSweep = BlackKing;
 	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
+	    !toggleFlag && PieceToChar(promoSweep) == '+' || // skip promoted versions of other
 	    appData.testLegality && (promoSweep == king || promoSweep == WhiteLion || promoSweep == BlackLion));
     if(toX >= 0) {
 	int victim = boards[currentMove][toY][toX];
