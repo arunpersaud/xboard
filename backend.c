@@ -7175,12 +7175,15 @@ Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VO
     else if(flags & F_MANDATORY_CAPTURE && board[rt][ft] != EmptySquare) (*m)[rt][ft] = 3;
 }
 
+static int hoverSavedValid;
+
 void
 MarkTargetSquares (int clear)
 {
   int x, y, sum=0;
   if(clear) { // no reason to ever suppress clearing
-    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) sum += marker[y][x], marker[y][x] = baseMarker[y][x] = 0;
+    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) sum += marker[y][x], marker[y][x] = 0;
+    hoverSavedValid = 0;
     if(!sum) return; // nothing was cleared,no redraw needed
   } else {
     int capt = 0;
@@ -7237,11 +7240,13 @@ HoverEvent (int xPix, int yPix, int x, int y)
 	if(fromX != oldFromX || fromY != oldFromY)  oldX = oldY = -1; // kludge to fake entry on from-click
 	if(x == oldX && y == oldY) return; // only do something if we enter new square
 	oldFromX = fromX; oldFromY = fromY;
-	if(oldX == -1 && oldY == -1 && x == fromX && y == fromY) // record markings after from-change
+	if(oldX == -1 && oldY == -1 && x == fromX && y == fromY) { // record markings after from-change
 	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
 	    baseMarker[r][f] = marker[r][f], baseLegal[r][f] = legal[r][f];
-	else if(oldX != x || oldY != y) {
+	  hoverSavedValid = 1;
+	} else if(oldX != x || oldY != y) {
 	  // [HGM] lift: entered new to-square; redraw arrow, and inform engine
+	  if(hoverSavedValid) // don't restore markers that are supposed to be cleared
 	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
 	    marker[r][f] = baseMarker[r][f], legal[r][f] = baseLegal[r][f];
 	  if((marker[y][x] == 2 || marker[y][x] == 6) && legal[y][x]) {
