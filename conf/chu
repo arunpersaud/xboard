@@ -1,0 +1,42 @@
+;
+; settings for oriental Chu-Shogi theme
+;
+-variant chu
+;
+; pieces: supplied chu-shogi svg's, and flip them in flipView
+;
+-pid ~~/themes/chu
+-flipBlack true
+-trueColors true
+;
+; board: no checkering (both w. and w.o. texture)
+;
+-liteBackTextureFile  "~~/themes/textures/wood_l.png"
+-darkBackTextureFile  "~~/themes/textures/wood_l.png"
+-lightSquareColor #FF8040
+-darkSquareColor #FF8040
+;
+; detour under-promotion is less convenient when non-pawns promote
+;
+-sweepPromotions false
+;
+; legality testing must be on for double-moves to work, no adjudication
+;
+-testLegality true
+-trivialDraws false
+-materialDraws false
+;
+; make the Lion roar on double captures
+;
+-roarSound roar.wav
+;
+; redefine default engine
+;
+-fcp hachu
+-scp hachu
+;
+; set up own persistence file, used for this theme only
+;
+-settingsFile ~/.xboard-chu-rc
+-saveSettingsFile ~/.xboard-chu-rc
+

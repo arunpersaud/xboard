@@ -1,0 +1,24 @@
+;
+; additional settings for mini-Shogi
+;
+-variant shogi
+;
+; size overrides
+;
+-boardWidth 5
+-boardHeight 5
+-holdingsSize 5
+;
+; remove L and N from piece set
+;
+-pieceToCharTable "P.BR.S...G.+.++.+Kp.br.s...g.+.++.+k"
+;
+; redefine default engine
+;
+-fcp gnuminishogi
+-scp gnuminishogi
+;
+; provide initial position
+;
+-loadPositionFile "~~/themes/conf/mini.fen"
+

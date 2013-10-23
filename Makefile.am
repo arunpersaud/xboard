@@ -70,7 +70,7 @@ DISTCLEANFILES = stamp-h
 GITVERSION=$(shell sh -c 'git describe --dirty --always 2>/dev/null')
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@ @CAIRO_CFLAGS@ @FRONTEND_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
 	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -D__GIT_VERSION='"$(GITVERSION)"' \
-            -DCONFIGURE_OPTIONS='"@CONFIGURE_OPTIONS@"' $(headers)
+            -DCONFIGURE_OPTIONS='"@CONFIGURE_OPTIONS@"' -DDATADIR='"$(datadir)/games/xboard"' $(headers)
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -175,6 +175,11 @@ dist_xiangqi_DATA = themes/xiangqi/BlackAdvisor.svg  themes/xiangqi/WhiteAdvisor
            themes/xiangqi/BlackGold.svg	    themes/xiangqi/WhiteGold.svg     \
            themes/xiangqi/BlackPawn.svg	    themes/xiangqi/WhitePawn.svg     \
            themes/xiangqi/BlackRook.svg	    themes/xiangqi/WhiteRook.svg
+
+### directory and files for themes (and other) configuration files
+
+themesdir = $(datadir)/games/xboard/themes/conf
+dist_themes_DATA = conf/shogi conf/xq conf/chu conf/ics conf/mini conf/mini.fen conf/sho conf/sho.fen
 
 ### directory and files for pixmaps
 

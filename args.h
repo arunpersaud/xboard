@@ -875,6 +875,12 @@ ParseSettingsFile(char *name, char **addr)
     }
   if (ok) {
     f = fopen(fullname, "r");
+#ifdef DATADIR
+    if(f == NULL && *fullname != '/') {         // when a relative name did not work
+	MySearchPath(DATADIR "/themes/conf", name, fullname); // also look in standard place
+	f = fopen(fullname, "r");
+    }
+#endif
     if (f != NULL) {
       if (addr != NULL) {
 	    ASSIGN(*addr, fullname);
@@ -1107,6 +1113,14 @@ ParseArgs(GetFunc get, void *cl)
 
     case ArgString:
     case ArgFilename:
+#ifdef DATADIR
+      if(argValue[0] == '~' && argValue[1] == '~') {
+        char buf[4*MSG_SIZ]; // expand ~~
+        snprintf(buf, 4*MSG_SIZ, DATADIR "%s", argValue+2);
+        ASSIGN(*(char **) ad->argLoc, buf);
+        break;
+      }
+#endif
       ASSIGN(*(char **) ad->argLoc, argValue);
       break;
 

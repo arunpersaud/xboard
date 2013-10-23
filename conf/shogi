@@ -1,0 +1,41 @@
+;
+; settings for oriental Shogi theme
+;
+-variant shogi
+;
+; pieces: supplied shogi svg's, and flip them in flipView
+;
+-pid ~~/themes/shogi
+-flipBlack true
+-trueColors true
+;
+; board: no checkering (both w. and w.o. texture)
+;
+-liteBackTextureFile  "~~/themes/textures/wood_l.png"
+-darkBackTextureFile  "~~/themes/textures/wood_l.png"
+-lightSquareColor #FF8040
+-darkSquareColor #FF8040
+;
+; detour under-promotion is less convenient when non-pawns promote
+;
+-sweepPromotions false
+;
+; no adjudication
+;
+-trivialDraws false
+-materialDraws false
+;
+; common non-compliant notations
+;
+-colorNickNames "sg"
+;
+; redefine default engine
+;
+-fcp gnushogi
+-scp gnushogi
+;
+; set up own persistence file, used for this theme only
+;
+-settingsFile ~/.xboard-shogi-rc
+-saveSettingsFile ~/.xboard-shogi-rc
+

@@ -1,0 +1,10 @@
+;
+; settings for Internet Chess Server client
+;
+-ics
+;
+; set up own persistence file, used for ICS play
+;
+-settingsFile ~/.xboard-ics-rc
+-saveSettingsFile ~/.xboard-ics-rc
+

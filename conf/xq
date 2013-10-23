@@ -1,0 +1,36 @@
+;
+; settings for oriental Xiangqi theme
+;
+-variant xiangqi
+;
+; pieces: supplied xiangqi svg's
+;
+-pid ~~/themes/xiangqi
+-trueColors true
+;
+; board: supplied board bitmap
+;
+-useBoardTexture true
+-liteBackTextureFile  "~~/themes/textures/xqboard.png"
+-darkBackTextureFile  "~~/themes/textures/xqboard.png"
+;
+; suppress square boundaries and highlight with arrow instead
+;
+-overrideLineGap 0
+-highlightMoveWithArrow true
+;
+; define common non-compliant notations
+;
+-pieceNickNames ".N...MB..G..n...mb..g."
+-colorNickNames "r."
+;
+; set default engines
+;
+-fcp maxqi
+-scp maxqi
+;
+; set up own persistence file, used for this theme only
+;
+-settingsFile ~/.xboard-xiangqi-rc
+-saveSettingsFile ~/.xboard-xiangqi-rc
+

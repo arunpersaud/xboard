@@ -1,0 +1,19 @@
+;
+; additional settings for Judkins Shogi
+;
+-variant shogi
+;
+; size overrides
+;
+-boardWidth 6
+-boardHeight 6
+-holdingsSize 6
+;
+; remove L from piece set
+;
+-pieceToCharTable "PNBR.S...G.++++.+Kpnbr.s...g.++++.+k"
+;
+; provide initial position
+;
+-loadPositionFile "~~/themes/conf/judkins.fen"
+
