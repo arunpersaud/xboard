@@ -1564,6 +1564,23 @@ InitBackEnd3 P((void))
     char buf[MSG_SIZ];
     int err, len;
 
+    if(!appData.icsActive && !appData.noChessProgram && !appData.matchMode &&                         // mode involves only first engine
+       !strcmp(appData.variant, "normal") &&                                                          // no explicit variant request
+        appData.NrRanks == -1 && appData.NrFiles == -1 && appData.holdingsSize == -1 &&               // no size overrides requested
+       !SupportedVariant(first.variants, VariantNormal, 8, 8, 0, first.protocolVersion, "") &&        // but 'normal' won't work with engine
+       !SupportedVariant(first.variants, VariantFischeRandom, 8, 8, 0, first.protocolVersion, "") ) { // nor will Chess960
+	char c, *q = first.variants, *p = strchr(q, ',');
+	if(p) *p = NULLCHAR;
+	if(StringToVariant(q) != VariantUnknown) { // the engine can play a recognized variant, however
+	    int w, h, s;
+	    if(sscanf(q, "%dx%d+%d_%c", &w, &h, &s, &c) == 4) // get size overrides the engine needs with it (if any)
+		appData.NrFiles = w, appData.NrRanks = h, appData.holdingsSize = s, q = strchr(q, '_') + 1;
+	    ASSIGN(appData.variant, q); // fake user requested the first variant played by the engine
+	    Reset(TRUE, FALSE);         // and re-initialize
+	}
+	if(p) *p = ',';
+    }
+
     InitChessProgram(&first, startedFromSetupPosition);
 
     if(!appData.noChessProgram) {  /* [HGM] tidy: redo program version to use name from myname feature */
