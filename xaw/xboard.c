@@ -819,6 +819,7 @@ PrintArg (ArgType t)
     case ArgTwo:
     case ArgNone:
     case ArgCommSettings:
+    case ArgInstall:
       break;
   }
   return p;

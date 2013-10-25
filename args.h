@@ -60,7 +60,7 @@
 typedef enum {
   ArgString, ArgInt, ArgFloat, ArgBoolean, ArgTrue, ArgFalse, ArgNone,
   ArgColor, ArgAttribs, ArgFilename, ArgBoardSize, ArgFont, ArgCommSettings,
-  ArgSettingsFilename, ArgBackupSettingsFile, ArgTwo,
+  ArgSettingsFilename, ArgBackupSettingsFile, ArgTwo, ArgInstall,
   ArgX, ArgY, ArgZ // [HGM] placement: for window-placement options stored relative to main window
 } ArgType;
 
@@ -507,6 +507,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondChessProgramNames", ArgString, (void *) &secondChessProgramNames,
     !XBOARD, (ArgIniType) SCP_NAMES },
   { "themeNames", ArgString, (void *) &appData.themeNames, !XBOARD, (ArgIniType) "native -upf false -ub false -ubt false -pid \"\"\n" },
+  { "installEngine", ArgInstall, (void *) &firstChessProgramNames, FALSE, (ArgIniType) "" },
   { "initialMode", ArgString, (void *) &appData.initialMode, FALSE, (ArgIniType) "" },
   { "mode", ArgString, (void *) &appData.initialMode, FALSE, INVALID },
   { "variant", ArgString, (void *) &appData.variant, FALSE, (ArgIniType) "normal" },
@@ -1176,6 +1177,16 @@ ParseArgs(GetFunc get, void *cl)
       ParseCommPortSettings(argValue);
       break;
 
+    case ArgInstall:
+      q = *(char **) ad->argLoc;
+      if((strcmp(version, VERSION) || autoClose) && !strstr(q, argValue) ) {
+        int l = strlen(q) + strlen(argValue);
+        *(char **) ad->argLoc = malloc(l+2);
+        snprintf(*(char **) ad->argLoc, l+2, "%s%s\n", q, argValue);
+        free(q);
+      }
+      break;
+
     case ArgNone:
       ExitArgError(_("Unrecognized argument %s"), argValue, TRUE);
       break;
@@ -1560,6 +1571,7 @@ SaveSettings(char* name)
     case ArgNone:
     case ArgBackupSettingsFile:
     case ArgSettingsFilename: ;
+    case ArgInstall: ;
     }
   }
   fclose(f);
