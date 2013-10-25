@@ -60,7 +60,7 @@
 typedef enum {
   ArgString, ArgInt, ArgFloat, ArgBoolean, ArgTrue, ArgFalse, ArgNone,
   ArgColor, ArgAttribs, ArgFilename, ArgBoardSize, ArgFont, ArgCommSettings,
-  ArgSettingsFilename, ArgBackupSettingsFile, ArgTwo, ArgInstall,
+  ArgSettingsFilename, ArgBackupSettingsFile, ArgTwo, ArgInstall, ArgMaster,
   ArgX, ArgY, ArgZ // [HGM] placement: for window-placement options stored relative to main window
 } ArgType;
 
@@ -102,7 +102,10 @@ typedef struct {
 IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
 
 int junk;
+int saveDate;
+int dateStamp;
 Boolean singleList;
+Boolean autoClose;
 char *homeDir;
 char *firstEngineLine;
 char *secondEngineLine;
@@ -149,6 +152,9 @@ ArgDescriptor argDescriptors[] = {
   { "loadGameFile", ArgFilename, (void *) &appData.loadGameFile, FALSE, INVALID },
   { "", ArgNone, NULL, FALSE, INVALID },
   /* keyword arguments */
+  { "saveDate", ArgInt, (void *) &saveDate, TRUE, 0 },
+  { "date", ArgInt, (void *) &dateStamp, FALSE, 0 },
+  { "autoClose", ArgTrue, (void *) &autoClose, FALSE, FALSE },
   JAWS_ARGS
   { "whitePieceColor", ArgColor, (void *) 0, TRUE, (ArgIniType) WHITE_PIECE_COLOR },
   { "wpc", ArgColor, (void *) 0, FALSE, INVALID },
@@ -507,6 +513,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondChessProgramNames", ArgString, (void *) &secondChessProgramNames,
     !XBOARD, (ArgIniType) SCP_NAMES },
   { "themeNames", ArgString, (void *) &appData.themeNames, !XBOARD, (ArgIniType) "native -upf false -ub false -ubt false -pid \"\"\n" },
+  { "addMasterOption", ArgMaster, NULL, FALSE, INVALID },
   { "installEngine", ArgInstall, (void *) &firstChessProgramNames, FALSE, (ArgIniType) "" },
   { "initialMode", ArgString, (void *) &appData.initialMode, FALSE, (ArgIniType) "" },
   { "mode", ArgString, (void *) &appData.initialMode, FALSE, INVALID },
@@ -823,6 +830,30 @@ ExitArgError(char *msg, char *badArg, Boolean quit)
   if(!quit) { printf(_("%s in settings file\n"), buf); return; } // DisplayError does not work yet at this stage...
   DisplayFatalError(buf, 0, 2);
   exit(2);
+}
+
+void
+AppendToSettingsFile (char *line)
+{
+  char buf[MSG_SIZ];
+  FILE *f;
+  int c;
+  if(f = fopen(SETTINGS_FILE, "r")) {
+    do {
+      int i = 0;
+      while((buf[i] = c = fgetc(f)) != '\n' && c != EOF) if(i < MSG_SIZ-1) i++;
+      buf[i] = NULLCHAR;
+      if(!strcmp(line, buf)) return; // line occurs
+    } while(c != EOF);
+    // line did not occur; add it
+    fclose(f);
+    if(f = fopen(SETTINGS_FILE, "a")) {
+      TimeMark now;
+      GetTimeMark(&now);
+      fprintf(f, "-date %ld\n%s\n", now.sec, line);
+      fclose(f);
+    }
+  }
 }
 
 int
@@ -1177,9 +1208,13 @@ ParseArgs(GetFunc get, void *cl)
       ParseCommPortSettings(argValue);
       break;
 
+    case ArgMaster:
+      AppendToSettingsFile(argValue);
+      break;
+
     case ArgInstall:
       q = *(char **) ad->argLoc;
-      if((strcmp(version, VERSION) || autoClose) && !strstr(q, argValue) ) {
+      if((saveDate == 0 || saveDate - dateStamp < 0) && !strstr(q, argValue) ) {
         int l = strlen(q) + strlen(argValue);
         *(char **) ad->argLoc = malloc(l+2);
         snprintf(*(char **) ad->argLoc, l+2, "%s%s\n", q, argValue);
@@ -1422,6 +1457,11 @@ InitAppData(char *lpCmdLine)
     appData.savePositionFile = strdup(buf);
   }
 
+  if(autoClose) { // was called for updating settingsfile only
+    if(saveSettingsOnExit) SaveSettings(settingsFileName);
+    exit(0);
+  }
+
   /* Finish initialization for fonts and sounds */
   CreateFonts();
 
@@ -1452,8 +1492,11 @@ SaveSettings(char* name)
   ArgDescriptor *ad;
   char dir[MSG_SIZ], buf[MSG_SIZ];
   int mps = appData.movesPerSession;
+  TimeMark now;
 
-  if (!MainWindowUp()) return;
+  if (!MainWindowUp() && !autoClose) return;
+
+  GetTimeMark(&now); saveDate = now.sec;
 
   GetCurrentDirectory(MSG_SIZ, dir);
   if(MySearchPath(installDir, name, buf)) {
@@ -1571,6 +1614,7 @@ SaveSettings(char* name)
     case ArgNone:
     case ArgBackupSettingsFile:
     case ArgSettingsFilename: ;
+    case ArgMaster: ;
     case ArgInstall: ;
     }
   }

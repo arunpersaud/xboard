@@ -663,6 +663,7 @@ PrintArg (ArgType t)
     case ArgTwo:
     case ArgNone:
     case ArgCommSettings:
+    default:
       break;
   }
   return p;
