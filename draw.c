@@ -145,7 +145,7 @@ SelectPieces(VariantClass v)
 	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+3];
 	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhiteKing+4];
 	   pngPieceBitmaps[i][(int)WhiteQueen] = pngPieceBitmaps2[i][(int)WhiteLance];
-	   pngPieceBitmaps[i][(int)WhiteFalcon] = pngPieceBitmaps2[i][(int)WhiteKing]; // for Sho Shogi
+	   pngPieceBitmaps[i][(int)WhiteFalcon] = pngPieceBitmaps2[i][(int)WhiteMonarch]; // for Sho Shogi
 	}
 #ifdef GOTHIC
 	if(v == VariantGothic) {
@@ -239,13 +239,15 @@ CreatePNGBoard (char *s, int kind)
 char *pngPieceNames[] = // must be in same order as internal piece encoding
 { "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
-  "GoldPawn", "HSword", "PromoHorse", "PromoDragon", "Leopard", "PromoSword", "King", "Queen", "Lion", "PromoRook", "PromoHSword",
+  "GoldPawn", "HSword", "PromoHorse", "PromoDragon", "Leopard", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
   "Dolphin", "Chancellor", "Unicorn", "Hawk", "Sword", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
   "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
+char *backupPiece[] = { "King", "Queen", "Lion" }; // pieces that map on other when not kanji
+
 RsvgHandle *
-LoadSVG (char *dir, int color, int piece)
+LoadSVG (char *dir, int color, int piece, int retry)
 {
     char buf[MSG_SIZ];
   RsvgHandle *svg=svgPieces[color][piece];
@@ -254,7 +256,8 @@ LoadSVG (char *dir, int color, int piece)
   cairo_surface_t *img;
   cairo_t *cr;
 
-    snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White", pngPieceNames[piece]);
+    snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White",
+             retry ? backupPiece[piece - WhiteMonarch] : pngPieceNames[piece]);
 
     if(svg || *dir && (svg = rsvg_handle_new_from_file(buf, &svgerror))) {
 
@@ -272,6 +275,8 @@ LoadSVG (char *dir, int color, int piece)
 
       return svg;
     }
+    if(!retry && piece >= WhiteMonarch && piece <= WhiteNothing) // pieces that are only different in kanji sets
+        return LoadSVG(dir, color, piece, 1);
     if(svgerror)
 	g_error_free(svgerror);
     return NULL;
@@ -287,21 +292,21 @@ ScaleOnePiece (int color, int piece)
 
   g_type_init ();
 
-  svgPieces[color][piece] = LoadSVG("", color, piece); // this fills pngPieceImages if we had cached svg with bitmap of wanted size
+  svgPieces[color][piece] = LoadSVG("", color, piece, 0); // this fills pngPieceImages if we had cached svg with bitmap of wanted size
 
   if(!pngPieceImages[color][piece]) { // we don't have cached bitmap (implying we did not have cached svg)
     if(*appData.pieceDirectory) { // user specified piece directory
       snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pieceDirectory, color ? "Black" : "White", pngPieceNames[piece]);
       img = cairo_image_surface_create_from_png (buf); // try if there are png pieces there
       if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) { // there were not
-	svgPieces[color][piece] = LoadSVG(appData.pieceDirectory, color, piece); // so try if he has svg there
+	svgPieces[color][piece] = LoadSVG(appData.pieceDirectory, color, piece, 0); // so try if he has svg there
       } else pngPieceImages[color][piece] = img;
     }
   }
 
   if(!pngPieceImages[color][piece]) { // we still did not manage to acquire a piece bitmap
     static int warned = 0;
-    if(!(svgPieces[color][piece] = LoadSVG(SVGDIR, color, piece)) && !warned) { // try to fall back on installed svg
+    if(!(svgPieces[color][piece] = LoadSVG(SVGDIR, color, piece, 0)) && !warned) { // try to fall back on installed svg 
       char *msg = _("No default pieces installed!\nSelect your own using '-pieceImageDirectory'.");
       printf("%s\n", msg); // give up
       DisplayError(msg, 0);
