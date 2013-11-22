@@ -9842,7 +9842,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
         board[toY][toX+1] = board[fromY][BOARD_LEFT];
         board[fromY][BOARD_LEFT] = EmptySquare;
     } else if ((board[fromY][fromX] == WhitePawn && gameInfo.variant != VariantXiangqi ||
-                board[fromY][fromX] == WhiteLance && gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi)
+                board[fromY][fromX] == WhiteLance && gameInfo.variant != VariantSuper && gameInfo.variant != VariantChu)
                && toY >= BOARD_HEIGHT-promoRank && promoChar // defaulting to Q is done elsewhere
                ) {
 	/* white pawn promotion */
@@ -9903,7 +9903,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	board[fromY][0] = EmptySquare;
 	board[toY][2] = BlackRook;
     } else if ((board[fromY][fromX] == BlackPawn && gameInfo.variant != VariantXiangqi ||
-                board[fromY][fromX] == BlackLance && gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi)
+                board[fromY][fromX] == BlackLance && gameInfo.variant != VariantSuper && gameInfo.variant != VariantChu)
 	       && toY < promoRank && promoChar
                ) {
 	/* black pawn promotion */
@@ -10016,6 +10016,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	board[toY][toX] = EmptySquare;
       }
     }
+
     if(gameInfo.variant == VariantSChess && promoChar != NULLCHAR && promoChar != '=' && piece != WhitePawn && piece != BlackPawn) {
         board[fromY][fromX] = CharToPiece(piece < BlackPawn ? ToUpper(promoChar) : ToLower(promoChar)); // S-Chess gating
     } else
