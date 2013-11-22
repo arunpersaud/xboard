@@ -4813,7 +4813,7 @@ ParseBoard12 (char *string)
 	      default:
 		break;
 	      case MT_CHECK:
-                if(gameInfo.variant != VariantShogi)
+                if(!IS_SHOGI(gameInfo.variant))
                     strcat(parseList[moveNum - 1], "+");
 		break;
 	      case MT_CHECKMATE:
@@ -9705,7 +9705,7 @@ ParseGameHistory (char *game)
 	  default:
 	    break;
 	  case MT_CHECK:
-            if(gameInfo.variant != VariantShogi)
+            if(!IS_SHOGI(gameInfo.variant))
                 strcat(parseList[boardIndex - 1], "+");
 	    break;
 	  case MT_CHECKMATE:
@@ -10147,7 +10147,7 @@ MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
       default:
 	break;
       case MT_CHECK:
-        if(gameInfo.variant != VariantShogi)
+        if(!IS_SHOGI(gameInfo.variant))
             strcat(parseList[forwardMostMove - 1], "+");
 	break;
       case MT_CHECKMATE:
