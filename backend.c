@@ -3027,8 +3027,10 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			} else {
 			    char tmp[MSG_SIZ];
 			    if(gameMode == IcsObserving) // restore original ICS messages
+			      /* TRANSLATORS: to 'kibitz' is to send a message to all players and the game observers */
 			      snprintf(tmp, MSG_SIZ, "%s kibitzes: %s", star_match[0], parse);
 			    else
+			    /* TRANSLATORS: to 'kibitz' is to send a message to all players and the game observers */
 			    snprintf(tmp, MSG_SIZ, _("your opponent kibitzes: %s"), parse);
 			    SendToPlayer(tmp, strlen(tmp));
 			}

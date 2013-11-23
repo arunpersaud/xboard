@@ -495,7 +495,7 @@ xpm_print_avail (FILE *fp, char *ext)
 {
     int i;
 
-    fprintf(fp, _("Available `%s' sizes:\n"), ext);
+    fprintf(fp, _("Available '%s' sizes:\n"), ext);
     for (i=1; i<MAXSQSIZE; ++i) {
 	if (xpm_avail[i])
 	  printf("%d\n", i);
@@ -528,7 +528,7 @@ xpm_closest_to (char *dirname, int size, char *ext)
     }
 
     if (!sm_index) {
-	fprintf(stderr, _("Error: No `%s' files!\n"), ext);
+	fprintf(stderr, _("Error: No '%s' files!\n"), ext);
 	exit(1);
     }
 

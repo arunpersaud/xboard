@@ -580,8 +580,8 @@ CreateBookDelayed ()
 
 MenuItem fileMenu[] = {
   {N_("New Game"),             "<Ctrl>n",          "NewGame",              ResetGameEvent},
-  {N_("New Shuffle Game ..."),  NULL,              "NewShuffleGame",       ShuffleMenuProc},
-  {N_("New Variant ..."),      "<Alt><Shift>v",    "NewVariant",           NewVariantProc},// [HGM] variant: not functional yet
+  {N_("New Shuffle Game..."),   NULL,              "NewShuffleGame",       ShuffleMenuProc},
+  {N_("New Variant..."),       "<Alt><Shift>v",    "NewVariant",           NewVariantProc},// [HGM] variant: not functional yet
   {"----",                      NULL,               NULL,                  NothingProc},
   {N_("Load Game"),            "<Ctrl>o",          "LoadGame",             LoadGameProc,           CHECK},
   {N_("Load Position"),        "<Ctrl><Shift>o",   "LoadPosition",         LoadPositionProc},
@@ -681,11 +681,11 @@ MenuItem actionMenu[] = {
 };
 
 MenuItem engineMenu[100] = {
-  {N_("Load New 1st Engine ..."),  NULL,     "LoadNew1stEngine", LoadEngine1Proc},
-  {N_("Load New 2nd Engine ..."),  NULL,     "LoadNew2ndEngine", LoadEngine2Proc},
+  {N_("Load New 1st Engine..."),   NULL,     "LoadNew1stEngine", LoadEngine1Proc},
+  {N_("Load New 2nd Engine..."),   NULL,     "LoadNew2ndEngine", LoadEngine2Proc},
   {"----",                         NULL,      NULL,              NothingProc},
-  {N_("Engine #1 Settings ..."),   NULL,     "Engine#1Settings", FirstSettingsProc},
-  {N_("Engine #2 Settings ..."),   NULL,     "Engine#2Settings", SecondSettingsProc},
+  {N_("Engine #1 Settings..."),    NULL,     "Engine#1Settings", FirstSettingsProc},
+  {N_("Engine #2 Settings..."),    NULL,     "Engine#2Settings", SecondSettingsProc},
   {"----",                         NULL,      NULL,              NothingProc},
   {N_("Hint"),                     NULL,     "Hint",             HintEvent},
   {N_("Book"),                     NULL,     "Book",             BookEvent},
@@ -697,17 +697,17 @@ MenuItem engineMenu[100] = {
 
 MenuItem optionsMenu[] = {
 #ifdef OPTIONSDIALOG
-  {N_("General ..."),             NULL,             "General",             OptionsProc},
+  {N_("General..."),              NULL,             "General",             OptionsProc},
 #endif
-  {N_("Time Control ..."),       "<Alt><Shift>t",   "TimeControl",         TimeControlProc},
-  {N_("Common Engine ..."),      "<Alt><Shift>u",   "CommonEngine",        UciMenuProc},
-  {N_("Adjudications ..."),      "<Alt><Shift>j",   "Adjudications",       EngineMenuProc},
-  {N_("ICS ..."),                 NULL,             "ICS",                 IcsOptionsProc},
-  {N_("Match ..."),               NULL,             "Match",               MatchOptionsProc},
-  {N_("Load Game ..."),           NULL,             "LoadGame",            LoadOptionsProc},
-  {N_("Save Game ..."),           NULL,             "SaveGame",            SaveOptionsProc},
-  {N_("Game List ..."),           NULL,             "GameList",            GameListOptionsProc},
-  {N_("Sounds ..."),              NULL,             "Sounds",              SoundOptionsProc},
+  {N_("Time Control..."),        "<Alt><Shift>t",   "TimeControl",         TimeControlProc},
+  {N_("Common Engine..."),       "<Alt><Shift>u",   "CommonEngine",        UciMenuProc},
+  {N_("Adjudications..."),       "<Alt><Shift>j",   "Adjudications",       EngineMenuProc},
+  {N_("ICS..."),                  NULL,             "ICS",                 IcsOptionsProc},
+  {N_("Match..."),                NULL,             "Match",               MatchOptionsProc},
+  {N_("Load Game..."),            NULL,             "LoadGame",            LoadOptionsProc},
+  {N_("Save Game..."),            NULL,             "SaveGame",            SaveOptionsProc},
+  {N_("Game List..."),            NULL,             "GameList",            GameListOptionsProc},
+  {N_("Sounds..."),               NULL,             "Sounds",              SoundOptionsProc},
   {"----",                        NULL,              NULL,                 NothingProc},
 #ifndef OPTIONSDIALOG
   {N_("Always Queen"),           "<Ctrl><Shift>q",  "AlwaysQueen",         AlwaysQueenProc},

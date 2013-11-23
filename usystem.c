@@ -227,7 +227,7 @@ static int
 parse_cpair (ColorClass cc, char *str)
 {
     if ((textColors[(int)cc].fg=parse_color(str, 0)) == -2) {
-	fprintf(stderr, _("%s: can't parse foreground color in `%s'\n"),
+	fprintf(stderr, _("%s: can't parse foreground color in '%s'\n"),
 		programName, str);
 	return -1;
     }
