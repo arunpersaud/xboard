@@ -727,7 +727,7 @@ main (int argc, char **argv)
     debugFP = stderr;
 
     if(argc > 1 && (!strcmp(argv[1], "-v" ) || !strcmp(argv[1], "--version" ))) {
-	printf("%s version %s\n", PACKAGE_NAME, PACKAGE_VERSION);
+        printf("%s version %s\n\n  configure options: %s\n", PACKAGE_NAME, PACKAGE_VERSION, CONFIGURE_OPTIONS);
 	exit(0);
     }
 
