@@ -192,6 +192,7 @@ if test x"$with_GTK" = x"yes" ; then
   PKG_CHECK_MODULES([GTK], [ gtk+-2.0 >= 2.16.0 gmodule-2.0 ])
   FRONTEND_CFLAGS=$GTK_CFLAGS
   FRONTEND_LIBS=$GTK_LIBS
+  with_Xaw="no"
 fi
 
 if test x"$with_GTK" = x"no" ; then
