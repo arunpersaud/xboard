@@ -537,6 +537,17 @@ if test x"$enable_mimedb" = "xyes"; then
    AC_SUBST(XDG_ICON_RESOURCE)
 fi
 
+dnl create a string with configure options that can be passed to the
+dnl program, good for bug reports and version printout, see output below
+CONFIGURE_OPTIONS="prefix=$prefix; datarootdir=$datarootdir; \
+datadir=$datadir; gamedatadir=$GAMEDATADIR; desktopdir=$DESKTOPDIR; \
+mimedir=$MIMEDIR; iconsdir=$ICONSDIR; svgiconsdir=$SVGICONSDIR; infodir=$infodir; \
+sysconfigdir=$sysconfigdir; update_mimedb=$enable_mimedb; NLS=$USE_NLS; \
+GKT=$with_GTK; Xaw3d=$with_Xaw3d; Xaw=$with_Xaw; xpm=$enable_xpm; \
+ptys=$enable_ptys; zippy=$enable_zippy; sigint=$enable_sigint"
+
+AC_SUBST(CONFIGURE_OPTIONS)
+
 dnl |  output Makefile
 AC_CONFIG_FILES([Makefile cmail po/Makefile.in])
 AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])

@@ -69,7 +69,8 @@ DISTCLEANFILES = stamp-h
 
 GITVERSION=$(shell sh -c 'git describe --dirty --always 2>/dev/null')
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@ @CAIRO_CFLAGS@ @FRONTEND_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -D__GIT_VERSION='"$(GITVERSION)"' $(headers)
+	    -DLOCALEDIR='"$(localedir)"' -DSVGDIR='"$(svgdir)"' -D__GIT_VERSION='"$(GITVERSION)"' \
+            -DCONFIGURE_OPTIONS='"@CONFIGURE_OPTIONS@"' $(headers)
 
 ACLOCAL_AMFLAGS = -I m4
 
