@@ -1496,7 +1496,7 @@ MatchEvent (int mode)
 			NextTourneyGame(-1, &dummy);
 			ReserveGame(-1, 0);
 			if(nextGame <= appData.matchGames) {
-			    DisplayNote(_("You restarted an already completed tourney\nOne more cycle will now be added to it\nGames commence in 10 sec"));
+			    DisplayNote(_("You restarted an already completed tourney.\nOne more cycle will now be added to it.\nGames commence in 10 sec."));
 			    matchMode = mode;
 			    ScheduleDelayedEvent(NextMatchGame, 10000);
 			    return;
@@ -9039,7 +9039,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	    DisplayInformation(_("Machine accepts your draw offer"));
 	    GameEnds(GameIsDrawn, "Draw agreed", GE_XBOARD);
 	  } else {
-            DisplayInformation(_("Machine offers a draw\nSelect Action / Draw to agree"));
+            DisplayInformation(_("Machine offers a draw.\nSelect Action / Draw to accept."));
 	  }
 	}
     }
@@ -9118,7 +9118,10 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 			if(f = fopen(buf, "w")) { // export PV to applicable PV file
 				fprintf(f, "%5.2f/%-2d %s", curscore/100., plylev, pv);
 				fclose(f);
-			} else DisplayError(_("failed writing PV"), 0);
+			}
+			else
+			  /* TRANSLATORS: PV = principal variation, the variation the chess engine thinks is the best for everyone */
+			  DisplayError(_("failed writing PV"), 0);
 		}
 
 		tempStats.depth = plylev;

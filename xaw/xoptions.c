@@ -1263,7 +1263,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer)(intptr_t) (30001 + (dlgNr<<16)));
     if(!(option[i].min & NO_CANCEL)) {
       XtSetArg(args[1], XtNfromHoriz, b_ok); // overwrites!
-      b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
+      b_cancel = XtCreateManagedWidget(_("Cancel"), commandWidgetClass, form, args, j);
       XtAddCallback(b_cancel, XtNcallback, GenericCallback, (XtPointer)(intptr_t) (30000 + (dlgNr<<16)));
     }
   }
