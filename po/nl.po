@@ -2,13 +2,15 @@
 # Copyright (C) 2013 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
 #
+# "The patterns change, and never are the same again."
+#
 # Benno Schulenberg <benno@vertaalt.nl>, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard 4.7.2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2013-08-28 21:49-0700\n"
-"PO-Revision-Date: 2013-11-20 18:08+0100\n"
+"PO-Revision-Date: 2013-11-24 22:15+0100\n"
 "Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "Language: nl\n"
@@ -21,7 +23,7 @@ msgstr ""
 #: args.h:820
 #, c-format
 msgid "%s in settings file\n"
-msgstr ""
+msgstr "%s in instellingenbestand\n"
 
 #: args.h:830
 #, c-format
@@ -46,7 +48,7 @@ msgstr "Onvolledige \\-stuurcode in waarde voor %s"
 #: args.h:1119
 #, c-format
 msgid "Failed to open indirection file %s"
-msgstr ""
+msgstr "Kan indirectiebestand %s niet openen"
 
 #: args.h:1136
 #, c-format
@@ -72,22 +74,22 @@ msgstr "protocolversie %d wordt niet ondersteund"
 
 #: backend.c:933
 msgid "You did not specify the engine executable"
-msgstr ""
+msgstr "U hebt geen automaatbestand opgegeven"
 
 #: backend.c:989
 #, c-format
 msgid "bad timeControl option %s"
-msgstr ""
+msgstr "ongeldige timeControl-optie: %s"
 
 #: backend.c:1004
 #, c-format
 msgid "bad searchTime option %s"
-msgstr ""
+msgstr "ongeldige searchTime-optie: %s"
 
 #: backend.c:1110
 #, c-format
 msgid "Variant %s supported only in ICS mode"
-msgstr ""
+msgstr "Variant %s wordt alleen ondersteund in ICS-modus"
 
 #: backend.c:1128
 #, c-format
@@ -116,15 +118,18 @@ msgid ""
 "One more cycle will now be added to it\n"
 "Games commence in 10 sec"
 msgstr ""
+"U hebt een reeds voltooid toernooi herstart.\n"
+"Er wordt een extra cyclus aan toegevoegd.\n"
+"De partijen beginnen in tien seconden."
 
 #: backend.c:1495
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
-msgstr ""
+msgstr "Alle partijen in toernooi '%s' zijn al gespeeld of spelen nog"
 
 #: backend.c:1502
 msgid "Can't have a match with no chess programs"
-msgstr ""
+msgstr "Er is geen wedstrijd mogelijk zonder schaakprogramma's"
 
 #: backend.c:1539
 #, c-format
@@ -134,48 +139,48 @@ msgstr "Kan communicatiepoort %s niet openen"
 #: backend.c:1542
 #, c-format
 msgid "Could not connect to host %s, port %s"
-msgstr "Kan geen verbinding maken met host %s op poort %s"
+msgstr "Kan geen verbinding maken met host %s, poort %s"
 
 #: backend.c:1598
 #, c-format
 msgid "Unknown initialMode %s"
-msgstr ""
+msgstr "Onbekende initialMode %s"
 
 #: backend.c:1624
 msgid "AnalyzeFile mode requires a game file"
-msgstr ""
+msgstr "AnalyzeFile-modus vereist een partijbestand"
 
 #: backend.c:1651
 msgid "Analysis mode requires a chess engine"
-msgstr ""
+msgstr "Analysemodus vereist een schaakprogramma"
 
 #: backend.c:1655
 msgid "Analysis mode does not work with ICS mode"
-msgstr ""
+msgstr "Analysemodus werkt niet met ICS-modus"
 
 #: backend.c:1666
 msgid "MachineWhite mode requires a chess engine"
-msgstr ""
+msgstr "MachineWhite-modus vereist een schaakprogramma"
 
 #: backend.c:1671
 msgid "MachineWhite mode does not work with ICS mode"
-msgstr ""
+msgstr "MachineWhite-modus werkt niet met ICS-modus"
 
 #: backend.c:1678
 msgid "MachineBlack mode requires a chess engine"
-msgstr ""
+msgstr "MachineBlack-modus vereist een schaakprogramma"
 
 #: backend.c:1683
 msgid "MachineBlack mode does not work with ICS mode"
-msgstr ""
+msgstr "MachineBlack-modus werkt niet met ICS-modus"
 
 #: backend.c:1690
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
+msgstr "TwoMachines-modus vereist een schaakprogramma"
 
 #: backend.c:1695
 msgid "TwoMachines mode does not work with ICS mode"
-msgstr ""
+msgstr "TwoMachines-modus werkt niet met ICS-modus"
 
 #: backend.c:1706
 msgid "Training mode requires a game file"
@@ -191,12 +196,12 @@ msgstr "Fout bij lezen van toetsenbord"
 
 #: backend.c:1887
 msgid "Got end of file from keyboard"
-msgstr ""
+msgstr "Einde-van-bestand ontvangen van toetsenbord"
 
 #: backend.c:2192
 #, c-format
 msgid "Unknown wild type %d"
-msgstr ""
+msgstr "Onbekend wild type %d"
 
 #: backend.c:2263 usystem.c:329
 msgid "Error writing to display"
@@ -205,7 +210,7 @@ msgstr "Fout bij schrijven naar beeldscherm"
 #: backend.c:3019
 #, c-format
 msgid "your opponent kibitzes: %s"
-msgstr ""
+msgstr "uw tegenstander kwekt: %s"
 
 #: backend.c:3548
 msgid "Error gathering move list: two headers"
@@ -242,7 +247,7 @@ msgstr ""
 
 #: backend.c:4253 backend.c:9755
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
+msgstr "*** Partij is te lang; verhoog MAX_MOVES en hercompileer."
 
 #: backend.c:4372
 msgid "Error gathering move list: extra board"
@@ -256,11 +261,11 @@ msgstr ""
 #: backend.c:5063
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
-msgstr ""
+msgstr "**interne programmafout**; ongeldig moveType %d (%d,%d-%d,%d)"
 
 #: backend.c:5133
 msgid "You cannot do this while you are playing or observing"
-msgstr ""
+msgstr "U kunt dit niet doen tijdens het spelen of bekijken."
 
 #: backend.c:6029
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
@@ -306,7 +311,7 @@ msgstr ""
 
 #: backend.c:7527
 msgid "Swiss tourney finished"
-msgstr ""
+msgstr "Zwitsers toernooi is beëindigd"
 
 #: backend.c:8102
 msgid "Invalid pairing from pairing engine"
@@ -315,26 +320,26 @@ msgstr ""
 #: backend.c:8235
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
-msgstr ""
+msgstr "Ongeldige zet \"%s\" van automaat %s"
 
 #: backend.c:8456
 msgid "Bad FEN received from engine"
-msgstr ""
+msgstr "Ongeldige FEN ontvangen van automaat"
 
 #: backend.c:8600 backend.c:13662 backend.c:13727
 #, c-format
 msgid "%s does not support analysis"
-msgstr ""
+msgstr "%s ondersteunt geen analyse"
 
 #: backend.c:8666
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
+msgstr "Ongeldige zet \"%s\" (geweigerd door schaakprogramma %s)"
 
 #: backend.c:8693
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
-msgstr ""
+msgstr "Starten van %s-schaakprogramma %s op %s is mislukt: %s\n"
 
 #: backend.c:8714
 #, c-format
@@ -347,11 +352,14 @@ msgid ""
 "Illegal hint move \"%s\"\n"
 "from %s chess program"
 msgstr ""
+"Ongeldige hintzet \"%s\"\n"
+"van schaakprogramma %s."
 
 #: backend.c:8894
 msgid "Machine accepts your draw offer"
 msgstr "Automaat accepteert uw remise-aanbod"
 
+# XXX punten
 #: backend.c:8897
 msgid ""
 "Machine offers a draw\n"
@@ -374,9 +382,6 @@ msgstr "Niet-eenduidige zet in ICS-uitvoer: \"%s\""
 msgid "Illegal move in ICS output: \"%s\""
 msgstr ""
 
-# This error message is issued when ael is given a list name it does not
-# understand.
-#       $Name           The offending list name.
 #: backend.c:9295
 msgid "Gap in move list"
 msgstr "Gat in zettenlijst"
@@ -641,7 +646,7 @@ msgstr "Opmerking op %d.%s%s bewerken"
 #: backend.c:13669
 #, c-format
 msgid "You are not observing a game"
-msgstr ""
+msgstr "U bent geen partij aan het bekijken."
 
 #: backend.c:13777
 msgid "It is not White's turn"
@@ -672,23 +677,23 @@ msgstr "Trainingsmodus is ingeschakeld"
 
 #: backend.c:14139
 msgid "Already at end of game"
-msgstr ""
+msgstr "Reeds aan einde van partij."
 
 #: backend.c:14219
 msgid "Warning: You are still playing a game"
-msgstr ""
+msgstr "Waarschuwing: u bent nog een partij aan het spelen."
 
 #: backend.c:14222
 msgid "Warning: You are still observing a game"
-msgstr ""
+msgstr "Waarschuwing: u bent nog een partij aan het bekijken."
 
 #: backend.c:14225
 msgid "Warning: You are still examining a game"
-msgstr ""
+msgstr "Waarschuwing: u bent nog een partij aan het bestuderen."
 
 #: backend.c:14292
 msgid "Click clock to clear board"
-msgstr ""
+msgstr "Klik op klok om bord leeg te maken."
 
 #: backend.c:14302
 msgid "Close ICS engine analyze..."
@@ -696,29 +701,27 @@ msgstr ""
 
 #: backend.c:14590
 msgid "That square is occupied"
-msgstr ""
+msgstr "Dat veld is bezet."
 
 #: backend.c:14614 backend.c:14640
 msgid "There is no pending offer on this move"
 msgstr ""
 
-# This error message is issued when a color component is not in the
-# range 0..255.
 #: backend.c:14676 backend.c:14687
 msgid "Your opponent is not out of time"
-msgstr ""
+msgstr "Uw tegenstander heeft nog tijd."
 
 #: backend.c:14753
 msgid "You must make your move before offering a draw"
-msgstr ""
+msgstr "U dient uw zet te doen alvorens remise aan te bieden."
 
 #: backend.c:15090
 msgid "You are not examining a game"
-msgstr ""
+msgstr "U bent geen partij aan het bestuderen."
 
 #: backend.c:15094
 msgid "You can't revert while pausing"
-msgstr ""
+msgstr "U kunt niet terugdraaien tijdens pauze."
 
 #: backend.c:15148 backend.c:15155
 msgid "It is your turn"
@@ -737,9 +740,8 @@ msgid "Game list not loaded or empty"
 msgstr "Partijenlijst is leeg of niet geladen"
 
 #: backend.c:15241
-#, fuzzy
 msgid "Book file exists! Try again for overwrite."
-msgstr "Bestand bestaat al.  Overschrijven?"
+msgstr "Bestand bestaat al.  Probeer het opnieuw om deze te overschrijven."
 
 #: backend.c:15719
 #, c-format
@@ -764,7 +766,7 @@ msgstr "Fout bij lezen van schaakprogramma %s (%s)"
 #: backend.c:16168
 #, c-format
 msgid "%s engine has too many options\n"
-msgstr ""
+msgstr "automaat %s heeft te veel opties\n"
 
 #: backend.c:16324
 msgid "Displayed move is not current"
@@ -772,7 +774,7 @@ msgstr "Getoonde zet is niet de huidige"
 
 #: backend.c:16333
 msgid "Could not parse move"
-msgstr ""
+msgstr "Kan zet niet ontleden"
 
 #: backend.c:16458 backend.c:16480
 msgid "Both flags fell"
@@ -788,7 +790,7 @@ msgstr "Zwarts vlag is gevallen"
 
 #: backend.c:16613
 msgid "Clock adjustment not allowed in auto-flag mode"
-msgstr ""
+msgstr "Klokbijstelling is niet toegestaan in auto-vlagmodus"
 
 #: backend.c:17448
 msgid "Bad FEN position in clipboard"
@@ -796,15 +798,15 @@ msgstr "Ongeldige FEN-positie op het klembord"
 
 #: book.c:577 book.c:830
 msgid "Polyglot book not valid"
-msgstr ""
+msgstr "Polyglot-boek is ongeldig"
 
 #: book.c:701
 msgid "Book Fault"
-msgstr ""
+msgstr "Fout in boek"
 
 #: book.c:833
 msgid "Hash keys are different"
-msgstr ""
+msgstr "Hash-sleutels zijn verschillend"
 
 #: book.c:1000
 msgid "Could not create book"
@@ -812,7 +814,7 @@ msgstr "Kan geen boek aanmaken"
 
 #: dialogs.c:259
 msgid "Tournament file:          "
-msgstr ""
+msgstr "Toernooibestand:          "
 
 #: dialogs.c:260
 msgid "Sync after round"
@@ -832,19 +834,20 @@ msgstr ""
 
 #: dialogs.c:264
 msgid "Tourney participants:"
-msgstr ""
+msgstr "Toernooi-deelnemers:"
 
 #: dialogs.c:265
 msgid "Select Engine:"
-msgstr ""
+msgstr "Kies automaat:"
 
 #: dialogs.c:273
 msgid "Tourney type (0 = round-robin, 1 = gauntlet):"
-msgstr ""
+msgstr "Toernooitype (0 = op-de-rij-af, 1 = handschoen):"
 
 #: dialogs.c:274
+#, fuzzy
 msgid "Number of tourney cycles (or Swiss rounds):"
-msgstr ""
+msgstr "Aantal toernooirondes:"
 
 #: dialogs.c:275
 msgid "Default Number of Games in Match (or Pairing):"
@@ -856,7 +859,7 @@ msgstr ""
 
 #: dialogs.c:277
 msgid "Save Tourney Games on:"
-msgstr ""
+msgstr "Toernooipartijen bewaren op:"
 
 #: dialogs.c:278
 msgid "Game File with Opening Lines:"
@@ -868,7 +871,7 @@ msgstr ""
 
 #: dialogs.c:280
 msgid "File with Start Positions:"
-msgstr ""
+msgstr "Bestand met startposities:"
 
 #: dialogs.c:281
 msgid "Position Number (-1 or -2 = Auto-Increment):"
@@ -884,15 +887,15 @@ msgstr ""
 
 #: dialogs.c:284
 msgid "Replace Engine"
-msgstr ""
+msgstr "Automaat vervangen"
 
 #: dialogs.c:285
 msgid "Upgrade Engine"
-msgstr ""
+msgstr "Automaat upgraden"
 
 #: dialogs.c:286
 msgid "Clone Tourney"
-msgstr ""
+msgstr "Toernooi klonen"
 
 #: dialogs.c:316
 msgid "First you must specify an existing tourney file to clone"
@@ -916,11 +919,11 @@ msgstr ""
 
 #: dialogs.c:365 menus.c:714
 msgid "Animate Dragging"
-msgstr ""
+msgstr "Slepen animeren"
 
 #: dialogs.c:366 menus.c:715
 msgid "Animate Moving"
-msgstr ""
+msgstr "Zetten animeren"
 
 #: dialogs.c:367 menus.c:716
 msgid "Auto Flag"
@@ -944,7 +947,7 @@ msgstr ""
 
 #: dialogs.c:372
 msgid "Hide Thinking from Human"
-msgstr ""
+msgstr "Denken verbergen voor mens"
 
 #: dialogs.c:373 menus.c:723
 msgid "Highlight Last Move"
@@ -956,11 +959,11 @@ msgstr "Markeren met pijl"
 
 #: dialogs.c:375 menus.c:726
 msgid "One-Click Moving"
-msgstr ""
+msgstr "Eenkliks zetten"
 
 #: dialogs.c:376
 msgid "Periodic Updates (in Analysis Mode)"
-msgstr ""
+msgstr "Periodieke updates (in analysemodus)"
 
 #: dialogs.c:378
 msgid "Play Move(s) of Clicked PV (Analysis)"
@@ -968,19 +971,19 @@ msgstr ""
 
 #: dialogs.c:379 dialogs.c:514 menus.c:728
 msgid "Ponder Next Move"
-msgstr ""
+msgstr "Volgende zet overdenken"
 
 #: dialogs.c:380
 msgid "Popup Exit Messages"
-msgstr ""
+msgstr "Popup-afsluitberichten"
 
 #: dialogs.c:381 menus.c:730
 msgid "Popup Move Errors"
-msgstr ""
+msgstr "Popup-zetfouten"
 
 #: dialogs.c:382
 msgid "Scores in Move List"
-msgstr ""
+msgstr "Scores in zettenlijst"
 
 #: dialogs.c:383
 msgid "Show Coordinates"
@@ -996,11 +999,11 @@ msgstr ""
 
 #: dialogs.c:386 menus.c:733
 msgid "Test Legality"
-msgstr ""
+msgstr "Geldigheid testen"
 
 #: dialogs.c:387
 msgid "Top-Level Dialogs"
-msgstr ""
+msgstr "Topniveau-dialogen"
 
 #: dialogs.c:388
 msgid "Flash Moves (0 = no flashing):"
@@ -1016,7 +1019,7 @@ msgstr ""
 
 #: dialogs.c:391
 msgid "Zoom factor in Evaluation Graph:"
-msgstr ""
+msgstr "Zoomfactor in evaluatiegrafiek:"
 
 #: dialogs.c:400
 msgid "General Options"
@@ -1028,11 +1031,11 @@ msgstr "normaal"
 
 #: dialogs.c:411
 msgid "makruk"
-msgstr ""
+msgstr "Makruk"
 
 #: dialogs.c:412
 msgid "FRC"
-msgstr ""
+msgstr "FRC"
 
 #: dialogs.c:413
 msgid "shatranj"
@@ -1056,15 +1059,15 @@ msgstr "cilinder *"
 
 #: dialogs.c:418
 msgid "3-checks"
-msgstr ""
+msgstr "drie keer schaak"
 
 #: dialogs.c:419
 msgid "berolina *"
-msgstr ""
+msgstr "berolina *"
 
 #: dialogs.c:420
 msgid "atomic"
-msgstr ""
+msgstr "atomisch"
 
 #: dialogs.c:421
 msgid "two kings"
@@ -1183,9 +1186,10 @@ msgid ""
 "(currently %s) are disabled"
 msgstr ""
 
+# XXX "NEW" is confusing, plural is better
 #: dialogs.c:490
 msgid "New Variant"
-msgstr ""
+msgstr "Varianten"
 
 #: dialogs.c:515
 msgid "Maximum Number of CPUs per Engine:"
@@ -1193,7 +1197,7 @@ msgstr "Maximum aantal processoren per automaat:"
 
 #: dialogs.c:516
 msgid "Polygot Directory:"
-msgstr ""
+msgstr "Polygot-map:"
 
 #: dialogs.c:517
 msgid "Hash-Table Size (MB):"
@@ -1201,7 +1205,7 @@ msgstr "Grootte van hash-tabel (MB):"
 
 #: dialogs.c:518
 msgid "Nalimov EGTB Path:"
-msgstr ""
+msgstr "Nalimov-EGTB-pad:"
 
 #: dialogs.c:519
 msgid "EGTB Cache Size (MB):"
@@ -1211,12 +1215,9 @@ msgstr "Grootte van EGTB-cache (MB):"
 msgid "Use GUI Book"
 msgstr ""
 
-# This information message is issued when Aegis appends the log to an
-# existing log file.
-#       $File_Name      The name of the log file.
 #: dialogs.c:521
 msgid "Opening-Book Filename:"
-msgstr ""
+msgstr "Bestandsnaam van openingenboek:"
 
 #: dialogs.c:522
 msgid "Book Depth (moves):"
@@ -1228,19 +1229,20 @@ msgstr ""
 
 #: dialogs.c:524
 msgid "Engine #1 Has Own Book"
-msgstr ""
+msgstr "Automaat #1 heeft eigen boek"
 
+# XXX why the spaces?
 #: dialogs.c:525
 msgid "Engine #2 Has Own Book          "
-msgstr ""
+msgstr "Automaat #2 heeft eigen boek"
 
 #: dialogs.c:534
 msgid "Common Engine Settings"
-msgstr ""
+msgstr "Algemene automaatinstellingen"
 
 #: dialogs.c:540
 msgid "Detect all Mates"
-msgstr ""
+msgstr "Alle matten detecteren"
 
 #: dialogs.c:541
 msgid "Verify Engine Result Claims"
@@ -1248,11 +1250,11 @@ msgstr ""
 
 #: dialogs.c:542
 msgid "Draw if Insufficient Mating Material"
-msgstr ""
+msgstr "Remise bij onvoldoende matmateriaal"
 
 #: dialogs.c:543
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
-msgstr ""
+msgstr "Eenvoudige remises beslissen (3 zetten uitstel)"
 
 #: dialogs.c:544
 msgid "N-Move Rule:"
@@ -1372,15 +1374,15 @@ msgstr ""
 
 #: dialogs.c:593
 msgid "Channel #1 Text Colors:"
-msgstr ""
+msgstr "Kanaal-1-tekstkleuren:"
 
 #: dialogs.c:594
 msgid "Other Channel Text Colors:"
-msgstr ""
+msgstr "Anderekanaal-tekstkleuren:"
 
 #: dialogs.c:595
 msgid "Kibitz Text Colors:"
-msgstr ""
+msgstr "Kwek-tekstkleuren:"
 
 #: dialogs.c:596
 msgid "Tell Text Colors:"
@@ -1392,7 +1394,7 @@ msgstr ""
 
 #: dialogs.c:598
 msgid "Request Text Colors:"
-msgstr ""
+msgstr "Verzoek-tekstkleuren:"
 
 #: dialogs.c:599
 msgid "Seek Text Colors:"
@@ -1404,7 +1406,7 @@ msgstr "ICS-opties"
 
 #: dialogs.c:611
 msgid "Exact position match"
-msgstr ""
+msgstr "Exacte positie-overeenkomst"
 
 #: dialogs.c:611
 msgid "Shown position is subset"
@@ -1412,7 +1414,7 @@ msgstr "Getoonde positie is een subset"
 
 #: dialogs.c:611
 msgid "Same material with exactly same Pawn chain"
-msgstr ""
+msgstr "Zelfde materiaal met exact dezelfde pionketen"
 
 #: dialogs.c:612
 msgid "Same material"
@@ -1420,11 +1422,11 @@ msgstr "Zelfde materiaal"
 
 #: dialogs.c:612
 msgid "Material range (top board half optional)"
-msgstr ""
+msgstr "Materiaalbereik (bovenste bordhelft is optioneel)"
 
 #: dialogs.c:612
 msgid "Material difference (optional stuff balanced)"
-msgstr ""
+msgstr "Materiaalverschil (optioneel spul is in evenwicht)"
 
 #: dialogs.c:624
 msgid "Auto-Display Tags"
@@ -1458,11 +1460,11 @@ msgstr ""
 
 #: dialogs.c:631
 msgid "Elo of strongest player at least:"
-msgstr ""
+msgstr "Elo van sterkste speler minstens:"
 
 #: dialogs.c:632
 msgid "Elo of weakest player at least:"
-msgstr ""
+msgstr "Elo van zwakste speler minstens:"
 
 #: dialogs.c:633
 msgid "No games before year:"
@@ -1470,7 +1472,7 @@ msgstr "Geen partijen vóór het jaar:"
 
 #: dialogs.c:634
 msgid "Minimum nr consecutive positions:"
-msgstr ""
+msgstr "Minimum aantal opeenvolgende posities:"
 
 #: dialogs.c:635
 msgid "Search mode:"
@@ -1478,31 +1480,31 @@ msgstr "Zoekmodus:"
 
 #: dialogs.c:636
 msgid "Also match reversed colors"
-msgstr ""
+msgstr "Ook matchen met verwisselde kleuren"
 
 #: dialogs.c:637
 msgid "Also match left-right flipped position"
-msgstr ""
+msgstr "Ook matchen met links-rechts gespiegelde positie"
 
 #: dialogs.c:645
 msgid "Load Game Options"
-msgstr ""
+msgstr "Partij-opties laden"
 
 #: dialogs.c:657
 msgid "Auto-Save Games"
-msgstr ""
+msgstr "Partijen auto-opslaan"
 
 #: dialogs.c:658
 msgid "Own Games Only"
-msgstr ""
+msgstr "Alleen eigen partijen"
 
 #: dialogs.c:659
 msgid "Save Games on File:"
-msgstr ""
+msgstr "Partijen opslaan in:"
 
 #: dialogs.c:660
 msgid "Save Final Positions on File:"
-msgstr ""
+msgstr "Eindposities opslaan in:"
 
 #: dialogs.c:661
 msgid "PGN Event Header:"
@@ -1526,7 +1528,7 @@ msgstr ""
 
 #: dialogs.c:672
 msgid "Save Game Options"
-msgstr ""
+msgstr "Partij-opties opslaan"
 
 #: dialogs.c:681
 msgid "No Sound"
@@ -1562,7 +1564,7 @@ msgstr "Laser"
 
 #: dialogs.c:689
 msgid "Penalty"
-msgstr ""
+msgstr "Penalty"
 
 #: dialogs.c:690
 msgid "Phone"
@@ -1594,7 +1596,7 @@ msgstr "Geluidsprogramma:"
 
 #: dialogs.c:719
 msgid "Try-Out Sound:"
-msgstr ""
+msgstr "Probeer geluid:"
 
 #: dialogs.c:720
 #, fuzzy
@@ -1841,8 +1843,6 @@ msgstr ""
 msgid "Load first engine"
 msgstr "Eerste automaat laden"
 
-# This fatal error message is issued when there would be no files in
-# the distributed change set.
 #: dialogs.c:1347
 msgid "Load second engine"
 msgstr "Tweede automaat laden"
@@ -1983,17 +1983,15 @@ msgstr "Chatbox"
 
 #: dialogs.c:1742
 msgid "factory"
-msgstr ""
+msgstr "origineel"
 
 #: dialogs.c:1743
-#, fuzzy
 msgid "up"
 msgstr "omhoog"
 
 #: dialogs.c:1744
-#, fuzzy
 msgid "down"
-msgstr "naar beneden"
+msgstr "omlaag"
 
 #: dialogs.c:1762
 msgid "No tag selected"
@@ -2223,23 +2221,23 @@ msgstr "Kan bestand niet openen"
 
 #: menus.c:134
 msgid "Load game file name?"
-msgstr ""
+msgstr "Partij laden uit bestand:"
 
 #: menus.c:179
 msgid "Load position file name?"
-msgstr ""
+msgstr "Positie laden uit bestand:"
 
 #: menus.c:185
 msgid "Save game file name?"
-msgstr ""
+msgstr "Partij opslaan in bestand:"
 
 #: menus.c:194
 msgid "Save position file name?"
-msgstr ""
+msgstr "Positie opslaan in bestand:"
 
 #: menus.c:358
 msgid " (with Zippy code)"
-msgstr ""
+msgstr " (met Zippy-code)"
 
 #: menus.c:363
 #, c-format
@@ -2259,6 +2257,22 @@ msgid ""
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
 msgstr ""
+"%s%s\n"
+"\n"
+"Copyright 1991 Digital Equipment Corporation\n"
+"Uitbreidingen Copyright 1992-2013 Free Software Foundation\n"
+"Uitbreidingen Copyright 2005 Alessandro Scotti\n"
+"\n"
+"%s is vrije software en kent GEEN GARANTIE;\n"
+"zie het bestand COPYING voor meer informatie.\n"
+"De GTK-versie is experimenteel en nog niet stabiel.\n"
+"\n"
+"Bezoek XBoard op het web: http://www.gnu.org/software/xboard/\n"
+"Voor nieuwe functies zie: http://www.gnu.org/software/xboard/whats_new.html\n"
+"\n"
+"Rapporteer gebreken in het programma aan <bug-xboard@gnu.org>;\n"
+"meld vertaalfouten aan <vertaling@vrijschrift.org>.\n"
+"\n"
 
 #: menus.c:375 menus.c:750
 msgid "About XBoard"
@@ -2272,9 +2286,10 @@ msgstr "Nieuwe partij"
 msgid "New Shuffle Game ..."
 msgstr ""
 
+# XXX "NEW" is wrong
 #: menus.c:584
 msgid "New Variant ..."
-msgstr "Nieuwe variant..."
+msgstr "Variant..."
 
 #: menus.c:586
 msgid "Load Game"
@@ -2302,7 +2317,7 @@ msgstr "Positie opslaan"
 
 #: menus.c:593
 msgid "Save Games as Book"
-msgstr ""
+msgstr "Partijen opslaan als boek"
 
 #: menus.c:595
 msgid "Mail Move"
@@ -2310,9 +2325,8 @@ msgstr "Zet mailen"
 
 #: menus.c:596
 msgid "Reload CMail Message"
-msgstr ""
+msgstr "CMail-bericht herladen"
 
-# Verleden tijd, "Afgesloten", net als de andere actiesignaalnamen.
 #: menus.c:598
 msgid "Quit "
 msgstr "Afsluiten "
@@ -2325,20 +2339,17 @@ msgstr "Partij kopiëren"
 msgid "Copy Position"
 msgstr "Positie kopiëren"
 
-# This error message is issued when ael is given a list name it does not
-# understand.
-#       $Name           The offending list name.
 #: menus.c:605
 msgid "Copy Game List"
 msgstr "Partijenlijst kopiëren"
 
 #: menus.c:607
 msgid "Paste Game"
-msgstr ""
+msgstr "Partij plakken"
 
 #: menus.c:608
 msgid "Paste Position"
-msgstr ""
+msgstr "Positie plakken"
 
 #: menus.c:610 menus.c:652
 msgid "Edit Game"
@@ -2362,7 +2373,7 @@ msgstr "Boek bewerken"
 
 #: menus.c:616
 msgid "Revert"
-msgstr ""
+msgstr "Terugdraaien"
 
 #: menus.c:617
 msgid "Annotate"
@@ -2418,7 +2429,7 @@ msgstr "Chatvenster openen"
 
 #: menus.c:641
 msgid "Board..."
-msgstr ""
+msgstr "Bord..."
 
 #: menus.c:642
 msgid "Game List Tags..."
@@ -2450,7 +2461,7 @@ msgstr "Training"
 
 #: menus.c:655
 msgid "ICS Client"
-msgstr ""
+msgstr "ICS-cliënt"
 
 #: menus.c:657
 msgid "Machine Match"
@@ -2494,39 +2505,35 @@ msgstr "Opgeven"
 
 #: menus.c:673
 msgid "Stop Observing"
-msgstr ""
+msgstr "Stoppen met bekijken"
 
 #: menus.c:674
 msgid "Stop Examining"
-msgstr ""
+msgstr "Stoppen met bestuderen"
 
 #: menus.c:675
 msgid "Upload to Examine"
-msgstr ""
+msgstr "Uploaden om te bestuderen"
 
 #: menus.c:677
 msgid "Adjudicate to White"
-msgstr ""
+msgstr "Winst aan wit toekennen"
 
 #: menus.c:678
 msgid "Adjudicate to Black"
-msgstr ""
+msgstr "Winst aan zwart toekennen"
 
-# TRANSLATION REQUIRED
-# This error message is issued when the aerpass command detects that a
-# user has already reviewed this change once since the last develop end.
-# (This can occur when the review_policy_command is being used.)
 #: menus.c:679
 msgid "Adjudicate Draw"
-msgstr ""
+msgstr "Tot remise besluiten"
 
 #: menus.c:684
 msgid "Load New 1st Engine ..."
-msgstr ""
+msgstr "Nieuwe 1ste automaat laden..."
 
 #: menus.c:685
 msgid "Load New 2nd Engine ..."
-msgstr ""
+msgstr "Nieuwe 2de automaat laden..."
 
 #: menus.c:687
 msgid "Engine #1 Settings ..."
@@ -2554,24 +2561,25 @@ msgstr "Zet terugnemen"
 
 #: menus.c:700
 msgid "General ..."
-msgstr "Algemeen ..."
+msgstr "Algemeen..."
 
 #: menus.c:702
 msgid "Time Control ..."
-msgstr "Tijdsbeperking ..."
+msgstr "Tijdsbeperking..."
 
 #: menus.c:703
 msgid "Common Engine ..."
-msgstr ""
+msgstr "Gemeenschappelijke automaat..."
 
 #: menus.c:704
 msgid "Adjudications ..."
-msgstr ""
+msgstr "Beslissingen ..."
 
 #: menus.c:705
 msgid "ICS ..."
-msgstr ""
+msgstr "ICS ..."
 
+# XXX wedstrijd OF overeenkomen??
 #: menus.c:706
 msgid "Match ..."
 msgstr ""
@@ -2602,7 +2610,7 @@ msgstr "Zetten knipperen"
 
 #: menus.c:721
 msgid "Highlight Dragging"
-msgstr ""
+msgstr "Slepen markeren"
 
 #: menus.c:724
 msgid "Highlight With Arrow"
@@ -2614,19 +2622,19 @@ msgstr "Zetgeluid"
 
 #: menus.c:727
 msgid "Periodic Updates"
-msgstr ""
+msgstr "Periodieke updates"
 
 #: menus.c:729
 msgid "Popup Exit Message"
-msgstr ""
+msgstr "Popup-afsluitbericht"
 
 #: menus.c:731
 msgid "Show Coords"
-msgstr ""
+msgstr "Coördinaten tonen"
 
 #: menus.c:732
 msgid "Hide Thinking"
-msgstr ""
+msgstr "Denken verbergen"
 
 #: menus.c:736
 msgid "Save Settings Now"
@@ -2650,15 +2658,15 @@ msgstr "Webpagina van XBoard"
 
 #: menus.c:746
 msgid "On-line User Guide"
-msgstr ""
+msgstr "Online gebruikersgids"
 
 #: menus.c:747
 msgid "Development News"
-msgstr ""
+msgstr "Ontwikkelingsnieuws"
 
 #: menus.c:748
 msgid "e-Mail Bug Report"
-msgstr ""
+msgstr "Foutrapportage mailen"
 
 #: nengineoutput.c:78 nengineoutput.c:85
 msgid "engine name"
@@ -2666,7 +2674,7 @@ msgstr "automaatnaam"
 
 #: nengineoutput.c:80 nengineoutput.c:87
 msgid "move"
-msgstr "zet"
+msgstr "zetten"
 
 #: nengineoutput.c:153
 msgid "Engine output"
@@ -2677,6 +2685,8 @@ msgid ""
 "Mismatch of STRIDE in nengineoutput.c\n"
 "Change and recompile!"
 msgstr ""
+"*** Niet-passende 'STRIDE' in 'nengineoutput.c'.\n"
+"Pas deze aan en hercompileer."
 
 #: nevalgraph.c:68
 msgid "Evaluation graph"
@@ -2692,7 +2702,7 @@ msgstr "positie vinden"
 
 #: ngamelist.c:88
 msgid "narrow"
-msgstr "smal"
+msgstr "nauw"
 
 #: ngamelist.c:89
 msgid "thresholds"
@@ -2721,7 +2731,7 @@ msgstr "Kan niet nog verder vooruitgaan"
 #: ngamelist.c:192
 #, c-format
 msgid "Scanning through games (%d)"
-msgstr ""
+msgstr "Zoeken door partijen (%d)"
 
 #: ngamelist.c:211
 msgid "previous page"
@@ -2733,7 +2743,7 @@ msgstr "volgende pagina"
 
 #: ngamelist.c:217
 msgid "no games matched your request"
-msgstr ""
+msgstr "er zijn geen partijen die overeenkomen met uw verzoek"
 
 #: ngamelist.c:219
 #, c-format
@@ -2744,7 +2754,6 @@ msgstr "%s - %d/%d partijen (%d-%d-%d)"
 msgid "There is no game list"
 msgstr "Er is geen partijenlijst"
 
-# This error message is issued when ael is not given a list name.
 #: nhistory.c:109
 msgid "Move list"
 msgstr "Zettenlijst"
@@ -2757,40 +2766,41 @@ msgstr "%s: niet-herkende kleur %s\n"
 #: usystem.c:230
 #, c-format
 msgid "%s: can't parse foreground color in `%s'\n"
-msgstr ""
+msgstr "%s: onbegrepen voorgrondkleur in '%s'\n"
 
 #: usystem.c:259
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
-msgstr ""
+msgstr "%s: onbegrepen kleurnamen; kleuring wordt uitgeschakeld\n"
 
 #: usystem.c:371
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
-msgstr ""
+msgstr "Fout: onbekende gebruiker %s (in pad %s)\n"
 
 #: usystem.c:556
+#, fuzzy
 msgid "Socket support is not configured in"
-msgstr "Ondersteuning voor sockets is niet geconfigureerd in"
+msgstr "Ondersteuning voor sockets is niet geconfigureerd"
 
 #: usystem.c:645
 msgid "internal rcmd not implemented for Unix"
-msgstr ""
+msgstr "interne 'rcmd' is niet geïmplementeerd voor Unix"
 
 #: xaw/xboard.c:477
 #, c-format
 msgid "%s: Can't access XPM directory %s\n"
-msgstr ""
+msgstr "%s: Kan geen toegang krijgen tot XPM-map %s\n"
 
 #: xaw/xboard.c:498
 #, c-format
 msgid "Available `%s' sizes:\n"
-msgstr ""
+msgstr "Beschikbare '%s'-groottes:\n"
 
 #: xaw/xboard.c:531
 #, c-format
 msgid "Error: No `%s' files!\n"
-msgstr ""
+msgstr "Fout: geen '%s'-bestanden!\n"
 
 #: xaw/xboard.c:544
 #, c-format
@@ -2809,7 +2819,7 @@ msgstr ""
 #: xaw/xengineoutput.c:114
 #, c-format
 msgid "Error %d loading icon image\n"
-msgstr ""
+msgstr "Fout %d tijdens laden van pictogram\n"
 
 #: xaw/xoptions.c:321 xaw/xoptions.c:1015
 msgid "browse"
@@ -2833,4 +2843,4 @@ msgstr "OK"
 
 #: xaw/xoptions.c:1266
 msgid "cancel"
-msgstr "annuleren"
+msgstr "Annuleren"
