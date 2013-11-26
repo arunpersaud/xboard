@@ -472,7 +472,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		if(j == -2) {
 		          char filter[] =
 				"All files\0*.*\0Game files\0*.pgn;*.gam\0Position files\0*.fen;*.epd;*.pos\0"
-				"EXE files\0*.exe\0Tournament files (*.trn)\0*.trn\0"
+				"EXE files\0*.exe;*.jar\0Tournament files (*.trn)\0*.trn\0"
 				"BIN Files\0*.bin\0LOG Files\0*.log\0INI Files\0*.ini\0"
 				"Image files\0*.bmp\0\0";
 		          OPENFILENAME ofn;
@@ -689,7 +689,7 @@ Option installOptions[] = {
   {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
   {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
   {   0,  0,    0, NULL, (void*) &useNick, NULL, NULL, CheckBox, N_("Use nickname in PGN tag") },
-  {   0,  0, 32+3, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine (*.exe):") },
+  {   0,  0, 32+3, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine (.exe or .jar):") },
   {   0,  0,    0, NULL, (void*) &params, NULL, NULL, TextBox, N_("command-line parameters:") },
   {   0,  0,    0, NULL, (void*) &wbOptions, NULL, NULL, TextBox, N_("Special WinBoard options:") },
   {   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("directory:") },

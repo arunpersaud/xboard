@@ -925,7 +925,7 @@ char *insert, *wbOptions; // point in ChessProgramNames were we should insert ne
 void
 Load (ChessProgramState *cps, int i)
 {
-    char *p, *q, buf[MSG_SIZ], command[MSG_SIZ], buf2[MSG_SIZ];
+    char *p, *q, buf[MSG_SIZ], command[MSG_SIZ], buf2[MSG_SIZ], buf3[MSG_SIZ], jar;
     if(engineLine && engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
@@ -949,11 +949,13 @@ Load (ChessProgramState *cps, int i)
 	p[-1] = SLASH;
 	if(SLASH == '/' && p - engineName > 1) *(p -= 2) = '.'; // for XBoard use ./exeName as command after split!
     } else { ASSIGN(appData.directory[i], "."); }
+    jar = (strstr(p, ".jar") == p + strlen(p) - 4);
     if(params[0]) {
 	if(strchr(p, ' ') && !strchr(p, '"')) snprintf(buf2, MSG_SIZ, "\"%s\"", p), p = buf2; // quote if it contains spaces
 	snprintf(command, MSG_SIZ, "%s %s", p, params);
 	p = command;
     }
+    if(jar) { snprintf(buf3, MSG_SIZ, "java -jar %s", p); p = buf3; }
     ASSIGN(appData.chessProgram[i], p);
     appData.isUCI[i] = isUCI;
     appData.protocolVersion[i] = v1 ? 1 : PROTOVER;
