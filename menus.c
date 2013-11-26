@@ -703,7 +703,7 @@ MenuItem optionsMenu[] = {
   {N_("Common Engine..."),       "<Alt><Shift>u",   "CommonEngine",        UciMenuProc},
   {N_("Adjudications..."),       "<Alt><Shift>j",   "Adjudications",       EngineMenuProc},
   {N_("ICS..."),                  NULL,             "ICS",                 IcsOptionsProc},
-  {N_("Match..."),                NULL,             "Match",               MatchOptionsProc},
+  {N_("Tournament..."),           NULL,             "Match",               MatchOptionsProc},
   {N_("Load Game..."),            NULL,             "LoadGame",            LoadOptionsProc},
   {N_("Save Game..."),            NULL,             "SaveGame",            SaveOptionsProc},
   {N_("Game List..."),            NULL,             "GameList",            GameListOptionsProc},

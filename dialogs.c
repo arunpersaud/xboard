@@ -258,10 +258,9 @@ MatchOK (int n)
 
 static Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:          ") },
+{ 0,  0,          0, NULL, NULL, "", NULL, Label, N_("For concurrent playing of tourney with multiple XBoards:") },
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round") },
-{ 0, SAME_ROW|LL, 0, NULL, NULL, "", NULL, Label, N_("    (for concurrent playing of a single") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
-{ 0, SAME_ROW|LL, 0, NULL, NULL, "", NULL, Label, N_("      tourney with multiple XBoards)") },
 { 0,  LR,       175, NULL, NULL, "", NULL, Label, N_("Tourney participants:") },
 { 0, SAME_ROW|RR, 175, NULL, NULL, "", NULL, Label, N_("Select Engine:") },
 { 150, T_VSCRL | T_FILL | T_WRAP,
@@ -342,7 +341,7 @@ MatchOptionsProc ()
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
    ASSIGN(engineName, appData.participants);
    ASSIGN(engineMnemonic[0], "");
-   GenericPopUp(matchOptions, _("Match Options"), TransientDlg, BoardWindow, MODAL, 0);
+   GenericPopUp(matchOptions, _("Tournament Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
 // ------------------------------------------- General Options --------------------------------------------------
