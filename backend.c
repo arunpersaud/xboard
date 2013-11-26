@@ -12609,6 +12609,15 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
       AnalyzeFileEvent();
     }
 
+    if(gameInfo.result == GameUnfinished && gameInfo.resultDetails && appData.clockMode) {
+	long int w, b; // [HGM] adjourn: restore saved clock times
+	char *p = strstr(gameInfo.resultDetails, "(Clocks:");
+	if(p && sscanf(p+8, "%ld,%ld", &w, &b) == 2) {
+	    timeRemaining[0][forwardMostMove] = whiteTimeRemaining = 1000*w + 500;
+	    timeRemaining[1][forwardMostMove] = blackTimeRemaining = 1000*b + 500;
+	}
+    }
+
     if(creatingBook) return TRUE;
     if (!matchMode && pos > 0) {
 	ToNrEvent(pos); // [HGM] no autoplay if selected on position
@@ -13110,8 +13119,10 @@ SaveGamePGN (FILE *f)
     /* Print result */
     if (gameInfo.resultDetails != NULL &&
 	gameInfo.resultDetails[0] != NULLCHAR) {
-	fprintf(f, "{%s} %s\n\n", gameInfo.resultDetails,
-		PGNResult(gameInfo.result));
+	char buf[MSG_SIZ], *p = gameInfo.resultDetails;
+	if(gameInfo.result == GameUnfinished && appData.clockMode && !appData.icsActive) // [HGM] adjourn: save clock settings
+	    snprintf(buf, MSG_SIZ, "%s (Clocks: %ld, %ld)", p, whiteTimeRemaining/1000, blackTimeRemaining/1000), p = buf;
+	fprintf(f, "{%s} %s\n\n", p, PGNResult(gameInfo.result));
     } else {
 	fprintf(f, "%s\n\n", PGNResult(gameInfo.result));
     }
