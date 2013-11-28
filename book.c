@@ -759,6 +759,9 @@ TextToMoves (char *text, int moveNum, entry_t *entries)
 	    text = strstr(text, yy_textstr) + strlen(yy_textstr); // skip what we parsed
 	    if(!valid || moveType != NormalMove && moveType != WhiteDrop && moveType != BlackDrop
                                                 && moveType != WhitePromotion && moveType != BlackPromotion
+                                                && moveType != WhiteCapturesEnPassant && moveType != BlackCapturesEnPassant
+                                                && moveType != WhiteKingSideCastle && moveType != BlackKingSideCastle
+                                                && moveType != WhiteQueenSideCastle && moveType != BlackQueenSideCastle
                                                 && moveType != WhiteNonPromotion && moveType != BlackNonPromotion) continue;
 	    if(*text == ' ' && sscanf(text+1, "{%hd/%hd}", &entries[count].learnPoints, &entries[count].learnCount) == 2) {
 		text = strchr(text+1, '}') + 1;
