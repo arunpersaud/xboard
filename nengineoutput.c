@@ -77,6 +77,7 @@ Option engoutOptions[] = {
 {  0,  LL|T2T,           18, NULL, NULL, NULL, NULL, Icon, " " },
 {  0, L2L|T2T|SAME_ROW, 162, NULL, NULL, NULL, NULL, Label, N_("engine name") },
 {  0,     T2T|SAME_ROW,  30, NULL, NULL, NULL, NULL, Icon, " " },
+/* TRANSLATORS: noun, as in "the move Nf3"*/
 {  0, R2R|T2T|SAME_ROW, 188, NULL, NULL, NULL, NULL, Label, N_("move") },
 {  0,  RR|T2T|SAME_ROW,  80, NULL, NULL, NULL, NULL, Label, N_("NPS") },
 {200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem1, "", (char**) MemoProc, TextBox, "" },
@@ -84,6 +85,7 @@ Option engoutOptions[] = {
 {  0,  LL|T2T,           18, NULL, NULL, NULL, NULL, Icon, " " },
 {  0, L2L|T2T|SAME_ROW, 162, NULL, NULL, NULL, NULL, Label, N_("engine name") },
 {  0,     T2T|SAME_ROW,  30, NULL, NULL, NULL, NULL, Icon, " " },
+/* TRANSLATORS: noun, as in "the move Nf3"*/
 {  0, R2R|T2T|SAME_ROW, 188, NULL, NULL, NULL, NULL, Label, N_("move") },
 {  0,  RR|T2T|SAME_ROW,  80, NULL, NULL, NULL, NULL, Label, N_("NPS") },
 {200, T_VSCRL | T_TOP,  500, NULL, (void*) &mem2, "", (char**) MemoProc, TextBox, "" },

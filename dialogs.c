@@ -420,12 +420,12 @@ static Option variantDescriptors[] = {
 { VariantBerolina,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Berolina *")},
 { VariantAtomic,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Atomic")},
 { VariantTwoKings,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("Two kings")},
-{ 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size ( -1 = default for selected variant):")},
+{ 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size (-1 = default for selected variant):")},
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.NrRanks, "", NULL, Spin, N_("Number of Board Ranks:") },
 { 0, -1, BOARD_FILES, NULL, (void*) &appData.NrFiles, "", NULL, Spin, N_("Number of Board Files:") },
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.holdingsSize, "", NULL, Spin, N_("Holdings Size:") },
 { 0, 0, 275, NULL, NULL, NULL, NULL, Label, warning },
-{ 0, 0, 275, NULL, NULL, NULL, NULL, Label, "Variants marked with * can only be played\nwith legality testing off"},
+{ 0, 0, 275, NULL, NULL, NULL, NULL, Label, N_("Variants marked with * can only be played\nwith legality testing off.")},
 { 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, ""},
 { VariantASEAN,         0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("ASEAN")},
 { VariantGreat,  SAME_ROW, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Great Shatranj (10x8)")},
@@ -503,8 +503,8 @@ NewVariantProc ()
 {
    static int start;
    int i, last;
-   if(appData.noChessProgram) sprintf(warning, _("Only bughouse is not available in viewer mode")); else
-   sprintf(warning, _("All variants not supported by first engine\n(currently %s) are disabled"), first.tidy);
+   if(appData.noChessProgram) sprintf(warning, _("Only bughouse is not available in viewer mode.")); else
+   sprintf(warning, _("All variants not supported by the first engine\n(currently %s) are disabled."), first.tidy);
    if(!start) while(variantDescriptors[start].type != -1) start++; // locate first spare
    last = -1;
    for(i=0; variantDescriptors[start+i].type != EndMark; i++) { // create buttons for engine-defined variants
@@ -847,7 +847,7 @@ static Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.upsideDown, "", NULL, CheckBox, N_("Flip Pieces Shogi Style        (Colored buttons restore default)") },
 //{ 0, 0, 0, NULL, (void*) &appData.allWhite, "", NULL, CheckBox, N_("Use Outline Pieces for Black") },
 { 0, 0, 0, NULL, (void*) &appData.monoMode, "", NULL, CheckBox, N_("Mono Mode") },
-{ 0,-1, 5, NULL, (void*) &appData.overrideLineGap, "", NULL, Spin, N_("Line Gap ( -1 = default for board size):") },
+{ 0,-1, 5, NULL, (void*) &appData.overrideLineGap, "", NULL, Spin, N_("Line Gap (-1 = default for board size):") },
 { 0, 0, 0, NULL, (void*) &appData.useBitmaps, "", NULL, CheckBox, N_("Use Board Textures") },
 { 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, ".png", NULL, FileName, N_("Light-Squares Texture File:") },
 { 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, ".png", NULL, FileName, N_("Dark-Squares Texture File:") },

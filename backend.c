@@ -14155,7 +14155,7 @@ TwoMachinesEvent P((void))
       case MachinePlaysWhite:
       case MachinePlaysBlack:
 	if (WhiteOnMove(forwardMostMove) == (gameMode == MachinePlaysWhite)) {
-	    DisplayError(_("Wait until your turn,\nor select Move Now"), 0);
+	    DisplayError(_("Wait until your turn,\nor select 'Move Now'."), 0);
 	    return;
 	}
 	/* fall through */
@@ -15270,7 +15270,7 @@ RetractMoveEvent ()
       case MachinePlaysWhite:
       case MachinePlaysBlack:
 	if (WhiteOnMove(forwardMostMove) == (gameMode == MachinePlaysWhite)) {
-	    DisplayError(_("Wait until your turn,\nor select Move Now"), 0);
+	    DisplayError(_("Wait until your turn,\nor select 'Move Now'."), 0);
 	    return;
 	}
 	if (forwardMostMove < 2) return;
@@ -15368,14 +15368,14 @@ HintEvent ()
     switch (gameMode) {
       case MachinePlaysWhite:
 	if (WhiteOnMove(forwardMostMove)) {
-	    DisplayError(_("Wait until your turn"), 0);
+	    DisplayError(_("Wait until your turn."), 0);
 	    return;
 	}
 	break;
       case BeginningOfGame:
       case MachinePlaysBlack:
 	if (!WhiteOnMove(forwardMostMove)) {
-	    DisplayError(_("Wait until your turn"), 0);
+	    DisplayError(_("Wait until your turn."), 0);
 	    return;
 	}
 	break;
@@ -15428,14 +15428,14 @@ BookEvent ()
     switch (gameMode) {
       case MachinePlaysWhite:
 	if (WhiteOnMove(forwardMostMove)) {
-	    DisplayError(_("Wait until your turn"), 0);
+	    DisplayError(_("Wait until your turn."), 0);
 	    return;
 	}
 	break;
       case BeginningOfGame:
       case MachinePlaysBlack:
 	if (!WhiteOnMove(forwardMostMove)) {
-	    DisplayError(_("Wait until your turn"), 0);
+	    DisplayError(_("Wait until your turn."), 0);
 	    return;
 	}
 	break;

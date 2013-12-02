@@ -290,7 +290,7 @@ ScaleOnePiece (int color, int piece)
   if(!pngPieceImages[color][piece]) { // we still did not manage to acquire a piece bitmap
     static int warned = 0;
     if(!(svgPieces[color][piece] = LoadSVG(SVGDIR, color, piece)) && !warned) { // try to fall back on installed svg
-      char *msg = _("No default pieces installed!\nSelect your own -pieceImageDirectory");
+      char *msg = _("No default pieces installed!\nSelect your own using '-pieceImageDirectory'.");
       printf("%s\n", msg); // give up
       DisplayError(msg, 0);
       warned = 1; // prevent error message being repeated for each piece type
