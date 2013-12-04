@@ -1,0 +1,36 @@
+table.board {
+ border-collapse: collapse;
+ overflow: hide;
+}
+table.board td {
+  width: 36px; height: 36px; vertical-align: center;
+  text-align: center;
+}
+table.board tr.toplegend td {
+  height: 15px;
+  text-align: right;
+}
+table.board td.leftlegend {
+  width: 15px; height: 36px;
+}
+table.board tr.toplegend td.corner {
+ border: none; width: 15px;
+}
+table.board td img {
+ display: block;
+}
+table.board td.w {
+ background: #FFFFFF; color: black; height: 36px; width: 360px;
+ text-align: left;
+}
+table.board td.b {
+ background: #FFFFFF; color: white; height: 72px; width: 36px;
+}
+table.board td.h {
+ background: #FFFFFF; color: black; height: 36px; width: 36px;
+}
+table.board td.n {
+ background: #C0C0C0; color: black; height: 36px; width: 36px;
+ border: 1px solid black;
+}
+

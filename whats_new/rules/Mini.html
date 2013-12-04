@@ -1,0 +1,414 @@
+<html>
+<header>
+<title>mini-Shogi</title>
+<link rel=StyleSheet href="./moves.css" type="text/css">
+<script type="text/javascript" src="chu.js"></script>
+</header>
+<body>
+<h1>mini-Shogi (Diamond Quest)</h1>
+<table cellpadding="20"><tr><td>
+<img src="Mini.png">
+</td><td>
+<h3>Initial setup</h3>
+<p>
+a1, e5: King
+<br>
+e1, a5: Rook
+<br>
+d1, hb5: Bishop
+<br>
+b1, d5: Gold General
+<br>
+c1, c5: Silver General
+<br>
+a2, e4: Pawn
+</p>
+</td></tr></table>
+
+<h3>Moves at a Glance</h3>
+
+<p>Click on a piece below to see its moves</p>
+
+<table class="board"><tr><td class="n" id="0x9">
+
+     </td><td class="n" id="1x9">
+
+     </td><td class="n" id="2x9">
+
+     </td><td class="n" id="3x9">
+
+     </td><td class="n" id="4x9">
+
+     </td><td class="n" id="5x9">
+
+     </td><td class="n" id="6x9">
+
+     </td><td class="n" id="7x9">
+
+     </td><td class="n" id="8x9">
+
+     </td><td class="n" id="9x9">
+
+</td></tr><tr><td class="n" id="0x8">
+
+     </td><td class="n" id="1x8">
+
+     </td><td class="n" id="2x8">
+
+     </td><td class="n" id="3x8">
+
+     </td><td class="n" id="4x8">
+
+     </td><td class="n" id="5x8">
+
+     </td><td class="n" id="6x8">
+
+     </td><td class="n" id="7x8">
+
+     </td><td class="n" id="8x8">
+
+     </td><td class="n" id="9x8">
+
+</td></tr><tr><td class="n" id="0x7">
+
+     </td><td class="n" id="1x7">
+
+     </td><td class="n" id="2x7">
+
+     </td><td class="n" id="3x7" onmouseDown="down_click(3,7)" onmouseUp="up_click()">
+<img src="sym/WhiteGold.png">
+     </td><td class="n" id="4x7" onmouseDown="down_click(4,7)" onmouseUp="up_click()">
+<img src="sym/WhiteAdvisor.png">
+     </td><td class="n" id="5x7">
+
+     </td><td class="n" id="6x7">
+
+     </td><td class="n" id="7x7">
+
+     </td><td class="n" id="8x7">
+
+     </td><td class="n" id="9x7">
+
+</td></tr><tr><td class="n" id="0x6">
+
+     </td><td class="n" id="1x6">
+
+     </td><td class="n" id="2x6">
+
+     </td><td class="n" id="3x6">
+
+     </td><td class="n" id="4x6">
+
+     </td><td class="n" id="5x6">
+
+     </td><td class="n" id="6x6" onmouseDown="down_click(6,6)" onmouseUp="up_click()">
+<img src="sym/WhiteKing.png">
+     </td><td class="n" id="7x6">
+
+     </td><td class="n" id="8x6">
+
+     </td><td class="n" id="9x6">
+
+</td></tr><tr><td class="n" id="0x5">
+
+     </td><td class="n" id="1x5">
+
+     </td><td class="n" id="2x5">
+
+     </td><td class="n" id="3x5">
+
+     </td><td class="n" id="4x5">
+
+     </td><td class="n" id="5x5">
+
+     </td><td class="n" id="6x5" onmouseDown="down_click(6,5)" onmouseUp="up_click()">
+<img src="sym/WhiteCrownedRook.png">
+     </td><td class="n" id="7x5" onmouseDown="down_click(7,5)" onmouseUp="up_click()">
+<img src="sym/WhiteRook.png">
+     </td><td class="n" id="8x5">
+
+     </td><td class="n" id="9x5">
+
+</td></tr><tr><td class="n" id="0x4">
+
+     </td><td class="n" id="1x4">
+
+     </td><td class="n" id="2x4">
+
+     </td><td class="n" id="3x4">
+
+     </td><td class="n" id="4x4">
+
+     </td><td class="n" id="5x4">
+
+     </td><td class="n" id="6x4" onmouseDown="down_click(6,4)" onmouseUp="up_click()">
+<img src="sym/WhiteCrownedBishop.png">
+     </td><td class="n" id="7x4" onmouseDown="down_click(7,4)" onmouseUp="up_click()">
+<img src="sym/WhiteBishop.png">
+     </td><td class="n" id="8x4">
+
+     </td><td class="n" id="9x4">
+
+</td></tr><tr><td class="n" id="0x3">
+
+     </td><td class="n" id="1x3">
+
+     </td><td class="n" id="2x3">
+
+     </td><td class="n" id="3x3">
+
+     </td><td class="n" id="4x3">
+
+     </td><td class="n" id="5x3">
+
+     </td><td class="n" id="6x3">
+
+     </td><td class="n" id="7x3">
+
+     </td><td class="n" id="8x3">
+
+     </td><td class="n" id="9x3">
+
+</td></tr><tr><td class="n" id="0x2">
+
+     </td><td class="n" id="1x2">
+
+     </td><td class="n" id="2x2">
+
+     </td><td class="n" id="3x2">
+
+     </td><td class="n" id="4x2">
+
+     </td><td class="n" id="5x2">
+
+     </td><td class="n" id="6x2" onmouseDown="down_click(6,2)" onmouseUp="up_click()">
+<img src="sym/WhitePawn.png">
+     </td><td class="n" id="7x2">
+
+     </td><td class="n" id="8x2">
+
+     </td><td class="n" id="9x2">
+
+</td></tr><tr><td class="n" id="0x1">
+
+     </td><td class="n" id="1x1">
+
+     </td><td class="n" id="2x1">
+
+     </td><td class="n" id="3x1">
+
+     </td><td class="n" id="4x1">
+
+     </td><td class="n" id="5x1">
+
+     </td><td class="n" id="6x1">
+
+     </td><td class="n" id="7x1">
+
+     </td><td class="n" id="8x1">
+
+     </td><td class="n" id="9x1">
+
+</td></tr><tr><td class="n" id="0x0">
+
+     </td><td class="n" id="1x0">
+
+     </td><td class="n" id="2x0">
+
+     </td><td class="n" id="3x0">
+
+     </td><td class="n" id="4x0">
+
+     </td><td class="n" id="5x0">
+
+     </td><td class="n" id="6x0">
+
+     </td><td class="n" id="7x0">
+
+     </td><td class="n" id="8x0">
+
+     </td><td class="n" id="9x0">
+
+</td></tr></table>
+
+<p id="piece" height="20">:<br>:<br>:<br>:</p>
+
+<table cellpadding="5" border="1"><tr><td>
+Piece
+     </td><td>
+ID
+     </td><td>
+value
+     </td><td>
+Moves (<a href="Betza.html">Betza notation</a>)
+     </td><td>
+Remarks
+</td></tr><tr><td>
+King
+     </td><td>
+K
+     </td><td>
+-
+     </td><td>
+WF
+     </td><td>
+
+</td></tr><tr><td>
+Rook
+     </td><td>
+R
+     </td><td>
+5
+     </td><td>
+WW
+     </td><td>
+Promotes tp Dragon
+</td></tr><tr><td>
+Bishop
+     </td><td>
+B
+     </td><td>
+4
+     </td><td>
+FF
+     </td><td>
+Promotes to Horse
+</td></tr><tr><td>
+Gold
+     </td><td>
+G
+     </td><td>
+4
+     </td><td>
+WfF
+     </td><td>
+
+</td></tr><tr><td>
+Silver
+     </td><td>
+S
+     </td><td>
+3.5
+     </td><td>
+FfW
+     </td><td>
+promotes to Gold
+</td></tr><tr><td>
+Pawn
+     </td><td>
+P
+     </td><td>
+1
+     </td><td>
+fW
+     </td><td>
+promotes to Gold
+</td></tr><tr><td colspan="5">
+Promoted pieces (not initially present)
+</td></tr><tr><td>
+Dragon
+     </td><td>
+D or +R
+     </td><td>
+6
+     </td><td>
+RF
+     </td><td>
+
+</td></tr><tr><td>
+Horse
+     </td><td>
+H or +B
+     </td><td>
+5
+     </td><td>
+BW
+     </td><td>
+
+</td></tr></table>
+<h3>Pawn peculiarities</h3>
+<ul>
+<li>Pawns move <b>and capture</b> straight ahead.</li>
+<li>It is forbidded to have more than one Pawn in the same file.</li>
+<li>It is forbidden to checkmate the opponent with a Pawn drop.</p>
+</ul>
+<h3>General rules</h3>
+<ul>
+<li>The game is won by capturing the opponent's King.</li>
+<li>Pieces captured change color, and are kept in hand by the side who captured them.
+In stead of a normal move, such pieces can be dropped at any later time.</li>
+<li>Pieces cannot be moved or dropped to a location where all their moves would go off board.</li>
+<li>Pieces optionally promote at the end of a move into, in or out of the promotion zone.</li>
+<li>The promotion zone consists of the last rank.</li>
+<li>Pieces obtained by promotion revert to their original form on capture.</li>
+<li>Perpetual checking is forbidden, and would be ruled a loss on the 4-fold repeat.</li>
+<li><b>On other 4-fold repetitions white loses.</b></li>
+</ul>
+<h3>XBoard interface issues</h3>
+<p>
+Mini-Shogi is (not yet) a standard variant in XBoard.
+It has to be played in XBoard by selecting regular Shogi
+after having set the board- and holdings-size overrides in the New Variant dialog all to 5
+(i.e. 5x5 board, and holdings for 5 piece types).
+This is not all, however; the pieceToCharTable has to be changed to tell XBoard that the Lance and Knight do not participate.
+(In regular Shogi they would, but here they would push Silver and Gold out of the holdings!)
+This can unfortunately only be done through command-line options.
+</p>
+<p>
+It is therefore best to put all options needed to massage XBoard into playing this variant in a settings file mini.xop.
+On install .xop files are associated with XBoard, so clicking them would start XBoard with the options in that file.
+You could then set everything in the file needed to start in mini-Shogi mode:
+<pre>
+-variant shogi
+-boardHeight 5
+-boardWidth 5
+-holdingsSize 5
+-pieceToCharTable "P.BR.S...G.+.++.+Kp.br.s...g.+.++.+k"
+</pre>
+Since the game is just a subset of regular Shogi, legality testing can remain on.
+You could also specify your favorite mini-Shogi engine with -fcp in that file.
+</p>
+<p>
+You can drop pieces by dragging them onto the board from the holdings displayed beside the board.
+</p>
+<p>
+Of course there will always be people that prefer an oriental look, with pentagonal kanji tiles.
+XBoard comes with a set of kanji pieces in the 'themes/shogi' sub-directory of its data directory
+(e.g. /usr/local/share/games/xboard).
+You can select that as -pieceImageDirectory (-pid for short) from the command line, or from the View -> Board dialog.
+You would also have to tick 'Flip black pieces Shogi style' there (or use the option <b>-flipBlack true</b>)
+to make sure the pieces won't go upside down when you flip the view.
+</p>
+<h3>Differences with FIDE</h3>
+<p>
+In stead of Queens you have Silver and Gold Generals.
+Pawns capture straight ahead.
+Captured pieces can later be dropped to augment the army of their capturer.
+There is no castling, Pawn double-push or e.p. capture.
+</p>
+<h3>Strategy issues</h3>
+<p>
+Because pieces are dropped back, there will not be a traditional end-game.
+Trading material does not constitute progress towards winning, even when you are ahead.
+</p>
+<p>
+Because Gold Generals obtained through promotion revert to their original form on capture,
+they are really different piece types from the primordial Golds that move the same.
+In notation they are therefore not indicated as 'G', but as the ID of the original piece prefixed with a '+'.
+Especially the promoted Pawn (aka Tokin) is more valuable: it is much better to lose a Gold that gives the opponent a Pawn in hand,
+than to lose a Gold that gives him a Gold in hand.
+</p>
+<p>
+It is a big advantage to have a General on the central square.
+</p>
+<p>
+Pieces in hand are in general worth more than on the board, as they are much more mobile.
+And you can drop them in the promotion for an easy promotion on the next turn.
+But pieces in hand cannot capture anything, and don't guard your promotion zone.
+</p>
+<p>
+</p>
+<p>
+</p>
+</body>
+</html>
