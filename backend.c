@@ -13120,7 +13120,8 @@ SaveGamePGN (FILE *f)
     if (gameInfo.resultDetails != NULL &&
 	gameInfo.resultDetails[0] != NULLCHAR) {
 	char buf[MSG_SIZ], *p = gameInfo.resultDetails;
-	if(gameInfo.result == GameUnfinished && appData.clockMode && !appData.icsActive) // [HGM] adjourn: save clock settings
+	if(gameInfo.result == GameUnfinished && appData.clockMode &&
+	   (gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack || gameMode == TwoMachinesPlay)) // [HGM] adjourn: save clock settings
 	    snprintf(buf, MSG_SIZ, "%s (Clocks: %ld, %ld)", p, whiteTimeRemaining/1000, blackTimeRemaining/1000), p = buf;
 	fprintf(f, "{%s} %s\n\n", p, PGNResult(gameInfo.result));
     } else {
