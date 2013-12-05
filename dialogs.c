@@ -1367,7 +1367,7 @@ ShuffleOK (int n)
 }
 
 static Option shuffleOptions[] = {
-  {   0,  0,   50, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, N_("shuffle") },
+  {   0,  0,    0, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, N_("shuffle") },
   { 0,-1,2000000000, NULL, (void*) &appData.defaultFrcPosition, "", NULL, Spin, N_("Start-position number:") },
   {   0,  0,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, N_("randomize") },
   {   0,  SAME_ROW,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, N_("pick fixed") },
