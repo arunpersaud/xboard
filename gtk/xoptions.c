@@ -1341,8 +1341,8 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             if(option[i].textValue) {
                 gdk_color_parse( option[i].textValue, &color );
                 gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
-                gtk_widget_set_sensitive(button, appData.noChessProgram || option[i].value < 0
-					 || strstr(first.variants, VariantName(option[i].value)));
+                gtk_widget_set_sensitive(button, option[i].value >= 0 && (appData.noChessProgram
+					 || strstr(first.variants, VariantName(option[i].value))));
             }
 
             Pack(hbox, table, button, left, left+1, top, 0);
