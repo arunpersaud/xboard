@@ -2487,13 +2487,17 @@ Refresh (int pathFlag)
     SetWidgetLabel(&browseOptions[0], title);
 }
 
+static char msg1[] = N_("FIRST TYPE DIRECTORY NAME HERE");
+static char msg2[] = N_("TRY ANOTHER NAME");
+
 void
 CreateDir (int n)
 {
     char *name, *errmsg = "";
     GetWidgetText(&browseOptions[n-1], &name);
-    if(!name[0]) errmsg = _("FIRST TYPE DIRECTORY NAME HERE"); else
-    if(mkdir(name, 0755)) errmsg = _("TRY ANOTHER NAME");
+    if(!strcmp(name, msg1) || !strcmp(name, msg2)) return;
+    if(!name[0]) errmsg = _(msg1); else
+    if(mkdir(name, 0755)) errmsg = _(msg2);
     else {
 	chdir(name);
 	Refresh(-1);
