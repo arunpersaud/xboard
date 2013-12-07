@@ -166,7 +166,7 @@ dist_xiangqi_DATA = themes/xiangqi/BlackAdvisor.svg  themes/xiangqi/WhiteAdvisor
 ### directory and files for pixmaps
 
 pixmapsdir = $(gamedatadir)/pixmaps/textures
-dist_pixmaps_DATA = pixmaps/cross32.xpm pixmaps/cross48.xpm pixmaps/board32.xpm pixmaps/board48.xpm pixmaps/ini32.xpm pixmaps/ini48.xpm
+dist_pixmaps_DATA = pixmaps/cross32.png pixmaps/cross48.png pixmaps/board32.png pixmaps/board48.png pixmaps/ini32.png pixmaps/ini48.png
 
 ### directory and files for pngs
 
@@ -213,12 +213,12 @@ if ENABLE_UPDATE_MIMEDB
 		$(XDG_DESKTOP_MENU) install --mode system --novendor xboard-fen-viewer.desktop;\
 		$(XDG_DESKTOP_MENU) install --mode system --novendor xboard-tourney.desktop;\
 		$(XDG_DESKTOP_MENU) install --mode system --novendor xboard-config.desktop;\
-		$(XDG_ICON_RESOURCE) install --context mimetypes --size 32 pixmaps/board32.xpm application-x-chess-pgn;\
-		$(XDG_ICON_RESOURCE) install --context mimetypes --size 32 pixmaps/cross32.xpm application-x-xboard-trn;\
-		$(XDG_ICON_RESOURCE) install --context mimetypes --size 32 pixmaps/ini32.xpm application-x-xboard-opt;\
-		$(XDG_ICON_RESOURCE) install --context mimetypes --size 48 pixmaps/board48.xpm application-x-chess-pgn;\
-		$(XDG_ICON_RESOURCE) install --context mimetypes --size 48 pixmaps/cross48.xpm application-x-xboard-trn;\
-		$(XDG_ICON_RESOURCE) install --context mimetypes --size 48 pixmaps/ini48.xpm application-x-xboard-opt;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 32 pixmaps/board32.png application-x-chess-pgn;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 32 pixmaps/cross32.png application-x-xboard-trn;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 32 pixmaps/ini32.png application-x-xboard-opt;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 48 pixmaps/board48.png application-x-chess-pgn;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 48 pixmaps/cross48.png application-x-xboard-trn;\
+		$(XDG_ICON_RESOURCE) install --context mimetypes --size 48 pixmaps/ini48.png application-x-xboard-opt;\
 	fi
 endif
 
@@ -230,11 +230,11 @@ if ENABLE_UPDATE_MIMEDB
 		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-fen-viewer.desktop;\
 		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-tourney.desktop;\
 		$(XDG_DESKTOP_MENU) uninstall --mode system --novendor xboard-config.desktop;\
-		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 32 board32.xpm application-x-chess-pgn;\
-		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 32 cross32.xpm application-x-xboard-trn;\
-		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 32 ini32.xpm application-x-xboard-opt;\
-		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 board48.xpm application-x-chess-pgn;\
-		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 cross48.xpm application-x-xboard-trn;\
-		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 ini48.xpm application-x-xboard-opt;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 32 board32.png application-x-chess-pgn;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 32 cross32.png application-x-xboard-trn;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 32 ini32.png application-x-xboard-opt;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 board48.png application-x-chess-pgn;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 cross48.png application-x-xboard-trn;\
+		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 ini48.png application-x-xboard-opt;\
 	fi
 endif
