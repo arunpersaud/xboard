@@ -1,415 +1,486 @@
-<html>
-<header>
-<title>CRC</title>
-<link rel=StyleSheet href="./moves.css" type="text/css">
-<script type="text/javascript" src="spartan.js"></script>
-</header>
-<body>
-<h1>Capablanca Random Chess (CRC)</h1>
-<table cellpadding="20"><tr><td>
-<img src="CRC.png">
-</td><td>
-<h3>Initial setup</h3>
-<p>
-There is no fixed setup;
-the back-rank pieces are randomly shuffled with certain restrictions.
-Black's setup is the mirror image of white's, though.
-Both sides have:
-</p><p>
-1 King
-<br>
-1 Queen
-<br>
-1 Chancellor
-<br>
-1 Archbishop
-<br>
-2 Rooks
-<br>
-2 Bishops
-<br>
-2 Knights
-<br>
-a2-j2, a7-j7: Pawns
-</p><p>
-The Bishops must start on different colors.
-The King must start between the Rooks.
-It has been suggested the Bishops should also not start next to each other.
-</p>
-</td></tr></table>
+<!--#include virtual="/server/html5-header.html" -->
+  <title>CRC</title>
+  <link rel="StyleSheet" href="./moves.css" type="text/css">
+  <script type="text/javascript" src="spartan.js">
+</script>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
 
-<h3>Moves at a Glance</h3>
+  <h1>Capablanca Random Chess (CRC)</h1>
 
-<p>Click on a piece below to see its moves</p>
+  <table cellpadding="20">
+    <tr>
+      <td><img src="CRC.png"></td>
 
-<table class="board"><tr><td class="n" id="0x9" onmouseDown="down_click(0,-9)" onmouseUp="up_click()">
-<img src="sym/BlackRook.png">
-     </td><td class="n" id="1x9">
+      <td>
+        <h3>Initial setup</h3>
 
-     </td><td class="n" id="2x9">
+        <p>There is no fixed setup; the back-rank pieces are
+        randomly shuffled with certain restrictions. Black's setup
+        is the mirror image of white's, though. Both sides
+        have:</p>
 
-     </td><td class="n" id="3x9">
+        <p>1 King<br>
+        1 Queen<br>
+        1 Chancellor<br>
+        1 Archbishop<br>
+        2 Rooks<br>
+        2 Bishops<br>
+        2 Knights<br>
+        a2-j2, a7-j7: Pawns</p>
 
-     </td><td class="n" id="4x9">
+        <p>The Bishops must start on different colors. The King
+        must start between the Rooks. It has been suggested the
+        Bishops should also not start next to each other.</p>
+      </td>
+    </tr>
+  </table>
 
-     </td><td class="n" id="5x9" onmouseDown="down_click(5,-9)" onmouseUp="up_click()">
-<img src="sym/BlackKing.png">
-     </td><td class="n" id="6x9">
+  <h3>Moves at a Glance</h3>
 
-     </td><td class="n" id="7x9">
+  <p>Click on a piece below to see its moves</p>
 
-     </td><td class="n" id="8x9">
+  <table class="board">
+    <tr>
+      <td class="n" id="sq0x9" onmousedown="down_click(0,-9)"
+      onmouseup="up_click()"><img src="sym/BlackRook.png"></td>
 
-     </td><td class="n" id="9x9" onmouseDown="down_click(9,9)" onmouseUp="up_click()">
-<img src="sym/BlackRook.png">
-     </td><td class="h">
-<img src="sym/yellow.png">
-     </td><td class="w" rowspan="2" valign="top">
-<p>Sliding capture or non-capture,<br>can be blocked on any square along the ray</p>
-</td></tr><tr><td class="n" id="0x8">
+      <td class="n" id="sq1x9"></td>
 
-     </td><td class="n" id="1x8">
+      <td class="n" id="sq2x9"></td>
 
-     </td><td class="n" id="2x8" onmouseDown="down_click(2,0)" onmouseUp="up_click()">
+      <td class="n" id="sq3x9"></td>
 
-     </td><td class="n" id="3x8">
+      <td class="n" id="sq4x9"></td>
 
-     </td><td class="n" id="4x8">
+      <td class="n" id="sq5x9" onmousedown="down_click(5,-9)"
+      onmouseup="up_click()"><img src="sym/BlackKing.png"></td>
 
-     </td><td class="n" id="5x8">
+      <td class="n" id="sq6x9"></td>
 
-     </td><td class="n" id="6x8">
+      <td class="n" id="sq7x9"></td>
 
-     </td><td class="n" id="7x8">
+      <td class="n" id="sq8x9"></td>
 
-     </td><td class="n" id="8x8">
+      <td class="n" id="sq9x9" onmousedown="down_click(9,9)"
+      onmouseup="up_click()"><img src="sym/BlackRook.png"></td>
 
-     </td><td class="n" id="9x8">
+      <td class="h"><img src="sym/yellow.png"></td>
 
-</td></tr><tr><td class="n" id="0x7">
+      <td class="w" rowspan="2" valign="top">
+        <p>Sliding capture or non-capture,<br>
+        can be blocked on any square along the ray</p>
+      </td>
+    </tr>
 
-     </td><td class="n" id="1x7">
+    <tr>
+      <td class="n" id="sq0x8"></td>
 
-     </td><td class="n" id="2x7">
+      <td class="n" id="sq1x8"></td>
 
-     </td><td class="n" id="3x7">
+      <td class="n" id="sq2x8" onmousedown="down_click(2,0)"
+      onmouseup="up_click()"></td>
 
-     </td><td class="n" id="4x7">
+      <td class="n" id="sq3x8"></td>
 
-     </td><td class="n" id="5x7">
+      <td class="n" id="sq4x8"></td>
 
-     </td><td class="n" id="6x7">
+      <td class="n" id="sq5x8"></td>
 
-     </td><td class="n" id="7x7">
+      <td class="n" id="sq6x8"></td>
 
-     </td><td class="n" id="8x7">
+      <td class="n" id="sq7x8"></td>
 
-     </td><td class="n" id="9x7">
+      <td class="n" id="sq8x8"></td>
 
-     </td><td class="h">
-<img src="sym/orange.png">
-     </td><td class="w">
-Unblockable leap (capture or non-capture)
-</td></tr><tr><td class="n" id="0x6">
+      <td class="n" id="sq9x8"></td>
+    </tr>
 
-     </td><td class="n" id="1x6">
+    <tr>
+      <td class="n" id="sq0x7"></td>
 
-     </td><td class="n" id="2x6">
+      <td class="n" id="sq1x7"></td>
 
-     </td><td class="n" id="3x6">
+      <td class="n" id="sq2x7"></td>
 
-     </td><td class="n" id="4x6">
+      <td class="n" id="sq3x7"></td>
 
-     </td><td class="n" id="5x6" onmouseDown="down_click(5,6)" onmouseUp="up_click()">
-<img src="sym/WhiteArchbishop.png">
-     </td><td class="n" id="6x6">
+      <td class="n" id="sq4x7"></td>
 
-     </td><td class="n" id="7x6">
+      <td class="n" id="sq5x7"></td>
 
-     </td><td class="n" id="8x6">
+      <td class="n" id="sq6x7"></td>
 
-     </td><td class="n" id="9x6">
+      <td class="n" id="sq7x7"></td>
 
-     </td><td class="h">
-<img src="sym/green.png">
-     </td><td class="w">
-Non-capture only
-</td></tr><tr><td class="n" id="0x5">
+      <td class="n" id="sq8x7"></td>
 
-     </td><td class="n" id="1x5">
+      <td class="n" id="sq9x7"></td>
 
-     </td><td class="n" id="2x5">
+      <td class="h"><img src="sym/orange.png"></td>
 
-     </td><td class="n" id="3x5">
+      <td class="w">Unblockable leap (capture or non-capture)</td>
+    </tr>
 
-     </td><td class="n" id="4x5">
+    <tr>
+      <td class="n" id="sq0x6"></td>
 
-     </td><td class="n" id="5x5">
+      <td class="n" id="sq1x6"></td>
 
-     </td><td class="n" id="6x5">
+      <td class="n" id="sq2x6"></td>
 
-     </td><td class="n" id="7x5">
+      <td class="n" id="sq3x6"></td>
 
-     </td><td class="n" id="8x5">
+      <td class="n" id="sq4x6"></td>
 
-     </td><td class="n" id="9x5">
+      <td class="n" id="sq5x6" onmousedown="down_click(5,6)"
+      onmouseup="up_click()"><img src=
+      "sym/WhiteArchbishop.png"></td>
 
-     </td><td class="h">
-<img src="sym/red.png">
-     </td><td class="w">
-Capture only
-</td></tr><tr><td class="n" id="0x4">
+      <td class="n" id="sq6x6"></td>
 
-     </td><td class="n" id="1x4">
+      <td class="n" id="sq7x6"></td>
 
-     </td><td class="n" id="2x4">
+      <td class="n" id="sq8x6"></td>
 
-     </td><td class="n" id="3x4">
+      <td class="n" id="sq9x6"></td>
 
-     </td><td class="n" id="4x4">
+      <td class="h"><img src="sym/green.png"></td>
 
-     </td><td class="n" id="5x4" onmouseDown="down_click(5,4)" onmouseUp="up_click()">
-<img src="sym/WhiteMarshall.png">
-     </td><td class="n" id="6x4">
+      <td class="w">Non-capture only</td>
+    </tr>
 
-     </td><td class="n" id="7x4">
+    <tr>
+      <td class="n" id="sq0x5"></td>
 
-     </td><td class="n" id="8x4">
+      <td class="n" id="sq1x5"></td>
 
-     </td><td class="n" id="9x4">
+      <td class="n" id="sq2x5"></td>
 
-</td></tr><tr><td class="n" id="0x3">
+      <td class="n" id="sq3x5"></td>
 
-     </td><td class="n" id="1x3" onmouseDown="down_click(1,3)" onmouseUp="up_click()">
-<img src="sym/BlackPawn.png">
-     </td><td class="n" id="2x3" onmouseDown="down_click(2,3)" onmouseUp="up_click()">
-<img src="sym/WhitePawn.png">
-     </td><td class="n" id="3x3" onmouseDown="down_click(3,3)" onmouseUp="up_click()">
-<img src="sym/WhiteRook.png">
-     </td><td class="n" id="4x3" onmouseDown="down_click(4,3)" onmouseUp="up_click()">
-<img src="sym/WhiteKnight.png">
-     </td><td class="n" id="5x3" onmouseDown="down_click(5,3)" onmouseUp="up_click()">
-<img src="sym/WhiteQueen.png">
-     </td><td class="n" id="6x3" onmouseDown="down_click(6,3)" onmouseUp="up_click()">
-<img src="sym/WhiteBishop.png">
-     </td><td class="n" id="7x3" onmouseDown="down_click(7,3)" onmouseUp="up_click()">
-<img src="sym/WhiteKing.png">
-     </td><td class="n" id="8x3">
+      <td class="n" id="sq4x5"></td>
 
-     </td><td class="n" id="9x3">
+      <td class="n" id="sq5x5"></td>
 
-</td></tr><tr><td class="n" id="0x2">
+      <td class="n" id="sq6x5"></td>
 
-     </td><td class="n" id="1x2">
+      <td class="n" id="sq7x5"></td>
 
-     </td><td class="n" id="2x2">
+      <td class="n" id="sq8x5"></td>
 
-     </td><td class="n" id="3x2">
+      <td class="n" id="sq9x5"></td>
 
-     </td><td class="n" id="4x2">
+      <td class="h"><img src="sym/red.png"></td>
 
-     </td><td class="n" id="5x2">
+      <td class="w">Capture only</td>
+    </tr>
 
-     </td><td class="n" id="6x2">
+    <tr>
+      <td class="n" id="sq0x4"></td>
 
-     </td><td class="n" id="7x2">
+      <td class="n" id="sq1x4"></td>
 
-     </td><td class="n" id="8x2">
+      <td class="n" id="sq2x4"></td>
 
-     </td><td class="n" id="9x2">
+      <td class="n" id="sq3x4"></td>
 
-</td></tr><tr><td class="n" id="0x1">
+      <td class="n" id="sq4x4"></td>
 
-     </td><td class="n" id="1x1">
+      <td class="n" id="sq5x4" onmousedown="down_click(5,4)"
+      onmouseup="up_click()"><img src="sym/WhiteMarshall.png"></td>
 
-     </td><td class="n" id="2x1" onmouseDown="down_click(-2,1)" onmouseUp="up_click()">
-<img src="sym/WhitePawn.png">
-     </td><td class="n" id="3x1">
+      <td class="n" id="sq6x4"></td>
 
-     </td><td class="n" id="4x1">
+      <td class="n" id="sq7x4"></td>
 
-     </td><td class="n" id="5x1">
+      <td class="n" id="sq8x4"></td>
 
-     </td><td class="n" id="6x1">
+      <td class="n" id="sq9x4"></td>
+    </tr>
 
-     </td><td class="n" id="7x1">
+    <tr>
+      <td class="n" id="sq0x3"></td>
 
-     </td><td class="n" id="8x1">
+      <td class="n" id="sq1x3" onmousedown="down_click(1,3)"
+      onmouseup="up_click()"><img src="sym/BlackPawn.png"></td>
 
-     </td><td class="n" id="9x1">
+      <td class="n" id="sq2x3" onmousedown="down_click(2,3)"
+      onmouseup="up_click()"><img src="sym/WhitePawn.png"></td>
 
-</td></tr><tr><td class="n" id="0x0">
+      <td class="n" id="sq3x3" onmousedown="down_click(3,3)"
+      onmouseup="up_click()"><img src="sym/WhiteRook.png"></td>
 
-     </td><td class="n" id="1x0">
+      <td class="n" id="sq4x3" onmousedown="down_click(4,3)"
+      onmouseup="up_click()"><img src="sym/WhiteKnight.png"></td>
 
-     </td><td class="n" id="2x0">
+      <td class="n" id="sq5x3" onmousedown="down_click(5,3)"
+      onmouseup="up_click()"><img src="sym/WhiteQueen.png"></td>
 
-     </td><td class="n" id="3x0">
+      <td class="n" id="sq6x3" onmousedown="down_click(6,3)"
+      onmouseup="up_click()"><img src="sym/WhiteBishop.png"></td>
 
-     </td><td class="n" id="4x0">
+      <td class="n" id="sq7x3" onmousedown="down_click(7,3)"
+      onmouseup="up_click()"><img src="sym/WhiteKing.png"></td>
 
-     </td><td class="n" id="5x0">
+      <td class="n" id="sq8x3"></td>
 
-     </td><td class="n" id="6x0">
+      <td class="n" id="sq9x3"></td>
+    </tr>
 
-     </td><td class="n" id="7x0">
+    <tr>
+      <td class="n" id="sq0x2"></td>
 
-     </td><td class="n" id="8x0">
+      <td class="n" id="sq1x2"></td>
 
-     </td><td class="n" id="9x0">
+      <td class="n" id="sq2x2"></td>
 
-</td></tr></table>
+      <td class="n" id="sq3x2"></td>
 
-<p id="piece" height="20">:<br>:<br>:<br>:</p>
+      <td class="n" id="sq4x2"></td>
 
-<table cellpadding="5" border="1"><tr><td>
-Piece
-     </td><td>
-ID
-     </td><td>
-value
-     </td><td>
-Moves (<a href="Betza.html">Betza notation</a>)
-     </td><td>
-Remarks
-</td></tr><tr><td>
-King
-     </td><td>
-K
-     </td><td>
--
-     </td><td>
-K
-     </td><td>
-Can castle with Rook, moving 3 steps towards it
-</td></tr><tr><td>
-Queen
-     </td><td>
-Q
-     </td><td>
-9.5
-     </td><td>
-RB or Q
-     </td><td>
-
-</td></tr><tr><td>
-Chancellor
-     </td><td>
-C
-     </td><td>
-9
-     </td><td>
-RN
-     </td><td>
-
-</td></tr><tr><td>
-ArchBishop
-     </td><td>
-A
-     </td><td>
-8.75
-     </td><td>
-BN
-     </td><td>
-
-</td></tr><tr><td>
-Rook
-     </td><td>
-R
-     </td><td>
-5
-     </td><td>
-R
-     </td><td>
-
-</td></tr><tr><td>
-Bishop
-     </td><td>
-B
-     </td><td>
-3.5
-     </td><td>
-B
-     </td><td>
-Color-bound
-</td></tr><tr><td>
-Knight
-     </td><td>
-N
-     </td><td>
-3
-     </td><td>
-N
-     </td><td>
-
-</td></tr><tr><td>
-Pawn
-     </td><td>
-P
-     </td><td>
-1
-     </td><td>
-mfWcfF
-     </td><td>
-Promotes to Q, R, B, or N on reaching last rank
-</td></tr></table>
-<h3>Pawn peculiarities</h3>
-<ul>
-<li>Pawns capture differently from how they move (straight move, diagonal capture).</li>
-<li>Pawns can move two squares ahead from their initial position, provided they are not blocked.</li>
-<li>On the move immediately after such a double push, they can be captured en passant by another Pawn,
-as if they had only moved 1 square ahead.</li>
-<li>Pawns promote to another (non-royal) piece of choice when they reach last rank.</li>
-</ul>
-<h3>Castling</h3>
-<p>
-A King that has not moved before can move to the c1/c8 or i1/i8 in the direction of a Rook that has not moved before,
-in which case that Rook is moved to the square on the other side next to the King.
-This is only allowed if all squares traveled through by King and Rook are empty (after their removal),
-when the King is not in check on the square it came from,
-and would not be in check on any of the squares it skipped over.
-</p>
-<h3>General rules</h3>
-<ul>
-<li>It is not allowed to expose your King to check.</li>
-<li>The game is won by checkmating the opponent's King.</li>
-<li>Stalemate (no legal moves, but not in check) is a draw.</li>
-</ul>
-<p>
-You can use the New Shuffle dialog to control the randomization of the initial position.
-</p>
-<h3>Differences with FIDE</h3>
-<p>
-The Chancellor and Archbishop pieces are extra, and the board is expanded to accomodate them.
-Castling is generalized to allow it with non-standard placement of King and Rooks.
-</p>
-<h3>Strategy issues</h3>
-<p>
-It is not possible to force checkmate on a bare King with just a single Bishop or Knight (in addition to your own King).
-Two Knights cannot do that either.
-The Archbishop can force checkmate against a bare King.
-</p>
-<p>
-Bishops are confined to squares of a single color.
-Having Bishops on both colors compensates this weakness, and is worth an extra 0.5 on top of their added value.
-</p>
-<p>
-As Chancellor and Queen are nearly equal in value to Queen, under-promotion is very common,
-and there is virtually never any need to promote to R, B or N.
-</p>
-<p>
-The super-pieces (Q, C, A) devaluate by the presence of lower-valued opponent pieces.
-As a result trading Q for R + B is in general a good trade when you still have both J,
-as the latter gain in value by eliminating the opponent's R and B,
-which is more compensation than the intrinsic value differene between Q and R + B.
-</p>
-<p>
-</p>
-<p>
-</p>
-<p>
-</p>
-<p>
-</p>
+      <td class="n" id="sq5x2"></td>
+
+      <td class="n" id="sq6x2"></td>
+
+      <td class="n" id="sq7x2"></td>
+
+      <td class="n" id="sq8x2"></td>
+
+      <td class="n" id="sq9x2"></td>
+    </tr>
+
+    <tr>
+      <td class="n" id="sq0x1"></td>
+
+      <td class="n" id="sq1x1"></td>
+
+      <td class="n" id="sq2x1" onmousedown="down_click(-2,1)"
+      onmouseup="up_click()"><img src="sym/WhitePawn.png"></td>
+
+      <td class="n" id="sq3x1"></td>
+
+      <td class="n" id="sq4x1"></td>
+
+      <td class="n" id="sq5x1"></td>
+
+      <td class="n" id="sq6x1"></td>
+
+      <td class="n" id="sq7x1"></td>
+
+      <td class="n" id="sq8x1"></td>
+
+      <td class="n" id="sq9x1"></td>
+    </tr>
+
+    <tr>
+      <td class="n" id="sq0x0"></td>
+
+      <td class="n" id="sq1x0"></td>
+
+      <td class="n" id="sq2x0"></td>
+
+      <td class="n" id="sq3x0"></td>
+
+      <td class="n" id="sq4x0"></td>
+
+      <td class="n" id="sq5x0"></td>
+
+      <td class="n" id="sq6x0"></td>
+
+      <td class="n" id="sq7x0"></td>
+
+      <td class="n" id="sq8x0"></td>
+
+      <td class="n" id="sq9x0"></td>
+    </tr>
+  </table>
+
+  <p id="piece" height="20">:<br>
+  :<br>
+  :<br>
+  :</p>
+
+  <table cellpadding="5" border="1">
+    <tr>
+      <td>Piece</td>
+
+      <td>ID</td>
+
+      <td>value</td>
+
+      <td>Moves (<a href="Betza.html">Betza notation</a>)</td>
+
+      <td>Remarks</td>
+    </tr>
+
+    <tr>
+      <td>King</td>
+
+      <td>K</td>
+
+      <td>-</td>
+
+      <td>K</td>
+
+      <td>Can castle with Rook, moving 3 steps towards it</td>
+    </tr>
+
+    <tr>
+      <td>Queen</td>
+
+      <td>Q</td>
+
+      <td>9.5</td>
+
+      <td>RB or Q</td>
+
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>Chancellor</td>
+
+      <td>C</td>
+
+      <td>9</td>
+
+      <td>RN</td>
+
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>ArchBishop</td>
+
+      <td>A</td>
+
+      <td>8.75</td>
+
+      <td>BN</td>
+
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>Rook</td>
+
+      <td>R</td>
+
+      <td>5</td>
+
+      <td>R</td>
+
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>Bishop</td>
+
+      <td>B</td>
+
+      <td>3.5</td>
+
+      <td>B</td>
+
+      <td>Color-bound</td>
+    </tr>
+
+    <tr>
+      <td>Knight</td>
+
+      <td>N</td>
+
+      <td>3</td>
+
+      <td>N</td>
+
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>Pawn</td>
+
+      <td>P</td>
+
+      <td>1</td>
+
+      <td>mfWcfF</td>
+
+      <td>Promotes to Q, R, B, or N on reaching last rank</td>
+    </tr>
+  </table>
+
+  <h3>Pawn peculiarities</h3>
+
+  <ul>
+    <li>Pawns capture differently from how they move (straight
+    move, diagonal capture).</li>
+
+    <li>Pawns can move two squares ahead from their initial
+    position, provided they are not blocked.</li>
+
+    <li>On the move immediately after such a double push, they can
+    be captured en passant by another Pawn, as if they had only
+    moved 1 square ahead.</li>
+
+    <li>Pawns promote to another (non-royal) piece of choice when
+    they reach last rank.</li>
+  </ul>
+
+  <h3>Castling</h3>
+
+  <p>A King that has not moved before can move to the c1/c8 or
+  i1/i8 in the direction of a Rook that has not moved before, in
+  which case that Rook is moved to the square on the other side
+  next to the King. This is only allowed if all squares traveled
+  through by King and Rook are empty (after their removal), when
+  the King is not in check on the square it came from, and would
+  not be in check on any of the squares it skipped over.</p>
+
+  <h3>General rules</h3>
+
+  <ul>
+    <li>It is not allowed to expose your King to check.</li>
+
+    <li>The game is won by checkmating the opponent's King.</li>
+
+    <li>Stalemate (no legal moves, but not in check) is a
+    draw.</li>
+  </ul>
+
+  <p>You can use the New Shuffle dialog to control the
+  randomization of the initial position.</p>
+
+  <h3>Differences with FIDE</h3>
+
+  <p>The Chancellor and Archbishop pieces are extra, and the board
+  is expanded to accomodate them. Castling is generalized to allow
+  it with non-standard placement of King and Rooks.</p>
+
+  <h3>Strategy issues</h3>
+
+  <p>It is not possible to force checkmate on a bare King with just
+  a single Bishop or Knight (in addition to your own King). Two
+  Knights cannot do that either. The Archbishop can force checkmate
+  against a bare King.</p>
+
+  <p>Bishops are confined to squares of a single color. Having
+  Bishops on both colors compensates this weakness, and is worth an
+  extra 0.5 on top of their added value.</p>
+
+  <p>As Chancellor and Queen are nearly equal in value to Queen,
+  under-promotion is very common, and there is virtually never any
+  need to promote to R, B or N.</p>
+
+  <p>The super-pieces (Q, C, A) devaluate by the presence of
+  lower-valued opponent pieces. As a result trading Q for R + B is
+  in general a good trade when you still have both J, as the latter
+  gain in value by eliminating the opponent's R and B, which is
+  more compensation than the intrinsic value differene between Q
+  and R + B.</p>
+</div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
 </body>
 </html>
