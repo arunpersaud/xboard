@@ -1,7 +1,6 @@
 table.board {
  border-collapse: collapse;
  overflow: hide;
- margin-left: 36px;
 }
 table.board td {
   width: 36px; height: 36px; vertical-align: center;
@@ -22,17 +21,15 @@ table.board td img {
 }
 table.board td.w {
  background: #FFFFFF; color: black; height: 36px; width: 360px;
- padding-left: 36px;
  text-align: left;
 }
 table.board td.b {
  background: #FFFFFF; color: white; height: 72px; width: 36px;
 }
 table.board td.h {
- display: none;
+ background: #FFFFFF; color: white; height: 36px; width: 36px;
 }
 table.board td.n {
  background: #C0C0C0; color: black; height: 36px; width: 36px;
  border: 1px solid black;
 }
-
