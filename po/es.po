@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: GNU xboard 4.7.2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2013-08-28 21:49-0700\n"
-"PO-Revision-Date: 2013-11-29 21:20+0200\n"
+"PO-Revision-Date: 2013-12-07 00:14+0200\n"
 "Last-Translator: Antonio Ceballos <aceballos@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "Language: es\n"
@@ -455,7 +455,6 @@ msgid "Bad tournament file"
 msgstr "Archivo de torneos incorrecto"
 
 #: backend.c:10471
-#, fuzzy
 msgid "Waiting for other game(s)"
 msgstr "Esperando por otra(s) partida(s)"
 
@@ -900,7 +899,7 @@ msgstr "Número de la posición (-1 o -2 = incremento automático):"
 
 #: dialogs.c:282
 msgid "Rewind Index after this many Games (0 = never):"
-msgstr ""
+msgstr "Rebobinar Índice después de este número de Partidas (0 = nunca)"
 
 #: dialogs.c:283
 msgid "Disable own engine books by default"
@@ -1016,7 +1015,7 @@ msgstr "Mostrar casillas objetivo"
 
 #: dialogs.c:385
 msgid "Sticky Windows"
-msgstr ""
+msgstr "Ventanas adhesivas"
 
 #: dialogs.c:386 menus.c:733
 msgid "Test Legality"
@@ -1753,7 +1752,7 @@ msgstr "Color de iluminación de prejugada:"
 
 #: dialogs.c:814
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr ""
+msgstr "Voltear piezas estilo Shogi    (Botones de colores predefinidos)"
 
 #: dialogs.c:816
 msgid "Mono Mode"
