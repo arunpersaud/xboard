@@ -1,514 +1,903 @@
-<html>
-<header>
-<title>(Extended) Betza notation</title>
-</header>
-<body>
-<h1>Extended Betza notation</h1>
-<p>
-Ralph Betza invented a compact notation to encode moves of a piece,
-which is now in wide-spread use for description of Chess variants.
-This page describes a version of it that has been extended in several ways.
-Some of these extensions were embraced from another proposed extension scheme,
-'<span style="background: #00FFFF;">Bex notation</span>' by David Howe, others are entirely new.
-These new extensions from the original Betza notation are <span style="background: yellow;">marked in yellow</span>.
-</p><p>
-Betza notation decomposes the piece into 'atoms',
-which represent the set of all (8-fold-)symmetry-equivalent moves of a certain distance.
-For example all eight Knight moves, or all diagonal moves of the King.
-Each 'atom' is written as a single capital (e.g. N for the Knight moves),
-which is very efficient when you are dealing with pieces that are maximally symmetric
-(which most pieces indeed are).
-Atoms refer to single unblockable leaps of a certain distance.
-Pieces that can repeat the same leap again and again until they encounter an obstacle
-(sliders or riders, such as Rook)
-are very common.
-Those moves are indicated by writing the number of steps the piece can maximally make behind the atom,
-<span style="background: yellow;">where '0' can be used to indicate 'any number of steps'</span>.
-</p>
-<p>
-The choice to treat moves as sets that go in all directions goes at the expense of the compactness when dealing with asymmetric pieces.
-(This is a cheap price to pay, as asymmetric pieces are much less common than fully symmetric ones.)
-To describe moves of asymmetric pieces Betza notation uses <i>lower-case prefixes</i> to identify which sub-set of the atom we mean.
-Such as f (forward) or r (right), or combinarions of those like fr.
-E.g. fR decribes a 'Rook' that only moves in the forward direction (i.e., the Shogi Lance).
-Lower-case prefixes are also used to specify the move is not a general one
-(i.e. valid as capture and non-capture, the normal situation in Chess-like games),
-but can only be used in limited ways (e.g. capture only, non-jumping, capture after jumping).
-</p>
-<h3>The basic atoms</h3>
-<table cellpadding="20"><tr><td>
-<p>
-The following table describes the most important atoms
-</p>
-<table border="1"><tr><th>
-Atom
-</th><th>
-Vector
-</th><th>
-Piece
-</th></tr><tr bgcolor="00FFFF"><td>
-O
-</td><td>
-(0,0)
-</td><td>
-Null move (Taikyoku-Shogi Lion can do this)
-</td></tr><tr><td>
-W
-</td><td>
-(1,0)
-</td><td>
-Wazir (Courier Chess)
-</td></tr><tr><td>
-F
-</td><td>
-(1,1)
-</td><td>
-Ferz (Shatranj)
-</td></tr><tr><td>
-D
-</td><td>
-(2,0)
-</td><td>
-Dababba
-</td></tr><tr><td>
-A
-</td><td>
-(2,2)
-</td><td>
-Alfil (Shatranj)
-</td></tr><tr><td>
-I
-</td><td>
-(3,0)
-</td><td>
-Tripper
-</td></tr><tr><td>
-L
-</td><td>
-(3,1)
-</td><td>
-Long Knight (aka Camel)
-</td></tr><tr><td>
-J
-</td><td>
-(3,2)
-</td><td>
-Zebra
-</td></tr><tr><td>
-G
-</td><td>
-(3,3)
-</td><td>
+<!--#include virtual="/server/html5-header.html" -->
+  <title>(Extended) Betza notation</title>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
 
-</td></tr></table>
-</td><td>
-<p>
-Laid out on the board, (standing at O), <br>the move encoding is as follows:
-<table border="1"><tr><td>
-.</td><td>.</td><td>.</td><td>.</td><td>.</td><td>.</td><td>.</td><td>.</td><td>.
-</td></tr><tr><td>
-.</td><td>G</td><td>J</td><td>L</td><td>H</td><td>L</td><td>J</td><td>G</td><td>.
-</td></tr><tr><td>
-.</td><td>J</td><td>A</td><td>N</td><td>D</td><td>N</td><td>A</td><td>J</td><td>.
-</td></tr><tr><td>
-.</td><td>L</td><td>N</td><td>F</td><td>W</td><td>F</td><td>N</td><td>L</td><td>.
-</td></tr><tr><td>
-.</td><td>H</td><td>D</td><td>W</td><td>O</td><td>W</td><td>D</td><td>H</td><td>.
-</td></tr><tr><td>
-.</td><td>L</td><td>N</td><td>F</td><td>W</td><td>F</td><td>N</td><td>L</td><td>.
-</td></tr><tr><td>
-.</td><td>J</td><td>A</td><td>N</td><td>D</td><td>N</td><td>A</td><td>J</td><td>.
-</td></tr><tr><td>
-.</td><td>G</td><td>J</td><td>L</td><td>H</td><td>L</td><td>J</td><td>G</td><td>.
-</td></tr><tr><td>
-.</td><td>.</td><td>.</td><td>.</td><td>.</td><td>.</td><td>.</td><td>.</td><td>.
-</td></tr></table>
-</p>
-</td></tr></table>
-<p>
-For longer-range atoms no letters are defined.
-In the rare cases they occur, <span style="background: #00FFFF;">these can be written using the numeric coordinates of their leap vector</span>,
-e.g. (4,1) for the Giraffe leap.
-Note this still implies the move goes in all directions (i.e. (4,1) also means (4,-1), (-4,1), (1,4), ...),
-and thus still does a lot for compactness.
-A piece that only leaps 4 forward and 1 left or right would be an f(4,1).
-</p>
+  <h1>Extended Betza notation</h1>
 
-<h3>Modifier prefixes</h3>
-<p>
-The following table lists possible prefixes to the atoms.
-Prefixes can be combined, in which case the sub-sets of move types they correspond to are joined.
-E.g. fb means forward <i>and</i> backward moves (but not sideways).
-So even prefixes with opposite meaning are not really conflicting;
-they could be superfluous, however.
-(E.g. mc would mean both non-capture and capture, which is the default in absence of prefixes anyway.)
-</p>
-<table border="1"><tr><th>
-prefix
-</th><th>
-short for
-</th><th>
-meaning
-</th></tr><tr><th colspan="3">
-Move modality
-</th></tr><tr><td>
-c
-</td><td>
-capture
-</td><td>
-Captures only
-</td></tr><tr><td>
-m
-</td><td>
-move
-</td><td>
-Move but not capture
-</td></tr><tr><th colspan="3">
-Move blocking
-</th></tr><tr><td>
-n
-</td><td>
-non-jumping
-</td><td>
-Cannot jump over occupied square
-</td></tr><tr><td>
-j
-</td><td>
-jump one
-</td><td>
-Must jump exactly one
-</td></tr><tr bgcolor="FFFF00"><td>
-jj
-</td><td>
-jump many
-</td><td>
-Can jump over any number of pieces
-</td></tr><tr><th colspan="3">
-Hopping
-</th></tr><tr><td>
-p
-</td><td>
-Pao (=Canon)
-</td><td>
-<span style="background: #FFFF00;">(Obsolete?)</span> Capture if move jumps over one obstacle, non-capture if it does not jump
-</td></tr><tr><td>
-g
-</td><td>
-Grasshopper
-</td><td>
-<span style="background: #FFFF00;">(Obsolete?)</span> Must land directly behind first obstacle
-</td></tr><tr><td>
-q
-</td><td>
-Circular
-</td><td>
-<span style="background: #FFFF00;">(Obsolete?)</span> Basic step repeated at an angle, until it closes on itself
-</td></tr><tr><td>
-z
-</td><td>
-Zig-zag
-</td><td>
-<span style="background: #FFFF00;">(Obsolete?)</span> Repeat step alternates angle between two values.
-</td></tr><tr><td>
-o
-</td><td>
+  <p>Ralph Betza invented a compact notation to encode moves of a
+  piece, which is now in wide-spread use for description of Chess
+  variants. This page describes a version of it that has been
+  extended in several ways. Some of these extensions were embraced
+  from another proposed extension scheme, '<span style=
+  "background: #00FFFF;">Bex notation</span>' by David Howe, others
+  are entirely new. These new extensions from the original Betza
+  notation are <span style="background: yellow;">marked in
+  yellow</span>.</p>
 
-</td><td>
-wraps around on cylinder board
-</td></tr><tr><th colspan="3">
-directional-subset and other geometry indicators
-</th></tr><tr><td>
-f
-</td><td>
-forward
-</td><td>
-most-forward single or pair of moves of symmetry-equivalent moves
-</td></tr><tr><td>
-b
-</td><td>
-backward
-</td><td>
-most-backward single or pair of moves of symmetry-equivalent moves
-</td></tr><tr><td>
-l
-</td><td>
-left
-</td><td>
-left-most single or pair of moves of symmetry-equivalent moves
-</td></tr><tr><td>
-r
-</td><td>
-right
-</td><td>
-right-most single or pair of moves of symmetry-equivalent moves
-</td></tr><tr><td>
-s
-</td><td>
-sideways
-</td><td>
-short for lr
-</td></tr><tr><td>
-v
-</td><td>
-vertical
-</td><td>
-short for fb
-</td></tr><tr bgcolor="FFFF00"><td>
-a
-</td><td>
-all
-</td><td>
-short for vs (default on atoms specifying complete move, but can be needed in chaining)
-</td></tr><tr><td>
-ff
-</td><td>
-forward
-</td><td>
-obsolete notation for forward-most two of 8 symmetry-equivalent moves
-</td></tr><tr><td>
-fh
-</td><td>
-forward half
-</td><td>
-forward-most four of 8 symmetry-equivalent moves
-</td></tr><tr><td>
-fs
-</td><td>
-sideway-forward
-</td><td>
-fh but not f
-</td></tr><tr><td>
-etc.
-</td><td>
+  <p>Betza notation decomposes the piece into 'atoms', which
+  represent the set of all (8-fold-)symmetry-equivalent moves of a
+  certain distance. For example all eight Knight moves, or all
+  diagonal moves of the King. Each 'atom' is written as a single
+  capital (e.g. N for the Knight moves), which is very efficient
+  when you are dealing with pieces that are maximally symmetric
+  (which most pieces indeed are). Atoms refer to single unblockable
+  leaps of a certain distance. Pieces that can repeat the same leap
+  again and again until they encounter an obstacle (sliders or
+  riders, such as Rook) are very common. Those moves are indicated
+  by writing the number of steps the piece can maximally make
+  behind the atom, <span style="background: yellow;">where '0' can
+  be used to indicate 'any number of steps'</span>.</p>
 
-</td><td>
-Similar for b (bb, bh, bs), l and r
-</td></tr><tr bgcolor="00FFFF"><td>
-i
-</td><td>
-initial
-</td><td>
-Initial move only (for pieces that have not moved yet)
-</td></tr><tr bgcolor="FFFF00"><td>
-e
-</td><td>
-equal
-</td><td>
-equal in length to previous step, measured in board steps (see section on chaining)
-</td></tr></table>
-<p>
-For example, fmWfcF is a Pawn: non-captures forward to a W square, captures to the two forward F squares.
-Pretty complicated, but the Pawn is a very complex piece (asymmetric, and divergent capture/non-capture).
-Note that fr and rf are not the same on 'oblique' (= not orthogonal or diagonal) atoms, which have 8 moves,
-and that they might not be what you intuitively think, as fs = fl + fr.
-<h3>Grouping</h3>
-<p>
-<span style="background: #00FFFF;">Grouping of atoms, modifiers and exponents is possible with parentheses</span>.
-This can be done for readability,
-or for overruling operator priorities.
-(fmW)(fcF) might read more easily than fmWfcF.
-The parentheses do not have any meaning in themselves.
-'Distributivity' also works for modifier prefixes:
-m(AB) where m is a string of modifiers and A and B are atoms, (or expressions grouped in parentheses),
-is defined to mean mAmB.
-Some shortcuts for commonly used combinations of atoms exist;
-these can be seen as implicit grouping of the involved atoms.
-</p>
-<table border="1"><tr><th>
-shortcut
-</th><th>
-stands for
-</th><th>
-orthodox piece
-</th></tr><tr><td>
-K
-</td><td>
-WF
-</td><td>
-King
-</td></tr><tr><td>
-B
-</td><td>
-F0 (FF)
-</td><td>
-Bishop
-</td></tr><tr><td>
-R
-</td><td>
-W0 (WW)
-</td><td>
-Rook
-</td></tr><tr><td>
-Q
-</td><td>
-RB
-</td><td>
-Queen
-</td></tr><tr bgcolor="FFFF00"><td>
-C
-</td><td>
-L
-</td><td>
-Camel
-</td></tr><tr bgcolor="FFFF00"><td>
-Z
-</td><td>
-J
-</td><td>
-Zebra
-</td></tr></table>
+  <p>The choice to treat moves as sets that go in all directions
+  goes at the expense of the compactness when dealing with
+  asymmetric pieces. (This is a cheap price to pay, as asymmetric
+  pieces are much less common than fully symmetric ones.) To
+  describe moves of asymmetric pieces Betza notation uses
+  <i>lower-case prefixes</i> to identify which sub-set of the atom
+  we mean. Such as f (forward) or r (right), or combinarions of
+  those like fr. E.g. fR decribes a 'Rook' that only moves in the
+  forward direction (i.e., the Shogi Lance). Lower-case prefixes
+  are also used to specify the move is not a general one (i.e.
+  valid as capture and non-capture, the normal situation in
+  Chess-like games), but can only be used in limited ways (e.g.
+  capture only, non-jumping, capture after jumping).</p>
 
-<h3>Chaining moves</h3>
-<p>
-When a number of atoms is concatenated, like WF, it joins their move sets.
-So the piece described by WF moves either as W or as F, i.e. one step diagonal, or one step orthogonal.
-That means it is the King of orthodox Chess!
-(From the notation you cannot see whether it is royal yet;
-the main purpose of the notation is to convey how it moves.
-<span STYLE="background-color: yellow;">But a 'k' prefix could be used to indicate royalty</span>, when this is of relevance.)
-</p>
-<p>
-It is also possible to specify that certain moves have to be performed sequentially, one after the other.
-For instance because something of importance happens or should be noted on an intermediate square.
-Such as for pieces that can be blocked on squares they cannot visit ('lame leapers'),
-or that have to hop over other pieces in a specific pattern.
-The simplest example of this, however, is repetition of the same step in the same direction,
-as in sliding or riding pieces, such as a Rook.
-The far moves of such a piece can indeed be blocked by an obstacle closer by on their path,
-although it can then always reach that square itself as well.
-Such moves are indicated by 'exponentiation': a number after the atom indicates how often the step may be repeated.
-E.g. F3 would be a piece that slides diagonally (i.e. like a Bishop), upto a maximum of 3 steps.
-To indicate an arbitrary number of steps can be taken, we use 0 (zero) for the exponent.
-(This because infinity is not in the ASCII character set, and 0 would be pointless when taken at face value.)
-So W0 would be the Rook, sliding arbitrarily far orthogonally, and F0 the Bishop.
-(Old notation for this would be WW and FF, but in the extended context these would be troublesome.)
-</p>
-Not all multi-step moves are as regular as simple sliders, however.
-Some 'bent' sliders can turn corners, for instance.
-The 'Griffon' is an example that first moves one step diagonally, and <b>then</b> continues outward as a Rook.
-It does not have to go beyond the corner, though; just like a normal Rook it can make the first step of its move only.
-And if it encounters something on that first step, it is blocked, and never gets to the rooky part of its move.
-To describe this trajectory we cannot use exponentiation, but have to explicitly write the chain: FtR.
-Here the 't' is the chaining operator, that distinguishes this from FR,
-which would mean a piece that steps one diagonally <b>or</b> moves like Rook (a Shogi Dragon Horse).
-The 't' is because of 'and <b>t</b>hen', but also because the move could be <b>t</b>erminated at that point,
-and there is no requirement to visit the later parts of the specified trajectory.
-</p>
-<p>
-There are other forms of chaining, where the 'connecting square' can not be visited.
-(I.e. no termination there.)
-The Xiangqi Horse moves one orthogonal step, and then (without stopping) one step diagonally outward,
-mimicking the move of a Knight, but blockable on the intermediate square.
-This is written as the chain W-F.
-The chaining operator '-' indicates the move cannot be terminated at that point (ending on the connection square),
-but must continue.
-If it cannot, because the square was occupied, the move described by the chain is considered blocked, and cannot be made.
-</p>
-<table border="1"><tr><th colspan="3">
-Overview of chaining operators
-</th></tr>
-<tr><td>t</td><td>then</td><td>terminate on connection square (if empty or enemy) or continue (if empty).</td></tr>
-<tr bgcolor="FFFF00"><td>-</td><td>block</td><td>must continue if connection square empty; otherwise entire path is considered blocked</td></tr>
-<tr bgcolor="FFFF00"><td>+</td><td>hop</td><td>connection square must be occupied and remains untouched; move must go on from there</td></tr>
-<tr bgcolor="FFFF00"><td>?</td><td>own</td><td>connection square must contain own piece and remains untouched; move must go on from there</td></tr>
-<tr bgcolor="FFFF00"><td>!</td><td>foe</td><td>connection square must contain enemy and remains untouched; move must go on from there</td></tr>
-<tr bgcolor="FFFF00"><td>x</td><td>capture</td><td>connection square must contain enemy, which is captured; move must go on from there</td></tr>
-<tr bgcolor="FFFF00"><td>d</td><td>destroy</td><td>connection square must be occupied, friend or foe there is destroyed; must go on</td></tr>
-<tr bgcolor="FFFF00"><td>y</td><td>split</td><td>connection square is one step before first obstacle; must continue from there</td></tr>
-</table>
-<p>
-Chaining implies continuation in the most similar direction.
-Should you need to deviate from that, e.g. because the trajectory doubles back on itself,
-directional modifiers must be used.
-The continuation steps are to be described in a coordinate system relative to the previous step, however.
-So W-rW-lW makes one step, (say moving North), then turns right for another step (moving East), and then turns left compared to that second step,
-meaning it is moving North again!
-So in the end you arrive at (1,2), over (0,1) and (1,1).
-This is a Knight move that can only be made if both the intermediate squares are empty,
-even worse than the Xiangqi Horse (which at least did not care about (1,1))!
-The latter would be described by W-F.
-The F after '-' would by default mean fF, and in the orientation of the preceding orthogonal step
-this would imply a pair of outward moves, fl + fr.
-</p>
-<p>
-Some examples that use the other operators:
-Q+K is the Grasshopper: it must move as Queen to an occupied square (the 'support'),
-(the first one it encounters, as Queens do not jump!),
-and then continue with a single K step in the same direction (leaving the occupant of the square alone),
-to land on the square directly behind the support.
-where it can capture or just move.
-mRcR+R is the Xiangqi Cannon: the first mR specifies its non-capture move, which is that of a normal Rook.
-The concatenated cR+R is the capturing alternative;
-it moves as R to an occupied square, and then continues as R in the same direction for a capture.
-Note that the 'c' prefix applies to the complete R+R path (a once jumping Rook);
-the operator priorities are such that the binary operators t-+xdy couple more tightly than the prefix modifiers mc.
-The latter are only allowed in front of a complete path, to specify what you can do at the end of it,
-and not on individual steps of the path, where the chaining operators already specify this.
-</p>
-<h3>Weird captures</h3>
-<p>
-The x operator allows description of pieces with unconventional capture,
-as it specifies moving away from the capture square.
-Normal in Chess is of course that you only captured what was on the square you end on.
-But even in orthodox Chess e.p. capture exists as an exception to that.
-It could be written as frmWxlW, which, as we have seen, means frm(WxlW)
-This expreses capture through a W step, and then turning left for a second W step,
-so that overall you make an F step in an L form.
-The frm prefix to this F step means that it can not capture <i>on the final square</i>
-(the Pawn in e.p. capture always goes to an empty square),
-to your forward right.
-I.e. you started moving right, then turned left to move forward.
-So the continuation square you pass over to remove the Pawn is to your right.
-(There is no way to express that you can only do this to Pawns, however, let alone to Pawns that just made a double push.)
-</p>
-<p>
-This shows the general encoding strategy: if you capture pieces not on your destination square, as 'side effect' to the move,
-you lay out a path that tramples all the pieces that are captured, so that the sub-steps are all normal replacement captures.
-E.g. a Checker would be fmFfmFxF. There the fmF part is the non-capture move,
-but the interesting part is the capture:
-one step diagonal (which must be to an occupied square, which we capture),
-and then straight on (which is now 'forward' in the local frame of reference set up by the first step)
-to the next square, for an overall A step.
-This step must be fmA, i.e. in one of the forward diagonal directions, not capturing anything on the square where it lands.
-'Rifle capture' by a Rook would be RxebR, i.e. first capture something in the normal way,
-and then manditorily withdraw in the direction from which you came (b) by an R move of the same length.
-No overall move, but the victim is gone!
-A Ultima Withdrawer, which destroys the adjacent piece from which it moves away, would be written as
-mQmKxbK-Q. The capture part, m(KxbK-Q) specifies capture to the adjacent piece, reversing that step (b) to your square of origin,
-and then mandatorily continuing in that direction with a Queen non-capture move (the victim already in your pocket).
-The hit-and-run or double capture of a Lion would be KxaK: capture the adjacent piece,
-after which you must continue by another King step in any direction relative to the first, capturing a second victim or just moving.
-ven the rifle capture (igui) is included in this.
-Its turn-passing move would be K-bK.
-Which is different from O, because it can only be done if the Lion is adacent to an empty square,
-while a piece that has an O atom can pass uncondiionally.
-For definiteness, when directional modifiers apply to a path that results in a return to the starting square,
-they will be referenced to the direction of the first step of the path.
-</p>
-<h3>More about exponentiation</h3>
-<p>
-Exponentiation by default implies repeated application of the 't' operator.
-But it can be used to indicate repeate application of other operators too.
-<span style="background: #FFFF00;">We define AmN, with A an atom or a group within parentheses, m a string of modifiers, and N a number,
-to mean AmAmAm...mA with N factors A and N-1 operators between them</span>.
-If the modifier string m does not contain one of the chaining operators, it is prefixed with the default 't'.
-If it does not include any directional modifiers, it is suffixed with 'f'.
-So W3 means WtfWtfW, 1 to 3 orthogonal steps in the same direction (which is what the 'f' specifies).
-But W-3 would mean W-fW-fW, which is exactly 3 such steps.
-And Wx3 would be exactly 3 steps where the first 2 mandatorily capture.
-</p>
-<p>
-By including directonal indicators, you can describe curved trajectories.
-Nrf8 would mean NtrfNtrfN..., upto 8 Knight moves, each consecutive move bending ~45 degrees right from the previous one
-(because that is what rf means; the first opportnity to the right that is not straight ahead).
-This describes the Rose!
-Circular riders fit into the system, and there is no need for a separate prefix to describe them.
-With grouping you can do more: (FtlF)r0 expands to FtlFtrFtlFtrFtl..., an arbitrary number of diagonal steps,
-that alternately turn 90 degrees left or right.
-In other words, the Crooked Bishop.
-There is also no real need for the z prefix in this extended Betza notation.
-The exponentiation can describe it much more precisely,
-specifying exactly how Crooked it is.
-</p>
+  <h3>The basic atoms</h3>
+
+  <table cellpadding="20">
+    <tr>
+      <td>
+        <p>The following table describes the most important
+        atoms</p>
+
+        <table border="1">
+          <tr>
+            <th>Atom</th>
+
+            <th>Vector</th>
+
+            <th>Piece</th>
+          </tr>
+
+          <tr bgcolor="#00FFFF">
+            <td>O</td>
+
+            <td>(0,0)</td>
+
+            <td>Null move (Taikyoku-Shogi Lion can do this)</td>
+          </tr>
+
+          <tr>
+            <td>W</td>
+
+            <td>(1,0)</td>
+
+            <td>Wazir (Courier Chess)</td>
+          </tr>
+
+          <tr>
+            <td>F</td>
+
+            <td>(1,1)</td>
+
+            <td>Ferz (Shatranj)</td>
+          </tr>
+
+          <tr>
+            <td>D</td>
+
+            <td>(2,0)</td>
+
+            <td>Dababba</td>
+          </tr>
+
+          <tr>
+            <td>A</td>
+
+            <td>(2,2)</td>
+
+            <td>Alfil (Shatranj)</td>
+          </tr>
+
+          <tr>
+            <td>I</td>
+
+            <td>(3,0)</td>
+
+            <td>Tripper</td>
+          </tr>
+
+          <tr>
+            <td>L</td>
+
+            <td>(3,1)</td>
+
+            <td>Long Knight (aka Camel)</td>
+          </tr>
+
+          <tr>
+            <td>J</td>
+
+            <td>(3,2)</td>
+
+            <td>Zebra</td>
+          </tr>
+
+          <tr>
+            <td>G</td>
+
+            <td>(3,3)</td>
+
+            <td></td>
+          </tr>
+        </table>
+      </td>
+
+      <td>
+        <p>Laid out on the board, (standing at O),<br>
+        the move encoding is as follows:</p>
+
+        <table border="1">
+          <tr>
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+          </tr>
+
+          <tr>
+            <td>.</td>
+
+            <td>G</td>
+
+            <td>J</td>
+
+            <td>L</td>
+
+            <td>H</td>
+
+            <td>L</td>
+
+            <td>J</td>
+
+            <td>G</td>
+
+            <td>.</td>
+          </tr>
+
+          <tr>
+            <td>.</td>
+
+            <td>J</td>
+
+            <td>A</td>
+
+            <td>N</td>
+
+            <td>D</td>
+
+            <td>N</td>
+
+            <td>A</td>
+
+            <td>J</td>
+
+            <td>.</td>
+          </tr>
+
+          <tr>
+            <td>.</td>
+
+            <td>L</td>
+
+            <td>N</td>
+
+            <td>F</td>
+
+            <td>W</td>
+
+            <td>F</td>
+
+            <td>N</td>
+
+            <td>L</td>
+
+            <td>.</td>
+          </tr>
+
+          <tr>
+            <td>.</td>
+
+            <td>H</td>
+
+            <td>D</td>
+
+            <td>W</td>
+
+            <td>O</td>
+
+            <td>W</td>
+
+            <td>D</td>
+
+            <td>H</td>
+
+            <td>.</td>
+          </tr>
+
+          <tr>
+            <td>.</td>
+
+            <td>L</td>
+
+            <td>N</td>
+
+            <td>F</td>
+
+            <td>W</td>
+
+            <td>F</td>
+
+            <td>N</td>
+
+            <td>L</td>
+
+            <td>.</td>
+          </tr>
+
+          <tr>
+            <td>.</td>
+
+            <td>J</td>
+
+            <td>A</td>
+
+            <td>N</td>
+
+            <td>D</td>
+
+            <td>N</td>
+
+            <td>A</td>
+
+            <td>J</td>
+
+            <td>.</td>
+          </tr>
+
+          <tr>
+            <td>.</td>
+
+            <td>G</td>
+
+            <td>J</td>
+
+            <td>L</td>
+
+            <td>H</td>
+
+            <td>L</td>
+
+            <td>J</td>
+
+            <td>G</td>
+
+            <td>.</td>
+          </tr>
+
+          <tr>
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+
+            <td>.</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <p>For longer-range atoms no letters are defined. In the rare
+  cases they occur, <span style="background: #00FFFF;">these can be
+  written using the numeric coordinates of their leap
+  vector</span>, e.g. (4,1) for the Giraffe leap. Note this still
+  implies the move goes in all directions (i.e. (4,1) also means
+  (4,-1), (-4,1), (1,4), ...), and thus still does a lot for
+  compactness. A piece that only leaps 4 forward and 1 left or
+  right would be an f(4,1).</p>
+
+  <h3>Modifier prefixes</h3>
+
+  <p>The following table lists possible prefixes to the atoms.
+  Prefixes can be combined, in which case the sub-sets of move
+  types they correspond to are joined. E.g. fb means forward
+  <i>and</i> backward moves (but not sideways). So even prefixes
+  with opposite meaning are not really conflicting; they could be
+  superfluous, however. (E.g. mc would mean both non-capture and
+  capture, which is the default in absence of prefixes anyway.)</p>
+
+  <table border="1">
+    <tr>
+      <th>prefix</th>
+
+      <th>short for</th>
+
+      <th>meaning</th>
+    </tr>
+
+    <tr>
+      <th colspan="3">Move modality</th>
+    </tr>
+
+    <tr>
+      <td>c</td>
+
+      <td>capture</td>
+
+      <td>Captures only</td>
+    </tr>
+
+    <tr>
+      <td>m</td>
+
+      <td>move</td>
+
+      <td>Move but not capture</td>
+    </tr>
+
+    <tr>
+      <th colspan="3">Move blocking</th>
+    </tr>
+
+    <tr>
+      <td>n</td>
+
+      <td>non-jumping</td>
+
+      <td>Cannot jump over occupied square</td>
+    </tr>
+
+    <tr>
+      <td>j</td>
+
+      <td>jump one</td>
+
+      <td>Must jump exactly one</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>jj</td>
+
+      <td>jump many</td>
+
+      <td>Can jump over any number of pieces</td>
+    </tr>
+
+    <tr>
+      <th colspan="3">Hopping</th>
+    </tr>
+
+    <tr>
+      <td>p</td>
+
+      <td>Pao (=Canon)</td>
+
+      <td><span style="background: #FFFF00;">(Obsolete?)</span>
+      Capture if move jumps over one obstacle, non-capture if it
+      does not jump</td>
+    </tr>
+
+    <tr>
+      <td>g</td>
+
+      <td>Grasshopper</td>
+
+      <td><span style="background: #FFFF00;">(Obsolete?)</span>
+      Must land directly behind first obstacle</td>
+    </tr>
+
+    <tr>
+      <td>q</td>
+
+      <td>Circular</td>
+
+      <td><span style="background: #FFFF00;">(Obsolete?)</span>
+      Basic step repeated at an angle, until it closes on
+      itself</td>
+    </tr>
+
+    <tr>
+      <td>z</td>
+
+      <td>Zig-zag</td>
+
+      <td><span style="background: #FFFF00;">(Obsolete?)</span>
+      Repeat step alternates angle between two values.</td>
+    </tr>
+
+    <tr>
+      <td>o</td>
+
+      <td></td>
+
+      <td>wraps around on cylinder board</td>
+    </tr>
+
+    <tr>
+      <th colspan="3">directional-subset and other geometry
+      indicators</th>
+    </tr>
+
+    <tr>
+      <td>f</td>
+
+      <td>forward</td>
+
+      <td>most-forward single or pair of moves of
+      symmetry-equivalent moves</td>
+    </tr>
+
+    <tr>
+      <td>b</td>
+
+      <td>backward</td>
+
+      <td>most-backward single or pair of moves of
+      symmetry-equivalent moves</td>
+    </tr>
+
+    <tr>
+      <td>l</td>
+
+      <td>left</td>
+
+      <td>left-most single or pair of moves of symmetry-equivalent
+      moves</td>
+    </tr>
+
+    <tr>
+      <td>r</td>
+
+      <td>right</td>
+
+      <td>right-most single or pair of moves of symmetry-equivalent
+      moves</td>
+    </tr>
+
+    <tr>
+      <td>s</td>
+
+      <td>sideways</td>
+
+      <td>short for lr</td>
+    </tr>
+
+    <tr>
+      <td>v</td>
+
+      <td>vertical</td>
+
+      <td>short for fb</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>a</td>
+
+      <td>all</td>
+
+      <td>short for vs (default on atoms specifying complete move,
+      but can be needed in chaining)</td>
+    </tr>
+
+    <tr>
+      <td>ff</td>
+
+      <td>forward</td>
+
+      <td>obsolete notation for forward-most two of 8
+      symmetry-equivalent moves</td>
+    </tr>
+
+    <tr>
+      <td>fh</td>
+
+      <td>forward half</td>
+
+      <td>forward-most four of 8 symmetry-equivalent moves</td>
+    </tr>
+
+    <tr>
+      <td>fs</td>
+
+      <td>sideway-forward</td>
+
+      <td>fh but not f</td>
+    </tr>
+
+    <tr>
+      <td>etc.</td>
+
+      <td></td>
+
+      <td>Similar for b (bb, bh, bs), l and r</td>
+    </tr>
+
+    <tr bgcolor="#00FFFF">
+      <td>i</td>
+
+      <td>initial</td>
+
+      <td>Initial move only (for pieces that have not moved
+      yet)</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>e</td>
+
+      <td>equal</td>
+
+      <td>equal in length to previous step, measured in board steps
+      (see section on chaining)</td>
+    </tr>
+  </table>
+
+  <p>For example, fmWfcF is a Pawn: non-captures forward to a W
+  square, captures to the two forward F squares. Pretty
+  complicated, but the Pawn is a very complex piece (asymmetric,
+  and divergent capture/non-capture). Note that fr and rf are not
+  the same on 'oblique' (= not orthogonal or diagonal) atoms, which
+  have 8 moves, and that they might not be what you intuitively
+  think, as fs = fl + fr.</p>
+
+  <h3>Grouping</h3>
+
+  <p><span style="background: #00FFFF;">Grouping of atoms,
+  modifiers and exponents is possible with parentheses</span>. This
+  can be done for readability, or for overruling operator
+  priorities. (fmW)(fcF) might read more easily than fmWfcF. The
+  parentheses do not have any meaning in themselves.
+  'Distributivity' also works for modifier prefixes: m(AB) where m
+  is a string of modifiers and A and B are atoms, (or expressions
+  grouped in parentheses), is defined to mean mAmB. Some shortcuts
+  for commonly used combinations of atoms exist; these can be seen
+  as implicit grouping of the involved atoms.</p>
+
+  <table border="1">
+    <tr>
+      <th>shortcut</th>
+
+      <th>stands for</th>
+
+      <th>orthodox piece</th>
+    </tr>
+
+    <tr>
+      <td>K</td>
+
+      <td>WF</td>
+
+      <td>King</td>
+    </tr>
+
+    <tr>
+      <td>B</td>
+
+      <td>F0 (FF)</td>
+
+      <td>Bishop</td>
+    </tr>
+
+    <tr>
+      <td>R</td>
+
+      <td>W0 (WW)</td>
+
+      <td>Rook</td>
+    </tr>
+
+    <tr>
+      <td>Q</td>
+
+      <td>RB</td>
+
+      <td>Queen</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>C</td>
+
+      <td>L</td>
+
+      <td>Camel</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>Z</td>
+
+      <td>J</td>
+
+      <td>Zebra</td>
+    </tr>
+  </table>
+
+  <h3>Chaining moves</h3>
+
+  <p>When a number of atoms is concatenated, like WF, it joins
+  their move sets. So the piece described by WF moves either as W
+  or as F, i.e. one step diagonal, or one step orthogonal. That
+  means it is the King of orthodox Chess! (From the notation you
+  cannot see whether it is royal yet; the main purpose of the
+  notation is to convey how it moves. <span style=
+  "background-color: yellow;">But a 'k' prefix could be used to
+  indicate royalty</span>, when this is of relevance.)</p>
+
+  <p>It is also possible to specify that certain moves have to be
+  performed sequentially, one after the other. For instance because
+  something of importance happens or should be noted on an
+  intermediate square. Such as for pieces that can be blocked on
+  squares they cannot visit ('lame leapers'), or that have to hop
+  over other pieces in a specific pattern. The simplest example of
+  this, however, is repetition of the same step in the same
+  direction, as in sliding or riding pieces, such as a Rook. The
+  far moves of such a piece can indeed be blocked by an obstacle
+  closer by on their path, although it can then always reach that
+  square itself as well. Such moves are indicated by
+  'exponentiation': a number after the atom indicates how often the
+  step may be repeated. E.g. F3 would be a piece that slides
+  diagonally (i.e. like a Bishop), upto a maximum of 3 steps. To
+  indicate an arbitrary number of steps can be taken, we use 0
+  (zero) for the exponent. (This because infinity is not in the
+  ASCII character set, and 0 would be pointless when taken at face
+  value.) So W0 would be the Rook, sliding arbitrarily far
+  orthogonally, and F0 the Bishop. (Old notation for this would be
+  WW and FF, but in the extended context these would be
+  troublesome.)</p>Not all multi-step moves are as regular as
+  simple sliders, however. Some 'bent' sliders can turn corners,
+  for instance. The 'Griffon' is an example that first moves one
+  step diagonally, and <b>then</b> continues outward as a Rook. It
+  does not have to go beyond the corner, though; just like a normal
+  Rook it can make the first step of its move only. And if it
+  encounters something on that first step, it is blocked, and never
+  gets to the rooky part of its move. To describe this trajectory
+  we cannot use exponentiation, but have to explicitly write the
+  chain: FtR. Here the 't' is the chaining operator, that
+  distinguishes this from FR, which would mean a piece that steps
+  one diagonally <b>or</b> moves like Rook (a Shogi Dragon Horse).
+  The 't' is because of 'and <b>t</b>hen', but also because the
+  move could be <b>t</b>erminated at that point, and there is no
+  requirement to visit the later parts of the specified trajectory.
+
+  <p>There are other forms of chaining, where the 'connecting
+  square' can not be visited. (I.e. no termination there.) The
+  Xiangqi Horse moves one orthogonal step, and then (without
+  stopping) one step diagonally outward, mimicking the move of a
+  Knight, but blockable on the intermediate square. This is written
+  as the chain W-F. The chaining operator '-' indicates the move
+  cannot be terminated at that point (ending on the connection
+  square), but must continue. If it cannot, because the square was
+  occupied, the move described by the chain is considered blocked,
+  and cannot be made.</p>
+
+  <table border="1">
+    <tr>
+      <th colspan="3">Overview of chaining operators</th>
+    </tr>
+
+    <tr>
+      <td>t</td>
+
+      <td>then</td>
+
+      <td>terminate on connection square (if empty or enemy) or
+      continue (if empty).</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>-</td>
+
+      <td>block</td>
+
+      <td>must continue if connection square empty; otherwise
+      entire path is considered blocked</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>+</td>
+
+      <td>hop</td>
+
+      <td>connection square must be occupied and remains untouched;
+      move must go on from there</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>?</td>
+
+      <td>own</td>
+
+      <td>connection square must contain own piece and remains
+      untouched; move must go on from there</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>!</td>
+
+      <td>foe</td>
+
+      <td>connection square must contain enemy and remains
+      untouched; move must go on from there</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>x</td>
+
+      <td>capture</td>
+
+      <td>connection square must contain enemy, which is captured;
+      move must go on from there</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>d</td>
+
+      <td>destroy</td>
+
+      <td>connection square must be occupied, friend or foe there
+      is destroyed; must go on</td>
+    </tr>
+
+    <tr bgcolor="#FFFF00">
+      <td>y</td>
+
+      <td>split</td>
+
+      <td>connection square is one step before first obstacle; must
+      continue from there</td>
+    </tr>
+  </table>
+
+  <p>Chaining implies continuation in the most similar direction.
+  Should you need to deviate from that, e.g. because the trajectory
+  doubles back on itself, directional modifiers must be used. The
+  continuation steps are to be described in a coordinate system
+  relative to the previous step, however. So W-rW-lW makes one
+  step, (say moving North), then turns right for another step
+  (moving East), and then turns left compared to that second step,
+  meaning it is moving North again! So in the end you arrive at
+  (1,2), over (0,1) and (1,1). This is a Knight move that can only
+  be made if both the intermediate squares are empty, even worse
+  than the Xiangqi Horse (which at least did not care about (1,1))!
+  The latter would be described by W-F. The F after '-' would by
+  default mean fF, and in the orientation of the preceding
+  orthogonal step this would imply a pair of outward moves, fl +
+  fr.</p>
+
+  <p>Some examples that use the other operators: Q+K is the
+  Grasshopper: it must move as Queen to an occupied square (the
+  'support'), (the first one it encounters, as Queens do not
+  jump!), and then continue with a single K step in the same
+  direction (leaving the occupant of the square alone), to land on
+  the square directly behind the support. where it can capture or
+  just move. mRcR+R is the Xiangqi Cannon: the first mR specifies
+  its non-capture move, which is that of a normal Rook. The
+  concatenated cR+R is the capturing alternative; it moves as R to
+  an occupied square, and then continues as R in the same direction
+  for a capture. Note that the 'c' prefix applies to the complete
+  R+R path (a once jumping Rook); the operator priorities are such
+  that the binary operators t-+xdy couple more tightly than the
+  prefix modifiers mc. The latter are only allowed in front of a
+  complete path, to specify what you can do at the end of it, and
+  not on individual steps of the path, where the chaining operators
+  already specify this.</p>
+
+  <h3>Weird captures</h3>
+
+  <p>The x operator allows description of pieces with
+  unconventional capture, as it specifies moving away from the
+  capture square. Normal in Chess is of course that you only
+  captured what was on the square you end on. But even in orthodox
+  Chess e.p. capture exists as an exception to that. It could be
+  written as frmWxlW, which, as we have seen, means frm(WxlW) This
+  expreses capture through a W step, and then turning left for a
+  second W step, so that overall you make an F step in an L form.
+  The frm prefix to this F step means that it can not capture <i>on
+  the final square</i> (the Pawn in e.p. capture always goes to an
+  empty square), to your forward right. I.e. you started moving
+  right, then turned left to move forward. So the continuation
+  square you pass over to remove the Pawn is to your right. (There
+  is no way to express that you can only do this to Pawns, however,
+  let alone to Pawns that just made a double push.)</p>
+
+  <p>This shows the general encoding strategy: if you capture
+  pieces not on your destination square, as 'side effect' to the
+  move, you lay out a path that tramples all the pieces that are
+  captured, so that the sub-steps are all normal replacement
+  captures. E.g. a Checker would be fmFfmFxF. There the fmF part is
+  the non-capture move, but the interesting part is the capture:
+  one step diagonal (which must be to an occupied square, which we
+  capture), and then straight on (which is now 'forward' in the
+  local frame of reference set up by the first step) to the next
+  square, for an overall A step. This step must be fmA, i.e. in one
+  of the forward diagonal directions, not capturing anything on the
+  square where it lands. 'Rifle capture' by a Rook would be RxebR,
+  i.e. first capture something in the normal way, and then
+  manditorily withdraw in the direction from which you came (b) by
+  an R move of the same length. No overall move, but the victim is
+  gone! A Ultima Withdrawer, which destroys the adjacent piece from
+  which it moves away, would be written as mQmKxbK-Q. The capture
+  part, m(KxbK-Q) specifies capture to the adjacent piece,
+  reversing that step (b) to your square of origin, and then
+  mandatorily continuing in that direction with a Queen non-capture
+  move (the victim already in your pocket). The hit-and-run or
+  double capture of a Lion would be KxaK: capture the adjacent
+  piece, after which you must continue by another King step in any
+  direction relative to the first, capturing a second victim or
+  just moving. ven the rifle capture (igui) is included in this.
+  Its turn-passing move would be K-bK. Which is different from O,
+  because it can only be done if the Lion is adacent to an empty
+  square, while a piece that has an O atom can pass uncondiionally.
+  For definiteness, when directional modifiers apply to a path that
+  results in a return to the starting square, they will be
+  referenced to the direction of the first step of the path.</p>
+
+  <h3>More about exponentiation</h3>
+
+  <p>Exponentiation by default implies repeated application of the
+  't' operator. But it can be used to indicate repeate application
+  of other operators too. <span style="background: #FFFF00;">We
+  define AmN, with A an atom or a group within parentheses, m a
+  string of modifiers, and N a number, to mean AmAmAm...mA with N
+  factors A and N-1 operators between them</span>. If the modifier
+  string m does not contain one of the chaining operators, it is
+  prefixed with the default 't'. If it does not include any
+  directional modifiers, it is suffixed with 'f'. So W3 means
+  WtfWtfW, 1 to 3 orthogonal steps in the same direction (which is
+  what the 'f' specifies). But W-3 would mean W-fW-fW, which is
+  exactly 3 such steps. And Wx3 would be exactly 3 steps where the
+  first 2 mandatorily capture.</p>
+
+  <p>By including directonal indicators, you can describe curved
+  trajectories. Nrf8 would mean NtrfNtrfN..., upto 8 Knight moves,
+  each consecutive move bending ~45 degrees right from the previous
+  one (because that is what rf means; the first opportnity to the
+  right that is not straight ahead). This describes the Rose!
+  Circular riders fit into the system, and there is no need for a
+  separate prefix to describe them. With grouping you can do more:
+  (FtlF)r0 expands to FtlFtrFtlFtrFtl..., an arbitrary number of
+  diagonal steps, that alternately turn 90 degrees left or right.
+  In other words, the Crooked Bishop. There is also no real need
+  for the z prefix in this extended Betza notation. The
+  exponentiation can describe it much more precisely, specifying
+  exactly how Crooked it is.</p>
+
+ </div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
 </body>
 </html>

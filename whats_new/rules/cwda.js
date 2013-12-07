@@ -9,7 +9,7 @@ var size = 10;
 var bw = 0;
 
 function set(x, y, n) {
-  sq = x + 'x' + y;
+  sq = 'sq' + x + 'x' + y;
   if(n > 0) {
     board[x][y] = document.getElementById(sq).innerHTML;
     if(n == 2)
@@ -259,7 +259,7 @@ function down_click(x, y) {
       initDone = 1;
       board = new Array();
       for(i=0; i<12; i = i + 1) board[i] = new Array();
-      if(document.getElementById('0x0').innerHTML[1] == ' ') bw = 1;
+      if(document.getElementById('sq0x0').innerHTML[1] == ' ') bw = 1;
    }
    if(down) return;
    if(y < 0) {
@@ -277,7 +277,7 @@ function down_click(x, y) {
 function up_click() {
    highlight(savx, savy, msg, 0);
    down = 0;
-//   document.getElementById(x + 'x' + y).innerHTML = save;
+//   document.getElementById('sq' + x + 'x' + y).innerHTML = save;
 }
 
 

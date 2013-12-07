@@ -1,159 +1,382 @@
-<html>
-<header>
-<title>Variants supported by XBoard</title>
-</header>
-<body>
-<img src="../winboardF.jpg">
-<h1>Chess variants supported by XBoard</h1>
-<p>
-Next to orthodox Chess (aka FIDE or Mad Queen), XBoard supports many other Chess variants.
-This includes the World's major forms of Chess: Chinese, FIDE, Japanese, and Thai Chess.
-But also many popular western variants (Suicide Chess, Crazyhouse, Chess960, Gothic/Capablanca Chess, Seirawan Chess).
-</p>
-<p>
-Full support by XBoard means that the latter is fully aware of how all pieces move, and what the winning condition is.
-This means the variant can be played with the option Test Legality switched on,
-and that it can accurately check any result claims that engines make.
-Non-supported variants can often be played with legality checking switched off.
-Then any of the 22 piece types known by XBoard can be used in ways XBoard does not expect.
-The only real drawback of this is that the game notation looks a bit crummy,
-with many spurious or missing disambiguators, check and checkmate symbols.
-XBoard will always be able to read suh games back, however (as on reading it suffers from the same misconceptions on piece movement).
-This can be kept baerable by choosing XBoard supported pieces to represent the unsupported ones that
-move as similar as possible.
-</p>
-<p>
-Some variants are only partially supported.
-This means they have to be played with legality checking off,
-although XBoard knows they exist, and even implements some of their rules that no other variant would allow.
-For instance, in Berolina Chess Pawns move diagonally, and in any other variant this would lead to disappearence
-of other Pawns during the game, as normally XBoard interprets a diagonal Pawn move to an empty square as e.p. capture.
-</p>
-<p>
-The following list tries to group all variants by properties.
-Some duplicates occur when a variant fits in more than one group.
-</p>
-<h3>List of supported variants</h3>
-<table><tr><td bgcolor="FFFF80">
+<!--#include virtual="/server/html5-header.html" -->
+  <title>Variants supported by XBoard</title>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
+  <h1>Chess variants supported by XBoard</h1>
 
-</td><td>
-= recommended
-</td></tr><tr><td>
-<a href="Chess.html">FIDE Chess</a></td><td>The modern international game, second in popularity only to Xiangqi
-</td></tr><tr><td colspan="2">
-<b>Shuffle games with normal pieces</b>
-</td></tr><tr><td>
-<a href="Wild.html">Wild Castle</a></td><td>Shuffles the initial FIDE setup, leaving King and Rooks in place
-</td></tr><tr><td>
-<a href="No.html">No Castle</a></td><td>More aggressive shuffling of the initial FIDE setup, without castling
-</td></tr><tr><td>
-<a href="FRC.html">Chess960</a></td><td>A Shuffle variant where even Kings and Rooks in non-standard location can castle
-</td></tr><tr><td colspan="2">
-<b>Variants with piece drops</b>
-</td></tr><tr><td>
-<a href="Crazy.html">Crazyhouse</a></td><td>Pieces you capture are added to your army, by dropping them back onto the board
-</td></tr><tr><td>
-Bughouse</td><td>four-player game that XBoard can only play with the aid of an Internet Chess Server
-</td></tr><tr><td>
-<a href="Shogi.html">Shogi</a></td><td>Japanese Chess, where pieces you captured can be dropped to strengthen your own army
-</td></tr><tr><td bgcolor="FFFF80">
-<a href="Mini.html">mini-Shogi</a></td><td>Highly simplified and very tactical mini version of Shogi (on 5x5 board)
-</td></tr><tr><td colspan="2">
-<b>Unusual winning conditions</b>
-</td></tr><tr><td>
-<a href="Suicide.html">Suicide Chess</a></td><td>Win by getting rid of all your material by mandatory capture
-</td></tr><tr><td>
-<a href="Giveaway.html">Give-Away Chess</a></td><td>Win by getting rid of all your material by mandatory capture
-</td></tr><tr><td>
-<a href="Losers.html">Losers Chess</a></td><td>Win by being left with a bare King
-</td></tr><tr><td>
-<a href="3checks.html">3-checks</a></td><td>Lose by being checked 3 times
-</td></tr><tr><td colspan="2">
-<b>Variants with various intrusive rules</b>
-</td></tr><tr><td>
-<a href="Atomic.html">Atomic Chess</a></td><td>Pieces that capture explode, destroying anything in the vicinity
-</td></tr><tr><td>
-<a href="Cylinder.html">Cylinder Chess</a></td><td>The a-file and h-file connect to make the board a cylinder
-</td></tr><tr><td>
-<a href="TwoKings.html">TwoKings</a></td><td>Play with two Kings, changing which one is royal during the game
-</td></tr><tr><td colspan="2">
-<b>Variants where just a few pieces move in unorthodox ways</b>
-</td></tr><tr><td>
-<a href="Shatranj.html">Shatranj</a></td><td>Ancient Arabic/Persian Chess, with primitive Queen and Bishops
-</td></tr><tr><td>
-<a href="Berolina.html">Berolina Chess</a></td><td>Pawns capture straight ahead, and move diagonally
-</td></tr><tr><td>
-<a href="ASEAN.html">ASEAN</a></td><td>South-East Asian Chess, a modernized version of Makruk
-</td></tr><tr><td bgcolor="FFFF80">
-<a href="Knightmate.html">Knightmate</a></td><td>Try to checkmate a single Royal Knight with (amongst others) two non-royal Kings
-</td></tr><tr><td>
-<a href="Falcon.html">Falcon Chess</a></td><td>Two (Rook-class) Falcon pieces augment FIDE on a 10-wide board
-</td></tr><tr><td bgcolor="FFFF80">
-<a href="Lion.html">Mighty-Lion Chess</a></td><td>All-powerful Lions can capture other pieces en-passant, or two pieces at once
-</td></tr><tr><td colspan="2">
-<b>Variants with extra Rook-Knight and Bishop-Knight compound pieces</b>
-</td></tr><tr><td>
-<a href="Seirawan.html">Seirawan Chess</a></td><td>Two extra super-pieces can be 'gated' onto the board during the opening
-</td></tr><tr><td>
-<a href="Capablanca.html">Capablanca Chess</a></td><td>Two super-pieces are added to FIDE on a 10-wide board
-</td></tr><tr><td bgcolor="FFFF80">
-<a href="Gothic.html">Gothic Chess</a></td><td>Two super-pieces are added to FIDE on a 10-wide board, with stream-lined initial setup
-</td></tr><tr><td>
-<a href="Janus.html">Janus Chess</a></td><td>Two Janus super-pieces (B-N compounds) are added to FIDE on a 10-wide board
-</td></tr><tr><td>
-<a href="CRC.html">Capablanca Random Chess</a></td><td>Capablanca Chess with shuffled initial setup, with generalized castling rules
-</td></tr><tr><td>
-<a href="Grand.html">Grand Chess</a></td><td>Chess on a 10x10 board with two extra super-pieces
-</td></tr><tr><td colspan="2">
-<b>Oriental forms of Chess</b>
-</td></tr><tr><td>
-<a href="Xiangqi.html">Xiangqi</a></td><td>Chinese Chess, where the King is confined to a Palace
-</td></tr><tr><td>
-<a href="Shogi.html">Shogi</a></td><td>Japanese Chess, where pieces you captured can be dropped to strengthen your own army
-</td></tr><tr><td>
-<a href="Sho.html">Sho Shogi</a></td><td>Ancient precurser of the modern Japanese 9x9 Shogi game (without drops)
-</td></tr><tr><td bgcolor="FFFF80">
-<a href="Chu.html">Chu Shogi</a></td><td>Ancient Japanese Chess with many pieces on a 12x12 board, and a Lion super-piece
-</td></tr><tr><td>
-<a href="Makruk.html">Makruk</a></td><td>Thai Chess, with an interesting Elephant piece
-</td></tr><tr><td>
-<a href="ASEAN.html">ASEAN</a></td><td>South-East Asian Chess, a modernized version of Makruk
-</td></tr><tr><td colspan="2">
-<b>Variants with mostly un-orthodox pieces</b>
-</td></tr><tr><td>
-<a href="Courier.html">Courier Chess</a></td><td>Mediaval precursor of Chess, combining Shatranj with modern pieces on a wide board
-</td></tr><tr><td>
-<a href="Super.html">Superchess</a></td><td>Randomly picked unorthodox pieces of many kinds replace some of your FIDE pieces
-</td></tr><tr><td>
-<a href="Great.html">Great Shatranj</a></td><td>Version of Capablanca Chess that replaces all sliding moves by 2-square jumps
-</td></tr><tr><td bgcolor="FFFF80">
-<a href="Spartan.html">Spartan Chess</a></td><td>Two different armies (Persians and Spartans, the latter lead by two Kings) battle each other
-</td></tr><tr><td>
-<a href="CWDA.html">Chess with Different Armies</a></td><td>Pick one of a set of (mostly) unsual armies to battle a completely different army
-</td></tr><tr><td bgcolor="FFFF80">
-<a href="Chu.html">Chu Shogi</a></td><td>Ancient Japanese Chess with many pieces on a 12x12 board, and a Lion super-piece
-</td></tr><tr><td>
-<a href="ChuChess.html">Chu Chess</a></td><td>Intermediate between Chess and Chu shogi, on a 10x10 board
-</td></tr><tr><td>
-<a href="">Cambodian Chess</a></td><td>
-</td></tr><tr><td>
-<a href="">Ai-Wok Makruk</a></td><td>
-</td></tr></table>
-<p>
-</p>
-<p>
-</p>
-<p>
-</p>
-<p>
-</p>
-<p>
-</p>
-<p>
-</p>
-<p>
-</p>
-<iframe src="http://hgm.nubati.net/cgi-bin/count.cgi?P=12" width="130" height="40"></iframe>
+  <p>Next to orthodox Chess (aka FIDE or Mad Queen), XBoard
+  supports many other Chess variants. This includes the World's
+  major forms of Chess: Chinese, FIDE, Japanese, and Thai Chess.
+  But also many popular western variants (Suicide Chess,
+  Crazyhouse, Chess960, Gothic/Capablanca Chess, Seirawan
+  Chess).</p>
 
+  <p>Full support by XBoard means that the latter is fully aware of
+  how all pieces move, and what the winning condition is. This
+  means the variant can be played with the option Test Legality
+  switched on, and that it can accurately check any result claims
+  that engines make. Non-supported variants can often be played
+  with legality checking switched off. Then any of the 22 piece
+  types known by XBoard can be used in ways XBoard does not expect.
+  The only real drawback of this is that the game notation looks a
+  bit crummy, with many spurious or missing disambiguators, check
+  and checkmate symbols. XBoard will always be able to read suh
+  games back, however (as on reading it suffers from the same
+  misconceptions on piece movement). This can be kept baerable by
+  choosing XBoard supported pieces to represent the unsupported
+  ones that move as similar as possible.</p>
+
+  <p>Some variants are only partially supported. This means they
+  have to be played with legality checking off, although XBoard
+  knows they exist, and even implements some of their rules that no
+  other variant would allow. For instance, in Berolina Chess Pawns
+  move diagonally, and in any other variant this would lead to
+  disappearence of other Pawns during the game, as normally XBoard
+  interprets a diagonal Pawn move to an empty square as e.p.
+  capture.</p>
+
+  <p>The following list tries to group all variants by properties.
+  Some duplicates occur when a variant fits in more than one
+  group.</p>
+
+  <h3>List of supported variants</h3>
+
+  <table>
+    <tr>
+      <td bgcolor="#FFFF80"></td>
+
+      <td>= recommended</td>
+    </tr>
+
+    <tr>
+      <td><a href="Chess.html">FIDE Chess</a></td>
+
+      <td>The modern international game, second in popularity only
+      to Xiangqi</td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><b>Shuffle games with normal pieces</b></td>
+    </tr>
+
+    <tr>
+      <td><a href="Wild.html">Wild Castle</a></td>
+
+      <td>Shuffles the initial FIDE setup, leaving King and Rooks
+      in place</td>
+    </tr>
+
+    <tr>
+      <td><a href="No.html">No Castle</a></td>
+
+      <td>More aggressive shuffling of the initial FIDE setup,
+      without castling</td>
+    </tr>
+
+    <tr>
+      <td><a href="FRC.html">Chess960</a></td>
+
+      <td>A Shuffle variant where even Kings and Rooks in
+      non-standard location can castle</td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><b>Variants with piece drops</b></td>
+    </tr>
+
+    <tr>
+      <td><a href="Crazy.html">Crazyhouse</a></td>
+
+      <td>Pieces you capture are added to your army, by dropping
+      them back onto the board</td>
+    </tr>
+
+    <tr>
+      <td>Bughouse</td>
+
+      <td>four-player game that XBoard can only play with the aid
+      of an Internet Chess Server</td>
+    </tr>
+
+    <tr>
+      <td><a href="Shogi.html">Shogi</a></td>
+
+      <td>Japanese Chess, where pieces you captured can be dropped
+      to strengthen your own army</td>
+    </tr>
+
+    <tr>
+      <td bgcolor="#FFFF80"><a href="Mini.html">mini-Shogi</a></td>
+
+      <td>Highly simplified and very tactical mini version of Shogi
+      (on 5x5 board)</td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><b>Unusual winning conditions</b></td>
+    </tr>
+
+    <tr>
+      <td><a href="Suicide.html">Suicide Chess</a></td>
+
+      <td>Win by getting rid of all your material by mandatory
+      capture</td>
+    </tr>
+
+    <tr>
+      <td><a href="Giveaway.html">Give-Away Chess</a></td>
+
+      <td>Win by getting rid of all your material by mandatory
+      capture</td>
+    </tr>
+
+    <tr>
+      <td><a href="Losers.html">Losers Chess</a></td>
+
+      <td>Win by being left with a bare King</td>
+    </tr>
+
+    <tr>
+      <td><a href="3checks.html">3-checks</a></td>
+
+      <td>Lose by being checked 3 times</td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><b>Variants with various intrusive
+      rules</b></td>
+    </tr>
+
+    <tr>
+      <td><a href="Atomic.html">Atomic Chess</a></td>
+
+      <td>Pieces that capture explode, destroying anything in the
+      vicinity</td>
+    </tr>
+
+    <tr>
+      <td><a href="Cylinder.html">Cylinder Chess</a></td>
+
+      <td>The a-file and h-file connect to make the board a
+      cylinder</td>
+    </tr>
+
+    <tr>
+      <td><a href="TwoKings.html">TwoKings</a></td>
+
+      <td>Play with two Kings, changing which one is royal during
+      the game</td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><b>Variants where just a few pieces move in
+      unorthodox ways</b></td>
+    </tr>
+
+    <tr>
+      <td><a href="Shatranj.html">Shatranj</a></td>
+
+      <td>Ancient Arabic/Persian Chess, with primitive Queen and
+      Bishops</td>
+    </tr>
+
+    <tr>
+      <td><a href="Berolina.html">Berolina Chess</a></td>
+
+      <td>Pawns capture straight ahead, and move diagonally</td>
+    </tr>
+
+    <tr>
+      <td><a href="ASEAN.html">ASEAN</a></td>
+
+      <td>South-East Asian Chess, a modernized version of
+      Makruk</td>
+    </tr>
+
+    <tr>
+      <td bgcolor="#FFFF80"><a href=
+      "Knightmate.html">Knightmate</a></td>
+
+      <td>Try to checkmate a single Royal Knight with (amongst
+      others) two non-royal Kings</td>
+    </tr>
+
+    <tr>
+      <td><a href="Falcon.html">Falcon Chess</a></td>
+
+      <td>Two (Rook-class) Falcon pieces augment FIDE on a 10-wide
+      board</td>
+    </tr>
+
+    <tr>
+      <td bgcolor="#FFFF80"><a href="Lion.html">Mighty-Lion
+      Chess</a></td>
+
+      <td>All-powerful Lions can capture other pieces en-passant,
+      or two pieces at once</td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><b>Variants with extra Rook-Knight and
+      Bishop-Knight compound pieces</b></td>
+    </tr>
+
+    <tr>
+      <td><a href="Seirawan.html">Seirawan Chess</a></td>
+
+      <td>Two extra super-pieces can be 'gated' onto the board
+      during the opening</td>
+    </tr>
+
+    <tr>
+      <td><a href="Capablanca.html">Capablanca Chess</a></td>
+
+      <td>Two super-pieces are added to FIDE on a 10-wide
+      board</td>
+    </tr>
+
+    <tr>
+      <td bgcolor="#FFFF80"><a href="Gothic.html">Gothic
+      Chess</a></td>
+
+      <td>Two super-pieces are added to FIDE on a 10-wide board,
+      with stream-lined initial setup</td>
+    </tr>
+
+    <tr>
+      <td><a href="Janus.html">Janus Chess</a></td>
+
+      <td>Two Janus super-pieces (B-N compounds) are added to FIDE
+      on a 10-wide board</td>
+    </tr>
+
+    <tr>
+      <td><a href="CRC.html">Capablanca Random Chess</a></td>
+
+      <td>Capablanca Chess with shuffled initial setup, with
+      generalized castling rules</td>
+    </tr>
+
+    <tr>
+      <td><a href="Grand.html">Grand Chess</a></td>
+
+      <td>Chess on a 10x10 board with two extra super-pieces</td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><b>Oriental forms of Chess</b></td>
+    </tr>
+
+    <tr>
+      <td><a href="Xiangqi.html">Xiangqi</a></td>
+
+      <td>Chinese Chess, where the King is confined to a
+      Palace</td>
+    </tr>
+
+    <tr>
+      <td><a href="Shogi.html">Shogi</a></td>
+
+      <td>Japanese Chess, where pieces you captured can be dropped
+      to strengthen your own army</td>
+    </tr>
+
+    <tr>
+      <td><a href="Sho.html">Sho Shogi</a></td>
+
+      <td>Ancient precurser of the modern Japanese 9x9 Shogi game
+      (without drops)</td>
+    </tr>
+
+    <tr>
+      <td bgcolor="#FFFF80"><a href="Chu.html">Chu Shogi</a></td>
+
+      <td>Ancient Japanese Chess with many pieces on a 12x12 board,
+      and a Lion super-piece</td>
+    </tr>
+
+    <tr>
+      <td><a href="Makruk.html">Makruk</a></td>
+
+      <td>Thai Chess, with an interesting Elephant piece</td>
+    </tr>
+
+    <tr>
+      <td><a href="ASEAN.html">ASEAN</a></td>
+
+      <td>South-East Asian Chess, a modernized version of
+      Makruk</td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><b>Variants with mostly un-orthodox
+      pieces</b></td>
+    </tr>
+
+    <tr>
+      <td><a href="Courier.html">Courier Chess</a></td>
+
+      <td>Mediaval precursor of Chess, combining Shatranj with
+      modern pieces on a wide board</td>
+    </tr>
+
+    <tr>
+      <td><a href="Super.html">Superchess</a></td>
+
+      <td>Randomly picked unorthodox pieces of many kinds replace
+      some of your FIDE pieces</td>
+    </tr>
+
+    <tr>
+      <td><a href="Great.html">Great Shatranj</a></td>
+
+      <td>Version of Capablanca Chess that replaces all sliding
+      moves by 2-square jumps</td>
+    </tr>
+
+    <tr>
+      <td bgcolor="#FFFF80"><a href="Spartan.html">Spartan
+      Chess</a></td>
+
+      <td>Two different armies (Persians and Spartans, the latter
+      lead by two Kings) battle each other</td>
+    </tr>
+
+    <tr>
+      <td><a href="CWDA.html">Chess with Different Armies</a></td>
+
+      <td>Pick one of a set of (mostly) unsual armies to battle a
+      completely different army</td>
+    </tr>
+
+    <tr>
+      <td bgcolor="#FFFF80"><a href="Chu.html">Chu Shogi</a></td>
+
+      <td>Ancient Japanese Chess with many pieces on a 12x12 board,
+      and a Lion super-piece</td>
+    </tr>
+
+    <tr>
+      <td><a href="ChuChess.html">Chu Chess</a></td>
+
+      <td>Intermediate between Chess and Chu shogi, on a 10x10
+      board</td>
+    </tr>
+
+    <tr>
+      <td><a href="">Cambodian Chess</a></td>
+
+      <td></td>
+    </tr>
+
+    <tr>
+      <td><a href="">Ai-Wok Makruk</a></td>
+
+      <td></td>
+    </tr>
+  </table>
+</div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
 </body>
 </html>
