@@ -413,7 +413,7 @@ InsertionPoint (int len, EngineOutputData *ed)
 		if(ed->moveKey != keys[i+n] && // same move always tops previous one (as a higher score must be a fail low)
 		   newScore < scores[i+n]) break;
 		// if it had higher score as previous, move previous in stead
-		scores[i+n+2] = scores[i+n];
+		scores[i+n+2] = ed->moveKey == keys[i+n] ? newScore : scores[i+n]; // correct scores of fail-low/high searches
 		textEnd[i+n+2] = textEnd[i+n] + len;
 		keys[i+n+2] = keys[i+n];
 	}
