@@ -14593,11 +14593,14 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 {
     char buf[MSG_SIZ];
     ChessSquare piece = boards[0][y][x];
+    static Board erasedBoard, currentBoard, menuBoard;
 
     if (gameMode != EditPosition && gameMode != IcsExamining) return;
 
     switch (selection) {
       case ClearBoard:
+	CopyBoard(currentBoard, boards[0]);
+	CopyBoard(menuBoard, initialPosition);
 	if (gameMode == IcsExamining && ics_type == ICS_FICS) {
 	    SendToICS(ics_prefix);
 	    SendToICS("bsetup clear\n");
@@ -14605,6 +14608,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 	    SendToICS(ics_prefix);
 	    SendToICS("clearboard\n");
 	} else {
+            int nonEmpty = 0;
             for (x = 0; x < BOARD_WIDTH; x++) { ChessSquare p = EmptySquare;
 		if(x == BOARD_LEFT-1 || x == BOARD_RGHT) p = (ChessSquare) 0; /* [HGM] holdings */
                 for (y = 0; y < BOARD_HEIGHT; y++) {
@@ -14615,9 +14619,30 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 			    SendToICS(buf);
 			}
 		    } else {
+			if(boards[0][y][x] != p) nonEmpty++;
 			boards[0][y][x] = p;
 		    }
 		}
+		menuBoard[1][x] = menuBoard[BOARD_HEIGHT-2][x] = p;
+	    }
+	    if(gameMode != IcsExamining) { // [HGM] editpos: cycle trough boards
+		for(x = BOARD_LEFT; x < BOARD_RGHT; x++) { // create 'menu board' by removing duplicates 
+		    ChessSquare p = menuBoard[0][x];
+		    for(y = x + 1; y < BOARD_RGHT; y++) if(menuBoard[0][y] == p) menuBoard[0][y] = EmptySquare;
+		    p = menuBoard[BOARD_HEIGHT-1][x];
+		    for(y = x + 1; y < BOARD_RGHT; y++) if(menuBoard[BOARD_HEIGHT-1][y] == p) menuBoard[BOARD_HEIGHT-1][y] = EmptySquare;
+		}
+		if(!nonEmpty) { // asked to clear an empty board
+		    CopyBoard(boards[0], menuBoard);
+		} else
+		if(CompareBoards(currentBoard, menuBoard)) { // asked to clear an empty board
+		    CopyBoard(boards[0], initialPosition);
+		} else
+		if(CompareBoards(currentBoard, initialPosition) && !CompareBoards(currentBoard, erasedBoard)) {
+		    CopyBoard(boards[0], erasedBoard);
+		} else
+		    CopyBoard(erasedBoard, currentBoard);
+
 	    }
 	}
 	if (gameMode == EditPosition) {
