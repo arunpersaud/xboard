@@ -423,7 +423,7 @@ static Option variantDescriptors[] = {
 { VariantBerolina,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("berolina *")},
 { VariantAtomic,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("atomic")},
 { VariantTwoKings,SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("two kings")},
-{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
+{ -1,                   0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
 { VariantSpartan,SAME_ROW, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
 { 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size ( -1 = default for selected variant):")},
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &ranksTmp, "", NULL, Spin, N_("Number of Board Ranks:") },
@@ -454,7 +454,7 @@ static Option variantDescriptors[] = {
 { VariantCourier, SAME_ROW,135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
 { VariantChuChess,      0, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("chu chess (10x10)")},
 { VariantChu,    SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("chu shogi (12x12)")},
-//{ VariantNormal,        0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
+//{ -1,                   0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
 // optional buttons for engine-defined variants
 { VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
 { VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
@@ -528,6 +528,7 @@ NewVariantProc ()
    if(!(last&1)) { // odd number, add filler
 	ASSIGN(variantDescriptors[start+last+1].name, " ");
 	variantDescriptors[start+last+1].type = Button;
+	variantDescriptors[start+last+1].value = -1;
    }
    safeStrCpy(buf, engineVariant, MSG_SIZ); *engineVariant = NULLCHAR; // yeghh...
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
