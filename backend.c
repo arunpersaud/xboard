@@ -14593,7 +14593,8 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 {
     char buf[MSG_SIZ];
     ChessSquare piece = boards[0][y][x];
-    static Board erasedBoard, currentBoard, menuBoard;
+    static Board erasedBoard, currentBoard, menuBoard, nullBoard;
+    static int lastVariant;
 
     if (gameMode != EditPosition && gameMode != IcsExamining) return;
 
@@ -14632,13 +14633,16 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 		    p = menuBoard[BOARD_HEIGHT-1][x];
 		    for(y = x + 1; y < BOARD_RGHT; y++) if(menuBoard[BOARD_HEIGHT-1][y] == p) menuBoard[BOARD_HEIGHT-1][y] = EmptySquare;
 		}
+		DisplayMessage("Clicking clock again restores position", "");
+		if(gameInfo.variant != lastVariant) lastVariant = gameInfo.variant, CopyBoard(erasedBoard, boards[0]);
 		if(!nonEmpty) { // asked to clear an empty board
 		    CopyBoard(boards[0], menuBoard);
 		} else
 		if(CompareBoards(currentBoard, menuBoard)) { // asked to clear an empty board
 		    CopyBoard(boards[0], initialPosition);
 		} else
-		if(CompareBoards(currentBoard, initialPosition) && !CompareBoards(currentBoard, erasedBoard)) {
+		if(CompareBoards(currentBoard, initialPosition) && !CompareBoards(currentBoard, erasedBoard)
+								 && !CompareBoards(nullBoard, erasedBoard)) {
 		    CopyBoard(boards[0], erasedBoard);
 		} else
 		    CopyBoard(erasedBoard, currentBoard);
