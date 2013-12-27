@@ -6553,7 +6553,11 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     // we either have a choice what to promote to, or (in Shogi) whether to promote
     if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
        gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN) {
-	*promoChoice = PieceToChar(BlackFerz);  // no choice
+	ChessSquare p=BlackFerz;  // no choice
+	while(p < EmptySquare) {  //but make sure we use piece that exists
+	    *promoChoice = PieceToChar(p++);
+	    if(*promoChoice != '.') break;
+	}
 	return FALSE;
     }
     // no sense asking what we must promote to if it is going to explode...
