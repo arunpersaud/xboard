@@ -4477,9 +4477,9 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
          PieceToChar(BlackMarshall) != '~')   ) ?
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Hide B & R button in Shogi, use Q as promote, N as defer */
-    ShowWindow(GetDlgItem(hDlg, PB_Rook),   !style ? SW_SHOW : SW_HIDE);
-    ShowWindow(GetDlgItem(hDlg, PB_Bishop), !style ? SW_SHOW : SW_HIDE);
-    if(style) {
+    ShowWindow(GetDlgItem(hDlg, PB_Rook),   !promoStyle ? SW_SHOW : SW_HIDE);
+    ShowWindow(GetDlgItem(hDlg, PB_Bishop), !promoStyle ? SW_SHOW : SW_HIDE);
+    if(promoStyle) {
         SetDlgItemText(hDlg, PB_Queen, "YES");
         SetDlgItemText(hDlg, PB_Knight, "NO");
         SetWindowText(hDlg, "Promote?");
@@ -4500,7 +4500,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       promoChar = gameInfo.variant == VariantSuper ? PieceToChar(BlackSilver) : PieceToChar(BlackKing);
       break;
     case PB_Queen:
-      promoChar = style ? '+' : ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteQueen : BlackQueen));
+      promoChar = promoStyle ? '+' : ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteQueen : BlackQueen));
       break;
     case PB_Rook:
       promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteRook : BlackRook));
@@ -4517,7 +4517,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteAngel : BlackAngel));
       break;
     case PB_Knight:
-      promoChar = gameInfo.variant == VariantShogi ? '=' : style ? NULLCHAR : 
+      promoChar = gameInfo.variant == VariantShogi ? '=' : promoStyle ? NULLCHAR : 
                   ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteKnight : BlackKnight));
       break;
     default:
@@ -8536,6 +8536,7 @@ HWND gameListOptionsDialog;
 
 // low-level front-end: clear text edit / list widget
 void
+
 GLT_ClearList()
 {
     SendDlgItemMessage( gameListOptionsDialog, IDC_GameListTags, LB_RESETCONTENT, 0, 0 );
