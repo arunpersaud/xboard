@@ -540,6 +540,7 @@ defined variant names are:
 <tr><td>unknown</td><td>Unknown variant (not supported)</td></tr>
 </table>
 
+As of XBoard 4.8, engines can define arbitrary variant names; see the "feature" and "setup" commands in <a href="#9">section 9</a>.
 </dd>
 
 <dt>quit</dt>
@@ -837,7 +838,7 @@ only applies to normal Chess;
 Obviously in variants that cannot be described by a FEN for normal Chess,
 e.g. because the board is not 8x8, other pieces then PNBRQK participate, 
 there are holdings that need to be specified, etc., 
-xboard will use a FEN format that is standard or suitable for that varant.
+xboard will use a FEN format that is standard or suitable for that variant.
 In particular, in FRC or CRC, WinBoard will use Shredder-FEN or X-FEN standard,
 i.e. it can use the rook-file indicator letter to represent a castling right 
 (like HAha) whenever it wants, but if it uses KQkq, this will always refer 
@@ -1342,10 +1343,16 @@ correct value for your engine (just "normal" in most cases) rather
 than leaving the default in place, so that the user will get an
 appropriate error message if he tries to play a variant that your
 engine does not support.</span>
+<span class="version47">As of XBoard 4.8 a variant name not known to the GUI will be
+considered an engine-defined variant.
+The user will be given the opportunity to select such variants,
+but when this happens, the engine should define its meaning
+in detail with the aid of a "setup" command defined below,
+in order to avoid an error.</span>
 <br />
 <span class="version43">If your engine can play variants on a deviating board size,
 like capablanca on an 8x8 board, or capablanca crazyhouse,
-it can list them amongst the variants with a prefix spcifying board size plus
+it can list them amongst the variants with a prefix specifying board size plus
 holdings size, like 8x8+0_capablanca or 10x8+7_capablanca.
 If it is capable of playing any variant with an arbitrary board size,
 it should list "boardsize" as one of the variants.
@@ -1510,6 +1517,46 @@ in this case, you must set done=1 before xboard will enter normal operation.
 </dl>
 </dd>
 
+<dt>setup FEN</dt>
+<dt>setup (PIECETOCHAR) FEN</dt>
+<dt>setup (PIECETOCHAR) WxH+S_PARENTVARIANT FEN</dt>
+<dd>The engine can optionally send a setup command to the GUI in reply
+to the variant command.
+In the simplest form this sends the FEN of the initial position.
+This can be used to implement engines for non-standard variants
+that only differ from standard variants through the initial position.
+(E.g. many of the 'wild' boards you can play on an ICS.)
+Whether the GUI should obey or ignore this command depends on the situation.
+Normally it would ignore it in variants where it knows the standard initial position
+and legality testing is on, or when the user specified an initial position.
+In other cases it will use the FEN sent by the first engine
+for setting up the initial position, as if it was an externally supplied position.
+Such a position will always be sent to a second engine that might be involved,
+and any setup commands received from the latter will always be ignored.
+(This to allow for shuffle games, where the two engines might pick different setups.)
+When no initial position is known, such as for 'catch-all' variants like fairy,
+or whenever the board width is overruled to a non-standard value,
+the FEN will be used as default initial position even when legality testing is on.
+</dd>
+<dd>Optionally the meaning of the piece ID letters in the FEN can be defined
+between parentheses; this will be interpreted as if it was the value of a
+-pieceToCharTable command-line option, mapping letters to GUI piece types.
+Also optionally behind that, the setup command can specify board width W,
+board height H and holdings size S, as well as a 'parent variant'.
+This is typically done in response to a variant command with a non-standard name,
+about which the GUI is not supposed to know anything at all.
+The engine can then specify board size, participating pieces, initial setup,
+and other rule details (inherited from the parent variant),
+saving the user the trouble to configure the GUI for this non-standard variant.
+Example:
+<pre>
+  setup (PN.RQKpn.rqk) 6x6+0_fairy rnqknr/pppppp/6/6/PPPPPP/RNQKNR w - - 0 1
+</pre>
+could be used by an engine for Los-Alamos Chess in response to 'variant losalamos',
+and would automatically switch the GUI to this variant as soon as the user
+selected it from the GUI menu.
+The PIECETOCHAR element would ensure a Bishop would not be accepted as promotion choice. 
+</dd>
 
 <dt>Illegal move: MOVE</dt>
 <dt>Illegal move (REASON): MOVE</dt>
