@@ -823,8 +823,15 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 			 // to give drawing routines opportunity to use it before first expose event
 			 // (which are only processed when main gets to the event loop, so after all init!)
 			 // so only change when size is no longer good
+		cairo_t *cr;
 		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
 		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
+		// paint white, to prevent weirdness when people maximize window and drag pieces over space next to board
+		cr = cairo_create ((cairo_surface_t *) graph->choice);
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
+		cairo_fill(cr);
+		cairo_destroy (cr);
 		break;
 	    }
 	    w = eevent->area.width;
