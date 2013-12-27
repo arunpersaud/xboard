@@ -871,12 +871,12 @@ VariantClass
 VariantWhichRadio(HWND hDlg)
 {
   int i=0, j;
+  *engineVariant = NULLCHAR;
   while((j = radioButton[i++]) != -2) {
 	if(j == -1) continue; // no menu button
 	if(IsDlgButtonChecked(hDlg, j) &&
 	   (appData.noChessProgram || strstr(first.variants, VariantName(i-1)))) return (VariantClass) i-1;
   }
-  *engineVariant = NULLCHAR;
   for(i=0; i<9; i++) { // check for engine-defined variants
     if(IsDlgButtonChecked(hDlg, OPT_EngineVariant+i) ) {
 	GetDlgItemText(hDlg, OPT_EngineVariant+i, engineVariant, MSG_SIZ); // remember name, so we can resolve it later
@@ -889,12 +889,15 @@ VariantWhichRadio(HWND hDlg)
 void
 VariantShowRadio(HWND hDlg)
 {
+  char c = *engineVariant;
   int i=0, j;
   CheckDlgButton(hDlg, radioButton[gameInfo.variant], TRUE);
+  *engineVariant = NULLCHAR; // [HGM] kludge to prevent VariantName will always return engineVariant
   while((j = radioButton[i++]) != -2) {
 	if(j == -1) continue; // no menu button
 	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || strstr(first.variants, VariantName(i-1)));
   }
+  *engineVariant = c;
   for(i=0; i<9; i++) { // initialize engine-defined variants
     char *v = EngineDefinedVariant(&first, i); // get name of #i
     if(v) { // there is such a variant
