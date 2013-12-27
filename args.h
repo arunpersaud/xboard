@@ -102,8 +102,8 @@ typedef struct {
 IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
 
 int junk;
-int saveDate;
-int dateStamp;
+unsigned int saveDate;
+unsigned int dateStamp;
 Boolean singleList;
 Boolean autoClose;
 char *homeDir;
@@ -850,7 +850,7 @@ AppendToSettingsFile (char *line)
     if(f = fopen(SETTINGS_FILE, "a")) {
       TimeMark now;
       GetTimeMark(&now);
-      fprintf(f, "-date %ld\n%s\n", now.sec, line);
+      fprintf(f, "-date %10lu\n%s\n", now.sec, line);
       fclose(f);
     }
   }
