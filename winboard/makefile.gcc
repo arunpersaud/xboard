@@ -63,10 +63,7 @@ clean:
 
 # Update the help file if necessary
 $(PROJ).hlp : $(PROJ).rtf
-	$(HC) $(PROJ).hpj
-	@cat $(PROJ).err
-	@mv $(PROJ).hlp tmp.hlp
-	@mv tmp.hlp $(PROJ).hlp # these moves to get the case right
+	$(HC) $(PROJ).hpj && @cat $(PROJ).err && @mv $(PROJ).hlp tmp.hlp && @mv tmp.hlp $(PROJ).hlp || true # these moves to get the case right
 
 
 # Update the resource if necessary
