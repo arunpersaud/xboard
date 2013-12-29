@@ -680,6 +680,7 @@ typedef struct {
     Boolean suppressLoadMoves;
     int serverPause;
     int timeOdds[ENGINES];
+    int drawDepth[ENGINES];
     int timeOddsMode;
     int accumulateTC[ENGINES];
     int NPS[ENGINES];

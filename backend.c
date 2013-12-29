@@ -55,14 +55,32 @@
 #ifdef WIN32
 #include <windows.h>
 
-int flock(int f, int code);
-#define LOCK_EX 2
-#define SLASH '\\'
+    int flock(int f, int code);
+#   define LOCK_EX 2
+#   define SLASH '\\'
+
+#   ifdef ARC_64BIT
+#       define EGBB_NAME "egbbdll64.dll"
+#   else
+#       define EGBB_NAME "egbbdll.dll"
+#   endif
 
 #else
 
-#include <sys/file.h>
-#define SLASH '/'
+#   include <sys/file.h>
+#   define SLASH '/'
+
+#   include <dlfcn.h>
+#   ifdef ARC_64BIT
+#       define EGBB_NAME "egbbso64.so"
+#   else
+#       define EGBB_NAME "egbbso.so"
+#   endif
+    // kludge to allow Windows code in back-end by converting it to corresponding Linux code 
+#   define CDECL
+#   define HMODULE void *
+#   define LoadLibrary(x) dlopen(x, RTLD_LAZY)
+#   define GetProcAddress dlsym
 
 #endif
 
@@ -845,6 +863,7 @@ InitEngine (ChessProgramState *cps, int n)
     /* [HGM] debug */
     cps->debug = FALSE;
 
+    cps->drawDepth = appData.drawDepth[n];
     cps->supportsNPS = UNKNOWN;
     cps->memSize = FALSE;
     cps->maxCores = FALSE;
@@ -8272,11 +8291,66 @@ Adjudicate (ChessProgramState *cps)
 	return 0;
 }
 
+typedef int (CDECL *PPROBE_EGBB) (int player, int *piece, int *square);
+typedef int (CDECL *PLOAD_EGBB) (char *path, int cache_size, int load_options);
+static int egbbCode[] = { 6, 5, 4, 3, 2, 1 };
+
+static int
+BitbaseProbe ()
+{
+    int pieces[10], squares[10], cnt=0, r, f, res;
+    static int loaded;
+    static PPROBE_EGBB probeBB;
+    if(!appData.testLegality) return 10;
+    if(BOARD_HEIGHT != 8 || BOARD_RGHT-BOARD_LEFT != 8) return 12;
+    if(gameInfo.holdingsSize && gameInfo.variant != VariantSuper && gameInfo.variant != VariantSChess) return 12;
+    if(loaded == 2 && forwardMostMove < 2) loaded = 0; // retry on new game
+    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	ChessSquare piece = boards[forwardMostMove][r][f];
+	int black = (piece >= BlackPawn);
+	int type = piece - black*BlackPawn;
+	if(piece == EmptySquare) continue;
+	if(type != WhiteKing && type > WhiteQueen) return 12; // unorthodox piece
+	if(type == WhiteKing) type = WhiteQueen + 1;
+	type = egbbCode[type];
+	squares[cnt] = r*(BOARD_RGHT - BOARD_LEFT) + f - BOARD_LEFT;
+        pieces[cnt] = type + black*6;
+	if(++cnt > 5) return 11;
+    }
+    pieces[cnt] = squares[cnt] = 0;
+    // probe EGBB
+    if(loaded == 2) return 13; // loading failed before
+    if(loaded == 0) {
+	loaded = 2; // prepare for failure
+	char *p, *path = strstr(appData.egtFormats, "scorpio:"), buf[MSG_SIZ];
+	HMODULE lib;
+	PLOAD_EGBB loadBB;
+	if(!path) return 13; // no egbb installed
+	strncpy(buf, path + 8, MSG_SIZ);
+	if(p = strchr(buf, ',')) *p = NULLCHAR; else p = buf + strlen(buf);
+	snprintf(p, MSG_SIZ - strlen(buf), "%c%s", SLASH, EGBB_NAME);
+	lib = LoadLibrary(buf);
+	if(!lib) { DisplayError(_("could not load EGBB library"), 0); return 13; }
+	loadBB = (PLOAD_EGBB) GetProcAddress(lib, "load_egbb_xmen");
+	probeBB = (PPROBE_EGBB) GetProcAddress(lib, "probe_egbb_xmen");
+	if(!loadBB || !probeBB) { DisplayError(_("wrong EGBB version"), 0); return 13; }
+	p[1] = NULLCHAR; loadBB(buf, 64*1028, 2); // 2 = SMART_LOAD
+	loaded = 1; // success!
+    }
+    res = probeBB(forwardMostMove & 1, pieces, squares);
+    return res > 0 ? 1 : res < 0 ? -1 : 0;
+}
+
 char *
 SendMoveToBookUser (int moveNr, ChessProgramState *cps, int initial)
 {   // [HGM] book: this routine intercepts moves to simulate book replies
     char *bookHit = NULL;
 
+    if(cps->drawDepth && BitbaseProbe() == 0) { // [HG} egbb: reduce depth in drawn position
+	char buf[MSG_SIZ];
+	snprintf(buf, MSG_SIZ, "sd %d\n", cps->drawDepth);
+	SendToProgram(buf, cps);
+    }
     //first determine if the incoming move brings opponent into his book
     if(appData.usePolyglotBook && (cps == &first ? !appData.firstHasOwnBookUCI : !appData.secondHasOwnBookUCI))
 	bookHit = ProbeBook(moveNr+1, appData.polyglotBook); // returns move
@@ -10725,6 +10799,7 @@ SwapEngines (int n)
     SWAP(fenOverride, p)
     SWAP(NPS, h)
     SWAP(accumulateTC, h)
+    SWAP(drawDepth, h)
     SWAP(host, p)
 }
 

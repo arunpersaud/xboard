@@ -697,6 +697,8 @@ ArgDescriptor argDescriptors[] = {
   { "topLevel", ArgBoolean, (void *) &appData.topLevel, XBOARD, (ArgIniType) TOPLEVEL },
   { "dialogColor", ArgString, (void *) &appData.dialogColor, XBOARD, (ArgIniType) "" },
   { "buttonColor", ArgString, (void *) &appData.buttonColor, XBOARD, (ArgIniType) "" },
+  { "firstDrawDepth", ArgInt, (void *) &appData.drawDepth[0], FALSE, (ArgIniType) 0 },
+  { "secondDrawDepth", ArgInt, (void *) &appData.drawDepth[1], FALSE, (ArgIniType) 0 },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

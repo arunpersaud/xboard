@@ -394,6 +394,7 @@ typedef struct XB_CPS {
     int debug;      /* [HGM] ignore engine debug lines starting with '#'    */
     int maxNrOfSessions; /* [HGM] secondary TC: max args in 'level' command */
     int accumulateTC; /* [HGM] secondary TC: how to handle extra sessions   */
+    int drawDepth;    /* [HGM] egbb: search depth to play egbb draws        */
     int nps;          /* [HGM] nps: factor for node count to replace time   */
     int supportsNPS;
     int alphaRank;    /* [HGM] shogi: engine uses shogi-type coordinates    */

@@ -57,7 +57,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 ###
 
 SUBDIRS = po
-xboard_LDADD = -lm @FRONTEND_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
+xboard_LDADD = -ldl -lm @FRONTEND_LIBS@ @X_LIBS@ @LIBINTL@ @CAIRO_LIBS@
 
 EXTRA_DIST = pixmaps themes png sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop xboard-config.desktop \
