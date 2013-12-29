@@ -947,7 +947,7 @@ ParseArgs(GetFunc get, void *cl)
       ch = get(cl);
       while (ch != '\n' && ch != NULLCHAR) ch = get(cl);
       continue;
-    } else if (ch == '/' || ch == '-') {
+    } else if (ch == SLASH || ch == '-') {
       /* Switch */
       q = argName;
       while (ch != ' ' && ch != '=' && ch != ':' && ch != NULLCHAR &&

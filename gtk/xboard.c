@@ -167,6 +167,19 @@ extern char *getenv();
 #include "gettext.h"
 #include "draw.h"
 
+#ifdef OSX
+#  include "gtkmacintegration/gtkosxapplication.h"
+   // prevent pathname of positional file argument provided by OSx being be mistaken for option name
+   // (price is that we won't recognize Windows option format anymore).
+#  define SLASH '-'
+   // redefine some defaults
+#  undef ICS_LOGON
+#  undef SYSCONFDIR
+#  define ICS_LOGON "Library/Preferences/XboardICS.conf"
+#  define SYSCONFDIR "../etc"
+#else
+#  define SLASH '/'
+#endif
 
 #ifdef __EMX__
 #ifndef HAVE_USLEEP
@@ -713,6 +726,24 @@ SlaveResize (Option *opt)
   gtk_window_resize(GTK_WINDOW(shells[DummyDlg]), slaveW + opt->max, slaveH + opt->value);
 }
 
+#ifdef OSX
+static char clickedFile[MSG_SIZ];
+static int suppress;
+
+static gboolean
+StartNewXBoard(GtkosxApplication *app, gchar *path, gpointer user_data)
+{ // handler of OSX OpenFile signal, which sends us the filename of clicked file or first argument
+  if(suppress) { // we just started XBoard without arguments
+    strncpy(clickedFile, path, MSG_SIZ); // remember file name, but otherwise ignore
+  } else {       // we are running something presumably useful
+    char buf[MSG_SIZ];
+    snprintf(buf, MSG_SIZ, "open -n -a \"xboard\" --args \"%s\"", path);
+    system(buf); // start new instance on this file
+  }
+  return TRUE;
+}
+#endif
+
 int
 main (int argc, char **argv)
 {
@@ -739,6 +770,28 @@ main (int argc, char **argv)
 
     /* set up GTK */
     gtk_init (&argc, &argv);
+#ifdef OSX
+    {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
+	GtkosxApplication *theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
+	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
+	// we must call application ready before we can get the signal,
+	// and supply a (dummy) menu bar before that, to avoid problems with dual apples in it
+	gtkosx_application_set_menu_bar(theApp, GTK_MENU_SHELL(gtk_menu_bar_new()));
+	gtkosx_application_ready(theApp);
+	suppress = (argc == 1 || argc > 1 && argv[1][00] != '-'); // OSX sends signal even if name was already argv[1]!
+	if(argc == 1) {                  // called without args: OSX open-file signal might follow
+	    static char *fakeArgv[3] = {NULL, clickedFile, NULL};
+	    usleep(10000);               // wait 10 msec (and hope this is long enough).
+	    while(gtk_events_pending())
+		gtk_main_iteration();    // process all events that came in upto now
+	    suppress = 0;                // future open-file signals should start new instance
+	    if(clickedFile[0]) {         // we were sent an open-file signal with filename!
+	      fakeArgv[0] = argv[0];
+	      argc = 2; argv = fakeArgv; // fake that we were called as "xboard filename"
+	    }
+	}
+    }
+#endif
 
     /* set up keyboard accelerators group */
     GtkAccelerators = gtk_accel_group_new();
@@ -1688,8 +1741,8 @@ void MoveTypeInProc(eventkey)
 {
     char buf[10];
 
-    // ingnore if ctrl or alt is pressed
-    if (eventkey->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) {
+    // ingnore if ctrl, alt, or meta is pressed
+    if (eventkey->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_META_MASK)) {
         return;
     }
 
