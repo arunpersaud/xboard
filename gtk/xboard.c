@@ -1776,26 +1776,15 @@ TempForwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
     ForwardEvent();
 	TempBackwardActive = False;
 }
-
-void
-ManInner (Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{   // called as key binding
-    char buf[MSG_SIZ];
-    String name;
-    if (nprms && *nprms > 0)
-      name = prms[0];
-    else
-      name = "xboard";
-    snprintf(buf, sizeof(buf), "xterm -e man %s &", name);
-    system(buf);
-}
 #endif
 
 void
 ManProc ()
 {   // called from menu
-#ifdef TODO_GTK
-    ManInner(NULL, NULL, NULL, NULL);
+#ifdef OSX
+    system("%s ./man.command", appData.sysOpen);
+#else
+    system("xterm -e man xboard &");
 #endif
 }
 
