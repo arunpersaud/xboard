@@ -944,7 +944,7 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     gtkfilter     = gtk_file_filter_new();
     gtkfilter_all = gtk_file_filter_new();
 
-    char fileext[10] = "*";
+    char fileext[MSG_SIZ];
 
     /* select file or folder depending on option_type */
     if (currentOption[opt_i].type == PathName)
@@ -965,11 +965,16 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),gtkfilter_all);
 
     /* filter for specific filetypes e.g. pgn or fen */
-    if (currentOption[opt_i].textValue != NULL && (strcmp(currentOption[opt_i].textValue, "") != 0) )
+    if (currentOption[opt_i].textValue != NULL)
       {
-        strcat(fileext, currentOption[opt_i].textValue);
-        gtk_file_filter_add_pattern(gtkfilter, fileext);
-        gtk_file_filter_set_name (gtkfilter, currentOption[opt_i].textValue);
+        char *q, *p = currentOption[opt_i].textValue;
+        gtk_file_filter_set_name (gtkfilter, p);
+        while(*p) {
+          snprintf(fileext, MSG_SIZ, "*%s", p);
+          while(*p) if(*p++ == ' ')  break;
+          for(q=fileext; *q; q++) if(*q == ' ') { *q = NULLCHAR; break; }
+          gtk_file_filter_add_pattern(gtkfilter, fileext);
+        }
         gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
         /* activate filter */
         gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
