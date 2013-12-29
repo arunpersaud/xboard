@@ -51,6 +51,9 @@ extern char *getenv();
 #include <cairo/cairo-xlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+#ifdef OSX
+#  include "gtkmacintegration/gtkosxapplication.h"
+#endif
 
 #include "common.h"
 #include "backend.h"
@@ -425,6 +428,10 @@ CreateMenuPopup (Option *opt, int n, int def)
       {
 	char *msg = mb[i].string;
 	if(!msg) break;
+#ifdef OSX
+	if(!strcmp(msg, "Quit ")) continue;             // Quit item will appear automatically in App menu
+	if(!strcmp(msg, "About XBoard")) msg = "About"; // 'XBoard' will be appended automatically when moved to App menu 1st item
+#endif
 	if(strcmp(msg, "----")) { //
 	  if(!(opt->min & NO_GETTEXT)) msg = _(msg);
 	  if(mb[i].handle) {
@@ -438,11 +445,17 @@ CreateMenuPopup (Option *opt, int n, int def)
 	    GdkModifierType accelerator_mods;
 
 	    gtk_accelerator_parse(mb[i].accel, &accelerator_key, &accelerator_mods);
+#ifdef OSX
+   	    if(accelerator_mods & GDK_CONTROL_MASK) {  // in OSX use Meta where Linux uses Ctrl
+		accelerator_mods &= ~GDK_CONTROL_MASK; // clear Ctrl flag
+		accelerator_mods |= GDK_META_MASK;     // set Meta flag
+	    } 
+#endif
 	    gtk_widget_add_accelerator (GTK_WIDGET(entry), "activate",GtkAccelerators,
 					accelerator_key, accelerator_mods, GTK_ACCEL_VISIBLE);
-	  };
-	  gtk_widget_show(entry);
+	  }
 	} else entry = gtk_separator_menu_item_new();
+	gtk_widget_show(entry);
 	gtk_menu_append(GTK_MENU (menu), entry);
 //CreateMenuItem(menu, opt->min & NO_GETTEXT ? msg : _(msg), (XtCallbackProc) ComboSelect, (n<<16)+i);
 	mb[i].handle = (void*) entry; // save item ID, for enabling / checkmarking
@@ -1480,9 +1493,21 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    break;
 	  case BarEnd:
 	    top--;
+#ifndef OSX
             gtk_table_attach(GTK_TABLE(table), menuBar, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
 
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
+#else
+	    top--; // in OSX menu bar is not put in window, so also don't count it
+	    {   // in stead, offer it to OSX, and move About item to top of App menu
+		GtkosxApplication *theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
+		extern MenuItem helpMenu[]; // oh, well... Adding items in help menu breaks this anyway
+		gtk_widget_hide (menuBar);
+		gtkosx_application_set_menu_bar(theApp, GTK_MENU_SHELL(menuBar));
+		gtkosx_application_insert_app_menu_item(theApp, GTK_MENU_ITEM(helpMenu[8].handle), 0); // hack
+		gtkosx_application_sync_menubar(theApp);
+	    } 
+#endif
 	    break;
 	  case BoxEnd:
 //	    XtManageChildren(&form, 1);

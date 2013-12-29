@@ -92,6 +92,8 @@
 #include "help.h"
 #include "wsnap.h"
 
+#define SLASH '/'
+
 //void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
 
   int myrandom(void);

@@ -210,6 +210,7 @@ extern char *getenv();
 #include "gettext.h"
 #include "draw.h"
 
+#define SLASH '/'
 
 #ifdef __EMX__
 #ifndef HAVE_USLEEP
