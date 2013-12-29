@@ -2117,7 +2117,7 @@ void FileNamePopUpWrapper(label, def, filter, proc, pathFlag, openMode, name, fp
   char *cp;
 
   /* make a copy of the filter string, so that strtok can work with it*/
-  cp = strndup(filter,strlen(filter));
+  cp = strdup(filter);
 
   /* add filters for file extensions */
   gtkfilter     = gtk_file_filter_new();
