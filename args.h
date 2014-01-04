@@ -1147,14 +1147,12 @@ ParseArgs(GetFunc get, void *cl)
 
     case ArgString:
     case ArgFilename:
-#ifdef DATADIR
       if(argValue[0] == '~' && argValue[1] == '~') {
         char buf[4*MSG_SIZ]; // expand ~~
-        snprintf(buf, 4*MSG_SIZ, DATADIR "%s", argValue+2);
+        snprintf(buf, 4*MSG_SIZ, "%s%s", DATADIR, argValue+2);
         ASSIGN(*(char **) ad->argLoc, buf);
         break;
       }
-#endif
       ASSIGN(*(char **) ad->argLoc, argValue);
       break;
 

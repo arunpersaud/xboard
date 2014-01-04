@@ -93,6 +93,7 @@
 #include "wsnap.h"
 
 #define SLASH '/'
+#define DATADIR "~~"
 
 //void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
 
@@ -7673,6 +7674,7 @@ DoWriteFile(HANDLE hFile, char *buf, int count, DWORD *outCount,
       else
 	err = GetLastError();
     }
+
   }
   return err;
 }
