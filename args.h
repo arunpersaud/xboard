@@ -1105,6 +1105,12 @@ ParseArgs(GetFunc get, void *cl)
 
     case ArgString:
     case ArgFilename:
+      if(argValue[0] == '~' && argValue[1] == '~') {
+        char buf[4*MSG_SIZ]; // expand ~~
+        snprintf(buf, 4*MSG_SIZ, "%s%s", DATADIR, argValue+2);
+        ASSIGN(*(char **) ad->argLoc, buf);
+        break;
+      }
       ASSIGN(*(char **) ad->argLoc, argValue);
       break;
 

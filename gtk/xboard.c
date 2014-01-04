@@ -169,7 +169,7 @@ extern char *getenv();
 
 #ifdef OSX
 #  include "gtkmacintegration/gtkosxapplication.h"
-   // prevent pathname of positional file argument provided by OSx being be mistaken for option name
+   // prevent pathname of positional file argument provided by OS X being be mistaken for option name
    // (price is that we won't recognize Windows option format anymore).
 #  define SLASH '-'
    // redefine some defaults
@@ -177,8 +177,11 @@ extern char *getenv();
 #  undef SYSCONFDIR
 #  define ICS_LOGON "Library/Preferences/XboardICS.conf"
 #  define SYSCONFDIR "../etc"
+#  define DATADIR dataDir
+   char *dataDir; // for expanding ~~
 #else
 #  define SLASH '/'
+#  define DATADIR "~~"
 #endif
 
 #ifdef __EMX__
@@ -772,6 +775,7 @@ main (int argc, char **argv)
 #ifdef OSX
     {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
 	GtkosxApplication *theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
+	dataDir = gtkosx_application_get_bundle_path();
 	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
 	// we must call application ready before we can get the signal,
 	// and supply a (dummy) menu bar before that, to avoid problems with dual apples in it
