@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard master-20110507\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2013-08-28 21:49-0700\n"
+"POT-Creation-Date: 2014-01-05 12:51-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr ""
 msgid "Bad integer value %s"
 msgstr ""
 
-#: args.h:923 args.h:1164
+#: args.h:923 args.h:1170
 #, c-format
 msgid "Unrecognized argument %s"
 msgstr ""
@@ -43,12 +43,12 @@ msgstr ""
 msgid "Incomplete \\ escape in value for %s"
 msgstr ""
 
-#: args.h:1119
+#: args.h:1125
 #, c-format
 msgid "Failed to open indirection file %s"
 msgstr ""
 
-#: args.h:1136
+#: args.h:1142
 #, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr ""
@@ -216,8 +216,8 @@ msgid "Error gathering move list: nested"
 msgstr ""
 
 #: backend.c:3699 backend.c:4117 backend.c:4321 backend.c:4880 backend.c:4884
-#: backend.c:6900 backend.c:12082 backend.c:13797 backend.c:13874
-#: backend.c:13920 backend.c:13926 backend.c:13931 backend.c:13936
+#: backend.c:6900 backend.c:12101 backend.c:13816 backend.c:13893
+#: backend.c:13939 backend.c:13945 backend.c:13950 backend.c:13955
 msgid "vs."
 msgstr ""
 
@@ -240,7 +240,7 @@ msgid ""
 "\"%s\""
 msgstr ""
 
-#: backend.c:4253 backend.c:9755
+#: backend.c:4253 backend.c:9756
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr ""
 
@@ -275,12 +275,12 @@ msgid "You are playing White"
 msgstr ""
 
 #: backend.c:6509 backend.c:6535 backend.c:6655 backend.c:6680 backend.c:6696
-#: backend.c:14573
+#: backend.c:14592
 msgid "It is White's turn"
 msgstr ""
 
 #: backend.c:6513 backend.c:6539 backend.c:6663 backend.c:6686 backend.c:6717
-#: backend.c:14565
+#: backend.c:14584
 msgid "It is Black's turn"
 msgstr ""
 
@@ -308,268 +308,268 @@ msgstr ""
 msgid "Swiss tourney finished"
 msgstr ""
 
-#: backend.c:8102
+#: backend.c:8103
 msgid "Invalid pairing from pairing engine"
 msgstr ""
 
-#: backend.c:8235
+#: backend.c:8236
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr ""
 
-#: backend.c:8456
+#: backend.c:8457
 msgid "Bad FEN received from engine"
 msgstr ""
 
-#: backend.c:8600 backend.c:13662 backend.c:13727
+#: backend.c:8601 backend.c:13681 backend.c:13746
 #, c-format
 msgid "%s does not support analysis"
 msgstr ""
 
-#: backend.c:8666
+#: backend.c:8667
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr ""
 
-#: backend.c:8693
+#: backend.c:8694
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr ""
 
-#: backend.c:8714
+#: backend.c:8715
 #, c-format
 msgid "Hint: %s"
 msgstr ""
 
-#: backend.c:8719
+#: backend.c:8720
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
 "from %s chess program"
 msgstr ""
 
-#: backend.c:8894
+#: backend.c:8895
 msgid "Machine accepts your draw offer"
 msgstr ""
 
-#: backend.c:8897
+#: backend.c:8898
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
 
-#: backend.c:8976
+#: backend.c:8977
 msgid "failed writing PV"
 msgstr ""
 
-#: backend.c:9274
+#: backend.c:9275
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr ""
 
-#: backend.c:9284
+#: backend.c:9285
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr ""
 
-#: backend.c:9295
+#: backend.c:9296
 msgid "Gap in move list"
 msgstr ""
 
-#: backend.c:9916 dialogs.c:460
+#: backend.c:9917 dialogs.c:460
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr ""
 
-#: backend.c:10037
+#: backend.c:10038
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr ""
 
-#: backend.c:10068
+#: backend.c:10069
 msgid "Waiting for first chess program"
 msgstr ""
 
-#: backend.c:10073 backend.c:13945
+#: backend.c:10074 backend.c:13964
 msgid "Waiting for second chess program"
 msgstr ""
 
-#: backend.c:10122
+#: backend.c:10123
 msgid "Could not write on tourney file"
 msgstr ""
 
-#: backend.c:10196
+#: backend.c:10197
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
 msgstr ""
 
-#: backend.c:10210
+#: backend.c:10211
 msgid "No engine with the name you gave is installed"
 msgstr ""
 
-#: backend.c:10212
+#: backend.c:10213
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
 
-#: backend.c:10213
+#: backend.c:10214
 msgid "You can only change one engine at the time"
 msgstr ""
 
-#: backend.c:10228 backend.c:10375
+#: backend.c:10229 backend.c:10376
 #, c-format
 msgid "No engine %s is installed"
 msgstr ""
 
-#: backend.c:10248
+#: backend.c:10249
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
 msgstr ""
 
-#: backend.c:10258
+#: backend.c:10259
 msgid "Not enough participants"
 msgstr ""
 
-#: backend.c:10459
+#: backend.c:10460
 msgid "Bad tournament file"
 msgstr ""
 
-#: backend.c:10471
+#: backend.c:10472
 msgid "Waiting for other game(s)"
 msgstr ""
 
-#: backend.c:10484
+#: backend.c:10485
 msgid "No pairing engine specified"
 msgstr ""
 
-#: backend.c:10961
+#: backend.c:10962
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr ""
 
-#: backend.c:11423 backend.c:11454
+#: backend.c:11424 backend.c:11455
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr ""
 
-#: backend.c:11443
+#: backend.c:11444
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr ""
 
-#: backend.c:11496 backend.c:12505 backend.c:12698 backend.c:13059
+#: backend.c:11497 backend.c:12524 backend.c:12717 backend.c:13078
 #, c-format
 msgid "Can't open \"%s\""
 msgstr ""
 
-#: backend.c:11508 menus.c:116
+#: backend.c:11509 menus.c:116
 msgid "Cannot build game list"
 msgstr ""
 
-#: backend.c:11593
+#: backend.c:11594
 msgid "No more games in this message"
 msgstr ""
 
-#: backend.c:11633
+#: backend.c:11634
 msgid "No game has been loaded yet"
 msgstr ""
 
-#: backend.c:11637 backend.c:12486 ngamelist.c:129
+#: backend.c:11638 backend.c:12505 ngamelist.c:129
 msgid "Can't back up any further"
 msgstr ""
 
-#: backend.c:12058
+#: backend.c:12077
 msgid "Game number out of range"
 msgstr ""
 
-#: backend.c:12069
+#: backend.c:12088
 msgid "Can't seek on game file"
 msgstr ""
 
-#: backend.c:12127
+#: backend.c:12146
 msgid "Game not found in file"
 msgstr ""
 
-#: backend.c:12255 backend.c:12582
+#: backend.c:12274 backend.c:12601
 msgid "Bad FEN position in file"
 msgstr ""
 
-#: backend.c:12407
+#: backend.c:12426
 msgid "No moves in game"
 msgstr ""
 
-#: backend.c:12482
+#: backend.c:12501
 msgid "No position has been loaded yet"
 msgstr ""
 
-#: backend.c:12543 backend.c:12554
+#: backend.c:12562 backend.c:12573
 msgid "Can't seek on position file"
 msgstr ""
 
-#: backend.c:12561 backend.c:12573
+#: backend.c:12580 backend.c:12592
 msgid "Position not found in file"
 msgstr ""
 
-#: backend.c:12613
+#: backend.c:12632
 msgid "Black to play"
 msgstr ""
 
-#: backend.c:12616
+#: backend.c:12635
 msgid "White to play"
 msgstr ""
 
-#: backend.c:12703 backend.c:13064
+#: backend.c:12722 backend.c:13083
 msgid "Waiting for access to save file"
 msgstr ""
 
-#: backend.c:12705
+#: backend.c:12724
 msgid "Saving game"
 msgstr ""
 
-#: backend.c:12706
+#: backend.c:12725
 msgid "Bad Seek"
 msgstr ""
 
-#: backend.c:13066
+#: backend.c:13085
 msgid "Saving position"
 msgstr ""
 
-#: backend.c:13192
+#: backend.c:13211
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
 msgstr ""
 
-#: backend.c:13197
+#: backend.c:13216
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
 msgstr ""
 
-#: backend.c:13202
+#: backend.c:13221
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
 msgstr ""
 
-#: backend.c:13249
+#: backend.c:13268
 msgid "You have not made a move yet"
 msgstr ""
 
-#: backend.c:13270
+#: backend.c:13289
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
 msgstr ""
 
-#: backend.c:13275
+#: backend.c:13294
 msgid "No unfinished games"
 msgstr ""
 
-#: backend.c:13281
+#: backend.c:13300
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -579,213 +579,213 @@ msgid ""
 "on the command line."
 msgstr ""
 
-#: backend.c:13296
+#: backend.c:13315
 msgid "Failed to invoke cmail"
 msgstr ""
 
-#: backend.c:13358
+#: backend.c:13377
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr ""
 
-#: backend.c:13380
+#: backend.c:13399
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr ""
 
-#: backend.c:13384
+#: backend.c:13403
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr ""
 
-#: backend.c:13388
+#: backend.c:13407
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr ""
 
-#: backend.c:13395
+#: backend.c:13414
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr ""
 
-#: backend.c:13401
+#: backend.c:13420
 #, c-format
 msgid "No unfinished games\n"
 msgstr ""
 
-#: backend.c:13403
+#: backend.c:13422
 #, c-format
 msgid "Ready to send mail\n"
 msgstr ""
 
-#: backend.c:13408
+#: backend.c:13427
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr ""
 
-#: backend.c:13612
+#: backend.c:13631
 msgid "Edit comment"
 msgstr ""
 
-#: backend.c:13614
+#: backend.c:13633
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr ""
 
-#: backend.c:13669
+#: backend.c:13688
 #, c-format
 msgid "You are not observing a game"
 msgstr ""
 
-#: backend.c:13777
+#: backend.c:13796
 msgid "It is not White's turn"
 msgstr ""
 
-#: backend.c:13858
+#: backend.c:13877
 msgid "It is not Black's turn"
 msgstr ""
 
-#: backend.c:13966
+#: backend.c:13985
 #, c-format
 msgid "Starting %s chess program"
 msgstr ""
 
-#: backend.c:13994 backend.c:15108
+#: backend.c:14013 backend.c:15127
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
 msgstr ""
 
-#: backend.c:14128
+#: backend.c:14147
 msgid "Training mode off"
 msgstr ""
 
-#: backend.c:14136
+#: backend.c:14155
 msgid "Training mode on"
 msgstr ""
 
-#: backend.c:14139
+#: backend.c:14158
 msgid "Already at end of game"
 msgstr ""
 
-#: backend.c:14219
+#: backend.c:14238
 msgid "Warning: You are still playing a game"
 msgstr ""
 
-#: backend.c:14222
+#: backend.c:14241
 msgid "Warning: You are still observing a game"
 msgstr ""
 
-#: backend.c:14225
+#: backend.c:14244
 msgid "Warning: You are still examining a game"
 msgstr ""
 
-#: backend.c:14292
+#: backend.c:14311
 msgid "Click clock to clear board"
 msgstr ""
 
-#: backend.c:14302
+#: backend.c:14321
 msgid "Close ICS engine analyze..."
 msgstr ""
 
-#: backend.c:14590
+#: backend.c:14609
 msgid "That square is occupied"
 msgstr ""
 
-#: backend.c:14614 backend.c:14640
+#: backend.c:14633 backend.c:14659
 msgid "There is no pending offer on this move"
 msgstr ""
 
-#: backend.c:14676 backend.c:14687
+#: backend.c:14695 backend.c:14706
 msgid "Your opponent is not out of time"
 msgstr ""
 
-#: backend.c:14753
+#: backend.c:14772
 msgid "You must make your move before offering a draw"
 msgstr ""
 
-#: backend.c:15090
+#: backend.c:15109
 msgid "You are not examining a game"
 msgstr ""
 
-#: backend.c:15094
+#: backend.c:15113
 msgid "You can't revert while pausing"
 msgstr ""
 
-#: backend.c:15148 backend.c:15155
+#: backend.c:15167 backend.c:15174
 msgid "It is your turn"
 msgstr ""
 
-#: backend.c:15206 backend.c:15213 backend.c:15266 backend.c:15273
+#: backend.c:15225 backend.c:15232 backend.c:15285 backend.c:15292
 msgid "Wait until your turn"
 msgstr ""
 
-#: backend.c:15218
+#: backend.c:15237
 msgid "No hint available"
 msgstr ""
 
-#: backend.c:15234 ngamelist.c:355
+#: backend.c:15253 ngamelist.c:355
 msgid "Game list not loaded or empty"
 msgstr ""
 
-#: backend.c:15241
+#: backend.c:15260
 msgid "Book file exists! Try again for overwrite."
 msgstr ""
 
-#: backend.c:15719
+#: backend.c:15738
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr ""
 
-#: backend.c:15722 backend.c:15753
+#: backend.c:15741 backend.c:15772
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr ""
 
-#: backend.c:15748
+#: backend.c:15767
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr ""
 
-#: backend.c:15766
+#: backend.c:15785
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr ""
 
-#: backend.c:16168
+#: backend.c:16187
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr ""
 
-#: backend.c:16324
+#: backend.c:16343
 msgid "Displayed move is not current"
 msgstr ""
 
-#: backend.c:16333
+#: backend.c:16352
 msgid "Could not parse move"
 msgstr ""
 
-#: backend.c:16458 backend.c:16480
+#: backend.c:16477 backend.c:16499
 msgid "Both flags fell"
 msgstr ""
 
-#: backend.c:16460
+#: backend.c:16479
 msgid "White's flag fell"
 msgstr ""
 
-#: backend.c:16482
+#: backend.c:16501
 msgid "Black's flag fell"
 msgstr ""
 
-#: backend.c:16613
+#: backend.c:16632
 msgid "Clock adjustment not allowed in auto-flag mode"
 msgstr ""
 
-#: backend.c:17448
+#: backend.c:17467
 msgid "Bad FEN position in clipboard"
 msgstr ""
 
-#: book.c:577 book.c:830
+#: book.c:577 book.c:833
 msgid "Polyglot book not valid"
 msgstr ""
 
@@ -793,11 +793,11 @@ msgstr ""
 msgid "Book Fault"
 msgstr ""
 
-#: book.c:833
+#: book.c:836
 msgid "Hash keys are different"
 msgstr ""
 
-#: book.c:1000
+#: book.c:1003
 msgid "Could not create book"
 msgstr ""
 
@@ -1893,7 +1893,7 @@ msgid "Engine #2 / Human"
 msgstr ""
 
 #: dialogs.c:1457 dialogs.c:1460 dialogs.c:1465 dialogs.c:1466
-#: gtk/xoptions.c:191
+#: gtk/xoptions.c:194
 msgid "Unused"
 msgstr ""
 
@@ -2131,11 +2131,11 @@ msgstr "Bình Chú"
 msgid "  next page"
 msgstr ""
 
-#: dialogs.c:2495
+#: dialogs.c:2490
 msgid "FIRST TYPE DIRECTORY NAME HERE"
 msgstr ""
 
-#: dialogs.c:2496
+#: dialogs.c:2491
 msgid "TRY ANOTHER NAME"
 msgstr ""
 
@@ -2166,50 +2166,50 @@ msgstr ""
 msgid "Reading game file (%d)"
 msgstr ""
 
-#: gtk/xboard.c:787 xaw/xboard.c:1161
+#: gtk/xboard.c:844 xaw/xboard.c:1162
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr ""
 
-#: gtk/xboard.c:796 xaw/xboard.c:1170
+#: gtk/xboard.c:853 xaw/xboard.c:1171
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr ""
 
-#: gtk/xboard.c:811 xaw/xboard.c:1179
+#: gtk/xboard.c:868 xaw/xboard.c:1180
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
 
-#: gtk/xboard.c:830 xaw/xboard.c:1211
+#: gtk/xboard.c:887 xaw/xboard.c:1212
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr ""
 
-#: gtk/xboard.c:870 xaw/xboard.c:1248
+#: gtk/xboard.c:927 xaw/xboard.c:1249
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr ""
 
-#: gtk/xboard.c:911 xaw/xboard.c:1285
+#: gtk/xboard.c:968 xaw/xboard.c:1286
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr ""
 
-#: gtk/xboard.c:1201 xaw/xboard.c:1567
+#: gtk/xboard.c:1258 xaw/xboard.c:1568
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr ""
 
-#: gtk/xboard.c:1226 xaw/xboard.c:1590
+#: gtk/xboard.c:1283 xaw/xboard.c:1591
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr ""
 
-#: gtk/xboard.c:1665 xaw/xboard.c:2080
+#: gtk/xboard.c:1722 xaw/xboard.c:2081
 msgid "Can't open temp file"
 msgstr ""
 
-#: gtk/xboard.c:2128
+#: gtk/xboard.c:2174
 msgid "Failed to open file"
 msgstr ""
 
@@ -2239,7 +2239,7 @@ msgid ""
 "%s%s\n"
 "\n"
 "Copyright 1991 Digital Equipment Corporation\n"
-"Enhancements Copyright 1992-2013 Free Software Foundation\n"
+"Enhancements Copyright 1992-2014 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
 "%s is free software and carries NO WARRANTY;see the file COPYING for more "
@@ -2800,22 +2800,22 @@ msgstr ""
 msgid "internal rcmd not implemented for Unix"
 msgstr ""
 
-#: xaw/xboard.c:477
+#: xaw/xboard.c:478
 #, c-format
 msgid "%s: Can't access XPM directory %s\n"
 msgstr ""
 
-#: xaw/xboard.c:498
+#: xaw/xboard.c:499
 #, c-format
 msgid "Available `%s' sizes:\n"
 msgstr ""
 
-#: xaw/xboard.c:531
+#: xaw/xboard.c:532
 #, c-format
 msgid "Error: No `%s' files!\n"
 msgstr ""
 
-#: xaw/xboard.c:544
+#: xaw/xboard.c:545
 #, c-format
 msgid ""
 "Warning: No DIR structure found on this system --\n"
@@ -2824,17 +2824,17 @@ msgid ""
 "   Include system type & operating system in message.\n"
 msgstr ""
 
-#: xaw/xboard.c:1291
+#: xaw/xboard.c:1292
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
 msgstr ""
 
-#: xaw/xengineoutput.c:114
+#: xaw/xengineoutput.c:115
 #, c-format
 msgid "Error %d loading icon image\n"
 msgstr ""
 
-#: xaw/xoptions.c:321 xaw/xoptions.c:1015
+#: xaw/xoptions.c:321 xaw/xoptions.c:1023
 msgid "browse"
 msgstr ""
 
@@ -2850,11 +2850,11 @@ msgstr ""
 msgid "Shift"
 msgstr ""
 
-#: xaw/xoptions.c:1262
+#: xaw/xoptions.c:1270
 msgid "OK"
 msgstr "Được"
 
-#: xaw/xoptions.c:1266
+#: xaw/xoptions.c:1274
 msgid "cancel"
 msgstr "Bỏ"
 
