@@ -6,6 +6,8 @@
  *
  * Copyright 2005 Alessandro Scotti
  *
+ * Enhancements Copyright 2009, 2010, 2014 Free Software Foundation, Inc.
+ *
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -19,7 +21,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/. 
+ * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  * ------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */

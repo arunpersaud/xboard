@@ -1,7 +1,7 @@
 /*
  * ngamelist.c -- Game list window, Xt-independent front-end code for XBoard
  *
- * Copyright 1995, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
+ * Copyright 1995, 2009, 2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
