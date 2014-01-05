@@ -1,3 +1,23 @@
+** Version 4.7.3 **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.7.3/ )
+
+   bugfix release for 4.7.2
+
+   * Fix buffer overflow in parser on long PGN with scores
+   * Allow castling and e.p. capture moves to survive when editing opening book
+   * Fix node-count overflow in engine output
+   * Better sorting of fail-low lines in engine output
+   * Fix Chess960 a-side castling legality check
+   * Fix position search in Chess960
+   * Fix adjudication of Giveaway stalemates
+   * Adapt WinBoard window positioning to work with multiple screens
+   * Cure some weirdness in XBoard when dragging pieces outside the board
+   * Some dialog layout improvements to facilitate internationalization
+   * Fix crash on using some dialog Browse buttons in GTK version
+   * Connect manual menu item work in GTK version
+   * Put code for OS X integration in the GTK version
+
 ** Version 4.7.2 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.7.2/ )
