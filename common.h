@@ -142,7 +142,7 @@ typedef char *String;
 #define VIRGIN       (BOARD_RANKS-2)           /* [HGM] pieces not moved     */
 #define EP_STATUS    CASTLING][(BOARD_FILES-2) /* [HGM] in upper rank        */
 #define HOLDINGS_SET CASTLING][(BOARD_FILES-1) /* [HGM] in upper-right corner*/
-#define ONE          ('1'-(BOARD_HEIGHT>9))    /* [HGM] foremost board rank  */
+#define ONE          ('1'-(BOARD_HEIGHT==10))  /* [HGM] foremost board rank  */
 #define AAA          ('a'-BOARD_LEFT)          /* [HGM] leftmost board file  */
 #define VIRGIN_W                 1             /* [HGM] flags in Board[VIRGIN][X] */
 #define VIRGIN_B                 2
