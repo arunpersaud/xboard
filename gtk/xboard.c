@@ -167,8 +167,8 @@ extern char *getenv();
 #include "gettext.h"
 #include "draw.h"
 
-#ifdef OSX
-#  include "gtkmacintegration/gtkosxapplication.h"
+#ifdef __APPLE__
+#  include <gtkmacintegration/gtkosxapplication.h>
    // prevent pathname of positional file argument provided by OS X being be mistaken for option name
    // (price is that we won't recognize Windows option format anymore).
 #  define SLASH '-'
@@ -728,7 +728,7 @@ SlaveResize (Option *opt)
   gtk_window_resize(GTK_WINDOW(shells[DummyDlg]), slaveW + opt->max, slaveH + opt->value);
 }
 
-#ifdef OSX
+#ifdef __APPLE__
 static char clickedFile[MSG_SIZ];
 static int suppress;
 
@@ -772,7 +772,7 @@ main (int argc, char **argv)
 
     /* set up GTK */
     gtk_init (&argc, &argv);
-#ifdef OSX
+#ifdef __APPLE__
     {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
 	GtkosxApplication *theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
 	dataDir = gtkosx_application_get_bundle_path();
@@ -1785,7 +1785,7 @@ TempForwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 ManProc ()
 {   // called from menu
-#ifdef OSX
+#ifdef __APPLE__
     system("%s ./man.command", appData.sysOpen);
 #else
     system("xterm -e man xboard &");
