@@ -3,6 +3,169 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2014-01-05 12:52:46 -0800 Arun Persaud <arun@nubati.net>:
+updated po/pot files
+
+
+2014-01-05 12:51:50 -0800 Arun Persaud <arun@nubati.net>:
+new version number for release 4.7.3
+
+
+2014-01-05 10:58:48 -0800 Arun Persaud <arun@nubati.net>:
+updated copyright to 2014 in menu.c
+
+
+2014-01-05 10:37:56 -0800 Arun Persaud <arun@nubati.net>:
+removed .DS_Store file from git
+
+
+2014-01-05 10:34:08 -0800 Arun Persaud <arun@nubati.net>:
+Updated copyright notice to 2014
+
+
+2014-01-05 10:27:53 -0800 Arun Persaud <arun@nubati.net>:
+cleanup some trailing whitespaces
+
+
+2013-12-29 13:46:40 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on use of dialog Browse buttons GTK
+
+The code to set a filter did not expect multiple extensions, and would
+cause a buffer overrun when there were.
+
+2013-12-27 20:12:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make building of Windows .hlp file optional
+
+By using && and || operators in the build recipe, the building of WinBoard
+with Cygwin is now not aborted whe the Help Compiler is not installed.
+
+2014-01-05 11:47:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use __APPLE__ compile switch for OS X
+
+It seems that on Apple machines the compiler will always define the
+symbol __APPLE__, so this is now used instead of OSX, which had to
+be defined with a -DOSX compiler flag. The gtkmacintegration header
+is now using <> in stead of "" in its #include. (Strange enough both
+were working.)
+
+2014-01-04 12:18:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Expand ~~/ to bundle path (OSX)
+
+DATADIR is #defined in WinBoard as "~~" to make the expansion a no-op
+there. Same for Linux compiles. For OS X it is #defined as a variable,
+obtained from GTK-OSX at startup.
+
+2013-12-29 23:27:12 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Activate ManProc in GTK
+
+
+2013-12-29 22:14:06 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove use of strndup
+
+The use of strndup was actually unsafe, as the length was passed using
+an ordinary strlen. strndup was not availableon OS X 10.6, and is now
+replaced by an ordinary strdup, which should be save enough.
+
+2013-12-29 22:09:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put some OSX code into gtk version
+
+Under control of #ifdef OSX code is added to integrate the GTK front-end
+into OS X. This involves moving the menu bar to outside the window, and
+catching the signal that OS X sends to running applications when opening
+another instance was requested. Som files are renamed to conform to the
+file tree of the OS X App package.
+
+2013-12-27 21:47:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Cure weirdness when dragging outside of board
+
+Dragging outside the board (when people maximized the window) did not
+properly restore background, (leaving a trail of dragged piece). Filling
+the canvas with white when it is creatd cured this. The problem most likely
+was that unitialized cairo surfaces had transparancy, and writing back
+transparancy doesn't helpmuch to erase things.
+
+2013-12-09 14:52:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix sorting of lines in Engine Output
+
+Lines tat were fail-lows or fail-ighs should get the scores on the basis
+of wich they are sorted corrected to that of te line (for the same move)
+superceding them, so that other moves can rise to above them, when they
+score higher than the corrected score.
+
+2013-12-05 20:08:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make filler variant button inactive
+
+
+2013-12-05 17:50:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix packing of FRC castlings
+
+The routine for packing moves to the internal database format was not
+working for FRC castlings, totally messing up position search for FRC
+and CRC.
+
+2013-12-05 16:23:53 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Xaw file-browser New Directory
+
+Prevent people from using the error messages that will be printed here
+as directory name by pressing New Directory a second time after first
+pressing it with an empty or existing name.
+
+2013-12-05 16:14:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Widen Xaw text entries for larger square sizes
+
+Presumably people will use larger fonts if they use larger board squares.
+(And in any case te default fonts would be larger.) This means they need
+more space to see what is the current value of text options.
+
+2013-12-05 15:47:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove width limiting of shuffle checkbox
+
+
+2013-11-28 13:30:40 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow castling and e.p. to be edited in opening book
+
+
+2013-09-16 22:32:32 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Repair FRC A-side castling legality testing
+
+XBoard allowed A-side castling when a rook started on the a-file,
+and the b-file was blocked.
+
+2013-09-16 22:27:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Repair XBoard from node-count patch
+
+u64 was #defined in backend.h, which unfortunately was almost alwats
+(Not sure why WinBoard did not suffer from this!) This, and related
+definitions have now been moved to common.h (which is always #included
+first).
+
+2013-09-15 20:13:06 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+WinBoard multi-monitor support
+
+A patch provided by Tim Kosse
+
+2013-09-15 19:28:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix node count range
+
+The node count was still clipped to 32 bit because one of the structs
+it passes through (FrontEndProgramStats) had the nodes field declared
+as an unsigned long.
+
+2013-09-15 19:12:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix adjudication of Giveaway stalemates
+
+The case where the side-to-move would win by stalemate was not treated
+in the Adjudicate switch.
+
+2013-08-30 17:33:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix buffer overflow in parser
+
+When a line ended with a comment, the parser had to read a line ahead
+to check if there was a PGNresult following, without being able to
+throw away the previous line yet. This could lead to buffer overflow
+in a long game where every line ended in a comment. The buffer now is
+cleansed of already parsed data when starting on a new syntactical unit.
+
 2013-08-27 22:55:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix -zippyVariants option
 

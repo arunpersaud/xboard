@@ -1,3 +1,39 @@
+** Version 4.7.3 **
+
+(git shortlog --no-merges v4.7.2..HEAD)
+
+Arun Persaud (6):
+      cleanup some trailing whitespaces
+      Updated copyright notice to 2014
+      removed .DS_Store file from git
+      updated copyright to 2014 in menu.c
+      new version number for release 4.7.3
+      updated po/pot files
+
+H.G. Muller (21):
+      Fix buffer overflow in parser
+      Fix adjudication of Giveaway stalemates
+      Fix node count range
+      WinBoard multi-monitor support
+      Repair XBoard from node-count patch
+      Repair FRC A-side castling legality testing
+      Allow castling and e.p. to be edited in opening book
+      Remove width limiting of shuffle checkbox
+      Widen Xaw text entries for larger square sizes
+      Fix Xaw file-browser New Directory
+      Fix packing of FRC castlings
+      Make filler variant button inactive
+      Fix sorting of lines in Engine Output
+      Cure weirdness when dragging outside of board
+      Put some OSX code into gtk version
+      Remove use of strndup
+      Activate ManProc in GTK
+      Expand ~~/ to bundle path (OSX)
+      Use __APPLE__ compile switch for OS X
+      Make building of Windows .hlp file optional
+      Fix crash on use of dialog Browse buttons GTK
+
+
 ** Version 4.7.2 **
 
 (git shortlog --no-merges v4.7.1..HEAD)
