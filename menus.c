@@ -362,7 +362,7 @@ AboutProc ()
     snprintf(buf, sizeof(buf),
 _("%s%s\n\n"
 "Copyright 1991 Digital Equipment Corporation\n"
-"Enhancements Copyright 1992-2013 Free Software Foundation\n"
+"Enhancements Copyright 1992-2014 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n\n"
 "%s is free software and carries NO WARRANTY;"
 "see the file COPYING for more information.\n"
