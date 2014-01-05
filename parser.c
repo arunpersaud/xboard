@@ -1,7 +1,7 @@
 /*
  * parser.c --
  *
- * Copyright 2011, 2012, 2013 Free Software Foundation, Inc.
+ * Copyright 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -174,6 +174,10 @@ NextUnit (char **p)
 	    if(fromString) return 0; // we are parsing string, so the end is really the end
 	    *p = inPtr = inputBuf;
 	    if(!ReadLine()) return 0; // EOF
+	} else if(inPtr > inputBuf + PARSEBUFSIZE/2) { // buffer fills up with already parsed stuff
+	    char *q = *p, *r = inputBuf;
+	    while(*r++ = *q++);
+	    *p = inputBuf; inPtr = r - 1;
 	}
 	parseStart = oldp = *p; // remember where we begin
 

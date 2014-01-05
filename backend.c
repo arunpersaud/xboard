@@ -5,7 +5,7 @@
  * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -8053,6 +8053,7 @@ Adjudicate (ChessProgramState *cps)
 	      case MT_NONE:
 	      default:
 		break;
+	      case MT_STEALMATE:
 	      case MT_STALEMATE:
 	      case MT_STAINMATE:
 		reason = "Xboard adjudication: Stalemate";
@@ -12195,22 +12196,40 @@ void
 PackMove (int fromX, int fromY, int toX, int toY, ChessSquare promoPiece)
 {
     int sq = fromX + (fromY<<4);
-    int piece = quickBoard[sq];
+    int piece = quickBoard[sq], rook;
     quickBoard[sq] = 0;
     moveDatabase[movePtr].to = pieceList[piece] = sq = toX + (toY<<4);
-    if(piece == pieceList[1] && fromY == toY && (toX > fromX+1 || toX < fromX-1) && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1) {
+    if(piece == pieceList[1] && fromY == toY) {
+      if((toX > fromX+1 || toX < fromX-1) && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1) {
 	int from = toX>fromX ? BOARD_RGHT-1 : BOARD_LEFT;
 	moveDatabase[movePtr++].piece = Q_WCASTL;
 	quickBoard[sq] = piece;
 	piece = quickBoard[from]; quickBoard[from] = 0;
 	moveDatabase[movePtr].to = pieceList[piece] = sq = toX>fromX ? sq-1 : sq+1;
+      } else if((rook = quickBoard[sq]) && pieceType[rook] == WhiteRook) { // FRC castling
+	quickBoard[sq] = 0; // remove Rook
+	moveDatabase[movePtr].to = sq = (toX>fromX ? BOARD_RGHT-2 : BOARD_LEFT+2); // King to-square
+	moveDatabase[movePtr++].piece = Q_WCASTL;
+	quickBoard[sq] = pieceList[1]; // put King
+	piece = rook;
+	moveDatabase[movePtr].to = pieceList[rook] = sq = toX>fromX ? sq-1 : sq+1;
+      }
     } else
-    if(piece == pieceList[2] && fromY == toY && (toX > fromX+1 || toX < fromX-1) && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1) {
+    if(piece == pieceList[2] && fromY == toY) {
+      if((toX > fromX+1 || toX < fromX-1) && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1) {
 	int from = (toX>fromX ? BOARD_RGHT-1 : BOARD_LEFT) + (BOARD_HEIGHT-1 <<4);
 	moveDatabase[movePtr++].piece = Q_BCASTL;
 	quickBoard[sq] = piece;
 	piece = quickBoard[from]; quickBoard[from] = 0;
 	moveDatabase[movePtr].to = pieceList[piece] = sq = toX>fromX ? sq-1 : sq+1;
+      } else if((rook = quickBoard[sq]) && pieceType[rook] == BlackRook) { // FRC castling
+	quickBoard[sq] = 0; // remove Rook
+	moveDatabase[movePtr].to = sq = (toX>fromX ? BOARD_RGHT-2 : BOARD_LEFT+2);
+	moveDatabase[movePtr++].piece = Q_BCASTL;
+	quickBoard[sq] = pieceList[2]; // put King
+	piece = rook;
+	moveDatabase[movePtr].to = pieceList[rook] = sq = toX>fromX ? sq-1 : sq+1;
+      }
     } else
     if(epOK && (pieceType[piece] == WhitePawn || pieceType[piece] == BlackPawn) && fromX != toX && quickBoard[sq] == 0) {
 	quickBoard[(fromY<<4)+toX] = 0;

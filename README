@@ -1,10 +1,10 @@
 What is XBoard?
 ===============
 XBoard is a graphical chessboard for the X Window System.  It can
-serve as a user interface for chess engines such as Fairy-Max, 
-Crafty or GNU Chess, for the Internet Chess Server, or for electronic 
-mail correspondence chess. It supports all major forms of chess, such 
-as international chess, xiangqi and shogi. XBoard can also be used by 
+serve as a user interface for chess engines such as Fairy-Max,
+Crafty or GNU Chess, for the Internet Chess Server, or for electronic
+mail correspondence chess. It supports all major forms of chess, such
+as international chess, xiangqi and shogi. XBoard can also be used by
 itself as viewer for stored chess games.  See the manual page for
 further details.
 
@@ -71,4 +71,3 @@ Here is a sample of approximately what you should type (on Unix):
 If you improve XBoard, please send a message about your changes, and
 we will get in touch with you about merging them in to the main line
 of development.
-

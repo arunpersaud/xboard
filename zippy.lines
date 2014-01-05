@@ -23,8 +23,8 @@ more than 250 characters long, it will never be used.  This is an
 extra sentence to make the saying more than 250 characters long so
 that the previous sentence will be true.
 ^
-The eighth item to know is that when you are testing, you had better have 
-several valid sayings in your file; for various reasons, having too few 
+The eighth item to know is that when you are testing, you had better have
+several valid sayings in your file; for various reasons, having too few
 sayings can cause Zippy to get into an endless loop, or to be very slow.
 ^
 As the ninth and final saying, let me add that you need a caret

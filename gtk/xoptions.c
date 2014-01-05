@@ -1,7 +1,7 @@
 /*
  * xoptions.c -- Move list window, part of X front end for XBoard
  *
- * Copyright 2000, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
+ * Copyright 2000, 2009, 2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -51,8 +51,8 @@ extern char *getenv();
 #include <cairo/cairo-xlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#ifdef OSX
-#  include "gtkmacintegration/gtkosxapplication.h"
+#ifdef __APPLE__
+#  include <gtkmacintegration/gtkosxapplication.h>
 #endif
 
 #include "common.h"
@@ -428,7 +428,7 @@ CreateMenuPopup (Option *opt, int n, int def)
       {
 	char *msg = mb[i].string;
 	if(!msg) break;
-#ifdef OSX
+#ifdef __APPLE__
 	if(!strcmp(msg, "Quit ")) continue;             // Quit item will appear automatically in App menu
 	if(!strcmp(msg, "About XBoard")) msg = "About"; // 'XBoard' will be appended automatically when moved to App menu 1st item
 #endif
@@ -445,11 +445,11 @@ CreateMenuPopup (Option *opt, int n, int def)
 	    GdkModifierType accelerator_mods;
 
 	    gtk_accelerator_parse(mb[i].accel, &accelerator_key, &accelerator_mods);
-#ifdef OSX
+#ifdef __APPLE__
    	    if(accelerator_mods & GDK_CONTROL_MASK) {  // in OSX use Meta where Linux uses Ctrl
 		accelerator_mods &= ~GDK_CONTROL_MASK; // clear Ctrl flag
 		accelerator_mods |= GDK_META_MASK;     // set Meta flag
-	    } 
+	    }
 #endif
 	    gtk_widget_add_accelerator (GTK_WIDGET(entry), "activate",GtkAccelerators,
 					accelerator_key, accelerator_mods, GTK_ACCEL_VISIBLE);
@@ -1498,7 +1498,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    break;
 	  case BarEnd:
 	    top--;
-#ifndef OSX
+#ifndef __APPLE__
             gtk_table_attach(GTK_TABLE(table), menuBar, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
 
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
@@ -1511,7 +1511,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		gtkosx_application_set_menu_bar(theApp, GTK_MENU_SHELL(menuBar));
 		gtkosx_application_insert_app_menu_item(theApp, GTK_MENU_ITEM(helpMenu[8].handle), 0); // hack
 		gtkosx_application_sync_menubar(theApp);
-	    } 
+	    }
 #endif
 	    break;
 	  case BoxEnd:

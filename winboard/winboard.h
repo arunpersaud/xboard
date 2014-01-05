@@ -2,10 +2,10 @@
  * WinBoard.h -- Definitions for Windows NT front end to XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts. 
+ * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -217,3 +217,5 @@ extern HWND gameListDialog;
 VOID EditTagsProc(void);
 extern HWND editTagsDialog;
 extern int screenWidth, screenHeight;
+extern RECT screenGeometry; // Top-left coordiate of the screen can be different from (0,0)
+

@@ -50,7 +50,7 @@ tends to work poorly because it is dull when shouted in isolated
 
 * * *
 
-Unix: To build the Zippy version of xboard, on most systems just do: 
+Unix: To build the Zippy version of xboard, on most systems just do:
 	configure --enable-zippy
 	make
 
@@ -126,12 +126,12 @@ NEW OPTIONS
 	its sayings file.  You can alias this to whatever you like.
 	If XXX is censoring you, he is automatically removed from your
 	notify list.
-	
+
 	(3) If a player XXX in your notify list logs off, xboard sends
-	the command "farewell XXX" to ICS.  You can alias this to 
+	the command "farewell XXX" to ICS.  You can alias this to
 	whatever you like.  Note that the player is already gone, so
 	telling him something is futile.
-	
+
 	If zippyTalk is on, colorization in the ICS interaction
 	window, and the sounds corresponding to colors in that window,
 	do not work.  The reply feature captures the tells, etc.,
@@ -263,7 +263,7 @@ NEW OPTIONS
         partner tells to be relayed to the engine with the ptell
         command.
 
-  -zippyMaxGames int 
+  -zippyMaxGames int
   -zippyReplayTimeout
         If zippyMaxGames > 0, Zippy will play at most the given number
 	of consecutive games against the same opponent.  Thereafter,
@@ -280,8 +280,8 @@ NEW OPTIONS
 	starts a game between Zippy and the first opponent to respond,
 	giving Zippy no choice about whether to accept or decline.
 
-  -zippyShortGame int 
-        If zippyShortGame > 0, Zippy will decline all challenges 
+  -zippyShortGame int
+        If zippyShortGame > 0, Zippy will decline all challenges
 	from an opponent that terminated a game before the given number
 	of ply (with an explanatory tell) until either someone else has
 	played or zippyReplayTimeout seconds have elapsed. Do not set

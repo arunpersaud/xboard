@@ -1,7 +1,7 @@
 /*
  * xoptions.c -- Move list window, part of X front end for XBoard
  *
- * Copyright 2000, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
+ * Copyright 2000, 2009, 2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -988,6 +988,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    } else texts[h] = dialog = NULL; // kludge to position from left margin
 	    w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
+	    if(squareSize > 33) w += (squareSize - 33)/2;
 	    j = SetPositionAndSize(args, dialog, last, 1 /* border */,
 				   w /* w */, option[i].type == TextBox ? option[i].value : 0 /* h */, 0x91 /* chain full width */);
 	    if(option[i].type == TextBox) { // decorations for multi-line text-edits

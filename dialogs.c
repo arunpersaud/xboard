@@ -1,7 +1,7 @@
 /*
  * dialogs.c -- platform-independent code for dialogs of XBoard
  *
- * Copyright 2000, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
+ * Copyright 2000, 2009, 2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -1416,7 +1416,7 @@ ShuffleOK (int n)
 }
 
 static Option shuffleOptions[] = {
-  {   0,  0,   50, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, N_("shuffle") },
+  {   0,  0,    0, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, N_("shuffle") },
   { 0,-1,2000000000, NULL, (void*) &appData.defaultFrcPosition, "", NULL, Spin, N_("Start-position number:") },
   {   0,  0,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, N_("randomize") },
   {   0,  SAME_ROW,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, N_("pick fixed") },
@@ -2543,13 +2543,17 @@ Refresh (int pathFlag)
     SetWidgetLabel(&browseOptions[0], title);
 }
 
+static char msg1[] = N_("FIRST TYPE DIRECTORY NAME HERE");
+static char msg2[] = N_("TRY ANOTHER NAME");
+
 void
 CreateDir (int n)
 {
     char *name, *errmsg = "";
     GetWidgetText(&browseOptions[n-1], &name);
-    if(!name[0]) errmsg = _("FIRST TYPE DIRECTORY NAME HERE"); else
-    if(mkdir(name, 0755)) errmsg = _("TRY ANOTHER NAME");
+    if(!strcmp(name, msg1) || !strcmp(name, msg2)) return;
+    if(!name[0]) errmsg = _(msg1); else
+    if(mkdir(name, 0755)) errmsg = _(msg2);
     else {
 	chdir(name);
 	Refresh(-1);

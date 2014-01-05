@@ -24,14 +24,14 @@ See script make-xboard-release that can handle GNU-upload and tagging in git.
   1) email gnu (check admin page for gnu) http://www.gnu.org/prep/maintain/html_node/Announcements.html#Announcements
   2) email chess servers (ICS, FICS) and other web directories
   3) email linux distributions/update opensuse (Arun can handle OpenSUSE)
-  4) email info-gnu-chess 
+  4) email info-gnu-chess
 - update freshmeat.net (Tim can do this, email him)
 - newsgroups add short discription of xboard to news item
   1)  gnu.chess, info-gnu-chess
   2)  rec.games.chess.computer
   3)  comp.os.linux.announce
-  4)  WinBoard forum web page (HGM does this one) 
-- update git to the next pre-release 
+  4)  WinBoard forum web page (HGM does this one)
+- update git to the next pre-release
 
 ** Template for emails
 
@@ -39,14 +39,14 @@ fill in the <...>
 
 Subject: release of XBoard version <...>
 
-Hello, 
+Hello,
 
 A new version of XBoard is available. Here are some details:
 
 Short description:
 
-XBoard is a graphical user interface for chess in all its major forms, 
-including international chess, xiangqi (Chinese chess), shogi Japanese chess) 
+XBoard is a graphical user interface for chess in all its major forms,
+including international chess, xiangqi (Chinese chess), shogi Japanese chess)
 and Makruk. Many variations of chess are also supported.
 
 Web page:
@@ -59,13 +59,13 @@ http://ftp.gnu.org/gnu/xboard/
 
 Windows binaries will be available at:
 
-http://www.open-aurec.com/wbforum/viewforum.php?f=19 
+http://www.open-aurec.com/wbforum/viewforum.php?f=19
 
 Development at:
 
 https://savannah.gnu.org/projects/xboard/
 
-News: 
+News:
 
 <list of most important new features>
 See the NEWS file in the distribution or git for more details.

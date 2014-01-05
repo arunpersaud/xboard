@@ -2,10 +2,10 @@
  * WinBoard.c -- Windows NT front end to XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts. 
+ * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
- * 2007, 2008, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
+ * 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
@@ -984,16 +984,17 @@ InitApplication(HINSTANCE hInstance)
 
 /* Set by InitInstance, used by EnsureOnScreen */
 int screenHeight, screenWidth;
+RECT screenGeometry;
 
 void
 EnsureOnScreen(int *x, int *y, int minX, int minY)
 {
 //  int gap = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION);
   /* Be sure window at (x,y) is not off screen (or even mostly off screen) */
-  if (*x > screenWidth - 32) *x = 0;
-  if (*y > screenHeight - 32) *y = 0;
-  if (*x < minX) *x = minX;
-  if (*y < minY) *y = minY;
+  if (*x > screenGeometry.right - 32) *x = screenGeometry.left;
+  if (*y > screenGeometry.bottom - 32) *y = screenGeometry.top;
+  if (*x < screenGeometry.left + minX) *x = screenGeometry.left + minX;
+  if (*y < screenGeometry.top + minY) *y = screenGeometry.top + minY;
 }
 
 VOID
@@ -1054,6 +1055,32 @@ InitTextures()
   }
 }
 
+#ifndef SM_CXVIRTUALSCREEN
+#define SM_CXVIRTUALSCREEN 78
+#endif
+#ifndef SM_CYVIRTUALSCREEN
+#define SM_CYVIRTUALSCREEN 79
+#endif
+#ifndef SM_XVIRTUALSCREEN 
+#define SM_XVIRTUALSCREEN 76
+#endif
+#ifndef SM_YVIRTUALSCREEN 
+#define SM_YVIRTUALSCREEN 77
+#endif
+
+VOID
+InitGeometry()
+{
+  screenHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+  if( !screenHeight ) screenHeight = GetSystemMetrics(SM_CYSCREEN);
+  screenWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+  if( !screenWidth ) screenWidth = GetSystemMetrics(SM_CXSCREEN);
+  screenGeometry.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+  screenGeometry.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+  screenGeometry.right = screenGeometry.left + screenWidth;
+  screenGeometry.bottom = screenGeometry.top + screenHeight;
+}
+
 BOOL
 InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 {
@@ -1072,7 +1099,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
     GetCurrentDirectory(MSG_SIZ, installDir);
   }
   gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] won't have open window otherwise
-  screenWidth = screenHeight = 1000; // [HGM] placement: kludge to allow calling EnsureOnScreen from InitAppData
+  InitGeometry();
   InitAppData(lpCmdLine);      /* Get run-time parameters */
   /* xboard, and older WinBoards, controlled the move sound with the
      appData.ringBellAfterMoves option.  In the current WinBoard, we
@@ -1119,8 +1146,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   iconBlack = LoadIcon(hInstance, "icon_black");
   iconCurrent = iconWhite;
   InitDrawingColors();
-  screenHeight = GetSystemMetrics(SM_CYSCREEN);
-  screenWidth = GetSystemMetrics(SM_CXSCREEN);
+
   InitPosition(0); // to set nr of ranks and files, which might be non-default through command-line args
   for (ibs = (int) NUM_SIZES - 1; ibs >= 0; ibs--) {
     /* Compute window size for each board size, and use the largest
