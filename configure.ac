@@ -250,10 +250,6 @@ dnl | make results available in Makefile.am
 AM_CONDITIONAL([withGTK],   [test x"$with_GTK" = x"yes"])
 AM_CONDITIONAL([withXaw],   [test x"$with_Xaw3d" = x"yes" || test x"$with_Xaw" = x"yes"])
 
-
-AC_SUBST(FRONTEND_CFLAGS)
-AC_SUBST(FRONTEND_LIBS)
-
 dnl | end Front-end check
 
 AC_CANONICAL_HOST
@@ -432,9 +428,28 @@ dnl| USE_PTYS=1
 
 dnl| add some libs for OS X
   *-apple-* )
+    AC_MSG_WARN([Apple support is experimental, please report any problems to bug-xboard@gnu.org])
+    AC_PATH_PROG(SW_VERS, sw_vers)
+    if test "x$SW_VERS" != "x"; then
+      AC_MSG_CHECKING(Mac OS X version)
+      MACOSX_VERSION=`$SW_VERS -productVersion`
+      AC_MSG_RESULT([$MACOSX_VERSION])
+    fi
+    case "$MACOSX_VERSION" in
+      10.0*|10.1|10.1.*|10.2*|10.3*|10.4*|10.5*|10.6*)
+      FRONTEND_LIBS= "$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk"
+        ;;
+      *)
+      FRONTEND_LIBS = "$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names"
+        ;;
+    esac
+
   ;;
 esac
 
+
+AC_SUBST(FRONTEND_CFLAGS)
+AC_SUBST(FRONTEND_LIBS)
 AC_SUBST(PRE_XMULIB)
 AC_SUBST(POST_XMULIB)
 AC_SUBST(CONF_CFLAGS)
