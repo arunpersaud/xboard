@@ -6520,8 +6520,8 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
         promotionZoneSize = 3;
     }
 
-    // Treat Lance as Pawn when it is not representing Amazon
-    if(gameInfo.variant != VariantSuper) {
+    // Treat Lance as Pawn when it is not representing Amazon or Lance
+    if(gameInfo.variant != VariantSuper && gameInfo.variant != VariantChu) {
         if(piece == WhiteLance) piece = WhitePawn; else
         if(piece == BlackLance) piece = BlackPawn;
     }
