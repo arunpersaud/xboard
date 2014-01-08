@@ -182,7 +182,6 @@ extern char *getenv();
    char *dataDir; // for expanding ~~
 #else
 #  define SLASH '/'
-#  define DATADIR "~~"
 #endif
 
 #ifdef __EMX__
