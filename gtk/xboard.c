@@ -174,12 +174,13 @@ extern char *getenv();
 #  define SLASH '-'
    // redefine some defaults
 #  undef ICS_LOGON
-#  undef SYSCONFDIR
 #  undef DATADIR
+#  undef SETTINGS_FILE
 #  define ICS_LOGON "Library/Preferences/XboardICS.conf"
-#  define SYSCONFDIR "../etc"
 #  define DATADIR dataDir
-   char *dataDir; // for expanding ~~
+#  define SETTINGS_FILE masterSettings
+   char dataDir[MSG_SIZ]; // for expanding ~~
+   char masterSettings[MSG_SIZ];
 #else
 #  define SLASH '/'
 #endif
@@ -776,7 +777,9 @@ main (int argc, char **argv)
 #ifdef __APPLE__
     {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
 	GtkosxApplication *theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
-	dataDir = gtkosx_application_get_bundle_path();
+	char *path = gtkosx_application_get_bundle_path();
+	strncpy(dataDir, path, MSG_SIZ);
+	snprintf(masterSettings, MSG_SIZ, "%s/../Resources/etc/xboard.conf", path);
 	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
 	// we must call application ready before we can get the signal,
 	// and supply a (dummy) menu bar before that, to avoid problems with dual apples in it
