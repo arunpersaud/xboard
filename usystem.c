@@ -497,9 +497,12 @@ StartChildProcess (char *cmdLine, char *dir, ProcRef *pr)
 }
 
 // [HGM] kill: implement the 'hard killing' of AS's Winboard_x
+static int pid;
+
 static RETSIGTYPE
 AlarmCallBack (int n)
 {
+    kill(pid, SIGKILL); // kill forcefully
     return;
 }
 
@@ -510,22 +513,17 @@ DestroyChildProcess (ProcRef pr, int signalType)
 
     if (cp->kind != CPReal) return;
     cp->kind = CPNone;
-    if (signalType == 10) { // [HGM] kill: if it does not terminate in 3 sec, kill
-	signal(SIGALRM, AlarmCallBack);
-	alarm(3);
-	if(wait((int *) 0) == -1) { // process does not terminate on its own accord
-	    kill(cp->pid, SIGKILL); // kill it forcefully
-	    wait((int *) 0);        // and wait again
-	}
-    } else {
-	if (signalType) {
-	    kill(cp->pid, signalType == 9 ? SIGKILL : SIGTERM); // [HGM] kill: use hard kill if so requested
-	}
-	/* Process is exiting either because of the kill or because of
-	   a quit command sent by the backend; either way, wait for it to die.
-	*/
-	wait((int *) 0);
+    if (signalType & 1) {
+	    kill(cp->pid, signalType == 9 ? SIGKILL : SIGTERM); // [HGM] kill: for 9 hard-kill immediately
     }
+    signal(SIGALRM, AlarmCallBack);
+    pid = cp->pid;
+    if(signalType & 4) alarm(1 + appData.delayAfterQuit); // [HGM] kill: schedule hard kill if so requested
+    /* Process is exiting either because of the kill or because of
+       a quit command sent by the backend; either way, wait for it to die.
+    */
+    wait((int *) 0);
+    alarm(0); // cancel alarm if still pending
     close(cp->fdFrom);
     close(cp->fdTo);
 }

@@ -9234,15 +9234,15 @@ DestroyChildProcess(ProcRef pr, int/*boolean*/ signal)
     /*!!if (signal) GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, cp->pid);*/
 
     /* [AS] Special termination modes for misbehaving programs... */
-    if( signal == 9 ) { 
+    if( signal & 8 ) { 
         result = TerminateProcess( cp->hProcess, 0 );
 
         if ( appData.debugMode) {
             fprintf( debugFP, "Terminating process %lu, result=%d\n", cp->pid, result );
         }
     }
-    else if( signal == 10 ) {
-        DWORD dw = WaitForSingleObject( cp->hProcess, 3*1000 ); // Wait 3 seconds at most
+    else if( signal & 4 ) {
+        DWORD dw = WaitForSingleObject( cp->hProcess, appData.delayAfterQuit*1000 + 50 ); // Wait 3 seconds at most
 
         if( dw != WAIT_OBJECT_0 ) {
             result = TerminateProcess( cp->hProcess, 0 );

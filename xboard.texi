@@ -3563,7 +3563,14 @@ Default is the login name on your local computer.
 @itemx -delayAfterQuit number
 @cindex delayBeforeQuit, option
 @cindex delayAfterQuit, option
-These options specify how long XBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies.
+These options order pauses before and after sending the "quit" command to an engine that must be terminated.
+The pause between quit and the previous command is specified in milliseconds.
+The pause after quit is used to schedule a kill signal to be sent to the engine process after the
+number of specified seconds plus one.
+This signal is a different one as the terminiation signal described in the protocol specs
+which engines can suppress or ignore, and which is sent directly after the "quit" command.
+Setting @code{delayAfterQuit} to -1 will suppress sending of the kill signal.
+Default: 0
 @item -searchMode n
 @cindex searchMode, option
 The integer n encodes the mode for the @samp{find position} function.
