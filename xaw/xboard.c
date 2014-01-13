@@ -990,6 +990,23 @@ main (int argc, char **argv)
 	exit(0);
     }
 
+    if(argc > 1 && !strcmp(argv[1], "--show-config")) { // [HGM] install: called to print config info
+	typedef struct {char *name, *value; } Config;
+	static Config configList[] = {
+	  { "Datadir", DATADIR },
+	  { "Sysconfdir", SYSCONFDIR },
+	  { NULL }
+	};
+	int i;
+
+	for(i=0; configList[i].name; i++) {
+	    if(argc > 2 && strcmp(argv[2], configList[i].name)) continue;
+	    if(argc > 2) printf("%s", configList[i].value);
+	    else printf("%-12s: %s\n", configList[i].name, configList[i].value);
+	}
+	exit(0);
+    }
+
     programName = strrchr(argv[0], '/');
     if (programName == NULL)
       programName = argv[0];
