@@ -276,6 +276,8 @@ DoGeneral(int n)
   OptionsProc();
 }
 
+#define PARTICIPANTS 6 /* This MUST be the number of the Option for &engineName!*/
+
 static Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:          ") },
 { 0,  0,          0, NULL, NULL, "", NULL, Label, N_("For concurrent playing of tourney with multiple XBoards:") },
@@ -313,14 +315,14 @@ static Option matchOptions[] = {
 static void
 ReplaceParticipant ()
 {
-    GenericReadout(matchOptions, 7);
+    GenericReadout(matchOptions, PARTICIPANTS);
     Substitute(strdup(engineName), True);
 }
 
 static void
 UpgradeParticipant ()
 {
-    GenericReadout(matchOptions, 7);
+    GenericReadout(matchOptions, PARTICIPANTS);
     Substitute(strdup(engineName), False);
 }
 
@@ -347,18 +349,22 @@ AddToTourney (int n, int sel)
     if(sel < 1) buf[0] = NULLCHAR; // back to top level
     else if(engineList[sel][0] == '#') safeStrCpy(buf, engineList[sel], MSG_SIZ); // group header, open group
     else { // normal line, select engine
-	AddLine(&matchOptions[7], engineMnemonic[sel]);
+	AddLine(&matchOptions[PARTICIPANTS], engineMnemonic[sel]);
 	return;
     }
     nr = NamesToList(firstChessProgramNames, engineList, engineMnemonic, buf); // replace list by only the group contents
     ASSIGN(engineMnemonic[0], buf);
-    LoadListBox(&matchOptions[8], _("# no engines are installed"), -1, -1);
-    HighlightWithScroll(&matchOptions[8], 0, nr);
+    LoadListBox(&matchOptions[PARTICIPANTS+1], _("# no engines are installed"), -1, -1);
+    HighlightWithScroll(&matchOptions[PARTICIPANTS+1], 0, nr);
 }
 
 void
 MatchOptionsProc ()
 {
+   if(matchOptions[PARTICIPANTS+1].type != ListBox) {
+	DisplayError(_("Internal error: PARTICIPANTS set wrong"), 0);
+	return;
+   }
    NamesToList(firstChessProgramNames, engineList, engineMnemonic, "");
    matchOptions[9].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
