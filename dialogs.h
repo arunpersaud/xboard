@@ -107,6 +107,7 @@ AskDlg,         // this and beyond do grab mouse events (and are destroyed)
 FatalDlg,
 BoardWindow,
 BrowserDlg,
+MasterDlg,
 NrOfDialogs     // dummy for total
 } DialogClass;
 

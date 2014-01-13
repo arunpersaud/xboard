@@ -253,9 +253,27 @@ MatchOK (int n)
 {
     ASSIGN(appData.participants, engineName);
     if(!CreateTourney(tfName) || matchMode) return matchMode || !appData.participants[0];
-    PopDown(TransientDlg); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
+    PopDown(MasterDlg); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
     MatchEvent(2); // start tourney
     return FALSE;  // no double PopDown!
+}
+
+static void
+DoTimeControl(int n)
+{
+  TimeControlProc();
+}
+
+static void
+DoCommonEngine(int n)
+{
+  UciMenuProc();
+}
+
+static void
+DoGeneral(int n)
+{
+  OptionsProc();
 }
 
 static Option matchOptions[] = {
@@ -283,6 +301,9 @@ static Option matchOptions[] = {
 { 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, N_("Position Number (-1 or -2 = Auto-Increment):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind Index after this many Games (0 = never):") },
 { 0,  0,          0, NULL, (void*) &appData.defNoBook, "", NULL, CheckBox, N_("Disable own engine books by default") },
+{ 0,  0,          0, NULL, (void*) &DoTimeControl, NULL, NULL, Button, N_("Time Control") },
+{ 0, SAME_ROW,    0, NULL, (void*) &DoCommonEngine, NULL, NULL, Button, N_("Common Engine") },
+{ 0, SAME_ROW,    0, NULL, (void*) &DoGeneral, NULL, NULL, Button, N_("General Options") },
 { 0,  0,          0, NULL, (void*) &ReplaceParticipant, NULL, NULL, Button, N_("Replace Engine") },
 { 0, SAME_ROW,    0, NULL, (void*) &UpgradeParticipant, NULL, NULL, Button, N_("Upgrade Engine") },
 { 0, SAME_ROW,    0, NULL, (void*) &CloneTourney, NULL, NULL, Button, N_("Clone Tourney") },
@@ -343,7 +364,7 @@ MatchOptionsProc ()
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
    ASSIGN(engineName, appData.participants);
    ASSIGN(engineMnemonic[0], "");
-   GenericPopUp(matchOptions, _("Tournament Options"), TransientDlg, BoardWindow, MODAL, 0);
+   GenericPopUp(matchOptions, _("Tournament Options"), MasterDlg, BoardWindow, MODAL, 0);
 }
 
 // ------------------------------------------- General Options --------------------------------------------------

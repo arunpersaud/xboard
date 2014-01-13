@@ -739,7 +739,8 @@ gboolean GenericPopDown(w, resptype, gdata)
 // I guess BrowserDlg will be abandoned, as GTK has a better browser of its own
     if(shellUp[BrowserDlg] && dlg != BrowserDlg || dialogError) return True; // prevent closing dialog when it has an open file-browse daughter
 #else
-    if(browserUp || dialogError && dlg != FatalDlg) return True; // prevent closing dialog when it has an open file-browse or error-popup daughter
+    if(browserUp || dialogError && dlg != FatalDlg || dlg == MasterDlg && shellUp[TransientDlg])
+	return True; // prevent closing dialog when it has an open file-browse, transient or error-popup daughter
 #endif
     shells[dlg] = w; // make sure we pop down the right one in case of multiple instances
 
@@ -1138,6 +1139,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	if(wp[dlgNr]) gtk_window_move(GTK_WINDOW(shells[dlgNr]), wp[dlgNr]->x, wp[dlgNr]->y);
         return 0;
     }
+    if(dlgNr == TransientDlg && parent == BoardWindow && shellUp[MasterDlg]) parent = MasterDlg; // MasterDlg can always take role of main window
 
     dialogOptions[dlgNr] = option; // make available to callback
     // post currentOption globally, so Spin and Combo callbacks can already use it

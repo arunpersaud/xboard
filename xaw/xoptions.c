@@ -333,7 +333,7 @@ SpinCallback (Widget w, XtPointer client_data, XtPointer call_data)
 	if(--j < opt->min) return;
     } else return;
     snprintf(buf, MSG_SIZ,  "%d", j);
-    SetWidgetText(opt, buf, TransientDlg);
+    SetWidgetText(opt, buf, shellUp[TransientDlg] ? TransientDlg : MasterDlg);
 }
 
 static void
@@ -626,7 +626,8 @@ GenericPopDown (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // to cause popdown through a translation (Delete Window button!)
     int dlg = atoi(prms[0]);
     Widget sh = shells[dlg];
-    if(shellUp[BrowserDlg] && dlg != BrowserDlg || dialogError) return; // prevent closing dialog when it has an open file-browse daughter
+    if(shellUp[BrowserDlg] && dlg != BrowserDlg || dialogError || dlg == MasterDlg && shellUp[TransientDlg])
+	return; // prevent closing dialog when it has an open file-browse or transient daughter
     shells[dlg] = w;
     PopDown(dlg);
     shells[dlg] = sh; // restore
@@ -920,6 +921,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	shellUp[dlgNr] = True;
 	return 0;
     }
+    if(dlgNr == TransientDlg && parent == BoardWindow && shellUp[MasterDlg]) parent = MasterDlg; // MasterDlg can always take role of main window
 
     dialogOptions[dlgNr] = option; // make available to callback
     // post currentOption globally, so Spin and Combo callbacks can already use it
