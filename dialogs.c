@@ -220,7 +220,7 @@ GenericReadout (Option *opts, int selected)
 		    }
 		    break;
 		case EndMark:
-		    if(opts[i].target) // callback for implementing necessary actions on OK (like redraw)
+		    if(opts[i].target && selected != -2) // callback for implementing necessary actions on OK (like redraw)
 			res = ((OKCallback*) opts[i].target)(i);
 		    break;
 	    default:
@@ -247,6 +247,7 @@ static void AddToTourney P((int n, int sel));
 static void CloneTourney P((void));
 static void ReplaceParticipant P((void));
 static void UpgradeParticipant P((void));
+static void PseudoOK P((void));
 
 static int
 MatchOK (int n)
@@ -306,6 +307,7 @@ static Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &DoTimeControl, NULL, NULL, Button, N_("Time Control") },
 { 0, SAME_ROW,    0, NULL, (void*) &DoCommonEngine, NULL, NULL, Button, N_("Common Engine") },
 { 0, SAME_ROW,    0, NULL, (void*) &DoGeneral, NULL, NULL, Button, N_("General Options") },
+{ 0, SAME_ROW,    0, NULL, (void*) &PseudoOK, NULL, NULL, Button, N_("Continue Later") },
 { 0,  0,          0, NULL, (void*) &ReplaceParticipant, NULL, NULL, Button, N_("Replace Engine") },
 { 0, SAME_ROW,    0, NULL, (void*) &UpgradeParticipant, NULL, NULL, Button, N_("Upgrade Engine") },
 { 0, SAME_ROW,    0, NULL, (void*) &CloneTourney, NULL, NULL, Button, N_("Clone Tourney") },
@@ -324,6 +326,14 @@ UpgradeParticipant ()
 {
     GenericReadout(matchOptions, PARTICIPANTS);
     Substitute(strdup(engineName), False);
+}
+
+static void
+PseudoOK ()
+{
+    GenericReadout(matchOptions, -2); // read all, but suppress calling of MatchOK
+    ASSIGN(appData.participants, engineName);
+    PopDown(MasterDlg); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
 }
 
 static void
