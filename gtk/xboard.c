@@ -1786,7 +1786,9 @@ void
 ManProc ()
 {   // called from menu
 #ifdef __APPLE__
-    system("%s ./man.command", appData.sysOpen);
+    char buf[MSG_SIZ];
+    snprintf(buf, MSG_SIZ, "%s ./man.command", appData.sysOpen);
+    system(buf);
 #else
     system("xterm -e man xboard &");
 #endif
