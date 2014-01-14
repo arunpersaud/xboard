@@ -90,8 +90,8 @@ static int  lastForwardMostMove[2] = { -1, -1 };
 static int  engineState[2] = { -1, -1 };
 static char lastLine[2][MSG_SIZ];
 static char header[2][MSG_SIZ];
-static char columnHeader[MSG_SIZ] = "dep\tscore\tnodes\ttime\n";
-static int  columnMask;
+static char columnHeader[MSG_SIZ] = "dep\tscore\tnodes\ttime\t(not shown:  tbhits\tknps\tseldep)\n";
+static int  columnMask = 0xF0;
 
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], keys[MAX_VAR], curDepth[2], nrVariations[2];
@@ -432,6 +432,20 @@ InsertionPoint (int len, EngineOutputData *ed)
       return offs + strlen(header[ed->which]);
 }
 
+static char spaces[] = "            "; // [HGM] align: spaces for padding
+
+static void
+Format(char *buf, int val)
+{ // [HGM] tbhits: print a positive integer with trailing whitespace to give it fixed width
+        if( val < 1000000 ) {
+            int h = val, i=0;
+            while(h > 0) h /= 10, i++;
+            snprintf( buf, 24, "%d%s\t", val, spaces + 2*i);
+        }
+        else {
+            snprintf( buf, 24, "%.1fM%s\t", val/1000000.0, spaces + 8 + 2*(val > 1e7));
+        }
+}
 
 // pure back end, now SetWindowText is called via wrapper DoSetWindowText
 static void
@@ -453,7 +467,7 @@ UpdateControls (EngineOutputData *ed)
 
 #ifdef SHOW_PONDERING
     if( IsEnginePondering( ed->which ) ) {
-        char buf[8];
+        char buf[12];
 
         buf[0] = '\0';
 
@@ -462,15 +476,17 @@ UpdateControls (EngineOutputData *ed)
             buf[sizeof(buf)-1] = '\0';
         }
         else if( ed->pv != 0 && *ed->pv != '\0' ) {
-            char * sep = strchr( ed->pv, ' ' );
+            char * sep, *startPV = ed->pv, c;
             int buflen = sizeof(buf);
 
+            if(sscanf(ed->pv, "{%*d,%*d,%*d}%c", &c) && c == ' ') startPV = strchr(ed->pv, '}') + 2; // [HGM] tbhits
+            sep = strchr( startPV, ' ' );
             if( sep != NULL ) {
-                buflen = sep - ed->pv + 1;
+                buflen = sep - startPV + 1;
                 if( buflen > sizeof(buf) ) buflen = sizeof(buf);
             }
 
-            strncpy( buf, ed->pv, buflen );
+            strncpy( buf, startPV, buflen );
             buf[ buflen-1 ] = '\0';
         }
 
@@ -523,12 +539,14 @@ UpdateControls (EngineOutputData *ed)
 
     /* Memo */
     if( ed->pv != 0 && *ed->pv != '\0' ) {
-        static char spaces[] = "            "; // [HGM] align: spaces for padding
         char s_nodes[24];
         char s_score[16];
         char s_time[24];
-        char buf[256];
-        int buflen;
+        char s_hits[24];
+        char s_seld[24];
+        char s_knps[24];
+        char buf[256], *pvStart = ed->pv;
+        int buflen, hits, seldep, knps, extra;
         int time_secs = ed->time / 100;
         int time_cent = ed->time % 100;
 
@@ -541,6 +559,13 @@ UpdateControls (EngineOutputData *ed)
         else {
             snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), "%.1fM%s\t", u64ToDouble(ed->nodes) / 1000000.0,
                       spaces + 8 + 2*(ed->nodes > 1e7));
+        }
+
+        /* TB Hits etc. */
+        hits = knps = seldep = 0; extra = sscanf(ed->pv, "{%d,%d,%d", &seldep, &knps, &hits);
+        Format(s_seld, seldep); Format(s_knps, knps); Format(s_hits, hits); 
+        if(extra) { // strip extended info from PV
+            if((pvStart = strstr(ed->pv, "} "))) pvStart += 2; else pvStart = ed->pv;
         }
 
         /* Score */
@@ -561,17 +586,20 @@ UpdateControls (EngineOutputData *ed)
         if(columnMask & 2) s_score[0] = NULLCHAR; // [HGM] hide: erase columns the user has hidden
         if(columnMask & 4) s_nodes[0] = NULLCHAR;
         if(columnMask & 8) s_time[0]  = NULLCHAR;
+        if(columnMask & 16) s_hits[0]  = NULLCHAR;
+        if(columnMask & 32) s_knps[0]  = NULLCHAR;
+        if(columnMask & 64) s_seld[0]  = NULLCHAR;
 
         /* Put all together... */
 	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0)
 	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%3d\t", ed->depth );
 	else
-	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%3d\t%s%s%s", ed->depth, s_score, s_nodes, s_time );
+	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%3d\t%s%s%s%s%s%s", ed->depth, s_score, s_nodes, s_time, s_hits, s_knps, s_seld );
 
         /* Add PV */
         buflen = strlen(buf);
 
-        strncpy( buf + buflen, ed->pv, sizeof(buf) - buflen );
+        strncpy( buf + buflen, pvStart, sizeof(buf) - buflen );
 
         buf[ sizeof(buf) - 3 ] = '\0';
 
@@ -586,12 +614,12 @@ UpdateControls (EngineOutputData *ed)
     SetEngineColorIcon( ed->which );
 }
 
-static char *titles[] = { "score\t", "nodes\t", "time\t" };
+static char *titles[] = { "score\t", "nodes\t", "time\t", "tbhits\t", "knps\t", "seldep\t" };
 
 void
 Collapse(int n)
 {   // handle click on column headers, to hide / show them
-    int i, j, nr=0, m=~columnMask, Ncol=4;
+    int i, j, nr=0, m=~columnMask, Ncol=7;
     for(i=0; columnHeader[i] && i<n; i++) nr += (columnHeader[i] == '\t');
     if(!nr) return; // depth always shown, so clicks on it ignored
     for(i=j=0; i<Ncol; i++) if(m & 1<<i) j++; // count hidden columns

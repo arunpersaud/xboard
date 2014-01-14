@@ -69,5 +69,6 @@ void DoClearMemo(int which);
 void ResizeWindowControls( int mode );
 int  EngineOutputDialogExists();
 void SetEngineOutputTitle( char *title );
+void Collapse P((int colNr));
 void InitEngineOutput P((Option *opt, Option *memo2)); // XB only
 void DrawWidgetIcon P((Option *opt, int nIcon)); // XB only

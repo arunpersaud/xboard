@@ -78,7 +78,7 @@
 }
 -niceEngines 0
 -polyglotDir ""
--adapterCommand 'polyglot -noini -ec "%fcp" -ed "%fd" -uci NalimovCache=%defaultCacheSizeEGTB'
+-adapterCommand 'polyglot -noini -ec "%fcp" -ed "%fd" -uci NalimovCache=%defaultCacheSizeEGTB -pg ShowTbHits=true'
 -defaultPathEGTB "/egtb"
 -egtFormats ""
 -testClaims true
