@@ -536,6 +536,7 @@ typedef struct {
     Boolean flipView;
     Boolean autoFlipView;
     char *cmailGameName; /* xboard only */
+    Boolean headers;
     Boolean alwaysPromoteToQueen;
     Boolean oldSaveStyle;
     Boolean oneClick;

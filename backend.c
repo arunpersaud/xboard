@@ -148,6 +148,7 @@ extern int gettimeofday(struct timeval *, struct timezone *);
 #endif
 #include "backendz.h"
 #include "evalgraph.h"
+#include "engineoutput.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS
@@ -250,7 +251,6 @@ static int NonStandardBoardSize P((VariantClass v, int w, int h, int s));
 #endif
 
 ChessProgramState *WhitePlayer();
-void InsertIntoMemo P((int which, char *text)); // [HGM] kibitz: in engineo.c
 int VerifyDisplayMode P(());
 
 char *GetInfoFromComment( int, char * ); // [HGM] PV time: returns stripped comment
@@ -5646,6 +5646,9 @@ LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end, int pane)
 		return FALSE;
 	} else if(strstr(buf+lineStart, "exclude:") == buf+lineStart) { // exclude moves clicked
 		ExcludeClick(origIndex - lineStart);
+		return FALSE;
+	} else if(!strncmp(buf+lineStart, "dep\t", 4)) {                // column headers clicked
+		Collapse(origIndex - lineStart);
 		return FALSE;
 	}
 	ParsePV(buf+startPV, FALSE, gameMode != AnalyzeMode);

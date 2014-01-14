@@ -90,6 +90,8 @@ static int  lastForwardMostMove[2] = { -1, -1 };
 static int  engineState[2] = { -1, -1 };
 static char lastLine[2][MSG_SIZ];
 static char header[2][MSG_SIZ];
+static char columnHeader[MSG_SIZ] = "dep\tscore\tnodes\ttime\n";
+static int  columnMask;
 
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], keys[MAX_VAR], curDepth[2], nrVariations[2];
@@ -222,6 +224,7 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
     }
 
     if( clearMemo ) {
+        if(!appData.headers) columnHeader[0] = NULLCHAR;
         DoClearMemo(which); nrVariations[which] = 0;
         header[which][0] = NULLCHAR;
         if(gameMode == AnalyzeMode) {
@@ -230,12 +233,15 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
             snprintf(header[which], MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
                                        appData.whitePOV || appData.scoreWhite ? "white" : "mover", cps->option[multi].value);
 	  }
-          if(!which) snprintf(header[which]+strlen(header[which]), MSG_SIZ-strlen(header[which]), "%s", exclusionHeader);
+          if(!which) snprintf(header[which]+strlen(header[which]), MSG_SIZ-strlen(header[which]), "%s%s", exclusionHeader, columnHeader);
           InsertIntoMemo( which, header[which], 0);
-        } else
-        if(appData.ponderNextMove && lastLine[which][0]) {
+        } else {
+          snprintf(header[which], MSG_SIZ, "%s", columnHeader);
+          if(appData.ponderNextMove && lastLine[which][0]) {
             InsertIntoMemo( which, lastLine[which], 0 );
             InsertIntoMemo( which, "\n", 0 );
+          }
+          InsertIntoMemo( which, header[which], 0);
         }
     }
 
@@ -423,7 +429,7 @@ InsertionPoint (int len, EngineOutputData *ed)
 		scores[n] = newScore;
 	}
 	nrVariations[n] += 2;
-      return offs + (gameMode == AnalyzeMode)*strlen(header[ed->which]);
+      return offs + strlen(header[ed->which]);
 }
 
 
@@ -517,6 +523,7 @@ UpdateControls (EngineOutputData *ed)
 
     /* Memo */
     if( ed->pv != 0 && *ed->pv != '\0' ) {
+        static char spaces[] = "            "; // [HGM] align: spaces for padding
         char s_nodes[24];
         char s_score[16];
         char s_time[24];
@@ -527,29 +534,39 @@ UpdateControls (EngineOutputData *ed)
 
         /* Nodes */
         if( ed->nodes < 1000000 ) {
-            snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), u64Display, ed->nodes );
+            int h = ed->nodes, i=0;
+            while(h > 0) h /= 10, i++; // [HGM] align: count digits; pad with 2 spaces for every missing digit
+            snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), u64Display "%s\t", ed->nodes, spaces + 2*i);
         }
         else {
-            snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), "%.1fM", u64ToDouble(ed->nodes) / 1000000.0 );
+            snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), "%.1fM%s\t", u64ToDouble(ed->nodes) / 1000000.0,
+                      spaces + 8 + 2*(ed->nodes > 1e7));
         }
 
         /* Score */
         h = ((gameMode == AnalyzeMode && appData.whitePOV || appData.scoreWhite) && !WhiteOnMove(currentMove) ? -1 : 1) * ed->score;
+        if( h == 0 ) {
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "  0.00\t" );
+        } else
         if( h > 0 ) {
-	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f", h / 100.0 );
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f\t", h / 100.0 );
         }
         else {
-	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "%.2f", h / 100.0 );
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), " %.2f\t", h / 100.0 );
         }
 
         /* Time */
-        snprintf( s_time, sizeof(s_time)/sizeof(s_time[0]), "%d:%02d.%02d", time_secs / 60, time_secs % 60, time_cent );
+        snprintf( s_time, sizeof(s_time)/sizeof(s_time[0]), "%d:%02d.%02d\t", time_secs / 60, time_secs % 60, time_cent );
+
+        if(columnMask & 2) s_score[0] = NULLCHAR; // [HGM] hide: erase columns the user has hidden
+        if(columnMask & 4) s_nodes[0] = NULLCHAR;
+        if(columnMask & 8) s_time[0]  = NULLCHAR;
 
         /* Put all together... */
 	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0)
 	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%3d\t", ed->depth );
 	else
-	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
+	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%3d\t%s%s%s", ed->depth, s_score, s_nodes, s_time );
 
         /* Add PV */
         buflen = strlen(buf);
@@ -567,6 +584,35 @@ UpdateControls (EngineOutputData *ed)
 
     /* Colors */
     SetEngineColorIcon( ed->which );
+}
+
+static char *titles[] = { "score\t", "nodes\t", "time\t" };
+
+void
+Collapse(int n)
+{   // handle click on column headers, to hide / show them
+    int i, j, nr=0, m=~columnMask, Ncol=4;
+    for(i=0; columnHeader[i] && i<n; i++) nr += (columnHeader[i] == '\t');
+    if(!nr) return; // depth always shown, so clicks on it ignored
+    for(i=j=0; i<Ncol; i++) if(m & 1<<i) j++; // count hidden columns
+    if(nr < j) { // shown column clicked: hide it
+	for(i=j=0; i<Ncol; i++) if(m & 1<<i && j++ == nr) break;
+	columnMask |= 1<<i;
+    } else { // hidden column clicked: show it
+	m = ~m; nr -= j;
+	for(i=j=0; i<Ncol; i++) if(m & 1<<i && j++ == nr) break;
+	columnMask &= ~(1<<i);
+    }
+    // create new header line
+    strcpy(columnHeader, "dep\t");
+    m = ~columnMask;
+    for(i=j=1; i<Ncol; i++) if(m & 1<<i) strcat(columnHeader, titles[i-1]), j++;
+    if(j != Ncol) { // list hidden columns, so user ca click them
+	m = ~m; strcat(columnHeader, "(not shown:  ");
+	for(i=1; i<Ncol; i++) if(m & 1<<i) strcat(columnHeader, titles[i-1]);
+	strcat(columnHeader, ")");
+    }
+    strcat(columnHeader, "\n");
 }
 
 // [HGM] kibitz: write kibitz line; split window for it if necessary

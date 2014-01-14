@@ -3289,6 +3289,14 @@ Default: False.
 When true, scores will always be printed from the white point-of-view, 
 rather than the side-to-move point-of-view.
 Default: False.
+@item -memoHeaders true|false
+@cindex memoHeaders, option
+When true, column headers will be displayed in the Engine Output window
+for the depth, score, time and nodes data.
+Right-clicking on these headers will hide or show the corresponding data.
+(Not intended for dynamic use, as already printed data of the current search
+will not be affected!)
+Defaul: False.
 @end table
 
 @node Adjudication Options

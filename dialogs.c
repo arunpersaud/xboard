@@ -409,6 +409,7 @@ static Option generalOptions[] = {
 /* TRANSLATORS: the drop menu is used to drop a piece, e.g. during bughouse or editing a position */
 { 0,  0, 0, NULL, (void*) &appData.dropMenu, "", NULL, CheckBox, N_("Drop Menu") },
 { 0,  0, 0, NULL, (void*) &appData.variations, "", NULL, CheckBox, N_("Enable Variation Trees") },
+{ 0,  0, 0, NULL, (void*) &appData.headers, "", NULL, CheckBox, N_("Headers in Engine Output Window") },
 { 0,  0, 0, NULL, (void*) &appData.hideThinkingFromHuman, "", NULL, CheckBox, N_("Hide Thinking from Human") },
 { 0,  0, 0, NULL, (void*) &appData.highlightLastMove, "", NULL, CheckBox, N_("Highlight Last Move") },
 { 0,  0, 0, NULL, (void*) &appData.highlightMoveWithArrow, "", NULL, CheckBox, N_("Highlight with Arrow") },

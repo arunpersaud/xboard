@@ -699,6 +699,7 @@ ArgDescriptor argDescriptors[] = {
   { "buttonColor", ArgString, (void *) &appData.buttonColor, XBOARD, (ArgIniType) "" },
   { "firstDrawDepth", ArgInt, (void *) &appData.drawDepth[0], FALSE, (ArgIniType) 0 },
   { "secondDrawDepth", ArgInt, (void *) &appData.drawDepth[1], FALSE, (ArgIniType) 0 },
+  { "memoHeaders", ArgBoolean, (void *) &appData.headers, TRUE, (ArgIniType) FALSE },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

@@ -59,6 +59,7 @@
 -defaultTourneyName "Tourney_%y%M%d_%h%m.trn"
 -variations true
 -appendPV true
+-memoHeaders true
 ;
 ; PGN format & Game List
 ;
