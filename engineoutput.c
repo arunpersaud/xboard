@@ -545,7 +545,7 @@ UpdateControls (EngineOutputData *ed)
         char s_hits[24];
         char s_seld[24];
         char s_knps[24];
-        char buf[256], *pvStart = ed->pv;
+        char buf[256], *pvStart = ed->pv, fail;
         int buflen, hits, seldep, knps, extra;
         int time_secs = ed->time / 100;
         int time_cent = ed->time % 100;
@@ -567,17 +567,19 @@ UpdateControls (EngineOutputData *ed)
         if(extra) { // strip extended info from PV
             if((pvStart = strstr(ed->pv, "} "))) pvStart += 2; else pvStart = ed->pv;
         }
+        fail = ed->pv[strlen(ed->pv)-1];
+	if(fail != '?' && fail != '!') fail = ' ';
 
         /* Score */
         h = ((gameMode == AnalyzeMode && appData.whitePOV || appData.scoreWhite) && !WhiteOnMove(currentMove) ? -1 : 1) * ed->score;
         if( h == 0 ) {
-	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "  0.00\t" );
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "  0.00%c\t", fail );
         } else
         if( h > 0 ) {
-	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f\t", h / 100.0 );
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f%c\t", h / 100.0, fail );
         }
         else {
-	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), " %.2f\t", h / 100.0 );
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), " %.2f%c\t", h / 100.0, fail );
         }
 
         /* Time */
