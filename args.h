@@ -911,7 +911,9 @@ ParseSettingsFile(char *name, char **addr)
     f = fopen(fullname, "r");
 #ifdef DATADIR
     if(f == NULL && *fullname != '/') {         // when a relative name did not work
-	MySearchPath(DATADIR "/themes/conf", name, fullname); // also look in standard place
+	char buf[MSG_SIZ];
+	snprintf(buf, MSG_SIZ, "%s/themes/conf", DATADIR);
+	MySearchPath(buf, name, fullname); // also look in standard place
 	f = fopen(fullname, "r");
     }
 #endif
