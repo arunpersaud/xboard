@@ -421,6 +421,7 @@ InsertionPoint (int len, EngineOutputData *ed)
 		offs = 0;
 		textEnd[n] = offs + len;
 		scores[n] = newScore;
+		keys[n] = ed->moveKey;
 	}
 	nrVariations[n] += 2;
       return offs + (gameMode == AnalyzeMode)*strlen(header[ed->which]);
