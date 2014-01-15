@@ -434,6 +434,7 @@ InsertionPoint (int len, EngineOutputData *ed)
       return offs + strlen(header[ed->which]);
 }
 
+#define MATE_SCORE 100000
 static char spaces[] = "            "; // [HGM] align: spaces for padding
 
 static void
@@ -590,6 +591,8 @@ UpdateControls (EngineOutputData *ed)
         if( h == 0 ) {
 	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "  0.00%c\t", fail );
         } else
+	if( h >= MATE_SCORE) snprintf(s_score, 16, "  %s#%d%c\t", ( h > MATE_SCORE+9 ? "" : "  "),  h - MATE_SCORE, fail ); else
+	if(-h >= MATE_SCORE) snprintf(s_score, 16, " %s#-%d%c\t", (-h > MATE_SCORE+9 ? "" : "  "), -h - MATE_SCORE, fail ); else
         if( h > 0 ) {
 	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f%c\t", h / 100.0, fail );
         }
