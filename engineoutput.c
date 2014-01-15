@@ -30,6 +30,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <ctype.h>
 
 #if STDC_HEADERS
 # include <stdlib.h>
@@ -457,6 +458,7 @@ UpdateControls (EngineOutputData *ed)
     char s_label[MAX_NAME_LENGTH + 32];
     int h;
     char * name = ed->name;
+    char *q, *pvStart = ed->pv;
 
     /* Label */
     if( name == 0 || *name == '\0' ) {
@@ -465,6 +467,14 @@ UpdateControls (EngineOutputData *ed)
 
     strncpy( s_label, name, MAX_NAME_LENGTH );
     s_label[ MAX_NAME_LENGTH-1 ] = '\0';
+
+    if(pvStart) { // [HGM] tbhits: plit up old PV into extra infos and real PV
+        while(strchr(pvStart, '\t')) { // locate last tab before non-int (real PV starts after that)
+            for(q=pvStart; isdigit(*q) || *q == ' '; q++);
+            if(*q != '\t') break;
+            pvStart = q + 1;
+        }
+    }
 
 #ifdef SHOW_PONDERING
     if( IsEnginePondering( ed->which ) ) {
@@ -476,18 +486,17 @@ UpdateControls (EngineOutputData *ed)
             strncpy( buf, ed->hint, sizeof(buf) );
             buf[sizeof(buf)-1] = '\0';
         }
-        else if( ed->pv != 0 && *ed->pv != '\0' ) {
-            char * sep, *startPV = ed->pv, c;
+        else if( pvStart != 0 && *pvStart != '\0' ) {
+            char * sep;
             int buflen = sizeof(buf);
 
-            if(sscanf(ed->pv, "{%*d,%*d,%*d}%c", &c) && c == ' ') startPV = strchr(ed->pv, '}') + 2; // [HGM] tbhits
-            sep = strchr( startPV, ' ' );
+            sep = strchr( pvStart, ' ' );
             if( sep != NULL ) {
-                buflen = sep - startPV + 1;
+                buflen = sep - pvStart + 1;
                 if( buflen > sizeof(buf) ) buflen = sizeof(buf);
             }
 
-            strncpy( buf, startPV, buflen );
+            strncpy( buf, pvStart, buflen );
             buf[ buflen-1 ] = '\0';
         }
 
@@ -539,15 +548,15 @@ UpdateControls (EngineOutputData *ed)
     DoSetWindowText( ed->which, nLabelNPS, s_label );
 
     /* Memo */
-    if( ed->pv != 0 && *ed->pv != '\0' ) {
+    if( pvStart != 0 && *pvStart != '\0' ) {
         char s_nodes[24];
         char s_score[16];
         char s_time[24];
         char s_hits[24];
         char s_seld[24];
         char s_knps[24];
-        char buf[256], *pvStart = ed->pv, fail;
-        int buflen, hits, seldep, knps, extra;
+        char buf[256], fail;
+        int buflen, hits, i, params[5], extra;
         int time_secs = ed->time / 100;
         int time_cent = ed->time % 100;
 
@@ -563,11 +572,16 @@ UpdateControls (EngineOutputData *ed)
         }
 
         /* TB Hits etc. */
-        hits = knps = seldep = 0; extra = sscanf(ed->pv, "{%d,%d,%d", &seldep, &knps, &hits);
-        Format(s_seld, seldep); Format(s_knps, knps); Format(s_hits, hits); 
-        if(extra) { // strip extended info from PV
-            if((pvStart = strstr(ed->pv, "} "))) pvStart += 2; else pvStart = ed->pv;
+        for(i=hits=0; i<5; i++) params[i] = 0;
+//fprintf(stderr, "%s\n%s\n", ed->pv, pvStart);
+        if(pvStart != ed->pv) { // check if numbers before PV
+            strncpy(buf, ed->pv, 256); buf[pvStart - ed->pv] = NULLCHAR;
+            extra = sscanf(buf, "%d %d %d %d %d", params, params+1, params+2, params+3, params+4);
+//fprintf(stderr, "extra=%d len=%d\n", extra, pvStart - ed->pv);
+            if(extra) hits = params[extra-1], params[extra-1] = 0; // last one is tbhits
         }
+        Format(s_seld, params[0]); Format(s_knps, params[1]); Format(s_hits, hits); 
+
         fail = ed->pv[strlen(ed->pv)-1];
 	if(fail != '?' && fail != '!') fail = ' ';
 

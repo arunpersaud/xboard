@@ -1799,10 +1799,30 @@ output should be in the following format:
 <tr><td>score</td><td>Integer giving current evaluation in centipawns.</td></tr>
 <tr><td>time</td><td>Current search time in centiseconds (ex:1028 = 10.28 seconds).</td></tr>
 <tr><td>nodes</td><td>Nodes searched.</td></tr>
+<tr><td>*selective depth</td><td>Maximium length of any branch in the current search.</td></tr>
+<tr><td>*speed</td><td>Nodes per second in last measured time interval.</td></tr>
+<tr><td>*</td><td>Reserved for future extensions.</td></tr>
+<tr><td>*tbhits</td><td>Number of tablebase probes made in the current search.</td></tr>
 <tr><td>pv</td><td>Freeform text giving current "best" line.
 You can continue the pv onto another line if you start each
 continuation line with at least four space characters.</td></tr>
 </table>
+
+<p class="version47">
+The items marked with * are optional.
+If any of these items is present, the <b>pv</b> field must be preceeded directly by a tab character;
+if no tab character preceeds the first non-integer token,
+the <b>pv</b> field will start at the first non-blank character after <b>nodes</b>.
+Otherwise it will start after the last tab that is not behind any non-integer token.
+Of all integers between <b>nodes</b> and <b>pv</b> the last one is intepreted as <b>tbhits</b>.
+Of any remaining ones the first is interpreted as <b>selective depth</b>,
+and a second as <b>speed</b>.
+More infos could be added to this in the future.
+Note that older interfaces might consider the optional infos to be part of the <b>pv</b> field,
+and display them exactly as sent.
+It is therefore encouraged that engines use tabs or spaces to format this optional info
+so that it will display nicely in (not too wide) columns.
+</p>
 
 <p>
 Example:
