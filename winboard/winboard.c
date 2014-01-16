@@ -5620,7 +5620,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     if( hwnd == hwndMain && appData.useStickyWindows ) {
         LPWINDOWPOS lpwp = (LPWINDOWPOS) lParam;
 
-        if( ((lpwp->flags & SWP_NOMOVE) == 0) && ((lpwp->flags & SWP_NOSIZE) != 0) ) {
+        if( ((lpwp->flags & SWP_NOMOVE) == 0) /*&& ((lpwp->flags & SWP_NOSIZE) != 0)*/ ) { // [HGM] in Win8 size always accompanies move?
             /* Window is moving */
             RECT rcMain;
 
