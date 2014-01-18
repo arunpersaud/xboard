@@ -1305,7 +1305,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 {
     CheckTestClosure cl;
     ChessSquare king = flags & F_WHITE_ON_MOVE ? WhiteKing : BlackKing;
-    ChessSquare captured = EmptySquare, ep, trampled;
+    ChessSquare captured = EmptySquare, ep=0, trampled=0;
     /*  Suppress warnings on uninitialized variables    */
 
     if(gameInfo.variant == VariantXiangqi)
