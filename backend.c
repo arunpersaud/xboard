@@ -13724,7 +13724,10 @@ AnalyzeModeEvent ()
 	first.maybeThinking = FALSE; /* avoid killing GNU Chess */
 	EngineOutputPopUp();
     }
-    if (!appData.icsEngineAnalyze) gameMode = AnalyzeMode;
+    if (!appData.icsEngineAnalyze) {
+	gameMode = AnalyzeMode;
+	ClearEngineOutputPane(0); // [TK] exclude: to print exclusion/multipv header
+    }
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
