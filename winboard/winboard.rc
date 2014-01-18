@@ -445,7 +445,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,208,86,50,14
 END
 
-DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 300, 211
+DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 300, 225
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General Options"
 FONT 8, "MS Sans Serif"
@@ -502,8 +502,14 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,174,151,10
     CONTROL         "auto-Display Comment",OPT_AutoComment,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,174,151,10
-    DEFPUSHBUTTON   "OK",IDOK,180,192,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,236,192,50,14
+    CONTROL         "Headers in Engine Output",OPT_Headers,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,188,151,10
+    CONTROL         "Enable Variation Trees",OPT_Variations,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,188,151,10
+    CONTROL         "Play Analysis PV on Click",OPT_AutoExtend,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,202,151,10
+    DEFPUSHBUTTON   "OK",IDOK,180,206,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,236,206,50,14
 END
 
 DLG_IcsOptions DIALOGEX 0, 0, 302, 268

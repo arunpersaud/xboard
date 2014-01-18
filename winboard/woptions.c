@@ -212,6 +212,9 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_SmartMove, appData.oneClick); // [HGM] one-click
     CHECK_BOX(OPT_AutoTags, appData.autoDisplayTags); // [HGM]
     CHECK_BOX(OPT_AutoComment, appData.autoDisplayComment); // [HGM]
+    CHECK_BOX(OPT_Headers, appData.headers); // [HGM]
+    CHECK_BOX(OPT_Variations, appData.variations); // [HGM]
+    CHECK_BOX(OPT_AutoExtend, appData.autoExtend); // [HGM]
 
 #undef CHECK_BOX
 
@@ -263,6 +266,9 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.oneClick             =IS_CHECKED(OPT_SmartMove); // [HGM] one-click
       appData.autoDisplayTags      =IS_CHECKED(OPT_AutoTags); // [HGM]
       appData.autoDisplayComment   =IS_CHECKED(OPT_AutoComment); // [HGM]
+      appData.headers              =IS_CHECKED(OPT_Headers); // [HGM]
+      appData.variations           =IS_CHECKED(OPT_Variations); // [HGM]
+      appData.autoExtend           =IS_CHECKED(OPT_AutoExtend); // [HGM]
 
 #undef IS_CHECKED
 

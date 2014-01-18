@@ -444,6 +444,9 @@
 #define OPT_HighlightMoveArrow          1438
 #define OPT_AutoLogo			1439
 #define OPT_AutoTags                    1440
+#define OPT_Headers                     1441
+#define OPT_Variations                  1442
+#define OPT_AutoExtend                  1443
 #define IDC_BUTTON1                     1440
 #define IDC_BrowseForPolyglotDir        1440
 #define IDC_BrowseForEGTB               1441
