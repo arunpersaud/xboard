@@ -779,7 +779,7 @@ main (int argc, char **argv)
 	GtkosxApplication *theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
 	char *path = gtkosx_application_get_bundle_path();
 	strncpy(dataDir, path, MSG_SIZ);
-	snprintf(masterSettings, MSG_SIZ, "%s/../Resources/etc/xboard.conf", path);
+	snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
 	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
 	// we must call application ready before we can get the signal,
 	// and supply a (dummy) menu bar before that, to avoid problems with dual apples in it
@@ -848,6 +848,8 @@ main (int argc, char **argv)
 
     { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
 	static char buf[MSG_SIZ];
+	snprintf(buf, MSG_SIZ, appData.sysOpen, DATADIR);
+	ASSIGN(appData.sysOpen, buf); // expand %s in -openCommand to DATADIR (usefull for OS X configuring)
 	EscapeExpand(buf, appData.firstInitString);
 	appData.firstInitString = strdup(buf);
 	EscapeExpand(buf, appData.secondInitString);
