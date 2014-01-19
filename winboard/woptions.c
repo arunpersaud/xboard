@@ -3077,6 +3077,8 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
     SetDlgItemInt( hDlg, IDC_Games, appData.defaultMatchGames, TRUE );
 
     SendDlgItemMessage( hDlg, IDC_PolyglotDir, EM_SETSEL, 0, -1 );
+    // [HGM] Yet another ponder duplicate
+    CheckDlgButton( hDlg, OPT_PonderNextMove, (BOOL) appData.ponderNextMove );
 
     return TRUE;
 
@@ -3096,10 +3098,11 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
       GetDlgItemText( hDlg, IDC_BookFile, buf, sizeof(buf) );
       appData.polyglotBook = strdup(buf);
       appData.usePolyglotBook = (Boolean) IsDlgButtonChecked( hDlg, IDC_UseBook );
-      // [HGM] smp: get nr of cores:
+      // [HGM] smp: get nr of cores and ponder:
       oldCores = appData.smpCores;
       appData.smpCores = GetDlgItemInt(hDlg, IDC_Cores, NULL, FALSE );
       if(appData.smpCores != oldCores) NewSettingEvent(FALSE, &(first.maxCores), "cores", appData.smpCores);
+      PonderNextMoveEvent((Boolean) IsDlgButtonChecked( hDlg, OPT_PonderNextMove ));
       // [HGM] book: read tick boxes for own book use
       appData.firstHasOwnBookUCI  = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook1 );
       appData.secondHasOwnBookUCI = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook2 );
@@ -3134,6 +3137,7 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
           ofn.hwndOwner = hDlg;
           ofn.hInstance = hInst;
           ofn.lpstrFilter = filter;
+
           ofn.lpstrFile = buf;
           ofn.nMaxFile = sizeof(buf);
           ofn.lpstrTitle = _("Choose Book");

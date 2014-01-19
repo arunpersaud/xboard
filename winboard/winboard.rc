@@ -999,6 +999,8 @@ BEGIN
     PUSHBUTTON      "...",IDC_BrowseForEGTB,226,40,17,14
     LTEXT           "EGTB Size (MB):",IDC_Cache,2,62,78,8
     EDITTEXT        IDC_SizeOfEGTB,82,58,40,14,ES_AUTOHSCROLL
+    CONTROL         "Ponder Next Move",OPT_PonderNextMove,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,136,62,100,10
     CONTROL         "Use Book:",IDC_UseBook,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,2,80,78,10
     EDITTEXT        IDC_BookFile,82,76,140,14,ES_AUTOHSCROLL
