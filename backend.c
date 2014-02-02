@@ -17756,7 +17756,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
 Boolean
 ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 {
-    int i, j, k, w=0;
+    int i, j, k, w=0, subst=0, shuffle=0;
     char *p, c;
     int emptycount, virgin[BOARD_FILES];
     ChessSquare piece;
@@ -17795,6 +17795,16 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                 if (j + emptycount > gameInfo.boardWidth) return FALSE;
                 while (emptycount--)
                         board[i][(j++)+gameInfo.holdingsWidth] = EmptySquare;
+            } else if (*p == '<') {
+                if(i == BOARD_HEIGHT-1) shuffle = 1;
+                else if (i != 0 || !shuffle) return FALSE;
+                p++;
+            } else if (shuffle && *p == '>') {
+                p++; // for now ignore closing shuffle range, and assume rank-end
+            } else if (*p == '?') {
+                if (j >= gameInfo.boardWidth) return FALSE;
+                if (i != 0  && i != BOARD_HEIGHT-1) return FALSE; // only on back-rank
+		board[i][(j++)+gameInfo.holdingsWidth] = ClearBoard; p++; subst++; // placeHolder
             } else if (*p == '+' || isalpha(*p)) {
                 if (j >= gameInfo.boardWidth) return FALSE;
                 if(*p=='+') {
@@ -17833,7 +17843,9 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
     /* [HGM] look for Crazyhouse holdings here */
     while(*p==' ') p++;
     if( gameInfo.holdingsWidth && p[-1] == '/' || *p == '[') {
+        int swap=0, wcnt=0, bcnt=0;
         if(*p == '[') p++;
+        if(*p == '<') swap++, p++;
         if(*p == '-' ) p++; /* empty holdings */ else {
             if( !gameInfo.holdingsWidth ) return FALSE; /* no room to put holdings! */
             /* if we would allow FEN reading to set board size, we would   */
@@ -17846,17 +17858,45 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                     if( i >= gameInfo.holdingsSize ) return FALSE;
                     board[BOARD_HEIGHT-1-i][0] = piece; /* black holdings */
                     board[BOARD_HEIGHT-1-i][1]++;       /* black counts   */
+                    bcnt++;
                 } else {
                     i = (int)piece - (int)WhitePawn;
 		    i = PieceToNumber((ChessSquare)i);
                     if( i >= gameInfo.holdingsSize ) return FALSE;
                     board[i][BOARD_WIDTH-1] = piece;    /* white holdings */
                     board[i][BOARD_WIDTH-2]++;          /* black holdings */
+                    wcnt++;
                 }
+            }
+            if(subst) { // substitute back-rank question marks by holdings pieces
+                for(j=BOARD_LEFT; j<BOARD_RGHT; j++) {
+                    int k, m, n = bcnt + 1;
+                    if(board[0][j] == ClearBoard) {
+                        if(!wcnt) return FALSE;
+                        n = rand() % wcnt;
+                        for(k=0, m=n; k<gameInfo.holdingsSize; k++) if((m -= board[k][BOARD_WIDTH-2]) < 0) {
+                            board[0][j] = board[k][BOARD_WIDTH-1]; wcnt--;
+                            if(--board[k][BOARD_WIDTH-2] == 0) board[k][BOARD_WIDTH-1] = EmptySquare;
+                            break;
+                        }
+                    }
+                    if(board[BOARD_HEIGHT-1][j] == ClearBoard) {
+                        if(!bcnt) return FALSE;
+                        if(n >= bcnt) n = rand() % bcnt; // use same randomization for black and white if possible
+                        for(k=0, m=n; k<gameInfo.holdingsSize; k++) if((n -= board[BOARD_HEIGHT-1-k][1]) < 0) {
+                            board[BOARD_HEIGHT-1][j] = board[BOARD_HEIGHT-1-k][0]; bcnt--;
+                            if(--board[BOARD_HEIGHT-1-k][1] == 0) board[BOARD_HEIGHT-1-k][0] = EmptySquare;
+                            break;
+                        }
+                    }
+                }
+                subst = 0;
             }
         }
         if(*p == ']') p++;
     }
+
+    if(subst) return FALSE; // substitution requested, but no holdings
 
     while(*p == ' ') p++;
 
