@@ -682,6 +682,7 @@ Option icsOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.colorChallenge, "", NULL, TextBox, N_("Challenge Text Colors:") },
 { 0, 0, 0, NULL, (void*) &appData.colorRequest, "", NULL, TextBox, N_("Request Text Colors:") },
 { 0, 0, 0, NULL, (void*) &appData.colorSeek, "", NULL, TextBox, N_("Seek Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorNormal, "", NULL, TextBox, N_("Other Text Colors:") },
 { 0, 0, 0, NULL, (void*) &IcsOptionsOK, "", NULL, EndMark , "" }
 };
 
@@ -1227,6 +1228,8 @@ NextInHistory ()
 }
 // end of borrowed code
 
+#define INPUT 0
+
 Option boxOptions[] = {
 {  30, T_TOP, 400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
 {  0,  NO_OK,   0, NULL, NULL, "", NULL, EndMark , "" }
@@ -1237,10 +1240,10 @@ ICSInputSendText ()
 {
     char *val;
 
-    GetWidgetText(&boxOptions[0], &val);
+    GetWidgetText(&boxOptions[INPUT], &val);
     SaveInHistory(val);
     SendMultiLineToICS(val);
-    SetWidgetText(&boxOptions[0], "", InputBoxDlg);
+    SetWidgetText(&boxOptions[INPUT], "", InputBoxDlg);
 }
 
 void
@@ -1254,14 +1257,14 @@ IcsKey (int n)
 	ICSInputSendText();
 	return;
       case 1:
-	GetWidgetText(&boxOptions[0], &val);
+	GetWidgetText(&boxOptions[INPUT], &val);
 	val = PrevInHistory(val);
 	break;
       case -1:
 	val = NextInHistory();
     }
-    SetWidgetText(&boxOptions[0], val = val ? val : "", InputBoxDlg);
-    SetInsertPos(&boxOptions[0], strlen(val));
+    SetWidgetText(&boxOptions[INPUT], val = val ? val : "", InputBoxDlg);
+    SetInsertPos(&boxOptions[INPUT], strlen(val));
 }
 
 static void
@@ -1270,13 +1273,13 @@ PutText (char *text, int pos)
     char buf[MSG_SIZ], *p;
 
     if(strstr(text, "$add ") == text) {
-	GetWidgetText(&boxOptions[0], &p);
+	GetWidgetText(&boxOptions[INPUT], &p);
 	snprintf(buf, MSG_SIZ, "%s%s", p, text+5); text = buf;
 	pos += strlen(p) - 5;
     }
-    SetWidgetText(&boxOptions[0], text, TextMenuDlg);
-    SetInsertPos(&boxOptions[0], pos);
-    HardSetFocus(&boxOptions[0]);
+    SetWidgetText(&boxOptions[INPUT], text, TextMenuDlg);
+    SetInsertPos(&boxOptions[INPUT], pos);
+    HardSetFocus(&boxOptions[INPUT]);
 }
 
 void
@@ -1284,8 +1287,8 @@ ICSInputBoxPopUp ()
 {
     MarkMenu("View.ICSInputBox", InputBoxDlg);
     if(GenericPopUp(boxOptions, _("ICS input box"), InputBoxDlg, BoardWindow, NONMODAL, 0))
-	AddHandler(&boxOptions[0], InputBoxDlg, 3);
-    CursorAtEnd(&boxOptions[0]);
+	AddHandler(&boxOptions[INPUT], InputBoxDlg, 3);
+    CursorAtEnd(&boxOptions[INPUT]);
 }
 
 void
@@ -1327,10 +1330,10 @@ BoxAutoPopUp (char *buf)
 	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
 	    if(DialogExists(InputBoxDlg)) { // box already exists: append to current contents
 		char *p, newText[MSG_SIZ];
-		GetWidgetText(&boxOptions[0], &p);
+		GetWidgetText(&boxOptions[INPUT], &p);
 		snprintf(newText, MSG_SIZ, "%s%c", p, *buf);
-		SetWidgetText(&boxOptions[0], newText, InputBoxDlg);
-		if(shellUp[InputBoxDlg]) HardSetFocus (&boxOptions[0]); //why???
+		SetWidgetText(&boxOptions[INPUT], newText, InputBoxDlg);
+		if(shellUp[InputBoxDlg]) HardSetFocus (&boxOptions[INPUT]); //why???
 	    } else icsText = buf; // box did not exist: make sure it pops up with char in it
 	    ICSInputBoxPopUp();
 	} else PopUpMoveDialog(*buf);
@@ -1704,21 +1707,53 @@ PromotionPopUp (char choice)
 //---------------------------- Chat Windows ----------------------------------------------
 
 static char *line, *memo, *partner, *texts[MAX_CHAT], dirty[MAX_CHAT];
-static int activePartner;
+static int activePartner, hidden = 1;
 
 void ChatSwitch P((int n));
 int  ChatOK P((int n));
 
+#define CHAT_ICS     6
+#define CHAT_PARTNER 8
+#define CHAT_OUT    10
+#define CHAT_PANE   11
+#define CHAT_IN     12
+
+void PaneSwitch P((void));
+
 Option chatOptions[] = {
+{  0,  0,   0, NULL, NULL, "", NULL, Label , N_("Chats:") },
+{ 1, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
+{ 2, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
+{ 3, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
+{ 4, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
+{ 5, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
+{ 250, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &memo, NULL, NULL, TextBox, "" },
+{  0,  0,   0, NULL, NULL, "", NULL, Break , "" },
 { 0,   T_TOP,    100, NULL, (void*) &partner, NULL, NULL, TextBox, N_("Chat partner:") },
-{ 1, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, "" },
-{ 2, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, "" },
-{ 3, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, "" },
-{ 4, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, "" },
-{ 100, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &memo, NULL, NULL, TextBox, "" },
+{  0, SAME_ROW, 0, NULL, (void*) &PaneSwitch, NULL, NULL, Button, N_("Hide") },
+{ 250, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &memo, NULL, NULL, TextBox, "" },
+{  0,  0,   0, NULL, NULL, "", NULL, Break , "" },
 {  0,    0,  510, NULL, (void*) &line, NULL, NULL, TextBox, "" },
 { 0, NO_OK|SAME_ROW, 0, NULL, (void*) &ChatOK, NULL, NULL, EndMark , "" }
 };
+
+void
+IcsHist (int n, Option *opt, DialogClass dlg)
+{   // [HGM] input: let up-arrow recall previous line from history
+    char *val = NULL; // to suppress spurious warning
+
+    if(opt != &chatOptions[CHAT_IN]) return;
+    switch(n) {
+      case 1:
+	GetWidgetText(opt, &val);
+	val = PrevInHistory(val);
+	break;
+      case -1:
+	val = NextInHistory();
+    }
+    SetWidgetText(opt, val = val ? val : "", dlg);
+    SetInsertPos(opt, strlen(val));
+}
 
 void
 OutputChatMessage (int partner, char *mess)
@@ -1730,11 +1765,11 @@ OutputChatMessage (int partner, char *mess)
     texts[partner] = (char*) malloc(len);
     snprintf(texts[partner], len, "%s%s", p ? p : "", mess);
     FREE(p);
-    if(partner == activePartner) {
-	AppendText(&chatOptions[5], mess);
-	SetInsertPos(&chatOptions[5], len-2);
+    if(partner == activePartner && !hidden) {
+	AppendText(&chatOptions[CHAT_OUT], mess);
+	SetInsertPos(&chatOptions[CHAT_OUT], len-2);
     } else {
-	SetColor("#FFC000", &chatOptions[partner + (partner < activePartner)]);
+	SetColor("#FFC000", &chatOptions[partner + 1]);
 	dirty[partner] = 1;
     }
 }
@@ -1744,17 +1779,19 @@ ChatOK (int n)
 {   // can only be called through <Enter> in chat-partner text-edit, as there is no OK button
     char buf[MSG_SIZ];
 
-    if(!partner || strcmp(partner, chatPartner[activePartner])) {
+    if(!hidden && (!partner || strcmp(partner, chatPartner[activePartner]))) {
 	safeStrCpy(chatPartner[activePartner], partner, MSG_SIZ);
-	SetWidgetText(&chatOptions[5], "", -1); // clear text if we alter partner
-	SetWidgetText(&chatOptions[6], "", ChatDlg); // clear text if we alter partner
-	HardSetFocus(&chatOptions[6]);
+	SetWidgetText(&chatOptions[CHAT_OUT], "", -1); // clear text if we alter partner
+	SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg); // clear text if we alter partner
+	SetWidgetLabel(&chatOptions[activePartner+1], chatPartner[activePartner] ? chatPartner[activePartner] : _("New Chat"));
+	HardSetFocus(&chatOptions[CHAT_IN]);
     }
-    if(line[0]) { // something was typed
-	SetWidgetText(&chatOptions[6], "", ChatDlg);
+    if(line[0] || hidden) { // something was typed (for ICS commands we also allow empty line!)
+	SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg);
 	// from here on it could be back-end
 	if(line[strlen(line)-1] == '\n') line[strlen(line)-1] = NULLCHAR;
 	SaveInHistory(line);
+	if(hidden) snprintf(buf, MSG_SIZ, "%s\n", line); else // command for ICS
 	if(!strcmp("whispers", chatPartner[activePartner]))
 	      snprintf(buf, MSG_SIZ, "whisper %s\n", line); // WHISPER box uses "whisper" to send
 	else if(!strcmp("shouts", chatPartner[activePartner]))
@@ -1773,30 +1810,53 @@ ChatOK (int n)
 }
 
 void
+DelayedScroll ()
+{   // If we do this immediately it does it before shrinking the memo, so the lower half remains hidden (Ughh!)
+    SetInsertPos(&chatOptions[CHAT_ICS], 999999);
+}
+
+void
 ChatSwitch (int n)
 {
     int i, j;
-    if(n <= activePartner) n--;
-    activePartner = n;
+    Show(&chatOptions[CHAT_PANE], 0); // show
+    if(hidden) ScheduleDelayedEvent(DelayedScroll, 50); // Awful!
+    hidden = 0;
+    activePartner = --n;
     if(!texts[n]) texts[n] = strdup("");
     dirty[n] = 0;
-    SetWidgetText(&chatOptions[5], texts[n], ChatDlg);
-    SetInsertPos(&chatOptions[5], strlen(texts[n]));
-    SetWidgetText(&chatOptions[0], chatPartner[n], ChatDlg);
+    SetWidgetText(&chatOptions[CHAT_OUT], texts[n], ChatDlg);
+    SetInsertPos(&chatOptions[CHAT_OUT], strlen(texts[n]));
+    SetWidgetText(&chatOptions[CHAT_PARTNER], chatPartner[n], ChatDlg);
     for(i=j=0; i<MAX_CHAT; i++) {
-	if(i == activePartner) continue;
-	SetWidgetLabel(&chatOptions[++j], chatPartner[i]);
+	SetWidgetLabel(&chatOptions[++j], *chatPartner[i] ? chatPartner[i] : _("New Chat"));
 	SetColor(dirty[i] ? "#FFC000" : "#FFFFFF", &chatOptions[j]);
     }
-    SetWidgetText(&chatOptions[6], "", ChatDlg);
-    HardSetFocus(&chatOptions[6]);
+    SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg);
+    HardSetFocus(&chatOptions[strcmp(chatPartner[n], "") ? CHAT_IN : CHAT_PARTNER]);
+}
+
+void
+PaneSwitch ()
+{
+    Show(&chatOptions[CHAT_PANE], hidden = 1); // hide
+}
+
+void
+ConsoleWrite(char *message, int count)
+{
+    if(shellUp[ChatDlg]) {
+	AppendColorized(&chatOptions[CHAT_ICS], message, count);
+	SetInsertPos(&chatOptions[CHAT_ICS], 999999);
+    }
 }
 
 void
 ChatProc ()
 {
-    if(GenericPopUp(chatOptions, _("Chat box"), ChatDlg, BoardWindow, NONMODAL, appData.topLevel))
-	AddHandler(&chatOptions[0], ChatDlg, 2), AddHandler(&chatOptions[6], ChatDlg, 2); // treats return as OK
+    if(GenericPopUp(chatOptions, _("ICS Interaction"), ChatDlg, BoardWindow, NONMODAL, appData.topLevel))
+	AddHandler(&chatOptions[CHAT_PARTNER], ChatDlg, 2), AddHandler(&chatOptions[CHAT_IN], ChatDlg, 2); // treats return as OK
+    PaneSwitch(); HardSetFocus(&chatOptions[CHAT_IN]);
     MarkMenu("View.OpenChatWindow", ChatDlg);
 }
 

@@ -164,6 +164,9 @@ void InitMenuMarkers P((void));
 void ShowGameListProc P((void)); // in ngamelist.c
 void HistoryShowProc P((void));  // in nhistory.c
 
+// only here because it is the only header shared by xoptions.c and usystem.c
+void SetTextColor P((char **cnames, int fg, int bg, int attr));
+void ConsoleWrite P((char *message, int count));
 
 // must be moved to xengineoutput.h
 

@@ -143,7 +143,7 @@ MarkMenuItem (char *menuRef, int state)
 {
     MenuItem *item = MenuNameToItem(menuRef);
 
-    if(item) {
+    if(item && item->handle) {
         ((GtkCheckMenuItem *) (item->handle))->active = state;
     }
 }
@@ -320,13 +320,10 @@ void
 ScrollToCursor (Option *opt, int caretPos)
 {
     static GtkTextIter iter;
-    static GtkTextMark *mark;
-    if(!mark) mark = gtk_text_mark_new(NULL, 0);
+    GtkTextMark *mark = gtk_text_buffer_get_mark((GtkTextBuffer *) opt->handle, "scrollmark");
     gtk_text_buffer_get_iter_at_offset((GtkTextBuffer *) opt->handle, &iter, caretPos);
-    gtk_text_buffer_add_mark((GtkTextBuffer *) opt->handle, mark, &iter);
+    gtk_text_buffer_move_mark((GtkTextBuffer *) opt->handle, mark, &iter);
     gtk_text_view_scroll_to_mark((GtkTextView *) opt->textValue, mark, 0.0, 0, 0.5, 0.5);
-//    gtk_text_view_scroll_to_iter((GtkTextView *) opt->textValue, &iter, 0.0, 0, 0.5, 0.5);
-    gtk_text_buffer_delete_mark((GtkTextBuffer *) opt->handle, mark);
 }
 
 int
@@ -432,6 +429,7 @@ CreateMenuPopup (Option *opt, int n, int def)
 	if(!strcmp(msg, "Quit ")) continue;             // Quit item will appear automatically in App menu
 	if(!strcmp(msg, "About XBoard")) msg = "About"; // 'XBoard' will be appended automatically when moved to App menu 1st item
 #endif
+        if(!strcmp(msg, "ICS Input Box")) { mb[i].handle = NULL; continue; } // suppress ICS Input Box in GTK
 	if(strcmp(msg, "----")) { //
 	  if(!(opt->min & NO_GETTEXT)) msg = _(msg);
 	  if(mb[i].handle) {
@@ -504,6 +502,8 @@ TypeInProc (GtkWidget *widget, GdkEventKey *event, gpointer gdata)
     shiftState = event->state & GDK_SHIFT_MASK;
     controlState = event->state & GDK_CONTROL_MASK;
     switch(event->keyval) {
+      case GDK_Up:     IcsHist(1, opt, dlg); break;
+      case GDK_Down:  IcsHist(-1, opt, dlg); break;
       case GDK_Return:
 	if(GenericReadout(dialogOptions[dlg], -1)) PopDown(dlg);
 	break;
@@ -530,6 +530,61 @@ HighlightText (Option *opt, int from, int to, Boolean highlight)
     gtk_text_buffer_get_iter_at_offset(opt->handle, &start, from);
     gtk_text_buffer_get_iter_at_offset(opt->handle, &end, to);
     gtk_text_buffer_apply_tag_by_name(opt->handle, highlight ? "highlight" : "normal", &start, &end);
+}
+
+static char **names;
+static int curFG, curBG, curAttr;
+static GdkColor backgroundColor;
+
+void
+SetTextColor(char **cnames, int fg, int bg, int attr)
+{
+    if(fg < 0) fg = 0; if(bg < 0) bg = 7;
+    names = cnames; curFG = fg; curBG = bg, curAttr = attr;
+    if(attr == -2) { // background color of ICS console.
+	gdk_color_parse(cnames[bg&7], &backgroundColor);
+	curAttr = 0;
+    }
+}
+
+void
+AppendColorized (Option *opt, char *s, int count)
+{
+    static GtkTextIter end;
+    static GtkTextTag *fgTags[8], *bgTags[8], *font, *bold, *normal, *attr = NULL;
+
+    if(!font) {
+	font = gtk_text_buffer_create_tag(opt->handle, NULL, "font", "Monospace normal", NULL);
+	gtk_widget_modify_base(GTK_WIDGET(opt->textValue), GTK_STATE_NORMAL, &backgroundColor);
+    }
+
+    gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(opt->handle), &end);
+
+    if(names) {
+      if(curAttr == 1) {
+	if(!bold) bold = gtk_text_buffer_create_tag(opt->handle, NULL, "weight", PANGO_WEIGHT_BOLD, NULL);
+        attr = bold;
+      } else {
+	if(!normal) normal = gtk_text_buffer_create_tag(opt->handle, NULL, "weight", PANGO_WEIGHT_NORMAL, NULL);
+        attr = normal;
+      }
+      if(!fgTags[curFG]) {
+	fgTags[curFG] = gtk_text_buffer_create_tag(opt->handle, NULL, "foreground", names[curFG], NULL);
+      }
+      if(!bgTags[curBG]) {
+	bgTags[curBG] = gtk_text_buffer_create_tag(opt->handle, NULL, "background", names[curBG], NULL);
+      }
+      gtk_text_buffer_insert_with_tags(opt->handle, &end, s, count, fgTags[curFG], bgTags[curBG], font, attr, NULL);
+    } else
+      gtk_text_buffer_insert_with_tags(opt->handle, &end, s, count, font, NULL);
+
+}
+
+void
+Show (Option *opt, int hide)
+{
+    if(hide) gtk_widget_hide(opt->handle);
+    else     gtk_widget_show(opt->handle);
 }
 
 int
@@ -652,7 +707,7 @@ AddHandler (Option *opt, DialogClass dlg, int nr)
 GtkWidget *shells[NrOfDialogs];
 DialogClass parents[NrOfDialogs];
 WindowPlacement *wp[NrOfDialogs] = { // Beware! Order must correspond to DialogClass enum
-    NULL, &wpComment, &wpTags, NULL, NULL, NULL, &wpDualBoard, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
+    NULL, &wpComment, &wpTags, NULL, NULL, &wpConsole, &wpDualBoard, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
     NULL, NULL, NULL, NULL, &wpMain
 };
 
@@ -1130,6 +1185,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 
     int i, j, arraysize, left, top, height=999, width=1, boxStart=0, breakType = 0, r;
     char def[MSG_SIZ], *msg, engineDlg = (currentCps != NULL && dlgNr != BrowserDlg);
+    gboolean expandable = FALSE;
 
     if(dlgNr < PromoDlg && shellUp[dlgNr]) return 0; // already up
 
@@ -1201,19 +1257,19 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	if(option[i].type == Skip) continue;
         top++;
 //printf("option =%2d, top =%2d\n", i, top);
-        if (top >= height) {
-            gtk_table_resize(GTK_TABLE(table), height, r);
+        if (top >= height || breakType) {
+            gtk_table_resize(GTK_TABLE(table), top - (breakType != 0), r);
 	    if(!pane) { // multi-column: put tables in intermediate hbox
-		if(breakType || engineDlg)
+		if(breakType & SAME_ROW || engineDlg)
 		    pane =  gtk_hbox_new (FALSE, 0);
 		else
 		    pane =  gtk_vbox_new (FALSE, 0);
 		gtk_box_set_spacing(GTK_BOX(pane), 5 + 5*breakType);
 		gtk_box_pack_start (GTK_BOX (/*GTK_DIALOG (dialog)->vbox*/box), pane, TRUE, TRUE, 0);
 	    }
-	    gtk_box_pack_start (GTK_BOX (pane), table, TRUE, TRUE, 0);
+	    gtk_box_pack_start (GTK_BOX (pane), table, expandable, TRUE, 0);
 	    table = gtk_table_new(arraysize - i, r=TableWidth(option + i), FALSE);
-            top = 0;
+            top = breakType = 0; expandable = FALSE;
         }
         if(!SameRow(&option[i])) {
 	    if(SameRow(&option[i+1])) {
@@ -1249,6 +1305,8 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 
             if (option[i].type==TextBox && option[i].value > 80){
+                GtkTextIter iter;
+                expandable = TRUE;
                 textview = gtk_text_view_new();
                 gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), option[i].min & T_WRAP ? GTK_WRAP_WORD : GTK_WRAP_NONE);
 #ifdef TODO_GTK
@@ -1280,6 +1338,8 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
                     gtk_text_buffer_set_text (textbuffer, "", -1);
                 option[i].handle = (void*)textbuffer;
                 option[i].textValue = (char*)textview;
+                gtk_text_buffer_get_iter_at_offset(textbuffer, &iter, -1);
+                gtk_text_buffer_create_mark(textbuffer, "scrollmark", &iter, FALSE); // permanent mark
 		if(option[i].choice) { // textviews can request a handler for mouse events in the choice field
 		    g_signal_connect(textview, "button-press-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
 		    g_signal_connect(textview, "button-release-event", G_CALLBACK (MemoEvent), (gpointer) &option[i] );
@@ -1440,6 +1500,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 
                 /* never has label, so let listbox occupy all columns */
                 Pack(hbox, table, sw, left, left+r, top, GTK_EXPAND);
+                expandable = TRUE;
             }
 	    break;
 	  case Graph:
@@ -1461,6 +1522,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		graph = frame;
 	    }
             Pack(hbox, table, graph, left, left+r, top, GTK_EXPAND);
+            expandable = TRUE;
 
 #ifdef TODO_GTK
 	    if(option[i].min & SAME_ROW) last = forelast, forelast = lastrow;
@@ -1523,8 +1585,8 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions
 	    break;
 	  case Break:
-            breakType = option[i].min & SAME_ROW;
-	    top = height; // force next option to start in a new table
+            breakType = option[i].min & SAME_ROW | BORDER; // kludge to flag we must break
+	    option[i].handle = table;
             break;
 
 	  case PopUp:
@@ -1536,10 +1598,10 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	}
     }
 
+    gtk_table_resize(GTK_TABLE(table), top+1, r);
     if(pane)
-	gtk_box_pack_start (GTK_BOX (pane), table, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (pane), table, expandable, TRUE, 0);
     else
-        gtk_table_resize(GTK_TABLE(table), top+1, r),
 	gtk_box_pack_start (GTK_BOX (/*GTK_DIALOG (dialog)->vbox*/box), table, TRUE, TRUE, 0);
 
     option[i].handle = (void *) table; // remember last table in EndMark handle (for hiding Engine-Output pane).

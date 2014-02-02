@@ -533,6 +533,7 @@ GetWindowCoords ()
   if(shellUp[GameListDlg]) GetActualPlacement(shells[GameListDlg], &wpGameList);
   if(shellUp[CommentDlg]) GetActualPlacement(shells[CommentDlg], &wpComment);
   if(shellUp[TagsDlg]) GetActualPlacement(shells[TagsDlg], &wpTags);
+  GetPlacement(ChatDlg, &wpConsole); if(appData.icsActive) wpConsole.visible = shellUp[ChatDlg];
 }
 
 void
@@ -1121,6 +1122,11 @@ main (int argc, char **argv)
       EngineOutputPopUp();
     }
 
+    if( wpConsole.visible && appData.icsActive ) {
+      ChatProc();
+      BoardToTop();
+    }
+
     InitBackEnd2();
 
     if (errorExitStatus == -1) {
@@ -1359,7 +1365,7 @@ EnableNamedMenuItem (char *menuRef, int state)
 {
     MenuItem *item = MenuNameToItem(menuRef);
 
-    if(item) gtk_widget_set_sensitive(item->handle, state);
+    if(item && item->handle) gtk_widget_set_sensitive(item->handle, state);
 }
 
 void
@@ -1560,6 +1566,7 @@ DragProc ()
 	    if(shellUp[HistoryDlg]) CoDrag(shells[HistoryDlg], &wpMoveHistory);
 	    if(shellUp[EvalGraphDlg]) CoDrag(shells[EvalGraphDlg], &wpEvalGraph);
 	    if(shellUp[GameListDlg]) CoDrag(shells[GameListDlg], &wpGameList);
+	    if(shellUp[ChatDlg]) CoDrag(shells[ChatDlg], &wpConsole);
         }
 	wpMain = wpNew;
 	DrawPosition(True, NULL);

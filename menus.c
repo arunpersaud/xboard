@@ -642,7 +642,7 @@ MenuItem viewMenu[] = {
   {N_("Tags"),               NULL,           "Tags",            EditTagsProc,           CHECK},
   {N_("Comments"),           NULL,           "Comments",        EditCommentProc,        CHECK},
   {N_("ICS Input Box"),      NULL,           "ICSInputBox",     IcsInputBoxProc,        CHECK},
-  {N_("Open Chat Window"),   NULL,           "OpenChatWindow",  ChatProc,               CHECK},
+  {N_("ICS/Chat Console"),   NULL,           "OpenChatWindow",  ChatProc,               CHECK},
   {"----",                   NULL,            NULL,             NothingProc},
   {N_("Board..."),           NULL,           "Board",           BoardOptionsProc},
   {N_("Game List Tags..."),  NULL,           "GameListTags",    GameListOptionsProc},

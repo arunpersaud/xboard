@@ -266,6 +266,21 @@ SelectedListBoxItem (Option *opt)
 }
 
 void
+SetTextColor (char **cnames, int fg, int bg, int attr)
+{ // this is not possible in Xaw
+}
+
+void
+AppendColorized (Option *opt, char *message, int count)
+{ // ignore
+}
+
+void
+Show (Option *opt, int hide)
+{
+}
+
+void
 HighlightText (Option *opt, int start, int end, Boolean on)
 {
     if(on)

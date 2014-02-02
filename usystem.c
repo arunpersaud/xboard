@@ -263,6 +263,7 @@ ParseIcsTextColors ()
       }
     textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
     textColors[ColorNone].attr = 0;
+    SetTextColor(cnames, textColors[ColorNormal].fg - 30, textColors[ColorNormal].bg - 40, -2); // kludge to announce background color to front-end 
 }
 
 static Boolean noEcho;
@@ -306,6 +307,8 @@ Colorize (ColorClass cc, int continuation)
 {
     char buf[MSG_SIZ];
     int count, outCount, error;
+
+    SetTextColor(cnames, textColors[(int)cc].fg - 30, textColors[(int)cc].bg - 40, textColors[(int)cc].attr); // for GTK widget
 
     if (textColors[(int)cc].bg > 0) {
 	if (textColors[(int)cc].fg > 0) {
@@ -676,6 +679,7 @@ OutputToProcess (ProcRef pr, char *message, int count, int *outError)
                 free(msg);
             }
         }
+        if(*message != '\033') ConsoleWrite(message, count);
     }
     else
       outCount = write(cp->fdTo, message, count);

@@ -771,6 +771,7 @@ ArgDescriptor argDescriptors[] = {
   { "winHeight", ArgInt, (void *) &wpMain.height, TRUE, INVALID }, //       for attaching auxiliary windows to them
   { "x", ArgInt, (void *) &wpMain.x, TRUE, (ArgIniType) CW_USEDEFAULT },
   { "y", ArgInt, (void *) &wpMain.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "icsUp", ArgBoolean, (void *) &wpConsole.visible, XBOARD, (ArgIniType) FALSE },
   { "icsX", ArgX,   (void *) &wpConsole.x, TRUE, (ArgIniType) CW_USEDEFAULT },
   { "icsY", ArgY,   (void *) &wpConsole.y, TRUE, (ArgIniType) CW_USEDEFAULT },
   { "icsW", ArgInt, (void *) &wpConsole.width, TRUE, (ArgIniType) CW_USEDEFAULT },

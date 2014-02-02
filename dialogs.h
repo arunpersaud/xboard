@@ -126,7 +126,7 @@ extern int dialogError;
 extern ButtonCallback *comboCallback;
 extern void *userLogo;
 
-extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain, wpDualBoard;
+extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain, wpDualBoard, wpConsole;
 extern char *marked[];
 extern Boolean shellUp[];
 extern Option textOptions[], typeOptions[], dualOptions[], mainOptions[];
@@ -138,6 +138,9 @@ int GenericReadout P((Option *currentOption, int selected));
 int PopDown P((DialogClass n));
 void MarkMenu P((char *item, int dlgNr));
 int AppendText P((Option *opt, char *s));
+void AppendColorized P((Option *opt, char *s, int count));
+void Show P((Option *opt, int hide));
+int  IcsHist P((int dir, Option *opt, DialogClass dlg));
 void HighlightText P((Option *opt, int from, int to, Boolean highlight));
 void SetColor P((char *colorName, Option *box));
 //void ColorChanged P((Widget w, XtPointer data, XEvent *event, Boolean *b));
