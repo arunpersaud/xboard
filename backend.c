@@ -17897,6 +17897,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
     }
 
     if(subst) return FALSE; // substitution requested, but no holdings
+    if(shuffle) SetUpShuffle(board, appData.defaultFrcPosition);
 
     while(*p == ' ') p++;
 
@@ -18022,7 +18023,8 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
       }
       for(i=0; i<nrCastlingRights; i++)
         if(board[CASTLING][i] != NoRights) initialRights[i] = board[CASTLING][i];
-      if(gameInfo.variant == VariantSChess) for(i=0; i<BOARD_FILES; i++) board[VIRGIN][i] = virgin[i];
+      if(gameInfo.variant == VariantSChess)
+        for(i=0; i<BOARD_FILES; i++) board[VIRGIN][i] = shuffle ? VIRGIN_W | VIRGIN_B : virgin[i]; // when shuffling assume all virgin
     if (appData.debugMode) {
         fprintf(debugFP, "FEN castling rights:");
         for(i=0; i<nrCastlingRights; i++)
