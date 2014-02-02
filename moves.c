@@ -387,11 +387,9 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
     for (rf = 0; rf < BOARD_HEIGHT; rf++)
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
           ChessSquare piece;
-          int rookRange;
 
 	  if(board[rf][ff] == EmptySquare) continue;
 	  if ((flags & F_WHITE_ON_MOVE) != (board[rf][ff] < BlackPawn)) continue; // [HGM] speed: wrong color
-	  rookRange = 1000;
           m = 0; piece = board[rf][ff];
           if(PieceToChar(piece) == '~')
                  piece = (ChessSquare) ( DEMOTED piece );
@@ -742,12 +740,16 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
                 for (s = -2; s <= 2; s += 4) {
 		      rt = rf + s * d;
 		      ft = ff + s * (1 - d);
-                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT || board[rf+rt>>1][ff+ft>>1] == EmptySquare) continue;
+                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
+                      if (board[rf+rt>>1][ff+ft>>1] == EmptySquare && gameInfo.variant != VariantSpartan) continue;
 		      if (SameColor(board[rf][ff], board[rt][ft])) continue;
 		      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
 		  }
-              if(gameInfo.variant == VariantSpartan) rookRange = 2; // in Spartan Chess restrict range to modern Dababba
-              goto doRook;
+              if(gameInfo.variant == VariantSpartan) // in Spartan Chess restrict range to modern Dababba
+		Wazir(board, flags, rf, ff, callback, closure);
+	      else
+		Rook(board, flags, rf, ff, callback, closure);
+              break;
 
             /* Shogi Dragon King has to continue as Ferz after Rook moves */
             case SHOGI WhiteDragon:
@@ -777,7 +779,6 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             case SHOGI BlackPRook:
 	    case WhiteRook:
 	    case BlackRook:
-          doRook:
 		Rook(board, flags, rf, ff, callback, closure);
 		break;
 
