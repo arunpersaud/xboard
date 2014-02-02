@@ -9822,11 +9822,11 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	}
         piece = board[toY][toX] = (ChessSquare) fromX;
   } else {
-      ChessSquare victim;
+//      ChessSquare victim;
       int i;
 
       if( killX >= 0 && killY >= 0 ) // [HGM] lion: Lion trampled over something
-           victim = board[killY][killX],
+//           victim = board[killY][killX],
            board[killY][killX] = EmptySquare,
            board[EP_STATUS] = EP_CAPTURE;
 

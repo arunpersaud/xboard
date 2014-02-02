@@ -752,7 +752,7 @@ int
 main (int argc, char **argv)
 {
     int i, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
-    int boardWidth, boardHeight, w, h;
+    int boardWidth, w, h; //, boardHeight;
     char *p;
     int forceMono = False;
 
@@ -967,7 +967,7 @@ main (int argc, char **argv)
 
     /* [HR] height treated separately (hacked) */
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+//    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
 
     /*
      * Determine what fonts to use.
