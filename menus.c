@@ -389,6 +389,12 @@ DebugProc ()
 }
 
 void
+EditEngineProc ()
+{
+    EditTagsPopUp(firstChessProgramNames, &firstChessProgramNames);
+}
+
+void
 NothingProc ()
 {
     return;
@@ -681,6 +687,8 @@ MenuItem actionMenu[] = {
 };
 
 MenuItem engineMenu[100] = {
+  {N_("Edit Engine List..."),      NULL,     "EditEngList",      EditEngineProc},
+  {"----",                         NULL,      NULL,              NothingProc},
   {N_("Load New 1st Engine..."),   NULL,     "LoadNew1stEngine", LoadEngine1Proc},
   {N_("Load New 2nd Engine..."),   NULL,     "LoadNew2ndEngine", LoadEngine2Proc},
   {"----",                         NULL,      NULL,              NothingProc},

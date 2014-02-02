@@ -1109,12 +1109,14 @@ EditCommentProc ()
 //------------------------------------------------------ Edit Tags ----------------------------------
 
 static void changeTags P((int n));
-static char *tagsText;
+static char *tagsText, **resPtr;
 
 static int
 NewTagsCallback (int n)
 {
-    if(!bookUp) ReplaceTags(tagsText, &gameInfo);
+    if(bookUp) SaveToBook(tagsText), DisplayBook(currentMove); else
+    if(resPtr) { ASSIGN(*resPtr, tagsText); } else
+    ReplaceTags(tagsText, &gameInfo);
     return 1;
 }
 
@@ -1130,6 +1132,7 @@ changeTags (int n)
 {
     GenericReadout(tagsOptions, 1);
     if(bookUp) SaveToBook(tagsText), DisplayBook(currentMove); else
+    if(resPtr) { ASSIGN(*resPtr, tagsText); } else
     ReplaceTags(tagsText, &gameInfo);
 }
 
@@ -1157,6 +1160,7 @@ TagsPopUp (char *tags, char *msg)
 void
 EditTagsPopUp (char *tags, char **dest)
 {   // wrapper to preserve old name used in back-end
+    resPtr = dest; 
     NewTagsPopup(tags, NULL);
 }
 
