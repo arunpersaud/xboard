@@ -1198,7 +1198,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
     top = -1;
 
     for (i=0;option[i].type != EndMark;i++) {
-	if(option[i].type == -1) continue;
+	if(option[i].type == Skip) continue;
         top++;
 //printf("option =%2d, top =%2d\n", i, top);
         if (top >= height) {

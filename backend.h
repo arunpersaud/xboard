@@ -286,7 +286,7 @@ int Explode P((Board board, int fromX, int fromY, int toX, int toY));
 
 typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton, ListBox, Graph, PopUp,
 		 FileName, PathName, Slider, Message, Fractional, Label, Icon,
-		 BoxBegin, BoxEnd, BarBegin, BarEnd, DropDown, Break, EndMark } Control;
+		 BoxBegin, BoxEnd, BarBegin, BarEnd, DropDown, Break, EndMark, Skip } Control;
 
 typedef struct XB_OPT {   // [HGM] options: descriptor of UCI-style option
     int value;          // current setting, starts as default

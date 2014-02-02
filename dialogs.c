@@ -230,7 +230,7 @@ GenericReadout (Option *opts, int selected)
 		case SaveButton:
 		case Label:
 		case Break:
-		case -1:
+		case Skip:
 	      break;
 	    }
 	    if(opts[i].type == EndMark) break;
@@ -494,18 +494,18 @@ static Option variantDescriptors[] = {
 { VariantChu,    SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("chu shogi (12x12)")},
 //{ -1,                   0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
 // optional buttons for engine-defined variants
-{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
-{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, -1, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
 { 0, NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
@@ -554,7 +554,7 @@ NewVariantProc ()
    ranksTmp = filesTmp = sizeTmp = -1; // prefer defaults over actual settings
    if(appData.noChessProgram) sprintf(warning, _("Only bughouse is not available in viewer mode.")); else
    sprintf(warning, _("All variants not supported by the first engine\n(currently %s) are disabled."), first.tidy);
-   if(!start) while(variantDescriptors[start].type != -1) start++; // locate first spare
+   if(!start) while(variantDescriptors[start].type != Skip) start++; // locate first spare
    last = -1;
    for(i=0; variantDescriptors[start+i].type != EndMark; i++) { // create buttons for engine-defined variants
      char *v = EngineDefinedVariant(&first, i);
@@ -562,12 +562,12 @@ NewVariantProc ()
 	last =  i;
 	ASSIGN(variantDescriptors[start+i].name, v);
 	variantDescriptors[start+i].type = Button;
-     } else variantDescriptors[start+i].type = -1;
+     } else variantDescriptors[start+i].type = Skip;
    }
    if(!(last&1)) { // odd number, add filler
 	ASSIGN(variantDescriptors[start+last+1].name, " ");
 	variantDescriptors[start+last+1].type = Button;
-	variantDescriptors[start+last+1].value = -1;
+	variantDescriptors[start+last+1].value = Skip;
    }
    safeStrCpy(buf, engineVariant, MSG_SIZ); *engineVariant = NULLCHAR; // yeghh...
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
@@ -2172,11 +2172,11 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Help") },
 { 0, 0, 0, NULL, (void*)&SizeKludge, "", NULL, BarEnd, "" },
 { 0, LR|T2T|BORDER|SAME_ROW, 0, NULL, NULL, "", NULL, Label, "1" }, // optional title in window
-{ 50,    LL|TT,            100, NULL, (void*) &LogoW, NULL, NULL, -1, "" }, // white logo
+{ 50,    LL|TT,            100, NULL, (void*) &LogoW, NULL, NULL, Skip, "" }, // white logo
 { 12,   L2L|T2T,           200, NULL, (void*) &CCB, NULL, NULL, Label, "White" }, // white clock
 { 13,   R2R|T2T|SAME_ROW,  200, NULL, (void*) &CCB, NULL, NULL, Label, "Black" }, // black clock
-{ 50,    RR|TT|SAME_ROW,   100, NULL, (void*) &LogoB, NULL, NULL, -1, "" }, // black logo
-{ 0, LR|T2T|BORDER,        401, NULL, NULL, "", NULL, -1, "2" }, // backup for title in window (if no room for other)
+{ 50,    RR|TT|SAME_ROW,   100, NULL, (void*) &LogoB, NULL, NULL, Skip, "" }, // black logo
+{ 0, LR|T2T|BORDER,        401, NULL, NULL, "", NULL, Skip, "2" }, // backup for title in window (if no room for other)
 { 0, LR|T2T|BORDER,        270, NULL, NULL, "", NULL, Label, "message" }, // message field
 { 0, RR|TT|SAME_ROW,       125, NULL, NULL, "", NULL, BoxBegin, "" }, // (optional) button bar
   { 0,    0,     0, NULL, (void*) &ToStartEvent, NULL, NULL, Button, N_("<<") },
@@ -2213,7 +2213,7 @@ SizeKludge (int n)
     int w = width - 44 - mainOptions[n].min;
     mainOptions[W_TITLE].max = w; // width left behind menu bar
     if(w < 0.4*width) // if no reasonable amount of space for title, force small layout
-	mainOptions[W_SMALL].type = mainOptions[W_TITLE].type, mainOptions[W_TITLE].type = -1;
+	mainOptions[W_SMALL].type = mainOptions[W_TITLE].type, mainOptions[W_TITLE].type = Skip;
 }
 
 void
@@ -2285,7 +2285,7 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
     mainOptions[W_BLACK].max = mainOptions[W_WHITE].max = size/2-3; // clock width
     mainOptions[W_MESSG].max = appData.showButtonBar ? size-135 : size-2; // message
     mainOptions[W_MENU].max = size-40; // menu bar
-    mainOptions[W_TITLE].type = appData.titleInWindow ? Label : -1 ;
+    mainOptions[W_TITLE].type = appData.titleInWindow ? Label : Skip ;
     if(logo && logo <= size/4) { // Activate logos
 	mainOptions[W_WHITE-1].type = mainOptions[W_BLACK+1].type = Graph;
 	mainOptions[W_WHITE-1].max  = mainOptions[W_BLACK+1].max  = logo;
@@ -2294,7 +2294,7 @@ BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
 	mainOptions[W_WHITE].max  = mainOptions[W_BLACK].max  -= logo + 4;
 	mainOptions[W_WHITE].name = mainOptions[W_BLACK].name = "Double\nHeight";
     }
-    if(!appData.showButtonBar) for(i=W_BUTTON; i<W_BOARD; i++) mainOptions[i].type = -1;
+    if(!appData.showButtonBar) for(i=W_BUTTON; i<W_BOARD; i++) mainOptions[i].type = Skip;
     for(i=0; i<8; i++) mainOptions[i+1].choice = (char**) menuBar[i].mi;
     AppendEnginesToMenu(appData.recentEngineList);
     GenericPopUp(mainOptions, "XBoard", BoardWindow, BoardWindow, NONMODAL, 1); // allways top-level

@@ -966,7 +966,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
     for(h=0; h<height || c == width-1; h++) {
 	i = h + c*height;
 	if(option[i].type == EndMark) break;
-	if(option[i].type == -1) continue;
+	if(option[i].type == Skip) continue;
 	lastrow = forelast;
 	forelast = last;
 	switch(option[i].type) {
