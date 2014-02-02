@@ -17897,7 +17897,6 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
     }
 
     if(subst) return FALSE; // substitution requested, but no holdings
-    if(shuffle) SetUpShuffle(board, appData.defaultFrcPosition);
 
     while(*p == ' ') p++;
 
@@ -17939,6 +17938,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 
     while(*p==' ') p++;
     if(nrCastlingRights) {
+      int fischer = 0;
       if(gameInfo.variant == VariantSChess) for(i=0; i<BOARD_FILES; i++) virgin[i] = 0;
       if(*p >= 'A' && *p <= 'Z' || *p >= 'a' && *p <= 'z' || *p=='-') {
           /* castling indicator present, so default becomes no castlings */
@@ -17969,6 +17969,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
               board[CASTLING][2] = whiteKingFile;
 	      if(board[CASTLING][0] != NoRights) virgin[board[CASTLING][0]] |= VIRGIN_W;
 	      if(board[CASTLING][2] != NoRights) virgin[board[CASTLING][2]] |= VIRGIN_W;
+              if(whiteKingFile != BOARD_WIDTH>>1|| i != BOARD_RGHT-1) fischer = 1;
               break;
           case'Q':
               for(i=BOARD_LEFT;  i<BOARD_RGHT && board[0][i]!=WhiteRook && i<whiteKingFile; i++);
@@ -17976,6 +17977,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
               board[CASTLING][2] = whiteKingFile;
 	      if(board[CASTLING][1] != NoRights) virgin[board[CASTLING][1]] |= VIRGIN_W;
 	      if(board[CASTLING][2] != NoRights) virgin[board[CASTLING][2]] |= VIRGIN_W;
+              if(whiteKingFile != BOARD_WIDTH>>1|| i != BOARD_LEFT) fischer = 1;
               break;
           case'k':
               for(i=BOARD_RGHT-1; board[BOARD_HEIGHT-1][i]!=BlackRook && i>blackKingFile; i--);
@@ -17983,6 +17985,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
               board[CASTLING][5] = blackKingFile;
 	      if(board[CASTLING][3] != NoRights) virgin[board[CASTLING][3]] |= VIRGIN_B;
 	      if(board[CASTLING][5] != NoRights) virgin[board[CASTLING][5]] |= VIRGIN_B;
+              if(blackKingFile != BOARD_WIDTH>>1|| i != BOARD_RGHT-1) fischer = 1;
               break;
           case'q':
               for(i=BOARD_LEFT; i<BOARD_RGHT && board[BOARD_HEIGHT-1][i]!=BlackRook && i<blackKingFile; i++);
@@ -17990,6 +17993,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
               board[CASTLING][5] = blackKingFile;
 	      if(board[CASTLING][4] != NoRights) virgin[board[CASTLING][4]] |= VIRGIN_B;
 	      if(board[CASTLING][5] != NoRights) virgin[board[CASTLING][5]] |= VIRGIN_B;
+              if(blackKingFile != BOARD_WIDTH>>1|| i != BOARD_LEFT) fischer = 1;
           case '-':
               break;
           default: /* FRC castlings */
@@ -18025,6 +18029,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
         if(board[CASTLING][i] != NoRights) initialRights[i] = board[CASTLING][i];
       if(gameInfo.variant == VariantSChess)
         for(i=0; i<BOARD_FILES; i++) board[VIRGIN][i] = shuffle ? VIRGIN_W | VIRGIN_B : virgin[i]; // when shuffling assume all virgin
+      if(fischer && shuffle) appData.fischerCastling = TRUE;
     if (appData.debugMode) {
         fprintf(debugFP, "FEN castling rights:");
         for(i=0; i<nrCastlingRights; i++)
@@ -18034,6 +18039,8 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 
       while(*p==' ') p++;
     }
+
+    if(shuffle) SetUpShuffle(board, appData.defaultFrcPosition);
 
     /* read e.p. field in games that know e.p. capture */
     if(gameInfo.variant != VariantShogi    && gameInfo.variant != VariantXiangqi &&
