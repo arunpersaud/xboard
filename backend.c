@@ -415,6 +415,7 @@ PosFlags (index)
   default:
     break;
   }
+  if(appData.fischerCastling) flags |= F_FRC_TYPE_CASTLING, flags &= ~F_ALL_CASTLE_OK; // [HGM] fischer
   return flags;
 }
 
@@ -5093,8 +5094,7 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
       /* Added by Tord: Send castle moves in "O-O" in FRC games if required by
        * the engine. It would be nice to have a better way to identify castle
        * moves here. */
-      if((gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom)
-									 && cps->useOOCastle) {
+      if(appData.fischerCastling && cps->useOOCastle) {
         int fromX = moveList[moveNum][0] - AAA;
         int fromY = moveList[moveNum][1] - ONE;
         int toX = moveList[moveNum][2] - AAA;
@@ -5971,7 +5971,7 @@ InitPosition (int redraw)
     oldh = gameInfo.holdingsWidth;
     static int oldv;
 
-    if(appData.icsActive) shuffleOpenings = FALSE; // [HGM] shuffle: in ICS mode, only shuffle on ICS request
+    if(appData.icsActive) shuffleOpenings = appData.fischerCastling = FALSE; // [HGM] shuffle: in ICS mode, only shuffle on ICS request
 
     /* [AS] Initialize pv info list [HGM] and game status */
     {
@@ -6012,6 +6012,7 @@ InitPosition (int redraw)
     switch (gameInfo.variant) {
     case VariantFischeRandom:
       shuffleOpenings = TRUE;
+      appData.fischerCastling = TRUE;
     default:
       break;
     case VariantShatranj:
@@ -6042,6 +6043,7 @@ InitPosition (int redraw)
       break;
     case VariantCapaRandom:
       shuffleOpenings = TRUE;
+      appData.fischerCastling = TRUE;
     case VariantCapablanca:
       pieces = CapablancaArray;
       gameInfo.boardWidth = 10;
@@ -7444,7 +7446,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	/* Check if clicking again on the same color piece */
 	fromP = boards[currentMove][fromY][fromX];
 	toP = boards[currentMove][y][x];
-	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom || gameInfo.variant == VariantSChess;
+	frc = appData.fischerCastling || gameInfo.variant == VariantSChess;
  	if( (killX < 0 || x != fromX || y != fromY) && // [HGM] lion: do not interpret igui as deselect!
 	   ((WhitePawn <= fromP && fromP <= WhiteKing &&
 	     WhitePawn <= toP && toP <= WhiteKing &&
@@ -8627,7 +8629,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                 GameEnds(machineWhite ? BlackWins : WhiteWins,
                            buf1, GE_XBOARD);
 		return;
-           } else if(gameInfo.variant != VariantFischeRandom && gameInfo.variant != VariantCapaRandom)
+           } else if(!appData.fischerCastling)
            /* [HGM] Kludge to handle engines that send FRC-style castling
               when they shouldn't (like TSCP-Gothic) */
            switch(moveType) {
@@ -17646,7 +17648,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
   } else {
   if(nrCastlingRights) {
      q = p;
-     if(gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom) {
+     if(appData.fischerCastling) {
        /* [HGM] write directly from rights */
            if(boards[move][CASTLING][2] != NoRights &&
               boards[move][CASTLING][0] != NoRights   )
@@ -17882,7 +17884,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
     board[EP_STATUS] = EP_UNKNOWN;
     for(i=0; i<nrCastlingRights; i++ ) {
         board[CASTLING][i] =
-            gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom ? NoRights : initialRights[i];
+            appData.fischerCastling ? NoRights : initialRights[i];
     }   /* assume possible unless obviously impossible */
     if(initialRights[0]!=NoRights && board[castlingRank[0]][initialRights[0]] != WhiteRook) board[CASTLING][0] = NoRights;
     if(initialRights[1]!=NoRights && board[castlingRank[1]][initialRights[1]] != WhiteRook) board[CASTLING][1] = NoRights;
@@ -17904,7 +17906,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
           }
       }
       while(*p=='K' || *p=='Q' || *p=='k' || *p=='q' || *p=='-' ||
-             (gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom || gameInfo.variant == VariantSChess) &&
+             (appData.fischerCastling || gameInfo.variant == VariantSChess) &&
              ( *p >= 'a' && *p < 'a' + gameInfo.boardWidth) ||
              ( *p >= 'A' && *p < 'A' + gameInfo.boardWidth)   ) {
         int c = *p++, whiteKingFile=NoRights, blackKingFile=NoRights;

@@ -558,6 +558,7 @@ ArgDescriptor argDescriptors[] = {
   { "pgnEventHeader", ArgString, (void *) &appData.pgnEventHeader, TRUE, (ArgIniType) "Computer Chess Game" },
   { "defaultFrcPosition", ArgInt, (void *) &appData.defaultFrcPosition, TRUE, (ArgIniType) -1 },
   { "shuffleOpenings", ArgTrue, (void *) &shuffleOpenings, FALSE, INVALID },
+  { "fischerCastling", ArgTrue, (void *) &appData.fischerCastling, FALSE, INVALID },
   { "gameListTags", ArgString, (void *) &appData.gameListTags, TRUE, (ArgIniType) GLT_DEFAULT_TAGS },
   { "saveOutOfBookInfo", ArgBoolean, (void *) &appData.saveOutOfBookInfo, TRUE, (ArgIniType) TRUE },
   { "showEvalInMoveHistory", ArgBoolean, (void *) &appData.showEvalInMoveHistory, TRUE, (ArgIniType) TRUE },

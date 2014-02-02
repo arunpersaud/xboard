@@ -1215,8 +1215,10 @@ GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, Ches
                 if(k != ft && board[0][k] != EmptySquare) ft = NoRights;
             for(k=left; k<right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = NoRights;
-            if(ft != NoRights && board[0][ft] == WhiteRook)
-                callback(board, flags, WhiteHSideCastleFR, 0, swap ? ft : ff, 0, swap ? ff : ft, closure);
+            if(ft != NoRights && board[0][ft] == WhiteRook) {
+                if(flags & F_FRC_TYPE_CASTLING) callback(board, flags, WhiteHSideCastleFR, 0, ff, 0, ft, closure);
+                if(swap)                        callback(board, flags, WhiteHSideCastleFR, 0, ft, 0, ff, closure);
+            }
 
             ft = castlingRights[1]; /* Rook file if we have A-side rights */
             left  = BOARD_LEFT+2;
@@ -1228,8 +1230,10 @@ GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, Ches
             if(ff > BOARD_LEFT+2)
             for(k=left+1; k<=right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = NoRights;
-            if(ft != NoRights && board[0][ft] == WhiteRook)
-                callback(board, flags, WhiteASideCastleFR, 0, swap ? ft : ff, 0, swap ? ff : ft, closure);
+            if(ft != NoRights && board[0][ft] == WhiteRook) {
+                if(flags & F_FRC_TYPE_CASTLING) callback(board, flags, WhiteASideCastleFR, 0, ff, 0, ft, closure);
+                if(swap)                        callback(board, flags, WhiteASideCastleFR, 0, ft, 0, ff, closure);
+            }
         }
     } else {
         ff = castlingRights[5]; /* King file if we have any rights */
@@ -1242,8 +1246,10 @@ GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, Ches
                 if(k != ft && board[BOARD_HEIGHT-1][k] != EmptySquare) ft = NoRights;
             for(k=left; k<right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = NoRights;
-            if(ft != NoRights && board[BOARD_HEIGHT-1][ft] == BlackRook)
-                callback(board, flags, BlackHSideCastleFR, BOARD_HEIGHT-1, swap ? ft : ff, BOARD_HEIGHT-1, swap ? ff : ft, closure);
+            if(ft != NoRights && board[BOARD_HEIGHT-1][ft] == BlackRook) {
+                if(flags & F_FRC_TYPE_CASTLING) callback(board, flags, BlackHSideCastleFR, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
+                if(swap)                        callback(board, flags, BlackHSideCastleFR, BOARD_HEIGHT-1, ft, BOARD_HEIGHT-1, ff, closure);
+            }
 
             ft = castlingRights[4]; /* Rook file if we have A-side rights */
             left  = BOARD_LEFT+2;
@@ -1255,8 +1261,10 @@ GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, Ches
             if(ff > BOARD_LEFT+2)
             for(k=left+1; k<=right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = NoRights;
-            if(ft != NoRights && board[BOARD_HEIGHT-1][ft] == BlackRook)
-                callback(board, flags, BlackASideCastleFR, BOARD_HEIGHT-1, swap ? ft : ff, BOARD_HEIGHT-1, swap ? ff : ft, closure);
+            if(ft != NoRights && board[BOARD_HEIGHT-1][ft] == BlackRook) {
+                if(flags & F_FRC_TYPE_CASTLING) callback(board, flags, BlackASideCastleFR, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
+                if(swap)                        callback(board, flags, BlackASideCastleFR, BOARD_HEIGHT-1, ft, BOARD_HEIGHT-1, ff, closure);
+            }
         }
     }
 
@@ -1478,10 +1486,14 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
             if(rf != 0) return IllegalMove; // must be on back rank
             if(!(board[VIRGIN][ff] & VIRGIN_W)) return IllegalMove; // non-virgin
             if(board[PieceToNumber(CharToPiece(ToUpper(promoChar)))][BOARD_WIDTH-2] == 0) return ImpossibleMove;// must be in stock
+            if(cl.kind == WhiteHSideCastleFR && (ff == BOARD_RGHT-2 || ff == BOARD_RGHT-3)) return ImpossibleMove;
+            if(cl.kind == WhiteASideCastleFR && (ff == BOARD_LEFT+2 || ff == BOARD_LEFT+3)) return ImpossibleMove;
         } else {
             if(rf != BOARD_HEIGHT-1) return IllegalMove;
             if(!(board[VIRGIN][ff] & VIRGIN_B)) return IllegalMove; // non-virgin
             if(board[BOARD_HEIGHT-1-PieceToNumber(CharToPiece(ToLower(promoChar)))][1] == 0) return ImpossibleMove;
+            if(cl.kind == BlackHSideCastleFR && (ff == BOARD_RGHT-2 || ff == BOARD_RGHT-3)) return ImpossibleMove;
+            if(cl.kind == BlackASideCastleFR && (ff == BOARD_LEFT+2 || ff == BOARD_LEFT+3)) return ImpossibleMove;
         }
     } else
     if(gameInfo.variant == VariantChu) {
@@ -1726,10 +1738,14 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
             if(closure->rf != 0) closure->kind = IllegalMove; // must be on back rank
             if(!(board[VIRGIN][closure->ff] & VIRGIN_W)) closure->kind = IllegalMove; // non-virgin
             if(board[PieceToNumber(CharToPiece(ToUpper(c)))][BOARD_WIDTH-2] == 0) closure->kind = ImpossibleMove;// must be in stock
+            if(closure->kind == WhiteHSideCastleFR && (closure->ff == BOARD_RGHT-2 || closure->ff == BOARD_RGHT-3)) closure->kind = ImpossibleMove;
+            if(closure->kind == WhiteASideCastleFR && (closure->ff == BOARD_LEFT+2 || closure->ff == BOARD_LEFT+3)) closure->kind = ImpossibleMove;
         } else {
             if(closure->rf != BOARD_HEIGHT-1) closure->kind = IllegalMove;
             if(!(board[VIRGIN][closure->ff] & VIRGIN_B)) closure->kind = IllegalMove; // non-virgin
             if(board[BOARD_HEIGHT-1-PieceToNumber(CharToPiece(ToLower(c)))][1] == 0) closure->kind = ImpossibleMove;
+            if(closure->kind == BlackHSideCastleFR && (closure->ff == BOARD_RGHT-2 || closure->ff == BOARD_RGHT-3)) closure->kind = ImpossibleMove;
+            if(closure->kind == BlackASideCastleFR && (closure->ff == BOARD_LEFT+2 || closure->ff == BOARD_LEFT+3)) closure->kind = ImpossibleMove;
         }
     } else
     if(gameInfo.variant == VariantChu) {

@@ -533,6 +533,7 @@ Pick (int n)
 
 	shuffleOpenings = FALSE; /* [HGM] shuffle: possible shuffle reset when we switch */
 	startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
+	appData.fischerCastling = FALSE; /* [HGM] fischer: no longer valid in new variant */
 	appData.NrRanks = ranksTmp;
 	appData.NrFiles = filesTmp;
 	appData.holdingsSize = sizeTmp;
@@ -1455,6 +1456,7 @@ ShuffleOK (int n)
 
 static Option shuffleOptions[] = {
   {   0,  0,    0, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, N_("shuffle") },
+  {   0,  0,    0, NULL, (void*) &appData.fischerCastling, NULL, NULL, CheckBox, N_("Fischer castling") },
   { 0,-1,2000000000, NULL, (void*) &appData.defaultFrcPosition, "", NULL, Spin, N_("Start-position number:") },
   {   0,  0,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, N_("randomize") },
   {   0,  SAME_ROW,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, N_("pick fixed") },

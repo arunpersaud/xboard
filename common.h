@@ -512,6 +512,7 @@ typedef struct {
     char *loadPositionFile;
     int loadPositionIndex;  /* position # within file */
     char *savePositionFile;
+    Boolean fischerCastling;/* [HGM] fischer: allow Fischr castling in any variant */
     Boolean matchMode;
     int matchGames;
     Boolean monoMode;
