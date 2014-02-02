@@ -611,7 +611,9 @@ AnimateMove (Board board, int fromX, int fromY, int toX, int toY)
     return;
 
   if(board[toY][toX] == WhiteRook && board[fromY][fromX] == WhiteKing ||
-     board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing)
+     board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing ||
+     board[toY][toX] == WhiteKing && board[fromY][fromX] == WhiteRook || // [HGM] seirawan
+     board[toY][toX] == BlackKing && board[fromY][fromX] == BlackRook)
 	return; // [HGM] FRC: no animtion of FRC castlings, as to-square is not true to-square
 
   if (fromY < 0 || fromX < 0 || toX < 0 || toY < 0) return;
