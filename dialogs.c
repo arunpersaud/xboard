@@ -1325,7 +1325,7 @@ PopUpMoveDialog (char firstchar)
 
 void
 BoxAutoPopUp (char *buf)
-{
+{       // only used in Xaw. GTK calls ConsoleAutoPopUp in stead (when we type to board)
 	if(!appData.autoBox) return;
 	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
 	    if(DialogExists(InputBoxDlg)) { // box already exists: append to current contents
@@ -1914,6 +1914,23 @@ ChatProc ()
 	AddHandler(&chatOptions[CHAT_PARTNER], ChatDlg, 2), AddHandler(&chatOptions[CHAT_IN], ChatDlg, 2); // treats return as OK
     PaneSwitch(); HardSetFocus(&chatOptions[CHAT_IN]);
     MarkMenu("View.OpenChatWindow", ChatDlg);
+    CursorAtEnd(&chatOptions[CHAT_IN]);
+}
+
+void
+ConsoleAutoPopUp (char *buf)
+{
+	if(!appData.autoBox) return;
+	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
+	    if(DialogExists(ChatDlg)) { // box already exists: append to current contents
+		char *p, newText[MSG_SIZ];
+		GetWidgetText(&chatOptions[CHAT_IN], &p);
+		snprintf(newText, MSG_SIZ, "%s%c", p, *buf);
+		SetWidgetText(&chatOptions[CHAT_IN], newText, ChatDlg);
+		if(shellUp[ChatDlg]) HardSetFocus (&boxOptions[CHAT_IN]); //why???
+	    } else { ASSIGN(line, buf); } // box did not exist: make sure it pops up with char in it
+	    ChatProc();
+	} else PopUpMoveDialog(*buf);
 }
 
 //--------------------------------- Game-List options dialog ------------------------------------------

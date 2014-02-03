@@ -189,6 +189,7 @@ void SlaveResize P((Option *opt));
 
 int  SetCurrentComboSelection P((Option *opt));
 void BoxAutoPopUp P((char *buf));
+void ConsoleAutoPopUp P((char *buf));
 void IcsKey P((int n));
 void ICSInputBoxPopUp P((void));
 void LoadOptionsPopUp P((DialogClass parent));
