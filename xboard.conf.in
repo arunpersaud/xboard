@@ -119,6 +119,7 @@ Match (name);match $name;
 Tell (name);tell $name $input;
 Play (name);play $name;
 Message (name);message $name $input;
+Open Chat Box (name);$chat;
 }
 ;
 ; Save user settings.

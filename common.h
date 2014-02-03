@@ -856,6 +856,7 @@ extern WindowPlacement wpEvalGraph;
 extern WindowPlacement wpMoveHistory;
 extern WindowPlacement wpGameList;
 extern WindowPlacement wpTags;
+extern WindowPlacement wpTextMenu;
 
 #define MAXENGINES 2000
 

@@ -523,6 +523,12 @@ GetActualPlacement (GtkWidget *shell, WindowPlacement *wp)
 }
 
 void
+GetPlacement (DialogClass dlg, WindowPlacement *wp)
+{ // wrapper to shield back-end from widget type
+  if(shellUp[dlg]) GetActualPlacement(shells[dlg], wp);
+}
+
+void
 GetWindowCoords ()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented

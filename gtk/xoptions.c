@@ -707,7 +707,7 @@ AddHandler (Option *opt, DialogClass dlg, int nr)
 GtkWidget *shells[NrOfDialogs];
 DialogClass parents[NrOfDialogs];
 WindowPlacement *wp[NrOfDialogs] = { // Beware! Order must correspond to DialogClass enum
-    NULL, &wpComment, &wpTags, NULL, NULL, &wpConsole, &wpDualBoard, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
+    NULL, &wpComment, &wpTags, &wpTextMenu, NULL, &wpConsole, &wpDualBoard, &wpMoveHistory, &wpGameList, &wpEngineOutput, &wpEvalGraph,
     NULL, NULL, NULL, NULL, &wpMain
 };
 
@@ -1661,8 +1661,8 @@ SendTextCB (Widget w, XtPointer client_data, Atom *selection,
 void
 SendText (int n)
 {
-#ifdef TODO_GTK
     char *p = (char*) textOptions[n].choice;
+#ifdef TODO_GTK
     if(strstr(p, "$name")) {
 	XtGetSelectionValue(menuBarWidget,
 	  XA_PRIMARY, XA_STRING,
@@ -1670,8 +1670,9 @@ SendText (int n)
 	  (XtPointer) (intptr_t) n, /* client_data passed to PastePositionCB */
 	  CurrentTime
 	);
-    } else SendString(p);
+    } else
 #endif
+    SendString(p);
 }
 
 void

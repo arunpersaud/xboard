@@ -966,20 +966,35 @@ BoardOptionsProc ()
 
 Option textOptions[100];
 static void PutText P((char *text, int pos));
+static void NewChat P((char *name));
+static char clickedWord[MSG_SIZ], click;
 
 void
 SendString (char *p)
 {
-    char buf[MSG_SIZ], *q;
+    char buf[MSG_SIZ], buf2[MSG_SIZ], *q;
+    if(q = strstr(p, "$name")) { // in Xaw this is already intercepted
+	if(!shellUp[TextMenuDlg] || !clickedWord[0]) return;
+	strncpy(buf2, p, MSG_SIZ);
+	snprintf(buf2 + (q-p), MSG_SIZ -(q-p), "%s%s", clickedWord, q+5);
+        p = buf2;
+    }
+    if(!strcmp(p, "$chat")) { // special case for opening chat
+        NewChat(clickedWord);
+    } else
     if(q = strstr(p, "$input")) {
 	if(!shellUp[TextMenuDlg]) return;
 	strncpy(buf, p, MSG_SIZ);
 	strncpy(buf + (q-p), q+6, MSG_SIZ-(q-p));
 	PutText(buf, q-p);
-	return;
+    } else {
+	snprintf(buf, MSG_SIZ, "%s\n", p);
+	SendToICS(buf);
     }
-    snprintf(buf, MSG_SIZ, "%s\n", p);
-    SendToICS(buf);
+    if(click) { // popped up by memo click
+	click = clickedWord[0] = 0;
+	PopDown(TextMenuDlg);
+    }
 }
 
 void
@@ -1265,21 +1280,6 @@ IcsKey (int n)
     }
     SetWidgetText(&boxOptions[INPUT], val = val ? val : "", InputBoxDlg);
     SetInsertPos(&boxOptions[INPUT], strlen(val));
-}
-
-static void
-PutText (char *text, int pos)
-{
-    char buf[MSG_SIZ], *p;
-
-    if(strstr(text, "$add ") == text) {
-	GetWidgetText(&boxOptions[INPUT], &p);
-	snprintf(buf, MSG_SIZ, "%s%s", p, text+5); text = buf;
-	pos += strlen(p) - 5;
-    }
-    SetWidgetText(&boxOptions[INPUT], text, TextMenuDlg);
-    SetInsertPos(&boxOptions[INPUT], pos);
-    HardSetFocus(&boxOptions[INPUT]);
 }
 
 void
@@ -1706,7 +1706,7 @@ PromotionPopUp (char choice)
 
 //---------------------------- Chat Windows ----------------------------------------------
 
-static char *line, *memo, *partner, *texts[MAX_CHAT], dirty[MAX_CHAT];
+static char *line, *memo, *chatMemo, *partner, *texts[MAX_CHAT], dirty[MAX_CHAT];
 static int activePartner, hidden = 1;
 
 void ChatSwitch P((int n));
@@ -1720,6 +1720,34 @@ int  ChatOK P((int n));
 
 void PaneSwitch P((void));
 
+WindowPlacement wpTextMenu;
+
+int
+ContextMenu (Option *opt, int button, int x, int y, char *text, int index)
+{ // callback for ICS-output clicks; handles button 3, passes on other events
+  char *start, *end;
+  int h;
+  if(button == -3) return TRUE; // supress default GTK context menu on up-click
+  if(button != 3) return FALSE;
+  start = end = text + index; // figure out what text was clicked
+  while(isalnum(*end)) end++;
+  while(start > text && isalnum(start[-1])) start--;
+  clickedWord[0] = NULLCHAR;
+  if(end-start >= 80) end = start + 80; // intended for small words and numbers
+  strncpy(clickedWord, start, end-start); clickedWord[end-start] = NULLCHAR;
+  click = !shellUp[TextMenuDlg]; // request auto-popdown of textmenu when we popped it up
+  h = wpTextMenu.height; // remembered height of text menu
+  if(h <= 0) h = 65;     // when not available, position w.r.t. top
+  GetPlacement(ChatDlg, &wpTextMenu);
+  if(opt->target == (void*) &chatMemo) wpTextMenu.y += (wpTextMenu.height - 30)/2; // click in chat
+  wpTextMenu.x += x - 50; wpTextMenu.y += y - h + 50; // request positioning
+  if(wpTextMenu.x < 0) wpTextMenu.x = 0;
+  if(wpTextMenu.y < 0) wpTextMenu.y = 0;
+  wpTextMenu.width = wpTextMenu.height = -1;
+  IcsTextProc();
+  return TRUE;
+}
+
 Option chatOptions[] = {
 {  0,  0,   0, NULL, NULL, "", NULL, Label , N_("Chats:") },
 { 1, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
@@ -1727,15 +1755,34 @@ Option chatOptions[] = {
 { 3, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
 { 4, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
 { 5, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
-{ 250, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &memo, NULL, NULL, TextBox, "" },
+{ 250, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &memo, NULL, (void*) &ContextMenu, TextBox, "" },
 {  0,  0,   0, NULL, NULL, "", NULL, Break , "" },
 { 0,   T_TOP,    100, NULL, (void*) &partner, NULL, NULL, TextBox, N_("Chat partner:") },
 {  0, SAME_ROW, 0, NULL, (void*) &PaneSwitch, NULL, NULL, Button, N_("Hide") },
-{ 250, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &memo, NULL, NULL, TextBox, "" },
+{ 250, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &chatMemo, NULL, (void*) &ContextMenu, TextBox, "" },
 {  0,  0,   0, NULL, NULL, "", NULL, Break , "" },
 {  0,    0,  510, NULL, (void*) &line, NULL, NULL, TextBox, "" },
 { 0, NO_OK|SAME_ROW, 0, NULL, (void*) &ChatOK, NULL, NULL, EndMark , "" }
 };
+
+static void
+PutText (char *text, int pos)
+{
+    char buf[MSG_SIZ], *p;
+    DialogClass dlg = ChatDlg;
+    Option *opt = &chatOptions[CHAT_IN];
+
+    if(strstr(text, "$add ") == text) {
+	GetWidgetText(&boxOptions[INPUT], &p);
+	snprintf(buf, MSG_SIZ, "%s%s", p, text+5); text = buf;
+	pos += strlen(p) - 5;
+    }
+    if(shellUp[InputBoxDlg]) opt = &boxOptions[INPUT], dlg = InputBoxDlg; // for the benefit of Xaw give priority to ICS Input Box
+    SetWidgetText(opt, text, dlg);
+    SetInsertPos(opt, pos);
+    HardSetFocus(opt);
+    CursorAtEnd(opt);
+}
 
 void
 IcsHist (int n, Option *opt, DialogClass dlg)
@@ -1783,7 +1830,7 @@ ChatOK (int n)
 	safeStrCpy(chatPartner[activePartner], partner, MSG_SIZ);
 	SetWidgetText(&chatOptions[CHAT_OUT], "", -1); // clear text if we alter partner
 	SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg); // clear text if we alter partner
-	SetWidgetLabel(&chatOptions[activePartner+1], chatPartner[activePartner] ? chatPartner[activePartner] : _("New Chat"));
+	SetWidgetLabel(&chatOptions[activePartner+1], chatPartner[activePartner][0] ? chatPartner[activePartner] : _("New Chat"));
 	HardSetFocus(&chatOptions[CHAT_IN]);
     }
     if(line[0] || hidden) { // something was typed (for ICS commands we also allow empty line!)
@@ -1840,6 +1887,15 @@ void
 PaneSwitch ()
 {
     Show(&chatOptions[CHAT_PANE], hidden = 1); // hide
+}
+
+static void
+NewChat (char *name)
+{   // open a chat on program request. If no empty one available, use last
+    int i;
+    for(i=0; i<MAX_CHAT-1; i++) if(!chatPartner[i][0]) break;
+    safeStrCpy(chatPartner[i], name, MSG_SIZ);
+    ChatSwitch(i+1);
 }
 
 void

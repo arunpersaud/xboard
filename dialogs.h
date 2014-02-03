@@ -132,6 +132,7 @@ extern Boolean shellUp[];
 extern Option textOptions[], typeOptions[], dualOptions[], mainOptions[];
 
 
+void GetPlacement P((DialogClass dlg, WindowPlacement *wp));
 int DialogExists P((DialogClass n));
 int GenericPopUp P((Option *option, char *title, DialogClass dlgNr, DialogClass parent, int modal, int topLevel));
 int GenericReadout P((Option *currentOption, int selected));
