@@ -1379,7 +1379,7 @@ TypeInProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 }
 
 void
-HardSetFocus (Option *opt)
+HardSetFocus (Option *opt, DialogClass dlg)
 {
     XSetInputFocus(xDisplay, XtWindow(opt->handle), RevertToPointerRoot, CurrentTime);
 }

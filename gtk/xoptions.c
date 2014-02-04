@@ -350,6 +350,7 @@ FocusOnWidget (Option *opt, DialogClass dlg)
 #ifdef TODO_GTK
     XtSetKeyboardFocus(shells[dlg], opt->handle);
 #endif
+    if(dlg) gtk_window_present(GTK_WINDOW(shells[dlg]));
     gtk_widget_grab_focus(opt->handle);
 }
 
@@ -502,13 +503,14 @@ TypeInProc (GtkWidget *widget, GdkEventKey *event, gpointer gdata)
     shiftState = event->state & GDK_SHIFT_MASK;
     controlState = event->state & GDK_CONTROL_MASK;
     switch(event->keyval) {
+      case GDK_Tab:   IcsHist(10, opt, dlg); break;
       case GDK_Up:     IcsHist(1, opt, dlg); break;
       case GDK_Down:  IcsHist(-1, opt, dlg); break;
       case GDK_Return:
 	if(GenericReadout(dialogOptions[dlg], -1)) PopDown(dlg);
 	break;
       case GDK_Escape:
-	PopDown(dlg);
+	if(!IcsHist(33, opt, dlg)) PopDown(dlg);
 	break;
       default:
 	return FALSE;
@@ -1683,7 +1685,7 @@ SetInsertPos (Option *opt, int pos)
 }
 
 void
-HardSetFocus (Option *opt)
+HardSetFocus (Option *opt, DialogClass dlg)
 {
-    FocusOnWidget(opt, 0); // second arg not used in GDK
+    FocusOnWidget(opt, dlg);
 }

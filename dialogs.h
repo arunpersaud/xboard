@@ -146,7 +146,7 @@ void HighlightText P((Option *opt, int from, int to, Boolean highlight));
 void SetColor P((char *colorName, Option *box));
 //void ColorChanged P((Widget w, XtPointer data, XEvent *event, Boolean *b));
 void SetInsertPos P((Option *opt, int pos));
-void HardSetFocus P((Option *opt));
+void HardSetFocus P((Option *opt, DialogClass dlg));
 void CursorAtEnd P((Option *opt));
 void GetWidgetText  P((Option *opt, char **buf));
 void SetWidgetText  P((Option *opt, char *buf, int n));

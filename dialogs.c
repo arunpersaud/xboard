@@ -1333,7 +1333,7 @@ BoxAutoPopUp (char *buf)
 		GetWidgetText(&boxOptions[INPUT], &p);
 		snprintf(newText, MSG_SIZ, "%s%c", p, *buf);
 		SetWidgetText(&boxOptions[INPUT], newText, InputBoxDlg);
-		if(shellUp[InputBoxDlg]) HardSetFocus (&boxOptions[INPUT]); //why???
+		if(shellUp[InputBoxDlg]) HardSetFocus (&boxOptions[INPUT], InputBoxDlg); //why???
 	    } else icsText = buf; // box did not exist: make sure it pops up with char in it
 	    ICSInputBoxPopUp();
 	} else PopUpMoveDialog(*buf);
@@ -1780,17 +1780,30 @@ PutText (char *text, int pos)
     if(shellUp[InputBoxDlg]) opt = &boxOptions[INPUT], dlg = InputBoxDlg; // for the benefit of Xaw give priority to ICS Input Box
     SetWidgetText(opt, text, dlg);
     SetInsertPos(opt, pos);
-    HardSetFocus(opt);
+    HardSetFocus(opt, dlg);
     CursorAtEnd(opt);
 }
 
-void
+int
 IcsHist (int n, Option *opt, DialogClass dlg)
 {   // [HGM] input: let up-arrow recall previous line from history
     char *val = NULL; // to suppress spurious warning
+    int chat, start;
 
-    if(opt != &chatOptions[CHAT_IN]) return;
+    if(opt != &chatOptions[CHAT_IN] && !(opt == &chatOptions[CHAT_PARTNER] && n == 33)) return 0;
     switch(n) {
+      case 33: // <Esc>
+	if(hidden) BoardToTop();
+	else PaneSwitch();
+	break;
+      case 10: // <Tab>
+	chat = start = (activePartner - hidden + MAX_CHAT) % MAX_CHAT;
+        while(!dirty[chat = (chat + 1)%MAX_CHAT]) if(chat == start) break;
+	if(!dirty[chat])
+        while(!chatPartner[chat = (chat + 1)%MAX_CHAT][0]) if(chat == start) break;
+	if(chat == start && hidden) chat = 0; // if all unused, start left
+        ChatSwitch(chat + 1);
+	break;
       case 1:
 	GetWidgetText(opt, &val);
 	val = PrevInHistory(val);
@@ -1800,6 +1813,7 @@ IcsHist (int n, Option *opt, DialogClass dlg)
     }
     SetWidgetText(opt, val = val ? val : "", dlg);
     SetInsertPos(opt, strlen(val));
+    return 1;
 }
 
 void
@@ -1831,7 +1845,7 @@ ChatOK (int n)
 	SetWidgetText(&chatOptions[CHAT_OUT], "", -1); // clear text if we alter partner
 	SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg); // clear text if we alter partner
 	SetWidgetLabel(&chatOptions[activePartner+1], chatPartner[activePartner][0] ? chatPartner[activePartner] : _("New Chat"));
-	HardSetFocus(&chatOptions[CHAT_IN]);
+	HardSetFocus(&chatOptions[CHAT_IN], 0);
     }
     if(line[0] || hidden) { // something was typed (for ICS commands we also allow empty line!)
 	SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg);
@@ -1880,7 +1894,7 @@ ChatSwitch (int n)
 	SetColor(dirty[i] ? "#FFC000" : "#FFFFFF", &chatOptions[j]);
     }
     SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg);
-    HardSetFocus(&chatOptions[strcmp(chatPartner[n], "") ? CHAT_IN : CHAT_PARTNER]);
+    HardSetFocus(&chatOptions[strcmp(chatPartner[n], "") ? CHAT_IN : CHAT_PARTNER], 0);
 }
 
 void
@@ -1912,7 +1926,7 @@ ChatProc ()
 {
     if(GenericPopUp(chatOptions, _("ICS Interaction"), ChatDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&chatOptions[CHAT_PARTNER], ChatDlg, 2), AddHandler(&chatOptions[CHAT_IN], ChatDlg, 2); // treats return as OK
-    PaneSwitch(); HardSetFocus(&chatOptions[CHAT_IN]);
+    PaneSwitch(); HardSetFocus(&chatOptions[CHAT_IN], 0);
     MarkMenu("View.OpenChatWindow", ChatDlg);
     CursorAtEnd(&chatOptions[CHAT_IN]);
 }
@@ -1927,7 +1941,7 @@ ConsoleAutoPopUp (char *buf)
 		GetWidgetText(&chatOptions[CHAT_IN], &p);
 		snprintf(newText, MSG_SIZ, "%s%c", p, *buf);
 		SetWidgetText(&chatOptions[CHAT_IN], newText, ChatDlg);
-		if(shellUp[ChatDlg]) HardSetFocus (&boxOptions[CHAT_IN]); //why???
+		if(shellUp[ChatDlg]) HardSetFocus (&chatOptions[CHAT_IN], ChatDlg); //why???
 	    } else { ASSIGN(line, buf); } // box did not exist: make sure it pops up with char in it
 	    ChatProc();
 	} else PopUpMoveDialog(*buf);
