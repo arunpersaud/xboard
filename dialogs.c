@@ -1796,6 +1796,10 @@ IcsHist (int n, Option *opt, DialogClass dlg)
 	if(hidden) BoardToTop();
 	else PaneSwitch();
 	break;
+      case 14:
+	for(chat=0; chat < MAX_CHAT; chat++) if(!chatPartner[chat][0]) break;
+	if(chat < MAX_CHAT) ChatSwitch(chat + 1);
+	break;
       case 10: // <Tab>
 	chat = start = (activePartner - hidden + MAX_CHAT) % MAX_CHAT;
         while(!dirty[chat = (chat + 1)%MAX_CHAT]) if(chat == start) break;
