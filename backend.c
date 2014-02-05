@@ -2830,7 +2830,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
     int backup;    /* [DM] For zippy color lines */
     char *p;
     char talker[MSG_SIZ]; // [HGM] chat
-    int channel;
+    int channel, collective=0;
 
     connectionAlive = TRUE; // [HGM] alive: I think, therefore I am...
 
@@ -3072,6 +3072,15 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			char mess[MSG_SIZ];
 			snprintf(mess, MSG_SIZ, "%s%s", talker, parse);
 			OutputChatMessage(chattingPartner, mess);
+			if(collective) { // broadcasted talk also goes to private chatbox of talker
+			    int p;
+			    talker[strlen(talker+1)-1] = NULLCHAR; // strip closing delimiter
+			    for(p=0; p<MAX_CHAT; p++) if(!StrCaseCmp(talker+1, chatPartner[p])) {
+				snprintf(mess, MSG_SIZ, "%s: %s", chatPartner[chattingPartner], parse);
+				OutputChatMessage(p, mess);
+				break;
+			    }
+			}
 			chattingPartner = -1;
 			next_out = i+1; // [HGM] suppress printing in ICS window
 		    } else
@@ -3289,13 +3298,14 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 					   looking_at(buf, &i, "*(*)(*)(*)(*):") && sscanf(star_match[4], "%d", &channel) == 1 )) {
 		int p;
 		sscanf(star_match[0], "%[^(]", talker+1); // strip (C) or (U) off ICS handle
-		chattingPartner = -1;
+		chattingPartner = -1; collective = 0;
 
 		if(channel >= 0) // channel broadcast; look if there is a chatbox for this channel
 		for(p=0; p<MAX_CHAT; p++) {
 		    if(chatPartner[p][0] >= '0' && chatPartner[p][0] <= '9' && channel == atoi(chatPartner[p])) {
 		    talker[0] = '['; strcat(talker, "] ");
 		    Colorize(channel == 1 ? ColorChannel1 : ColorChannel, FALSE);
+		    collective = 1;
 		    chattingPartner = p; break;
 		    }
 		} else
@@ -3303,6 +3313,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		for(p=0; p<MAX_CHAT; p++) {
 		    if(!strcmp("kibitzes", chatPartner[p])) {
 			talker[0] = '['; strcat(talker, "] ");
+			collective = 1;
 			chattingPartner = p; break;
 		    }
 		} else
@@ -3310,6 +3321,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		for(p=0; p<MAX_CHAT; p++) {
 		    if(!strcmp("whispers", chatPartner[p])) {
 			talker[0] = '['; strcat(talker, "] ");
+			collective = 1;
 			chattingPartner = p; break;
 		    }
 		} else
@@ -3318,6 +3330,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		  for(p=0; p<MAX_CHAT; p++) { // c-shout; check if dedicatesd c-shout box exists
 		    if(!strcmp("c-shouts", chatPartner[p])) {
 			talker[0] = '('; strcat(talker, ") "); Colorize(ColorSShout, FALSE);
+			collective = 1;
 			chattingPartner = p; break;
 		    }
 		  }
@@ -3327,6 +3340,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			if(buf[oldi+2] == '>') { talker[0] = '<'; strcat(talker, "> "); Colorize(ColorShout, FALSE); }
 			else if(buf[i-8] == '-') { talker[0] = '('; strcat(talker, ") "); Colorize(ColorSShout, FALSE); }
 			else { talker[0] = '['; strcat(talker, "] "); Colorize(ColorShout, FALSE); }
+			collective = 1;
 			chattingPartner = p; break;
 		    }
 		  }
