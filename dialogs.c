@@ -1714,11 +1714,12 @@ int  ChatOK P((int n));
 
 #define CHAT_ICS     6
 #define CHAT_PARTNER 8
-#define CHAT_OUT    10
-#define CHAT_PANE   11
-#define CHAT_IN     12
+#define CHAT_OUT    11
+#define CHAT_PANE   12
+#define CHAT_IN     13
 
 void PaneSwitch P((void));
+void ClearChat P((void));
 
 WindowPlacement wpTextMenu;
 
@@ -1758,6 +1759,7 @@ Option chatOptions[] = {
 { 250, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &memo, NULL, (void*) &ContextMenu, TextBox, "" },
 {  0,  0,   0, NULL, NULL, "", NULL, Break , "" },
 { 0,   T_TOP,    100, NULL, (void*) &partner, NULL, NULL, TextBox, N_("Chat partner:") },
+{  0, SAME_ROW, 0, NULL, (void*) &ClearChat,  NULL, NULL, Button, N_("End Chat") },
 {  0, SAME_ROW, 0, NULL, (void*) &PaneSwitch, NULL, NULL, Button, N_("Hide") },
 { 250, T_VSCRL | T_FILL | T_WRAP | T_TOP,    510, NULL, (void*) &chatMemo, NULL, (void*) &ContextMenu, TextBox, "" },
 {  0,  0,   0, NULL, NULL, "", NULL, Break , "" },
@@ -1928,6 +1930,19 @@ PaneSwitch ()
     tmpLine = icsLine; ScheduleDelayedEvent(DelayedSetText, 50);
 //    SetWidgetText(&chatOptions[CHAT_IN], icsLine, ChatDlg); // does not work (in this widget only)
 //    SetInsertPos(&chatOptions[CHAT_IN], strlen(icsLine));
+}
+
+void
+ClearChat ()
+{   // clear the chat to make it free for other use
+    chatPartner[activePartner][0] = NULLCHAR;
+    ASSIGN(texts[activePartner], "");
+    ASSIGN(inputs[activePartner], "");
+    SetWidgetText(&chatOptions[CHAT_PARTNER], "", ChatDlg);
+    SetWidgetText(&chatOptions[CHAT_OUT], "", ChatDlg);
+    SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg);
+    SetWidgetLabel(&chatOptions[activePartner+1], _("New Chat"));
+    HardSetFocus(&chatOptions[CHAT_PARTNER], 0);
 }
 
 static void
