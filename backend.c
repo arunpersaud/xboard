@@ -289,6 +289,7 @@ int chattingPartner;
 char marker[BOARD_RANKS][BOARD_FILES]; /* [HGM] marks for target squares */
 char legal[BOARD_RANKS][BOARD_FILES];  /* [HGM] legal target squares */
 char lastMsg[MSG_SIZ];
+char lastTalker[MSG_SIZ];
 ChessSquare pieceSweep = EmptySquare;
 ChessSquare promoSweep = EmptySquare, defaultPromoChoice;
 int promoDefaultAltered;
@@ -3335,7 +3336,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		    talker[0] = 0; Colorize(ColorTell, FALSE);
 		    chattingPartner = p; break;
 		}
-		if(chattingPartner<0) i = oldi; else {
+		if(chattingPartner<0) i = oldi, safeStrCpy(lastTalker, talker+1, MSG_SIZ); else {
 		    Colorize(curColor, TRUE); // undo the bogus colorations we just made to trigger the souds
 		    if(oldi > 0 && buf[oldi-1] == '\n') oldi--;
 		    if (oldi > next_out) SendToPlayer(&buf[next_out], oldi - next_out);

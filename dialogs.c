@@ -1798,6 +1798,9 @@ IcsHist (int n, Option *opt, DialogClass dlg)
 	if(hidden) BoardToTop();
 	else PaneSwitch();
 	break;
+      case 15:
+	NewChat(lastTalker);
+	break;
       case 14:
 	for(chat=0; chat < MAX_CHAT; chat++) if(!chatPartner[chat][0]) break;
 	if(chat < MAX_CHAT) ChatSwitch(chat + 1);
