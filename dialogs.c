@@ -1706,7 +1706,7 @@ PromotionPopUp (char choice)
 
 //---------------------------- Chat Windows ----------------------------------------------
 
-static char *line, *memo, *chatMemo, *partner, *texts[MAX_CHAT], dirty[MAX_CHAT];
+static char *line, *memo, *chatMemo, *partner, *texts[MAX_CHAT], dirty[MAX_CHAT], *inputs[MAX_CHAT], *icsLine, *tmpLine;
 static int activePartner, hidden = 1;
 
 void ChatSwitch P((int n));
@@ -1871,17 +1871,30 @@ ChatOK (int n)
 }
 
 void
+DelayedSetText ()
+{
+    SetWidgetText(&chatOptions[CHAT_IN], tmpLine, ChatDlg);
+    SetInsertPos(&chatOptions[CHAT_IN], strlen(tmpLine));
+}
+
+void
 DelayedScroll ()
 {   // If we do this immediately it does it before shrinking the memo, so the lower half remains hidden (Ughh!)
     SetInsertPos(&chatOptions[CHAT_ICS], 999999);
+    SetWidgetText(&chatOptions[CHAT_IN], tmpLine, ChatDlg);
+    SetInsertPos(&chatOptions[CHAT_IN], strlen(tmpLine));
 }
 
 void
 ChatSwitch (int n)
 {
     int i, j;
+    char *v;
     Show(&chatOptions[CHAT_PANE], 0); // show
     if(hidden) ScheduleDelayedEvent(DelayedScroll, 50); // Awful!
+    else ScheduleDelayedEvent(DelayedSetText, 50);
+    GetWidgetText(&chatOptions[CHAT_IN], &v);
+    if(hidden) { ASSIGN(icsLine, v); } else { ASSIGN(inputs[activePartner], v); }
     hidden = 0;
     activePartner = --n;
     if(!texts[n]) texts[n] = strdup("");
@@ -1893,14 +1906,24 @@ ChatSwitch (int n)
 	SetWidgetLabel(&chatOptions[++j], *chatPartner[i] ? chatPartner[i] : _("New Chat"));
 	SetColor(dirty[i] ? "#FFC000" : "#FFFFFF", &chatOptions[j]);
     }
-    SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg);
+    if(!inputs[n]) { ASSIGN(inputs[n], ""); }
+//    SetWidgetText(&chatOptions[CHAT_IN], inputs[n], ChatDlg); // does not work (in this widget only)
+//    SetInsertPos(&chatOptions[CHAT_IN], strlen(inputs[n]));
+    tmpLine = inputs[n]; // for the delayed event
     HardSetFocus(&chatOptions[strcmp(chatPartner[n], "") ? CHAT_IN : CHAT_PARTNER], 0);
 }
 
 void
 PaneSwitch ()
 {
+    char *v;
     Show(&chatOptions[CHAT_PANE], hidden = 1); // hide
+    GetWidgetText(&chatOptions[CHAT_IN], &v);
+    ASSIGN(inputs[activePartner], v);
+    if(!icsLine) { ASSIGN(icsLine, ""); }
+    tmpLine = icsLine; ScheduleDelayedEvent(DelayedSetText, 50);
+//    SetWidgetText(&chatOptions[CHAT_IN], icsLine, ChatDlg); // does not work (in this widget only)
+//    SetInsertPos(&chatOptions[CHAT_IN], strlen(icsLine));
 }
 
 static void
@@ -1926,7 +1949,8 @@ ChatProc ()
 {
     if(GenericPopUp(chatOptions, _("ICS Interaction"), ChatDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&chatOptions[CHAT_PARTNER], ChatDlg, 2), AddHandler(&chatOptions[CHAT_IN], ChatDlg, 2); // treats return as OK
-    PaneSwitch(); HardSetFocus(&chatOptions[CHAT_IN], 0);
+    Show(&chatOptions[CHAT_PANE], hidden = 1); // hide
+    HardSetFocus(&chatOptions[CHAT_IN], 0);
     MarkMenu("View.OpenChatWindow", ChatDlg);
     CursorAtEnd(&chatOptions[CHAT_IN]);
 }
