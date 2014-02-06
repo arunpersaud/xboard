@@ -3072,7 +3072,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			char mess[MSG_SIZ];
 			snprintf(mess, MSG_SIZ, "%s%s", talker, parse);
 			OutputChatMessage(chattingPartner, mess);
-			if(collective) { // broadcasted talk also goes to private chatbox of talker
+			if(collective == 1) { // broadcasted talk also goes to private chatbox of talker
 			    int p;
 			    talker[strlen(talker+1)-1] = NULLCHAR; // strip closing delimiter
 			    for(p=0; p<MAX_CHAT; p++) if(!StrCaseCmp(talker+1, chatPartner[p])) {
@@ -3082,7 +3082,8 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			    }
 			}
 			chattingPartner = -1;
-			next_out = i+1; // [HGM] suppress printing in ICS window
+			if(collective != 3) next_out = i+1; // [HGM] suppress printing in ICS window
+			collective = 0;
 		    } else
 		    if(!suppressKibitz) // [HGM] kibitz
 			AppendComment(forwardMostMove, StripHighlight(parse), TRUE);
@@ -3302,63 +3303,68 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 
 		if(channel >= 0) // channel broadcast; look if there is a chatbox for this channel
 		for(p=0; p<MAX_CHAT; p++) {
+		    collective = 1;
 		    if(chatPartner[p][0] >= '0' && chatPartner[p][0] <= '9' && channel == atoi(chatPartner[p])) {
 		    talker[0] = '['; strcat(talker, "] ");
-		    Colorize(channel == 1 ? ColorChannel1 : ColorChannel, FALSE);
-		    collective = 1;
+		    Colorize((channel == 1 ? ColorChannel1 : ColorChannel), FALSE);
 		    chattingPartner = p; break;
 		    }
 		} else
 		if(buf[i-3] == 'e') // kibitz; look if there is a KIBITZ chatbox
 		for(p=0; p<MAX_CHAT; p++) {
+		    collective = 1;
 		    if(!strcmp("kibitzes", chatPartner[p])) {
 			talker[0] = '['; strcat(talker, "] ");
-			collective = 1;
 			chattingPartner = p; break;
 		    }
 		} else
 		if(buf[i-3] == 'r') // whisper; look if there is a WHISPER chatbox
 		for(p=0; p<MAX_CHAT; p++) {
+		    collective = 1;
 		    if(!strcmp("whispers", chatPartner[p])) {
 			talker[0] = '['; strcat(talker, "] ");
-			collective = 1;
 			chattingPartner = p; break;
 		    }
 		} else
 		if(buf[i-3] == 't' || buf[oldi+2] == '>') {// shout, c-shout or it; look if there is a 'shouts' chatbox
 		  if(buf[i-8] == '-' && buf[i-3] == 't')
 		  for(p=0; p<MAX_CHAT; p++) { // c-shout; check if dedicatesd c-shout box exists
+		    collective = 1;
 		    if(!strcmp("c-shouts", chatPartner[p])) {
 			talker[0] = '('; strcat(talker, ") "); Colorize(ColorSShout, FALSE);
-			collective = 1;
 			chattingPartner = p; break;
 		    }
 		  }
 		  if(chattingPartner < 0)
 		  for(p=0; p<MAX_CHAT; p++) {
+		    collective = 1;
 		    if(!strcmp("shouts", chatPartner[p])) {
 			if(buf[oldi+2] == '>') { talker[0] = '<'; strcat(talker, "> "); Colorize(ColorShout, FALSE); }
 			else if(buf[i-8] == '-') { talker[0] = '('; strcat(talker, ") "); Colorize(ColorSShout, FALSE); }
 			else { talker[0] = '['; strcat(talker, "] "); Colorize(ColorShout, FALSE); }
-			collective = 1;
 			chattingPartner = p; break;
 		    }
 		  }
 		}
 		if(chattingPartner<0) // if not, look if there is a chatbox for this indivdual
 		for(p=0; p<MAX_CHAT; p++) if(!StrCaseCmp(talker+1, chatPartner[p])) {
-		    talker[0] = 0; Colorize(ColorTell, FALSE);
+		    talker[0] = 0;
+		    Colorize(ColorTell, FALSE);
+		    if(collective) safeStrCpy(talker, "broadcasts: ", MSG_SIZ);
+		    collective |= 2;
 		    chattingPartner = p; break;
 		}
 		if(chattingPartner<0) i = oldi, safeStrCpy(lastTalker, talker+1, MSG_SIZ); else {
 		    Colorize(curColor, TRUE); // undo the bogus colorations we just made to trigger the souds
-		    if(oldi > 0 && buf[oldi-1] == '\n') oldi--;
-		    if (oldi > next_out) SendToPlayer(&buf[next_out], oldi - next_out);
 		    started = STARTED_COMMENT;
 		    parse_pos = 0; parse[0] = NULLCHAR;
 		    savingComment = 3 + chattingPartner; // counts as TRUE
-		    suppressKibitz = TRUE;
-		    continue;
+		    if(collective == 3) i = oldi; else {
+			suppressKibitz = TRUE;
+			if(oldi > 0 && buf[oldi-1] == '\n') oldi--;
+			if (oldi > next_out) SendToPlayer(&buf[next_out], oldi - next_out);
+			continue;
+		    }
 		}
 	    } // [HGM] chat: end of patch
 
@@ -3442,7 +3448,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 		      parse[parse_pos] = NULLCHAR;
 		      started = STARTED_COMMENT;
 		      savingComment = TRUE;
-		    } else {
+		    } else if(collective != 3) {
 		      started = STARTED_CHATTER;
 		      savingComment = FALSE;
 		    }
