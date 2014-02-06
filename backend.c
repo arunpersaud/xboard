@@ -13972,6 +13972,7 @@ ExitEvent (int status)
       return;
     }
 
+    if (appData.icsActive) printf("\n"); // [HGM] end on new line after closing XBoard
     if (appData.icsActive && appData.colorize) Colorize(ColorNone, FALSE);
 
     if (telnetISR != NULL) {
