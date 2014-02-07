@@ -979,6 +979,9 @@ SendString (char *p)
 	snprintf(buf2 + (q-p), MSG_SIZ -(q-p), "%s%s", clickedWord, q+5);
         p = buf2;
     }
+    if(!strcmp(p, "$copy")) { // special case for copy selection
+        CopySomething(clickedWord);
+    } else
     if(!strcmp(p, "$chat")) { // special case for opening chat
         NewChat(clickedWord);
     } else
@@ -1727,16 +1730,20 @@ WindowPlacement wpTextMenu;
 int
 ContextMenu (Option *opt, int button, int x, int y, char *text, int index)
 { // callback for ICS-output clicks; handles button 3, passes on other events
-  char *start, *end;
   int h;
   if(button == -3) return TRUE; // supress default GTK context menu on up-click
   if(button != 3) return FALSE;
-  start = end = text + index; // figure out what text was clicked
-  while(isalnum(*end)) end++;
-  while(start > text && isalnum(start[-1])) start--;
-  clickedWord[0] = NULLCHAR;
-  if(end-start >= 80) end = start + 80; // intended for small words and numbers
-  strncpy(clickedWord, start, end-start); clickedWord[end-start] = NULLCHAR;
+  if(index == -1) { // pre-existing selection in memo
+    strncpy(clickedWord, text, MSG_SIZ);
+  } else { // figure out what word was clicked
+    char *start, *end;
+    start = end = text + index;
+    while(isalnum(*end)) end++;
+    while(start > text && isalnum(start[-1])) start--;
+    clickedWord[0] = NULLCHAR;
+    if(end-start >= 80) end = start + 80; // intended for small words and numbers
+    strncpy(clickedWord, start, end-start); clickedWord[end-start] = NULLCHAR;
+  }
   click = !shellUp[TextMenuDlg]; // request auto-popdown of textmenu when we popped it up
   h = wpTextMenu.height; // remembered height of text menu
   if(h <= 0) h = 65;     // when not available, position w.r.t. top

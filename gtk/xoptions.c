@@ -661,15 +661,23 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 		((ButtonCallback*) memo->target)(button == 1 ? memo->value : -memo->value);
 		return TRUE;
 	    }
+	    if(memo->value == 250 // kludge to recognize ICS Console and Chat panes
+	     && gtk_text_buffer_get_selection_bounds(memo->handle, NULL, NULL) ) {
+printf("*** selected\n");
+	        gtk_text_buffer_get_selection_bounds(memo->handle, &start, &end); // only return selected text
+		index = -1; // kludge to indicate omething was selected
+	    } else {
 // GTK_TODO: is this really the most efficient way to get the character at the mouse cursor???
-	    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(widget), GTK_TEXT_WINDOW_WIDGET, w, h, &x, &y);
-	    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(widget), &start, x, y);
-	    gtk_text_buffer_place_cursor(memo->handle, &start);
-	    /* get cursor position into index */
-	    g_object_get(memo->handle, "cursor-position", &index, NULL);
+		gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(widget), GTK_TEXT_WINDOW_WIDGET, w, h, &x, &y);
+		gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(widget), &start, x, y);
+		gtk_text_buffer_place_cursor(memo->handle, &start);
+		/* get cursor position into index */
+		g_object_get(memo->handle, "cursor-position", &index, NULL);
+		/* take complete contents */
+		gtk_text_buffer_get_start_iter (memo->handle, &start);
+		gtk_text_buffer_get_end_iter (memo->handle, &end);
+	    }
 	    /* get text from textbuffer */
-	    gtk_text_buffer_get_start_iter (memo->handle, &start);
-	    gtk_text_buffer_get_end_iter (memo->handle, &end);
 	    val = gtk_text_buffer_get_text (memo->handle, &start, &end, FALSE);
 	    break;
 	default:
