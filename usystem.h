@@ -68,6 +68,7 @@ typedef struct {
 } ChildProc;
 
 extern char *oldICSInteractionTitle;
+extern Boolean stdoutClosed;
 
 char *ExpandPathName P((char *path));
 int  MySearchPath P((char *installDir, char *name, char *fullname));

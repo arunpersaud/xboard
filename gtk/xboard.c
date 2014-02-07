@@ -1970,6 +1970,11 @@ DoInputCallback(io, cond, data)
 	count = read(is->fd, is->unused,
 		     INPUT_SOURCE_BUF_SIZE - (is->unused - is->buf));
 	if (count <= 0) {
+	    if(count == 0 && is->kind == CPReal && shells[ChatDlg]) { // [HGM] absence of terminal is no error if ICS Console present
+		RemoveInputSource(is); // cease reading stdin
+		stdoutClosed = TRUE;   // suppress future output
+		return True;
+	    } 
 	    (is->func)(is, is->closure, is->buf, count, count ? errno : 0);
 	    return True;
 	}

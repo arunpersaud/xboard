@@ -650,6 +650,8 @@ OpenRcmd (char *host, char *user, char *cmd, ProcRef *pr)
     return -1;
 }
 
+Boolean stdoutClosed = FALSE;
+
 int
 OutputToProcess (ProcRef pr, char *message, int count, int *outError)
 {
@@ -659,9 +661,9 @@ OutputToProcess (ProcRef pr, char *message, int count, int *outError)
 
     if (pr == NoProc)
     {
-        if (appData.noJoin || !appData.useInternalWrap)
-            outCount = fwrite(message, 1, count, stdout);
-        else
+        if (appData.noJoin || !appData.useInternalWrap) {
+            if(!stdoutClosed) outCount = fwrite(message, 1, count, stdout);
+        } else
         {
             int width = get_term_width();
             int len = wrap(NULL, message, count, width, &line);
