@@ -512,7 +512,7 @@ ArgDescriptor argDescriptors[] = {
     TRUE, (ArgIniType) FCP_NAMES },
   { "secondChessProgramNames", ArgString, (void *) &secondChessProgramNames,
     !XBOARD, (ArgIniType) SCP_NAMES },
-  { "themeNames", ArgString, (void *) &appData.themeNames, !XBOARD, (ArgIniType) "native -upf false -ub false -ubt false -pid \"\"\n" },
+  { "themeNames", ArgString, (void *) &appData.themeNames, TRUE, (ArgIniType) "native -upf false -ub false -ubt false -pid \"\"\n" },
   { "addMasterOption", ArgMaster, NULL, FALSE, INVALID },
   { "installEngine", ArgInstall, (void *) &firstChessProgramNames, FALSE, (ArgIniType) "" },
   { "initialMode", ArgString, (void *) &appData.initialMode, FALSE, (ArgIniType) "" },

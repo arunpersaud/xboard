@@ -537,6 +537,12 @@ ParseColor (int n, char *name)
   if(colorVariable[n]) *(char**)colorVariable[n] = strdup(name);
 }
 
+char *
+Col2Text (int n)
+{
+    return *(char**)colorVariable[n];
+}
+
 void
 ParseTextAttribs (ColorClass cc, char *s)
 {

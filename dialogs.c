@@ -846,20 +846,20 @@ SoundOptionsProc ()
 
 static void DefColor P((int n));
 static void AdjustColor P((int i));
+static void ThemeSel P((int n, int sel));
+static int BoardOptionsOK P((int n));
 
 static char oldPieceDir[MSG_SIZ];
+extern char *engineLine, *nickName; // defined later on
 
-static int
-BoardOptionsOK (int n)
-{
-    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
-    InitDrawingParams(strcmp(oldPieceDir, appData.pieceDirectory));
-    InitDrawingSizes(-1, 0);
-    DrawPosition(True, NULL);
-    return 1;
-}
+#define THEMELIST 1
 
 static Option boardOptions[] = {
+{   0,LR|T2T, 0, NULL, NULL, NULL, NULL, Label, N_("Selectable themes:") },
+{ 300,LR|TB,200, NULL, (void*) engineMnemonic, (char*) &ThemeSel, NULL, ListBox, "" },
+{   0,LR|T2T, 0, NULL, NULL, NULL, NULL, Label, N_("New name for current theme:") },
+{ 0, 0, 0, NULL, (void*) &nickName, ".png", NULL, TextBox, "" },
+{ 0,SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, NULL },
 { 0,          0, 70, NULL, (void*) &appData.whitePieceColor, "", NULL, TextBox, N_("White Piece Color:") },
 { 1000, SAME_ROW, 0, NULL, (void*) &DefColor, NULL, (char**) "#FFFFCC", Button, "      " },
 /* TRANSLATORS: R = single letter for the color red */
@@ -913,6 +913,16 @@ static Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 
+static int
+BoardOptionsOK (int n)
+{
+    if(n && (n = SelectedListBoxItem(&boardOptions[THEMELIST])) > 0 && *engineList[n] != '#') { // called by pressing OK, and theme selected
+	ASSIGN(engineLine, engineList[n]);
+    }
+    LoadTheme();
+    return 1;
+}
+
 static void
 SetColorText (int n, char *buf)
 {
@@ -956,9 +966,32 @@ AdjustColor (int i)
 }
 
 void
+ThemeSel (int n, int sel)
+{
+    int nr;
+    char buf[MSG_SIZ];
+    if(sel < 1) buf[0] = NULLCHAR; // back to top level
+    else if(engineList[sel][0] == '#') safeStrCpy(buf, engineList[sel], MSG_SIZ); // group header, open group
+    else { // normal line, select engine
+	ASSIGN(engineLine, engineList[sel]);
+	LoadTheme();
+        PopDown(TransientDlg);
+	return;
+    }
+    nr = NamesToList(appData.themeNames, engineList, engineMnemonic, buf); // replace list by only the group contents
+    ASSIGN(engineMnemonic[0], buf);
+    LoadListBox(&boardOptions[THEMELIST], _("# no themes are defined"), -1, -1);
+    HighlightWithScroll(&boardOptions[THEMELIST], 0, nr);
+}
+
+void
 BoardOptionsProc ()
 {
    strncpy(oldPieceDir, appData.pieceDirectory, MSG_SIZ-1); // to see if it changed
+   ASSIGN(engineLine, "");
+   ASSIGN(nickName, "");
+   ASSIGN(engineMnemonic[0], "");
+   NamesToList(appData.themeNames, engineList, engineMnemonic, "");
    GenericPopUp(boardOptions, _("Board Options"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
@@ -2886,10 +2919,9 @@ FileNamePopUp (char *label, char *def, char *filter, FileProc proc, char *openMo
 void
 ActivateTheme (int col)
 {
+    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
+    InitDrawingParams(strcmp(oldPieceDir, appData.pieceDirectory));
+    InitDrawingSizes(-1, 0);
+    DrawPosition(True, NULL);
 }
 
-char *
-Col2Text (int n)
-{
-    return NULL;
-}
