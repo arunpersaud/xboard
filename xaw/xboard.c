@@ -1115,6 +1115,8 @@ main (int argc, char **argv)
 		    programName, appData.boardSize);
 	    exit(2);
 	}
+	if(BOARD_WIDTH > 8)
+	    squareSize = (squareSize*8 + BOARD_WIDTH/2)/BOARD_WIDTH; // scale height
 	if (i < 7) {
 	    /* Find some defaults; use the nearest known size */
 	    SizeDefaults *szd, *nearest;
@@ -1138,8 +1140,8 @@ main (int argc, char **argv)
     } else {
         SizeDefaults *szd = sizeDefaults;
         if (*appData.boardSize == NULLCHAR) {
-	    while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize ||
-		   DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) {
+	    while (DisplayWidth(xDisplay, xScreen)  < (szd->minScreenSize*BOARD_WIDTH  + 4)/8 ||
+		   DisplayHeight(xDisplay, xScreen) < (szd->minScreenSize*BOARD_HEIGHT + 4)/8) {
 	      szd++;
 	    }
 	    if (szd->name == NULL) szd--;

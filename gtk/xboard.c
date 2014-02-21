@@ -924,6 +924,8 @@ main (int argc, char **argv)
 		    programName, appData.boardSize);
 	    exit(2);
 	}
+	if(BOARD_WIDTH > 8)
+	    squareSize = (squareSize*8 + BOARD_WIDTH/2)/BOARD_WIDTH; // scale height
 	if (i < 7) {
 	    /* Find some defaults; use the nearest known size */
 	    SizeDefaults *szd, *nearest;
@@ -947,11 +949,11 @@ main (int argc, char **argv)
     } else {
         SizeDefaults *szd = sizeDefaults;
         if (*appData.boardSize == NULLCHAR) {
-            GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(mainwindow));
+            GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(mainwindow)); // TODO: this does not work, as no mainwindow yet
             guint screenwidth = gdk_screen_get_width(screen);
             guint screenheight = gdk_screen_get_height(screen);
-	    while (screenwidth < szd->minScreenSize ||
-		   screenheight < szd->minScreenSize) {
+	    while (screenwidth  < (szd->minScreenSize*BOARD_WIDTH  + 4)/8 ||
+		   screenheight < (szd->minScreenSize*BOARD_HEIGHT + 4)/8) {
 	      szd++;
 	    }
 	    if (szd->name == NULL) szd--;

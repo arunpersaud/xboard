@@ -175,9 +175,17 @@ InitDrawingSizes (BoardSize boardSize, int flags)
     int boardWidth, boardHeight;
     static int oldWidth, oldHeight;
     static VariantClass oldVariant;
-    static int oldTwoBoards = 0;
+    static int oldTwoBoards = 0, oldNrOfFiles = 0;
 
     if(!mainOptions[W_BOARD].handle) return;
+
+    if(boardSize == -2 && gameInfo.variant != oldVariant
+                       && oldNrOfFiles && oldNrOfFiles != BOARD_WIDTH) { // called because variant switch changed board format
+	squareSize = ((squareSize + lineGap) * oldNrOfFiles + 0.5*BOARD_WIDTH) / BOARD_WIDTH - lineGap; // keep total width fixed
+	CreatePNGPieces();
+        CreateGrid();
+    }
+    oldNrOfFiles = BOARD_WIDTH;
 
     if(oldTwoBoards && !twoBoards) PopDown(DummyDlg);
     oldTwoBoards = twoBoards;
