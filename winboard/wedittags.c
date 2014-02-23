@@ -26,6 +26,7 @@
 #include "config.h"
 
 #include <windows.h>   /* required for all Windows applications */
+#include <richedit.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -43,6 +44,7 @@
 
 /* Module globals */
 static char *editTagsText, **resPtr;
+static HWND memo;
 BOOL editTagsUp = FALSE;
 BOOL canEditTags = FALSE;
 
@@ -66,14 +68,15 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Initialize the dialog items */
     Translate(hDlg, DLG_EditTags);
-   hwndText = GetDlgItem(hDlg, OPT_TagsText);
+   hwndText = memo = GetDlgItem(hDlg, OPT_TagsText);
     SendMessage(hwndText, WM_SETFONT, 
       (WPARAM)font[boardSize][EDITTAGS_FONT]->hf, MAKELPARAM(FALSE, 0));
     SetDlgItemText(hDlg, OPT_TagsText, editTagsText);
     EnableWindow(GetDlgItem(hDlg, OPT_TagsCancel), canEditTags);
-    EnableWindow(GetDlgItem(hDlg, OPT_EditTags), !canEditTags);
+    EnableWindow(GetDlgItem(hDlg, OPT_EditTags), !canEditTags || bookUp);
     SendMessage(hwndText, EM_SETREADONLY, !canEditTags, 0);
     if (bookUp) {
+      SetDlgItemText(hDlg, OPT_EditTags, _("&Play Move"));
       SetWindowText(hDlg, _("Edit Book"));
       SetFocus(hwndText);
     } else
@@ -150,6 +153,7 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       return TRUE;
       
     case OPT_EditTags:
+      if(bookUp) addToBookFlag = !addToBookFlag; else
       EditTagsEvent();
       return TRUE;
 
@@ -204,11 +208,17 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   return FALSE;
 }
 
+VOID AddBookMove(char *text)
+{
+    SendMessage( memo, EM_SETSEL, 999999, 999999 ); // [HGM] multivar: choose insertion point
+    SendMessage( memo, EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) text );
+}
+
 VOID TagsPopDown(void)
 {
   if (editTagsDialog) ShowWindow(editTagsDialog, SW_HIDE);
   CheckMenuItem(GetMenu(hwndMain), IDM_Tags, MF_UNCHECKED);
-  editTagsUp = bookUp = FALSE;
+  editTagsUp = bookUp = addToBookFlag = FALSE;
 }
 
 

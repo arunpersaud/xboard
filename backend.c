@@ -6816,6 +6816,7 @@ int lastLoadGameUseList = FALSE;
 char lastLoadGameTitle[MSG_SIZ], lastLoadPositionTitle[MSG_SIZ];
 ChessMove lastLoadGameStart = EndOfFile;
 int doubleClick;
+Boolean addToBookFlag;
 
 void
 UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
@@ -6992,6 +6993,16 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
         if(ExcludeOneMove(fromY, fromX, toY, toX, promoChar, '*')) // toggle
 	     ClearPremoveHighlights(); // was included
 	else ClearHighlights(), SetPremoveHighlights(ff, rf, ft, rt); // exclusion indicated  by premove highlights
+	return;
+    }
+
+    if(addToBookFlag) { // adding moves to book
+	char buf[MSG_SIZ], move[MSG_SIZ];
+        CoordsToAlgebraic(boards[currentMove], PosFlags(currentMove), fromY, fromX, toY, toX, promoChar, move);
+	snprintf(buf, MSG_SIZ, "  0.0%%     1  %s\n", move);
+	AddBookMove(buf);
+	addToBookFlag = FALSE;
+	ClearHighlights();
 	return;
     }
 

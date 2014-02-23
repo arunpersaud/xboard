@@ -792,6 +792,7 @@ DisplayBook (int moveNr)
     p = MovesToText(count, entries);
     EditTagsPopUp(p, NULL);
     free(p);
+    addToBookFlag = FALSE;
     return TRUE;
 }
 

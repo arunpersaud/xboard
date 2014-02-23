@@ -1182,10 +1182,17 @@ NewTagsCallback (int n)
     return 1;
 }
 
+static void
+NewMove ()
+{
+    addToBookFlag = !addToBookFlag;
+}
+
 static Option tagsOptions[] = {
 {   0,   0,   0, NULL, NULL, NULL, NULL, Label,  NULL },
 { 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 200, NULL, (void*) &tagsText, "", (char **) &TagsClick, TextBox, "" },
-{   0,   0, 100, NULL, (void*) &changeTags, NULL, NULL, Button, N_("save changes") },
+{   0,   0, 100, NULL, (void*) &NewMove,    NULL, NULL, Button, N_("add next move") },
+{ 0,SAME_ROW,100,NULL, (void*) &changeTags, NULL, NULL, Button, N_("save changes") },
 { 0,SAME_ROW, 0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }
 };
 
@@ -1210,6 +1217,7 @@ NewTagsPopup (char *text, char *msg)
 {
     char *title = bookUp ? _("Edit book") : _("Tags");
 
+    tagsOptions[2].type = bookUp ? Button : Skip;
     if(DialogExists(TagsDlg)) { // if already exists, alter title and content
 	SetWidgetText(&tagsOptions[1], text, TagsDlg);
 	SetDialogTitle(TagsDlg, title);
@@ -1244,6 +1252,12 @@ void
 EditTagsProc ()
 {
   if (bookUp || !PopDown(TagsDlg)) EditTagsEvent();
+}
+
+void
+AddBookMove (char *text)
+{
+    AppendText(&tagsOptions[1], text);
 }
 
 //---------------------------------------------- ICS Input Box ----------------------------------
