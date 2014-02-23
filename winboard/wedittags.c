@@ -90,6 +90,7 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       GetClientRect(hDlg, &rect);
       sizeX = rect.right;
       sizeY = rect.bottom;
+      SendDlgItemMessage( hDlg, OPT_TagsText, EM_SETEVENTMASK, 0, ENM_MOUSEEVENTS );
       if (wpTags.x != CW_USEDEFAULT && wpTags.y != CW_USEDEFAULT &&
 	  wpTags.width != CW_USEDEFAULT && wpTags.height != CW_USEDEFAULT) {
 	WINDOWPLACEMENT wp;
@@ -156,6 +157,34 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     }
     break;
+
+  case WM_NOTIFY: // [HGM] vari: cloned from whistory.c
+        if( wParam == OPT_TagsText ) {
+            MSGFILTER * lpMF = (MSGFILTER *) lParam;
+
+            if( lpMF->msg == WM_RBUTTONDOWN ) {
+                POINTL pt;
+                LRESULT index;
+
+                pt.x = LOWORD( lpMF->lParam );
+                pt.y = HIWORD( lpMF->lParam );
+
+                index = SendDlgItemMessage( hDlg, OPT_TagsText, EM_CHARFROMPOS, 0, (LPARAM) &pt );
+
+		hwndText = GetDlgItem(hDlg, OPT_TagsText); // cloned from above
+		len = GetWindowTextLength(hwndText);
+		str = (char *) malloc(len + 1);
+		GetWindowText(hwndText, str, len + 1);
+		if(bookUp) PlayBookMove(str, index);
+		free(str);
+
+                /* Zap the message for good: apparently, returning non-zero is not enough */
+                lpMF->msg = WM_USER;
+
+                return TRUE;
+            }
+        }
+        break;
 
   case WM_SIZE:
     newSizeX = LOWORD(lParam);

@@ -204,6 +204,7 @@ int PromoScroll P((int x, int y));
 void EditBookEvent P((void));
 Boolean DisplayBook P((int moveNr));
 void SaveToBook P((char *text));
+void PlayBookMove P((char *text, int index));
 void HoverEvent P((int hiX, int hiY, int x, int y));
 int PackGame P((Board board));
 Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen, Boolean autoSize));

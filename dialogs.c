@@ -1171,6 +1171,8 @@ EditCommentProc ()
 static void changeTags P((int n));
 static char *tagsText, **resPtr;
 
+static int TagsClick P((Option *opt, int n, int x, int y, char *val, int index));
+
 static int
 NewTagsCallback (int n)
 {
@@ -1182,10 +1184,17 @@ NewTagsCallback (int n)
 
 static Option tagsOptions[] = {
 {   0,   0,   0, NULL, NULL, NULL, NULL, Label,  NULL },
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 200, NULL, (void*) &tagsText, "", NULL, TextBox, "" },
+{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 200, NULL, (void*) &tagsText, "", (char **) &TagsClick, TextBox, "" },
 {   0,   0, 100, NULL, (void*) &changeTags, NULL, NULL, Button, N_("save changes") },
 { 0,SAME_ROW, 0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }
 };
+
+static int TagsClick (Option *opt, int n, int x, int y, char *val, int index)
+{
+    if(!bookUp || n != 3) return FALSE; // only button-3 press in Edit Book is of interest
+    PlayBookMove(val, index);
+    return TRUE;
+}
 
 static void
 changeTags (int n)
