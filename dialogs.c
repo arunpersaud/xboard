@@ -1034,7 +1034,7 @@ SendString (char *p)
 }
 
 void
-IcsTextProc ()
+IcsTextPopUp ()
 {
    int i=0, j;
    char *p, *q, *r;
@@ -1064,6 +1064,13 @@ IcsTextProc ()
    textOptions[i].min = 2;
    MarkMenu("View.ICStextmenu", TextMenuDlg);
    GenericPopUp(textOptions, _("ICS text menu"), TextMenuDlg, BoardWindow, NONMODAL, appData.topLevel);
+}
+
+void
+IcsTextProc ()
+{
+    if(shellUp[TextMenuDlg]) PopDown(TextMenuDlg);
+    else IcsTextPopUp();
 }
 
 //---------------------------------------------------- Edit Comment -----------------------------------
@@ -1786,7 +1793,7 @@ ContextMenu (Option *opt, int button, int x, int y, char *text, int index)
   if(wpTextMenu.x < 0) wpTextMenu.x = 0;
   if(wpTextMenu.y < 0) wpTextMenu.y = 0;
   wpTextMenu.width = wpTextMenu.height = -1;
-  IcsTextProc();
+  IcsTextPopUp();
   return TRUE;
 }
 
@@ -2008,7 +2015,7 @@ ConsoleWrite(char *message, int count)
 }
 
 void
-ChatProc ()
+ChatPopUp ()
 {
     if(GenericPopUp(chatOptions, _("ICS Interaction"), ChatDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&chatOptions[CHAT_PARTNER], ChatDlg, 2), AddHandler(&chatOptions[CHAT_IN], ChatDlg, 2); // treats return as OK
@@ -2016,6 +2023,13 @@ ChatProc ()
 //    HardSetFocus(&chatOptions[CHAT_IN], 0);
     MarkMenu("View.OpenChatWindow", ChatDlg);
     CursorAtEnd(&chatOptions[CHAT_IN]);
+}
+
+void
+ChatProc ()
+{
+    if(shellUp[ChatDlg]) PopDown(ChatDlg);
+    else ChatPopUp();
 }
 
 void
@@ -2030,7 +2044,7 @@ ConsoleAutoPopUp (char *buf)
 		SetWidgetText(&chatOptions[CHAT_IN], newText, ChatDlg);
 		if(shellUp[ChatDlg]) HardSetFocus (&chatOptions[CHAT_IN], ChatDlg); //why???
 	    } else { ASSIGN(line, buf); } // box did not exist: make sure it pops up with char in it
-	    ChatProc();
+	    ChatPopUp();
 	} else PopUpMoveDialog(*buf);
 }
 
