@@ -2505,6 +2505,7 @@ Exp (int n, int x, int y)
 {
     static int but1, but3, oldW, oldH;
     int menuNr = -3, sizing, f, r;
+    TimeMark now;
 
     if(n == 0) { // motion
 	if(SeekGraphClick(Press, x, y, 1)) return NULL;
@@ -2518,6 +2519,7 @@ Exp (int n, int x, int y)
 	return NULL;
     }
     if(n != 10 && PopDown(PromoDlg)) fromX = fromY = -1; // user starts fiddling with board when promotion dialog is up
+    else GetTimeMark(&now);
     shiftKey = ShiftKeys();
     controlKey = (shiftKey & 0xC) != 0;
     shiftKey = (shiftKey & 3) != 0;
@@ -2532,7 +2534,7 @@ Exp (int n, int x, int y)
 	    sizing = (oldW != x || oldH != y);
 	    oldW = x; oldH = y;
 	    InitDrawingHandle(mainOptions + W_BOARD);
-	    if(sizing) return NULL; // don't redraw while sizing
+	    if(sizing && SubtractTimeMarks(&now, &programStartTime) > 10000) return NULL; // don't redraw while sizing (except at startup)
 	    DrawPosition(True, NULL);
 	default:
 	    return NULL;

@@ -425,6 +425,8 @@ typedef struct {
     int ms;    /* Assuming this is >= 16 bits */
 } TimeMark;
 
+extern TimeMark programStartTime;
+
 void GetTimeMark P((TimeMark *));
 long SubtractTimeMarks P((TimeMark *, TimeMark *));
 
