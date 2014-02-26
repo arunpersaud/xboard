@@ -119,7 +119,7 @@ typedef struct {
 #define BORDER_X_OFFSET 3
 #define BORDER_Y_OFFSET 27
 #define FIRST_CHESS_PROGRAM	"fairymax"
-#define SECOND_CHESS_PROGRAM	"fairymax"
+#define SECOND_CHESS_PROGRAM	""
 #define FIRST_DIRECTORY         "."
 #define SECOND_DIRECTORY        "."
 #define SOUND_BELL              ""

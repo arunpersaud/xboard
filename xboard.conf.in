@@ -70,7 +70,6 @@
 ; Engines & adjudicatons in engine-engine games
 ;
 -firstChessProgram fairymax
--secondChessProgram fairymax
 -firstChessProgramNames {fairymax
 "Fruit 2.1" -fcp fruit -fUCI
 "Crafty" -fcp crafty
