@@ -8759,7 +8759,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 			(unsigned int)programStats.nodes / (10*abs(programStats.time) + 1.),
 			programStats.movelist);
 		SendToICS(buf);
-if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.nodes, programStats.nodes);
 	  }
 	}
 #endif

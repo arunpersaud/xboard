@@ -1810,6 +1810,7 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
     COLORREF chroma = RGB(0xFF,0x00,0xFF);
     RECT rc;
     SIZE sz;
+
     POINT pt;
     int backColor = whitePieceColor; 
     int foreColor = blackPieceColor;
@@ -2299,6 +2300,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   { // correct board size to one where built-in pieces exist
     if((v == VariantCapablanca || v == VariantGothic || v == VariantGrand || v == VariantCapaRandom || v == VariantJanus || v == VariantSuper)
        && (boardSize < SizePetite || boardSize > SizeBulky) // Archbishop and Chancellor available in entire middle range
+
       || (v == VariantShogi && boardSize != SizeModerate)   // Japanese-style Shogi
       ||  v == VariantKnightmate || v == VariantSChess || v == VariantXiangqi || v == VariantSpartan
       ||  v == VariantShatranj || v == VariantMakruk || v == VariantGreat || v == VariantFairy || v == VariantLion ) {
@@ -3977,6 +3979,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
     else
     if(dragInfo.from.x == BOARD_RGHT+1 )
                  board[dragInfo.from.y][dragInfo.from.x-1]++;
+
     board[dragInfo.from.y][dragInfo.from.x] = dragged_piece;
     x = dragInfo.pos.x - squareSize / 2;
     y = dragInfo.pos.y - squareSize / 2;
@@ -4718,7 +4721,7 @@ LRESULT CALLBACK
 WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   FARPROC lpProc;
-  int wmId, wmEvent;
+  int wmId;
   char *defName;
   FILE *f;
   UINT number;
@@ -4821,7 +4824,6 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   case WM_COMMAND: /* message: command from application menu */
     wmId    = LOWORD(wParam);
-    wmEvent = HIWORD(wParam);
 
     switch (wmId) {
     case IDM_NewGame:
@@ -6389,7 +6391,7 @@ LRESULT CALLBACK
 CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   static HANDLE hwndText = NULL;
-  int len, newSizeX, newSizeY, flags;
+  int len, newSizeX, newSizeY;
   static int sizeX, sizeY;
   char *str;
   RECT rect;
@@ -6417,7 +6419,6 @@ CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* Size and position the dialog */
     if (!commentDialog) {
       commentDialog = hDlg;
-      flags = SWP_NOZORDER;
       GetClientRect(hDlg, &rect);
       sizeX = rect.right;
       sizeY = rect.bottom;
@@ -6754,7 +6755,6 @@ ErrorPopDown()
 LRESULT CALLBACK
 ErrorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  HANDLE hwndText;
   RECT rChild;
 
   switch (message) {
@@ -6778,7 +6778,6 @@ ErrorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     errorDialog = hDlg;
     SetWindowText(hDlg, errorTitle);
-    hwndText = GetDlgItem(hDlg, OPT_ErrorText);
     SetDlgItemText(hDlg, OPT_ErrorText, errorMessage);
     return FALSE;
 
@@ -6804,7 +6803,6 @@ HWND gothicDialog = NULL;
 LRESULT CALLBACK
 GothicDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  HANDLE hwndText;
   RECT rChild;
   int height = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
 
@@ -6823,7 +6821,6 @@ GothicDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     */
     gothicDialog = hDlg;
     SetWindowText(hDlg, errorTitle);
-    hwndText = GetDlgItem(hDlg, OPT_ErrorText);
     SetDlgItemText(hDlg, OPT_ErrorText, errorMessage);
     return FALSE;
 
@@ -10076,6 +10073,7 @@ int flock(int fid, int code)
     ov.OffsetHigh = 0;
     switch(code) {
       case 1: LockFileEx(hFile, LOCKFILE_EXCLUSIVE_LOCK, 0, 1024, 0, &ov); break;   // LOCK_SH
+
       case 2: LockFileEx(hFile, LOCKFILE_EXCLUSIVE_LOCK, 0, 1024, 0, &ov); break;   // LOCK_EX
       case 3: UnlockFileEx(hFile, 0, 1024, 0, &ov); break; // LOCK_UN
       default: return -1;

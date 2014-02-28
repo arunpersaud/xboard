@@ -164,7 +164,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
   int nItem;
   RECT rect;
   static int sizeX, sizeY;
-  int newSizeX, newSizeY, flags;
+  int newSizeX, newSizeY;
   MINMAXINFO *mmi;
   static BOOL filterHasFocus = FALSE;
   int count;
@@ -197,7 +197,6 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     /* Size and position the dialog */
     if (!gameListDialog) {
       gameListDialog = hDlg;
-      flags = SWP_NOZORDER;
       GetClientRect(hDlg, &rect);
       sizeX = rect.right;
       sizeY = rect.bottom;

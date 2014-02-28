@@ -58,7 +58,7 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   static HANDLE hwndText;
   static int sizeX, sizeY;
-  int len, newSizeX, newSizeY, flags;
+  int len, newSizeX, newSizeY;
   char *str;
   RECT rect;
   MINMAXINFO *mmi;
@@ -89,7 +89,6 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     if (!editTagsDialog) {
       editTagsDialog = hDlg;
-      flags = SWP_NOZORDER;
       GetClientRect(hDlg, &rect);
       sizeX = rect.right;
       sizeY = rect.bottom;

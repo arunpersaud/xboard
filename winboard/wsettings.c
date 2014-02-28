@@ -120,7 +120,7 @@ void
 LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionList)
 {
     int i, b = strlen(groupName), stop, prefix, right, nextOption, firstButton = buttons;
-    Control lastType, nextType;
+    Control lastType, nextType=Label;
 
     nextOption = firstOption;
     while(nextOption < endOption) {
@@ -380,7 +380,6 @@ int
 GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 // read out all controls, and if value is altered, remember it and send it to the engine
 {
-    HANDLE hwndCombo;
     int i, k, new=0, changed=0, len;
     char **choices, newText[MSG_SIZ], buf[MSG_SIZ], *text;
     BOOL success;
@@ -424,7 +423,6 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 		break;
 	    case ComboBox:
 		choices = (char**) optionList[j].textValue;
-		hwndCombo = GetDlgItem(hDlg, 2001+2*i);
 		success = GetDlgItemText( hDlg, 2001+2*i, newText, MSG_SIZ );
 		if(!success) break;
 		new = -1;
@@ -577,8 +575,8 @@ void AddOption(int x, int y, Control type, int i)
     int extra, num = ES_NUMBER;
 
     switch(type) {
-	case Slider+100:
-	    num = 0; // needs text control for accepting negative numbers
+//	case Slider+100:
+//	    num = 0; // needs text control for accepting negative numbers
 	case Slider:
 	case Spin:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
@@ -888,8 +886,7 @@ int MatchOK()
 
 void PseudoOK(HWND hDlg)
 {
-    void (*saveOK)();
-    saveOK = okFunc; okFunc = 0;
+    okFunc = 0;
     GetOptionValues(hDlg, activeCps, activeList);
     EndDialog( hDlg, 0 );
     comboCallback = NULL; activeCps = NULL;
