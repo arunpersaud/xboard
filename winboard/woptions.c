@@ -440,7 +440,7 @@ PaintSampleSquare(
   /*
    * clean up
    */
-  SelectObject(hdcMem, oldBrushPiece);
+  SelectObject(hdcMem, oldBrushSquare);
   SelectObject(hdcMem, oldPen);
   DeleteObject(brushPiece);
   DeleteObject(brushPieceDetail);
