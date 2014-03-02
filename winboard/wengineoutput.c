@@ -225,7 +225,8 @@ void ResizeWindowControls( int mode )
     InvalidateRect( GetDlgItem(hDlg,IDC_EngineMemo2), NULL, FALSE );
 }
 
-static int currentPV, highTextStart[2], highTextEnd[2];
+static int currentPV;
+int highTextStart[2], highTextEnd[2];
 extern RECT boardRect;
 
 VOID
