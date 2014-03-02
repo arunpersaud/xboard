@@ -913,11 +913,16 @@ ParseSettingsFile(char *name, char **addr)
   if (ok) {
     f = fopen(fullname, "r");
 #ifdef DATADIR
-    if(f == NULL && *fullname != '/') {         // when a relative name did not work
+    if(f == NULL && *fullname != '/' && !addr) {         // when a relative name did not work
 	char buf[MSG_SIZ];
-	snprintf(buf, MSG_SIZ, "%s/themes/conf", DATADIR);
-	MySearchPath(buf, name, fullname); // also look in standard place
+	snprintf(buf, MSG_SIZ, "~/.xboard/themes/conf/%s", name);
+	MySearchPath(installDir, buf, fullname); // first look in user's own files
 	f = fopen(fullname, "r");
+	if(f == NULL) {
+	    snprintf(buf, MSG_SIZ, "%s/themes/conf", DATADIR);
+	    MySearchPath(buf, name, fullname); // also look in standard place
+	    f = fopen(fullname, "r");
+	}
     }
 #endif
     if (f != NULL) {
