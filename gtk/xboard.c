@@ -384,7 +384,8 @@ ParseFont (char *name, int number)
   if(sscanf(name, "size%d:", &size)) {
     // [HGM] font: font is meant for specific boardSize (likely from settings file);
     //       defer processing it until we know if it matches our board size
-    if(size >= 0 && size<MAX_SIZE) { // for now, fixed limit
+    if(!strstr(name, "-*-") &&       // ignore X-fonts
+       size >= 0 && size<MAX_SIZE) { // for now, fixed limit
 	fontTable[number][size] = strdup(strchr(name, ':')+1);
 	fontValid[number][size] = True;
     }
@@ -599,7 +600,7 @@ void
 ResizeBoardWindow (int w, int h, int inhibit)
 {
     GtkAllocation a;
-    if(clockKludge) return; // ignore as long as clock does not have final height
+//    if(clockKludge) return; // ignore as long as clock does not have final height
     gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH + a.height + 1;
@@ -615,6 +616,18 @@ MakeColors ()
 void
 InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
 {   // determine what fonts to use, and create them
+
+    if(!fontIsSet[CLOCK_FONT] && fontValid[CLOCK_FONT][squareSize])
+	appData.clockFont = fontTable[CLOCK_FONT][squareSize];
+    if(!fontIsSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
+	appData.font = fontTable[MESSAGE_FONT][squareSize];
+    if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
+	appData.coordFont = fontTable[COORD_FONT][squareSize];
+
+    appData.font = InsertPxlSize(appData.font, fontPxlSize);
+    appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
+    appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
+
 #ifdef TODO_GTK
     XrmValue vTo;
     XrmDatabase xdb;
@@ -987,9 +1000,7 @@ main (int argc, char **argv)
     /*
      * Determine what fonts to use.
      */
-#ifdef TODO_GTK
-    InitializeFonts(clockFontPxlSize, coordFontPxlSize, fontPxlSize);
-#endif
+    InitializeFonts((2*clockFontPxlSize+1)/3, coordFontPxlSize, fontPxlSize);
 
     /*
      * Detect if there are not enough colors available and adapt.
@@ -1216,7 +1227,16 @@ CmailSigHandlerCallBack (InputSourceRef isr, VOIDSTAR closure, char *message, in
 
 #define Abs(n) ((n)<0 ? -(n) : (n))
 
+char *
+InsertPxlSize (char *pattern, int targetPxlSize)
+{
+    char buf[MSG_SIZ];
+    snprintf(buf, MSG_SIZ, pattern, targetPxlSize); // pattern is something like "Sans Bold %d"
+    return strdup(buf);
+}
+
 #ifdef ENABLE_NLS
+#ifdef TODO_GTK
 char *
 InsertPxlSize (char *pattern, int targetPxlSize)
 {
@@ -1267,6 +1287,7 @@ InsertPxlSize (char *pattern, int targetPxlSize)
 
     return base_fnt_lst;
 }
+#endif
 
 #ifdef TODO_GTK
 XFontSet
@@ -1533,11 +1554,7 @@ ReSize (WindowPlacement *wp)
 	int sqx, sqy, w, h, hc, lg = lineGap;
 	gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
 	hc = a.height; // clock height can depend on single / double line clock text!
-        if(clockKludge == a.height) return; // wait for clock to get final size at startup
-	if(clockKludge) { // clock height OK now; calculate desired initial board height
-	    clockKludge = 0;
-	    wp->height = BOARD_HEIGHT * (squareSize + lineGap) + lineGap + marginH + hc;
-	}
+	wp->height = BOARD_HEIGHT * (squareSize + lineGap) + lineGap + marginH + hc;
 	if(wp->width == wpMain.width && wp->height == wpMain.height) return; // not sized
 	sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
 	sqy = (wp->height - lg - marginH - hc) / BOARD_HEIGHT - lg;
@@ -1920,11 +1937,15 @@ DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
     gtk_widget_modify_bg(gtk_widget_get_parent(opt->handle), GTK_STATE_NORMAL, &col);
 
     if (appData.clockMode) {
-        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s:%s%s</span>",
+        markup = g_markup_printf_escaped("<span font=\"%s\" background=\"%s\" foreground=\"%s\">%s:%s%s</span>", appData.clockFont,
 					 bgcolor, fgcolor, color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
+//        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s:%s%s</span>",
+//					 bgcolor, fgcolor, color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
     } else {
-        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s  </span>",
+        markup = g_markup_printf_escaped("<span font=\"%s\" background=\"%s\" foreground=\"%s\">%s  </span>", appData.clockFont,
 					 bgcolor, fgcolor, color);
+//        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s  </span>",
+//					 bgcolor, fgcolor, color);
     }
     gtk_label_set_markup(GTK_LABEL(w), markup);
     g_free(markup);

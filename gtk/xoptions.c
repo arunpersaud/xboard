@@ -1549,6 +1549,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  case DropDown:
 	    top--;
 	    msg = _(option[i].name); // write name on the menu button
+	    if(tinyLayout) { strncpy(def, msg, 1); msg = def; }
 //	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 //	    XtSetArg(args[j], XtNlabel, msg);  j++;
 	    option[i].handle = (void*)

@@ -53,24 +53,9 @@
 
 #define ICS_LOGON    ".icsrc"
 #define MANPAGE      "xboard.6"
-#if ENABLE_NLS
-#define CLOCK_FONT_NAME \
-  "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*," \
-  "-misc-fixed-bold-r-normal--*-*-*-*-*-*-*-*," \
-  "-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
-#define COORD_FONT_NAME \
-  "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*," \
-  "-misc-fixed-bold-r-normal--*-*-*-*-*-*-*-*," \
-  "-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
-#define DEFAULT_FONT_NAME \
-  "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*," \
-  "-misc-fixed-medium-r-normal--*-*-*-*-*-*-*-*," \
-  "-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
-#else
-#define CLOCK_FONT_NAME         "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
-#define COORD_FONT_NAME         "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
-#define DEFAULT_FONT_NAME       "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*"
-#endif
+#define CLOCK_FONT_NAME         "Sans Bold %d"
+#define COORD_FONT_NAME         "Sans Bold %d"
+#define DEFAULT_FONT_NAME       "Sans Normal %d"
 #define COLOR_SHOUT             "green"
 #define COLOR_SSHOUT            "green,black,1"
 #define COLOR_CHANNEL1          "cyan"
@@ -107,11 +92,11 @@ typedef struct {
   { "Moderate", 58, 3, 34, 12, 14, 1, 0, 768 }, \
   { "Average",  54, 2, 30, 11, 12, 1, 0, 600 }, \
   { "Middling", 49, 2, 24, 10, 12, 1, 0, 600 }, \
-  { "Mediocre", 45, 2, 20, 10, 12, 1, 0, 600 }, \
-  { "Small",    40, 2, 20, 10, 12, 1, 0, 480 }, \
-  { "Slim",     37, 2, 20, 10, 12, 1, 0, 480 }, \
-  { "Petite",   33, 1, 15, 9,  11, 1, 0, 480 }, \
-  { "Dinky",    29, 1, 15, 9,  11, 1, 0, 480 }, \
+  { "Mediocre", 45, 2, 20, 10, 12, 1, 1, 600 }, \
+  { "Small",    40, 2, 20, 10, 12, 1, 1, 480 }, \
+  { "Slim",     37, 2, 20, 10, 12, 1, 1, 480 }, \
+  { "Petite",   33, 1, 15, 9,  11, 1, 1, 480 }, \
+  { "Dinky",    29, 1, 15, 9,  11, 1, 1, 480 }, \
   { "Teeny",    25, 1, 12, 8,  11, 1, 1, 480 }, \
   { "Tiny",     21, 1, 12, 8,  11, 1, 1, 0 }, \
   {   NULL,      0, 0,  0, 0,   0, 0, 0, 0 } }
