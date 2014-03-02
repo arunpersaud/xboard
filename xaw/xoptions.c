@@ -272,7 +272,8 @@ SetTextColor (char **cnames, int fg, int bg, int attr)
 
 void
 AppendColorized (Option *opt, char *message, int count)
-{ // ignore
+{
+  AppendText(opt, message);
 }
 
 void
@@ -1205,6 +1206,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    last = form; lastrow = oldLastRow; form = oldForm; forelast = oldForeLast;
 	    break;
 	  case Break:
+	    if(c) break;
 	    width++;
 	    height = i+1;
 	    stack = !(option[i].min & SAME_ROW);
@@ -1359,6 +1361,11 @@ void
 SetInsertPos (Option *opt, int pos)
 {
     Arg args[16];
+    if(pos == 999999) { // this kludge to indicate end in GTK is fatal in Xaw
+      char *s;
+      GetWidgetText(opt, &s);
+      pos = strlen(s) - 1;
+    }
     XtSetArg(args[0], XtNinsertPosition, pos);
     XtSetValues(opt->handle, args, 1);
 //    SetFocus(opt->handle, shells[InputBoxDlg], NULL, False); // No idea why this does not work, and the following is needed:
@@ -1370,6 +1377,8 @@ TypeInProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {   // can be used as handler for any text edit in any dialog (from GenericPopUp, that is)
     int n = prms[0][0] - '0';
     Widget sh = XtParent(XtParent(XtParent(w))); // popup shell
+    extern int hidden;
+    hidden = 0;
 
     if(n<2) { // Enter or Esc typed from primed text widget: treat as if dialog OK or cancel button hit.
 	int dlgNr; // figure out what the dialog number is by comparing shells (because we must pass it :( )

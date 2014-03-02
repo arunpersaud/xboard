@@ -1707,7 +1707,8 @@ PromotionPopUp (char choice)
 //---------------------------- Chat Windows ----------------------------------------------
 
 static char *line, *memo, *chatMemo, *partner, *texts[MAX_CHAT], dirty[MAX_CHAT], *inputs[MAX_CHAT], *icsLine, *tmpLine;
-static int activePartner, hidden = 1;
+static int activePartner;
+int hidden = 1;
 
 void ChatSwitch P((int n));
 int  ChatOK P((int n));
@@ -1861,7 +1862,7 @@ ChatOK (int n)
 	// from here on it could be back-end
 	if(line[strlen(line)-1] == '\n') line[strlen(line)-1] = NULLCHAR;
 	SaveInHistory(line);
-	if(hidden) snprintf(buf, MSG_SIZ, "%s\n", line); else // command for ICS
+	if(hidden || !*chatPartner[activePartner]) snprintf(buf, MSG_SIZ, "%s\n", line); else // command for ICS
 	if(!strcmp("whispers", chatPartner[activePartner]))
 	      snprintf(buf, MSG_SIZ, "whisper %s\n", line); // WHISPER box uses "whisper" to send
 	else if(!strcmp("shouts", chatPartner[activePartner]))
@@ -1972,7 +1973,7 @@ ChatProc ()
     if(GenericPopUp(chatOptions, _("ICS Interaction"), ChatDlg, BoardWindow, NONMODAL, appData.topLevel))
 	AddHandler(&chatOptions[CHAT_PARTNER], ChatDlg, 2), AddHandler(&chatOptions[CHAT_IN], ChatDlg, 2); // treats return as OK
     Show(&chatOptions[CHAT_PANE], hidden = 1); // hide
-    HardSetFocus(&chatOptions[CHAT_IN], 0);
+//    HardSetFocus(&chatOptions[CHAT_IN], 0);
     MarkMenu("View.OpenChatWindow", ChatDlg);
     CursorAtEnd(&chatOptions[CHAT_IN]);
 }
