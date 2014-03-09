@@ -204,8 +204,8 @@ int main P((int argc, char **argv));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
-#if ENABLE_NLS
 char *InsertPxlSize P((char *pattern, int targetPxlSize));
+#if ENABLE_NLS
 XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
@@ -1335,13 +1335,13 @@ CreateFontSet (char *base_fnt_lst)
  * The return value should be freed with XtFree when no
  * longer needed.
  */
+#ifdef TODO_GTK
 char *
 FindFont (char *pattern, int targetPxlSize)
 {
     char **fonts, *p, *best, *scalable, *scalableTail;
     int i, j, nfonts, minerr, err, pxlSize;
 
-#ifdef TODO_GTK
     fonts = XListFonts(xDisplay, pattern, 999999, &nfonts);
     if (nfonts < 1) {
 	fprintf(stderr, _("%s: no fonts match pattern %s\n"),
@@ -1390,9 +1390,9 @@ FindFont (char *pattern, int targetPxlSize)
 		pattern, targetPxlSize, p);
     }
     XFreeFontNames(fonts);
-#endif
     return p;
 }
+#endif
 #endif
 
 void
