@@ -1549,7 +1549,9 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  case DropDown:
 	    top--;
 	    msg = _(option[i].name); // write name on the menu button
-	    if(tinyLayout) { strncpy(def, msg, 1); msg = def; }
+#ifndef __APPLE__
+	    if(tinyLayout) { strcpy(def, msg); def[tinyLayout] = NULLCHAR; msg = def; } // clip menu text to keep menu bar small
+#endif
 //	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 //	    XtSetArg(args[j], XtNlabel, msg);  j++;
 	    option[i].handle = (void*)
