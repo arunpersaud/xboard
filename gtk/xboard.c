@@ -1554,11 +1554,13 @@ ReSize (WindowPlacement *wp)
 	int sqx, sqy, w, h, hc, lg = lineGap;
 	gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
 	hc = a.height; // clock height can depend on single / double line clock text!
-	wp->height = BOARD_HEIGHT * (squareSize + lineGap) + lineGap + marginH + hc;
+        if(clockKludge && hc != clockKludge) wp->height += hc - clockKludge, clockKludge = 0;
+	wpMain.height = BOARD_HEIGHT * (squareSize + lineGap) + lineGap + marginH + hc;
 	if(wp->width == wpMain.width && wp->height == wpMain.height) return; // not sized
 	sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
 	sqy = (wp->height - lg - marginH - hc) / BOARD_HEIGHT - lg;
 	if(sqy < sqx) sqx = sqy;
+        if(sqx < 20) return;
 	if(appData.overrideLineGap < 0) { // do second iteration with adjusted lineGap
 	    lg = lineGap = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
 	    sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
@@ -1566,7 +1568,6 @@ ReSize (WindowPlacement *wp)
 	    if(sqy < sqx) sqx = sqy;
 	}
 	if(sqx != squareSize) {
-//printf("new sq size %d (%dx%d)\n", sqx, wp->width, wp->height);
 	    squareSize = sqx; // adopt new square size
 	    CreatePNGPieces(); // make newly scaled pieces
 	    InitDrawingSizes(0, 0); // creates grid etc.

@@ -181,7 +181,9 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 
     if(boardSize == -2 && gameInfo.variant != oldVariant
                        && oldNrOfFiles && oldNrOfFiles != BOARD_WIDTH) { // called because variant switch changed board format
-	squareSize = ((squareSize + lineGap) * oldNrOfFiles + 0.5*BOARD_WIDTH) / BOARD_WIDTH - lineGap; // keep total width fixed
+	squareSize = ((squareSize + lineGap) * oldNrOfFiles + 0.5*BOARD_WIDTH) / BOARD_WIDTH; // keep total width fixed
+	if(appData.overrideLineGap < 0) lineGap = squareSize < 37 ? 1 : squareSize < 59 ? 2 : squareSize < 116 ? 3 : 4;
+        squareSize -= lineGap;
 	CreatePNGPieces();
         CreateGrid();
     }
