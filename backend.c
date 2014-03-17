@@ -8852,7 +8852,10 @@ printf("score=%d count=%d\n",score,count);
       int dummy, w, h, hand, s=6; char buf[MSG_SIZ], varName[MSG_SIZ];
       if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
       *buf = NULLCHAR;
-      if(sscanf(message, "setup (%s", buf) == 1) s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
+      if(sscanf(message, "setup (%s", buf) == 1) {
+        s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
+        ASSIGN(appData.pieceToCharTable, buf);
+      }
       if(startedFromSetupPosition) return;
       dummy = sscanf(message+s, "%dx%d+%d_%s", &w, &h, &hand, varName);
       if(dummy >= 3) {
@@ -10424,6 +10427,7 @@ InitChessProgram (ChessProgramState *cps, int setup)
 	SendToProgram(buf, cps);
     }
 
+    setboardSpoiledMachineBlack = FALSE;
     SendToProgram(cps->initString, cps);
     if (gameInfo.variant != VariantNormal &&
 	gameInfo.variant != VariantLoadable
