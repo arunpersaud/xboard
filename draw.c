@@ -727,6 +727,7 @@ DrawText (char *string, int x, int y, int align)
 	}
 
 	cairo_move_to (cr, xx-1, yy);
+	if(align == -2) cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); else
 	if(align < 3) cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 	else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 	cairo_show_text (cr, string);
@@ -755,7 +756,7 @@ InscribeKanji (ChessSquare piece, int x, int y)
     strncpy(buf, p, 10);
     for(q=buf; (*++q & 0xC0) == 0x80;);
     *q = NULLCHAR;
-    DrawText(buf, x, y, -1);
+    DrawText(buf, x, y, n > WhiteLion ? -2 : -1);
 }
 
 void
