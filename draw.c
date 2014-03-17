@@ -708,7 +708,7 @@ DrawText (char *string, int x, int y, int align)
 		    CAIRO_FONT_SLANT_NORMAL,
 		    CAIRO_FONT_WEIGHT_BOLD);
 
-	cairo_set_font_size (cr, squareSize/4);
+	cairo_set_font_size (cr, align < 0 ? 2*squareSize/3 : squareSize/4);
 	// calculate where it goes
 	cairo_text_extents (cr, string, &te);
 
@@ -722,6 +722,8 @@ DrawText (char *string, int x, int y, int align)
 	    yy += -te.y_bearing + 3;
 	} else if (align == 4) {
 	    xx += te.x_bearing + 1, yy += -te.y_bearing + 3;
+	} else if (align < 0) {
+	    xx += squareSize/2 - te.width/2, yy += 9*squareSize/16 - te.y_bearing/2;
 	}
 
 	cairo_move_to (cr, xx-1, yy);
@@ -729,6 +731,31 @@ DrawText (char *string, int x, int y, int align)
 	else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 	cairo_show_text (cr, string);
 	cairo_destroy (cr);
+}
+
+void
+InscribeKanji (ChessSquare piece, int x, int y)
+{
+    char *p, *q, buf[10];
+    int n;
+    if(piece == EmptySquare) return;
+    if(piece >= BlackPawn) piece = BLACK_TO_WHITE piece;
+    p = appData.inscriptions;
+    n = piece;
+    while(piece > WhitePawn) {
+      if(*p++ == NULLCHAR) {
+        if(n != WhiteKing) return;
+        p = q;
+        break;
+      }
+      q = p - 1;
+      while((*p & 0xC0) == 0x80) p++; // skip UTF-8 continuation bytes
+      piece--;
+    }
+    strncpy(buf, p, 10);
+    for(q=buf; (*++q & 0xC0) == 0x80;);
+    *q = NULLCHAR;
+    DrawText(buf, x, y, -1);
 }
 
 void
@@ -740,6 +767,7 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 	BlankSquare(csBoardWindow, x, y, square_color, piece, 1);
     } else {
 	pngDrawPiece(csBoardWindow, piece, square_color, x, y);
+        InscribeKanji(piece, x, y);
     }
 
     if(align) { // square carries inscription (coord or piece count)

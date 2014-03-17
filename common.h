@@ -631,6 +631,7 @@ typedef struct {
     int darkBackTextureMode;
     char * renderPiecesWithFont; /* Name of font for rendering chess pieces */
     char * fontToPieceTable; /* Map to translate font character to chess pieces */
+    char * inscriptions;         /* text (kanji) to write on top of a piece     */
     int fontBackColorWhite;
     int fontForeColorWhite;
     int fontBackColorBlack;

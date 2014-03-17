@@ -8705,7 +8705,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         }
 
         /* [AS] Adjudicate game if needed (note: remember that forwardMostMove now points past the last move) */
-        if( gameMode == TwoMachinesPlay && adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
+        if( gameMode == TwoMachinesPlay && appData.adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
             int count = 0;
 
             while( count < adjudicateLossPlies ) {
@@ -8714,8 +8714,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                 if( count & 1 ) {
                     score = -score; /* Flip score for winning side */
                 }
-
-                if( score > adjudicateLossThreshold ) {
+printf("score=%d count=%d\n",score,count);
+                if( score > appData.adjudicateLossThreshold ) {
                     break;
                 }
 
