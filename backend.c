@@ -17816,7 +17816,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 		    appData.NrRanks = gameInfo.boardHeight - i; i=0;
                 }
 		break;
-#if(BOARD_FILES >= 10)
+#if(BOARD_FILES >= 10)*0
             } else if(*p=='x' || *p=='X') { /* [HGM] X means 10 */
                 p++; emptycount=10;
                 if (j + emptycount > gameInfo.boardWidth) return FALSE;
