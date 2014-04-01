@@ -661,6 +661,7 @@ typedef struct {
     int adjudicateDrawMoves;
     Boolean autoDisplayComment;
     Boolean autoDisplayTags;
+    Boolean pseudo[ENGINES]; /* [HGM] pseudo-engines */
     Boolean isUCI[ENGINES];
     Boolean hasOwnBookUCI[ENGINES];
     char * adapterCommand;

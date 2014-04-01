@@ -847,6 +847,7 @@ InitEngine (ChessProgramState *cps, int n)
     cps->analyzing = FALSE;
     cps->initDone = FALSE;
     cps->reload = FALSE;
+    cps->pseudo = appData.pseudo[n];
 
     /* New features added by Tord: */
     cps->useFEN960 = FALSE;
@@ -9136,6 +9137,10 @@ printf("score=%d count=%d\n",score,count);
 	   Don't use it. */
 	cps->sendTime = 0;
     }
+    if (cps->pseudo) { // [HGM] pseudo-engine, granted unusual powers
+	if (sscanf(message, "wtime %ld\n", &whiteTimeRemaining) == 1 || // adjust clock times
+	    sscanf(message, "btime %ld\n", &blackTimeRemaining) == 1   ) return;
+    }
 
     /*
      * If chess program startup fails, exit with an error message.
@@ -10841,6 +10846,7 @@ SwapEngines (int n)
     SWAP(accumulateTC, h)
     SWAP(drawDepth, h)
     SWAP(host, p)
+    SWAP(pseudo, h)
 }
 
 int

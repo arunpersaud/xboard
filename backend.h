@@ -343,6 +343,7 @@ typedef struct XB_CPS {
     int analyzing;
     int protocolVersion;
     int initDone;
+    int pseudo;
 
     /* Added by Tord: */
     int useFEN960;   /* 0=use "KQkq" style FENs, 1=use "HAha" style FENs */
