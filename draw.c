@@ -768,7 +768,7 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 	BlankSquare(csBoardWindow, x, y, square_color, piece, 1);
     } else {
 	pngDrawPiece(csBoardWindow, piece, square_color, x, y);
-        InscribeKanji(piece, x, y);
+        if(appData.inscriptions[0]) InscribeKanji(piece, x, y);
     }
 
     if(align) { // square carries inscription (coord or piece count)
