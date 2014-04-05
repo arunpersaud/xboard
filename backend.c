@@ -17639,12 +17639,12 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
                 if(PieceToChar(piece) == '+') {
                     /* [HGM] write promoted pieces as '+<unpromoted>' (Shogi) */
                     *p++ = '+';
-                    piece = (ChessSquare)(DEMOTED piece);
+                    piece = (ChessSquare)(CHUDEMOTED piece);
                 }
                 *p++ = (piece == DarkSquare ? '*' : PieceToChar(piece));
                 if(p[-1] == '~') {
                     /* [HGM] flag promoted pieces as '<promoted>~' (Crazyhouse) */
-                    p[-1] = PieceToChar((ChessSquare)(DEMOTED piece));
+                    p[-1] = PieceToChar((ChessSquare)(CHUDEMOTED piece));
                     *p++ = '~';
                 }
 	    }

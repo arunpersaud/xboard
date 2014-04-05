@@ -313,6 +313,7 @@ typedef enum {
 #define DEMOTED        (int)WhiteRook - (int)WhiteDragon + (int)
 #define SHOGI          (int)EmptySquare + (int)
 #define CHUPROMOTED    ((int)WhitePDragon - (int)WhiteDragon)*(gameInfo.variant == VariantChu) + PROMOTED
+#define CHUDEMOTED     ((int)WhiteDragon - (int)WhitePDragon)*(gameInfo.variant == VariantChu) + DEMOTED
 #define IS_SHOGI(V)    ((V) == VariantShogi || (V) == VariantChu)
 #define IS_LION(V)     ((V) == WhiteLion || (V) == BlackLion)
 
