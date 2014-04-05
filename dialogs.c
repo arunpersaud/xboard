@@ -1218,6 +1218,7 @@ NewTagsPopup (char *text, char *msg)
     char *title = bookUp ? _("Edit book") : _("Tags");
 
     tagsOptions[2].type = bookUp ? Button : Skip;
+    tagsOptions[3].min = bookUp ? SAME_ROW : 0;
     if(DialogExists(TagsDlg)) { // if already exists, alter title and content
 	SetWidgetText(&tagsOptions[1], text, TagsDlg);
 	SetDialogTitle(TagsDlg, title);
