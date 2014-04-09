@@ -15013,14 +15013,14 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 			boards[0][y][x] = p;
 		    }
 		}
-		menuBoard[1][x] = menuBoard[BOARD_HEIGHT-2][x] = p;
 	    }
 	    if(gameMode != IcsExamining) { // [HGM] editpos: cycle trough boards
-		for(x = BOARD_LEFT; x < BOARD_RGHT; x++) { // create 'menu board' by removing duplicates 
-		    ChessSquare p = menuBoard[0][x];
-		    for(y = x + 1; y < BOARD_RGHT; y++) if(menuBoard[0][y] == p) menuBoard[0][y] = EmptySquare;
-		    p = menuBoard[BOARD_HEIGHT-1][x];
-		    for(y = x + 1; y < BOARD_RGHT; y++) if(menuBoard[BOARD_HEIGHT-1][y] == p) menuBoard[BOARD_HEIGHT-1][y] = EmptySquare;
+		int r;
+		for(r = 0; r < BOARD_HEIGHT; r++) {
+		  for(x = BOARD_LEFT; x < BOARD_RGHT; x++) { // create 'menu board' by removing duplicates 
+		    ChessSquare p = menuBoard[r][x];
+		    for(y = x + 1; y < BOARD_RGHT; y++) if(menuBoard[r][y] == p) menuBoard[r][y] = EmptySquare;
+		  }
 		}
 		DisplayMessage("Clicking clock again restores position", "");
 		if(gameInfo.variant != lastVariant) lastVariant = gameInfo.variant, CopyBoard(erasedBoard, boards[0]);
