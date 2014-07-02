@@ -6972,7 +6972,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
         return;
     }
 
-    if(toX < 0 || toY < 0) return;
+    if((toX < 0 || toY < 0) && (fromY != DROP_RANK || fromX != EmptySquare)) return;
     pup = boards[currentMove][toY][toX];
 
     /* [HGM] If move started in holdings, it means a drop. Convert to standard form */
@@ -6992,7 +6992,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
     moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
                                          fromY, fromX, toY, toX, promoChar);
 
-    if(fromY == DROP_RANK && fromX == EmptySquare && (gameMode == AnalyzeMode || gameMode == EditGame)) moveType = NormalMove;
+    if(fromY == DROP_RANK && fromX == EmptySquare && (gameMode == AnalyzeMode || gameMode == EditGame || PosFlags(0) & F_NULL_MOVE)) moveType = NormalMove;
 
     /* [HGM] but possibly ignore an IllegalMove result */
     if (appData.testLegality) {
