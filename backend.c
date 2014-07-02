@@ -15295,7 +15295,7 @@ ClockClick (int which)
 	    if(!appData.pieceMenu && blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetBlackToPlayEvent();
 	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame ||
-		      gameMode == MachinePlaysBlack && PosFlags(0) & F_NULL_MOVE && !blackFlag) && WhiteOnMove(currentMove)) {
+		      gameMode == MachinePlaysBlack && PosFlags(0) & F_NULL_MOVE && !blackFlag && !shiftKey) && WhiteOnMove(currentMove)) {
           UserMoveEvent((int)EmptySquare, DROP_RANK, 0, 0, 0); // [HGM] multi-move: if not out of time, enters null move
 	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
@@ -15308,7 +15308,7 @@ ClockClick (int which)
 	    if(!appData.pieceMenu && !blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetWhiteToPlayEvent();
 	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame ||
-		      gameMode == MachinePlaysWhite && PosFlags(0) & F_NULL_MOVE && !whiteFlag) && !WhiteOnMove(currentMove)) {
+		      gameMode == MachinePlaysWhite && PosFlags(0) & F_NULL_MOVE && !whiteFlag && !shiftKey) && !WhiteOnMove(currentMove)) {
           UserMoveEvent((int)EmptySquare, DROP_RANK, 0, 0, 0); // [HGM] multi-move
 	  } else if (shiftKey) {
 	    AdjustClock(which, -1);

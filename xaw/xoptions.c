@@ -308,12 +308,20 @@ SetIconName (DialogClass dlg, char *name)
 }
 
 static void
+LabelCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
+{   // called on ButtonPress in label widgets with attached user handler (clocks!)
+    int s, data = (intptr_t) client_data;
+    Option *opt = dialogOptions[data >> 8] + (s = data & 255);
+
+    if(((XButtonEvent*)event)->button != Button1) s = -s;
+    ((ButtonCallback*) opt->target) (s);
+}
+
+static void
 CheckCallback (Widget ww, XtPointer client_data, XEvent *event, Boolean *b)
 {
     int s, data = (intptr_t) client_data;
     Option *opt = dialogOptions[data >> 8] + (data & 255);
-
-    if(opt->type == Label) { ((ButtonCallback*) opt->target)(data&255); return; }
 
     GetWidgetState(opt, &s);
     SetWidgetState(opt, !s);
@@ -1093,7 +1101,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 	    XtSetArg(args[j], XtNlabel, _(msg));  j++;
 	    option[i].handle = (void*) (last = XtCreateManagedWidget("label", labelWidgetClass, form, args, j));
 	    if(option[i].target) // allow user to specify event handler for button presses
-		XtAddEventHandler(last, ButtonPressMask, False, CheckCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
+		XtAddEventHandler(last, ButtonPressMask, False, LabelCallback, (XtPointer)(intptr_t) i + 256*dlgNr);
 	    break;
 	  case SaveButton:
 	  case Button:
