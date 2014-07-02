@@ -413,6 +413,11 @@ PosFlags (index)
   case VariantGrand:
     flags &= ~F_ALL_CASTLE_OK;
     break;
+  case VariantChu:
+  case VariantChuChess:
+  case VariantLion:
+    flags |= F_NULL_MOVE;
+    break;
   default:
     break;
   }
@@ -15289,7 +15294,8 @@ ClockClick (int which)
 	  if (gameMode == EditPosition || gameMode == IcsExamining) {
 	    if(!appData.pieceMenu && blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetBlackToPlayEvent();
-	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame) && !blackFlag && WhiteOnMove(currentMove)) {
+	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame ||
+		      gameMode == MachinePlaysBlack && PosFlags(0) & F_NULL_MOVE && !blackFlag) && WhiteOnMove(currentMove)) {
           UserMoveEvent((int)EmptySquare, DROP_RANK, 0, 0, 0); // [HGM] multi-move: if not out of time, enters null move
 	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
@@ -15301,7 +15307,8 @@ ClockClick (int which)
 	  if (gameMode == EditPosition || gameMode == IcsExamining) {
 	    if(!appData.pieceMenu && !blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetWhiteToPlayEvent();
-	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame) && !whiteFlag && !WhiteOnMove(currentMove)) {
+	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame ||
+		      gameMode == MachinePlaysWhite && PosFlags(0) & F_NULL_MOVE && !whiteFlag) && !WhiteOnMove(currentMove)) {
           UserMoveEvent((int)EmptySquare, DROP_RANK, 0, 0, 0); // [HGM] multi-move
 	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
