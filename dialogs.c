@@ -2107,7 +2107,7 @@ static void GLT_Button P((int n));
 static int GLT_OK P((int n));
 
 static Option listOptions[] = {
-{300, LR|TB, 200, NULL, (void*) strings, "", NULL, ListBox, "" }, // For GTK we need to specify a height, as default would just show 3 lines
+{300, LR|TB, 200, NULL, (void*) strings, NULL, NULL, ListBox, "" }, // For GTK we need to specify a height, as default would just show 3 lines
 { 0,    0,     0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("factory") },
 { 0, SAME_ROW, 0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("up") },
 { 0, SAME_ROW, 0, NULL, (void*) &GLT_Button, NULL, NULL, Button, N_("down") },
