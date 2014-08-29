@@ -1320,6 +1320,9 @@ main (int argc, char **argv)
       EngineOutputPopUp();
     }
 
+    gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
+    InitPosition(TRUE);
+
     InitBackEnd2();
 
     if (errorExitStatus == -1) {
@@ -1340,8 +1343,6 @@ main (int argc, char **argv)
 	}
     }
 
-    gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
-    InitPosition(TRUE);
     UpdateLogos(TRUE);
 //    XtSetKeyboardFocus(shellWidget, formWidget);
     XSetInputFocus(xDisplay, XtWindow(formWidget), RevertToPointerRoot, CurrentTime);

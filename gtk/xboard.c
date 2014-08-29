@@ -1152,6 +1152,9 @@ main (int argc, char **argv)
       BoardToTop();
     }
 
+    gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
+    InitPosition(TRUE);
+
     InitBackEnd2();
 
     if (errorExitStatus == -1) {
@@ -1172,8 +1175,6 @@ main (int argc, char **argv)
 	}
     }
 
-    gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
-    InitPosition(TRUE);
     UpdateLogos(TRUE);
 //    XtSetKeyboardFocus(shellWidget, formWidget);
 #ifdef TODO_GTK
