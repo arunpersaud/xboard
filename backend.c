@@ -12364,12 +12364,26 @@ QuickCompare (Board board, int *minCounts, int *maxCounts)
 int
 QuickScan (Board board, Move *move)
 {   // reconstruct game,and compare all positions in it
-    int cnt=0, stretch=0, total = MakePieceList(board, counts);
+    int cnt=0, stretch=0, found = -1, total = MakePieceList(board, counts);
     do {
 	int piece = move->piece;
 	int to = move->to, from = pieceList[piece];
+	if(!found) { // if already found just scan to game end for final piece count
+	  if(QuickCompare(soughtBoard, minSought, maxSought) ||
+	   appData.ignoreColors && QuickCompare(reverseBoard, minReverse, maxReverse) ||
+	   flipSearch && (QuickCompare(flipBoard, minSought, maxSought) ||
+				appData.ignoreColors && QuickCompare(rotateBoard, minReverse, maxReverse))
+	    ) {
+	    static int lastCounts[EmptySquare+1];
+	    int i;
+	    if(stretch) for(i=0; i<EmptySquare; i++) if(lastCounts[i] != counts[i]) { stretch = 0; break; } // reset if material changes
+	    if(stretch++ == 0) for(i=0; i<EmptySquare; i++) lastCounts[i] = counts[i]; // remember actual material
+	  } else stretch = 0;
+	  if(stretch && (appData.searchMode == 1 || stretch >= appData.stretch)) found = cnt + 1 - stretch;
+	  if(found && !appData.minPieces) return found;
+	}
 	if(piece <= Q_PROMO) { // special moves encoded by otherwise invalid piece numbers 1-4
-	  if(!piece) return -1;
+	  if(!piece) return (appData.minPieces && (total < appData.minPieces || total > appData.maxPieces) ? -1 : found);
 	  if(piece == Q_PROMO) { // promotion, encoded as (Q_PROMO, to) + (piece, promoType)
 	    piece = (++move)->piece;
 	    from = pieceList[piece];
@@ -12400,17 +12414,6 @@ QuickScan (Board board, Move *move)
 	quickBoard[to] = piece;
 	pieceList[piece] = to;
 	cnt++; turn ^= 3;
-	if(QuickCompare(soughtBoard, minSought, maxSought) ||
-	   appData.ignoreColors && QuickCompare(reverseBoard, minReverse, maxReverse) ||
-	   flipSearch && (QuickCompare(flipBoard, minSought, maxSought) ||
-				appData.ignoreColors && QuickCompare(rotateBoard, minReverse, maxReverse))
-	  ) {
-	    static int lastCounts[EmptySquare+1];
-	    int i;
-	    if(stretch) for(i=0; i<EmptySquare; i++) if(lastCounts[i] != counts[i]) { stretch = 0; break; } // reset if material changes
-	    if(stretch++ == 0) for(i=0; i<EmptySquare; i++) lastCounts[i] = counts[i]; // remember actual material
-	} else stretch = 0;
-	if(stretch && (appData.searchMode == 1 || stretch >= appData.stretch)) return cnt + 1 - stretch;
 	move++;
     } while(1);
 }

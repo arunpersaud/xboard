@@ -2535,6 +2535,7 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     SetDlgItemInt(hDlg, OPT_Stretch, appData.stretch, FALSE);
     CheckDlgButton(hDlg, OPT_Reversed, appData.ignoreColors);
     CheckDlgButton(hDlg, OPT_Mirror, appData.findMirror);
+    SetDlgItemText(hDlg, OPT_Range,  "");
     switch (appData.searchMode) {
     case 1:
       CheckDlgButton(hDlg, OPT_Exact, TRUE);
@@ -2579,6 +2580,10 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.searchMode = LoadOptionsWhichRadio(hDlg);
       appData.ignoreColors = IsDlgButtonChecked(hDlg, OPT_Reversed);
       appData.findMirror   = IsDlgButtonChecked(hDlg, OPT_Mirror);
+      appData.eloThreshold1 = GetDlgItemText(hDlg, OPT_Range, buf, MSG_SIZ);
+      appData.minPieces = appData.maxPieces = 0;
+      sscanf(buf, "%d-%d", appData.minPieces, appData.maxPieces);
+      if(appData.maxPieces < appData.minPieces) appData.maxPieces = appData.minPieces;
       EndDialog(hDlg, TRUE);
       return TRUE;
 

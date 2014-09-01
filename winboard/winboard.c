@@ -260,7 +260,8 @@ int dialogItems[][42] = {
 { DLG_TimeControl, IDC_Babble, OPT_TCUseMoves, OPT_TCUseInc, OPT_TCUseFixed, 
   OPT_TCtext1, OPT_TCtext2, OPT_TCitext1, OPT_TCitext2, OPT_TCftext, GPB_Factors,   IDC_Factor1, IDC_Factor2, IDOK, IDCANCEL }, 
 { DLG_LoadOptions, OPT_Autostep, OPT_AStext1, OPT_Exact, OPT_Subset, OPT_Struct, OPT_Material, OPT_Range, OPT_Difference,
-  OPT_elo1t, OPT_elo2t, OPT_datet, OPT_Stretch, OPT_Stretcht, OPT_Reversed, OPT_SearchMode, OPT_Mirror, OPT_thresholds, IDOK, IDCANCEL }, 
+  OPT_elo1t, OPT_elo2t, OPT_datet, OPT_Stretch, OPT_Stretcht, OPT_Reversed, OPT_SearchMode, OPT_Mirror, OPT_thresholds,
+  OPT_Ranget, IDOK, IDCANCEL }, 
 { DLG_SaveOptions, OPT_Autosave, OPT_AVPrompt, OPT_AVToFile, OPT_AVBrowse,
   801, OPT_PGN, OPT_Old, OPT_OutOfBookInfo, IDOK, IDCANCEL }, 
 { 1536, 1090, IDC_Directories, 1089, 1091, IDOK, IDCANCEL, 1038, IDC_IndexNr, 1037 }, 
@@ -1810,6 +1811,7 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
     COLORREF chroma = RGB(0xFF,0x00,0xFF);
     RECT rc;
     SIZE sz;
+
 
     POINT pt;
     int backColor = whitePieceColor; 

@@ -697,11 +697,14 @@ IcsOptionsProc ()
 static char *modeNames[] = { N_("Exact position match"), N_("Shown position is subset"), N_("Same material with exactly same Pawn chain"),
 		      N_("Same material"), N_("Material range (top board half optional)"), N_("Material difference (optional stuff balanced)"), NULL };
 static char *modeValues[] = { "1", "2", "3", "4", "5", "6" };
-static char *searchMode;
+static char *searchMode, *countRange;
 
 static int
 LoadOptionsOK ()
 {
+    appData.minPieces = appData.maxPieces = 0;
+    sscanf(countRange, "%d-%d", &appData.minPieces, &appData.maxPieces);
+    if(appData.maxPieces < appData.minPieces) appData.maxPieces = appData.minPieces;
     appData.searchMode = atoi(searchMode);
     return 1;
 }
@@ -718,6 +721,7 @@ static Option loadOptions[] = {
 { 0, 0,5000,    NULL, (void*) &appData.eloThreshold2, "", NULL, Spin, N_("Elo of weakest player at least:") },
 { 0, 0,5000,    NULL, (void*) &appData.dateThreshold, "", NULL, Spin, N_("No games before year:") },
 { 0, 1,50,      NULL, (void*) &appData.stretch, "", NULL, Spin, N_("Minimum nr consecutive positions:") },
+{ 0, 0,197,     NULL, (void*) &countRange, "", NULL, TextBox,  "Final nr of pieces" },
 { 0, 0,205,     NULL, (void*) &searchMode, (char*) modeValues, modeNames, ComboBox, N_("Search mode:") },
 { 0, 0, 0,      NULL, (void*) &appData.ignoreColors, "", NULL, CheckBox, N_("Also match reversed colors") },
 { 0, 0, 0,      NULL, (void*) &appData.findMirror, "", NULL, CheckBox, N_("Also match left-right flipped position") },
@@ -727,6 +731,7 @@ static Option loadOptions[] = {
 void
 LoadOptionsPopUp (DialogClass parent)
 {
+   ASSIGN(countRange, "");
    ASSIGN(searchMode, modeValues[appData.searchMode-1]);
    GenericPopUp(loadOptions, _("Load Game Options"), TransientDlg, parent, MODAL, 0);
 }

@@ -736,6 +736,8 @@ typedef struct {
     int dateThreshold;
     int searchMode;
     int stretch;
+    int minPieces;
+    int maxPieces;
     Boolean ignoreColors;
     Boolean findMirror;
     char *userName;
