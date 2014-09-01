@@ -12368,7 +12368,7 @@ QuickScan (Board board, Move *move)
     do {
 	int piece = move->piece;
 	int to = move->to, from = pieceList[piece];
-	if(!found) { // if already found just scan to game end for final piece count
+	if(found < 0) { // if already found just scan to game end for final piece count
 	  if(QuickCompare(soughtBoard, minSought, maxSought) ||
 	   appData.ignoreColors && QuickCompare(reverseBoard, minReverse, maxReverse) ||
 	   flipSearch && (QuickCompare(flipBoard, minSought, maxSought) ||
@@ -12380,7 +12380,7 @@ QuickScan (Board board, Move *move)
 	    if(stretch++ == 0) for(i=0; i<EmptySquare; i++) lastCounts[i] = counts[i]; // remember actual material
 	  } else stretch = 0;
 	  if(stretch && (appData.searchMode == 1 || stretch >= appData.stretch)) found = cnt + 1 - stretch;
-	  if(found && !appData.minPieces) return found;
+	  if(found >= 0 && !appData.minPieces) return found;
 	}
 	if(piece <= Q_PROMO) { // special moves encoded by otherwise invalid piece numbers 1-4
 	  if(!piece) return (appData.minPieces && (total < appData.minPieces || total > appData.maxPieces) ? -1 : found);
@@ -12408,7 +12408,7 @@ QuickScan (Board board, Move *move)
 	  }
 	}
 	if(appData.searchMode > 2) counts[pieceType[quickBoard[to]]]--; // account capture
-	if((total -= (quickBoard[to] != 0)) < soughtTotal) return -1; // piece count dropped below what we search for
+	if((total -= (quickBoard[to] != 0)) < soughtTotal && found < 0) return -1; // piece count dropped below what we search for
 	quickBoard[from] = 0;
       aftercastle:
 	quickBoard[to] = piece;
@@ -13366,9 +13366,9 @@ GetOutOfBookInfo (char * buf)
     }
 }
 
-/* Save game in PGN style and close the file */
-int
-SaveGamePGN (FILE *f)
+/* Save game in PGN style */
+static void
+SaveGamePGN2 (FILE *f)
 {
     int i, offset, linelen, newblock;
 //    char *movetext;
@@ -13528,7 +13528,13 @@ SaveGamePGN (FILE *f)
     } else {
 	fprintf(f, "%s\n\n", PGNResult(gameInfo.result));
     }
+}
 
+/* Save game in PGN style and close the file */
+int
+SaveGamePGN (FILE *f)
+{
+    SaveGamePGN2(f);
     fclose(f);
     lastSavedGame = GameCheckSum(); // [HGM] save: remember ID of last saved game to prevent double saving
     return TRUE;
@@ -15821,6 +15827,36 @@ HintEvent ()
     }
     SendToProgram("hint\n", &first);
     hintRequested = TRUE;
+}
+
+int
+SaveSelected (FILE *g, int dummy, char *dummy2)
+{
+    ListGame * lg = (ListGame *) gameList.head;
+    int nItem, cnt=0;
+    FILE *f;
+
+    if( !(f = GameFile()) || ((ListGame *) gameList.tailPred)->number <= 0 ) {
+        DisplayError(_("Game list not loaded or empty"), 0);
+        return 0;
+    }
+
+    creatingBook = TRUE; // suppresses stuff during load game
+
+    /* Get list size */
+    for (nItem = 1; nItem <= ((ListGame *) gameList.tailPred)->number; nItem++){
+	if(lg->position >= 0) { // selected?
+	    LoadGame(f, nItem, "", TRUE);
+	    SaveGamePGN2(g); // leaves g open
+	    cnt++;
+	}
+        lg = (ListGame *) lg->node.succ;
+    }
+
+    fclose(g);
+    creatingBook = FALSE;
+
+    return cnt;
 }
 
 void

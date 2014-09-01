@@ -242,6 +242,7 @@ GameListPopUp (FILE *fp, char *filename)
     page = 0;
     GameListReplace(0); // [HGM] filter: code put in separate routine, and also called to set title
     MarkMenu("View.GameList", GameListDlg);
+    EnableNamedMenuItem("File.SaveSelected", TRUE);
 }
 
 FILE *
@@ -254,6 +255,7 @@ void
 GameListDestroy ()
 {
     if (glc == NULL) return;
+    EnableNamedMenuItem("File.SaveSelected", FALSE);
     PopDown(GameListDlg);
     if (glc->strings != NULL) {
 	char **st;

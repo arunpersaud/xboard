@@ -406,6 +406,7 @@ VOID GameListPopUp(FILE *fp, char *filename)
     gameFileName = StrSave(filename);
   }
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowGameList, MF_CHECKED);
+  EnableMenuItem(GetMenu(hwndMain), IDM_SaveSelected, MF_ENABLED);
   if (gameListDialog) {
     SendMessage(gameListDialog, WM_INITDIALOG, 0, 0);
     if (!gameListUp) ShowWindow(gameListDialog, SW_SHOW);
@@ -427,6 +428,7 @@ FILE *GameFile()
 VOID GameListPopDown(void)
 {
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowGameList, MF_UNCHECKED);
+  EnableMenuItem(GetMenu(hwndMain), IDM_SaveSelected, MF_GRAYED);
   if (gameListDialog) ShowWindow(gameListDialog, SW_HIDE);
   gameListUp = FALSE;
 }

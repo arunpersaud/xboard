@@ -1228,6 +1228,7 @@ InitMenuChecks()
   (void) CheckMenuItem(hmenu, IDM_SaveSettingsOnExit,
 		       MF_BYCOMMAND|(saveSettingsOnExit ?
 				     MF_CHECKED : MF_UNCHECKED));
+  EnableMenuItem(hmenu, IDM_SaveSelected, MF_GRAYED);
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -4915,6 +4916,16 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			 _("Save Diagram to File"), NULL, fileTitle, NULL);
       if (f != NULL) {
 	SaveDiagram(f);
+      }
+      break;
+
+    case IDM_SaveSelected:
+      f = OpenFileDialog(hwnd, "a", "",
+			 "pgn",
+			 GAME_FILT,
+			 _("Save Game to File"), NULL, fileTitle, NULL);
+      if (f != NULL) {
+	SaveSelected(f, 0, "");
       }
       break;
 

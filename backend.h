@@ -106,6 +106,7 @@ int LoadGame P((FILE *f, int n, char *title, int useList));
 int LoadGameFromFile P((char *filename, int n, char *title, int useList));
 int CmailLoadGame P((FILE *f, int n, char *title, int useList));
 int ReloadGame P((int offset));
+int SaveSelected P((FILE *f, int dummy, char *dummy2));
 int SaveGame P((FILE *f, int dummy, char *dummy2));
 int SaveGameToFile P((char *filename, int append));
 int LoadPosition P((FILE *f, int n, char *title));

@@ -639,8 +639,9 @@
 #define OPT_GameListFind                1981
 #define OPT_Grid                        1983
 #define IDM_LoadProg2                   1984
-#define OPT_Range                       1985
+#define OPT_Counts                      1985
 #define OPT_Ranget                      1986
+#define IDM_SaveSelected                1987
 
 
 // Next default values for new objects

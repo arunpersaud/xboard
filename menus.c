@@ -580,6 +580,15 @@ CreateBookDelayed ()
   ScheduleDelayedEvent(CreateBookEvent, 50);
 }
 
+void
+SaveSelectedProc ()
+{
+  FileNamePopUp(_("Save game file name?"),
+		  "",
+		  ".pgn",
+		  SaveSelected, "a");
+}
+
 /*
  *  Menu definition tables
  */
@@ -596,6 +605,7 @@ MenuItem fileMenu[] = {
   {"----",                      NULL,               NULL,                  NothingProc},
   {N_("Save Game"),            "<Ctrl>s",          "SaveGame",             SaveGameProc},
   {N_("Save Position"),        "<Ctrl><Shift>s",   "SavePosition",         SavePositionProc},
+  {N_("Save Selected Games"),   NULL,              "SaveSelected",         SaveSelectedProc},
   {N_("Save Games as Book"),    NULL,              "CreateBook",           CreateBookDelayed},
   {"----",                      NULL,               NULL,                  NothingProc},
   {N_("Mail Move"),             NULL,              "MailMove",             MailMoveEvent},
@@ -1218,4 +1228,5 @@ InitMenuMarkers()
     if (saveSettingsOnExit) {
 	MarkMenuItem("Options.SaveSettingsonExit", True);
     }
+    EnableNamedMenuItem("File.SaveSelected", False);
 }
