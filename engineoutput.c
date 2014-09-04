@@ -446,7 +446,9 @@ Format(char *buf, int val)
             snprintf( buf, 24, "%d%s\t", val, spaces + 2*i);
         }
         else {
-            snprintf( buf, 24, "%.1fM%s\t", val/1000000.0, spaces + 8 + 2*(val > 1e7));
+            char unit = 'M';
+            if(val >= 1e9) val /= 1e3, unit = 'G';
+            snprintf( buf, 24, "%.*f%c%s\t", 1 + (val < 1e7), val/1e6, unit, spaces + 10 + 2*(val >= 1e8));
         }
 }
 
@@ -568,8 +570,11 @@ UpdateControls (EngineOutputData *ed)
             snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), u64Display "%s\t", ed->nodes, spaces + 2*i);
         }
         else {
-            snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), "%.1fM%s\t", u64ToDouble(ed->nodes) / 1000000.0,
-                      spaces + 8 + 2*(ed->nodes > 1e7));
+            double x = u64ToDouble(ed->nodes);
+            char unit = 'M';
+            if(x >= 1e9) x /= 1e3, unit = 'G';
+            snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), "%.*f%c%s\t", 1 + (x < 1e7), x / 1e6,
+                      unit, spaces + 10 + 2*(ed->nodes >= 1e8));
         }
 
         /* TB Hits etc. */
