@@ -496,7 +496,8 @@ ParseFont (char *name, int number)
   if(sscanf(name, "size%d:", &size)) {
     // [HGM] font: font is meant for specific boardSize (likely from settings file);
     //       defer processing it until we know if it matches our board size
-    if(size >= 0 && size<MAX_SIZE) { // for now, fixed limit
+    if(strstr(name, "-*-") &&        // only pay attention to things that look like X-fonts
+       size >= 0 && size<MAX_SIZE) { // for now, fixed limit
 	fontTable[number][size] = strdup(strchr(name, ':')+1);
 	fontValid[number][size] = True;
     }
