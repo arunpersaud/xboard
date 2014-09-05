@@ -2536,6 +2536,8 @@ Exp (int n, int x, int y)
 	case  3: menuNr = RightClick(Press,   x, y, &pmFromX, &pmFromY), but3 = 1; break;
 	case -2: shiftKey = !shiftKey;
 	case -3: menuNr = RightClick(Release, x, y, &pmFromX, &pmFromY), but3 = 0; break;
+	case  4: BackwardEvent(); break;
+	case  5: ForwardEvent(); break;
 	case 10:
 	    sizing = (oldW != x || oldH != y);
 	    oldW = x; oldH = y;
