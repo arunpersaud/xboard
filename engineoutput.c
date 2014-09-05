@@ -606,6 +606,9 @@ UpdateControls (EngineOutputData *ed)
         }
 
         /* Time */
+        if(time_secs >= 3600)
+            snprintf( s_time, sizeof(s_time)/sizeof(s_time[0]), "%d:%02d:%02d\t", time_secs / 3600, (time_secs / 60) % 60, time_secs % 60 );
+        else
         snprintf( s_time, sizeof(s_time)/sizeof(s_time[0]), "%d:%02d.%02d\t", time_secs / 60, time_secs % 60, time_cent );
 
         if(columnMask & 2) s_score[0] = NULLCHAR; // [HGM] hide: erase columns the user has hidden
