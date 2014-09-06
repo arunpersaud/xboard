@@ -335,6 +335,10 @@ FEN (Forsythe-Edwards notation) format unless the @code{oldSaveStyle}
 option is true, in which case they are saved in an older,
 human-readable format that is specific to XBoard. Both formats
 can be read back by the @samp{Load Position} command.
+@item Save Selected Games
+@cindex Save Selected Games
+Will cause all games selected for display in the current Game List
+to be appended to a file of the user's choice.
 @item Save Games as Book
 @cindex Save Games as Book, Menu Item
 Creates an opening book from the currently loaded game file,
