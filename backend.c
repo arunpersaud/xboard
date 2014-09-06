@@ -9421,6 +9421,9 @@ printf("score=%d count=%d\n",score,count);
 	    if (sscanf(message, "%d%c %d %d " u64Display " %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5) {
 
+		if(nodes>>32 == u64Const(0xFFFFFFFF))   // [HGM] negative node count read
+		    nodes += u64Const(0x100000000);
+
 		if (plyext != ' ' && plyext != '\t') {
 		    time *= 100;
 		}
