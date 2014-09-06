@@ -8371,10 +8371,10 @@ BitbaseProbe ()
     // probe EGBB
     if(loaded == 2) return 13; // loading failed before
     if(loaded == 0) {
-	loaded = 2; // prepare for failure
 	char *p, *path = strstr(appData.egtFormats, "scorpio:"), buf[MSG_SIZ];
 	HMODULE lib;
 	PLOAD_EGBB loadBB;
+	loaded = 2; // prepare for failure
 	if(!path) return 13; // no egbb installed
 	strncpy(buf, path + 8, MSG_SIZ);
 	if(p = strchr(buf, ',')) *p = NULLCHAR; else p = buf + strlen(buf);
