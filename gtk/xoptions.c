@@ -870,6 +870,7 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     GdkEventExpose *eevent = (GdkEventExpose *) event;
     GdkEventButton *bevent = (GdkEventButton *) event;
     GdkEventMotion *mevent = (GdkEventMotion *) event;
+    GdkEventScroll *sevent = (GdkEventScroll *) event;
     GtkAllocation a;
     cairo_t *cr;
 
@@ -926,6 +927,10 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	    cairo_destroy(cr);
 	default:
 	    return;
+	case GDK_SCROLL:
+	    if(sevent->direction == GDK_SCROLL_UP) button = 4;
+	    if(sevent->direction == GDK_SCROLL_DOWN) button = 5;
+	    break;
 	case GDK_MOTION_NOTIFY:
 	    f = 0;
 	    w = mevent->x; h = mevent->y;
@@ -1527,6 +1532,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "button-release-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
             g_signal_connect (graph, "motion-notify-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
+            g_signal_connect (graph, "scroll-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 	    if(option[i].min & FIX_H) { // logo
 		GtkWidget *frame = gtk_aspect_frame_new(NULL, 0.5, 0.5, option[i].max/(float)option[i].value, FALSE);
 		gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_NONE);
