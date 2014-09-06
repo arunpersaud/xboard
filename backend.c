@@ -15887,8 +15887,10 @@ CreateBookEvent ()
 
     /* Get list size */
     for (nItem = 1; nItem <= ((ListGame *) gameList.tailPred)->number; nItem++){
-	LoadGame(f, nItem, "", TRUE);
-	AddGameToBook(TRUE);
+	if(lg->position >= 0) {
+	    LoadGame(f, nItem, "", TRUE);
+	    AddGameToBook(TRUE);
+	}
         lg = (ListGame *) lg->node.succ;
     }
 

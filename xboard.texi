@@ -337,7 +337,8 @@ human-readable format that is specific to XBoard. Both formats
 can be read back by the @samp{Load Position} command.
 @item Save Games as Book
 @cindex Save Games as Book, Menu Item
-Creates an opening book from the currently loaded game file.
+Creates an opening book from the currently loaded game file,
+incorporating only the games currently selected in the Game List.
 The book will be saved on the file specified in the @samp{Common Engine}
 options dialog.
 The value of @samp{Book Depth} specified in that same dialog will 
@@ -346,7 +347,7 @@ the internal book buffer.
 This command can take a long time to process,
 and the size of the buffer is currently limited.
 At the end the buffer will be saved as a Polyglot book,
-but the buffer will ot be cleared,
+but the buffer will not be cleared,
 so that you can continue adding games from other game files.
 @item Mail Move
 @itemx Reload CMail Message
