@@ -1353,6 +1353,13 @@ main (int argc, char **argv)
     return 0;
 }
 
+void
+DoEvents ()
+{
+    XtInputMask m;
+    while((m = XtAppPending(appContext))) XtAppProcessEvent(appContext, m);
+}
+
 RETSIGTYPE
 TermSizeSigHandler (int sig)
 {

@@ -108,6 +108,7 @@ void Raw P((void));
 void Colorize P((ColorClass cc, int continuation));
 char *InterpretFileName P((char *name, char *dir));
 void DoSleep P((int n));
+void DoEvents P((void));
 
 char *UserName P((void));
 char *HostName P((void));

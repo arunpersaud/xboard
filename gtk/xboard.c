@@ -1191,6 +1191,12 @@ gtk_main_iteration();
     return 0;
 }
 
+void
+DoEvents ()
+{
+    while(gtk_events_pending()) gtk_main_iteration();
+}
+
 RETSIGTYPE
 TermSizeSigHandler (int sig)
 {

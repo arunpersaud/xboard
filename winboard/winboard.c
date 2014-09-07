@@ -786,12 +786,14 @@ void ThawUI()
  *
 \*---------------------------------------------------------------------------*/
 
+static void HandleMessage P((MSG *message));
+static HANDLE hAccelMain, hAccelNoAlt, hAccelNoICS;
+
 int APIENTRY
 WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
   MSG msg;
-  HANDLE hAccelMain, hAccelNoAlt, hAccelNoICS;
 //  INITCOMMONCONTROLSEX ex;
 
   debugFP = stderr;
@@ -823,6 +825,17 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		    0,    /* lowest message to examine */
 		    0))   /* highest message to examine */
     {
+	HandleMessage(msg);
+    }
+
+
+  return (msg.wParam);	/* Returns the value from PostQuitMessage */
+}
+
+static void
+HandleMessage (MSG *message)
+{
+    MSG msg = *message;
 
       if(msg.message == WM_CHAR && msg.wParam == '\t') {
 	// [HGM] navigate: switch between all windows with tab
@@ -890,7 +903,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	  if(currentElement < 5 && IsIconic(hwndMain))    ShowWindow(hwndMain, SW_RESTORE); // all open together
 	  SetFocus(h);
 
-	  continue; // this message now has been processed
+	  return; // this message now has been processed
 	}
       }
 
@@ -909,14 +922,24 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	    if(chatHandle[i] && IsDialogMessage(chatHandle[i], &msg)) {
 		done = 1; break;
 	}
-	if(done) continue; // [HGM] chat: end patch
+	if(done) return; // [HGM] chat: end patch
 	TranslateMessage(&msg);	/* Translates virtual key codes */
 	DispatchMessage(&msg);	/* Dispatches message to window */
       }
+}
+
+void
+DoEvents ()
+{ /* Dispatch pending messages */
+  MSG msg;
+  while (PeekMessage(&msg, /* message structure */
+		     NULL, /* handle of window receiving the message */
+		     0,    /* lowest message to examine */
+		     0,    /* highest message to examine */
+		     PM_REMOVE))
+    {
+	HandleMessage(msg);
     }
-
-
-  return (msg.wParam);	/* Returns the value from PostQuitMessage */
 }
 
 /*---------------------------------------------------------------------------*\
