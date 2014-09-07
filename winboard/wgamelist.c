@@ -437,14 +437,22 @@ VOID GameListPopDown(void)
 VOID GameListHighlight(int index)
 {
   char buf[MSG_SIZ];
-  int i, res = 0;
+  int i, j, k, n, res = 0;
   if (gameListDialog == NULL) return;
-  for(i=0; res != LB_ERR; i++) {
+  for(i=64; ; i+=i) {
         res = SendDlgItemMessage( gameListDialog, OPT_GameListText, LB_GETTEXT, i, (LPARAM)buf );
-        if(index <= atoi( buf )) break;
+        if(res == LB_ERR || index < atoi( buf )) break;
   }
-  SendDlgItemMessage(gameListDialog, OPT_GameListText,
-    LB_SETCURSEL, i, 0);
+  j = i/2;
+  while(i-j > 1) {
+        n = (i + j) >> 1;
+        res = SendDlgItemMessage( gameListDialog, OPT_GameListText, LB_GETTEXT, n, (LPARAM)buf );
+        if(res == LB_ERR || index < (k = atoi( buf ))) i = n; else {
+            j = n;
+            if(index == k) break;
+        }
+  }
+  SendDlgItemMessage(gameListDialog, OPT_GameListText, LB_SETCURSEL, j, 0);
 }
 
 
