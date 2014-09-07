@@ -1120,13 +1120,13 @@ ParseArgs(GetFunc get, void *cl)
     if(posflag) { // positional argument: the argName was implied, and per default set as -lgf
       int len = strlen(argValue) - 4; // start of filename extension
       if(len < 0) len = 0;
-      if(!strcasecmp(argValue + len, ".trn")) {
+      if(!StrCaseCmp(argValue + len, ".trn")) {
         ad = &argDescriptors[2]; // correct implied type to -tf
         appData.tourney = TRUE; // let it parse -tourneyOptions later
-      } else if(!strcasecmp(argValue + len, ".fen") || !strcasecmp(argValue + len, ".epd")) {
+      } else if(!StrCaseCmp(argValue + len, ".fen") || !StrCaseCmp(argValue + len, ".epd")) {
         ad = &argDescriptors[1]; // correct implied type to -lpf
         appData.viewer = TRUE;
-      } else if(!strcasecmp(argValue + len, ".ini") || !strcasecmp(argValue + len, ".xop")) {
+      } else if(!StrCaseCmp(argValue + len, ".ini") || !StrCaseCmp(argValue + len, ".xop")) {
         ad = &argDescriptors[0]; // correct implied type to -opt
       } else if(GetEngineLine(argValue, 11)) {
         ad = &argDescriptors[3]; // correct implied type to -is
