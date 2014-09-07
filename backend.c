@@ -15851,7 +15851,7 @@ SaveSelected (FILE *g, int dummy, char *dummy2)
 	if(lg->position >= 0) { // selected?
 	    LoadGame(f, nItem, "", TRUE);
 	    SaveGamePGN2(g); // leaves g open
-	    cnt++;
+	    cnt++; DoEvents();
 	}
         lg = (ListGame *) lg->node.succ;
     }
@@ -15890,6 +15890,7 @@ CreateBookEvent ()
 	if(lg->position >= 0) {
 	    LoadGame(f, nItem, "", TRUE);
 	    AddGameToBook(TRUE);
+	    DoEvents();
 	}
         lg = (ListGame *) lg->node.succ;
     }

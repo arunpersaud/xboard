@@ -373,7 +373,7 @@ GameListBuild (FILE *f)
 	}
 	if(gameNumber % 1000 == 0) {
 	    snprintf(buf, MSG_SIZ, _("Reading game file (%d)"), gameNumber);
-	    DisplayTitle(buf);
+	    DisplayTitle(buf); DoEvents();
 	}
     }
     while (cm != (ChessMove) 0);

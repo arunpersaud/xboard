@@ -190,7 +190,7 @@ GameListPrepare (int byPos, int narrow)
 	if(lg->number % 2000 == 0) {
 	    char buf[MSG_SIZ];
 	    snprintf(buf, MSG_SIZ, _("Scanning through games (%d)"), lg->number);
-	    DisplayTitle(buf);
+	    DisplayTitle(buf); DoEvents();
 	}
 	lg->position = pos;
 	lg = (ListGame *) lg->node.succ;

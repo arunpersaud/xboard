@@ -95,7 +95,7 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
 
         if(nItem % 2000 == 0) {
           snprintf(buf, MSG_SIZ, _("Scanning through games (%d)"), nItem);
-          SetWindowText(hwndMain, buf);
+          SetWindowText(hwndMain, buf); DoEvents();
         }
 
       if(!narrow || lg->position >= 0) {
