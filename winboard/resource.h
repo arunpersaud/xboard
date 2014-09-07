@@ -343,7 +343,7 @@
 #define OPT_AutoCreate                  1352
 #define OPT_AutoFlag                    1353
 #define OPT_AlwaysQueen                 1354
-#define OPT_AutoComment                 1354
+#define OPT_AutoComment                 1458
 #define OPT_AnimateDragging             1355
 #define OPT_AutoObserve                 1355
 #define OPT_AnimateMoving               1356
