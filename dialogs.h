@@ -32,8 +32,8 @@
 // int     max        X/E   (w)   (w)    (w)   (w)   (w)  (w)  (w)   (w)
 // void*   handle     X/E   X/E   X/E    X/E   X/E    X    X    X     X    X
 // void*   target      X     X     X     X/C    C          X    X     C    C
-// char*   textValue               E     X/E    *
-// char ** choice                        X/E    *                          X
+// char*   textValue              X/E    X/E    *
+// char ** choice                  C     X/E    *                          X
 // enum    type       X/E   X/E   X/E    X/E    X     X    X    X     X    X     X    X
 // char[]  name       X/E   X/E   X/E    X/E    X          X    X     X    X
 // File and Path options are like String (but get a browse button added in the dialog), and Slider

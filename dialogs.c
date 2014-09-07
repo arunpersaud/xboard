@@ -1096,7 +1096,7 @@ NewComCallback (int n)
 }
 
 Option commentOptions[] = {
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 250, NULL, (void*) &commentText, "", (char **) &CommentClick, TextBox, "" },
+{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 250, NULL, (void*) &commentText, (char*) &appData.commentFont, (char **) &CommentClick, TextBox, "" },
 { 0,     0,     50, NULL, (void*) &ClearComment, NULL, NULL, Button, N_("clear") },
 { 0, SAME_ROW, 100, NULL, (void*) &SaveChanges, NULL, NULL, Button, N_("save changes") },
 { 0, SAME_ROW,  0,  NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
@@ -1195,7 +1195,7 @@ NewMove ()
 
 static Option tagsOptions[] = {
 {   0,   0,   0, NULL, NULL, NULL, NULL, Label,  NULL },
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 200, NULL, (void*) &tagsText, "", (char **) &TagsClick, TextBox, "" },
+{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 200, NULL, (void*) &tagsText, (char*) &appData.tagsFont, (char **) &TagsClick, TextBox, "" },
 {   0,   0, 100, NULL, (void*) &NewMove,    NULL, NULL, Button, N_("add next move") },
 { 0,SAME_ROW,100,NULL, (void*) &changeTags, NULL, NULL, Button, N_("save changes") },
 { 0,SAME_ROW, 0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }

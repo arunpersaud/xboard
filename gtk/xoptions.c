@@ -558,7 +558,7 @@ AppendColorized (Option *opt, char *s, int count)
     static GtkTextTag *fgTags[8], *bgTags[8], *font, *bold, *normal, *attr = NULL;
 
     if(!font) {
-	font = gtk_text_buffer_create_tag(opt->handle, NULL, "font", "Monospace normal", NULL);
+	font = gtk_text_buffer_create_tag(opt->handle, NULL, "font", appData.icsFont, NULL);
 	gtk_widget_modify_base(GTK_WIDGET(opt->textValue), GTK_STATE_NORMAL, &backgroundColor);
     }
 
@@ -1348,6 +1348,11 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
                 else {
                     /* no label so let textview occupy all columns */
                     Pack(hbox, table, sw, left, left+r, top, GTK_EXPAND);
+                }
+                if ( option[i].textValue != NULL ) {
+                    PangoFontDescription *pfd;
+                    pfd = pango_font_description_from_string(*(char**)option[i].textValue);
+                    gtk_widget_modify_font(textview, pfd);
                 }
                 if ( *(char**)option[i].target != NULL )
                     gtk_text_buffer_set_text (textbuffer, *(char**)option[i].target, -1);

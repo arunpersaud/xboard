@@ -386,10 +386,9 @@ ParseFont (char *name, int number)
     //       defer processing it until we know if it matches our board size
     if(!strstr(name, "-*-") &&       // ignore X-fonts
        size >= 0 && size<MAX_SIZE) { // for now, fixed limit
-	fontTable[number][size] = strdup(strchr(name, ':')+1);
+	fontTable[number][size] = name = strdup(strchr(name, ':')+1);
 	fontValid[number][size] = True;
-    }
-    return;
+    } else return;
   }
   switch(number) {
     case 0: // CLOCK_FONT
@@ -401,6 +400,21 @@ ParseFont (char *name, int number)
     case 2: // COORD_FONT
 	appData.coordFont = strdup(name);
       break;
+    case CONSOLE_FONT:
+	appData.icsFont = strdup(name);
+      break;
+    case EDITTAGS_FONT:
+	appData.tagsFont = strdup(name);
+      break;
+    case COMMENT_FONT:
+	appData.commentFont = strdup(name);
+      break;
+    case MOVEHISTORY_FONT:
+	appData.historyFont = strdup(name);
+      break;
+    case GAMELIST_FONT:
+	appData.gameListFont = strdup(name);
+      break;
     default:
       return;
   }
@@ -410,9 +424,14 @@ ParseFont (char *name, int number)
 void
 SetFontDefaults ()
 { // only 2 fonts currently
-  appData.clockFont = CLOCK_FONT_NAME;
-  appData.coordFont = COORD_FONT_NAME;
-  appData.font  =   DEFAULT_FONT_NAME;
+  appData.clockFont = strdup(CLOCK_FONT_NAME);
+  appData.coordFont = strdup(COORD_FONT_NAME);
+  appData.font  =   strdup(DEFAULT_FONT_NAME);
+  appData.icsFont = strdup(CONSOLE_FONT_NAME);
+  appData.tagsFont = strdup(TAGS_FONT_NAME);
+  appData.commentFont = strdup(COMMENT_FONT_NAME);
+  appData.historyFont = strdup(HISTORY_FONT_NAME);
+  appData.gameListFont = strdup(GAMELIST_FONT_NAME);
 }
 
 void
@@ -469,6 +488,21 @@ SaveFontArg (FILE *f, ArgDescriptor *ad)
       break;
     case 2: // COORD_FONT
 	name = appData.coordFont;
+      break;
+    case CONSOLE_FONT:
+	name = appData.icsFont;
+      break;
+    case EDITTAGS_FONT:
+	name = appData.tagsFont;
+      break;
+    case COMMENT_FONT:
+	name = appData.commentFont;
+      break;
+    case MOVEHISTORY_FONT:
+	name = appData.historyFont;
+      break;
+    case GAMELIST_FONT:
+	name = appData.gameListFont;
       break;
     default:
       return;
@@ -623,10 +657,19 @@ InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
 	appData.font = fontTable[MESSAGE_FONT][squareSize];
     if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
 	appData.coordFont = fontTable[COORD_FONT][squareSize];
+    if(!fontIsSet[CONSOLE_FONT] && fontValid[CONSOLE_FONT][squareSize])
+	appData.icsFont = fontTable[CONSOLE_FONT][squareSize];
+    if(!fontIsSet[COMMENT_FONT] && fontValid[COMMENT_FONT][squareSize])
+	appData.commentFont = fontTable[COMMENT_FONT][squareSize];
 
     appData.font = InsertPxlSize(appData.font, fontPxlSize);
     appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
     appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
+    appData.icsFont = InsertPxlSize(appData.icsFont, fontPxlSize);
+    appData.tagsFont = InsertPxlSize(appData.tagsFont, fontPxlSize);
+    appData.commentFont = InsertPxlSize(appData.commentFont, fontPxlSize);
+    appData.historyFont = InsertPxlSize(appData.historyFont, fontPxlSize);
+    appData.gameListFont = InsertPxlSize(appData.gameListFont, fontPxlSize);
 
 #ifdef TODO_GTK
     XrmValue vTo;

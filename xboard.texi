@@ -3102,7 +3102,8 @@ Default: true.
 The font used for the clocks. If the option value is a pattern
 that does not specify the font size, XBoard tries to choose an
 appropriate font for the board size being used.
-Default: -*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*.
+Default Xaw: -*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*.
+Default GTK: Sans Bold %d.
 @item -coordFont font
 @cindex coordFont, option
 @cindex Font, coordinates
@@ -3110,15 +3111,56 @@ The font used for rank and file coordinate labels if @code{showCoords}
 is true. If the option value is a pattern that does not specify
 the font size, XBoard tries to choose an appropriate font for
 the board size being used.
-Default: -*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*.
+Default Xaw: -*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*.
+Default GTK: Sans Bold %d.
 @item -messageFont font
 @cindex messageFont, option
 @cindex Font, message
-The font used for popup dialogs, menus, comments, etc.
+The font used for popup dialogs, menus, etc.
 If the option value is a pattern that does not specify
 the font size, XBoard tries to choose an appropriate font for
 the board size being used.
-Default: -*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*.
+Default Xaw: -*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*.
+Default GTK: Sans Bold %d.
+@cindex tagsFont, option
+@cindex Font, tags
+The font used in the Edit Tags dialog.
+If the option value contains %d, XBoard will replace it by
+an appropriate font for the board size being used.
+(Only used in GTK build.)
+Default: Sans Normal %d.
+@cindex commentFont, option
+@cindex Font, comment
+The font used in the Edit Comment dialog.
+If the option value contains %d, XBoard will replace it by
+an appropriate font for the board size being used.
+(Only used in GTK build.)
+Default: Sans Normal %d.
+@cindex icsFont, option
+@cindex Font, ics
+The font used to display ICS output in the ICS  Chat window.
+As ICS output often contains tables aligned by spaces,
+a mono-space font is recommended here.
+If the option value contains %d, XBoard will replace it by
+an appropriate font for the board size being used.
+(Only used in GTK build.)
+Default: Monospace Normal %d.
+@cindex moveHistoryFont, option
+@cindex Font, moveHistory
+The font used in Move History and Engine Output windows.
+As these windows display mainly moves,
+one could use a figurine font here.
+If the option value contains %d, XBoard will replace it by
+an appropriate font for the board size being used.
+(Only used in GTK build.)
+Default: Sans Normal %d.
+@cindex gameListFont, option
+@cindex Font, gameList
+The font used in the listbox of the Game List window.
+If the option value contains %d, XBoard will replace it by
+an appropriate font for the board size being used.
+(Only used in GTK build.)
+Default: Sans Bold %d.
 @item -fontSizeTolerance tol
 @cindex fontSizeTolerance, option
 In the font selection algorithm, a nonscalable font will be preferred
