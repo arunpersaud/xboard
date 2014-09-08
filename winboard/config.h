@@ -155,6 +155,7 @@
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
+#define inline __inline
 #if _MSC_VER < 1500
 #define vsnprintf _vsnprintf
 #endif
