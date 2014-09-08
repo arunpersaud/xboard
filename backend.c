@@ -5680,7 +5680,7 @@ LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end, int pane)
 	}
 	ParsePV(buf+startPV, FALSE, gameMode != AnalyzeMode);
 	*start = startPV; *end = index-1;
-	extendGame = (gameMode == AnalyzeMode && appData.autoExtend);
+	extendGame = (gameMode == AnalyzeMode && appData.autoExtend && origIndex - startPV < 5);
 	return TRUE;
 }
 
