@@ -844,12 +844,13 @@ char *
 GenerateGlobalTranslationTable (void)
 {
   /* go through all menu items and extract the keyboard shortcuts, so that X11 can load them */
-  char *output;
+  char *output[2];
 
   int i,j;
   MenuItem *mi;
 
-  output = strdup("");
+  output[0] = strdup(""); // build keystrokes with and wo mod keys separately
+  output[1] = strdup(""); // so the more specific can preceed the other
 
   /* loop over all menu entries */
   for( i=0; menuBar[i].mi ; i++)
@@ -928,8 +929,8 @@ GenerateGlobalTranslationTable (void)
 	      snprintf(buffer, buffersize+1, ":%s<Key>%s: MenuItem(%s) \n ", mods, key, name);
 
 	      /* add string to the output */
-	      output = realloc(output, strlen(output) + strlen(buffer)+1);
-	      strncat(output, buffer, strlen(buffer));
+	      output[shift|alt|ctrl] = realloc(output[shift|alt|ctrl], strlen(output[shift|alt|ctrl]) + strlen(buffer)+1);
+	      strncat(output[shift|alt|ctrl], buffer, strlen(buffer));
 
 	      /* clean up */
 	      free(key);
@@ -939,7 +940,10 @@ GenerateGlobalTranslationTable (void)
 	    }
 	}
     }
-  return output;
+  output[1] = realloc(output[1], strlen(output[1]) + strlen(output[0])+1);
+  strncat(output[1], output[0], strlen(output[0]));
+  free(output[0]);
+  return output[1];
 }
 
 
