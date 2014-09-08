@@ -846,16 +846,16 @@ GenerateGlobalTranslationTable (void)
   /* go through all menu items and extract the keyboard shortcuts, so that X11 can load them */
   char *output[2];
 
-  int i,j;
+  int i,j,n=0;
   MenuItem *mi;
 
   output[0] = strdup(""); // build keystrokes with and wo mod keys separately
   output[1] = strdup(""); // so the more specific can preceed the other
 
   /* loop over all menu entries */
-  for( i=0; menuBar[i].mi ; i++)
+  for( i=0; menuBar[i-n].mi || !n++; i++)
     {
-      mi = menuBar[i].mi;
+      mi = menuBar[i+n].mi; // kludge to access 'noMenu' behind sentinel
       for(j=0; mi[j].proc; j++)
 	{
 	  if (mi[j].accel)
@@ -920,13 +920,12 @@ GenerateGlobalTranslationTable (void)
 		mods[strlen(mods)-1]='\0';
 
 	      /* get the name for the callback, we can use MenuItem() here that will call KeyBindingProc */
-	      size_t namesize = snprintf(NULL, 0, "%s.%s", menuBar[i].ref, mi[j].ref);
-	      char *name = malloc(namesize+1);
-	      snprintf(name, namesize+1, "%s.%s", menuBar[i].ref, mi[j].ref);
+	      char *name = malloc(MSG_SIZ);
+	      if(n) snprintf(name, MSG_SIZ, "%s", mi[j].ref);
+	      else  snprintf(name, MSG_SIZ, "%s.%s", menuBar[i].ref, mi[j].ref);
 
-	      size_t buffersize = snprintf(NULL, 0, ":%s<Key>%s: MenuItem(%s) \n ", mods, key, name);
-	      char *buffer = malloc(buffersize+1);
-	      snprintf(buffer, buffersize+1, ":%s<Key>%s: MenuItem(%s) \n ", mods, key, name);
+	      char *buffer = malloc(MSG_SIZ);
+	      snprintf(buffer, MSG_SIZ, ":%s<Key>%s: MenuItem(%s) \n ", mods, key, name);
 
 	      /* add string to the output */
 	      output[shift|alt|ctrl] = realloc(output[shift|alt|ctrl], strlen(output[shift|alt|ctrl]) + strlen(buffer)+1);
