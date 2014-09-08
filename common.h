@@ -529,10 +529,12 @@ typedef struct {
     char *clockFont;
     char *messageFont; /* WinBoard only */
     char *coordFont;
-    char *font; /* xboard only: all other fonts */
-    char *tagsFont; /* WinBoard only */
-    char *commentFont; /* WinBoard only */
-    char *icsFont; /* WinBoard only */
+    char *font; /* xboard only */
+    char *tagsFont;
+    char *commentFont;
+    char *historyFont;
+    char *gameListFont;
+    char *icsFont;
     Boolean ringBellAfterMoves;
     Boolean autoCallFlag;
     Boolean flipView;
