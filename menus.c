@@ -313,8 +313,12 @@ void
 InfoProc ()
 {
     char buf[MSG_SIZ];
+#ifdef __APPLE__
+    snprintf(buf, MSG_SIZ, "%s ./info.command", appData.sysOpen);
+#else
     snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
 	    INFODIR, INFOFILE);
+#endif
     system(buf);
 }
 
@@ -810,7 +814,8 @@ Menu menuBar[] = {
     {N_("Engine"),  "Engine", engineMenu},
     {N_("Options"), "Options", optionsMenu},
     {N_("Help"),    "Help", helpMenu},
-    {NULL, NULL, NULL}
+    {NULL, NULL, NULL},
+    {   "",         "None", noMenu}
 };
 
 MenuItem *

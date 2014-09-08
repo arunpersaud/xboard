@@ -1611,10 +1611,17 @@ SaveSettings(char* name)
       break;
     case ArgFilename:
       if(*(char**)ad->argLoc == NULL) break; // just in case
-      if (strchr(*(char **)ad->argLoc, '\"')) {
-	fprintf(f, OPTCHAR "%s" SEPCHAR "'%s'\n", ad->argName, *(char **)ad->argLoc);
-      } else {
-	fprintf(f, OPTCHAR "%s" SEPCHAR "\"%s\"\n", ad->argName, *(char **)ad->argLoc);
+      { char buf[MSG_SIZ];
+        snprintf(buf, MSG_SIZ, "%s", *(char**)ad->argLoc);
+#ifdef __APPLE__
+        if(strstr(buf, DATADIR) == buf)
+          snprintf(buf, MSG_SIZ, "~~%s", *(char**)ad->argLoc + strlen(DATADIR));
+#endif
+        if (strchr(buf, '\"')) {
+          fprintf(f, OPTCHAR "%s" SEPCHAR "'%s'\n", ad->argName, buf);
+        } else {
+          fprintf(f, OPTCHAR "%s" SEPCHAR "\"%s\"\n", ad->argName, buf);
+        }
       }
       break;
     case ArgBoardSize:
