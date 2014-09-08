@@ -825,7 +825,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		    0,    /* lowest message to examine */
 		    0))   /* highest message to examine */
     {
-	HandleMessage(msg);
+	HandleMessage(&msg);
     }
 
 
@@ -938,7 +938,7 @@ DoEvents ()
 		     0,    /* highest message to examine */
 		     PM_REMOVE))
     {
-	HandleMessage(msg);
+	HandleMessage(&msg);
     }
 }
 
@@ -4512,6 +4512,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   char promoChar;
 
   switch (message) {
+
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Center the dialog over the application window */
     CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
@@ -5737,6 +5738,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   default:	/* Passes it on if unprocessed */
     return (DefWindowProc(hwnd, message, wParam, lParam));
   }
+
   return 0;
 }
 
