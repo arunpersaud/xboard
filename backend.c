@@ -11755,11 +11755,20 @@ AutoPlayOneMove ()
 	    SetHighlights(-1, -1, toX, toY);
 	}
     } else {
+        int viaX = moveList[currentMove][5] - AAA;
+        int viaY = moveList[currentMove][6] - ONE;
         fromX = moveList[currentMove][0] - AAA;
         fromY = moveList[currentMove][1] - ONE;
 
         HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove); /* [AS] */
 
+        if(moveList[currentMove][4] == ';') { // multi-leg
+            ChessSquare piece = boards[currentMove][viaY][viaX];
+	    AnimateMove(boards[currentMove], fromX, fromY, viaX, viaY);
+            boards[currentMove][viaY][viaX] = boards[currentMove][fromY][fromX];
+            AnimateMove(boards[currentMove], fromX=viaX, fromY=viaY, toX, toY);
+            boards[currentMove][viaY][viaX] = piece;
+        } else
 	AnimateMove(boards[currentMove], fromX, fromY, toX, toY);
 
 	if (appData.highlightLastMove) {
@@ -15484,9 +15493,18 @@ ForwardInner (int target)
 		SetHighlights(-1, -1, toX, toY);
 	    }
 	} else {
+            int viaX = moveList[target - 1][5] - AAA;
+            int viaY = moveList[target - 1][6] - ONE;
             fromX = moveList[target - 1][0] - AAA;
             fromY = moveList[target - 1][1] - ONE;
 	    if (target == currentMove + 1) {
+		if(moveList[target - 1][4] == ';') { // multi-leg
+		    ChessSquare piece = boards[currentMove][viaY][viaX];
+		    AnimateMove(boards[currentMove], fromX, fromY, viaX, viaY);
+		    boards[currentMove][viaY][viaX] = boards[currentMove][fromY][fromX];
+		    AnimateMove(boards[currentMove], viaX, viaY, toX, toY);
+		    boards[currentMove][viaY][viaX] = piece;
+		} else
 		AnimateMove(boards[currentMove], fromX, fromY, toX, toY);
 	    }
 	    if (appData.highlightLastMove) {
