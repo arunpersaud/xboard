@@ -665,11 +665,11 @@ InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
     appData.font = InsertPxlSize(appData.font, fontPxlSize);
     appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
     appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
-    appData.icsFont = InsertPxlSize(appData.icsFont, fontPxlSize);
-    appData.tagsFont = InsertPxlSize(appData.tagsFont, fontPxlSize);
-    appData.commentFont = InsertPxlSize(appData.commentFont, fontPxlSize);
-    appData.historyFont = InsertPxlSize(appData.historyFont, fontPxlSize);
-    appData.gameListFont = InsertPxlSize(appData.gameListFont, fontPxlSize);
+    appData.icsFont = InsertPxlSize(appData.icsFont, coordFontPxlSize);
+    appData.tagsFont = InsertPxlSize(appData.tagsFont, coordFontPxlSize);
+    appData.commentFont = InsertPxlSize(appData.commentFont, coordFontPxlSize);
+    appData.historyFont = InsertPxlSize(appData.historyFont, coordFontPxlSize);
+    appData.gameListFont = InsertPxlSize(appData.gameListFont, coordFontPxlSize);
 
 #ifdef TODO_GTK
     XrmValue vTo;
@@ -815,6 +815,8 @@ StartNewXBoard(GtkosxApplication *app, gchar *path, gpointer user_data)
   }
   return TRUE;
 }
+
+GtkosxApplication *theApp;
 #endif
 
 int
@@ -845,8 +847,8 @@ main (int argc, char **argv)
     gtk_init (&argc, &argv);
 #ifdef __APPLE__
     {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
-	GtkosxApplication *theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
 	char *path = gtkosx_application_get_bundle_path();
+	theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
 	strncpy(dataDir, path, MSG_SIZ);
 	snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
 	suppress = (argc == 1 || argc > 1 && argv[1][00] != '-'); // OSX sends signal even if name was already argv[1]!
@@ -1118,8 +1120,7 @@ main (int argc, char **argv)
      */
     WhiteIcon  = gdk_pixbuf_new_from_file(SVGDIR "/icon_white.svg", NULL);
     BlackIcon  = gdk_pixbuf_new_from_file(SVGDIR "/icon_black.svg", NULL);
-    mainwindowIcon = WhiteIcon;
-    gtk_window_set_icon(GTK_WINDOW(shellWidget), mainwindowIcon);
+    SetClockIcon(0); // sets white icon
 
 
     /*
