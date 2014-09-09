@@ -669,7 +669,7 @@ InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
     if(!fontIsSet[GAMELIST_FONT] && fontValid[GAMELIST_FONT][squareSize])
 	appData.gameListFont = fontTable[GAMELIST_FONT][squareSize];
 
-    appData.font = InsertPxlSize(appData.font, fontPxlSize);
+    appData.font = InsertPxlSize(appData.font, coordFontPxlSize);
     appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
     appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
     appData.icsFont = InsertPxlSize(appData.icsFont, coordFontPxlSize);

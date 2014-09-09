@@ -2460,13 +2460,13 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
 { 13,   R2R|T2T|SAME_ROW,  200, NULL, (void*) &CCB, NULL, NULL, Label, "Black" }, // black clock
 { 50,    RR|TT|SAME_ROW,   100, NULL, (void*) &LogoB, NULL, NULL, Skip, "" }, // black logo
 { 0, LR|T2T|BORDER,        401, NULL, NULL, "", NULL, Skip, "2" }, // backup for title in window (if no room for other)
-{ 0, LR|T2T|BORDER,        270, NULL, NULL, "", NULL, Label, "message" }, // message field
+{ 0, LR|T2T|BORDER,        270, NULL, NULL, (char*)&appData.font, NULL, Label, "message" }, // message field
 { 0, RR|TT|SAME_ROW,       125, NULL, NULL, "", NULL, BoxBegin, "" }, // (optional) button bar
-  { 0,    0,     0, NULL, (void*) &ToStartEvent, NULL, NULL, Button, N_("<<") },
-  { 0, SAME_ROW, 0, NULL, (void*) &BackwardEvent, NULL, NULL, Button, N_("<") },
-  { 0, SAME_ROW, 0, NULL, (void*) &PauseEvent, NULL, NULL, Button, N_(PAUSE_BUTTON) },
-  { 0, SAME_ROW, 0, NULL, (void*) &ForwardEvent, NULL, NULL, Button, N_(">") },
-  { 0, SAME_ROW, 0, NULL, (void*) &ToEndEvent, NULL, NULL, Button, N_(">>") },
+  { 0,    0,     0, NULL, (void*) &ToStartEvent, (char*)&appData.font, NULL, Button, N_("<<") },
+  { 0, SAME_ROW, 0, NULL, (void*) &BackwardEvent, (char*)&appData.font, NULL, Button, N_("<") },
+  { 0, SAME_ROW, 0, NULL, (void*) &PauseEvent, (char*)&appData.font, NULL, Button, N_(PAUSE_BUTTON) },
+  { 0, SAME_ROW, 0, NULL, (void*) &ForwardEvent, (char*)&appData.font, NULL, Button, N_(">") },
+  { 0, SAME_ROW, 0, NULL, (void*) &ToEndEvent, (char*)&appData.font, NULL, Button, N_(">>") },
 { 0, 0, 0, NULL, NULL, "", NULL, BoxEnd, "" },
 { 401, LR|TB, 401, NULL, (char*) &Exp, NULL, NULL, Graph, "shadow board" }, // board
   { 2, COMBO_CALLBACK, 0, NULL, (void*) &PMSelect, NULL, pieceMenuStrings[0], PopUp, "menuW" },
