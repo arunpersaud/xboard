@@ -693,6 +693,7 @@ printf("*** selected\n");
 void
 AddHandler (Option *opt, DialogClass dlg, int nr)
 {
+    PangoFontDescription *pfd;
     switch(nr) {
       case 0: // history (now uses generic textview callback)
       case 1: // comment (likewise)
@@ -703,6 +704,8 @@ AddHandler (Option *opt, DialogClass dlg, int nr)
 	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (TypeInProc), (gpointer) (dlg<<16 | (opt - dialogOptions[dlg])));
 	break;
       case 5: // game list
+        pfd = pango_font_description_from_string(appData.gameListFont);
+        gtk_widget_modify_font(opt->handle, pfd);
 	g_signal_connect(opt->handle, "button-press-event", G_CALLBACK (GameListEvent), (gpointer) 0 );
       case 4: // game-list filter
 	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (GameListEvent), (gpointer) (intptr_t) nr );
