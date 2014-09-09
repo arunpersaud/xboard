@@ -1959,7 +1959,7 @@ ChatOK (int n)
 void
 DelayedSetText ()
 {
-    SetWidgetText(&chatOptions[CHAT_IN], tmpLine, ChatDlg);
+    SetWidgetText(&chatOptions[CHAT_IN], tmpLine, -1); // leave focus on chat-partner field!
     SetInsertPos(&chatOptions[CHAT_IN], strlen(tmpLine));
 }
 
@@ -1976,6 +1976,7 @@ ChatSwitch (int n)
 {
     int i, j;
     char *v;
+    if(chatOptions[CHAT_ICS].type == Skip) hidden = 0; // In Xaw there is no ICS pane we can hide behind
     Show(&chatOptions[CHAT_PANE], 0); // show
     if(hidden) ScheduleDelayedEvent(DelayedScroll, 50); // Awful!
     else ScheduleDelayedEvent(DelayedSetText, 50);
@@ -2037,7 +2038,7 @@ NewChat (char *name)
 void
 ConsoleWrite(char *message, int count)
 {
-    if(shellUp[ChatDlg]) {
+    if(shellUp[ChatDlg] && chatOptions[CHAT_ICS].type != Skip) { // in Xaw this is a no-op
 	AppendColorized(&chatOptions[CHAT_ICS], message, count);
 	SetInsertPos(&chatOptions[CHAT_ICS], 999999);
     }

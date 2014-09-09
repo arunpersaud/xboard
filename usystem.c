@@ -657,7 +657,7 @@ OutputToProcess (ProcRef pr, char *message, int count, int *outError)
 {
     static int line = 0;
     ChildProc *cp = (ChildProc *) pr;
-    int outCount;
+    int outCount = count;
 
     if (pr == NoProc)
     {

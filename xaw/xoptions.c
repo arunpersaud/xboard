@@ -273,12 +273,29 @@ SetTextColor (char **cnames, int fg, int bg, int attr)
 void
 AppendColorized (Option *opt, char *message, int count)
 {
+  if(!opt->handle) return;
   AppendText(opt, message);
 }
 
 void
 Show (Option *opt, int hide)
 {
+    static Dimension h;
+    Arg args[16];
+    Dimension v;
+    int j=0;
+return; // FIXME: it would be nice if the Chat window did have an ICS pane we could hide behind
+printf("Show(%d) %x\n", hide, opt->handle);
+    if(!opt->handle) return;
+    if(hide) { // make sure original size is saved
+      XtSetArg(args[j], XtNheight, &v); j++;
+      XtGetValues(opt->handle, args, j);
+      if(v != 1) h = v;
+    }
+printf("h = %d\n",h);
+    j = 0;
+    XtSetArg(args[j], XtNheight, hide ? 1 : h); j++;
+    XtSetValues(opt->handle, args, j);
 }
 
 void

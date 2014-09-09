@@ -990,6 +990,9 @@ main (int argc, char **argv)
     char *p;
     int forceMono = False;
 
+    extern Option chatOptions[]; // FIXME: adapt Chat window, removing ICS pane and Hide button
+    chatOptions[6].type = chatOptions[10].type = Skip;
+
     srandom(time(0)); // [HGM] book: make random truly random
 
     setbuf(stdout, NULL);
