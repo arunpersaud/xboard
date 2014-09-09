@@ -849,12 +849,12 @@ main (int argc, char **argv)
 	char *path = gtkosx_application_get_bundle_path();
 	strncpy(dataDir, path, MSG_SIZ);
 	snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
+	suppress = (argc == 1 || argc > 1 && argv[1][00] != '-'); // OSX sends signal even if name was already argv[1]!
 	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
 	// we must call application ready before we can get the signal,
 	// and supply a (dummy) menu bar before that, to avoid problems with dual apples in it
 	gtkosx_application_set_menu_bar(theApp, GTK_MENU_SHELL(gtk_menu_bar_new()));
 	gtkosx_application_ready(theApp);
-	suppress = (argc == 1 || argc > 1 && argv[1][00] != '-'); // OSX sends signal even if name was already argv[1]!
 	if(argc == 1) {                  // called without args: OSX open-file signal might follow
 	    static char *fakeArgv[3] = {NULL, clickedFile, NULL};
 	    usleep(10000);               // wait 10 msec (and hope this is long enough).
