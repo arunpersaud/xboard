@@ -386,9 +386,10 @@ ParseFont (char *name, int number)
     //       defer processing it until we know if it matches our board size
     if(!strstr(name, "-*-") &&       // ignore X-fonts
        size >= 0 && size<MAX_SIZE) { // for now, fixed limit
-	fontTable[number][size] = name = strdup(strchr(name, ':')+1);
+	fontTable[number][size] = strdup(strchr(name, ':')+1);
 	fontValid[number][size] = True;
-    } else return;
+    }
+    return;
   }
   switch(number) {
     case 0: // CLOCK_FONT
@@ -659,8 +660,14 @@ InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
 	appData.coordFont = fontTable[COORD_FONT][squareSize];
     if(!fontIsSet[CONSOLE_FONT] && fontValid[CONSOLE_FONT][squareSize])
 	appData.icsFont = fontTable[CONSOLE_FONT][squareSize];
+    if(!fontIsSet[EDITTAGS_FONT] && fontValid[EDITTAGS_FONT][squareSize])
+	appData.tagsFont = fontTable[EDITTAGS_FONT][squareSize];
     if(!fontIsSet[COMMENT_FONT] && fontValid[COMMENT_FONT][squareSize])
 	appData.commentFont = fontTable[COMMENT_FONT][squareSize];
+    if(!fontIsSet[MOVEHISTORY_FONT] && fontValid[MOVEHISTORY_FONT][squareSize])
+	appData.historyFont = fontTable[MOVEHISTORY_FONT][squareSize];
+    if(!fontIsSet[GAMELIST_FONT] && fontValid[GAMELIST_FONT][squareSize])
+	appData.gameListFont = fontTable[GAMELIST_FONT][squareSize];
 
     appData.font = InsertPxlSize(appData.font, fontPxlSize);
     appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
