@@ -1765,12 +1765,12 @@ Currently no keystroke is assigned to this ReloadPositionProc.
 @end table
 
 In the Xaw build of XBoard you can add or remove shortcut keys
-using the X resources @code{form.translations}.
-Here is an example of what would go in your
-@file{.Xresources} file:
+using the X resources @code{paneA.translations}.
+Here is an example of what could go into your
+@file{.Xdefaults} file:
 
 @example
-XBoard*form.translations: \
+XBoard*paneA.translations: \
   Shift<Key>?: MenuItem(Help.About) \n\
   Ctrl<Key>y: MenuItem(Action.Accept) \n\
   Ctrl<Key>n: MenuItem(Action.Decline) \n\
