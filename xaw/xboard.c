@@ -204,6 +204,7 @@ extern char *getenv();
 #include "draw.h"
 
 #define SLASH '/'
+#define DATADIR "~~"
 
 #ifdef __EMX__
 #ifndef HAVE_USLEEP

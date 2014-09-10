@@ -1,3 +1,119 @@
+** Version 4.7.3 **
+
+(git diff -b --stat --summary -M v4.7.2 HEAD)
+
+ COPYRIGHT                        |   2 +-
+ README                           |   1 -
+ args.h                           |  10 +-
+ autogen.sh                       |   2 +-
+ backend.c                        |  27 +++-
+ backend.h                        |  42 +-----
+ backendz.h                       |   2 +-
+ board.c                          |   2 +-
+ board.h                          |   2 +-
+ book.c                           |   3 +
+ childio.c                        |   2 +-
+ childio.h                        |   2 +-
+ cmail.in                         |   2 +-
+ common.h                         |  42 +++++-
+ configure.ac                     |   4 +-
+ copyright.texi                   |   2 +-
+ dialogs.c                        |  14 +-
+ dialogs.h                        |   2 +-
+ doc-maint/release.org            |   0
+ draw.c                           |   2 +-
+ draw.h                           |   2 +-
+ engineoutput.c                   |   4 +-
+ engineoutput.h                   |   2 +-
+ evalgraph.c                      |   2 +-
+ evalgraph.h                      |   2 +-
+ frontend.h                       |   4 +-
+ gamelist.c                       |   2 +-
+ gtk/xboard.c                     |  84 +++++++++---
+ gtk/xboard.h                     |   2 +-
+ gtk/xengineoutput.c              |   2 +-
+ gtk/xoptions.c                   |  55 ++++++--
+ gtk/xtimer.c                     |   2 +-
+ history.c                        |   2 +-
+ lists.c                          |   2 +-
+ lists.h                          |   2 +-
+ menus.c                          |   4 +-
+ menus.h                          |   2 +-
+ moves.c                          |   4 +-
+ moves.h                          |   2 +-
+ nengineoutput.c                  |   2 +-
+ nevalgraph.c                     |   2 +-
+ ngamelist.c                      |   2 +-
+ nhistory.c                       |   2 +-
+ parser.c                         |   6 +-
+ parser.h                         |   2 +-
+ pgntags.c                        |   2 +-
+ po/da.po                         | 280 +++++++++++++++++++-------------------
+ po/de.po                         | 280 +++++++++++++++++++-------------------
+ po/es.po                         | 280 +++++++++++++++++++-------------------
+ po/it.po                         | 280 +++++++++++++++++++-------------------
+ po/lng2po.sh                     |   2 +-
+ po/ru.po                         | 280 +++++++++++++++++++-------------------
+ po/tr.po                         | 280 +++++++++++++++++++-------------------
+ po/uk.po                         | 282 +++++++++++++++++++--------------------
+ po/vi.po                         | 280 +++++++++++++++++++-------------------
+ po/xboard.pot                    | 282 +++++++++++++++++++--------------------
+ po/zh_CN.po                      | 280 +++++++++++++++++++-------------------
+ po/zh_HK.po                      | 280 +++++++++++++++++++-------------------
+ po/zh_TW.po                      | 280 +++++++++++++++++++-------------------
+ themes/xiangqi/.DS_Store         | Bin 6148 -> 0 bytes
+ uci.c                            |   2 +-
+ usounds.c                        |   2 +-
+ usystem.c                        |   2 +-
+ usystem.h                        |   2 +-
+ winboard/config.h                |   6 +-
+ winboard/defaults.h              |   2 +-
+ winboard/help.c                  |   2 +-
+ winboard/help/html/24.htm        |   2 +-
+ winboard/jaws.c                  |   2 +-
+ winboard/language.txt            |   2 +-
+ winboard/language/deutsch.lng    |   2 +-
+ winboard/language/italiano.lng   |   2 +-
+ winboard/language/nederlands.lng |   2 +-
+ winboard/language/romanian.lng   |   2 +-
+ winboard/language/russian.lng    |   2 +-
+ winboard/language/spanish.lng    |   2 +-
+ winboard/language/vietnamese.lng |   2 +-
+ winboard/makefile.gcc            |   5 +-
+ winboard/wchat.c                 |   2 +-
+ winboard/wclipbrd.c              |   2 +-
+ winboard/wclipbrd.h              |   2 +-
+ winboard/wedittags.c             |   2 +-
+ winboard/wengineoutput.c         |   2 +-
+ winboard/wevalgraph.c            |   2 +
+ winboard/wgamelist.c             |   2 +-
+ winboard/whistory.c              |   2 +
+ winboard/winboard.c              |  46 +++++--
+ winboard/winboard.h              |   4 +-
+ winboard/winboard.rc             |   4 +-
+ winboard/wlayout.c               |  14 +-
+ winboard/woptions.c              |   2 +-
+ winboard/woptions.h              |   2 +-
+ winboard/wsettings.c             |  23 ++++
+ winboard/wsockerr.c              |   2 +-
+ winboard/wsockerr.h              |   2 +-
+ xaw/xboard.c                     |   3 +-
+ xaw/xboard.h                     |   2 +-
+ xaw/xengineoutput.c              |   3 +-
+ xaw/xgamelist.c                  |   2 +-
+ xaw/xgamelist.h                  |   2 +-
+ xaw/xhistory.c                   |   2 +-
+ xaw/xhistory.h                   |   2 +-
+ xaw/xoptions.c                   |  14 +-
+ xboard2.h                        |  22 +++
+ zippy.README                     |   0
+ zippy.c                          |   2 +-
+ zippy.h                          |   2 +-
+ zippy.lines                      |   0
+ 108 files changed, 2077 insertions(+), 1867 deletions(-)
+ delete mode 100644 themes/xiangqi/.DS_Store
+
+
 ** Version 4.7.2 **
 
 (git diff -b --stat --summary -M v4.7.1 HEAD)
