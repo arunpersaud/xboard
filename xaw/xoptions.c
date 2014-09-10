@@ -285,7 +285,7 @@ Show (Option *opt, int hide)
     Dimension v;
     int j=0;
 return; // FIXME: it would be nice if the Chat window did have an ICS pane we could hide behind
-printf("Show(%d) %x\n", hide, opt->handle);
+//printf("Show(%d) %x\n", hide, opt->handle);
     if(!opt->handle) return;
     if(hide) { // make sure original size is saved
       XtSetArg(args[j], XtNheight, &v); j++;
