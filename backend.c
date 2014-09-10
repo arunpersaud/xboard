@@ -16608,6 +16608,10 @@ EngineDefinedVariant (ChessProgramState *cps, int n)
       v = StringToVariant(s);
       if(v == VariantNormal && strcmp(s, "normal") && !strstr(s, "_normal")) v = VariantUnknown; // garbage is recognized as normal
 	if(v == VariantUnknown) { // non-standard variant in list of engine-supported variants
+	    if(!strcmp(s, "tenjiku") || !strcmp(s, "dai") || !strcmp(s, "dada") || // ignore Alien-Edition variants
+	       !strcmp(s, "maka") || !strcmp(s, "tai") || !strcmp(s, "kyoku") ||
+	       !strcmp(s, "checkers") || !strcmp(s, "go") || !strcmp(s, "reversi") ||
+	       !strcmp(s, "dark") || !strcmp(s, "alien") || !strcmp(s, "multi") || !strcmp(s, "amazons") ) n++;
 	    if(--n < 0) safeStrCpy(buf, s, MSG_SIZ);
 	}
 	if(p) *p++ = ',';
