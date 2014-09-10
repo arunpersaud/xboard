@@ -376,7 +376,6 @@ typedef enum {
     Variant36,           /* Temporary name for possible future ICC wild 36 */
     VariantShogi,        /* [HGM] added variants */
     VariantChu,
-    VariantXiangqi,
     VariantCourier,
     VariantGothic,
     VariantCapablanca,
@@ -391,10 +390,11 @@ typedef enum {
     VariantGreat,
     VariantTwilight,
     VariantMakruk,
-    VariantASEAN,
     VariantSChess,
     VariantGrand,
     VariantSpartan,
+    VariantXiangqi,
+    VariantASEAN,
     VariantLion,
     VariantChuChess,
     VariantUnknown       /* Catchall for other unknown variants */
@@ -426,7 +426,6 @@ typedef enum {
   "wild36", \
   "shogi", \
   "chu", \
-  "xiangqi", \
   "courier", \
   "gothic", \
   "capablanca", \
@@ -441,12 +440,13 @@ typedef enum {
   "great",\
   "twilight",\
   "makruk",\
-  "asean",\
   "seirawan",\
   "grand",\
   "spartan",\
+  "xiangqi", \
+  "asean",\
   "lion",\
-  "chuchess",\
+  "elven",\
   "unknown" \
 }
 

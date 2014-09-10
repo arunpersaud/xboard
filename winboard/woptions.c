@@ -850,7 +850,6 @@ int radioButton[] = {
     -1,
     OPT_VariantShogi,
     -1, // Chu
-    OPT_VariantXiangqi,
     OPT_VariantCourier,
     OPT_VariantGothic,
     OPT_VariantCapablanca,
@@ -865,10 +864,11 @@ int radioButton[] = {
     OPT_VariantGreat,
     -1, // Twilight,
     OPT_VariantMakruk,
-    OPT_VariantASEAN,
     OPT_VariantSChess,
     OPT_VariantGrand,
     OPT_VariantSpartan, // Spartan
+    OPT_VariantXiangqi,
+    OPT_VariantASEAN,
     OPT_VariantLion,
     -2 // sentinel
 };
