@@ -13,6 +13,7 @@
   .version43 { color: green;}
   .version44 { color: blue; }
   .version47 { color: purple; }
+  .version48 { color: brown; }
 
   table tr { text-align: left}
   tr > td:first-child { font-weight:bold;}
@@ -537,10 +538,13 @@ defined variant names are:
 <tr class="version43"><td>cylinder  </td><td>Pieces wrap around between side edges, like board is a cylinder</td></tr>
 <tr class="version44"><td>super  </td><td>Superchess: a shuffle variant with 4 fairy pieces on 8x8 board</td></tr>
 <tr class="version44"><td>great  </td><td>Great Shatranj: sliders are replaced by corresponding short-range pieces on a 10x8 board</td></tr>
+<tr class="version48"><td>lion  </td><td>Mighty-Lion Chess, with a super-knight, more powerful than a Queen</td></tr>
+<tr class="version48"><td>elven  </td><td>Elven Chess: hybrid between Chess and Chu Shogi on 10x10 board</td></tr>
+<tr class="version48"><td>chu  </td><td>Chu Shogi: Edo-period Japanese Chess on a 12x12 board</td></tr>
 <tr><td>unknown</td><td>Unknown variant (not supported)</td></tr>
 </table>
 
-As of XBoard 4.8, engines can define arbitrary variant names; see the "feature" and "setup" commands in <a href="#9">section 9</a>.
+<span class="version48">As of XBoard 4.8, engines can define arbitrary variant names; see the "feature" and "setup" commands in <a href="#9">section 9</a>.</span>
 </dd>
 
 <dt>quit</dt>
@@ -706,10 +710,12 @@ algebraic notation.  Examples:
 <tr><td>Bughouse/crazyhouse drop:</td><td>P@h3</td></tr>
 <tr><td>ICS Wild 0/1 castling:</td><td>d1f1, d1b1, d8f8, d8b8</td></tr>
 <tr><td>FischerRandom castling:</td><td>O-O, O-O-O (oh, not zero)</td></tr>
+<tr class="version48"><td>Multi-leg move:</td><td>c4d5,d5e4 (legs separated by comma)</td></tr>
+<tr class="version48"><td>Null move:</td><td>@@@@</td></tr>
 </table>
 
 <p class="version43">
-Note that on boards with more than 9 ranks, counting of the ranks starts at 0.
+Note that on boards with <span class="version48">exactly 10</span> ranks, counting of the ranks starts at 0.
 </p>
 <p class="version1">
 Beginning in protocol version 2, you can use the feature command
@@ -1121,6 +1127,24 @@ It is entirely up to the engine to decide when the effect of this option should 
 or even into future sessions until the user explicitly clears it through an engine-defined option.)
 This command will only be sent to engines that have requested it through the setscore feature.
 </dd>
+
+<dt class="version48">lift SQUARE</dt>
+<dt class="version48">put SQUARE</dt>
+<dt class="version48">hover SQUARE</dt>
+<dd class="version48">
+These commands are only important for variants the GUI does not know the rules of,
+and keep the engine aware of how the user is manipulating pieces in the GUI,
+so that it can supply relevant rule information.
+The "lift" command is sent by the GUI when the user 'picks up' (or selects) a piece from the mentioned SQUARE,
+so that the engine can reply with a "highlight" command to mark the squares where that piece can move to.
+The "put" command similarly indicates where the user releases that piece;
+as the GUI clears the highlights on that event by itself, usually no engine response would be required.
+The "hover" command is sent whenever the mouse pointer enters a square that is currently marked in red,
+(reserved for captures)
+so that the engine can (optionally) reply with a "highlight" command to mark victims of non-standard capture
+(such as e.p. capture in Chess, or jump capture in Checkers) when the user would move the currently selected piece there.
+These commands will only be sent to engines that have requested such through the highlight feature.
+</dd>
 </dl>
 
 <h3>Bughouse commands:</h3>
@@ -1343,7 +1367,7 @@ correct value for your engine (just "normal" in most cases) rather
 than leaving the default in place, so that the user will get an
 appropriate error message if he tries to play a variant that your
 engine does not support.</span>
-<span class="version47">As of XBoard 4.8 a variant name not known to the GUI will be
+<span class="version48">As of XBoard 4.8 a variant name not known to the GUI will be
 considered an engine-defined variant.
 The user will be given the opportunity to select such variants,
 but when this happens, the engine should define its meaning
@@ -1496,12 +1520,17 @@ without first receiving a -reset option command, is undefined.)
 If exclude=1 the GUI can send "exclude" and "include" commands to control which moves
 from the root position should be searched.
 </dd>
-</dd>
 
 <dt class="version47">setscore (boolean, default 0)</dt>
 <dd class="version47">
 If setscore=1 the GUI can send "setscore" commands to define the score of the current position.
 </dd>
+
+<dt class="version48">highlight (boolean, default 0)</dt>
+<dd class="version48">
+If highlight=1 the GUI will send "lift", "put" and "hover" commands to the engine,
+to keep the latter aware of the user's piece manipulation before the move entry is completed,
+so it can respond with the proper "highlight" and "click" commands.
 </dd>
 
 <dt class="version1">done (integer, no default)</dt>
@@ -1622,6 +1651,11 @@ compatibility.  An even more conservative approach would be for your
 engine to send SAN to the interface only if you have set feature san=1
 (which causes the interface to send SAN to you) and have received
 "accepted san" in reply.
+</p>
+
+<p class="version48">
+For a multi-leg move, each leg will have to be sent in a separate "move" command,
+a comma at the end of all non-final legs indicating there is more to follow.
 </p>
 </div>
 </dd>
@@ -1777,6 +1811,43 @@ If the engine has set feature debug=1,
 it is guaranteed that WinBoard (and any future version of it) will completely ignore
 these lines in any other respect.
 </dd>
+
+<dt class="version48">highlight COLORFEN</dt>
+<dd class="version48">
+Through this command the engine can apply markers to the board squares,
+of the same type as the GUI uses for indicating where the user could put down a piece he grabs.
+The COLORFEN is a construct similar to the board part of a FEN,
+in which the letters indicate colors rather than piece types.
+Eight colors are available, through the single-letter codes: RYGCBMWD,
+for red, yellow, green, cyan, blue, magenta, white, black ('dark'), respectively.
+For example, "highlight 8/8/8/8/4y3/4yr2/8/8" would mark e3 and e4 yellow, and f3 red.
+Some colors have special meaning to the GUI:
+<table>
+<tr><th>color</th><th>used for</th><th>effect</th><tr>
+<tr><td>red</td><td>capture</td><td>hovering over the square makes the GUI send a "hover" command</td><tr>
+<tr><td>magenta</td><td>promotion</td><td>moving to the square will be treated by the GUI as a promotion</td><tr>
+<tr><td>cyan</td><td>multi-move</td><td>moving to the square will not complete the move entry</td><tr>
+<tr><td>green</td><td>victims</td><td>no real effect, but used by convention to indicate capture victims on "hover"</td><tr>
+</table>
+The GUI will use the markers for legality checking,
+and will consider moves to squares left non-marked in a highlight command as illegal even when legality checking is off.
+This way the GUI can be made aware of the rules of unknown variants,
+popping up promotion dialogs where it would otherwise not,
+and knowing where to wait for more input on multi-leg moves.
+When it would be necessary to mark squares where no legal moves go to
+(e.g. to indicate side effects),
+the corresponding lower-case character can be used for the color.
+For indicating a legal destination square without visibly marking it, T (transparent) can be used.
+</dd>
+
+<dt class="version48">click SQUARE</dt>
+<dd class="version48">
+The GUI will treat this command as if the user had clicked the mentioned SQUARE.
+This can be used to implement one-click moving in variants the GUI does not know the rules of
+(having the engine send the clicks needed to complete the move).
+It can also be used to implement side effects of the move the GUI would not know about
+(e.g. moving the Rook in a non-standard castling).
+</dd>
 </dl>
 
 <h2><a name="10">10. Thinking Output</a></h2>
@@ -1808,7 +1879,7 @@ You can continue the pv onto another line if you start each
 continuation line with at least four space characters.</td></tr>
 </table>
 
-<p class="version47">
+<p class="version48">
 The items marked with * are optional.
 If any of these items is present, the <b>pv</b> field must be preceeded directly by a tab character;
 if no tab character preceeds the first non-integer token,
@@ -1824,13 +1895,13 @@ It is therefore encouraged that engines use tabs or spaces to format this option
 so that it will display nicely in (not too wide) columns.
 </p>
 
-<p class="version47">
+<p class="version48">
 A question mark as the last character in the <b>pv</b> field should be used to indicate
 the reported score is from a fail low, and thus represents an upper bound only.
 Similarly, an exclamation point should be used to indicate a fail high / lower bound.
 </p>
 
-<p class="version47">
+<p class="version48">
 Mate scores should be indicated as 100000 + N for "mate in N moves",
 and -100000 - N for "mated in N moves".
 </p>
