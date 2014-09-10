@@ -1,114 +1,114 @@
-# XBoard -- a graphical chessboard for X
-# Copyright (C) 2013, 2014 Free Software Foundation, Inc.
-# This file is distributed under the same license as the XBoard package.
-# Traducción por Óscar Toledo G., 2010
-# Antonio Ceballos <aceballos@gmail.com>, 2014
+# Polish translations for GNU xboard package
+# Polskie tłumaczenia dla pakietu GNU xboard.
+# Copyright (C) 2014 Free Software Foundation, Inc.
+# This file is distributed under the same license as the xboard package.
+# Paweł Żołnowski <pawel@zolnowski.name>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard 4.7.2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2013-08-28 21:49-0700\n"
-"PO-Revision-Date: 2014-06-28 17:38+0200\n"
-"Last-Translator: Antonio Ceballos <aceballos@gmail.com>\n"
-"Language-Team: Spanish <es@tp.org.es>\n"
-"Language: es\n"
+"PO-Revision-Date: 2014-03-03 14:20+0100\n"
+"Last-Translator: Paweł Żołnowski <pawel@zolnowski.name>\n"
+"Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: args.h:820
 #, c-format
 msgid "%s in settings file\n"
-msgstr "%s en el fichero de configuración\n"
+msgstr "%s w pliku konfiguracyjnym\n"
 
 #: args.h:830
 #, c-format
 msgid "Bad integer value %s"
-msgstr "Valor entero malo %s"
+msgstr "Błędna wartość całkowita %s"
 
 #: args.h:923 args.h:1164
 #, c-format
 msgid "Unrecognized argument %s"
-msgstr "Argumento no reconocido %s"
+msgstr "Nieznany parametr %s"
 
 #: args.h:954
 #, c-format
 msgid "No value provided for argument %s"
-msgstr "No se ha dado valor al argumento %s"
+msgstr "Brak wartości parametru %s"
 
 #: args.h:1014
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
-msgstr "Carácter de escape \\ incompleto en el valor de %s"
+msgstr "Niepełna sekwencja specjalna \\ w wartości dla %s"
 
 #: args.h:1119
 #, c-format
 msgid "Failed to open indirection file %s"
-msgstr "Fallo al abrir fichero de indirección %s"
+msgstr "Nie udało się otworzyć pliku pośredniego %s"
 
 #: args.h:1136
 #, c-format
 msgid "Unrecognized boolean argument value %s"
-msgstr "Valor del argumento lógico %s no reconocido"
+msgstr "Nieznana wartość parametru logicznego %s"
 
 #. TRANSLATORS: "first" is the first of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
 #: backend.c:744
 msgid "first"
-msgstr "primer"
+msgstr "1."
 
 #. TRANSLATORS: "second" is the second of possible two chess engines. It is inserted into strings
 #. such as "%s engine" / "%s chess program" / "%s machine" - all meaning the same thing
 #: backend.c:747
 msgid "second"
-msgstr "segundo"
+msgstr "2."
 
 #: backend.c:827
 #, c-format
 msgid "protocol version %d not supported"
-msgstr "versión %d del protocolo no es admitida"
+msgstr "nieobsługiwana wersja %d protokołu"
 
 #: backend.c:933
 msgid "You did not specify the engine executable"
-msgstr "No se especificó el ejecutable del motor"
+msgstr "Nie podano pliku wykonywalnego silnika"
 
 #: backend.c:989
 #, c-format
 msgid "bad timeControl option %s"
-msgstr "opción timeControl incorrecta %s"
+msgstr "zła opcja timeControl %s"
 
 #: backend.c:1004
 #, c-format
 msgid "bad searchTime option %s"
-msgstr "opción searchTime incorrecta %s"
+msgstr "zła opcja searchTime %s"
 
 #: backend.c:1110
 #, c-format
 msgid "Variant %s supported only in ICS mode"
-msgstr "La variante %s solo se admite en modo ICS"
+msgstr "Wariant %s jest obsługiwany tylko w trybie ICS"
 
 #: backend.c:1128
 #, c-format
 msgid "Unknown variant name %s"
-msgstr "Nombre de variante desconocido %s"
+msgstr "Nieznana nazwa wariantu %s"
 
 #: backend.c:1375
 msgid "Starting chess program"
-msgstr "Iniciando programa de ajedrez"
+msgstr "Uruchamianie silnika szachowego"
 
 #: backend.c:1398
 msgid "Bad game file"
-msgstr "archivo de partidas incorrecto"
+msgstr "Nieprawidłowy plik gry"
 
 #: backend.c:1405
 msgid "Bad position file"
-msgstr "archivo de posición incorrecto"
+msgstr "Nieprawidłowy plik pozycji"
 
 #: backend.c:1419
 msgid "Pick new game"
-msgstr "Seleccionar una nueva partida"
+msgstr "Wybierz nową grę"
 
 #: backend.c:1488
 msgid ""
@@ -116,125 +116,125 @@ msgid ""
 "One more cycle will now be added to it\n"
 "Games commence in 10 sec"
 msgstr ""
-"Se ha reiniciado un torneo que ya había concluido\n"
-"Se le va a añadir un nuevo ciclo\n"
-"Las partidas comienzan dentro de 10 s"
+"Zrestartowano ukończony już turniej\n"
+"Zostanie dodany do niego jeszcze jeden cykl\n"
+"Gry rozpoczną się za 10 s"
 
 #: backend.c:1495
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
-msgstr "Ya se han disputado o se están disputando todas las partidas del torneo '%s'"
+msgstr "Wszystkie gry w turnieju \"%s\" zostały już rozegrane lub są w toku"
 
 #: backend.c:1502
 msgid "Can't have a match with no chess programs"
-msgstr "No se puede tener una partida sin programas de ajedrez"
+msgstr "Konieczny jest wybór silnika szachowego"
 
 #: backend.c:1539
 #, c-format
 msgid "Could not open comm port %s"
-msgstr "No se pudo abrir la puerta de comunicaciones %s"
+msgstr "Nie można otworzyć portu szeregowego %s"
 
 #: backend.c:1542
 #, c-format
 msgid "Could not connect to host %s, port %s"
-msgstr "No se pudo conectar al servidor %s, puerta %s"
+msgstr "Nie można się połączyć z hostem %s, port %s"
 
 #: backend.c:1598
 #, c-format
 msgid "Unknown initialMode %s"
-msgstr "Modo inicial desconocido %s"
+msgstr "Nieznany initialMode %s"
 
 #: backend.c:1624
 msgid "AnalyzeFile mode requires a game file"
-msgstr "El modo análisis de archivo requiere un archivo de partidas"
+msgstr "Tryb AnalyzeFile wymaga pliku gry"
 
 #: backend.c:1651
 msgid "Analysis mode requires a chess engine"
-msgstr "El modo de análisis requiere un motor de ajedrez"
+msgstr "Tryb analizy wymaga silnika szachowego"
 
 #: backend.c:1655
 msgid "Analysis mode does not work with ICS mode"
-msgstr "El modo de análisis no funciona con el modo ICS"
+msgstr "Tryb analizy nie działa w trybie ICS"
 
 #: backend.c:1666
 msgid "MachineWhite mode requires a chess engine"
-msgstr "El modo de máquina con blancas requiere un motor de ajedrez"
+msgstr "Tryb MachineWhite wymaga silnika szachowego"
 
 #: backend.c:1671
 msgid "MachineWhite mode does not work with ICS mode"
-msgstr "El modo de máquina con blancas no funciona con el modo ICS"
+msgstr "Tryb MachineWhite nie działa w trybie ICS"
 
 #: backend.c:1678
 msgid "MachineBlack mode requires a chess engine"
-msgstr "El modo de máquina con negras requiere un motor de ajedrez"
+msgstr "Tryb MachineBlack wymaga silnika szachowego"
 
 #: backend.c:1683
 msgid "MachineBlack mode does not work with ICS mode"
-msgstr "El modo de máquina con negras no funciona con el modo ICS"
+msgstr "Tryb MachineBlack nie działa w trybie ICS"
 
 #: backend.c:1690
 msgid "TwoMachines mode requires a chess engine"
-msgstr "El modo de dos máquinas requiere un motor de ajedrez"
+msgstr "Tryb TwoMachines wymaga silnika szachowego"
 
 #: backend.c:1695
 msgid "TwoMachines mode does not work with ICS mode"
-msgstr "El modo de dos máquinas no funciona con el modo ICS"
+msgstr "Tryb TwoMachines nie działa w trybie ICS"
 
 #: backend.c:1706
 msgid "Training mode requires a game file"
-msgstr "El modo de entrenamiento requiere un archivo de partidas"
+msgstr "Tryb treningu wymaga pliku gry"
 
 #: backend.c:1869 backend.c:1924 backend.c:1947 backend.c:2346
 msgid "Error writing to ICS"
-msgstr "Error al escribir a ICS"
+msgstr "Błąd zapisu do ICS"
 
 #: backend.c:1884
 msgid "Error reading from keyboard"
-msgstr "Error al leer el teclado"
+msgstr "Błąd odczytu z klawiatury"
 
 #: backend.c:1887
 msgid "Got end of file from keyboard"
-msgstr "Se obtuvo del teclado un fin de archivo"
+msgstr "Wprowadzono EOF z klawiatury"
 
 #: backend.c:2192
 #, c-format
 msgid "Unknown wild type %d"
-msgstr "Tipo «wild» %d desconocido"
+msgstr "Nieznany typ wild %d"
 
 #: backend.c:2263 usystem.c:329
 msgid "Error writing to display"
-msgstr "Error al escribir en la pantalla"
+msgstr "Błąd zapisu do ekranu"
 
 #: backend.c:3019
 #, c-format
 msgid "your opponent kibitzes: %s"
-msgstr "información kibitz de su oponente: %s"
+msgstr "przeciwnik doradza: %s"
 
 #: backend.c:3548
 msgid "Error gathering move list: two headers"
-msgstr "Error al recolectar lista de jugadas: dos encabezados"
+msgstr "Błąd podczas tworzenia listy ruchów: dwa nagłówki"
 
 #: backend.c:3595
 msgid "Error gathering move list: nested"
-msgstr "Error al recolectar lista de jugadas: anidado"
+msgstr "Błąd podczas tworzenia listy ruchów: zagnieżdżona lista"
 
 #: backend.c:3699 backend.c:4117 backend.c:4321 backend.c:4880 backend.c:4884
 #: backend.c:6900 backend.c:12082 backend.c:13797 backend.c:13874
 #: backend.c:13920 backend.c:13926 backend.c:13931 backend.c:13936
 msgid "vs."
-msgstr "contra"
+msgstr "vs."
 
 #: backend.c:3827
 msgid "Illegal move (rejected by ICS)"
-msgstr "La jugada no es válida (la ha rechazado ICS)"
+msgstr "Niedozwolony ruch (odrzucony przez ICS)"
 
 #: backend.c:4165
 msgid "Connection closed by ICS"
-msgstr "Conexión cerrada por ICS"
+msgstr "Połączenie zamknięte przez ICS"
 
 #: backend.c:4167
 msgid "Error reading from ICS"
-msgstr "Error al leer de ICS"
+msgstr "Błąd odczytu z ICS"
 
 #: backend.c:4244
 #, c-format
@@ -242,110 +242,109 @@ msgid ""
 "Failed to parse board string:\n"
 "\"%s\""
 msgstr ""
-"Fallo al analizar texto del tablero:\n"
+"Nie udało się przetworzyć ciągu znaków szachownicy:\n"
 "\"%s\""
 
 #: backend.c:4253 backend.c:9755
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr "Partida demasiado larga; incremente MAX_MOVES y recompile"
+msgstr "Gra jest za długa; należy zwiększyć wartość MAX_MOVES i skompilować ponownie"
 
 #: backend.c:4372
 msgid "Error gathering move list: extra board"
-msgstr "Error al recolectar lista de jugadas: tablero extra"
+msgstr "Błąd podczas tworzenia listy ruchów: dodatkowa szachownica"
 
 #: backend.c:4804 backend.c:4826
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
-msgstr "No se pudo analizar la jugada \"%s\" de ICS"
+msgstr "Nie można przetworzyć ruchu \"%s\" z ICS"
 
 #: backend.c:5063
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
-msgstr "say Error interno; moveType incorrecto %d (%d,%d-%d,%d)"
+msgstr "Błąd wewnętrzny; nieprawidłowy moveType %d (%d,%d-%d,%d)"
 
 #: backend.c:5133
 msgid "You cannot do this while you are playing or observing"
-msgstr "No se puede hacer esto mientras se está jugando u observando"
+msgstr "Nie można tego zrobić w czasie gry ani podczas obserwacji"
 
-#  TRANSLATORS: BOARDS_RANKS, BOARD_FILES translatable?
 #: backend.c:6029
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr "¡Hace falta recompilar para disponer de BOARD_RANKS o BOARD_FILES!"
+msgstr "Należy skompilować ponownie, aby włączyć obsługę BOARD_RANKS lub BOARD_FILES!"
 
 #: backend.c:6491
 msgid "You are playing Black"
-msgstr "Usted juega negras"
+msgstr "Grasz czarnymi"
 
 #: backend.c:6500 backend.c:6527
 msgid "You are playing White"
-msgstr "Usted juega blancas"
+msgstr "Grasz białymi"
 
 #: backend.c:6509 backend.c:6535 backend.c:6655 backend.c:6680 backend.c:6696
 #: backend.c:14573
 msgid "It is White's turn"
-msgstr "Turno de las blancas"
+msgstr "Ruch należy do białych"
 
 #: backend.c:6513 backend.c:6539 backend.c:6663 backend.c:6686 backend.c:6717
 #: backend.c:14565
 msgid "It is Black's turn"
-msgstr "Turno de las negras"
+msgstr "Ruch należy do czarnych"
 
 #: backend.c:6552
 msgid "Displayed position is not current"
-msgstr "La posición mostrada no es la actual"
+msgstr "Wyświetlona pozycja nie jest aktualna"
 
 #: backend.c:6790
 msgid "Illegal move"
-msgstr "Jugada ilegal"
+msgstr "Niedozwolony ruch"
 
 #: backend.c:6857
 msgid "End of game"
-msgstr "Fin del juego"
+msgstr "Koniec gry"
 
 #: backend.c:6860
 msgid "Incorrect move"
-msgstr "Jugada incorrecta"
+msgstr "Nieprawidłowy ruch"
 
 #: backend.c:7169 backend.c:7296
 msgid "Pull pawn backwards to under-promote"
-msgstr "Retrasar el peón a la posición previa a la coronación"
+msgstr "Należy przeciągnąć pionek w tył, aby dokonać słabej promocji"
 
 #: backend.c:7527
 msgid "Swiss tourney finished"
-msgstr "Torneo suizo terminado"
+msgstr "Zakończono turniej w systemie szwajcarskim"
 
 #: backend.c:8102
 msgid "Invalid pairing from pairing engine"
-msgstr "El bando del otro motor no es válido"
+msgstr "Nieprawidłowe kojarzenie par"
 
 #: backend.c:8235
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
-msgstr "Jugada ilegal \"%s\" del %s motor"
+msgstr "Niedozwolony ruch \"%s\" dokonany przez %s silnik"
 
 #: backend.c:8456
 msgid "Bad FEN received from engine"
-msgstr "El FEN recibido del motor es incorrecto"
+msgstr "Nieprawidłowa notacja FEN otrzymana z silnika"
 
 #: backend.c:8600 backend.c:13662 backend.c:13727
 #, c-format
 msgid "%s does not support analysis"
-msgstr "%s no admite análisis"
+msgstr "%s nie obsługuje analizy"
 
 #: backend.c:8666
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr "Jugada ilegal \"%s\" (rechazada por el programa de ajedrez %s)"
+msgstr "Niedozwolony ruch \"%s\" (odrzucony przez %s silnik szachowy)"
 
 #: backend.c:8693
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
-msgstr "Fallo al iniciar el programa de ajedrez %s %s en %s: %s\n"
+msgstr "Nie udało się uruchomić %s silnika szachowego %s na %s: %s\n"
 
 #: backend.c:8714
 #, c-format
 msgid "Hint: %s"
-msgstr "Sugerencia: %s"
+msgstr "Wskazówka: %s"
 
 #: backend.c:8719
 #, c-format
@@ -353,246 +352,245 @@ msgid ""
 "Illegal hint move \"%s\"\n"
 "from %s chess program"
 msgstr ""
-"La jugada sugerida \"%s\"\n"
-"por el programa de ajedrez %s no es válida"
+"%2$s silnik szachowy zasugerował\n"
+"niedozwolony ruch \"%1$s\""
 
 #: backend.c:8894
 msgid "Machine accepts your draw offer"
-msgstr "La máquina acepta su oferta de tablas"
+msgstr "Silnik przyjmuje propozycję remisu"
 
-# TRANSLATORS: Action / Draw translatable?
 #: backend.c:8897
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
-"La máquina ofrece tablas\n"
-"Seleccione Action / Draw si está de acuerdo"
+"Silnik proponuje remis\n"
+"Należy wybrać Działanie->Remis, żeby się zgodzić"
 
 #: backend.c:8976
 msgid "failed writing PV"
-msgstr "fallo al escribir la PV"
+msgstr "nie udało się zapisać PV"
 
 #: backend.c:9274
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
-msgstr "Jugada ambigua en la salida ICS: \"%s\""
+msgstr "Niejednoznaczny ruch na wyjściu ICS: \"%s\""
 
 #: backend.c:9284
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
-msgstr "Jugada ilegal en la salida ICS: \"%s\""
+msgstr "Niedozwolony ruch na wyjściu ICS: \"%s\""
 
 #: backend.c:9295
 msgid "Gap in move list"
-msgstr "Hueco en la lista de jugadas"
+msgstr "Luka na liście ruchów"
 
 #: backend.c:9916 dialogs.c:460
 #, c-format
 msgid "Variant %s not supported by %s"
-msgstr "La variante %s no es admitida por %s"
+msgstr "Odmiana %s nie jest obsługiwana przez %s"
 
 #: backend.c:10037
 #, c-format
 msgid "Startup failure on '%s'"
-msgstr "Fallo al iniciar '%s'"
+msgstr "Błąd uruchamiania w \"%s\""
 
 #: backend.c:10068
 msgid "Waiting for first chess program"
-msgstr "Esperando al primer programa de ajedrez"
+msgstr "Oczekiwanie na pierwszy silnik szachowy"
 
 #: backend.c:10073 backend.c:13945
 msgid "Waiting for second chess program"
-msgstr "Esperando al segundo programa de ajedrez"
+msgstr "Oczekiwanie na drugi silnik szachowy"
 
 #: backend.c:10122
 msgid "Could not write on tourney file"
-msgstr "No se ha podido escribir en el fichero de torneos"
+msgstr "Nieudany zapis do pliku turnieju"
 
 #: backend.c:10196
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
 msgstr ""
-"¡No se puede reemplazar un motor mientras está ocupado!\n"
-"Termine primero la partida del motor."
+"Nie można zastąpić silnika w trakcie jego pracy!\n"
+"Należy zakończyć najpierw jego grę."
 
 #: backend.c:10210
 msgid "No engine with the name you gave is installed"
-msgstr "No hay ningún motor instalado con el nombre indicado"
+msgstr "Silnik o podanej nazwie nie jest zainstalowany"
 
 #: backend.c:10212
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
-"Cambie primero un motor editando la lista de participantes\n"
-"en el diálogo de las Opciones de Torneo"
+"Należy najpierw zmienić silnik, edytując listę uczestników\n"
+"w oknie dialogowym Opcji turnieju."
 
 #: backend.c:10213
 msgid "You can only change one engine at the time"
-msgstr "Solo se puede cambiar un motor a la vez"
+msgstr "Można jednocześnie modyfikować tylko jeden silnik"
 
 #: backend.c:10228 backend.c:10375
 #, c-format
 msgid "No engine %s is installed"
-msgstr "No hay ningún motor %s instalado"
+msgstr "Silnik %s nie jest zainstalowany"
 
 #: backend.c:10248
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
 msgstr ""
-"Hay que proporcionar un fichero de torneos,\n"
-"para almacenar el progreso del torneo"
+"Należy dostarczyć plik turnieju,\n"
+"żeby móc zapisać jego przebieg"
 
 #: backend.c:10258
 msgid "Not enough participants"
-msgstr "No hay suficientes participantes"
+msgstr "Za mało uczestników"
 
 #: backend.c:10459
 msgid "Bad tournament file"
-msgstr "Archivo de torneos incorrecto"
+msgstr "Nieprawidłowy plik turnieju"
 
 #: backend.c:10471
 msgid "Waiting for other game(s)"
-msgstr "Esperando por otra(s) partida(s)"
+msgstr "Oczekiwanie na pozostałe gry"
 
 #: backend.c:10484
 msgid "No pairing engine specified"
-msgstr "iNo se ha especificado el otro motor"
+msgstr "Nie określono silnika do kojarzenia par"
 
 #: backend.c:10961
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
-msgstr "Encuentro %s - %s: puntuación final %d-%d-%d"
+msgstr "Mecz %s vs. %s: ostateczny wynik %d-%d-%d"
 
 #: backend.c:11423 backend.c:11454
 #, c-format
 msgid "Illegal move: %d.%s%s"
-msgstr "Jugada ilegal: %d.%s%s"
+msgstr "Niedozwolony ruch: %d.%s%s"
 
 #: backend.c:11443
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
-msgstr "Jugada ambigua: %d.%s%s"
+msgstr "Niejednoznaczny ruch: %d.%s%s"
 
 #: backend.c:11496 backend.c:12505 backend.c:12698 backend.c:13059
 #, c-format
 msgid "Can't open \"%s\""
-msgstr "No se puede abrir \"%s\""
+msgstr "Nie można otworzyć \"%s\""
 
 #: backend.c:11508 menus.c:116
 msgid "Cannot build game list"
-msgstr "No se pudo construir la lista de partidas"
+msgstr "Nie można utworzyć listy gier"
 
 #: backend.c:11593
 msgid "No more games in this message"
-msgstr "No hay más partidas en este mensaje"
+msgstr "Nie ma więcej gier w tej wiadomości"
 
 #: backend.c:11633
 msgid "No game has been loaded yet"
-msgstr "Ninguna partida se ha cargado aún"
+msgstr "Nie wczytano jeszcze żadnej gry"
 
 #: backend.c:11637 backend.c:12486 ngamelist.c:129
 msgid "Can't back up any further"
-msgstr "Ya no se puede ir más atrás"
+msgstr "Dalsze cofanie jest niemożliwe"
 
 #: backend.c:12058
 msgid "Game number out of range"
-msgstr "Número de partida fuera de rango"
+msgstr "Numer gry jest poza zakresem"
 
 #: backend.c:12069
 msgid "Can't seek on game file"
-msgstr "No se puede buscar en archivo de partidas"
+msgstr "Niemożliwe przemieszczanie w pliku gry"
 
 #: backend.c:12127
 msgid "Game not found in file"
-msgstr "Partida no hallada en archivo"
+msgstr "Nie znaleziono gry w pliku"
 
 #: backend.c:12255 backend.c:12582
 msgid "Bad FEN position in file"
-msgstr "Posición FEN incorrecta en archivo"
+msgstr "Nieprawidłowa pozycja FEN w pliku"
 
 #: backend.c:12407
 msgid "No moves in game"
-msgstr "Ninguna jugada en la partida"
+msgstr "Brak ruchów w grze"
 
 #: backend.c:12482
 msgid "No position has been loaded yet"
-msgstr "Ninguna posición se ha cargado aún"
+msgstr "Nie wczytano jeszcze żadnej pozycji"
 
 #: backend.c:12543 backend.c:12554
 msgid "Can't seek on position file"
-msgstr "No se puede buscar en archivo de aperturas"
+msgstr "Niemożliwe przemieszczanie w pliku pozycji"
 
 #: backend.c:12561 backend.c:12573
 msgid "Position not found in file"
-msgstr "No se halló la posición en el archivo"
+msgstr "Nie znaleziono pozycji w pliku"
 
 #: backend.c:12613
 msgid "Black to play"
-msgstr "Negras juegan"
+msgstr "Czarne do gry"
 
 #: backend.c:12616
 msgid "White to play"
-msgstr "Blancas juegan"
+msgstr "Białe do gry"
 
 #: backend.c:12703 backend.c:13064
 msgid "Waiting for access to save file"
-msgstr "Esperando a tener acceso para guardar el fichero"
+msgstr "Oczekiwanie na dostęp, aby zapisać plik"
 
 #: backend.c:12705
 msgid "Saving game"
-msgstr "Guardando partida"
+msgstr "Zapisywanie gry"
 
 #: backend.c:12706
 msgid "Bad Seek"
-msgstr "Búsqueda incorrecta"
+msgstr "Nieprawidłowe szukanie"
 
 #: backend.c:13066
 msgid "Saving position"
-msgstr "Guardando posición"
+msgstr "Zapisywanie pozycji"
 
 #: backend.c:13192
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
 msgstr ""
-"Usted ha editado el historial de la partida.\n"
-"Use «Reload Same Game» y vuelva a realizar un movimiento."
+"Zmodyfikowano historię gry.\n"
+"Należy wybrać Wczytaj grę ponownie i wykonać ruch jeszcze raz."
 
 #: backend.c:13197
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
 msgstr ""
-"Usted ha introducido demasiadas jugadas.\n"
-"Retroceda hasta la posición correcta e inténtelo de nuevo."
+"Wprowadzono za dużo ruchów.\n"
+"Proszę cofnąć do prawidłowej pozycji i spróbować ponownie."
 
 #: backend.c:13202
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
 msgstr ""
-"La posición que se está mostrando no es la actual.\n"
-"Avance hasta la posición correcta e inténtelo de nuevo."
+"Wyświetlona pozycja nie jest aktualna.\n"
+"Proszę przejść do przodu do prawidłowej pozycji i spróbować ponownie."
 
 #: backend.c:13249
 msgid "You have not made a move yet"
-msgstr "Usted no ha realizado todavía ninguna jugada"
+msgstr "Jeszcze nie wykonano ruchu"
 
 #: backend.c:13270
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
 msgstr ""
-"El mensaje «cmail» no está cargado.\n"
-"Use «Reload CMail Message» y vuelva a realizar un movimiento."
+"Nie wczytano wiadomości cmail.\n"
+"Należy wybrać Wczytaj wiadomość cmail ponownie i wykonać ruch jeszcze raz."
 
 #: backend.c:13275
 msgid "No unfinished games"
-msgstr "No hay partidas sin terminar"
+msgstr "Brak niedokończonych gier"
 
 #: backend.c:13281
 #, c-format
@@ -603,519 +601,519 @@ msgid ""
 "\"cmail -remail -game %s\"\n"
 "on the command line."
 msgstr ""
-"Ya ha enviado una jugada por correo.\n"
-"Espere hasta recibir una jugada de su adversario.\n"
-"Para volver a enviar la misma jugada, teclee\n"
+"Wysłano już ruch.\n"
+"Należy poczekać na nadejście ruchu od przeciwnika.\n"
+"Aby wysłać ruch ponownie, należy wpisać\n"
 "\"cmail -remail -game %s\"\n"
-"en la línea de órdenes."
+"w wierszu poleceń."
 
 #: backend.c:13296
 msgid "Failed to invoke cmail"
-msgstr "Fallo al invocar cmail"
+msgstr "Nie udało się wywołać cmail"
 
 #: backend.c:13358
 #, c-format
 msgid "Waiting for reply from opponent\n"
-msgstr "Esperando respuesta del oponente\n"
+msgstr "Oczekiwanie na odpowiedź od przeciwnika\n"
 
 #: backend.c:13380
 #, c-format
 msgid "Still need to make move for game\n"
-msgstr "Todavía necesita hacer una jugada para la partida\n"
+msgstr "Wciąż trzeba wykonać ruch w grze\n"
 
 #: backend.c:13384
 #, c-format
 msgid "Still need to make moves for both games\n"
-msgstr "Todavía necesita hacer jugadas para ambas partidas\n"
+msgstr "Wciąż trzeba wykonać ruch w obu grach\n"
 
 #: backend.c:13388
 #, c-format
 msgid "Still need to make moves for all %d games\n"
-msgstr "Todavía necesita hacer jugadas para las %d partidas\n"
+msgstr "Wciąż trzeba wykonać ruch we wszystkich grach %d\n"
 
 #: backend.c:13395
 #, c-format
 msgid "Still need to make a move for game %s\n"
-msgstr "Todavía necesita hacer una jugada para la partida %s\n"
+msgstr "Wciąż trzeba wykonać ruch w grze %s\n"
 
 #: backend.c:13401
 #, c-format
 msgid "No unfinished games\n"
-msgstr "No hay juegos sin terminar\n"
+msgstr "Brak niedokończonych gier\n"
 
 #: backend.c:13403
 #, c-format
 msgid "Ready to send mail\n"
-msgstr "Listo para enviar correo\n"
+msgstr "Gotowy do wysłania wiadomości\n"
 
 #: backend.c:13408
 #, c-format
 msgid "Still need to make moves for games %s\n"
-msgstr "Todavía necesita hacer jugadas para las partidas %s\n"
+msgstr "Wciąż trzeba wykonać ruch w grach %s\n"
 
 #: backend.c:13612
 msgid "Edit comment"
-msgstr "Editar comentario"
+msgstr "Edytuj komentarz"
 
 #: backend.c:13614
 #, c-format
 msgid "Edit comment on %d.%s%s"
-msgstr "Editar comentario en %d.%s%s"
+msgstr "Edytowanie komentarza do %d.%s%s"
 
 #: backend.c:13669
 #, c-format
 msgid "You are not observing a game"
-msgstr "Usted no está observando una partida"
+msgstr "Gra nie jest obserwowana"
 
 #: backend.c:13777
 msgid "It is not White's turn"
-msgstr "No es turno de las blancas"
+msgstr "Ruch nie należy do białych"
 
 #: backend.c:13858
 msgid "It is not Black's turn"
-msgstr "No es turno de las negras"
+msgstr "Ruch nie należy do czarnych"
 
 #: backend.c:13966
 #, c-format
 msgid "Starting %s chess program"
-msgstr "Iniciando el programa de ajedrez %s"
+msgstr "Uruchamianie %s silnika szachowego"
 
 #: backend.c:13994 backend.c:15108
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
 msgstr ""
-"Espere su turno\n"
-"o seleccione «Move Now»"
+"Proszę poczekać na swój ruch\n"
+"lub wybrać Wykonaj ruch"
 
 #: backend.c:14128
 msgid "Training mode off"
-msgstr "Modo de entrenamiento apagado"
+msgstr "Tryb treningu wył."
 
 #: backend.c:14136
 msgid "Training mode on"
-msgstr "Modo de entrenamiento activo"
+msgstr "Tryb treningu wł."
 
 #: backend.c:14139
 msgid "Already at end of game"
-msgstr "Ya se encuentra al final de la partida"
+msgstr "Zakończono już grę"
 
 #: backend.c:14219
 msgid "Warning: You are still playing a game"
-msgstr "Advertencia: Usted todavía está jugando una partida"
+msgstr "Ostrzeżenie: Nie zakończono jeszcze gry"
 
 #: backend.c:14222
 msgid "Warning: You are still observing a game"
-msgstr "Advertencia: Usted todavía está observando una partida"
+msgstr "Ostrzeżenie: Nie zakończono obserwacji gry"
 
 #: backend.c:14225
 msgid "Warning: You are still examining a game"
-msgstr "Advertencia: Usted todavía está examinando una partida"
+msgstr "Ostrzeżenie: Nie zakończono badania gry"
 
 #: backend.c:14292
 msgid "Click clock to clear board"
-msgstr "Pinche el reloj para limpiar el tablero"
+msgstr "Kliknij zegar, aby wyczyścić szachownicę"
 
 #: backend.c:14302
 msgid "Close ICS engine analyze..."
-msgstr "Cerrar el modo de análisis del motor ICS..."
+msgstr "Zamknij analizę silnika ICS..."
 
 #: backend.c:14590
 msgid "That square is occupied"
-msgstr "Ese cuadro está ocupado"
+msgstr "To pole jest zajęte"
 
 #: backend.c:14614 backend.c:14640
 msgid "There is no pending offer on this move"
-msgstr "No hay oferta pendiente para esta jugada"
+msgstr "Brak oczekującej propozycji tego ruchu"
 
 #: backend.c:14676 backend.c:14687
 msgid "Your opponent is not out of time"
-msgstr "Su oponente no está fuera de tiempo"
+msgstr "Przeciwnik nie przekroczył limitu czasu"
 
 #: backend.c:14753
 msgid "You must make your move before offering a draw"
-msgstr "Debe hacer su jugada antes de ofrecer tablas"
+msgstr "Przed zaproponowaniem remisu należy wykonać ruch"
 
 #: backend.c:15090
 msgid "You are not examining a game"
-msgstr "Usted no está examinando una partida"
+msgstr "Żadna gra nie jest badana"
 
 #: backend.c:15094
 msgid "You can't revert while pausing"
-msgstr "No puede revertir si está en pausa"
+msgstr "Nie można cofać podczas pauzy"
 
 #: backend.c:15148 backend.c:15155
 msgid "It is your turn"
-msgstr "Es su turno"
+msgstr "Ruch należy do ciebie"
 
 #: backend.c:15206 backend.c:15213 backend.c:15266 backend.c:15273
 msgid "Wait until your turn"
-msgstr "Espero su turno"
+msgstr "Proszę poczekać na swój ruch"
 
 #: backend.c:15218
 msgid "No hint available"
-msgstr "No hay sugerencia disponible"
+msgstr "Brak wskazówek"
 
 #: backend.c:15234 ngamelist.c:355
 msgid "Game list not loaded or empty"
-msgstr "La lista de partidas no se ha cargado o está vacía"
+msgstr "Nie wczytano listy gier lub jest ona pusta"
 
 #: backend.c:15241
 msgid "Book file exists! Try again for overwrite."
-msgstr "¡Ya existe el fichero del libro! Inténtelo de nuevo si quiere sobreescribirlo."
+msgstr "Plik książki już istnieje! Należy spróbować ponownie, aby nadpisać."
 
 #: backend.c:15719
 #, c-format
 msgid "Error writing to %s chess program"
-msgstr "Error al escribir al %s programa de ajedrez"
+msgstr "Błąd zapisu do %s silnika szachowego"
 
 #: backend.c:15722 backend.c:15753
 #, c-format
 msgid "%s program exits in draw position (%s)"
-msgstr "El programa %s termina en posición de tablas (%s)"
+msgstr "%s silnik znajduje się w martwej pozycji (%s)"
 
 #: backend.c:15748
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
-msgstr "Error: el %s programa de ajedrez (%s) terminó inesperadamente"
+msgstr "Błąd: %s silnik szachowy (%s) zakończył nieoczekiwanie pracę"
 
 #: backend.c:15766
 #, c-format
 msgid "Error reading from %s chess program (%s)"
-msgstr "Error al leer del %s programa de ajedrez (%s)"
+msgstr "Błąd odczytu z %s silnika szachowego (%s)"
 
 #: backend.c:16168
 #, c-format
 msgid "%s engine has too many options\n"
-msgstr "El motor %s tiene demasiadas opciones\n"
+msgstr "%s silnik ma za dużo opcji\n"
 
 #: backend.c:16324
 msgid "Displayed move is not current"
-msgstr "La jugada ilustrada no es la actual"
+msgstr "Wyświetlony ruch nie jest aktualny"
 
 #: backend.c:16333
 msgid "Could not parse move"
-msgstr "No se pudo analizar la jugada"
+msgstr "Nie można przetworzyć ruchu"
 
 #: backend.c:16458 backend.c:16480
 msgid "Both flags fell"
-msgstr "Ambas banderas cayeron"
+msgstr "Spadły obie chorągiewki"
 
 #: backend.c:16460
 msgid "White's flag fell"
-msgstr "La bandera blanca cayó"
+msgstr "Spadła chorągiewka białych"
 
 #: backend.c:16482
 msgid "Black's flag fell"
-msgstr "La bandera negra cayó"
+msgstr "Spadła chorągiewka czarnych"
 
 #: backend.c:16613
 msgid "Clock adjustment not allowed in auto-flag mode"
-msgstr "El ajuste del reloj no está permitido en el modo de advertencia de tiempo automático"
+msgstr "Nie można nastawiać zegara w trybie automatycznej chorągiewki"
 
 #: backend.c:17448
 msgid "Bad FEN position in clipboard"
-msgstr "Posición FEN incorrecta en portapapeles"
+msgstr "Nieprawidłowa pozycja FEN w schowku"
 
 #: book.c:577 book.c:830
 msgid "Polyglot book not valid"
-msgstr "El libro de Polyglot no es válido"
+msgstr "Nieprawidłowa książka polyglot"
 
 #: book.c:701
 msgid "Book Fault"
-msgstr "Error en el libro"
+msgstr "Błąd książki"
 
 #: book.c:833
 msgid "Hash keys are different"
-msgstr "Las claves «hash» son diferentes"
+msgstr "Klucze hash nie są takie same"
 
 #: book.c:1000
 msgid "Could not create book"
-msgstr "No se ha podido crear el libro"
+msgstr "Nie można utworzyć książki"
 
 #: dialogs.c:259
 msgid "Tournament file:          "
-msgstr "Fichero de torneos:       "
+msgstr "Plik turnieju:          "
 
 #: dialogs.c:260
 msgid "Sync after round"
-msgstr "Sincronizar después de la ronda"
+msgstr "Synchronizacja po rundzie"
 
 #: dialogs.c:261
 msgid "    (for concurrent playing of a single"
-msgstr "    (para jugar simultáneamente en un solo"
+msgstr "    (dla równoczesnego rozegrania pojedynczego"
 
 #: dialogs.c:262
 msgid "Sync after cycle"
-msgstr "Sincronizar después de una vuelta"
+msgstr "Synchronizacja po cyklu"
 
 #: dialogs.c:263
 msgid "      tourney with multiple XBoards)"
-msgstr "      torneo con múltiples XBoards)"
+msgstr "      turnieju za pomocą wielu programów XBoard)"
 
 #: dialogs.c:264
 msgid "Tourney participants:"
-msgstr "Participantes del torneo:"
+msgstr "Uczestnicy turnieju:"
 
 #: dialogs.c:265
 msgid "Select Engine:"
-msgstr "Seleccione Motor:"
+msgstr "Wybór silnika:"
 
 #: dialogs.c:273
 msgid "Tourney type (0 = round-robin, 1 = gauntlet):"
-msgstr "Tipo de torneo (0 = liga, 1 = uno contra todos):"
+msgstr "Typ turnieju (0 = system-kołowy, 1 = system-gauntlet):"
 
 #: dialogs.c:274
 msgid "Number of tourney cycles (or Swiss rounds):"
-msgstr "Número de vueltas del torneo (o rondas de torneo suizo)"
+msgstr "Liczba cykli turnieju (lub rund szwajcarskich)"
 
 #: dialogs.c:275
 msgid "Default Number of Games in Match (or Pairing):"
-msgstr "Número predeterminado de partidas del encuentro (o emparejamiento):"
+msgstr "Domyślna liczba gier podczas meczu (lub na parę)"
 
 #: dialogs.c:276
 msgid "Pause between Match Games (msec):"
-msgstr "Pausa entre partidas del encuentro (ms):"
+msgstr "Pauza między grami meczowymi (ms):"
 
 #: dialogs.c:277
 msgid "Save Tourney Games on:"
-msgstr "Guardar partidas del torneo en:"
+msgstr "Zapisuj gry turnieju do:"
 
 #: dialogs.c:278
 msgid "Game File with Opening Lines:"
-msgstr "Fichero de partidas con líneas de apertura:"
+msgstr "Plik gry z wierszami otwierającymi:"
 
 #: dialogs.c:279
 msgid "Game Number (-1 or -2 = Auto-Increment):"
-msgstr "Número de la partida (-1 o -2 = incremento automático):"
+msgstr "Numer gry (-1 lub -2 = przyrost automatyczny):"
 
 #: dialogs.c:280
 msgid "File with Start Positions:"
-msgstr "Fichero con posiciones iniciales:"
+msgstr "Plik z pozycjami startowymi:"
 
 #: dialogs.c:281
 msgid "Position Number (-1 or -2 = Auto-Increment):"
-msgstr "Número de la posición (-1 o -2 = incremento automático):"
+msgstr "Numer pozycji (-1 lub -2 = przyrost automatyczny):"
 
 #: dialogs.c:282
 msgid "Rewind Index after this many Games (0 = never):"
-msgstr "Rebobinar Índice después de este número de Partidas (0 = nunca)"
+msgstr "Przewiń indeks wstecz po liczbie gier równej (0 = nigdy):"
 
 #: dialogs.c:283
 msgid "Disable own engine books by default"
-msgstr "Inicialmente, desactivar los libros propios del motor"
+msgstr "Wyłącz domyślnie własne książki silnika"
 
 #: dialogs.c:284
 msgid "Replace Engine"
-msgstr "Reemplazar motor"
+msgstr "Zastąp silnik"
 
 #: dialogs.c:285
 msgid "Upgrade Engine"
-msgstr "Actualizar motor"
+msgstr "Aktualizuj silnik"
 
 #: dialogs.c:286
 msgid "Clone Tourney"
-msgstr "Clonar torneo"
+msgstr "Skopiuj turniej"
 
 #: dialogs.c:316
 msgid "First you must specify an existing tourney file to clone"
-msgstr "En primer lugar, debe usted especificar un fichero de torneos que exista, para ser clonado"
+msgstr "Należy najpierw określić istniejący plik turnieju do skopiowania"
 
 #: dialogs.c:332 dialogs.c:1320
 msgid "# no engines are installed"
-msgstr "# no hay ningún motor instalado"
+msgstr "# nie zainstalowano żadnych silników"
 
 #: dialogs.c:344
 msgid "Match Options"
-msgstr "Opciones del encuentro"
+msgstr "Opcje meczu"
 
 #: dialogs.c:363
 msgid "Absolute Analysis Scores"
-msgstr "Puntuaciones absolutas del análisis"
+msgstr "Wyniki absolutnej analizy"
 
 #: dialogs.c:364
 msgid "Almost Always Queen (Detour Under-Promote)"
-msgstr "Casi siempre dama (rodeo para subcoronar)"
+msgstr "Prawie zawsze hetman (okrężna słaba promocja)"
 
 #: dialogs.c:365 menus.c:714
 msgid "Animate Dragging"
-msgstr "Animar arrastre"
+msgstr "Animowane przesuwanie"
 
 #: dialogs.c:366 menus.c:715
 msgid "Animate Moving"
-msgstr "Animar movimiento"
+msgstr "Animowany ruch"
 
 #: dialogs.c:367 menus.c:716
 msgid "Auto Flag"
-msgstr "Bandera automática"
+msgstr "Automatyczna chorągiewka"
 
 #: dialogs.c:368 menus.c:717
 msgid "Auto Flip View"
-msgstr "Cambio de lado automático"
+msgstr "Autoodwracanie szachownicy"
 
 #: dialogs.c:369 menus.c:718
 msgid "Blindfold"
-msgstr "A ciegas"
+msgstr "Niewidzialne bierki"
 
 #: dialogs.c:370
 msgid "Drop Menu"
-msgstr "Menú «drop»"
+msgstr "Rozwijane menu"
 
 #: dialogs.c:371
 msgid "Enable Variation Trees"
-msgstr "Activar árboles de variaciones"
+msgstr "Włącz drzewo alternatywnych ruchów"
 
 #: dialogs.c:372
 msgid "Hide Thinking from Human"
-msgstr "Ocultar cogitaciones al jugar contra humano"
+msgstr "Ukryj myślenie przed graczem"
 
 #: dialogs.c:373 menus.c:723
 msgid "Highlight Last Move"
-msgstr "Iluminar última jugada"
+msgstr "Podświetl ostatni ruch"
 
 #: dialogs.c:374
 msgid "Highlight with Arrow"
-msgstr "Iluminar con flecha"
+msgstr "Podświetl kursorem"
 
 #: dialogs.c:375 menus.c:726
 msgid "One-Click Moving"
-msgstr "Moviemento de un click"
+msgstr "Ruch jednym kliknięciem"
 
 #: dialogs.c:376
 msgid "Periodic Updates (in Analysis Mode)"
-msgstr "Actualización periódica (en análisis)"
+msgstr "Częste aktualizacje (w trybie analizy)"
 
 #: dialogs.c:378
 msgid "Play Move(s) of Clicked PV (Analysis)"
-msgstr "Realizar la(s) jugada(s) de la PV escogida (análisis)"
+msgstr "Odtwórz ruch(y) PV (analiza)"
 
 #: dialogs.c:379 dialogs.c:514 menus.c:728
 msgid "Ponder Next Move"
-msgstr "Prever siguente jugada"
+msgstr "Myślenie nad następnym ruchem"
 
 #: dialogs.c:380
 msgid "Popup Exit Messages"
-msgstr "Ventana emergente al salir"
+msgstr "Pytaj przed wyjściem"
 
 #: dialogs.c:381 menus.c:730
 msgid "Popup Move Errors"
-msgstr "Ventana emergente si error en jugada"
+msgstr "Błędy ruchu w oknie podręcznym"
 
 #: dialogs.c:382
 msgid "Scores in Move List"
-msgstr "Puntuaciones de la lista de jugadas"
+msgstr "Wyniki na liście ruchów"
 
 #: dialogs.c:383
 msgid "Show Coordinates"
-msgstr "Mostrar coordenadas"
+msgstr "Wyświetlanie współrzędnych"
 
 #: dialogs.c:384
 msgid "Show Target Squares"
-msgstr "Mostrar casillas objetivo"
+msgstr "Wyświetlanie możliwych ruchów"
 
 #: dialogs.c:385
 msgid "Sticky Windows"
-msgstr "Ventanas adhesivas"
+msgstr "Przyklejanie okien"
 
 #: dialogs.c:386 menus.c:733
 msgid "Test Legality"
-msgstr "Verificar legalidad"
+msgstr "Blokowanie niedozwolonych ruchów"
 
 #: dialogs.c:387
 msgid "Top-Level Dialogs"
-msgstr "Diálogos de alto nivel"
+msgstr "Okna dialogowe najwyższego poziomu"
 
 #: dialogs.c:388
 msgid "Flash Moves (0 = no flashing):"
-msgstr "Destello en las jugadas (0 = sin destello):"
+msgstr "Migający ruch (0 = brak migania):"
 
 #: dialogs.c:389
 msgid "Flash Rate (high = fast):"
-msgstr "Velocidad de destello (high = rápido):"
+msgstr "Szybkość migania (wysoka = szybka):"
 
 #: dialogs.c:390
 msgid "Animation Speed (high = slow):"
-msgstr "Velocidad de animación (high = lenta):"
+msgstr "Szybkość animacji (wysoka = wolna):"
 
 #: dialogs.c:391
 msgid "Zoom factor in Evaluation Graph:"
-msgstr "Factor de «zoom» en el grafo de evaluación:"
+msgstr "Współczynnik powiększenia na Wykresie wyników"
 
 #: dialogs.c:400
 msgid "General Options"
-msgstr "Opciones generales"
+msgstr "Opcje ogólne"
 
 #: dialogs.c:410
 msgid "normal"
-msgstr "normal"
+msgstr "normalne"
 
 #: dialogs.c:411
 msgid "makruk"
-msgstr "«makruk» (tailandés)"
+msgstr "makruk"
 
 #: dialogs.c:412
 msgid "FRC"
-msgstr "FRC (ajedrez aleatorio de Fischer)"
+msgstr "szachy losowe (960)"
 
 #: dialogs.c:413
 msgid "shatranj"
-msgstr "«shatranj»"
+msgstr "szatrandż"
 
 #: dialogs.c:414
 msgid "wild castle"
-msgstr "enroque salvaje"
+msgstr "wild castle"
 
 #: dialogs.c:415
 msgid "knightmate"
-msgstr "mate al caballo"
+msgstr "knightmate"
 
 #: dialogs.c:416
 msgid "no castle"
-msgstr "sin enroque"
+msgstr "bez roszady"
 
 #: dialogs.c:417
 msgid "cylinder *"
-msgstr "cilíndrico *"
+msgstr "cylindryczne *"
 
 #: dialogs.c:418
 msgid "3-checks"
-msgstr "tres jaques"
+msgstr "do 3 szachów"
 
 #: dialogs.c:419
 msgid "berolina *"
-msgstr "belorina *"
+msgstr "berolina *"
 
 #: dialogs.c:420
 msgid "atomic"
-msgstr "atómico"
+msgstr "atomowe"
 
 #: dialogs.c:421
 msgid "two kings"
-msgstr "dos reyes"
+msgstr "dwa króle"
 
 #: dialogs.c:422
 msgid "Board size ( -1 = default for selected variant):"
-msgstr "Tamaño del tablero ( -1 = el predeterminado para la variante seleccionada):"
+msgstr "Rozmiar szachownicy (-1 = domyślny dla wybranego wariantu):"
 
 #: dialogs.c:423
 msgid "Number of Board Ranks:"
-msgstr "Número de filas del tablero:"
+msgstr "Liczba rzędów szachownicy:"
 
 #: dialogs.c:424
 msgid "Number of Board Files:"
-msgstr "Número de columnas del tablero:"
+msgstr "Liczba kolumn szachownicy:"
 
 #: dialogs.c:425
 msgid "Holdings Size:"
-msgstr "Tamaño tenencias:"
+msgstr "Rozmiar rezerwy:"
 
 #: dialogs.c:429
 msgid "fairy"
-msgstr "mágico"
+msgstr "fairy"
 
 #: dialogs.c:430
 msgid "Great Shatranj (10x8)"
-msgstr "Gran shatranj (10x8)"
+msgstr "wielki szatrandż (10x8)"
 
 #: dialogs.c:431
 msgid "Seirawan"
@@ -1123,27 +1121,27 @@ msgstr "Seirawan"
 
 #: dialogs.c:432
 msgid "falcon (10x8)"
-msgstr "halcón (10x8)"
+msgstr "falcon (10x8)"
 
 #: dialogs.c:433
 msgid "Superchess"
-msgstr "Superajedrez"
+msgstr "Superchess"
 
 #: dialogs.c:434
 msgid "Capablanca (10x8)"
-msgstr "Capablanca (10x8)"
+msgstr "szachy Capablanki (10x8)"
 
 #: dialogs.c:435
 msgid "crazyhouse"
-msgstr "«crazyhouse»"
+msgstr "crazyhouse"
 
 #: dialogs.c:436
 msgid "Gothic (10x8)"
-msgstr "Gótico (10x8)"
+msgstr "Gothic (10x8)"
 
 #: dialogs.c:437
 msgid "bughouse"
-msgstr "pasapiezas"
+msgstr "kloc"
 
 #: dialogs.c:438
 msgid "janus (10x8)"
@@ -1151,37 +1149,35 @@ msgstr "janus (10x8)"
 
 #: dialogs.c:439
 msgid "suicide"
-msgstr "suicida"
+msgstr "antyszachy (suicide)"
 
 #: dialogs.c:440
 msgid "CRC (10x8)"
-msgstr "CRC (10x8)"
+msgstr "losowe szachy Capablanki (10x8)"
 
-# TRANSLATORS: give-away = losers?
 #: dialogs.c:441
 msgid "give-away"
-msgstr "pierde gana"
+msgstr "antyszachy (give-away)"
 
 #: dialogs.c:442
 msgid "grand (10x10)"
-msgstr "gran ajedrez (10x10)"
+msgstr "grand (10x10)"
 
-# TRANSLATORS: give-away = losers?
 #: dialogs.c:443
 msgid "losers"
-msgstr "pierde gana"
+msgstr "antyszachy (losers)"
 
 #: dialogs.c:444
 msgid "shogi (9x9)"
-msgstr "japonés (9x9)"
+msgstr "shōgi (9x9)"
 
 #: dialogs.c:445
 msgid "Spartan"
-msgstr "espartano"
+msgstr "Spartan"
 
 #: dialogs.c:446
 msgid "xiangqi (9x10)"
-msgstr "chino"
+msgstr "xiangqi (9x10)"
 
 #: dialogs.c:447
 msgid " "
@@ -1189,17 +1185,17 @@ msgstr " "
 
 #: dialogs.c:448
 msgid "courier (12x8)"
-msgstr "ajedrez del mensajero (12x8)"
+msgstr "courier (12x8)"
 
 #: dialogs.c:465
 #, c-format
 msgid "Warning: second engine (%s) does not support this!"
-msgstr "Advertencia: ¡el segundo motor (%s) no admite esto!"
+msgstr "Ostrzeżenie: drugi silnik (%s) nie obsługuje tego!"
 
 #: dialogs.c:488
 #, c-format
 msgid "Only bughouse is not available in viewer mode"
-msgstr "Solo pasapiezas no está disponible en el modo visor"
+msgstr "Tylko odmiana kloc nie jest dostępna w trybie obserwatora"
 
 #: dialogs.c:489
 #, c-format
@@ -1207,268 +1203,268 @@ msgid ""
 "All variants not supported by first engine\n"
 "(currently %s) are disabled"
 msgstr ""
-"Todas las variantes no disponibles en el primer motor\n"
-"(actualmente %s) están desactivas"
+"Odmiany nieobsługiwane przez pierwszy silnik\n"
+"(obecnie %s) są niedostępne"
 
 #: dialogs.c:490
 msgid "New Variant"
-msgstr "Nueva variante"
+msgstr "Nowa odmiana"
 
 #: dialogs.c:515
 msgid "Maximum Number of CPUs per Engine:"
-msgstr "Número max. CPUs por motor:"
+msgstr "Maksymalna liczba rdzeni na silnik:"
 
 #: dialogs.c:516
 msgid "Polygot Directory:"
-msgstr "Directorio de Ployglot:"
+msgstr "Katalog książki polyglot:"
 
 #: dialogs.c:517
 msgid "Hash-Table Size (MB):"
-msgstr "Tamaño de la tabla de transposición (MB):"
+msgstr "Rozmiary tablicy mieszającej (MB)"
 
 #: dialogs.c:518
 msgid "Nalimov EGTB Path:"
-msgstr "Carpeta de la EGTB Nalimov:"
+msgstr "Ścieżka do Nalimov EGTB:"
 
 #: dialogs.c:519
 msgid "EGTB Cache Size (MB):"
-msgstr "Tamaño de la caché de la EGTB (MB):"
+msgstr "Rozmiar pamięci podręcznej dla EGTB (MB):"
 
 #: dialogs.c:520
 msgid "Use GUI Book"
-msgstr "Usar el libro de la GUI"
+msgstr "Używanie książki GUI"
 
 #: dialogs.c:521
 msgid "Opening-Book Filename:"
-msgstr "Fichero del libro de aperturas:"
+msgstr "Nazwa pliku książki otwarć:"
 
 #: dialogs.c:522
 msgid "Book Depth (moves):"
-msgstr "Profundidad del libro (jugadas):"
+msgstr "Pojemność książki (w ruchach):"
 
 #: dialogs.c:523
 msgid "Book Variety (0) vs. Strength (100):"
-msgstr "Variedad del libro (0) frente a fuerza (100):"
+msgstr "Różnorodność (0) książki a siła (100):"
 
 #: dialogs.c:524
 msgid "Engine #1 Has Own Book"
-msgstr "El motor 1 tiene libro propio"
+msgstr "Silnik #1 ma własną książkę"
 
 #: dialogs.c:525
 msgid "Engine #2 Has Own Book          "
-msgstr "El motor 2 tiene libro propio"
+msgstr "Silnik #2 ma własną książkę          "
 
 #: dialogs.c:534
 msgid "Common Engine Settings"
-msgstr "Configuración general de los motores"
+msgstr "Wspólne ustawienia silników"
 
 #: dialogs.c:540
 msgid "Detect all Mates"
-msgstr "Detectar todos los mates"
+msgstr "Wykrywanie wszystkich matów i patów"
 
 #: dialogs.c:541
 msgid "Verify Engine Result Claims"
-msgstr "Verificar avisos del motor"
+msgstr "Weryfikowanie żądań silnika o wynik"
 
 #: dialogs.c:542
 msgid "Draw if Insufficient Mating Material"
-msgstr "Tablas si el material es insuficiente"
+msgstr "Remis w przypadku niewystarczającego materiału matowego"
 
 #: dialogs.c:543
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
-msgstr "Adjudicar tablas triviales (regla de las tres jugadas)"
+msgstr "Rozstrzyganie zgodnych remisów (3-ruchowe opóźnienie)"
 
 #: dialogs.c:544
 msgid "N-Move Rule:"
-msgstr "Regla de las N jugadas:"
+msgstr "Liczba ruchów przed remisem:"
 
 #: dialogs.c:545
 msgid "N-fold Repeats:"
-msgstr "N repeticiones:"
+msgstr "Liczba powtórzeń ruchu:"
 
 #: dialogs.c:546
 msgid "Draw after N Moves Total:"
-msgstr "Adjudicar mate después de:"
+msgstr "Remis po całkowitej liczbie ruchów:"
 
 #: dialogs.c:547
 msgid "Win / Loss Threshold:"
-msgstr "Límite para adjudicar juego:"
+msgstr "Próg zwycięstwa / przegranej"
 
 #: dialogs.c:548
 msgid "Negate Score of Engine #1"
-msgstr "Negar puntuación del motor #1"
+msgstr "Negacja wyniku silnika #1"
 
 #: dialogs.c:549
 msgid "Negate Score of Engine #2"
-msgstr "Negar puntuación del motor #2"
+msgstr "Negacja wyniku silnika #2"
 
 #: dialogs.c:556
 msgid "Adjudicate non-ICS Games"
-msgstr "Adjudicar partidas no ICS"
+msgstr "Rozstrzyganie gier spoza ICS"
 
 #: dialogs.c:569
 msgid "Auto-Kibitz"
-msgstr "Auto Kibitz"
+msgstr "Autodoradzanie"
 
 #: dialogs.c:570
 msgid "Auto-Comment"
-msgstr "Auto-comentario"
+msgstr "Autokomentowanie"
 
 #: dialogs.c:571
 msgid "Auto-Observe"
-msgstr "Auto-Observar"
+msgstr "Autoobserwacja"
 
 #: dialogs.c:572
 msgid "Auto-Raise Board"
-msgstr "Tablero al frente (automático)"
+msgstr "Autowysuwanie szachownicy"
 
 #: dialogs.c:573
 msgid "Auto-Create Logon Script"
-msgstr "Creación de fichero de registro automática"
+msgstr "Autotworzenie skryptu logowania"
 
 #: dialogs.c:574
 msgid "Background Observe while Playing"
-msgstr "Seguir observando mientras se juega"
+msgstr "Obserwacja w tle podczas gry"
 
 #: dialogs.c:575
 msgid "Dual Board for Background-Observed Game"
-msgstr "Tablero dual para partidas observadas"
+msgstr "Podwójna szachownica podczas obserwacji w tle"
 
 #: dialogs.c:576
 msgid "Get Move List"
-msgstr "Leer lista de jugadas"
+msgstr "Pobieranie listy ruchów"
 
 #: dialogs.c:577
 msgid "Quiet Play"
-msgstr "Jugar en silencio"
+msgstr "Cicha gra"
 
 #: dialogs.c:578
 msgid "Seek Graph"
-msgstr "Buscar gráfica"
+msgstr "Wykres gier"
 
 #: dialogs.c:579
 msgid "Auto-Refresh Seek Graph"
-msgstr "Grafo de búsqueda con refresco automático"
+msgstr "Autoodświeżanie wykresu gier"
 
 #: dialogs.c:580
 msgid "Auto-InputBox PopUp"
-msgstr "Ventana emergente de buzón automática"
+msgstr "Podręczne okno poleceń"
 
 #: dialogs.c:581
 msgid "Premove"
-msgstr "Pre-jugada"
+msgstr "Premove"
 
 #: dialogs.c:582
 msgid "Premove for White"
-msgstr "Prejugada de las blancas"
+msgstr "Premove dla białych"
 
 #: dialogs.c:583
 msgid "First White Move:"
-msgstr "1er. mov. blancas"
+msgstr "Pierwszy ruch białych:"
 
 #: dialogs.c:584
 msgid "Premove for Black"
-msgstr "Prejugada de las negras"
+msgstr "Premove dla czarnych"
 
 #: dialogs.c:585
 msgid "First Black Move:"
-msgstr "1er. mov. negras"
+msgstr "Pierwszy ruch czarnych"
 
 #: dialogs.c:587
 msgid "Alarm"
-msgstr "Alarma"
+msgstr "Alarm"
 
 #: dialogs.c:588
 msgid "Alarm Time (msec):"
-msgstr "Tiempo de la alarma (ms):"
+msgstr "Czas alarmu (ms):"
 
 #: dialogs.c:590
 msgid "Colorize Messages"
-msgstr "Mensajes coloreados"
+msgstr "Kolorowanie wiadomości"
 
 #: dialogs.c:591
 msgid "Shout Text Colors:"
-msgstr "Colores del texto que se expresa en voz alta:"
+msgstr "Kolory tekstu wiadomości shout"
 
 #: dialogs.c:592
 msgid "S-Shout Text Colors:"
-msgstr "Colores «S» del texto que se expresa en voz alta:"
+msgstr "Kolory tekstu wiadomości S-Shout:"
 
 #: dialogs.c:593
 msgid "Channel #1 Text Colors:"
-msgstr "Colores del texto del canal 1:"
+msgstr "Kolory tekstu kanału #1:"
 
 #: dialogs.c:594
 msgid "Other Channel Text Colors:"
-msgstr "Colores del texto del otro canal:"
+msgstr "Kolory tekstu pozostałych kanałów"
 
 #: dialogs.c:595
 msgid "Kibitz Text Colors:"
-msgstr "Colores del texto kibitz:"
+msgstr "Kolory tekstu porad:"
 
 #: dialogs.c:596
 msgid "Tell Text Colors:"
-msgstr "Colores del texto de hablar con otros:"
+msgstr "Kolory tekstu wiadomości tell:"
 
 #: dialogs.c:597
 msgid "Challenge Text Colors:"
-msgstr "Colores del texto de desafíos:"
+msgstr "Kolory tekstu wyzwania:"
 
 #: dialogs.c:598
 msgid "Request Text Colors:"
-msgstr "Colores del texto de peticiones:"
+msgstr "Kolory tekstu prośby:"
 
 #: dialogs.c:599
 msgid "Seek Text Colors:"
-msgstr "Colores del texto de búsqueda:"
+msgstr "Kolory tekstu propozycji gier:"
 
 #: dialogs.c:606
 msgid "ICS Options"
-msgstr "Opciones ICS"
+msgstr "Opcje ICS"
 
 #: dialogs.c:611
 msgid "Exact position match"
-msgstr "Coincidencia exacta de la posición"
+msgstr "Ścisłe dopasowanie pozycji"
 
 #: dialogs.c:611
 msgid "Shown position is subset"
-msgstr "La posición mostrada es un subconjunto"
+msgstr "Wyświetlona pozycja jest podzbiorem"
 
 #: dialogs.c:611
 msgid "Same material with exactly same Pawn chain"
-msgstr "Mismo material con exactamente la misma cadena de peones"
+msgstr "Ten sam materiał z dokładnie takim samym szeregiem pionków"
 
 #: dialogs.c:612
 msgid "Same material"
-msgstr "Mismo material"
+msgstr "Ten sam materiał"
 
 #: dialogs.c:612
 msgid "Material range (top board half optional)"
-msgstr "Rango de material (mitad superior del tablero opcional)"
+msgstr "Zasięg materiału (opcjonalnie górna połowa szachownicy)"
 
 #: dialogs.c:612
 msgid "Material difference (optional stuff balanced)"
-msgstr "Diferencia de material (situación equilibrada opcional)"
+msgstr "Różnica materiału (zbalansowany materiał dodatkowy)"
 
 #: dialogs.c:624
 msgid "Auto-Display Tags"
-msgstr "Etiquetas de visualización automática"
+msgstr "Autowyświetlanie znaczników"
 
 #: dialogs.c:625
 msgid "Auto-Display Comment"
-msgstr "Comentario de visualización automática"
+msgstr "Autowyświetlanie komentarzy"
 
 #: dialogs.c:626
 msgid ""
 "Auto-Play speed of loaded games\n"
 "(0 = instant, -1 = off):"
 msgstr ""
-"Velocidad de juego automático de las partidas cargadas\n"
-"(0 = instantánea, -1 = desactivada):"
+"Szybkość rozgrywki wczytywanych gier\n"
+"(0 = natychmiastowa, -1 = wył.):"
 
 #: dialogs.c:627
 msgid "Seconds per Move:"
-msgstr "Segundos por jugadas:"
+msgstr "Liczba sekund na ruch:"
 
 #: dialogs.c:628
 msgid ""
@@ -1476,7 +1472,7 @@ msgid ""
 "options to use in game-viewer mode:"
 msgstr ""
 "\n"
-"opciones para el modo de visualización de partidas:"
+"opcje do użycia w trybie game-viewer:"
 
 #: dialogs.c:630
 msgid ""
@@ -1484,227 +1480,223 @@ msgid ""
 "Thresholds for position filtering in game list:"
 msgstr ""
 "\n"
-"Umbral para filtrar posiciones en la lista de partidas:"
+"Próg filtrowania pozycji na liście gier:"
 
 #: dialogs.c:631
 msgid "Elo of strongest player at least:"
-msgstr "Elo del mejor jugador como mínimo:"
+msgstr "Najmniejsza liczba punktów elo najsilniejszego gracza:"
 
 #: dialogs.c:632
 msgid "Elo of weakest player at least:"
-msgstr "Elo del peor jugador como mínimo:"
+msgstr "Najmniejsza liczba punktów elo najsłabszego gracza:"
 
 #: dialogs.c:633
 msgid "No games before year:"
-msgstr "Número de partidas antes del año:"
+msgstr "Pominięcie gier sprzed roku:"
 
 #: dialogs.c:634
 msgid "Minimum nr consecutive positions:"
-msgstr "Número mínimo de posiciones consecutivas:"
+msgstr "Minimum kolejnych pozycji:"
 
 #: dialogs.c:635
 msgid "Search mode:"
-msgstr "Modo de búsqueda:"
+msgstr "Tryb wyszukiwania:"
 
 #: dialogs.c:636
 msgid "Also match reversed colors"
-msgstr "También colores invertidos"
+msgstr "Dopasowanie odwrotnych kolorów"
 
 #: dialogs.c:637
 msgid "Also match left-right flipped position"
-msgstr "También posición volteada izquierda-derecha"
+msgstr "Dopasowanie pozycji z prawej i lewej strony"
 
 #: dialogs.c:645
 msgid "Load Game Options"
-msgstr "Opciones al leer partida"
+msgstr "Opcje wczytywania gry"
 
 #: dialogs.c:657
 msgid "Auto-Save Games"
-msgstr "Guardar partidas automáticamente"
+msgstr "Autozapis gier"
 
 #: dialogs.c:658
 msgid "Own Games Only"
-msgstr "Solo partidas propias"
+msgstr "Tylko własne gry"
 
 #: dialogs.c:659
 msgid "Save Games on File:"
-msgstr "Guardar partidas en fichero"
+msgstr "Zapisywanie gier do pliku:"
 
 #: dialogs.c:660
 msgid "Save Final Positions on File:"
-msgstr "Guardar en fichero posiciones finales:"
+msgstr "Zapisywanie końcowych pozycji do pliku:"
 
 #: dialogs.c:661
 msgid "PGN Event Header:"
-msgstr "Cabecera PGN del evento:"
+msgstr "Nazwa turnieju w zapisie PGN:"
 
 #: dialogs.c:662
 msgid "Old Save Style (as opposed to PGN)"
-msgstr "Estilo de guardado antiguo (en contraposición a PGN)"
+msgstr "Stary styl zapisu (zamiast PGN)"
 
 #: dialogs.c:663
 msgid "Include Number Tag in tourney PGN"
-msgstr "Incluir etiqueta de número en el PGN del torneo"
+msgstr "Umieść znacznik Number w zapisie PGN turnieju"
 
 #: dialogs.c:664
 msgid "Save Score/Depth Info in PGN"
-msgstr "Guardar la información de puntuación/profundidad en el PGN"
+msgstr "Zapisywanie informacji o wyniku/głębokości do PGN"
 
 #: dialogs.c:665
 msgid "Save Out-of-Book Info in PGN           "
-msgstr "Guardar información fuera-de-libro en PGN "
+msgstr "Zapisywanie informacji spoza książki do PGN           "
 
 #: dialogs.c:672
 msgid "Save Game Options"
-msgstr "Opciones al salvar partida"
+msgstr "Opcje zapisu gry"
 
 #: dialogs.c:681
 msgid "No Sound"
-msgstr "Sin sonido"
+msgstr "Bez dźwięku"
 
 #: dialogs.c:682
 msgid "Default Beep"
-msgstr "Bip predeterminado"
+msgstr "Domyślny sygnał"
 
 #: dialogs.c:683
 msgid "Above WAV File"
-msgstr "Fichero WAV de arriba"
+msgstr "Powyższy plik WAV"
 
 #: dialogs.c:684
 msgid "Car Horn"
-msgstr "Bocina de coche"
+msgstr "Klakson"
 
 #: dialogs.c:685
 msgid "Cymbal"
-msgstr "Platillos"
+msgstr "Talerz"
 
 #: dialogs.c:686
 msgid "Ding"
-msgstr "Timbre"
+msgstr "Bim"
 
 #: dialogs.c:687
 msgid "Gong"
-msgstr "«Gong»"
+msgstr "Gong"
 
 #: dialogs.c:688
 msgid "Laser"
-msgstr "Láser"
+msgstr "Laser"
 
-# TRANSLATORS
 #: dialogs.c:689
 msgid "Penalty"
-msgstr "Penalización"
+msgstr "Karny"
 
 #: dialogs.c:690
 msgid "Phone"
-msgstr "Teléfono"
+msgstr "Telefon"
 
 #: dialogs.c:691
 msgid "Pop"
-msgstr "«Pop»"
+msgstr "Wystrzał"
 
 #: dialogs.c:692
 msgid "Slap"
-msgstr "Palmada"
+msgstr "Plaśnięcie"
 
-# TRANSLATORS
 #: dialogs.c:693
 msgid "Wood Thunk"
-msgstr "«Wood thunk»"
+msgstr "Stuknięcie drewna"
 
 #: dialogs.c:695
 msgid "User File"
-msgstr "Fichero del usuario"
+msgstr "Własny plik"
 
 #: dialogs.c:717
 msgid "User WAV File:"
-msgstr "Fichero WAV del usuario:"
+msgstr "Własny plik WAV:"
 
 #: dialogs.c:718
 msgid "Sound Program:"
-msgstr "Programa de sonido:"
+msgstr "Odtwarzacz:"
 
 #: dialogs.c:719
 msgid "Try-Out Sound:"
-msgstr "Sonido de prueba"
+msgstr "Sprawdź dźwięk:"
 
 #: dialogs.c:720
 msgid "Play"
-msgstr "Reproducir"
+msgstr "Odtwórz"
 
 #: dialogs.c:721
 msgid "Move:"
-msgstr "Jugada:"
+msgstr "Ruch:"
 
-# TRANSLATORS
 #: dialogs.c:722
 msgid "Win:"
-msgstr "Victorias:"
+msgstr "Wygrana:"
 
 #: dialogs.c:723
 msgid "Lose:"
-msgstr "Derrotas:"
+msgstr "Przegrana:"
 
 #: dialogs.c:724
 msgid "Draw:"
-msgstr "Tablas"
+msgstr "Remis:"
 
 #: dialogs.c:725
 msgid "Unfinished:"
-msgstr "No terminadas:"
+msgstr "Niedokończenie:"
 
 #: dialogs.c:726
 msgid "Alarm:"
-msgstr "Alarma:"
+msgstr "Alarm:"
 
 #: dialogs.c:727
 msgid "Challenge:"
-msgstr "Desafío:"
+msgstr "Wyzwanie:"
 
 #: dialogs.c:729
 msgid "Sounds Directory:"
-msgstr "Carpeta de sonidos:"
+msgstr "Katalog z dźwiękami:"
 
 #: dialogs.c:730
 msgid "Shout:"
-msgstr "En voz alta:"
+msgstr "Shout:"
 
-# TRANSLATORS
 #: dialogs.c:731
 msgid "S-Shout:"
-msgstr "En voz alta S"
+msgstr "S-Shout:"
 
 #: dialogs.c:732
 msgid "Channel:"
-msgstr "Canal:"
+msgstr "Kanał:"
 
 #: dialogs.c:733
 msgid "Channel 1:"
-msgstr "Canal 1:"
+msgstr "Kanał 1:"
 
 #: dialogs.c:734
 msgid "Tell:"
-msgstr "Decir:"
+msgstr "Tell:"
 
 #: dialogs.c:735
 msgid "Kibitz:"
-msgstr "Kibitz:"
+msgstr "Porada:"
 
 #: dialogs.c:736
 msgid "Request:"
-msgstr "Pedir:"
+msgstr "Prośba:"
 
 #: dialogs.c:737
 msgid "Seek:"
-msgstr "Buscar:"
+msgstr "Wyszukanie gry:"
 
 #: dialogs.c:753
 msgid "Sound Options"
-msgstr "Opciones de sonido"
+msgstr "Opcje dźwięków"
 
 #: dialogs.c:774
 msgid "White Piece Color:"
-msgstr "Color de las piezas blancas:"
+msgstr "Kolor białych bierek:"
 
 #. TRANSLATORS: R = single letter for the color red
 #: dialogs.c:777 dialogs.c:786 dialogs.c:792 dialogs.c:798 dialogs.c:804
@@ -1716,139 +1708,139 @@ msgstr "R"
 #: dialogs.c:779 dialogs.c:787 dialogs.c:793 dialogs.c:799 dialogs.c:805
 #: dialogs.c:811
 msgid "G"
-msgstr "V"
+msgstr "R"
 
 #. TRANSLATORS: B = single letter for the color blue
 #: dialogs.c:781 dialogs.c:788 dialogs.c:794 dialogs.c:800 dialogs.c:806
 #: dialogs.c:812
 msgid "B"
-msgstr "A"
+msgstr "B"
 
 #. TRANSLATORS: D = single letter to make a color darker
 #: dialogs.c:783 dialogs.c:789 dialogs.c:795 dialogs.c:801 dialogs.c:807
 #: dialogs.c:813
 msgid "D"
-msgstr "O"
+msgstr "D"
 
 #: dialogs.c:784
 msgid "Black Piece Color:"
-msgstr "Color de las piezas negras:"
+msgstr "Kolor czarnych bierek:"
 
 #: dialogs.c:790
 msgid "Light Square Color:"
-msgstr "Color de los escaques claros"
+msgstr "Kolor jasnych pól:"
 
 #: dialogs.c:796
 msgid "Dark Square Color:"
-msgstr "Color de los escaques oscuros"
+msgstr "Kolor ciemnych pól:"
 
 #: dialogs.c:802
 msgid "Highlight Color:"
-msgstr "Color de escaque iluminado"
+msgstr "Kolor podświetlenia:"
 
 #: dialogs.c:808
 msgid "Premove Highlight Color:"
-msgstr "Color de iluminación de prejugada:"
+msgstr "Kolor podświetlenia ruchu premove:"
 
 #: dialogs.c:814
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr "Voltear piezas estilo Shogi    (Botones de colores predefinidos)"
+msgstr "Odwrócone bierki w odmianie shogi        (Kolorowe przyciski przywracają ustawienia domyślne)"
 
 #: dialogs.c:816
 msgid "Mono Mode"
-msgstr "Modo mono"
+msgstr "Tryb mono"
 
 #: dialogs.c:817
 msgid "Line Gap ( -1 = default for board size):"
-msgstr "Hueco de la línea ( -1 = el predeterminado para el tamaño de ltablero):"
+msgstr "Grubość linii między polami (-1 = domyślnie dla danego rozmiaru szachownicy):"
 
 #: dialogs.c:818
 msgid "Use Board Textures"
-msgstr "Utilizar tablero con texturas"
+msgstr "Użycie tekstur szachownicy"
 
 #: dialogs.c:819
 msgid "Light-Squares Texture File:"
-msgstr "Fichero de texturas para escaques claros:"
+msgstr "Plik tekstury jasnych pól:"
 
 #: dialogs.c:820
 msgid "Dark-Squares Texture File:"
-msgstr "Fichero de texturas para escaques oscuros:"
+msgstr "Plik tekstury ciemnych pól:"
 
 #: dialogs.c:821
 msgid "Use external piece bitmaps with their own colors"
-msgstr "Utilizar «bitmaps» externos para las piezas con sus propios colores"
+msgstr "Użycie bitmap bierek z własnymi kolorami"
 
 #: dialogs.c:822
 msgid "Directory with Pieces Images:"
-msgstr "Carpeta con imágenes de piezas:"
+msgstr "Katalog obrazów bierek:"
 
 #: dialogs.c:872
 msgid "Board Options"
-msgstr "Opciones de tablero"
+msgstr "Opcje szachownicy"
 
 #: dialogs.c:925 menus.c:634
 msgid "ICS text menu"
-msgstr "Menú de texto ICS"
+msgstr "Menu tekstowe ICS"
 
 #: dialogs.c:947
 msgid "clear"
-msgstr "borrar"
+msgstr "wyczyść"
 
 #: dialogs.c:948 dialogs.c:1036
 msgid "save changes"
-msgstr "guardar cambios"
+msgstr "zapisz zmiany"
 
 #: dialogs.c:1051
 msgid "Edit book"
-msgstr "Editar libro"
+msgstr "Edytuj książkę"
 
 #: dialogs.c:1051 menus.c:636
 msgid "Tags"
-msgstr "Etiquetas"
+msgstr "Znaczniki"
 
 #: dialogs.c:1193
 msgid "ICS input box"
-msgstr "Cuadro de entrada ICS"
+msgstr "Okno poleceń ICS"
 
 #: dialogs.c:1225
 msgid "Type a move"
-msgstr "Teclear una jugada"
+msgstr "Proszę wpisać ruch"
 
 #: dialogs.c:1251
 msgid "Engine has no options"
-msgstr "El motor no tiene opciones"
+msgstr "Brak opcji silnika"
 
 #: dialogs.c:1253
 msgid "Engine Settings"
-msgstr "Configuración del motor"
+msgstr "Ustawienia silnika"
 
 #: dialogs.c:1278
 msgid "Select engine from list:"
-msgstr "Seleccionar un motor de la lista:"
+msgstr "Wybór silnika z listy:"
 
 #: dialogs.c:1281
 msgid "or specify one below:"
-msgstr "o especificar uno debajo:"
+msgstr "lub określenie go poniżej:"
 
 #: dialogs.c:1282
 msgid "Nickname (optional):"
-msgstr "Sobrenombre (opcional):"
+msgstr "Pseudonim (opcjonalnie):"
 
 #: dialogs.c:1283
 msgid "Use nickname in PGN player tags of engine-engine games"
-msgstr "Usar el sobrenombre de las etiquetas de jugadores del PGN en las partidas motor-motor"
+msgstr "Używanie pseudonimu w znacznikach gracza w zapisie PGN gier typu silnik vs. silnik"
 
 #: dialogs.c:1284
 msgid "Engine Directory:"
-msgstr "Carpeta del motor:"
+msgstr "Katalog silnika:"
 
 #: dialogs.c:1285
 msgid "Engine Command:"
-msgstr "Instrucción para el motor:"
+msgstr "Polecenie silnika:"
 
 #: dialogs.c:1286
 msgid "(Directory will be derived from engine path when empty)"
-msgstr "(La carpeta se derivará de la del motor cuando esté vacía)"
+msgstr "(Jeśli pole pozostanie puste, ścieżka pliku wykonywalnego silnika wyznaczy katalog)"
 
 #: dialogs.c:1287
 msgid "UCI"
@@ -1856,264 +1848,264 @@ msgstr "UCI"
 
 #: dialogs.c:1288
 msgid "WB protocol v1 (do not wait for engine features)"
-msgstr "Protocolo WB v1 (no esperar por las características del motor)"
+msgstr "Protokół WB v1 (szybsze wczytywanie funkcji silnika)"
 
 #: dialogs.c:1289
 msgid "Must not use GUI book"
-msgstr "No debe utilizar el libro de la GUI"
+msgstr "Nieużywanie książki GUI"
 
 #: dialogs.c:1290
 msgid "Add this engine to the list"
-msgstr "Añadir este motor a la lista"
+msgstr "Dodanie silnika do listy"
 
 #: dialogs.c:1291
 msgid "Force current variant with this engine"
-msgstr "Forzar la variante actual con este motor"
+msgstr "Wymuszenie bieżącej odmiany na danym silniku"
 
 #: dialogs.c:1341
 msgid "Load first engine"
-msgstr "Cargar el primer motor"
+msgstr "Wczytaj pierwszy silnik"
 
 #: dialogs.c:1347
 msgid "Load second engine"
-msgstr "Cargar el segundo motor"
+msgstr "Wczytaj drugi silnik"
 
 #: dialogs.c:1370
 msgid "shuffle"
-msgstr "barajar"
+msgstr "losowe rozstawienie"
 
 #: dialogs.c:1371
 msgid "Start-position number:"
-msgstr "Núm. de pos. inicial:"
+msgstr "Numer pozycji początkowej:"
 
 #: dialogs.c:1372
 msgid "randomize"
-msgstr "aleatorizar"
+msgstr "losuj"
 
 #: dialogs.c:1373
 msgid "pick fixed"
-msgstr "selección fijada"
+msgstr "wybierz liczbę"
 
 #: dialogs.c:1390
 msgid "New Shuffle Game"
-msgstr "Nueva partida revuelta..."
+msgstr "Nowa gra losowa"
 
 #: dialogs.c:1409
 msgid "classical"
-msgstr "clásica"
+msgstr "klasyczny"
 
 #: dialogs.c:1410
 msgid "incremental"
-msgstr "incremental"
+msgstr "przyrostowy"
 
 #: dialogs.c:1411
 msgid "fixed max"
-msgstr "máximo fijado"
+msgstr "stały maksymalny czas"
 
 #: dialogs.c:1412
 msgid "Moves per session:"
-msgstr "Jugadas por sesión:"
+msgstr "Liczba ruchów na sesję:"
 
 #: dialogs.c:1413
 msgid "Initial time (min):"
-msgstr "Tiempo inicial (min):"
+msgstr "Czas początkowy (min):"
 
 #: dialogs.c:1414
 msgid "Increment or max (sec/move):"
-msgstr "Incremento o máximo (s(jugada):"
+msgstr "Przyrost lub maksymalny czas (sekund/ruch):"
 
 #: dialogs.c:1415
 msgid "Time-Odds factors:"
-msgstr "Factores de tiempo extra:"
+msgstr "Dzielniki czasu:"
 
 #: dialogs.c:1416
 msgid "Engine #1"
-msgstr "Motor 1"
+msgstr "Silnik #1"
 
 #: dialogs.c:1417
 msgid "Engine #2 / Human"
-msgstr "Motor 2 / Humano"
+msgstr "Silnik #2 / człowiek"
 
 #: dialogs.c:1457 dialogs.c:1460 dialogs.c:1465 dialogs.c:1466
 #: gtk/xoptions.c:191
 msgid "Unused"
-msgstr "No se usa"
+msgstr "Nieużywane"
 
 #: dialogs.c:1478
 msgid "Time Control"
-msgstr "Control de tiempo"
+msgstr "Kontrola czasu"
 
 #: dialogs.c:1507
 msgid "Error writing to chess program"
-msgstr "Error al escribir al programa de ajedrez"
+msgstr "Błąd zapisu do silnika szachowego"
 
 #: dialogs.c:1574
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr "Anuluj"
 
 #: dialogs.c:1579 dialogs.c:1971 dialogs.c:1975
 msgid "King"
-msgstr "Rey"
+msgstr "Król"
 
 #: dialogs.c:1582
 msgid "Captain"
-msgstr "Capitán"
+msgstr "Kapitan"
 
 #: dialogs.c:1583
 msgid "Lieutenant"
-msgstr "Teniente"
+msgstr "Porucznik"
 
 #: dialogs.c:1584
 msgid "General"
-msgstr "General"
+msgstr "Generał"
 
 #: dialogs.c:1585
 msgid "Warlord"
-msgstr "Caudillo"
+msgstr "Gubernator"
 
 #: dialogs.c:1587 dialogs.c:1970 dialogs.c:1974 dialogs.c:1993
 msgid "Knight"
-msgstr "Caballo"
+msgstr "Skoczek"
 
 #: dialogs.c:1588 dialogs.c:1970 dialogs.c:1974 dialogs.c:1993
 msgid "Bishop"
-msgstr "Alfil"
+msgstr "Goniec"
 
 #: dialogs.c:1589 dialogs.c:1970 dialogs.c:1974 dialogs.c:1993
 msgid "Rook"
-msgstr "Torre"
+msgstr "Wieża"
 
 #: dialogs.c:1593 dialogs.c:1972 dialogs.c:1976
 msgid "Archbishop"
-msgstr "Arzobispo"
+msgstr "Arcybiskup"
 
 #: dialogs.c:1594 dialogs.c:1972 dialogs.c:1976
 msgid "Chancellor"
-msgstr "Canciller"
+msgstr "Kanclerz"
 
 #: dialogs.c:1596 dialogs.c:1971 dialogs.c:1975 dialogs.c:1993
 msgid "Queen"
-msgstr "Dama"
+msgstr "Hetman"
 
 #: dialogs.c:1600
 msgid "Defer"
-msgstr "Diferir"
+msgstr "Odłóż"
 
 #: dialogs.c:1601 dialogs.c:1972 dialogs.c:1976
 msgid "Promote"
-msgstr "Coronar"
+msgstr "Promuj"
 
 #: dialogs.c:1616
 msgid "Chat partner:"
-msgstr "Charlar con compañero:"
+msgstr "Partner do rozmowy:"
 
 #: dialogs.c:1701
 msgid "Chat box"
-msgstr "Cuadro de charla"
+msgstr "Okno rozmowy"
 
 #: dialogs.c:1742
 msgid "factory"
-msgstr "De fábrica"
+msgstr "domyślne"
 
 #: dialogs.c:1743
 msgid "up"
-msgstr "arriba"
+msgstr "do góry"
 
 #: dialogs.c:1744
 msgid "down"
-msgstr "abajo"
+msgstr "na dół"
 
 #: dialogs.c:1762
 msgid "No tag selected"
-msgstr "Número de la etiqueta seleccionada"
+msgstr "Nie zaznaczono żadnego znacznika"
 
 #: dialogs.c:1793
 msgid "Game-list options"
-msgstr "Opciones de la lista de partidas"
+msgstr "Opcje listy gier"
 
 #: dialogs.c:1869 dialogs.c:1883
 msgid "Error"
-msgstr "Error"
+msgstr "Błąd"
 
 #: dialogs.c:1906
 msgid "Fatal Error"
-msgstr "Error fatal"
+msgstr "Błąd krytyczny"
 
 #: dialogs.c:1906
 msgid "Exiting"
-msgstr "Saliendo"
+msgstr "Wychodzenie"
 
 #: dialogs.c:1917
 msgid "Information"
-msgstr "Información"
+msgstr "Informacje"
 
 #: dialogs.c:1924
 msgid "Note"
-msgstr "Nota"
+msgstr "Uwaga"
 
 #: dialogs.c:1970 dialogs.c:2245 dialogs.c:2248
 msgid "White"
-msgstr "Blancas"
+msgstr "Białe"
 
 #: dialogs.c:1970 dialogs.c:1974 dialogs.c:1993
 msgid "Pawn"
-msgstr "Peón"
+msgstr "Pionek"
 
 #: dialogs.c:1971 dialogs.c:1975
 msgid "Elephant"
-msgstr "Elefante"
+msgstr "Słoń"
 
 #: dialogs.c:1971 dialogs.c:1975
 msgid "Cannon"
-msgstr "Cañón"
+msgstr "Armata"
 
 #: dialogs.c:1972 dialogs.c:1976
 msgid "Demote"
-msgstr "Degradar"
+msgstr "Zdegraduj"
 
 #: dialogs.c:1973 dialogs.c:1977
 msgid "Empty square"
-msgstr "Vaciar el escaque"
+msgstr "Puste pole"
 
 #: dialogs.c:1973 dialogs.c:1977
 msgid "Clear board"
-msgstr "Limpiar el tablero"
+msgstr "Wyczyść szachownicę"
 
 #: dialogs.c:1974 dialogs.c:2257 dialogs.c:2260
 msgid "Black"
-msgstr "Negras"
+msgstr "Czarne"
 
 #: dialogs.c:2073 menus.c:787
 msgid "File"
-msgstr "Archivo"
+msgstr "Plik"
 
 #: dialogs.c:2074 menus.c:788
 msgid "Edit"
-msgstr "Editar"
+msgstr "Edytuj"
 
 #: dialogs.c:2075 menus.c:789
 msgid "View"
-msgstr "Ver"
+msgstr "Widok"
 
 #: dialogs.c:2076 menus.c:790
 msgid "Mode"
-msgstr "Modo"
+msgstr "Tryb"
 
 #: dialogs.c:2077 menus.c:791
 msgid "Action"
-msgstr "Acción"
+msgstr "Działanie"
 
 #: dialogs.c:2078 menus.c:792
 msgid "Engine"
-msgstr "Motor"
+msgstr "Silnik"
 
 #: dialogs.c:2079 menus.c:793
 msgid "Options"
-msgstr "Opciones"
+msgstr "Opcje"
 
 #: dialogs.c:2080 menus.c:794
 msgid "Help"
-msgstr "Ayuda"
+msgstr "Pomoc"
 
 #: dialogs.c:2090
 msgid "<<"
@@ -2133,67 +2125,68 @@ msgstr ">>"
 
 #: dialogs.c:2364
 msgid "Directories:"
-msgstr "Carpetas:"
+msgstr "Katalogi:"
 
 #: dialogs.c:2365
 msgid "Files:"
-msgstr "Archivos:"
+msgstr "Pliki:"
 
 #: dialogs.c:2366
 msgid "by name"
-msgstr "por nombre"
+msgstr "wg nazwy"
 
 #: dialogs.c:2367
 msgid "by type"
-msgstr "por tipo"
+msgstr "wg typu"
 
 #: dialogs.c:2370
 msgid "Filename:"
-msgstr "Nombre del fichero:"
+msgstr "Nazwa pliku:"
 
 #: dialogs.c:2371
 msgid "New directory"
-msgstr "Nueva carpeta"
+msgstr "Nowy katalog"
 
 #: dialogs.c:2372
 msgid "File type:"
-msgstr "Tipo de fichero:"
+msgstr "Typ pliku:"
 
 #: dialogs.c:2447
 msgid "Contents of"
-msgstr "Contenido de"
+msgstr "Zawartość"
 
 #: dialogs.c:2473
 msgid "  next page"
-msgstr "  siguiente página"
+msgstr "  następna strona"
 
 #: dialogs.c:2495
 msgid "FIRST TYPE DIRECTORY NAME HERE"
-msgstr "NOMBRE DEL DIRECTORIO PRIMERO AQUÍ"
+msgstr "NAJPIERW NALEŻY TU WPISAĆ NAZWĘ KATALOGU"
 
 #: dialogs.c:2496
 msgid "TRY ANOTHER NAME"
-msgstr "INTENTAR OTRO NOMBRE"
+msgstr "PROSZĘ SPRÓBOWAĆ INNĄ NAZWĘ"
 
 #: draw.c:293
 msgid ""
 "No default pieces installed\n"
 "Select your own -pieceImageDirectory"
 msgstr ""
-"No hay piezas predeterminadas instaladas\n"
-"Seleccione su propio -pieceImageDirectory"
+"Nie zainstalowano domyślnych bierek\n"
+"Należy określić własny katalog bierek (-pieceImageDirectory)"
 
 #: engineoutput.c:107 menus.c:630
 #, c-format
 msgid "Engine Output"
-msgstr "Salida del motor"
+msgstr "Komunikaty silnika"
 
 #: engineoutput.c:117
 #, c-format
 msgid "%s (%d reversible ply)"
 msgid_plural "%s (%d reversible plies)"
-msgstr[0] "%s (%d media-jugada reversible)"
-msgstr[1] "%s (%d medias-jugadas reversibles)"
+msgstr[0] "%s (%d odwracalny półruch)"
+msgstr[1] "%s (%d odwracalne półruchy)"
+msgstr[2] "%s (%d odwracalnych półruchów)"
 
 #: engineoutput.c:509 engineoutput.c:512 nengineoutput.c:81 nengineoutput.c:88
 msgid "NPS"
@@ -2202,75 +2195,74 @@ msgstr "NPS"
 #: gamelist.c:375
 #, c-format
 msgid "Reading game file (%d)"
-msgstr "Leyendo fichero de partidas (%d)"
+msgstr "Czytanie pliku gry (%d)"
 
 #: gtk/xboard.c:787 xaw/xboard.c:1161
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
-msgstr "%s: no se puede ir a la carpeta CHESSDIR: "
+msgstr "%s: nie można wejść do CHESSDIR: "
 
 #: gtk/xboard.c:796 xaw/xboard.c:1170
 #, c-format
 msgid "Failed to open file '%s'\n"
-msgstr "Fallo al abrir el fichero '%s'\n"
+msgstr "Nie udało się otworzyć pliku \"%s\"\n"
 
-#  TRANSLATORS: BOARDS_RANKS, BOARD_FILES translatable?
 #: gtk/xboard.c:811 xaw/xboard.c:1179
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr "Recompilar con BOARD_RANKS o BOARD_FILES mayor para admitir este tamaño"
+msgstr "Należy skompilować ponownie z większą wartością dla BOARD_RANKS lub BOARD_FILES, aby obsługiwać ten rozmiar"
 
 #: gtk/xboard.c:830 xaw/xboard.c:1211
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
-msgstr "%s: sintaxis de boardSize incorrecta %s\n"
+msgstr "%s: błędna składnia boardSize %s\n"
 
 #: gtk/xboard.c:870 xaw/xboard.c:1248
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
-msgstr "%s: nombre de boardSize no reconocido %s\n"
+msgstr "%s: nieznana nazwa boardSize %s\n"
 
 #: gtk/xboard.c:911 xaw/xboard.c:1285
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
-msgstr "%s: insuficientes colores disponibles: probando modo monocromo\n"
+msgstr "%s: za mało dostępnych kolorów; próba użycia trybu monochromatycznego\n"
 
 #: gtk/xboard.c:1201 xaw/xboard.c:1567
 #, c-format
 msgid "Unable to create font set for %s.\n"
-msgstr "No se ha podido crear conjunto de fuentes para %s.\n"
+msgstr "Nie można utworzyć zestawu czcionek dla %s.\n"
 
 #: gtk/xboard.c:1226 xaw/xboard.c:1590
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
-msgstr "%s: ninguna fuente concuerda con el patrón %s\n"
+msgstr "%s: żadna czcionka nie pasuje do wzoru %s\n"
 
 #: gtk/xboard.c:1665 xaw/xboard.c:2080
 msgid "Can't open temp file"
-msgstr "No se puede abrir el fichero temporal"
+msgstr "Nie można otworzyć pliku temp"
 
 #: gtk/xboard.c:2128
 msgid "Failed to open file"
-msgstr "Fallo al abrir fichero"
+msgstr "Nie udało się otworzyć pliku"
 
 #: menus.c:134
 msgid "Load game file name?"
-msgstr "¿Nombre del fichero de partidas para cargar?"
+msgstr "Wczytać nazwę pliku gry?"
 
 #: menus.c:179
 msgid "Load position file name?"
-msgstr "¿Nombre del fichero de posiciones para cargar?"
+msgstr "Wczytać nazwę pliku pozycji?"
 
 #: menus.c:185
 msgid "Save game file name?"
-msgstr "¿Nombre del fichero de partidas para guardar?"
+msgstr "Zapisać nazwę pliku gry?"
 
 #: menus.c:194
 msgid "Save position file name?"
-msgstr "¿Nombre del fichero de posiciones para guardar?"
+msgstr "Zapisać nazwę pliku pozycji?"
 
 #: menus.c:358
 msgid " (with Zippy code)"
-msgstr " (con el código de Zippy)"
+msgstr " (z kodem Zippy)"
 
 #: menus.c:363
 #, c-format
@@ -2293,542 +2285,542 @@ msgstr ""
 "%s%s\n"
 "\n"
 "Copyright 1991 Digital Equipment Corporation\n"
-"Copyright de las mejoras 1992-2013 Free Software Foundation\n"
-"Copyright de las mejoras 2005 Alessandro Scotti\n"
+"Enhancements Copyright 1992-2013 Free Software Foundation\n"
+"Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s es software libre SIN NINGUNA GARANTÍA; ver el fichero COPYING para más información.\n"
-"La versión de GTK utilizada es experimental e inestable\n"
+"%s jest darmowym oprogramowaniem, które NIE posiada gwarancji. Więcej informacji można znaleźć w pliku COPYING.\n"
+"Interfejs GTK tej wersji programu jest eksperymentalny i niestabilny\n"
 "\n"
-"Visite XBoard en la web en: http://www.gnu.org/software/xboard/\n"
-"Obtenga las características más recientes en: http://www.gnu.org/software/xboard/whats_new.html\n"
+"Zapraszamy na stronę programu XBoard: http://www.gnu.org/software/xboard/\n"
+"Najnowsze funkcje można poznać na: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
-"Informe de errores por correo a: <bug-xboard@gnu.org>\n"
+"Błędy prosimy zgłaszać na adres: <bug-xboard@gnu.org>\n"
 "\n"
 
 #: menus.c:375 menus.c:750
 msgid "About XBoard"
-msgstr "Acerca de XBoard"
+msgstr "O programie XBoard"
 
 #: menus.c:582
 msgid "New Game"
-msgstr "Nueva partida"
+msgstr "Nowa gra"
 
 #: menus.c:583
 msgid "New Shuffle Game ..."
-msgstr "Nueva partida revuelta..."
+msgstr "Nowa gra losowa..."
 
 #: menus.c:584
 msgid "New Variant ..."
-msgstr "Nueva variante ..."
+msgstr "Nowa odmiana..."
 
 #: menus.c:586
 msgid "Load Game"
-msgstr "Cargar partida"
+msgstr "Wczytaj grę"
 
 #: menus.c:587
 msgid "Load Position"
-msgstr "Cargar posición"
+msgstr "Wczytaj pozycję"
 
 #: menus.c:588
 msgid "Next Position"
-msgstr "Siguiente posición"
+msgstr "Następna pozycja"
 
 #: menus.c:589
 msgid "Prev Position"
-msgstr "Posición previa"
+msgstr "Poprzednia pozycja"
 
 #: menus.c:591
 msgid "Save Game"
-msgstr "Guardar partida"
+msgstr "Zapisz grę"
 
 #: menus.c:592
 msgid "Save Position"
-msgstr "Guardar posición"
+msgstr "Zapisz pozycję"
 
 #: menus.c:593
 msgid "Save Games as Book"
-msgstr "Guardar partidas como libro"
+msgstr "Zapisz gry w postaci książki"
 
 #: menus.c:595
 msgid "Mail Move"
-msgstr "Jugada por correo"
+msgstr "Ruch mailowy"
 
 #: menus.c:596
 msgid "Reload CMail Message"
-msgstr "Volver a cargar mensaje CMail"
+msgstr "Wczytaj wiadomość CMail ponownie"
 
 #: menus.c:598
 msgid "Quit "
-msgstr "Salir "
+msgstr "Wyjście "
 
 #: menus.c:603
 msgid "Copy Game"
-msgstr "Copiar partida"
+msgstr "Skopiuj grę"
 
 #: menus.c:604
 msgid "Copy Position"
-msgstr "Copiar posición"
+msgstr "Skopiuj pozycję"
 
 #: menus.c:605
 msgid "Copy Game List"
-msgstr "Copiar lista de partidas"
+msgstr "Skopiuj listę gier"
 
 #: menus.c:607
 msgid "Paste Game"
-msgstr "Pegar partida"
+msgstr "Wklej grę"
 
 #: menus.c:608
 msgid "Paste Position"
-msgstr "Pegar posición"
+msgstr "Wklej pozycję"
 
 #: menus.c:610 menus.c:652
 msgid "Edit Game"
-msgstr "Editar partida"
+msgstr "Edytuj grę"
 
 #: menus.c:611 menus.c:653
 msgid "Edit Position"
-msgstr "Editar posición"
+msgstr "Edytuj pozycję"
 
 #: menus.c:612
 msgid "Edit Tags"
-msgstr "Editar etiquetas"
+msgstr "Edytuj znaczniki"
 
 #: menus.c:613
 msgid "Edit Comment"
-msgstr "Editar comentario"
+msgstr "Edytuj komentarz"
 
 #: menus.c:614
 msgid "Edit Book"
-msgstr "Editar libro"
+msgstr "Edytuj książkę"
 
 #: menus.c:616
 msgid "Revert"
-msgstr "Revertir"
+msgstr "Cofnij"
 
 #: menus.c:617
 msgid "Annotate"
-msgstr "Anotar"
+msgstr "Dodaj jako komentarz"
 
 #: menus.c:618
 msgid "Truncate Game"
-msgstr "Truncar partida"
+msgstr "Porzuć grę"
 
 #: menus.c:620
 msgid "Backward"
-msgstr "Hacia atrás"
+msgstr "Do tyłu"
 
 #: menus.c:621
 msgid "Forward"
-msgstr "Hacia delante"
+msgstr "Do przodu"
 
 #: menus.c:622
 msgid "Back to Start"
-msgstr "Volver a empezar"
+msgstr "Na początek"
 
 #: menus.c:623
 msgid "Forward to End"
-msgstr "Avanzar hasta el final"
+msgstr "Na koniec"
 
 #: menus.c:628
 msgid "Flip View"
-msgstr "Voltear vista"
+msgstr "Odwróć widok"
 
 #: menus.c:631
 msgid "Move History"
-msgstr "Historial de jugadas"
+msgstr "Historia ruchów"
 
 #: menus.c:632
 msgid "Evaluation Graph"
-msgstr "Gráfica de evaluación"
+msgstr "Wykres wyników"
 
 #: menus.c:633
 msgid "Game List"
-msgstr "Lista de partidas"
+msgstr "Lista gier"
 
 #: menus.c:637
 msgid "Comments"
-msgstr "Comentarios"
+msgstr "Komentarze"
 
 #: menus.c:638
 msgid "ICS Input Box"
-msgstr "Cuatro de entrada ICS"
+msgstr "Okno poleceń ICS"
 
 #: menus.c:639
 msgid "Open Chat Window"
-msgstr "Abrir ventana de conversación"
+msgstr "Otwórz okno rozmowy"
 
 #: menus.c:641
 msgid "Board..."
-msgstr "Tablero..."
+msgstr "Szachownica..."
 
 #: menus.c:642
 msgid "Game List Tags..."
-msgstr "Etiquetas de la lista de partidas..."
+msgstr "Znaczniki listy gier..."
 
 #: menus.c:647
 msgid "Machine White"
-msgstr "El programa con blancas"
+msgstr "Silnik białe"
 
 #: menus.c:648
 msgid "Machine Black"
-msgstr "El programa con negras"
+msgstr "Silnik czarne"
 
 #: menus.c:649
 msgid "Two Machines"
-msgstr "Dos programas"
+msgstr "Silnik vs. silnik"
 
 #: menus.c:650
 msgid "Analysis Mode"
-msgstr "Modo de análisis"
+msgstr "Tryb analizy"
 
 #: menus.c:651
 msgid "Analyze Game"
-msgstr "Analizar partida"
+msgstr "Analizuj grę"
 
 #: menus.c:654
 msgid "Training"
-msgstr "Entrenamiento"
+msgstr "Trening"
 
 #: menus.c:655
 msgid "ICS Client"
-msgstr "Cliente ICS"
+msgstr "Klient ICS"
 
 #: menus.c:657
 msgid "Machine Match"
-msgstr "Torneo de dos programas"
+msgstr "Mecz silników"
 
 #: menus.c:658
 msgid "Pause"
-msgstr "Pausa"
+msgstr "Pauza"
 
 #: menus.c:663
 msgid "Accept"
-msgstr "Aceptar"
+msgstr "Akceptuj"
 
 #: menus.c:664
 msgid "Decline"
-msgstr "Declinar"
+msgstr "Odrzuć"
 
 #: menus.c:665
 msgid "Rematch"
-msgstr "Revancha"
+msgstr "Ponowny mecz"
 
 #: menus.c:667
 msgid "Call Flag"
-msgstr "Pedir la bandera"
+msgstr "Reklamuj przekroczenie czasu"
 
 #: menus.c:668
 msgid "Draw"
-msgstr "Tablas"
+msgstr "Remis"
 
 #: menus.c:669
 msgid "Adjourn"
-msgstr "Aplazar"
+msgstr "Przerwa"
 
 #: menus.c:670
 msgid "Abort"
-msgstr "Abortar"
+msgstr "Zaniechanie gry"
 
 #: menus.c:671
 msgid "Resign"
-msgstr "Rendirse"
+msgstr "Poddaj partię"
 
 #: menus.c:673
 msgid "Stop Observing"
-msgstr "Dejar de observar"
+msgstr "Przerwij obserwację"
 
 #: menus.c:674
 msgid "Stop Examining"
-msgstr "Dejar de examinar"
+msgstr "Przerwij badanie"
 
 #: menus.c:675
 msgid "Upload to Examine"
-msgstr "Enviar para examinar"
+msgstr "Wyślij do zbadania"
 
 #: menus.c:677
 msgid "Adjudicate to White"
-msgstr "Adjudicar a blancas"
+msgstr "Rozstrzygnij na korzyść białych"
 
 #: menus.c:678
 msgid "Adjudicate to Black"
-msgstr "Adjudicar a negras"
+msgstr "Rozstrzygnij na korzyść czarnych"
 
 #: menus.c:679
 msgid "Adjudicate Draw"
-msgstr "Adjudicar tablas"
+msgstr "Ogłoś remis"
 
 #: menus.c:684
 msgid "Load New 1st Engine ..."
-msgstr "Cargar un nuevo primer motor ..."
+msgstr "Wczytaj nowy 1. silnik..."
 
 #: menus.c:685
 msgid "Load New 2nd Engine ..."
-msgstr "Cargar un nuevo segundo motor ..."
+msgstr "Wczytaj nowy 2. silnik..."
 
 #: menus.c:687
 msgid "Engine #1 Settings ..."
-msgstr "Configuración del motor #1..."
+msgstr "Ustawienia silnika #1..."
 
 #: menus.c:688
 msgid "Engine #2 Settings ..."
-msgstr "Configuración del motor #2..."
+msgstr "Ustawienia silnika #2..."
 
 #: menus.c:690
 msgid "Hint"
-msgstr "Pista"
+msgstr "Wskazówka"
 
 #: menus.c:691
 msgid "Book"
-msgstr "Repertorio de aperturas"
+msgstr "Książka"
 
 #: menus.c:693
 msgid "Move Now"
-msgstr "Mover ahora"
+msgstr "Wykonaj ruch"
 
 #: menus.c:694
 msgid "Retract Move"
-msgstr "Revocar jugada"
+msgstr "Cofnij ruch"
 
 #: menus.c:700
 msgid "General ..."
-msgstr "General..."
+msgstr "Ogólne..."
 
 #: menus.c:702
 msgid "Time Control ..."
-msgstr "Controles de tiempo..."
+msgstr "Kontrola czasu..."
 
 #: menus.c:703
 msgid "Common Engine ..."
-msgstr "General de los motores..."
+msgstr "Wspólne ustawienia silników..."
 
 #: menus.c:704
 msgid "Adjudications ..."
-msgstr "Adjudicaciones..."
+msgstr "Rozstrzyganie..."
 
 #: menus.c:705
 msgid "ICS ..."
-msgstr "ICS ..."
+msgstr "ICS..."
 
 #: menus.c:706
 msgid "Match ..."
-msgstr "Encuentro ..."
+msgstr "Mecz..."
 
 #: menus.c:707
 msgid "Load Game ..."
-msgstr "Cargar partida ..."
+msgstr "Wczytywanie gry..."
 
 #: menus.c:708
 msgid "Save Game ..."
-msgstr "Guardar partida ..."
+msgstr "Zapisywanie gry..."
 
 #: menus.c:709
 msgid "Game List ..."
-msgstr "Lista de partidas ..."
+msgstr "Lista gier..."
 
 #: menus.c:710
 msgid "Sounds ..."
-msgstr "Sonidos ..."
+msgstr "Dźwięki..."
 
 #: menus.c:713
 msgid "Always Queen"
-msgstr "Siempre dama"
+msgstr "Zawsze hetman"
 
 #: menus.c:719
 msgid "Flash Moves"
-msgstr "Destello en las jugadas"
+msgstr "Miganie po ruchu"
 
 #: menus.c:721
 msgid "Highlight Dragging"
-msgstr "Iluminar arrastre"
+msgstr "Podświetlenie podczas przeciągania"
 
 #: menus.c:724
 msgid "Highlight With Arrow"
-msgstr "Iluminar con flecha"
+msgstr "Podświetlenie kursorem"
 
 #: menus.c:725
 msgid "Move Sound"
-msgstr "Sonido en jugadas"
+msgstr "Dźwięk ruchu"
 
 #: menus.c:727
 msgid "Periodic Updates"
-msgstr "Actualización periódica"
+msgstr "Częste aktualizacje"
 
 #: menus.c:729
 msgid "Popup Exit Message"
-msgstr "Mensaje de salida en venta emergente"
+msgstr "Pytaj przed wyjściem"
 
 #: menus.c:731
 msgid "Show Coords"
-msgstr "Mostrar coordenadas"
+msgstr "Wyświetlanie współrzędnych"
 
 #: menus.c:732
 msgid "Hide Thinking"
-msgstr "Ocultar cogitaciones"
+msgstr "Ukrywanie myślenia"
 
 #: menus.c:736
 msgid "Save Settings Now"
-msgstr "Guardar config. ahora"
+msgstr "Zapisz ustawienia"
 
 #: menus.c:737
 msgid "Save Settings on Exit"
-msgstr "Guardar config. al salir del programa"
+msgstr "Zapisz ustawienia przy wyjściu"
 
 #: menus.c:742
 msgid "Info XBoard"
-msgstr "Información XBoard"
+msgstr "O programie"
 
 #: menus.c:743
 msgid "Man XBoard"
-msgstr "Manual de XBoard"
+msgstr "Dokumentacja XBoard"
 
 #: menus.c:745
 msgid "XBoard Home Page"
-msgstr "Página web de XBoard"
+msgstr "Strona domowa"
 
 #: menus.c:746
 msgid "On-line User Guide"
-msgstr "Guía del usuario en línea"
+msgstr "Przewodnik online"
 
 #: menus.c:747
 msgid "Development News"
-msgstr "Noticias sobre el desarrollo"
+msgstr "Aktualności o postępach"
 
 #: menus.c:748
 msgid "e-Mail Bug Report"
-msgstr "correo-e para informar de errores"
+msgstr "Raporty o błędach (e-mail)"
 
 #: nengineoutput.c:78 nengineoutput.c:85
 msgid "engine name"
-msgstr "nombre del motor"
+msgstr "nazwa silnika"
 
 #: nengineoutput.c:80 nengineoutput.c:87
 msgid "move"
-msgstr "jugada"
+msgstr "ruch"
 
 #: nengineoutput.c:153
 msgid "Engine output"
-msgstr "Salida del motor"
+msgstr "Komunikaty silnika"
 
 #: nengineoutput.c:157
 msgid ""
 "Mismatch of STRIDE in nengineoutput.c\n"
 "Change and recompile!"
 msgstr ""
-"STRIDE desajustado en nengineoutput.c\n"
-"¡Cambiar y recompilar!"
+"Niezgodność STRIDE w nengineoutput.c\n"
+"Należy zmienić i skompilować ponownie!"
 
 #: nevalgraph.c:68
 msgid "Evaluation graph"
-msgstr "Gráfica de evaluación"
+msgstr "Wykres wyników"
 
 #: nevalgraph.c:105
 msgid "Eval"
-msgstr "Evaluación"
+msgstr "Wyniki"
 
 #: ngamelist.c:87
 msgid "find position"
-msgstr "encontrar posición"
+msgstr "znajdź pozycję"
 
 #: ngamelist.c:88
 msgid "narrow"
-msgstr "estrecho"
+msgstr "zawęź"
 
 #: ngamelist.c:89
 msgid "thresholds"
-msgstr "umbrales"
+msgstr "progi"
 
 #: ngamelist.c:90
 msgid "tags"
-msgstr "etiquetas"
+msgstr "znaczniki"
 
 #: ngamelist.c:91
 msgid "next"
-msgstr "siguiente"
+msgstr "następny"
 
 #: ngamelist.c:92
 msgid "close"
-msgstr "cerrar"
+msgstr "zamknij"
 
 #: ngamelist.c:116
 msgid "No game selected"
-msgstr "Ninguna partida seleccionada"
+msgstr "Nie zaznaczono żadnej gry"
 
 #: ngamelist.c:122
 msgid "Can't go forward any further"
-msgstr "Ya no se puede ir más adelante"
+msgstr "Dalej nie można"
 
 #: ngamelist.c:192
 #, c-format
 msgid "Scanning through games (%d)"
-msgstr "Explorando partidas (%d)"
+msgstr "Przeszukiwanie gier (%d)"
 
 #: ngamelist.c:211
 msgid "previous page"
-msgstr "página anterior"
+msgstr "poprzednia strona"
 
 #: ngamelist.c:214
 msgid "next page"
-msgstr "página siguiente"
+msgstr "następna strona"
 
 #: ngamelist.c:217
 msgid "no games matched your request"
-msgstr "ninguna partida responde a su búsqueda"
+msgstr "żadna gra nie spełnia podanych kryteriów"
 
 #: ngamelist.c:219
 #, c-format
 msgid "%s - %d/%d games (%d-%d-%d)"
-msgstr "%s - %d/%d partidas (%d-%d-%d)"
+msgstr "%s - %d/%d gier (%d-%d-%d)"
 
 #: ngamelist.c:274
 msgid "There is no game list"
-msgstr "No hay lista de partidas"
+msgstr "Nie ma listy gier"
 
 #: nhistory.c:109
 msgid "Move list"
-msgstr "Lista de jugadas"
+msgstr "Lista ruchów"
 
 #: usystem.c:222
 #, c-format
 msgid "%s: unrecognized color %s\n"
-msgstr "%s: color no reconocido %s\n"
+msgstr "%s: nieznany kolor %s\n"
 
 #: usystem.c:230
 #, c-format
 msgid "%s: can't parse foreground color in `%s'\n"
-msgstr "%s: no se puede analizar el color de primer plano en `%s'\n"
+msgstr "%s: nie można przetworzyć koloru tła w \"%s\"\n"
 
 #: usystem.c:259
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
-msgstr "%s: no se puede analizar los nombres de los colores; desactivando colorido\n"
+msgstr "%s: nie można przetworzyć nazw kolorów: wyłączenie kolorów\n"
 
 #: usystem.c:371
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
-msgstr "ERROR: usuario desconocido %s (en carpeta %s)\n"
+msgstr "BŁĄD: Nieznany użytkownik %s (w ścieżce %s)\n"
 
 #: usystem.c:556
 msgid "Socket support is not configured in"
-msgstr "La capacidad de «socket» no está configurada en"
+msgstr "Nie skonfigurowano obsługi portu w"
 
 #: usystem.c:645
 msgid "internal rcmd not implemented for Unix"
-msgstr "rcmd interno no implementado para Unix"
+msgstr "polecenie wewnętrzne rcmd nie zostało zaimplementowane w Uniksie"
 
 #: xaw/xboard.c:477
 #, c-format
 msgid "%s: Can't access XPM directory %s\n"
-msgstr "%s: No se puede acceder a la carpeta XPM %s\n"
+msgstr "%s: Brak dostępu do katalogu XPM %s\n"
 
 #: xaw/xboard.c:498
 #, c-format
 msgid "Available `%s' sizes:\n"
-msgstr "Disponibles `%s' tamaños:\n"
+msgstr "Dostępne rozmiary dla \"%s\":\n"
 
 #: xaw/xboard.c:531
 #, c-format
 msgid "Error: No `%s' files!\n"
-msgstr "¡Error: no hay ficheros `%s'!\n"
+msgstr "Błąd: Brak plików \"%s\"!\n"
 
 #: xaw/xboard.c:544
 #, c-format
@@ -2838,24 +2830,24 @@ msgid ""
 "   Please report this error to %s.\n"
 "   Include system type & operating system in message.\n"
 msgstr ""
-"ATENCIÓN: No se ha encontrado estructura DIR en este sistema --\n"
-"          No se puede asignar tamaño automáticamente a las piezas XPM/XIM.\n"
-"   Por favor, informe de este error a %s.\n"
-"   Incluya en su mensaje el tipo de sistema y de sistema operativo.\n"
+"Ostrzeżenie: Nie znaleziono struktury katalogów w tym systemie --\n"
+"         Niemożliwa automatyczna zmiana rozmiaru bierek XPM/XIM.\n"
+"   Proszę zgłosić ten błąd do %s.\n"
+"   Do wiadomości należy dołączyć informacje o rodzaju systemu operacyjnego.\n"
 
 #: xaw/xboard.c:1291
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
-msgstr "pixel blanco = 0x%lx, pixel negro = 0x%lx\n"
+msgstr "biały piksel = 0x%lx, czarny piksel = 0x%lx\n"
 
 #: xaw/xengineoutput.c:114
 #, c-format
 msgid "Error %d loading icon image\n"
-msgstr "Error %d cargando imagen de icono\n"
+msgstr "Błąd %d wczytywania obrazka\n"
 
 #: xaw/xoptions.c:321 xaw/xoptions.c:1015
 msgid "browse"
-msgstr "navegar"
+msgstr "przeglądaj"
 
 #: xaw/xoptions.c:387 xaw/xoptions.c:388
 msgid "Ctrl"
@@ -2867,12 +2859,12 @@ msgstr "Alt"
 
 #: xaw/xoptions.c:399 xaw/xoptions.c:400
 msgid "Shift"
-msgstr "Mayús"
+msgstr "Shift"
 
 #: xaw/xoptions.c:1262
 msgid "OK"
-msgstr "Aceptar"
+msgstr "OK"
 
 #: xaw/xoptions.c:1266
 msgid "cancel"
-msgstr "Cancelar"
+msgstr "anuluj"
