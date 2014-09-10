@@ -1514,6 +1514,7 @@ terminated by feature done=1.
 (The effect of sending an option feature for an option with the same name as was defined before, 
 without first receiving a -reset option command, is undefined.)
 </span>
+</dd>
 
 <dt class="version47">exclude (boolean, default 0)</dt>
 <dd class="version47">
@@ -1545,6 +1546,7 @@ in this case, you must set done=1 before xboard will enter normal operation.
 </dd>
 </dl>
 </dd>
+</p>
 
 <dt>setup FEN</dt>
 <dt>setup (PIECETOCHAR) FEN</dt>
@@ -1566,8 +1568,8 @@ and any setup commands received from the latter will always be ignored.
 When no initial position is known, such as for 'catch-all' variants like fairy,
 or whenever the board width is overruled to a non-standard value,
 the FEN will be used as default initial position even when legality testing is on.
-</dd>
-<dd>Optionally the meaning of the piece ID letters in the FEN can be defined
+<p>
+Optionally the meaning of the piece ID letters in the FEN can be defined
 between parentheses; this will be interpreted as if it was the value of a
 -pieceToCharTable command-line option, mapping letters to GUI piece types.
 Also optionally behind that, the setup command can specify board width W,
@@ -1585,7 +1587,18 @@ could be used by an engine for Los-Alamos Chess in response to 'variant losalamo
 and would automatically switch the GUI to this variant as soon as the user
 selected it from the GUI menu.
 The PIECETOCHAR element would ensure a Bishop would not be accepted as promotion choice. 
+</p>
 </dd>
+
+<dt><span class="version48">piece ID PIECEDESC</span></dt>
+<dd><span class="version48">This command is already reserved for future protocol extension.
+The engine can send it in response to a variant command in order to specify that the piece
+indicated by its pieceToChar letter ID moves in a non-standard way in this variant.
+(This to enable the GUI to reliably perform made detection, and produce good SAN.)
+The format of PIECEDESC is subject to future specification.
+</span>
+</dd>
+</p>
 
 <dt>Illegal move: MOVE</dt>
 <dt>Illegal move (REASON): MOVE</dt>
