@@ -120,6 +120,7 @@ typedef struct {
 #define SETTINGS_FILE           SYSCONFDIR"/xboard.conf"
 #define COLOR_BKGD              "white"
 
+GdkPixbuf *LoadIconFile P((char *name));
 void NewTagsPopup P((char *text, char *msg));
 int AppendText P((Option *opt, char *s));
 void NewCommentPopup P((char *title, char *text, int index));

@@ -172,6 +172,7 @@ extern char *getenv();
    // prevent pathname of positional file argument provided by OS X being be mistaken for option name
    // (price is that we won't recognize Windows option format anymore).
 #  define SLASH '-'
+#  define IMG ".png"
    // redefine some defaults
 #  undef ICS_LOGON
 #  undef DATADIR
@@ -183,6 +184,7 @@ extern char *getenv();
    char masterSettings[MSG_SIZ];
 #else
 #  define SLASH '/'
+#  define IMG ".svg"
 #endif
 
 #ifdef __EMX__
@@ -806,6 +808,15 @@ SlaveResize (Option *opt)
   gtk_window_resize(GTK_WINDOW(shells[DummyDlg]), slaveW + opt->max, slaveH + opt->value);
 }
 
+GdkPixbuf *
+LoadIconFile (gchar *svgFilename)
+{
+    char buf[MSG_SIZ];
+
+    snprintf(buf, MSG_SIZ, "%s/%s" IMG, svgDir, svgFilename);
+    return gdk_pixbuf_new_from_file(buf, NULL);
+}
+
 #ifdef __APPLE__
 static char clickedFile[MSG_SIZ];
 static int suppress;
@@ -858,6 +869,7 @@ main (int argc, char **argv)
 	theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
 	strncpy(dataDir, path, MSG_SIZ);
 	snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
+	snprintf(svgDir, MSG_SIZ, "%s/Contents/Resources/share/xboard/themes/default", path);
 	suppress = (argc == 1 || argc > 1 && argv[1][00] != '-'); // OSX sends signal even if name was already argv[1]!
 	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
 	// we must call application ready before we can get the signal,
@@ -1125,8 +1137,8 @@ main (int argc, char **argv)
     /*
      * Create an icon. (Use two icons, to indicate whther it is white's or black's turn.)
      */
-    WhiteIcon  = gdk_pixbuf_new_from_file(SVGDIR "/icon_white.svg", NULL);
-    BlackIcon  = gdk_pixbuf_new_from_file(SVGDIR "/icon_black.svg", NULL);
+    WhiteIcon  = LoadIconFile("icon_white");
+    BlackIcon  = LoadIconFile("icon_black");
     SetClockIcon(0); // sets white icon
 
 

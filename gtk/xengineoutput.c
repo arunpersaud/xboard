@@ -77,10 +77,7 @@ static GdkPixbuf *iconsGTK[8];
 static void
 ReadIcon (gchar *svgFilename, int iconNr)
 {
-    char buf[MSG_SIZ];
-
-    snprintf(buf, MSG_SIZ, "%s/%s", SVGDIR, svgFilename);
-    iconsGTK[iconNr] = gdk_pixbuf_new_from_file(buf, NULL);
+    iconsGTK[iconNr] = LoadIconFile(svgFilename);
 }
 
 void
@@ -90,14 +87,14 @@ InitEngineOutput (Option *opt, Option *memo2)
 	Widget w = opt->handle;
 	memoWidget = memo2->handle;
 #endif
-    ReadIcon("eo_White.svg", nColorWhite);
-    ReadIcon("eo_Black.svg", nColorBlack);
-    ReadIcon("eo_Unknown.svg", nColorUnknown);
+    ReadIcon("eo_White", nColorWhite);
+    ReadIcon("eo_Black", nColorBlack);
+    ReadIcon("eo_Unknown", nColorUnknown);
 
-    ReadIcon("eo_Clear.svg", nClear);
-    ReadIcon("eo_Ponder.svg", nPondering);
-    ReadIcon("eo_Thinking.svg", nThinking);
-    ReadIcon("eo_Analyzing.svg", nAnalyzing);
+    ReadIcon("eo_Clear", nClear);
+    ReadIcon("eo_Ponder", nPondering);
+    ReadIcon("eo_Thinking", nThinking);
+    ReadIcon("eo_Analyzing", nAnalyzing);
 }
 
 void

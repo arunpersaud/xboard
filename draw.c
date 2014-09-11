@@ -117,6 +117,8 @@ int useTexture, textureW[2], textureH[2];
 
 #define White(piece) ((int)(piece) < (int)BlackPawn)
 
+char svgDir[MSG_SIZ] = SVGDIR;
+
 char *crWhite = "#FFFFB0";
 char *crBlack = "#AD5D3D";
 
@@ -316,7 +318,7 @@ ScaleOnePiece (int color, int piece)
 
   if(!pngPieceImages[color][piece]) { // we still did not manage to acquire a piece bitmap
     static int warned = 0;
-    if(!(svgPieces[color][piece] = LoadSVG(SVGDIR, color, piece, 0)) && !warned) { // try to fall back on installed svg 
+    if(!(svgPieces[color][piece] = LoadSVG(svgDir, color, piece, 0)) && !warned) { // try to fall back on installed svg 
       char *msg = _("No default pieces installed!\nSelect your own using '-pieceImageDirectory'.");
       printf("%s\n", msg); // give up
       DisplayError(msg, 0);
