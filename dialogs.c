@@ -281,13 +281,13 @@ DoGeneral(int n)
 
 static Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:          ") },
-{ 0,  0,          0, NULL, NULL, "", NULL, Label, N_("For concurrent playing of tourney with multiple XBoards:") },
+{ 0,  0,          0, NULL, NULL, NULL, NULL, Label, N_("For concurrent playing of tourney with multiple XBoards:") },
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
-{ 0,  LR,       175, NULL, NULL, "", NULL, Label, N_("Tourney participants:") },
-{ 0, SAME_ROW|RR, 175, NULL, NULL, "", NULL, Label, N_("Select Engine:") },
+{ 0,  LR,       175, NULL, NULL, NULL, NULL, Label, N_("Tourney participants:") },
+{ 0, SAME_ROW|RR, 175, NULL, NULL, NULL, NULL, Label, N_("Select Engine:") },
 { 150, T_VSCRL | T_FILL | T_WRAP,
-                175, NULL, (void*) &engineName, "", NULL, TextBox, "" },
+                175, NULL, (void*) &engineName, NULL, NULL, TextBox, "" },
 { 150, SAME_ROW|RR,
                 175, NULL, (void*) engineMnemonic, (char*) &AddToTourney, NULL, ListBox, "" },
 { 0, 0, 0, NULL, NULL, NULL, NULL, Break, "" }, // to decouple alignment above and below boxes
@@ -863,7 +863,7 @@ static Option boardOptions[] = {
 {   0,LR|T2T, 0, NULL, NULL, NULL, NULL, Label, N_("Selectable themes:") },
 { 300,LR|TB,200, NULL, (void*) engineMnemonic, (char*) &ThemeSel, NULL, ListBox, "" },
 {   0,LR|T2T, 0, NULL, NULL, NULL, NULL, Label, N_("New name for current theme:") },
-{ 0, 0, 0, NULL, (void*) &nickName, ".png", NULL, TextBox, "" },
+{ 0, 0, 0, NULL, (void*) &nickName, "", NULL, TextBox, "" },
 { 0,SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, NULL },
 { 0,          0, 70, NULL, (void*) &appData.whitePieceColor, "", NULL, TextBox, N_("White Piece Color:") },
 { 1000, SAME_ROW, 0, NULL, (void*) &DefColor, NULL, (char**) "#FFFFCC", Button, "      " },
@@ -1318,7 +1318,7 @@ NextInHistory ()
 #define INPUT 0
 
 Option boxOptions[] = {
-{  30, T_TOP, 400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
+{  30, T_TOP, 400, NULL, (void*) &icsText, NULL, NULL, TextBox, "" },
 {  0,  NO_OK,   0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
@@ -1374,7 +1374,7 @@ IcsInputBoxProc ()
 static int TypeInOK P((int n));
 
 Option typeOptions[] = {
-{ 30, T_TOP, 400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
+{ 30, T_TOP, 400, NULL, (void*) &icsText, NULL, NULL, TextBox, "" },
 { 0,  NO_OK,   0, NULL, (void*) &TypeInOK, "", NULL, EndMark , "" }
 };
 
@@ -1827,7 +1827,7 @@ ContextMenu (Option *opt, int button, int x, int y, char *text, int index)
 }
 
 Option chatOptions[] = {
-{  0,  0,   0, NULL, NULL, "", NULL, Label , N_("Chats:") },
+{  0,  0,   0, NULL, NULL, NULL, NULL, Label , N_("Chats:") },
 { 1, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
 { 2, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
 { 3, SAME_ROW|TT, 75, NULL, (void*) &ChatSwitch, NULL, NULL, Button, N_("New Chat") },
@@ -2454,7 +2454,7 @@ Option mainOptions[] = { // description of main window in terms of generic dialo
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Options") },
   { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Help") },
 { 0, 0, 0, NULL, (void*)&SizeKludge, "", NULL, BarEnd, "" },
-{ 0, LR|T2T|BORDER|SAME_ROW, 0, NULL, NULL, "", NULL, Label, "1" }, // optional title in window
+{ 0, LR|T2T|BORDER|SAME_ROW, 0, NULL, NULL, NULL, NULL, Label, "1" }, // optional title in window
 { 50,    LL|TT,            100, NULL, (void*) &LogoW, NULL, NULL, Skip, "" }, // white logo
 { 12,   L2L|T2T,           200, NULL, (void*) &CCB, NULL, NULL, Label, "White" }, // white clock
 { 13,   R2R|T2T|SAME_ROW,  200, NULL, (void*) &CCB, NULL, NULL, Label, "Black" }, // black clock
