@@ -2030,7 +2030,11 @@ SetClockIcon (int color)
     GdkPixbuf *pm = *clockIcons[color];
     if (mainwindowIcon != pm) {
         mainwindowIcon = pm;
-	gtk_window_set_icon(GTK_WINDOW(shellWidget), mainwindowIcon);
+#ifdef __APPLE__
+        gtkosx_application_set_dock_icon_pixbuf(theApp, mainwindowIcon);
+#else
+        gtk_window_set_icon(GTK_WINDOW(shellWidget), mainwindowIcon);
+#endif
     }
 }
 
