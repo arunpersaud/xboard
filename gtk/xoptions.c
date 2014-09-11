@@ -138,16 +138,6 @@ static Arg formArgs[] = {
 };
 #endif
 
-void
-MarkMenuItem (char *menuRef, int state)
-{
-    MenuItem *item = MenuNameToItem(menuRef);
-
-    if(item && item->handle) {
-        ((GtkCheckMenuItem *) (item->handle))->active = state;
-    }
-}
-
 void GetWidgetTextGTK(GtkWidget *w, char **buf)
 {
     GtkTextIter start;

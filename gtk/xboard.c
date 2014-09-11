@@ -180,11 +180,13 @@ extern char *getenv();
 #  define ICS_LOGON "Library/Preferences/XboardICS.conf"
 #  define DATADIR dataDir
 #  define SETTINGS_FILE masterSettings
+#  define SYNC_MENUBAR gtkosx_application_sync_menubar(theApp)
    char dataDir[MSG_SIZ]; // for expanding ~~
    char masterSettings[MSG_SIZ];
 #else
 #  define SLASH '/'
 #  define IMG ".svg"
+#  define SYNC_MENUBAR
 #endif
 
 #ifdef __EMX__
@@ -1466,11 +1468,23 @@ FindFont (char *pattern, int targetPxlSize)
 #endif
 
 void
+MarkMenuItem (char *menuRef, int state)
+{
+    MenuItem *item = MenuNameToItem(menuRef);
+
+    if(item && item->handle) {
+        ((GtkCheckMenuItem *) (item->handle))->active = state;
+    }
+    SYNC_MENUBAR;
+}
+
+void
 EnableNamedMenuItem (char *menuRef, int state)
 {
     MenuItem *item = MenuNameToItem(menuRef);
 
     if(item && item->handle) gtk_widget_set_sensitive(item->handle, state);
+    SYNC_MENUBAR;
 }
 
 void
