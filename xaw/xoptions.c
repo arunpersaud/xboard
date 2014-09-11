@@ -1141,7 +1141,7 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 		XtAddEventHandler(option[i-1].handle, KeyReleaseMask, False, ColorChanged, (XtPointer)(intptr_t) i-1);
 	    }
 	    XtAddCallback(last, XtNcallback, GenericCallback, (XtPointer)(intptr_t) i + (dlgNr<<16)); // invokes user callback
-	    if(option[i].textValue) SetColor( option[i].textValue, &option[i]); // for new-variant buttons
+	    if(option[i].textValue && *option[i].textValue == '#') SetColor( option[i].textValue, &option[i]); // for new-variant buttons
 	    break;
 	  case ComboBox:
 	    j = SetPositionAndSize(args, last, lastrow, 0 /* border */,
