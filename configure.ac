@@ -437,10 +437,10 @@ dnl| add some libs for OS X
     fi
     case "$MACOSX_VERSION" in
       10.0*|10.1|10.1.*|10.2*|10.3*|10.4*|10.5*|10.6*)
-      FRONTEND_LIBS= "$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk"
+      FRONTEND_LIBS="$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk"
         ;;
       *)
-      FRONTEND_LIBS = "$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names"
+      FRONTEND_LIBS="$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names"
         ;;
     esac
 
