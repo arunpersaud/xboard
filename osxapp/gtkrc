@@ -1,0 +1,9 @@
+# Include OSX-theme path to fix plugins not applying theme'
+include "../../share/themes/OSX-theme/gtk-2.0/gtkrc"
+# Set default theme to OSX-theme
+gtk-theme-name = "OSX-theme"
+
+# Include Mac path to fix plugins not applying key-bindings
+include "../../share/themes/Mac/gtk-2.0-key/gtkrc"
+# Set default key-bindings to Mac
+gtk-key-theme-name = "Mac"
