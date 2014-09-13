@@ -60,7 +60,6 @@ AH_TEMPLATE([USE_XAW3D],[template])
 AH_TEMPLATE([X_LOCALE],[template])
 
 
-
 if test -z "$CFLAGS" ; then
 dnl| Prevent the next macro from setting CFLAGS to -g
   CFLAGS=" "
@@ -75,7 +74,6 @@ AC_ISC_POSIX
 AC_PROG_INSTALL
 
 dnl| add gettext support
-AM_GNU_GETTEXT_VERSION(0.17)
 AM_GNU_GETTEXT([external])
 
 AC_CHECK_PROGS(RSH, remsh rsh, rsh)
