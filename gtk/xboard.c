@@ -2228,13 +2228,20 @@ static void
 LoadLogo (ChessProgramState *cps, int n, Boolean ics)
 {
     char buf[MSG_SIZ], *logoName = buf;
+    FILE *f;
     if(appData.logo[n][0]) {
 	logoName = appData.logo[n];
     } else if(appData.autoLogo) {
 	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
 	    sprintf(buf, "%s/%s.png", appData.logoDir, appData.icsHost);
-	} else if(appData.directory[n] && appData.directory[n][0]) {
-	    sprintf(buf, "%s/%s.png", appData.logoDir, cps->tidy);
+	} else { // engine; look in engine-dir (if any) first
+	    snprintf(buf, MDG_SIZ, "%s/logo.png", appData.directory[n]);
+	    if(appData.directory[n] && appData.directory[n][0]
+	       && strcmp(appData.directory[n], ".") && (f = fopen(buf, "r")) )
+		fclose(f);
+	    else // no engine dir or no logo.png in it: look in logo dir
+	    if(appData.logoDir && appData.logoDir[0])
+		sprintf(buf, "%s/%s.png", appData.logoDir, cps->tidy);
 	}
     }
     if(logoName[0])

@@ -2502,7 +2502,7 @@ LoadLogo (ChessProgramState *cps, int n, Boolean ics)
     } else if(appData.autoLogo) {
 	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
 	    sprintf(buf, "%s/%s.png", appData.logoDir, appData.icsHost);
-	} else if(appData.directory[n] && appData.directory[n][0]) {
+	} else if(appData.logoDir && appData.logoDir[0]) {
 	    sprintf(buf, "%s/%s.png", appData.logoDir, cps->tidy);
 	}
     }
