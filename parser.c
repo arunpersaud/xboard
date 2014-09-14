@@ -87,7 +87,7 @@ SkipWhite (char **p)
     return *p != start;
 }
 
-inline int
+static inline int
 Match (char *pattern, char **ptr)
 {
     char *p = pattern, *s = *ptr;
@@ -99,7 +99,7 @@ Match (char *pattern, char **ptr)
     return 0; // no match, no ptr update
 }
 
-inline int
+static inline int
 Word (char *pattern, char **p)
 {
     if(Match(pattern, p)) return 1;
