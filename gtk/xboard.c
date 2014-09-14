@@ -2235,7 +2235,7 @@ LoadLogo (ChessProgramState *cps, int n, Boolean ics)
 	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
 	    sprintf(buf, "%s/%s.png", appData.logoDir, appData.icsHost);
 	} else { // engine; look in engine-dir (if any) first
-	    snprintf(buf, MDG_SIZ, "%s/logo.png", appData.directory[n]);
+	    snprintf(buf, MSG_SIZ, "%s/logo.png", appData.directory[n]);
 	    if(appData.directory[n] && appData.directory[n][0]
 	       && strcmp(appData.directory[n], ".") && (f = fopen(buf, "r")) )
 		fclose(f);
