@@ -60,6 +60,7 @@
 -variations true
 -appendPV true
 -memoHeaders true
+-autoInstall "ALL"
 ;
 ; PGN format & Game List
 ;

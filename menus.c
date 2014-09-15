@@ -1160,6 +1160,92 @@ ModeToWidgetName (GameMode mode)
     }
 }
 
+static void
+InstallNewEngine (char *command, char *dir, char *variants, char *protocol)
+{ // install the given engine in XBoard's -firstChessProgramNames
+    char buf[MSG_SIZ], *quote = "";
+    if(strchr(command, ' ')) { // quoting needed
+	if(!strchr(command, '"')) quote = "\""; else
+	if(!strchr(command, '\'')) quote = "'"; else {
+	    printf("Could not auto-install %s\n", command); // too complex
+	}
+    }
+    // construct engine line, with optional -fd and -fUCI arguments
+    snprintf(buf, MSG_SIZ, "%s%s%s", quote, command, quote);
+    if(strcmp(dir, "") && strcmp(dir, "."))
+	snprintf(buf + strlen(buf), MSG_SIZ - strlen(buf), " -fd %s", dir);
+    if(!strcmp(protocol, "uci"))
+	snprintf(buf + strlen(buf), MSG_SIZ - strlen(buf), " -fUCI");
+    // append line
+    quote = malloc(strlen(firstChessProgramNames) + strlen(buf) + 2);
+    sprintf(quote, "%s%s\n", firstChessProgramNames, buf);
+    FREE(firstChessProgramNames); firstChessProgramNames = quote;
+}
+
+#ifdef HAVE_DIRENT_H
+#include <dirent.h>
+#else
+#include <sys/dir.h>
+#define dirent direct
+#endif
+
+static void
+InstallFromDir (char *dirName, char *protocol, char *settingsFile)
+{   // scan system for new plugin specs in given directory
+    DIR *dir;
+    struct dirent *dp;
+    struct stat statBuf;
+    time_t lastSaved = 0;
+    char buf[1024];
+
+    if(!stat(settingsFile, &statBuf)) lastSaved = statBuf.st_mtime;
+    snprintf(buf, 1024, "%s/%s", dirName, protocol);
+
+    if(!(dir = opendir(buf))) return;
+    while( (dp = readdir(dir))) {
+	time_t installed = 0;
+	if(!strstr(dp->d_name, ".eng")) continue; // to suppress . and ..
+	snprintf(buf, 1024, "%s/%s/%s", dirName, protocol, dp->d_name);
+	if(!stat(buf, &statBuf)) installed = statBuf.st_mtime;
+	if(lastSaved == 0 || (int) (installed - lastSaved) > 0) { // first time we see it
+	    FILE *f = fopen(buf, "r");
+	    if(f) { // read the plugin-specs
+		char engineCommand[1024], engineDir[1024], variants[1024];
+		char bad=0, dummy, *engineCom = engineCommand;
+		int major, minor;
+		if(fscanf(f, "plugin spec %d.%d%c", &major, &minor, &dummy) != 3 ||
+		   fscanf(f, "%[^\n]%c", engineCommand, &dummy) != 2 ||
+		   fscanf(f, "%[^\n]%c", variants, &dummy) != 2) bad = 1;
+		fclose(f);
+		if(bad) continue;
+		// uncomment following two lines for chess-only installs
+//		if(!(p = strstr(variants, "chess")) ||
+//		     p != variants && p[-1] != ',' || p[5] && p[5] != ',') continue;
+		// split off engine working directory (if any)
+		strcpy(engineDir, "");
+		if(sscanf(engineCommand, "cd %[^;];%c", engineDir, &dummy) == 2)
+		    engineCom = engineCommand + strlen(engineDir) + 4;
+		InstallNewEngine(engineCom, engineDir, variants, protocol);
+	    }
+	}
+    }
+    closedir(dir);
+}
+
+static void
+AutoInstallProtocol (char *settingsFile, char *protocol)
+{   // install new engines for given protocol (both from package and source)
+    InstallFromDir("/usr/local/share/games/plugins", protocol, settingsFile);
+    InstallFromDir("/usr/share/games/plugins", protocol, settingsFile);
+}
+
+void
+AutoInstall (char *settingsFile)
+{   // install all new XBoard and UCI engines
+    AutoInstallProtocol(settingsFile, "xboard");
+    AutoInstallProtocol(settingsFile, "uci");
+}
+
 void
 InitMenuMarkers()
 {
@@ -1234,4 +1320,7 @@ InitMenuMarkers()
 	MarkMenuItem("Options.SaveSettingsonExit", True);
     }
     EnableNamedMenuItem("File.SaveSelected", False);
+
+    // all XBoard builds get here, but not WinBoard...
+    if(*appData.autoInstall) AutoInstall(settingsFileName);
 }

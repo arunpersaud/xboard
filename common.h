@@ -508,6 +508,7 @@ typedef struct {
     char *loadGameFile;
     int loadGameIndex;      /* game # within file */
     char *saveGameFile;
+    char *autoInstall;
     Boolean autoSaveGames;
     Boolean onlyOwn;        /* [HGM] suppress auto-saving of observed games */
     char *loadPositionFile;

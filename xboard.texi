@@ -2906,6 +2906,17 @@ the last one is discarded.
 Changes in the list will only become visible the next session,
 provided you saved the settings.
 Default: 6.
+@item -autoInstall list
+@cindex autoInstall, option
+When the list is set to a non-empty string, XBoard will scan the
+operating system's plugin directory for engines supporting UCI
+and XBoard protocol at startup.
+When it finds an engine that was installed after it last saved
+its settings, a line to launch that engine (as per specs in
+the plugin file) is appended to the -firstChessProgramNames
+list of installed engines.
+In the future it will be possible to use the list to limit
+this automatic adding of engines to a certain types of variants.
 @item -oneClickMove true/false
 @cindex oneClickMove, option
 When set, this option allows you to enter moves by only clicking the to-
