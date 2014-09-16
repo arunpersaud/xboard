@@ -536,7 +536,7 @@ CreateFonts ()
 void
 ParseColor (int n, char *name)
 { // in XBoard, just copy the color-name string
-  if(colorVariable[n]) *(char**)colorVariable[n] = strdup(name);
+  if(colorVariable[n] && *name == '#') *(char**)colorVariable[n] = strdup(name);
 }
 
 char *
