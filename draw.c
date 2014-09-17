@@ -239,28 +239,28 @@ static void
 CreatePNGBoard (char *s, int kind)
 {
     float w, h;
-    static float n=1.;
+    static float n[2] = { 1., 1. };
     if(!appData.useBitmaps || s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
     if(strstr(s, ".png")) {
 	cairo_surface_t *img = cairo_image_surface_create_from_png (s);
 	if(img) {
 	    if(pngOriginalBoardBitmap[kind]) cairo_surface_destroy(pngOriginalBoardBitmap[kind]);
-	    if(n != 1.) cairo_surface_destroy(pngBoardBitmap[kind]);
+	    if(n[kind] != 1.) cairo_surface_destroy(pngBoardBitmap[kind]);
 	    useTexture |= kind + 1; pngOriginalBoardBitmap[kind] = img;
 	    w = textureW[kind] = cairo_image_surface_get_width (img);
 	    h = textureH[kind] = cairo_image_surface_get_height (img);
-	    n = 1;
+	    n[kind] = 1.;
 	    if(w > 256 & h > 256) { // full-board image?
-		while(squareSize*9 > n*w || squareSize*10 > n*h) n++;
+		while(squareSize*9 > n[kind]*w || squareSize*10 > n[kind]*h) n[kind]++;
 	    } else {
-		while(squareSize > n*w || squareSize > n*h) n++;
+		while(squareSize > n[kind]*w || squareSize > n[kind]*h) n[kind]++;
 	    }
-	    if(n == 1.) pngBoardBitmap[kind] = img; else {
+	    if(n[kind] == 1.) pngBoardBitmap[kind] = img; else {
 		// create scaled-up copy of the raw png image when it was too small
-		cairo_surface_t *cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, n*w, n*h);
+		cairo_surface_t *cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, n[kind]*w, n[kind]*h);
 		cairo_t *cr = cairo_create(cs);
-		pngBoardBitmap[kind] = cs; textureW[kind] *= n; textureH[kind] *= n;
-		cairo_scale(cr, n, n);
+		pngBoardBitmap[kind] = cs; textureW[kind] *= n[kind]; textureH[kind] *= n[kind];
+		cairo_scale(cr, n[kind], n[kind]);
 		cairo_set_source_surface (cr, img, 0, 0);
 		cairo_paint (cr);
 		cairo_destroy (cr);
