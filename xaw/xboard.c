@@ -1288,7 +1288,7 @@ main (int argc, char **argv)
 
     CatchDeleteWindow(shellWidget, "QuitProc");
 
-    CreateAnyPieces();
+    CreateAnyPieces(1);
     CreateGrid();
 
     if(appData.logoSize)

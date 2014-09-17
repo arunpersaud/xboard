@@ -1182,7 +1182,7 @@ main (int argc, char **argv)
 	marginH =  h - a.height - hc; // subtract current clock height, so it can be added back dynamically
     }
 
-    CreateAnyPieces();
+    CreateAnyPieces(1);
     CreateGrid();
 
     if(appData.logoSize)

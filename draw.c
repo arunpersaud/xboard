@@ -109,7 +109,7 @@ static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
 static RsvgHandle *svgPieces[2][(int)BlackPawn+4]; // vector pieces in store
-static cairo_surface_t *pngBoardBitmap[2];
+static cairo_surface_t *pngBoardBitmap[2], *pngOriginalBoardBitmap[2];
 int useTexture, textureW[2], textureH[2];
 
 #define pieceToSolid(piece) &pieceBitmap[SOLID][(piece) % (int)BlackPawn]
@@ -202,6 +202,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 
     oldWidth = boardWidth; oldHeight = boardHeight;
     CreateGrid();
+    CreateAnyPieces(0); // redo texture scaling
 
     /*
      * Inhibit shell resizing.
@@ -237,13 +238,33 @@ ExposeRedraw (Option *graph, int x, int y, int w, int h)
 static void
 CreatePNGBoard (char *s, int kind)
 {
+    float w, h;
+    static float n=1.;
     if(!appData.useBitmaps || s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
     if(strstr(s, ".png")) {
 	cairo_surface_t *img = cairo_image_surface_create_from_png (s);
 	if(img) {
-	    useTexture |= kind + 1; pngBoardBitmap[kind] = img;
-	    textureW[kind] = cairo_image_surface_get_width (img);
-	    textureH[kind] = cairo_image_surface_get_height (img);
+	    if(pngOriginalBoardBitmap[kind]) cairo_surface_destroy(pngOriginalBoardBitmap[kind]);
+	    if(n != 1.) cairo_surface_destroy(pngBoardBitmap[kind]);
+	    useTexture |= kind + 1; pngOriginalBoardBitmap[kind] = img;
+	    w = textureW[kind] = cairo_image_surface_get_width (img);
+	    h = textureH[kind] = cairo_image_surface_get_height (img);
+	    n = 1;
+	    if(w > 256 & h > 256) { // full-board image?
+		while(squareSize*9 > n*w || squareSize*10 > n*h) n++;
+	    } else {
+		while(squareSize > n*w || squareSize > n*h) n++;
+	    }
+	    if(n == 1.) pngBoardBitmap[kind] = img; else {
+		// create scaled-up copy of the raw png image when it was too small
+		cairo_surface_t *cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, n*w, n*h);
+		cairo_t *cr = cairo_create(cs);
+		pngBoardBitmap[kind] = cs; textureW[kind] *= n; textureH[kind] *= n;
+		cairo_scale(cr, n, n);
+		cairo_set_source_surface (cr, img, 0, 0);
+		cairo_paint (cr);
+		cairo_destroy (cr);
+	    }
 	}
     }
 }
@@ -381,9 +402,9 @@ CreatePNGPieces ()
 }
 
 void
-CreateAnyPieces ()
+CreateAnyPieces (int p)
 {   // [HGM] taken out of main
-    CreatePNGPieces();
+    if(p) CreatePNGPieces();
     CreatePNGBoard(appData.liteBackTextureFile, 1);
     CreatePNGBoard(appData.darkBackTextureFile, 0);
 }
@@ -399,7 +420,7 @@ InitDrawingParams (int reloadPieces)
 	if(svgPieces[i][p]) rsvg_handle_close(svgPieces[i][p], NULL);
 	svgPieces[i][p] = NULL;
     }
-    CreateAnyPieces();
+    CreateAnyPieces(1);
 }
 
 // [HGM] seekgraph: some low-level drawing routines (by JC, mostly)
