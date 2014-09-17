@@ -295,6 +295,7 @@ ChessSquare promoSweep = EmptySquare, defaultPromoChoice;
 int promoDefaultAltered;
 int keepInfo = 0; /* [HGM] to protect PGN tags in auto-step game analysis */
 static int initPing = -1;
+static Boolean pieceDefs;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -954,7 +955,7 @@ extern Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 static char resetOptions[] =
 	"-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 "
 	"-firstInitString \"" INIT_STRING "\" -firstComputerString \"" COMPUTER_STRING "\" "
-	"-firstFeatures \"\" -firstLogo \"\" -firstAccumulateTC 1 "
+	"-firstFeatures \"\" -firstLogo \"\" -firstAccumulateTC 1 -fd \".\" "
 	"-firstOptions \"\" -firstNPS -1 -fn \"\" -firstScoreAbs false";
 
 void
@@ -7277,7 +7278,7 @@ MarkTargetSquares (int clear)
   } else {
     int capt = 0;
     if(!appData.markers || !appData.highlightDragging || appData.icsActive && gameInfo.variant < VariantShogi ||
-       !appData.testLegality || gameMode == EditPosition) return;
+       !appData.testLegality && !pieceDefs || gameMode == EditPosition) return;
     GenLegal(boards[currentMove], PosFlags(currentMove), Mark, (void*) marker, EmptySquare);
     if(PosFlags(0) & F_MANDATORY_CAPTURE) {
       for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) if(marker[y][x]>1) capt++;
@@ -8884,6 +8885,11 @@ printf("score=%d count=%d\n",score,count);
       ParseFEN(boards[0], &dummy, message+s, FALSE);
       DrawPosition(TRUE, boards[0]);
       startedFromSetupPosition = TRUE;
+      return;
+    }
+    if(sscanf(message, "piece %c %s", &promoChar, buf1) == 2) {
+      ChessSquare piece = CharToPiece(promoChar);
+      if(piece < EmptySquare && !appData.testLegality) { ASSIGN(pieceDesc[piece], buf1); pieceDefs = TRUE; }
       return;
     }
     /* [HGM] Allow engine to set up a position. Don't ask me why one would
@@ -11607,6 +11613,8 @@ Reset (int redraw, int init)
 	fprintf(debugFP, "Reset(%d, %d) from gameMode %d\n",
 		redraw, init, gameMode);
     }
+    pieceDefs = FALSE; // [HGM] gen: reset engine-defined piece moves
+    for(i=0; i<EmptySquare; i++) { FREE(pieceDesc[i]); pieceDesc[i] = NULL; }
     CleanupTail(); // [HGM] vari: delete any stored variations
     CommentPopDown(); // [HGM] make sure no comments to the previous game keep hanging on
     pausing = pauseExamInvalid = FALSE;

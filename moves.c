@@ -54,6 +54,8 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <ctype.h>
+#include <stdlib.h>
 #if HAVE_STRING_H
 # include <string.h>
 #else /* not HAVE_STRING_H */
@@ -71,6 +73,7 @@ int PosFlags(int index);
 
 extern signed char initialRights[BOARD_FILES]; /* [HGM] all rights enabled, set in InitPosition */
 int quickFlag;
+char *pieceDesc[EmptySquare];
 
 int
 WhitePiece (ChessSquare piece)
@@ -164,6 +167,112 @@ CompareBoards (Board board1, Board board2)
     }
     return TRUE;
 }
+
+// [HGM] gen: configurable move generation from Betza notation sent by engine.
+
+//  alphabet      "abcdefghijklmnopqrstuvwxyz"
+char symmetry[] = "FBNW.F.WFNKN.N..QR....W..N";
+char xStep[]    = "2110.1.03102.10.00....0..2";
+char yStep[]    = "2132.1.33313.20.11....1..3";
+char dirType[]  = "01000104000200000260050000";
+//  alphabet   "a b    c d e f    g h    i j k l    m n o p q r    s    t u v    w x y z "
+int dirs1[] = { 0,0x3C,0,0,0,0xC3,0,0,   0,0,0,0xF0,0,0,0,0,0,0x0F,0   ,0,0,0   ,0,0,0,0 };
+int dirs2[] = { 0,0x18,0,0,0,0x81,0,0xFF,0,0,0,0x60,0,0,0,0,0,0x06,0x66,0,0,0x99,0,0,0,0 };
+
+int rot[][4] = { // rotation matrices for each direction
+  { 1, 0, 0, 1 },
+  { 0, 1, 1, 0 },
+  { 0, 1,-1, 0 },
+  { 1, 0, 0,-1 },
+  {-1, 0, 0,-1 },
+  { 0,-1,-1, 0 },
+  { 0,-1, 1, 0 },
+  {-1, 0, 0, 1 }
+};
+
+void
+MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback cb, VOIDSTAR cl)
+{
+    char *p = desc;
+    int mine, his, dir, bit, occup, i;
+    if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
+    while(*p) {                  // more moves to go
+	int expo = 1, dx, dy, x, y, mode, dirSet, retry=0, initial=0;
+	if(*p == 'i') initial = 1, p++;
+	while(islower(*p)) p++;  // skip prefixes
+	if(!isupper(*p)) return; // syntax error: no atom
+	dirSet = 0;              // build direction set based on atom symmetry
+	switch(symmetry[*p-'A']) {
+	  case 'B': expo = 0;    // bishop, slide
+	  case 'F':              // diagonal atom (degenerate 4-fold)
+		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
+			int b = dirs1[*desc-'a']; // use wide version
+			if( islower(desc[1]) &&
+				 ((i | dirType[desc[1]-'a']) & 3) == 3) {   // combinable (perpendicular dim)
+			    b = dirs1[*desc-'a'] & dirs1[desc[1]-'a'];      // intersect wide & perp wide
+			    desc += 2;
+			} else desc++;
+			dirSet |= b;
+		    }
+		    dirSet &= 0x99; if(!dirSet) dirSet = 0x99;
+		    break;
+	  case 'R': expo = 0;    // rook, slide
+	  case 'W':              // orthogonal atom (non-deg 4-fold)
+		    while(islower(*desc) && (dirType[*desc-'a'] & ~4) != '0') dirSet |= dirs2[*desc++-'a'];
+		    dirSet &= 0x55; if(!dirSet) dirSet = 0x55;
+		    break;
+	  case 'N':              // oblique atom (degenerate 8-fold)
+		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
+			int b = dirs2[*desc-'a']; // when alone, use narrow version
+			if(desc[1] == 'h') b = dirs1[*desc-'a'], desc += 2; // dirs1 is wide version
+			else if(islower(desc[1]) && i < '4'
+				&& ((i | dirType[desc[1]-'a']) & 3) == 3) { // combinable (perpendicular dim)
+			    b = dirs1[*desc-'a'] & dirs2[desc[1]-'a'];      // intersect wide & perp narrow
+			    desc += 2;
+			} else desc++;
+			dirSet |= b;
+		    }
+		    if(!dirSet) dirSet = 0xFF;
+		    break;
+	  case 'Q': expo = 0;    // queen, slide
+	  case 'K':              // non-deg (pseudo) 8-fold
+		    dirSet=0x55; // start with orthogonal moves
+		    retry = 1;   // and schedule the diagonal moves for later
+		    break;       // should not have direction indicators
+	  default:  return;      // syntax error: invalid atom
+	}
+	if(mine == 2) dirSet = dirSet >> 4 | dirSet << 4 & 255; // invert black moves
+	mode = 0;                // build mode mask
+	if(*desc == 'm') mode |= 4, desc++;
+	if(*desc == 'c') mode |= his, desc++;
+	if(*desc == 'd') mode |= mine, desc++;
+	if(!mode) mode = his + 4;// no mode spec, use default = mc
+	dx = xStep[*p-'A'] - '0';                     // step vector of atom
+	dy = yStep[*p-'A'] - '0';
+	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
+	if(expo > 9) p++;                             // allow double-digit
+	desc = p;                                     // this is start of next move
+	if(initial && (mine == 1 ? r > 1 : r < BOARD_HEIGHT - 2)) continue;
+        do {
+	  for(dir=0, bit=1; dir<8; dir++, bit += bit) { // loop over directions
+	    int i = expo;
+	    if(!(bit & dirSet)) continue;             // does not move in this direction
+	    x = f; y = r;                             // start square
+	    do {
+		x += dx*rot[dir][0] + dy*rot[dir][1]; // step to next square
+		y += dx*rot[dir][2] + dy*rot[dir][3];
+		if(y < 0 || y >= BOARD_HEIGHT || x < BOARD_LEFT || x >= BOARD_RGHT) break;
+		if(board[y][x] < BlackPawn)   occup = 1; else
+		if(board[y][x] < EmptySquare) occup = 2; else
+					      occup = 4;
+		if(occup & mode) cb(board, flags, NormalMove, r, f, y, x, cl); // allowed, generate
+		if(occup != 4) break; // not valid transit square
+	    } while(--i);
+	  }
+	  dx = dy = 1; dirSet = 0x99; // prepare for diagonal moves of K,Q
+	} while(retry--);             // and start doing them
+    }
+} // next atom
 
 // [HGM] move generation now based on hierarchy of subroutines for rays and combinations of rays
 
@@ -394,6 +503,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
           if(PieceToChar(piece) == '~')
                  piece = (ChessSquare) ( DEMOTED piece );
           if(filter != EmptySquare && piece != filter) continue;
+          if(pieceDesc[piece]) { MovesFromString(board, flags, ff, rf, pieceDesc[piece], callback, closure); continue; } // [HGM] gen
           if(IS_SHOGI(gameInfo.variant))
                  piece = (ChessSquare) ( SHOGI piece );
 
