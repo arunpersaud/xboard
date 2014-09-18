@@ -7261,8 +7261,8 @@ Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VO
     if(rf == fromY && ff == fromX && (killX < 0 && !(rt == rf && ft == ff) || abs(ft-killX) < 2 && abs(rt-killY) < 2))
 	(*m)[rt][ft] = 1 + (board[rt][ft] != EmptySquare
 			 || kind == WhiteCapturesEnPassant
-			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && killX < 0);
-    else if(flags & F_MANDATORY_CAPTURE && board[rt][ft] != EmptySquare) (*m)[rt][ft] = 3;
+			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && killX < 0), legal[rt][ft] = 1;
+    else if(flags & F_MANDATORY_CAPTURE && board[rt][ft] != EmptySquare) (*m)[rt][ft] = 3, legal[rt][ft] = 1;
 }
 
 static int hoverSavedValid;
@@ -7354,7 +7354,7 @@ void ReportClick(char *action, int x, int y)
 	char buf[MSG_SIZ]; // Inform engine of what user does
 	int r, f;
 	if(action[0] == 'l') // mark any target square of a lifted piece as legal to-square, clear markers
-	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = 1, marker[r][f] = 0;
+	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = !pieceDefs, marker[r][f] = 0;
 	if(!first.highlight || gameMode == EditPosition) return;
 	snprintf(buf, MSG_SIZ, "%s %c%d%s\n", action, x+AAA, y+ONE-'0', controlKey && action[0]=='p' ? "," : "");
 	SendToProgram(buf, &first);
@@ -7575,7 +7575,8 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 
     clearFlag = 0;
 
-    if(gameMode != EditPosition && !appData.testLegality && !legal[y][x] && (x != killX || y != killY) && !sweepSelecting) {
+    if(gameMode != EditPosition && !appData.testLegality && !legal[y][x] &&
+       fromX >= BOARD_LEFT && fromX < BOARD_RGHT && (x != killX || y != killY) && !sweepSelecting) {
 	if(dragging) DragPieceEnd(xPix, yPix), dragging = 0;
 	DisplayMessage(_("only marked squares are legal"),"");
 	DrawPosition(TRUE, NULL);
@@ -8887,9 +8888,17 @@ printf("score=%d count=%d\n",score,count);
       startedFromSetupPosition = TRUE;
       return;
     }
-    if(sscanf(message, "piece %c %s", &promoChar, buf1) == 2) {
-      ChessSquare piece = CharToPiece(promoChar);
-      if(piece < EmptySquare && !appData.testLegality) { ASSIGN(pieceDesc[piece], buf1); pieceDefs = TRUE; }
+    if(sscanf(message, "piece %s %s", buf2, buf1) == 2) {
+      ChessSquare piece = WhitePawn;
+      char *p=buf2;
+      if(cps != &first || appData.testLegality) return;
+      if(*p == '+') piece = CHUPROMOTED WhitePawn, p++;
+      piece += CharToPiece(*p) - WhitePawn;
+      if(piece < EmptySquare) {
+        pieceDefs = TRUE;
+        ASSIGN(pieceDesc[piece], buf1);
+        if(isupper(*p) && p[1] == '&') { ASSIGN(pieceDesc[WHITE_TO_BLACK piece], buf1); }
+      }
       return;
     }
     /* [HGM] Allow engine to set up a position. Don't ask me why one would
