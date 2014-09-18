@@ -1530,9 +1530,9 @@ if(appData.debugMode) fprintf(debugFP, "LegalDrop: %d @ %d,%d)\n", piece, ft, rt
             piece == WhiteKnight && rt > BOARD_HEIGHT-3 ||
             piece == BlackKnight && rt < 2 ) return IllegalMove; // e.g. where dropped piece has no moves
         if(piece == WhitePawn || piece == BlackPawn) {
-            int r;
+            int r, max = 1 + (BOARD_HEIGHT == 7); // two Pawns per file in Tori!
             for(r=1; r<BOARD_HEIGHT-1; r++)
-                if(board[r][ft] == piece) return IllegalMove; // or there already is a Pawn in file
+                if(!(max -= (board[r][ft] == piece))) return IllegalMove; // or there already is a Pawn in file
             // should still test if we mate with this Pawn
         }
     } else if(gameInfo.variant == VariantSChess) { // only back-rank drops
