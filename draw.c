@@ -141,7 +141,7 @@ SelectPieces(VariantClass v)
 	int p;
 	for(p=0; p<=(int)WhiteKing; p++)
 	   pngPieceBitmaps[i][p] = pngPieceBitmaps2[i][p]; // defaults
-	if(v == VariantShogi) {
+	if(v == VariantShogi && BOARD_HEIGHT != 7) { // no exceptions in Tori Shogi
 	   pngPieceBitmaps[i][(int)WhiteCannon] = pngPieceBitmaps2[i][(int)WhiteTokin];
 	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteKing+2];
 	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+3];
@@ -244,14 +244,23 @@ CreatePNGBoard (char *s, int kind)
     if(strstr(s, ".png")) {
 	cairo_surface_t *img = cairo_image_surface_create_from_png (s);
 	if(img) {
+	    char c, *p = s, *q;
+	    int r, f;
 	    if(pngOriginalBoardBitmap[kind]) cairo_surface_destroy(pngOriginalBoardBitmap[kind]);
 	    if(n[kind] != 1.) cairo_surface_destroy(pngBoardBitmap[kind]);
 	    useTexture |= kind + 1; pngOriginalBoardBitmap[kind] = img;
 	    w = textureW[kind] = cairo_image_surface_get_width (img);
 	    h = textureH[kind] = cairo_image_surface_get_height (img);
 	    n[kind] = 1.;
-	    if(w > 256 & h > 256) { // full-board image?
-		while(squareSize*9 > n[kind]*w || squareSize*10 > n[kind]*h) n[kind]++;
+	    while((q = strchr(p+1, '-'))) p = q; // find last '-'
+	    if(strlen(p) < 11 && sscanf(p, "-%dx%d.pn%c", &f, &r, &c) == 3 && c == 'g') {
+		if(f == 0 || r == 0) f = BOARD_WIDTH, r = BOARD_HEIGHT; // 0x0 means 'fits any', so make it fit
+		textureW[kind] = (w*BOARD_WIDTH)/f; // sync cutting locations with square pattern
+		textureH[kind] = (h*BOARD_HEIGHT)/r;
+		n[kind] = r*squareSize/h; // scale to make it fit exactly vertically
+	    } else
+	    if((p = strstr(s, "xq")) && (p == s || p[-1] == '/')) { // assume full-board image for Xiangqi
+		while(0.8*squareSize*BOARD_WIDTH > n[kind]*w || 0.8*squareSize*BOARD_HEIGHT > n[kind]*h) n[kind]++;
 	    } else {
 		while(squareSize > n[kind]*w || squareSize > n[kind]*h) n[kind]++;
 	    }
@@ -260,6 +269,7 @@ CreatePNGBoard (char *s, int kind)
 		cairo_surface_t *cs = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, n[kind]*w, n[kind]*h);
 		cairo_t *cr = cairo_create(cs);
 		pngBoardBitmap[kind] = cs; textureW[kind] *= n[kind]; textureH[kind] *= n[kind];
+//		cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 		cairo_scale(cr, n[kind], n[kind]);
 		cairo_set_source_surface (cr, img, 0, 0);
 		cairo_paint (cr);
