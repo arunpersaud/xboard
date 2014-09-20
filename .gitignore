@@ -53,3 +53,23 @@ xboard.toc
 xboard.tp
 xboard.vr
 
+# gettextize -f files
+ABOUT-NLS
+config.rpath
+m4/gettext.m4
+m4/iconv.m4
+m4/lib-ld.m4
+m4/lib-link.m4
+m4/lib-prefix.m4
+m4/nls.m4
+m4/po.m4
+m4/progtest.m4
+po/Makefile.in.in
+po/Makevars.template
+po/Rules-quot
+po/boldquot.sed
+po/en@boldquot.header
+po/en@quot.header
+po/insert-header.sin
+po/quot.sed
+po/remove-potcdate.sin
