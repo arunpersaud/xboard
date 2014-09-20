@@ -3259,6 +3259,16 @@ and if they should be used rather than using simple colors.
 The algorithm for cutting squares out of a given bitmap is such that
 the picture is perfectly reproduced when a bitmap the size of
 the complete board is given.
+If the filename ends in "-NxM.png", with integer N and M,
+it is assumed to contain a bitmap of a complete board of N files
+and M ranks, and XBoard will scale it to exactly match the
+current square size.
+If N=M=0 it scales the entire bitmap to the size of the board,
+irrespective of the number of files and ranks of the latter.
+Without any -NxM suffix textures are only blown up by an integer
+factor when they are smaller than the square size, or,
+when the name starts with "xq", too small to cover the
+complete Xiangqi board.
 Default: false and ""
 @item -drag/-xdrag or -animateDragging true/false
 @cindex drag, option
