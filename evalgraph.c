@@ -53,6 +53,7 @@ int currFirst = 0;
 int currLast = 0;
 int currCurrent = -1;
 int range = 1;
+int differentialView;
 
 int nWidthPB = 0;
 int nHeightPB = 0;
@@ -85,6 +86,7 @@ GetPvScore (int index)
 {
     int score = currPvInfo[ index ].score;
 
+    if(differentialView) score = index < currLast-1 ? -currPvInfo[ index+1 ].score - score : 0;
     if( index & 1 ) score = -score; /* Flip score for black */
 
     return score;
@@ -312,15 +314,26 @@ static void
 DrawHistograms ()
 {
     VisualizationData vd;
+    int i; double step = 1;
 
     if( InitVisualization( &vd ) ) {
         if( vd.hist_width < MIN_HIST_WIDTH ) {
             DrawHistogramAsDiagram( vd.cy, vd.paint_width, vd.hist_count );
+            step = 0.5*vd.paint_width / (((vd.hist_count | 7) + 1)/2 + 1.);
         }
         else {
-            DrawHistogramFull( vd.cy, vd.hist_width, vd.hist_count );
+            DrawHistogramFull( vd.cy, step = vd.hist_width, vd.hist_count );
         }
     }
+    if(!differentialView) return;
+    differentialView = 0;
+    DrawSegment( MarginX + MarginW, vd.cy, NULL, NULL, PEN_NONE );
+    for( i=0; i<vd.hist_count; i++ ) {
+        int index = currFirst + i;
+        int x = MarginX + MarginW + index * step + step/2;
+        DrawSegment((int) x, GetValueY( GetPvScore(index) ), NULL, NULL, PEN_ANY );
+    }
+    differentialView = 1;
 }
 
 // back-end

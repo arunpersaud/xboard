@@ -65,7 +65,7 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-static char *title = N_("Evaluation graph");
+static char *title[2] = { N_("Evaluation graph"), N_("Blunder graph") };
 Option *disp;
 
 /* Module variables */
@@ -100,9 +100,10 @@ static Option graphOptions[] = {
 static void
 DisplayEvalGraph ()
 {   // back-end painting; calls back front-end primitives for lines, rectangles and text
-    char *t = MakeEvalTitle(_(title));
+    char *t = MakeEvalTitle(_(title[differentialView]));
     nWidthPB = disp->max; nHeightPB = disp->value;
-    if(t != title && nWidthPB < 340) t = MakeEvalTitle(nWidthPB < 240 ? "" : _("Eval"));
+    if(t != title[differentialView] && nWidthPB < 340)
+	t = MakeEvalTitle(nWidthPB < 240 ? "" : differentialView ? _("Blunder") : _("Eval"));
     PaintEvalGraph();
     GraphExpose(graphOptions, 0, 0, nWidthPB, nHeightPB);
     SetDialogTitle(EvalGraphDlg, t);
@@ -111,9 +112,13 @@ DisplayEvalGraph ()
 static Option *
 EvalCallback (int button, int x, int y)
 {
+    int dir = appData.zoom + 1;
     if(!initDone) return NULL;
 
     switch(button) {
+	case 3: dir = 0; differentialView = !differentialView;
+	case 4: dir -= 2;
+	case 5: if(dir > 0) appData.zoom = dir;
 	case 10: // expose event
 	    /* Create or recreate paint box if needed */
 	    if(x != nWidthPB || y != nHeightPB) {
@@ -132,12 +137,12 @@ EvalCallback (int button, int x, int y)
 void
 EvalGraphPopUp ()
 {
-    if (GenericPopUp(graphOptions, _(title), EvalGraphDlg, BoardWindow, NONMODAL, appData.topLevel)) {
+    if (GenericPopUp(graphOptions, _(title[differentialView]), EvalGraphDlg, BoardWindow, NONMODAL, appData.topLevel)) {
 	InitializeEvalGraph(&graphOptions[0], wpEvalGraph.width, wpEvalGraph.height); // first time: add callbacks and initialize pens
 	disp = graphOptions;
     } else {
-	SetDialogTitle(EvalGraphDlg, _(title));
-	SetIconName(EvalGraphDlg, _(title));
+	SetDialogTitle(EvalGraphDlg, _(title[differentialView]));
+	SetIconName(EvalGraphDlg, _(title[differentialView]));
     }
 
     MarkMenu("View.EvaluationGraph", EvalGraphDlg);

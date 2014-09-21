@@ -27,7 +27,7 @@
 #define MIN_HIST_WIDTH  4
 #define MAX_HIST_WIDTH  10
 
-typedef enum { PEN_NONE, PEN_BLACK, PEN_DOTTED, PEN_BLUEDOTTED, PEN_BOLDWHITE, PEN_BOLDBLACK, PEN_BACKGD } PenType;
+typedef enum { PEN_NONE, PEN_BLACK, PEN_DOTTED, PEN_BLUEDOTTED, PEN_BOLDWHITE, PEN_BOLDBLACK, PEN_BACKGD, PEN_ANY } PenType;
 
 #define FILLED 1
 #define OPEN   0
@@ -37,6 +37,7 @@ ChessProgramStats_Move * currPvInfo;
 extern int currFirst;
 extern int currLast;
 extern int currCurrent;
+extern int differentialView;
 
 extern int nWidthPB;
 extern int nHeightPB;

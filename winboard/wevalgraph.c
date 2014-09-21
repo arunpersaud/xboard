@@ -51,7 +51,7 @@ static COLORREF crBlack = RGB( 0xAD, 0x5D, 0x3D );
 
 static HDC hdcPB = NULL;
 static HBITMAP hbmPB = NULL;
-static HPEN pens[6]; // [HGM] put all pens in one array
+static HPEN pens[PEN_ANY+1]; // [HGM] put all pens in one array
 static HBRUSH hbrHist[3] = { NULL, NULL, NULL };
 
 Boolean EvalGraphIsUp()
@@ -156,7 +156,7 @@ static VOID DisplayEvalGraph( HWND hWnd, HDC hDC )
 
     // back-end painting; calls back front-end primitives for lines, rectangles and text
     PaintEvalGraph();
-    SetWindowText(hWnd, MakeEvalTitle(T_("Evaluation Graph")));
+    SetWindowText(hWnd, MakeEvalTitle(differentialView ? T_("Blunder Graph") : T_("Evaluation Graph")));
 
     /* Copy bitmap into destination DC */
     BitBlt( hDC, 0, 0, nWidthPB, nHeightPB, hdcPB, 0, 0, SRCCOPY );
@@ -208,7 +208,14 @@ LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
         EndPaint( hDlg, &stPS );
         break;
 
+    case WM_MOUSEWHEEL:
+        if((short)HIWORD(wParam) < 0) appData.zoom++;
+        if((short)HIWORD(wParam) > 0 && appData.zoom > 1)  appData.zoom--;
+        goto paint;
+    case WM_RBUTTONDOWN:
+        differentialView = !differentialView;
     case WM_REFRESH_GRAPH:
+    paint:
         hDC = GetDC( hDlg );
         DisplayEvalGraph( hDlg, hDC );
         ReleaseDC( hDlg, hDC );
