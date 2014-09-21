@@ -96,6 +96,7 @@ static int  columnMask = 0xF0;
 
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], keys[MAX_VAR], curDepth[2], nrVariations[2];
+static char fail[MAX_VAR];
 
 extern int initialRulePlies;
 
@@ -403,6 +404,7 @@ static int
 InsertionPoint (int len, EngineOutputData *ed)
 {
 	int i, offs = 0, newScore = ed->score, n = ed->which;
+	char failType;
 
 	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0)
 		newScore = 1e6; // info lines inserted on top
@@ -410,6 +412,9 @@ InsertionPoint (int len, EngineOutputData *ed)
 		curDepth[n] = ed->depth;
 		nrVariations[n] = 0; // throw away everything we had
 	}
+	i = strlen(ed->pv); if(i > 0) i--;
+	failType = ed->pv[i];
+	if(failType != '?' && failType != '!') failType = ' ';
 	// loop through all lines. Note even / odd used for different panes
 	for(i=nrVariations[n]-2; i>=0; i-=2) {
 		// put new item behind those we haven't looked at
@@ -417,18 +422,21 @@ InsertionPoint (int len, EngineOutputData *ed)
 		textEnd[i+n+2] = offs + len;
 		scores[i+n+2] = newScore;
 		keys[i+n+2] = ed->moveKey;
+		fail[i+n+2] = failType;
 		if(ed->moveKey != keys[i+n] && // same move always tops previous one (as a higher score must be a fail low)
-		   newScore < scores[i+n]) break;
+		   newScore < scores[i+n] && fail[i+n] == ' ') break;
 		// if it had higher score as previous, move previous in stead
 		scores[i+n+2] = ed->moveKey == keys[i+n] ? newScore : scores[i+n]; // correct scores of fail-low/high searches
 		textEnd[i+n+2] = textEnd[i+n] + len;
 		keys[i+n+2] = keys[i+n];
+		fail[i+n+2] = fail[i+n];
 	}
 	if(i<0) {
 		offs = 0;
 		textEnd[n] = offs + len;
 		scores[n] = newScore;
 		keys[n] = ed->moveKey;
+		fail[n] = failType;
 	}
 	nrVariations[n] += 2;
       return offs + strlen(header[ed->which]);
@@ -588,7 +596,7 @@ UpdateControls (EngineOutputData *ed)
         }
         Format(s_seld, params[0]); Format(s_knps, params[1]); Format(s_hits, hits); 
 
-        fail = ed->pv[strlen(ed->pv)-1];
+        if(*ed->pv) fail = ed->pv[strlen(ed->pv)-1]; else fail = ' ';
 	if(fail != '?' && fail != '!') fail = ' ';
 
         /* Score */
