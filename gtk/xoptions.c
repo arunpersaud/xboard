@@ -249,15 +249,13 @@ SetDialogTitle (DialogClass dlg, char *title)
     gtk_window_set_title(GTK_WINDOW(shells[dlg]), title);
 }
 
-int
-SetWidgetFont (GtkWidget *w, char *s)
+void
+SetWidgetFont (GtkWidget *w, char **s)
 {
     PangoFontDescription *pfd;
-    if (!s || *s == '#') return 0; // no spec, or spec of color: fail
-    if(!*(char**)s) return 1;      // empty spec: do nothing, but succeed
-    pfd = pango_font_description_from_string(*(char**)s);
+    if (!s || !*s || !**s) return; // uses no font, no font spec or empty font spec
+    pfd = pango_font_description_from_string(*s);
     gtk_widget_modify_font(w, pfd);
-    return 1;
 }
 
 void
@@ -704,8 +702,6 @@ AddHandler (Option *opt, DialogClass dlg, int nr)
 	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (TypeInProc), (gpointer) (dlg<<16 | (opt - dialogOptions[dlg])));
 	break;
       case 5: // game list
-printf("use %s\n", appData.gameListFont);
-        SetWidgetFont(opt->handle, (char*) &appData.gameListFont);
 	g_signal_connect(opt->handle, "button-press-event", G_CALLBACK (GameListEvent), (gpointer) 0 );
       case 4: // game-list filter
 	g_signal_connect(opt->handle, "key-press-event", G_CALLBACK (GameListEvent), (gpointer) (intptr_t) nr );
@@ -1352,7 +1348,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
                     /* no label so let textview occupy all columns */
                     Pack(hbox, table, sw, left, left+r, top, GTK_EXPAND);
                 }
-                SetWidgetFont(textview, option[i].textValue);
+                SetWidgetFont(textview, option[i].font);
                 if ( *(char**)option[i].target != NULL )
                     gtk_text_buffer_set_text (textbuffer, *(char**)option[i].target, -1);
                 else
@@ -1419,7 +1415,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             option[i].handle = (void *) (label = gtk_label_new(option[i].name));
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-            SetWidgetFont(label, option[i].textValue);
+            SetWidgetFont(label, option[i].font);
 	    if(option[i].min & BORDER) {
 		GtkWidget *frame = gtk_frame_new(NULL);
                 gtk_container_add(GTK_CONTAINER(frame), label);
@@ -1439,6 +1435,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
           case SaveButton:
           case Button:
             button = gtk_button_new_with_label (option[i].name);
+            SetWidgetFont(gtk_bin_get_child(GTK_BIN(button)), option[i].font);
 
             /* set button color on view board dialog */
             if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) {
@@ -1447,7 +1444,6 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    }
 
             /* set button color on new variant dialog */
-            if(!SetWidgetFont(gtk_bin_get_child(GTK_BIN(button)), option[i].textValue))
             if(option[i].textValue) {
                 gdk_color_parse( option[i].textValue, &color );
                 gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
@@ -1501,6 +1497,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
                 GtkListStore *store;
 
                 option[i].handle = (void *) (list = gtk_tree_view_new());
+                SetWidgetFont(option[i].handle, option[i].font);
                 gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(list), FALSE);
                 renderer = gtk_cell_renderer_text_new();
                 column = gtk_tree_view_column_new_with_attributes("List Items", renderer, "text", 0, NULL);

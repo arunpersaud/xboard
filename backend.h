@@ -303,6 +303,7 @@ typedef struct XB_OPT {   // [HGM] options: descriptor of UCI-style option
     char **choice;      // points to array of combo choices in cps->combo
     Control type;
     char *name;         // holds both option name and text value (in allocated memory)
+    char **font;
 } Option;
 
 typedef struct XB_CPS {

@@ -79,7 +79,7 @@ SelectMove (Option *opt, int n, int x, int y, char *text, int index)
 }
 
 Option historyOptions[] = {
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 400, NULL, (void*) &historyText, (char*) &appData.historyFont, (char**) &SelectMove, TextBox, "" },
+{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 400, NULL, (void*) &historyText, NULL , (char**) &SelectMove, TextBox, "", &appData.historyFont },
 {   0,           NO_OK,             0, NULL, (void*) NULL, "", NULL, EndMark , "" }
 };
 

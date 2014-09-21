@@ -35,7 +35,8 @@
 // char*   textValue              X/E    X/E    *
 // char ** choice                  C     X/E    *                          X
 // enum    type       X/E   X/E   X/E    X/E    X     X    X    X     X    X     X    X
-// char[]  name       X/E   X/E   X/E    X/E    X          X    X     X    X
+// char *  name       X/E   X/E   X/E    X/E    X          X    X     X    X
+// char ** font                    X            X          X    X                       (GTK only)
 // File and Path options are like String (but get a browse button added in the dialog), and Slider
 // is like Spin. Menu can be PopUp or PopDown; both need the COMBO_CALLBACK bit (3) set!
 // (h) or (w) means the field optionally (when non-null) specifies the height or width of the main
