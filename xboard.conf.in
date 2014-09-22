@@ -123,6 +123,20 @@ Copy;$copy;
 Open Chat Box (name);$chat;
 }
 ;
+; pre-define some themes
+;
+-themeNames {"native" -ubt false -pid "" -trueColors false -flipBlack false -overrideLineGap -1
+"classic" -ubt false -lsc #c8c365 -dsc #77a26d -pid "" -wpc #ffffcc -bpc #202020 -hsc #ffff00 -phc #ff0000 -overrideLineGap -1 -flipBlack false
+"wood" -ubt true -lbtf ~~/themes/textures/wood_l.png -dbtf ~~/themes/textures/wood_d.png -pid ""  -hsc #ffff00 -phc #ff0000 -overrideLineGap 1
+"diagram" -ubt true -lbtf "" -dbtf ~~/themes/textures/hatch.png -lsc #ffffff -wpc #ffffff -bpc #000000 -pid "" -hsc #808080 -phc #808080 -trueColors false -overrideLineGap 1
+"icy" -ubt false -lsc #ffffff -dsc #80ffff -pid "" -wpc #f1f8f8 -bpc #202020 -hsc #0000ff -phc #ff0000
+# ORIENTAL THEMES
+"shogi" -ubt true  -lbtf ~~/themes/textures/wood_d.png -dbtf ~~/themes/textures/wood_d.png -pid ~~/themes/shogi -trueColors true -hsc #ffff00 -phc #0080ff -overrideLineGap 1
+"xiangqi" -ubt true  -lbtf ~~/themes/textures/xqboard.png -dbtf ~~/themes/textures/xqboard.png -pid ~~/themes/xiangqi -trueColors true -hsc #ffff00 -phc #ff0000 -overrideLineGap 0
+"chu shogi" -ubt false -lsc #ff8040 -dsc #ff8040 -pid ~~/themes/chu -trueColors true -hsc #0000ff -phc #00ff00
+# end
+}
+;
 ; Save user settings.
 ; Must be last in file to make user options prevail over system-wide settings!
 ;
