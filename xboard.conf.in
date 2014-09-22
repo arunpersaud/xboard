@@ -30,6 +30,8 @@
 -recentEngines 4
 -gameListW 500
 -gameListH 300
+-evalGraphW 300
+-evalGraphH 150
 -stickyWindows false
 ;
 ; Behavior
