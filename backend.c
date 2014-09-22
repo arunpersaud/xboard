@@ -8729,7 +8729,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                 if( count & 1 ) {
                     score = -score; /* Flip score for winning side */
                 }
-printf("score=%d count=%d\n",score,count);
+
                 if( score > appData.adjudicateLossThreshold ) {
                     break;
                 }
