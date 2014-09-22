@@ -577,11 +577,17 @@ NewVariantProc ()
 //------------------------------------------- Common Engine Options -------------------------------------
 
 static int oldCores;
+static char *egtPath;
 
 static int
 CommonOptionsOK (int n)
 {
 	int newPonder = appData.ponderNextMove;
+	if(*egtPath != '/' && strchr(egtPath, ':')) {
+	    ASSIGN(appData.egtFormats, egtPath);
+	} else {
+	    ASSIGN(appData.defaultPathEGTB, egtPath);
+	}
 	// make sure changes are sent to first engine by re-initializing it
 	// if it was already started pre-emptively at end of previous game
 	if(gameMode == BeginningOfGame) Reset(True, True); else {
@@ -599,7 +605,7 @@ static Option commonEngineOptions[] = {
 { 0,  0, 1000, NULL, (void*) &appData.smpCores, "", NULL, Spin, N_("Maximum Number of CPUs per Engine:") },
 { 0,  0,    0, NULL, (void*) &appData.polyglotDir, "", NULL, PathName, N_("Polygot Directory:") },
 { 0,  0,16000, NULL, (void*) &appData.defaultHashSize, "", NULL, Spin, N_("Hash-Table Size (MB):") },
-{ 0,  0,    0, NULL, (void*) &appData.defaultPathEGTB, "", NULL, PathName, N_("Nalimov EGTB Path:") },
+{ 0,  0,    0, NULL, (void*) &egtPath, "", NULL, PathName, N_("EGTB Path:") },
 { 0,  0, 1000, NULL, (void*) &appData.defaultCacheSizeEGTB, "", NULL, Spin, N_("EGTB Cache Size (MB):") },
 { 0,  0,    0, NULL, (void*) &appData.usePolyglotBook, "", NULL, CheckBox, N_("Use GUI Book") },
 { 0,  0,    0, NULL, (void*) &appData.polyglotBook, ".bin", NULL, FileName, N_("Opening-Book Filename:") },
@@ -615,6 +621,8 @@ UciMenuProc ()
 {
    oldCores = appData.smpCores;
    oldPonder = appData.ponderNextMove;
+   if(appData.egtFormats && *appData.egtFormats) { ASSIGN(egtPath, appData.egtFormats); }
+   else { ASSIGN(egtPath, appData.defaultPathEGTB); }
    GenericPopUp(commonEngineOptions, _("Common Engine Settings"), TransientDlg, BoardWindow, MODAL, 0);
 }
 

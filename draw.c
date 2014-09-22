@@ -241,6 +241,7 @@ CreatePNGBoard (char *s, int kind)
     float w, h;
     static float n[2] = { 1., 1. };
     if(!appData.useBitmaps || s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
+    textureW[kind] = 0; // prevents bitmap from being used if not succesfully loaded
     if(strstr(s, ".png")) {
 	cairo_surface_t *img = cairo_image_surface_create_from_png (s);
 	if(img) {
