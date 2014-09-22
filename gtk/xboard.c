@@ -1589,12 +1589,12 @@ static WindowPlacement wpNew;
 void
 CoDrag (GtkWidget *sh, WindowPlacement *wp)
 {
-    int touch=0, fudge = 2, f = 2;
+    int touch=0, fudge = 4, f = 3;
     GetActualPlacement(sh, wp);
     if(abs(wpMain.x + wpMain.width + 2*frameX - f - wp->x)         < fudge) touch = 1; else // right touch
-    if(abs(wp->x + wp->width + 2*frameX + f - wpMain.x)            < fudge) touch = 2; else // left touch
+    if(abs(wp->x + wp->width + 2*frameX - f - wpMain.x)            < fudge) touch = 2; else // left touch
     if(abs(wpMain.y + wpMain.height + frameX - f + frameY - wp->y) < fudge) touch = 3; else // bottom touch
-    if(abs(wp->y + wp->height + frameX + frameY + f - wpMain.y)    < fudge) touch = 4;      // top touch
+    if(abs(wp->y + wp->height + frameX + frameY - f - wpMain.y)    < fudge) touch = 4;      // top touch
 //printf("CoDrag: touch = %d x=%d w=%d x2=%d w2=%d fx=%d\n", touch, wpMain.x, wpMain.width, wp->x, wp->width, frameX);
     if(!touch ) return; // only windows that touch co-move
     if(touch < 3 && wpNew.height != wpMain.height) { // left or right and height changed
