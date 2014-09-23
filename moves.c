@@ -256,6 +256,9 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 	if(expo > 9) p++;                             // allow double-digit
 	desc = p;                                     // this is start of next move
 	if(initial && board[r][f] != initialPosition[r][f]) continue;
+	if(expo > 1 && dx == 0 && dy == 0) {          // castling indicated by O + number
+	    mode |= 16; dy = 1;
+	}
         do {
 	  for(dir=0, bit=1; dir<8; dir++, bit += bit) { // loop over directions
 	    int i = expo, vx, vy;
@@ -273,6 +276,15 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 					      occup = 4;
 		if(mode & 8 && y == board[EP_RANK] && occup == 4 && board[EP_FILE] == x) { // to e.p. square
 		    cb(board, flags, mine == 1 ? WhiteCapturesEnPassant : BlackCapturesEnPassant, r, f, y, x, cl);
+		}
+		if(mode & 16) {              // castling
+		    i = 2;                   // kludge to elongate move indefinitely
+		    if(occup == 4) continue; // skip empty squares
+		    if(x == BOARD_LEFT   && board[y][x] == initialPosition[y][x]) // reached initial corner piece
+			cb(board, flags, mine == 1 ? WhiteQueenSideCastle : BlackQueenSideCastle, r, f, y, f - expo, cl);
+		    if(x == BOARD_RGHT-1 && board[y][x] == initialPosition[y][x])
+			cb(board, flags, mine == 1 ? WhiteKingSideCastle : BlackKingSideCastle, r, f, y, f + expo, cl);
+		    break;
 		}
 		if(occup & mode) cb(board, flags, NormalMove, r, f, y, x, cl); // allowed, generate
 		if(occup != 4) break; // not valid transit square
@@ -1218,6 +1230,7 @@ GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, Ches
     int ignoreCheck = (flags & F_IGNORE_CHECK) != 0;
     ChessSquare wKing = WhiteKing, bKing = BlackKing, *castlingRights = board[CASTLING];
     int inCheck = !ignoreCheck && CheckTest(board, flags, -1, -1, -1, -1, FALSE); // kludge alert: this would mark pre-existing checkers if status==1
+    char *p;
 
     cl.cb = callback;
     cl.cl = closure;
@@ -1231,6 +1244,9 @@ GenLegal (Board board, int  flags, MoveCallback callback, VOIDSTAR closure, Ches
     if(gameInfo.variant == VariantKnightmate) { /* [HGM] Knightmate */
         wKing = WhiteUnicorn; bKing = BlackUnicorn;
     }
+
+    p = (flags & F_WHITE_ON_MOVE ? pieceDesc[wKing] : pieceDesc[bKing]);
+    if(p && strchr(p, 'O')) return FALSE; // [HGM] gen: castlings were already generated from string
 
     for (ff = BOARD_WIDTH>>1; ff >= (BOARD_WIDTH-1)>>1; ff-- /*ics wild 1*/) {
 	if ((flags & F_WHITE_ON_MOVE) &&
