@@ -9882,6 +9882,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
       if(gameInfo.variant == VariantBerolina) berolina = EP_BEROLIN_A;
       oldEP = (signed char)board[EP_STATUS];
       board[EP_STATUS] = EP_NONE;
+      board[EP_FILE] = board[EP_RANK] = 100;
 
   if (fromY == DROP_RANK) {
 	/* must be first */
@@ -9916,6 +9917,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
            if( toY-fromY==2) {
+               board[EP_FILE] = (fromX + toX)/2; board[EP_RANK] = (fromY + toY)/2;
                if(toX>BOARD_LEFT   && board[toY][toX-1] == BlackPawn &&
 			gameInfo.variant != VariantBerolina || toX < fromX)
 	              board[EP_STATUS] = toX | berolina;
@@ -9928,6 +9930,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
            if( toY-fromY== -2) {
+               board[EP_FILE] = (fromX + toX)/2; board[EP_RANK] = (fromY + toY)/2;
                if(toX>BOARD_LEFT   && board[toY][toX-1] == WhitePawn &&
 			gameInfo.variant != VariantBerolina || toX < fromX)
 	              board[EP_STATUS] = toX | berolina;

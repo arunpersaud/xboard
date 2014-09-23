@@ -171,9 +171,9 @@ CompareBoards (Board board1, Board board2)
 // [HGM] gen: configurable move generation from Betza notation sent by engine.
 
 //  alphabet      "abcdefghijklmnopqrstuvwxyz"
-char symmetry[] = "FBNW.F.WFNKN.N..QR....W..N";
-char xStep[]    = "2110.1.03102.10.00....0..2";
-char yStep[]    = "2132.1.33313.20.11....1..3";
+char symmetry[] = "FBNW.FFW.NKN.NW.QR....W..N";
+char xStep[]    = "2110.130.102.10.00....0..2";
+char yStep[]    = "2132.133.313.20.11....1..3";
 char dirType[]  = "01000104000200000260050000";
 //  alphabet   "a b    c d e f    g h    i j k l    m n o p q r    s    t u v    w x y z "
 int dirs1[] = { 0,0x3C,0,0,0,0xC3,0,0,   0,0,0,0xF0,0,0,0,0,0,0x0F,0   ,0,0,0   ,0,0,0,0 };
@@ -197,8 +197,8 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
     int mine, his, dir, bit, occup, i;
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
     while(*p) {                  // more moves to go
-	int expo = 1, dx, dy, x, y, mode, dirSet, retry=0, initial=0;
-	if(*p == 'i') initial = 1, p++;
+	int expo = 1, dx, dy, x, y, mode, dirSet, retry=0, initial=0, jump=1;
+	if(*p == 'i') initial = 1, desc = ++p;
 	while(islower(*p)) p++;  // skip prefixes
 	if(!isupper(*p)) return; // syntax error: no atom
 	dirSet = 0;              // build direction set based on atom symmetry
@@ -246,25 +246,34 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 	if(*desc == 'm') mode |= 4, desc++;
 	if(*desc == 'c') mode |= his, desc++;
 	if(*desc == 'd') mode |= mine, desc++;
+	if(*desc == 'e') mode |= 8, desc++;
+	if(*desc == 'n') jump = 0, desc++;
+	while(*desc == 'j') jump++, desc++;
 	if(!mode) mode = his + 4;// no mode spec, use default = mc
 	dx = xStep[*p-'A'] - '0';                     // step vector of atom
 	dy = yStep[*p-'A'] - '0';
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
 	if(expo > 9) p++;                             // allow double-digit
 	desc = p;                                     // this is start of next move
-	if(initial && (mine == 1 ? r > 1 : r < BOARD_HEIGHT - 2)) continue;
+	if(initial && board[r][f] != initialPosition[r][f]) continue;
         do {
 	  for(dir=0, bit=1; dir<8; dir++, bit += bit) { // loop over directions
-	    int i = expo;
+	    int i = expo, vx, vy;
 	    if(!(bit & dirSet)) continue;             // does not move in this direction
+	    vx = dx*rot[dir][0] + dy*rot[dir][1];     // rotate step vector
+	    vy = dx*rot[dir][2] + dy*rot[dir][3];
 	    x = f; y = r;                             // start square
 	    do {
-		x += dx*rot[dir][0] + dy*rot[dir][1]; // step to next square
-		y += dx*rot[dir][2] + dy*rot[dir][3];
+		x += vx; y += vy;                     // step to next square
 		if(y < 0 || y >= BOARD_HEIGHT || x < BOARD_LEFT || x >= BOARD_RGHT) break;
+		if(!jump    && board[y - vy + vy/2][x - vx + vx/2] != EmptySquare) break; // blocked
+		if(jump > 1 && board[y - vy + vy/2][x - vx + vx/2] == EmptySquare) break; // no hop
 		if(board[y][x] < BlackPawn)   occup = 1; else
 		if(board[y][x] < EmptySquare) occup = 2; else
 					      occup = 4;
+		if(mode & 8 && y == board[EP_RANK] && occup == 4 && board[EP_FILE] == x) { // to e.p. square
+		    cb(board, flags, mine == 1 ? WhiteCapturesEnPassant : BlackCapturesEnPassant, r, f, y, x, cl);
+		}
 		if(occup & mode) cb(board, flags, NormalMove, r, f, y, x, cl); // allowed, generate
 		if(occup != 4) break; // not valid transit square
 	    } while(--i);
@@ -1979,7 +1988,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 {
     ChessSquare piece;
     ChessMove kind;
-    char *outp = out, c;
+    char *outp = out, c, capture;
     CoordsToAlgebraicClosure cl;
 
     if (rf == DROP_RANK) {
@@ -2012,14 +2021,15 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 	}
 	/* Pawn move */
         *outp++ = ff + AAA;
-        if (ff == ft && board[rt][ft] == EmptySquare) { /* [HGM] Xiangqi has straight noncapts! */
+	capture = board[rt][ft] != EmptySquare || kind == WhiteCapturesEnPassant || kind == BlackCapturesEnPassant;
+        if (ff == ft && !capture) { /* [HGM] Xiangqi has straight noncapts! */
 	    /* Non-capture; use style "e5" */
             if(rt+ONE <= '9')
                *outp++ = rt + ONE;
             else { *outp++ = (rt+ONE-'0')/10 + '0';*outp++ = (rt+ONE-'0')%10 + '0'; }
 	} else {
 	    /* Capture; use style "exd5" */
-            if(gameInfo.variant != VariantXiangqi || board[rt][ft] != EmptySquare )
+            if(capture)
             *outp++ = 'x';  /* [HGM] Xiangqi has sideway noncaptures across river! */
             *outp++ = ft + AAA;
             if(rt+ONE <= '9')
