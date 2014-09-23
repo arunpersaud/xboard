@@ -1591,11 +1591,23 @@ The PIECETOCHAR element would ensure a Bishop would not be accepted as promotion
 </dd>
 
 <dt><span class="version48">piece ID PIECEDESC</span></dt>
-<dd><span class="version48">This command is already reserved for future protocol extension.
-The engine can send it in response to a variant command in order to specify that the piece
-indicated by its pieceToChar letter ID moves in a non-standard way in this variant.
-(This to enable the GUI to reliably perform made detection, and produce good SAN.)
-The format of PIECEDESC is subject to future specification.
+<dd><span class="version48">The engine can send one or more piece commands
+in response to a variant command, in order to specify that the piece
+indicated by ID moves in a non-standard way in this variant.
+(This to enable the GUI to reliably perform mate detection, and produce good SAN.)
+Like in FEN the ID is a case-sensitive letter, specifying the color.
+When it is a capital suffixed by &, the description is valid for both colors.
+PIECEDESC describes the moves in 'Betza notation',
+basically a concatenation of one-letter (upper-case) codes for all of its moves.
+These codes can be prefixed with lower-case 'modifiers' to indicate directional sub-sets
+(combinations of fblrvs, if the piece is not totally symmetric),
+move modality (non-capture, capture, e.p. capture; mce),
+and whether the move can jump directly to its destination,
+or can be blocked (n).
+Moves only valid for a virgin piece are prefixed by 'i'.
+An optional numeric suffix on the move indicates the maximum number of times
+the move can be repeated in the same direction,
+to indicate sliders / riders (with the convention 0 = infinite).
 </span>
 </dd>
 </p>
