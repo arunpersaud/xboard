@@ -247,9 +247,11 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 	if(*desc == 'c') mode |= his, desc++;
 	if(*desc == 'd') mode |= mine, desc++;
 	if(*desc == 'e') mode |= 8, desc++;
+	if(!mode) mode = his + 4;// no mode spec, use default = mc
+	if(*desc == 'p') mode |= 32, desc++;
+	if(*desc == 'g') mode |= 64, desc++;
 	if(*desc == 'n') jump = 0, desc++;
 	while(*desc == 'j') jump++, desc++;
-	if(!mode) mode = his + 4;// no mode spec, use default = mc
 	dx = xStep[*p-'A'] - '0';                     // step vector of atom
 	dy = yStep[*p-'A'] - '0';
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
@@ -261,7 +263,7 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 	}
         do {
 	  for(dir=0, bit=1; dir<8; dir++, bit += bit) { // loop over directions
-	    int i = expo, vx, vy;
+	    int i = expo, hop = mode, vx, vy;
 	    if(!(bit & dirSet)) continue;             // does not move in this direction
 	    vx = dx*rot[dir][0] + dy*rot[dir][1];     // rotate step vector
 	    vy = dx*rot[dir][2] + dy*rot[dir][3];
@@ -274,6 +276,7 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 		if(board[y][x] < BlackPawn)   occup = 1; else
 		if(board[y][x] < EmptySquare) occup = 2; else
 					      occup = 4;
+		if(hop & 32+64) { if(occup != 4) { if(hop & 64 && i != 1) i = 2; hop &= 31; } continue; } // hopper
 		if(mode & 8 && y == board[EP_RANK] && occup == 4 && board[EP_FILE] == x) { // to e.p. square
 		    cb(board, flags, mine == 1 ? WhiteCapturesEnPassant : BlackCapturesEnPassant, r, f, y, x, cl);
 		}
