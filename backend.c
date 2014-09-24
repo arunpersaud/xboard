@@ -7354,7 +7354,8 @@ void ReportClick(char *action, int x, int y)
 	char buf[MSG_SIZ]; // Inform engine of what user does
 	int r, f;
 	if(action[0] == 'l') // mark any target square of a lifted piece as legal to-square, clear markers
-	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = !pieceDefs, marker[r][f] = 0;
+	  for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
+	    legal[r][f] = !pieceDefs || !appData.markers, marker[r][f] = 0;
 	if(!first.highlight || gameMode == EditPosition) return;
 	snprintf(buf, MSG_SIZ, "%s %c%d%s\n", action, x+AAA, y+ONE-'0', controlKey && action[0]=='p' ? "," : "");
 	SendToProgram(buf, &first);
