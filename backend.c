@@ -6028,9 +6028,10 @@ InitPosition (int redraw)
     gameInfo.boardHeight   = 8;
     gameInfo.holdingsSize  = 0;
     nrCastlingRights = -1; /* [HGM] Kludge to indicate default should be used */
-    for(i=0; i<BOARD_FILES-2; i++)
+    for(i=0; i<BOARD_FILES-6; i++)
       initialPosition[CASTLING][i] = initialRights[i] = NoRights; /* but no rights yet */
     initialPosition[EP_STATUS] = EP_NONE;
+    initialPosition[TOUCHED_W] = initialPosition[TOUCHED_B] = 0;
     SetCharTable(pieceToChar, "PNBRQ...........Kpnbrq...........k");
     if(startVariant == gameInfo.variant) // [HGM] nicks: enable nicknames in original variant
          SetCharTable(pieceNickName, appData.pieceNickNames);
@@ -9940,6 +9941,11 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	              board[EP_STATUS] = toX;
 	   }
        }
+
+       if(fromY == 0) board[TOUCHED_W] |= 1<<fromX; else // new way to keep track of virginity
+       if(fromY == BOARD_HEIGHT-1) board[TOUCHED_B] |= 1<<fromX;
+       if(toY == 0) board[TOUCHED_W] |= 1<<toX; else
+       if(toY == BOARD_HEIGHT-1) board[TOUCHED_B] |= 1<<toX;
 
        for(i=0; i<nrCastlingRights; i++) {
            if(board[CASTLING][i] == fromX && castlingRank[i] == fromY ||

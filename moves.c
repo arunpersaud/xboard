@@ -257,7 +257,9 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
 	if(expo > 9) p++;                             // allow double-digit
 	desc = p;                                     // this is start of next move
-	if(initial && board[r][f] != initialPosition[r][f]) continue;
+	if(initial && (board[r][f] != initialPosition[r][f] ||
+		       r == 0              && board[TOUCHED_W] & 1<<f ||
+		       r == BOARD_HEIGHT-1 && board[TOUCHED_B] & 1<<f   ) ) continue;
 	if(expo > 1 && dx == 0 && dy == 0) {          // castling indicated by O + number
 	    mode |= 16; dy = 1;
 	}

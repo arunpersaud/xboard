@@ -180,6 +180,8 @@ typedef char *String;
 #define BOARD_RGHT   (gameInfo.boardWidth + gameInfo.holdingsWidth)
 #define CASTLING     (BOARD_RANKS-1)           /* [HGM] hide in upper rank   */
 #define VIRGIN       (BOARD_RANKS-2)           /* [HGM] pieces not moved     */
+#define TOUCHED_W    CASTLING][(BOARD_FILES-6) /* [HGM] in upper rank        */
+#define TOUCHED_B    CASTLING][(BOARD_FILES-5) /* [HGM] in upper rank        */
 #define EP_RANK      CASTLING][(BOARD_FILES-4) /* [HGM] in upper rank        */
 #define EP_FILE      CASTLING][(BOARD_FILES-3) /* [HGM] in upper rank        */
 #define EP_STATUS    CASTLING][(BOARD_FILES-2) /* [HGM] in upper rank        */
