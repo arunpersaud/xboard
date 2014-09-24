@@ -250,6 +250,7 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 	if(!mode) mode = his + 4;// no mode spec, use default = mc
 	if(*desc == 'p') mode |= 32, desc++;
 	if(*desc == 'g') mode |= 64, desc++;
+	if(*desc == 'o') mode |= 128, desc++;
 	if(*desc == 'n') jump = 0, desc++;
 	while(*desc == 'j') jump++, desc++;
 	dx = xStep[*p-'A'] - '0';                     // step vector of atom
@@ -272,7 +273,9 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 	    x = f; y = r;                             // start square
 	    do {
 		x += vx; y += vy;                     // step to next square
-		if(y < 0 || y >= BOARD_HEIGHT || x < BOARD_LEFT || x >= BOARD_RGHT) break;
+		if(y < 0 || y >= BOARD_HEIGHT) break; // vertically off-board: always done
+		if(x <  BOARD_LEFT) { if(mode & 128) x += BOARD_RGHT - BOARD_LEFT; else break; }
+		if(x >= BOARD_RGHT) { if(mode & 128) x -= BOARD_RGHT - BOARD_LEFT; else break; }
 		if(!jump    && board[y - vy + vy/2][x - vx + vx/2] != EmptySquare) break; // blocked
 		if(jump > 1 && board[y - vy + vy/2][x - vx + vx/2] == EmptySquare) break; // no hop
 		if(board[y][x] < BlackPawn)   occup = 1; else
