@@ -1815,6 +1815,8 @@ DisambiguateCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
 	(cl->rtIn == -1 || cl->rtIn == rt || wildCard) &&
 	(cl->ftIn == -1 || cl->ftIn == ft || wildCard)) {
 
+	if(cl->count && rf == cl->rf && ff == cl->ff) return; // duplicate move
+
 	cl->count++;
 	if(cl->count == 1 || board[rt][ft] != EmptySquare) {
 	  // [HGM] oneclick: if multiple moves, be sure we remember capture
