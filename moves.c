@@ -170,6 +170,8 @@ CompareBoards (Board board1, Board board2)
 
 // [HGM] gen: configurable move generation from Betza notation sent by engine.
 
+Boolean pieceDefs;
+
 //  alphabet      "abcdefghijklmnopqrstuvwxyz"
 char symmetry[] = "FBNW.FFW.NKN.NW.QR....W..N";
 char xStep[]    = "2110.130.102.10.00....0..2";
@@ -532,7 +534,10 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
           if(PieceToChar(piece) == '~')
                  piece = (ChessSquare) ( DEMOTED piece );
           if(filter != EmptySquare && piece != filter) continue;
-          if(pieceDesc[piece]) { MovesFromString(board, flags, ff, rf, pieceDesc[piece], callback, closure); continue; } // [HGM] gen
+          if(pieceDefs && pieceDesc[piece]) { // [HGM] gen: use engine-defined moves
+              MovesFromString(board, flags, ff, rf, pieceDesc[piece], callback, closure);
+              continue;
+          }
           if(IS_SHOGI(gameInfo.variant))
                  piece = (ChessSquare) ( SHOGI piece );
 
@@ -1876,6 +1881,12 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
 	    return;
 	  }
 	}
+    } else if(pieceDefs && closure->count > 1) { // [HGM] gen: move is ambiguous under engine-defined rules
+	DisambiguateClosure spare = *closure;
+	pieceDefs = FALSE; spare.count = 0;     // See if the (erroneous) built-in rules would resolve that
+        GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) &spare, closure->pieceIn);
+	if(spare.count == 1) *closure = spare;  // It does, so use those in stead (game from file saved before gen patch?)
+	pieceDefs = TRUE;
     }
 
     if (c == 'x') c = NULLCHAR; // get rid of any 'x' (which should never happen?)

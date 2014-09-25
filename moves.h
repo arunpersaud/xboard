@@ -63,6 +63,7 @@ extern char pieceToChar[(int)EmptySquare+1];
 extern char pieceNickName[(int)EmptySquare];
 extern char *pieceDesc[(int)EmptySquare];
 extern Board initialPosition;
+extern Boolean pieceDefs;
 
 typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,

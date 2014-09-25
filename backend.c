@@ -295,7 +295,6 @@ ChessSquare promoSweep = EmptySquare, defaultPromoChoice;
 int promoDefaultAltered;
 int keepInfo = 0; /* [HGM] to protect PGN tags in auto-step game analysis */
 static int initPing = -1;
-static Boolean pieceDefs;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
