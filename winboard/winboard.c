@@ -166,7 +166,7 @@ BoardSize boardSize;
 Boolean chessProgram;
 //static int boardX, boardY;
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
-int squareSize, lineGap, minorSize, border;
+int squareSize, lineGap, minorSize;
 static int winW, winH;
 static RECT messageRect, whiteRect, blackRect, leftLogoRect, rightLogoRect; // [HGM] logo
 static int logoHeight = 0;
@@ -1282,6 +1282,7 @@ LFfromMFP(LOGFONT* lf, MyFontParams *mfp)
   lf->lfStrikeOut = mfp->strikeout;
   lf->lfCharSet = mfp->charset;
   lf->lfOutPrecision = OUT_DEFAULT_PRECIS;
+
   lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
   lf->lfQuality = DEFAULT_QUALITY;
   lf->lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;

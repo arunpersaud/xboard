@@ -295,6 +295,7 @@ ChessSquare promoSweep = EmptySquare, defaultPromoChoice;
 int promoDefaultAltered;
 int keepInfo = 0; /* [HGM] to protect PGN tags in auto-step game analysis */
 static int initPing = -1;
+int border;       /* [HGM] width of board rim, needed to size seek graph  */
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -2716,8 +2717,8 @@ DrawSeekGraph ()
 {
     int i;
     if(!seekGraphUp) return FALSE;
-    h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
-    w = BOARD_WIDTH  * (squareSize + lineGap) + lineGap;
+    h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap + 2*border;
+    w = BOARD_WIDTH  * (squareSize + lineGap) + lineGap + 2*border;
 
     DrawSeekBackground(0, 0, w, h);
     DrawSeekAxis(hMargin, h-1-vMargin, w-5, h-1-vMargin);
