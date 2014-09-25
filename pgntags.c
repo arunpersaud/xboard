@@ -144,6 +144,7 @@ ParsePGNTag (char *tag, GameInfo *gameInfo)
 void
 PrintPGNTags (FILE *fp, GameInfo *gameInfo)
 {
+    char *p;
     fprintf(fp, "[Event \"%s\"]\n", gameInfo->event ? gameInfo->event : "?");
     fprintf(fp, "[Site \"%s\"]\n", gameInfo->site ? gameInfo->site : "?");
     fprintf(fp, "[Date \"%s\"]\n", gameInfo->date ? gameInfo->date : "?");
@@ -159,6 +160,8 @@ PrintPGNTags (FILE *fp, GameInfo *gameInfo)
 	fprintf(fp, "[TimeControl \"%s\"]\n", gameInfo->timeControl);
     if (gameInfo->variant != VariantNormal)
         fprintf(fp, "[Variant \"%s\"]\n", VariantName(gameInfo->variant));
+    if (*(p = CollectPieceDescriptors()))
+        fprintf(fp, "[Pieces \"%s\"]\n", p);
     if (gameInfo->extraTags)
 	fputs(gameInfo->extraTags, fp);
 }

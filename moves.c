@@ -74,6 +74,16 @@ int PosFlags(int index);
 extern signed char initialRights[BOARD_FILES]; /* [HGM] all rights enabled, set in InitPosition */
 int quickFlag;
 char *pieceDesc[EmptySquare];
+char *defaultDesc[EmptySquare] = {
+ "fmWfceFifmnD", "N", "B", "R", "Q",
+ "F", "A", "BN", "RN", "W", "K",
+ "mRcpR", "N0", "BW", "RF", "gQ",
+ "", "", "QN", "", "N", "",
+ "", "", "", "", "",
+ "", "", "", "", "", "",
+ "", "", "", "", "",
+ "", "", "", "", "", "K"
+};
 
 int
 WhitePiece (ChessSquare piece)
@@ -166,6 +176,45 @@ CompareBoards (Board board1, Board board2)
 	    return FALSE;
     }
     return TRUE;
+}
+
+char defaultName[] = "PNBRQ......................................K"  // white
+                     "pnbrq......................................k"; // black
+char shogiName[]   = "PNBRLS...G.++++++..........................K"  // white
+                     "pnbrls...g.++++++..........................k"; // black
+char xqName[]      = "PH.R.AE..K.C................................"  // white
+                     "ph.r.ae..k.c................................"; // black
+
+char *
+CollectPieceDescriptors ()
+{   // make a line of piece descriptions for use in the PGN Piece tag:
+    // dump all engine defined pieces, and pieces with non-standard names,
+    // but suppress black pieces that are the same as their white counterpart
+    ChessSquare p;
+    static char buf[MSG_SIZ];
+    char *m, c, d, *pieceName = defaultName;
+    int len;
+    *buf = NULLCHAR;
+    if(!pieceDefs) return "";
+    if(gameInfo.variant == VariantChu) return ""; // for now don't do this for Chu Shogi
+    if(gameInfo.variant == VariantShogi) pieceName = shogiName;
+    if(gameInfo.variant == VariantXiangqi) pieceName = xqName;
+    for(p=WhitePawn; p<EmptySquare; p++) {
+	if((c = pieceToChar[p]) == '.' || c == '~') continue;  // does not participate
+	m = pieceDesc[p]; d = (c == '+' ? pieceToChar[DEMOTED p] : c);
+	if(p >= BlackPawn && pieceToChar[BLACK_TO_WHITE p] == toupper(c)
+             && (c != '+' || pieceToChar[DEMOTED BLACK_TO_WHITE p] == d)) { // black member of normal pair
+	    char *wm = pieceDesc[BLACK_TO_WHITE p];
+	    if(!m && !wm || m && wm && !strcmp(wm, m)) continue;            // moves as a white piece
+	} else                                                              // white or unpaired black
+	if((p < BlackPawn || CharToPiece(toupper(d)) != EmptySquare) &&     // white or lone black
+	   !pieceDesc[p] /*&& pieceName[p] == c*/) continue; // orthodox piece known by its usual name
+// TODO: listing pieces because of unusual name can only be done if we have accurate Betza of all defaults
+	if(!m) m = defaultDesc[p];
+	len = strlen(buf);
+	snprintf(buf+len, MSG_SIZ-len, "%s%s%c:%s", len ? ";" : "", c == '+' ? "+" : "", d, m);
+    }
+    return buf;
 }
 
 // [HGM] gen: configurable move generation from Betza notation sent by engine.
