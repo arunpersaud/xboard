@@ -9975,6 +9975,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     /* FRC castling assumed when king captures friendly rook. [HGM] or RxK for S-Chess */
     if (board[fromY][fromX] == WhiteKing && board[toY][toX] == WhiteRook ||
         board[fromY][fromX] == WhiteRook && board[toY][toX] == WhiteKing) {
+      board[EP_STATUS] = EP_NONE; // capture was fake!
       board[fromY][fromX] = EmptySquare;
       board[toY][toX] = EmptySquare;
       if((toX > fromX) != (piece == WhiteRook)) {
@@ -9984,6 +9985,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
       }
     } else if (board[fromY][fromX] == BlackKing && board[toY][toX] == BlackRook ||
                board[fromY][fromX] == BlackRook && board[toY][toX] == BlackKing) {
+      board[EP_STATUS] = EP_NONE;
       board[fromY][fromX] = EmptySquare;
       board[toY][toX] = EmptySquare;
       if((toX > fromX) != (piece == BlackRook)) {
