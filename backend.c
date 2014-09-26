@@ -10486,7 +10486,19 @@ InitChessProgram (ChessProgramState *cps, int setup)
       b = SupportedVariant(cps->variants, gameInfo.variant, gameInfo.boardWidth,
                            gameInfo.boardHeight, gameInfo.holdingsSize, cps->protocolVersion, cps->tidy);
       if (b == NULL) {
-	DisplayFatalError(variantError, 0, 1);
+	VariantClass v;
+	char c, *q = cps->variants, *p = strchr(q, ',');
+	if(p) *p = NULLCHAR;
+	v = StringToVariant(q);
+	DisplayError(variantError, 0);
+	if(v != VariantUnknown && cps == &first) {
+	    int w, h, s;
+	    if(sscanf(q, "%dx%d+%d_%c", &w, &h, &s, &c) == 4) // get size overrides the engine needs with it (if any)
+		appData.NrFiles = w, appData.NrRanks = h, appData.holdingsSize = s, q = strchr(q, '_') + 1;
+	    ASSIGN(appData.variant, q);
+	    Reset(TRUE, FALSE);
+	}
+	if(p) *p = ',';
 	return;
       }
 
