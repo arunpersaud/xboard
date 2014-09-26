@@ -14657,8 +14657,10 @@ TwoMachinesEvent P((void))
 
     if(!SupportedVariant(second.variants, gameInfo.variant, gameInfo.boardWidth,
                          gameInfo.boardHeight, gameInfo.holdingsSize, second.protocolVersion, second.tidy)) {
-	startingEngine = FALSE;
+	startingEngine = matchMode = FALSE;
 	DisplayError("second engine does not play this", 0);
+	gameMode = TwoMachinesPlay; ModeHighlight(); // Needed to make sure menu item is unchecked
+	EditGameEvent(); // switch back to EditGame mode
 	return;
     }
 
