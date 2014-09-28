@@ -1647,10 +1647,13 @@ ReSize (WindowPlacement *wp)
 	if(sqy < sqx) sqx = sqy;
         if(sqx < 20) return;
 	if(appData.overrideLineGap < 0) { // do second iteration with adjusted lineGap
+	    int oldSqx = sqx;
 	    lg = lineGap = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
 	    sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
 	    sqy = (wp->height - lg - marginH - hc) / BOARD_HEIGHT - lg;
 	    if(sqy < sqx) sqx = sqy;
+	    lg = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
+	    if(sqx == oldSqx + 1 && lg == lineGap + 1) sqx = oldSqx, squareSize = 0; // prevent oscillations, force resize by kludge
 	}
 	if(sqx != squareSize) {
 	    squareSize = sqx; // adopt new square size
