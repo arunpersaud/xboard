@@ -135,7 +135,7 @@ PieceToNumber (ChessSquare p)  /* [HGM] holdings: count piece type, ignoring non
     int i=0;
     ChessSquare start = (int)p >= (int)BlackPawn ? BlackPawn : WhitePawn;
 
-    while(start++ != p) if(pieceToChar[(int)start-1] != '.') i++;
+    while(start++ != p) if(pieceToChar[start-1] != '.' && pieceToChar[start-1] != '+') i++;
     return i;
 }
 

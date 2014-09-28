@@ -6986,7 +6986,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 	   // holdings might not be sent yet in ICS play; we have to figure out which piece belongs here
 	   if(fromX == 0) fromY = BOARD_HEIGHT-1 - fromY; // black holdings upside-down
 	   fromX = fromX ? WhitePawn : BlackPawn; // first piece type in selected holdings
-	   while(PieceToChar(fromX) == '.' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) fromX++;
+	   while(PieceToChar(fromX) == '.' || PieceToChar(fromX) == '+' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) fromX++;
          fromY = DROP_RANK;
     }
 
@@ -10149,8 +10149,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
         p = (int) captured;
         if (p >= (int) BlackPawn) {
           p -= (int)BlackPawn;
-          if(gameInfo.variant == VariantShogi && DEMOTED p >= 0) {
-                  /* in Shogi restore piece to its original  first */
+          if(DEMOTED p >= 0 && PieceToChar(p) == '+') {
+                  /* Restore shogi-promoted piece to its original  first */
                   captured = (ChessSquare) (DEMOTED captured);
                   p = DEMOTED p;
           }
@@ -10160,7 +10160,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
           board[p][BOARD_WIDTH-1] = BLACK_TO_WHITE captured;
 	} else {
           p -= (int)WhitePawn;
-          if(gameInfo.variant == VariantShogi && DEMOTED p >= 0) {
+          if(DEMOTED p >= 0 && PieceToChar(p) == '+') {
                   captured = (ChessSquare) (DEMOTED captured);
                   p = DEMOTED p;
           }
