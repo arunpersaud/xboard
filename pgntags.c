@@ -116,6 +116,9 @@ ParsePGNTag (char *tag, GameInfo *gameInfo)
         /* xboard-defined extension */
         gameInfo->variant = StringToVariant(value);
 	success = TRUE;
+    } else if (StrCaseCmp(name, "VariantMen") == 0) {
+        /* for now ignore this tag, as we have no method yet */
+        /* for assigning the pieces to XBoard pictograms     */
     } else if (StrCaseCmp(name, PGN_OUT_OF_BOOK) == 0) {
         /* [AS] Out of book annotation */
         success = StrSavePtr(value, &gameInfo->outOfBook) != NULL;
@@ -161,7 +164,7 @@ PrintPGNTags (FILE *fp, GameInfo *gameInfo)
     if (gameInfo->variant != VariantNormal)
         fprintf(fp, "[Variant \"%s\"]\n", VariantName(gameInfo->variant));
     if (*(p = CollectPieceDescriptors()))
-        fprintf(fp, "[Pieces \"%s\"]\n", p);
+        fprintf(fp, "[VariantMen \"%s\"]\n", p);
     if (gameInfo->extraTags)
 	fputs(gameInfo->extraTags, fp);
 }
