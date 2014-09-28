@@ -2690,7 +2690,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     pieceBitmap[1][WhiteLion] = DoLoadBitmap(hInst, "ln", squareSize, "o");
     pieceBitmap[2][WhiteLion] = DoLoadBitmap(hInst, "ln", squareSize, "w");
 
-    if(gameInfo.variant == VariantShogi) { /* promoted Gold represemtations */
+    if(gameInfo.variant == VariantShogi && BOARD_HEIGHT != 7) { /* promoted Gold representations (but not in Tori!)*/
       pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "wp", squareSize, "s");
       pieceBitmap[1][WhiteCannon] = DoLoadBitmap(hInst, "wp", squareSize, "o");
       pieceBitmap[2][WhiteCannon] = DoLoadBitmap(hInst, "w", squareSize, "w");
@@ -5739,6 +5739,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   default:	/* Passes it on if unprocessed */
     return (DefWindowProc(hwnd, message, wParam, lParam));
   }
+
 
   return 0;
 }
