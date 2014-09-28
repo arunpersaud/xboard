@@ -276,8 +276,8 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
 			int b = dirs2[*desc-'a']; // when alone, use narrow version
 			if(desc[1] == 'h') b = dirs1[*desc-'a'], desc += 2; // dirs1 is wide version
-			else if(islower(desc[1]) && i < '4'
-				&& ((i | dirType[desc[1]-'a']) & 3) == 3) { // combinable (perpendicular dim)
+			else if(*desc == desc[1] || islower(desc[1]) && i < '4'
+				&& ((i | dirType[desc[1]-'a']) & 3) == 3) { // combinable (perpendicular dim or same)
 			    b = dirs1[*desc-'a'] & dirs2[desc[1]-'a'];      // intersect wide & perp narrow
 			    desc += 2;
 			} else desc++;
