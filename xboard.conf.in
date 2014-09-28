@@ -1,5 +1,5 @@
 ;
-; xboard 4.6 Save Settings file
+; xboard 4.8 Save Settings file
 ;
 ; This file contains the system-wide settings of XBoard, in so far they
 ; deviate from the compiled-in defaults, and are not settable through menus,
@@ -12,6 +12,7 @@
 ;
 ; Looks
 ;
+-size 49
 -internetChessServerInputBox false
 -titleInWindow false
 -showButtonBar true
