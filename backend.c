@@ -5328,6 +5328,7 @@ UploadGameEvent ()
 }
 
 int killX = -1, killY = -1; // [HGM] lion: used for passing e.p. capture square to MakeMove
+int legNr = 1;
 
 void
 CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char move[7])
@@ -7263,7 +7264,7 @@ Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VO
 {
     typedef char Markers[BOARD_RANKS][BOARD_FILES];
     Markers *m = (Markers *) closure;
-    if(rf == fromY && ff == fromX && (killX < 0 && !(rt == rf && ft == ff) || abs(ft-killX) < 2 && abs(rt-killY) < 2))
+    if(rf == fromY && ff == fromX && (killX < 0 ? !(rt == rf && ft == ff) && legNr & 1 : rt == killY && ft == killX || legNr & 2))
 	(*m)[rt][ft] = 1 + (board[rt][ft] != EmptySquare
 			 || kind == WhiteCapturesEnPassant
 			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && killX < 0), legal[rt][ft] = 1;
