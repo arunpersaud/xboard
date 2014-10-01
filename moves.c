@@ -248,7 +248,7 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
     int mine, his, dir, bit, occup, i;
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
     while(*p) {                  // more moves to go
-	int expo = 1, dx, dy, x, y, mode, dirSet, retry=0, initial=0, jump=1;
+	int expo = 1, dx, dy, x, y, mode, dirSet, retry=0, initial=0, jump=1, skip = 0;
 	if(*p == 'i') initial = 1, desc = ++p;
 	while(islower(*p)) p++;  // skip prefixes
 	if(!isupper(*p)) return; // syntax error: no atom
@@ -265,7 +265,7 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 			} else desc++;
 			dirSet |= b;
 		    }
-		    dirSet &= 0x99; if(!dirSet) dirSet = 0x99;
+		    dirSet &= 0x55; if(!dirSet) dirSet = 0x55;
 		    break;
 	  case 'R': expo = 0;    // rook, slide
 	  case 'W':              // orthogonal atom (non-deg 4-fold)
@@ -315,10 +315,12 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 	if(expo > 1 && dx == 0 && dy == 0) {          // castling indicated by O + number
 	    mode |= 16; dy = 1;
 	}
+	if(dy == 1) skip = jump - 1, jump = 1;        // on W & F atoms 'j' = skip first square
         do {
 	  for(dir=0, bit=1; dir<8; dir++, bit += bit) { // loop over directions
-	    int i = expo, hop = mode, vx, vy;
+	    int i = expo, j = skip, hop = mode, vx, vy;
 	    if(!(bit & dirSet)) continue;             // does not move in this direction
+	    if(dy != 1) j = 0;                        // 
 	    vx = dx*rot[dir][0] + dy*rot[dir][1];     // rotate step vector
 	    vy = dx*rot[dir][2] + dy*rot[dir][3];
 	    x = f; y = r;                             // start square
@@ -327,6 +329,7 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 		if(y < 0 || y >= BOARD_HEIGHT) break; // vertically off-board: always done
 		if(x <  BOARD_LEFT) { if(mode & 128) x += BOARD_RGHT - BOARD_LEFT; else break; }
 		if(x >= BOARD_RGHT) { if(mode & 128) x -= BOARD_RGHT - BOARD_LEFT; else break; }
+		if(j) { j--; continue; }              // skip irrespective of occupation
 		if(!jump    && board[y - vy + vy/2][x - vx + vx/2] != EmptySquare) break; // blocked
 		if(jump > 1 && board[y - vy + vy/2][x - vx + vx/2] == EmptySquare) break; // no hop
 		if(board[y][x] < BlackPawn)   occup = 1; else
