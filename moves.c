@@ -322,6 +322,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	if(*desc == 'p') mode |= 32, desc++;
 	if(*desc == 'g') mode |= 64, desc++;
 	if(*desc == 'o') mode |= 128, desc++;
+	if(*desc == 'y') mode |= 512, desc++;
 	if(*desc == 'n') jump = 0, desc++;
 	while(*desc == 'j') jump++, desc++;
 	if(*desc == 'a') cont = ++desc;
@@ -340,8 +341,9 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	    if(!(mode & 15)) mode = his + 4;          // no mode spec, use default = mc
 	} else {
 	    if(mode & 32) mode ^= 256 + 32;           // in non-final legs 'p' means 'pass through'
-	    if(mode & 64) {
+	    if(mode & 64 + 512) {
 		mode |= 256;                          // and 'g' too, but converts leaper <-> slider
+		if(mode & 512) mode ^= 0x304;         // and 'y' is m-like 'g'
 		strncpy(buf, cont, 80); cont = buf;   // copy next leg(s), so we can modify
 		while(islower(*cont)) cont++;         // skip to atom
 		*cont = upgrade[*cont-'A'];           // replace atom, BRQ <-> FWK
@@ -349,7 +351,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		*++cont = '\0';                       // make sure any old range is stripped off
 		cont = buf;                           // use modified string for continuation leg
 	    }
-	    if(!(mode & 0x10F)) mode = his + 0x104;   // and default = mcp
+	    if(!(mode & 0x30F)) mode = his + 0x104;   // and default = mcp
 	}
 	if(dy == 1) skip = jump - 1, jump = 1;        // on W & F atoms 'j' = skip first square
         do {
