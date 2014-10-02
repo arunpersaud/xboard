@@ -235,6 +235,8 @@ char symmetry[] = "FBNW.FFW.NKN.NW.QR....W..N";
 char xStep[]    = "2110.130.102.10.00....0..2";
 char yStep[]    = "2132.133.313.20.11....1..3";
 char dirType[]  = "01000104000200000260050000";
+char upgrade[]  = "AFCD.BGH.JQL.NO.KW....R..Z";
+
 //  alphabet   "a b    c d e f    g h    i j k l    m n o p q r    s    t u v    w x y z "
 int dirs1[] = { 0,0x3C,0,0,0,0xC3,0,0,   0,0,0,0xF0,0,0,0,0,0,0x0F,0   ,0,0,0   ,0,0,0,0 };
 int dirs2[] = { 0,0x18,0,0,0,0x81,0,0xFF,0,0,0,0x60,0,0,0,0,0,0x06,0x66,0,0,0x99,0,0,0,0 };
@@ -259,7 +261,7 @@ OK (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOID
 void
 MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle, char *desc, MoveCallback cb, VOIDSTAR cl)
 {
-    char *p = desc;
+    char buf[80], *p = desc;
     int mine, his, dir, bit, occup, i;
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
     while(*p) {                  // more moves to go
@@ -323,12 +325,6 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	if(*desc == 'n') jump = 0, desc++;
 	while(*desc == 'j') jump++, desc++;
 	if(*desc == 'a') cont = ++desc;
-        if(!cont) {
-	    if(!(mode & 15)) mode = his + 4;          // no mode spec, use default = mc
-	} else {
-	    if(mode & 32) mode ^= 256 + 32;           // in non-final legs 'p' means 'pass through'
-	    if(!(mode & 0x10F)) mode = his + 0x104;   // and default = mcp
-	}
 	dx = xStep[*p-'A'] - '0';                     // step vector of atom
 	dy = yStep[*p-'A'] - '0';
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
@@ -339,6 +335,21 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		       r == BOARD_HEIGHT-1 && board[TOUCHED_B] & 1<<f   ) ) continue;
 	if(expo > 1 && dx == 0 && dy == 0) {          // castling indicated by O + number
 	    mode |= 16; dy = 1;
+	}
+        if(!cont) {
+	    if(!(mode & 15)) mode = his + 4;          // no mode spec, use default = mc
+	} else {
+	    if(mode & 32) mode ^= 256 + 32;           // in non-final legs 'p' means 'pass through'
+	    if(mode & 64) {
+		mode |= 256;                          // and 'g' too, but converts leaper <-> slider
+		strncpy(buf, cont, 80); cont = buf;   // copy next leg(s), so we can modify
+		while(islower(*cont)) cont++;         // skip to atom
+		*cont = upgrade[*cont-'A'];           // replace atom, BRQ <-> FWK
+		if(expo == 1) *++cont = '0';          // turn other leapers into riders 
+		*++cont = '\0';                       // make sure any old range is stripped off
+		cont = buf;                           // use modified string for continuation leg
+	    }
+	    if(!(mode & 0x10F)) mode = his + 0x104;   // and default = mcp
 	}
 	if(dy == 1) skip = jump - 1, jump = 1;        // on W & F atoms 'j' = skip first square
         do {
