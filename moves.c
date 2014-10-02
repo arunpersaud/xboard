@@ -235,11 +235,13 @@ char symmetry[] = "FBNW.FFW.NKN.NW.QR....W..N";
 char xStep[]    = "2110.130.102.10.00....0..2";
 char yStep[]    = "2132.133.313.20.11....1..3";
 char dirType[]  = "01000104000200000260050000";
-char upgrade[]  = "AFCD.BGH.JQL.NO.KW....R..Z";
+char upgrade[]  = "AKCD.QGH.JQL.NO.KK....Q..Z";
 
 //  alphabet   "a b    c d e f    g h    i j k l    m n o p q r    s    t u v    w x y z "
 int dirs1[] = { 0,0x3C,0,0,0,0xC3,0,0,   0,0,0,0xF0,0,0,0,0,0,0x0F,0   ,0,0,0   ,0,0,0,0 };
 int dirs2[] = { 0,0x18,0,0,0,0x81,0,0xFF,0,0,0,0x60,0,0,0,0,0,0x06,0x66,0,0,0x99,0,0,0,0 };
+int dirs3[] = { 0,0x38,0,0,0,0x83,0,0xFF,0,0,0,0xE0,0,0,0,0,0,0x0E,0xEE,0,0,0xBB,0,0,0,0 };
+int dirs4[] = { 0,0x10,0,0,0,0x01,0,0xFF,0,0,0,0x40,0,0,0,0,0,0x04,0x44,0,0,0x11,0,0,0,0 };
 
 int rot[][4] = { // rotation matrices for each direction
   { 1, 0, 0, 1 },
@@ -265,11 +267,13 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
     int mine, his, dir, bit, occup, i;
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
     while(*p) {                  // more moves to go
-	int expo = 1, dx, dy, x, y, mode, dirSet, retry=0, initial=0, jump=1, skip = 0;
+	int expo = 1, dx, dy, x, y, mode, dirSet, ds2, retry=0, initial=0, jump=1, skip = 0;
 	char *cont = NULL;
 	if(*p == 'i') initial = 1, desc = ++p;
 	while(islower(*p)) p++;  // skip prefixes
 	if(!isupper(*p)) return; // syntax error: no atom
+	dx = xStep[*p-'A'] - '0';// step vector of atom
+	dy = yStep[*p-'A'] - '0';
 	dirSet = 0;              // build direction set based on atom symmetry
 	switch(symmetry[*p-'A']) {
 	  case 'B': expo = 0;    // bishop, slide
@@ -284,7 +288,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 			} else desc++;
 			dirSet |= b;
 		      }
-		      dirSet &= 0x55; if(!dirSet) dirSet = 0x55;
+		      dirSet &= 0xAA; if(!dirSet) dirSet = 0xAA;
 		      break;
 		    }
 	  case 'R': expo = 0;    // rook, slide
@@ -294,7 +298,8 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		    dirSet = (dirSet << angle | dirSet >> 8-angle) & 255;   // re-orient direction system
 		    break;
 	  case 'N':              // oblique atom (degenerate 8-fold)
-		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
+		    if(tx < 0) { // for continuation legs relative directions are non-degenerate!
+		      while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
 			int b = dirs2[*desc-'a']; // when alone, use narrow version
 			if(desc[1] == 'h') b = dirs1[*desc-'a'], desc += 2; // dirs1 is wide version
 			else if(*desc == desc[1] || islower(desc[1]) && i < '4'
@@ -303,13 +308,28 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 			    desc += 2;
 			} else desc++;
 			dirSet |= b;
+		      }
+		      if(!dirSet) dirSet = 0xFF;
+		      break;
 		    }
-		    if(!dirSet) dirSet = 0xFF;
-		    break;
 	  case 'Q': expo = 0;    // queen, slide
 	  case 'K':              // non-deg (pseudo) 8-fold
-		    dirSet=0x55; // start with orthogonal moves
-		    retry = 1;   // and schedule the diagonal moves for later
+		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
+			int b = dirs4[*desc-'a'];    // when alone, use narrow version
+			if(desc[1] == *desc) desc++; // doubling forces alone
+			else if(islower(desc[1]) && i < '4'
+				&& ((i | dirType[desc[1]-'a']) & 3) == 3) { // combinable (perpendicular dim or same)
+			    b = dirs3[*desc-'a'] & dirs3[desc[1]-'a'];      // intersect wide & perp wide
+			    desc += 2;
+			} else desc++;
+			dirSet |= b;
+		    }
+		    if(!dirSet) dirSet = 0xFF;
+		    dirSet = (dirSet << angle | dirSet >> 8-angle) & 255;   // re-orient direction system
+		    ds2 = dirSet & 0xAA;          // extract diagonal directions
+		    if(dirSet &= 0x55)            // start with orthogonal moves, if present
+		         retry = 1;               // and schedule the diagonal moves for later
+		    else dx = 1, dirSet = ds2;    // if no orthogonal directions, do diagonal immediately
 		    break;       // should not have direction indicators
 	  default:  return;      // syntax error: invalid atom
 	}
@@ -326,8 +346,6 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	if(*desc == 'n') jump = 0, desc++;
 	while(*desc == 'j') jump++, desc++;
 	if(*desc == 'a') cont = ++desc;
-	dx = xStep[*p-'A'] - '0';                     // step vector of atom
-	dy = yStep[*p-'A'] - '0';
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
 	if(expo > 9) p++;                             // allow double-digit
 	desc = p;                                     // this is start of next move
@@ -410,8 +428,8 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(occup != 4) break; // not valid transit square
 	    } while(--i);
 	  }
-	  dx = dy = 1; dirSet = 0x99; // prepare for diagonal moves of K,Q
-	} while(retry--);             // and start doing them
+	  dx = dy = 1; dirSet = ds2;  // prepare for diagonal moves of K,Q
+	} while(retry-- && ds2);      // and start doing them
 	if(tx >= 0) break;            // don't do other atoms in continuation legs
     }
 } // next atom
