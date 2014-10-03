@@ -335,17 +335,18 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	}
 	if(mine == 2 && tx < 0) dirSet = dirSet >> 4 | dirSet << 4 & 255;   // invert black moves
 	mode = 0;                // build mode mask
-	if(*desc == 'm') mode |= 4, desc++;
-	if(*desc == 'c') mode |= his, desc++;
-	if(*desc == 'd') mode |= mine, desc++;
-	if(*desc == 'e') mode |= 8, desc++;
-	if(*desc == 'p') mode |= 32, desc++;
-	if(*desc == 'g') mode |= 64, desc++;
-	if(*desc == 'o') mode |= 128, desc++;
-	if(*desc == 'y') mode |= 512, desc++;
-	if(*desc == 'n') jump = 0, desc++;
-	while(*desc == 'j') jump++, desc++;
-	if(*desc == 'a') cont = ++desc;
+	if(*desc == 'm') mode |= 4, desc++;           // move to empty
+	if(*desc == 'c') mode |= his, desc++;         // capture foe
+	if(*desc == 'd') mode |= mine, desc++;        // destroy (capture friend)
+	if(*desc == 'e') mode |= 8, desc++;           // e.p. capture last mover
+	if(*desc == 't') mode |= 16, desc++;          // exclude enemies as hop platform ('test')
+	if(*desc == 'p') mode |= 32, desc++;          // hop over occupied
+	if(*desc == 'g') mode |= 64, desc++;          // hop and toggle range
+	if(*desc == 'o') mode |= 128, desc++;         // wrap around cylinder board
+	if(*desc == 'y') mode |= 512, desc++;         // toggle range on empty square
+	if(*desc == 'n') jump = 0, desc++;            // non-jumping
+	while(*desc == 'j') jump++, desc++;           // must jump (on B,R,Q: skip first square)
+	if(*desc == 'a') cont = ++desc;               // move again after doing what preceded it
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
 	if(expo > 9) p++;                             // allow double-digit
 	desc = p;                                     // this is start of next move
@@ -353,7 +354,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		       r == 0              && board[TOUCHED_W] & 1<<f ||
 		       r == BOARD_HEIGHT-1 && board[TOUCHED_B] & 1<<f   ) ) continue;
 	if(expo > 1 && dx == 0 && dy == 0) {          // castling indicated by O + number
-	    mode |= 16; dy = 1;
+	    mode |= 1024; dy = 1;
 	}
         if(!cont) {
 	    if(!(mode & 15)) mode = his + 4;          // no mode spec, use default = mc
@@ -394,6 +395,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(board[y][x] < EmptySquare) occup = 0x102; else
 					      occup = 4;
 		if(cont) {                            // non-final leg
+		  if(mode&16 && his&occup) occup &= 3;// suppress hopping foe in t-mode
 		  if(occup & mode) {                  // valid intermediate square, do continuation
 		    if(occup & mode & 0x104)          // no side effects, merge legs to one move
 			MovesFromString(board, flags, f, r, x, y, dir, cont, cb, cl);
@@ -415,7 +417,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(mode & 8 && y == board[EP_RANK] && occup == 4 && board[EP_FILE] == x) { // to e.p. square
 		    cb(board, flags, mine == 1 ? WhiteCapturesEnPassant : BlackCapturesEnPassant, r, f, y, x, cl);
 		}
-		if(mode & 16) {              // castling
+		if(mode & 1024) {            // castling
 		    i = 2;                   // kludge to elongate move indefinitely
 		    if(occup == 4) continue; // skip empty squares
 		    if(x == BOARD_LEFT   && board[y][x] == initialPosition[y][x]) // reached initial corner piece
