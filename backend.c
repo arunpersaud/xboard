@@ -15524,6 +15524,7 @@ ForwardInner (int target)
 
     seekGraphUp = FALSE;
     MarkTargetSquares(1);
+    fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
 
     if (gameMode == PlayFromGameFile && !pausing)
       PauseEvent();
@@ -15642,6 +15643,7 @@ BackwardInner (int target)
     if (gameMode == EditPosition) return;
     seekGraphUp = FALSE;
     MarkTargetSquares(1);
+    fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
     if (currentMove <= backwardMostMove) {
 	ClearHighlights();
 	DrawPosition(full_redraw, boards[currentMove]);
