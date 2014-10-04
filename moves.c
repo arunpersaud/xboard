@@ -1663,7 +1663,7 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
     /* [HGM] Cobra and Falcon are wildcard pieces; consider all their moves legal */
     /* (perhaps we should disallow moves that obviously leave us in check?)              */
     if((piece == WhiteFalcon || piece == BlackFalcon ||
-        piece == WhiteCobra  || piece == BlackCobra) && gameInfo.variant != VariantChu)
+        piece == WhiteCobra  || piece == BlackCobra) && gameInfo.variant != VariantChu && !pieceDesc[piece])
         return CheckTest(board, flags, rf, ff, rt, ft, FALSE) ? IllegalMove : NormalMove;
 
     cl.rf = rf;

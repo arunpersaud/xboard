@@ -8898,13 +8898,15 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     if(sscanf(message, "piece %s %s", buf2, buf1) == 2) {
       ChessSquare piece = WhitePawn;
       char *p=buf2;
+      if(*p == '+') piece = CHUPROMOTED WhitePawn, p++;
+      piece += CharToPiece(*p) - WhitePawn;
       if(cps != &first || appData.testLegality && *engineVariant == NULLCHAR
+      /* always accept definition of  */       && piece != WhiteFalcon && piece != BlackFalcon
+      /* wild-card pieces.            */       && piece != WhiteCobra  && piece != BlackCobra
       /* For variants we don't have   */       && gameInfo.variant != VariantBerolina
       /* correct rules for, we cannot */       && gameInfo.variant != VariantCylinder
       /* enforce legality on our own! */       && gameInfo.variant != VariantUnknown
                                                && gameInfo.variant != VariantFairy    ) return;
-      if(*p == '+') piece = CHUPROMOTED WhitePawn, p++;
-      piece += CharToPiece(*p) - WhitePawn;
       if(piece < EmptySquare) {
         pieceDefs = TRUE;
         ASSIGN(pieceDesc[piece], buf1);
