@@ -6107,7 +6107,7 @@ InitPosition (int redraw)
     case VariantFalcon:
       pieces = FalconArray;
       gameInfo.boardWidth = 10;
-      SetCharTable(pieceToChar, "PNBRQ.............FKpnbrq.............fk");
+      SetCharTable(pieceToChar, "PNBRQ............FKpnbrq............fk");
       break;
     case VariantXiangqi:
       pieces = XiangqiArray;
