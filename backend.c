@@ -8877,7 +8877,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
         ASSIGN(appData.pieceToCharTable, buf);
       }
-      if(startedFromSetupPosition) return;
       dummy = sscanf(message+s, "%dx%d+%d_%s", &w, &h, &hand, varName);
       if(dummy >= 3) {
         while(message[s] && message[s++] != ' ');
@@ -8887,8 +8886,10 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    if(dummy == 4) gameInfo.variant = StringToVariant(varName);     // parent variant
           InitPosition(1); // calls InitDrawingSizes to let new parameters take effect
           if(*buf) SetCharTable(pieceToChar, buf); // do again, for it was spoiled by InitPosition
+          startedFromSetupPosition = FALSE;
         }
       }
+      if(startedFromSetupPosition) return;
       ParseFEN(boards[0], &dummy, message+s, FALSE);
       DrawPosition(TRUE, boards[0]);
       startedFromSetupPosition = TRUE;
