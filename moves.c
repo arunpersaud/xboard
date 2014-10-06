@@ -235,7 +235,8 @@ char symmetry[] = "FBNW.FFW.NKN.NW.QR....W..N";
 char xStep[]    = "2110.130.102.10.00....0..2";
 char yStep[]    = "2132.133.313.20.11....1..3";
 char dirType[]  = "01000104000200000260050000";
-char upgrade[]  = "AKCD.QGH.JQL.NO.KK....Q..Z";
+char upgrade[]  = "AFCD.BGH.JQL.NO.KW....R..Z";
+char rotate[]   = "DRCA.WHG.JKL.NO.QB....F..Z";
 
 //  alphabet   "a b    c d e f    g h    i j k l    m n o p q r    s    t u v    w x y z "
 int dirs1[] = { 0,0x3C,0,0,0,0xC3,0,0,   0,0,0,0xF0,0,0,0,0,0,0x0F,0   ,0,0,0   ,0,0,0,0 };
@@ -263,11 +264,11 @@ OK (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOID
 void
 MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle, char *desc, MoveCallback cb, VOIDSTAR cl)
 {
-    char buf[80], *p = desc;
+    char buf[80], *p = desc, *atom = NULL;
     int mine, his, dir, bit, occup, i;
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
     while(*p) {                  // more moves to go
-	int expo = 1, dx, dy, x, y, mode, dirSet, ds2, retry=0, initial=0, jump=1, skip = 0;
+	int expo = 1, dx, dy, x, y, mode, dirSet, ds2, retry=0, initial=0, jump=1, skip = 0, all = 0;
 	char *cont = NULL;
 	if(*p == 'i') initial = 1, desc = ++p;
 	while(islower(*p)) p++;  // skip prefixes
@@ -277,9 +278,9 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	dirSet = 0;              // build direction set based on atom symmetry
 	switch(symmetry[*p-'A']) {
 	  case 'B': expo = 0;    // bishop, slide
-	  case 'F':              // diagonal atom (degenerate 4-fold)
-		    if(tx < 0) { // for continuation legs relative directions are orthogonal!
-		      while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
+	  case 'F': all = 0xAA;  // diagonal atom (degenerate 4-fold)
+		    if(tx >= 0) goto king;        // continuation legs specified in K/Q system!
+		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
 			int b = dirs1[*desc-'a']; // use wide version
 			if( islower(desc[1]) &&
 				 ((i | dirType[desc[1]-'a']) & 3) == 3) {   // combinable (perpendicular dim)
@@ -287,19 +288,19 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 			    desc += 2;
 			} else desc++;
 			dirSet |= b;
-		      }
-		      dirSet &= 0xAA; if(!dirSet) dirSet = 0xAA;
-		      break;
 		    }
+		    dirSet &= 0xAA; if(!dirSet) dirSet = 0xAA;
+		    break;
 	  case 'R': expo = 0;    // rook, slide
-	  case 'W':              // orthogonal atom (non-deg 4-fold)
+	  case 'W': all = 0x55;  // orthogonal atom (non-deg 4-fold)
+		    if(tx >= 0) goto king;        // continuation legs specified in K/Q system!
 		    while(islower(*desc) && (dirType[*desc-'a'] & ~4) != '0') dirSet |= dirs2[*desc++-'a'];
 		    dirSet &= 0x55; if(!dirSet) dirSet = 0x55;
 		    dirSet = (dirSet << angle | dirSet >> 8-angle) & 255;   // re-orient direction system
 		    break;
-	  case 'N':              // oblique atom (degenerate 8-fold)
-		    if(tx < 0) { // for continuation legs relative directions are non-degenerate!
-		      while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
+	  case 'N': all = 0xFF;  // oblique atom (degenerate 8-fold)
+		    if(tx >= 0) goto king;        // continuation legs specified in K/Q system!
+		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
 			int b = dirs2[*desc-'a']; // when alone, use narrow version
 			if(desc[1] == 'h') b = dirs1[*desc-'a'], desc += 2; // dirs1 is wide version
 			else if(*desc == desc[1] || islower(desc[1]) && i < '4'
@@ -308,12 +309,12 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 			    desc += 2;
 			} else desc++;
 			dirSet |= b;
-		      }
-		      if(!dirSet) dirSet = 0xFF;
-		      break;
 		    }
+		    if(!dirSet) dirSet = 0xFF;
+		    break;
 	  case 'Q': expo = 0;    // queen, slide
-	  case 'K':              // non-deg (pseudo) 8-fold
+	  case 'K': all = 0xFF;  // non-deg (pseudo) 8-fold
+	  king:
 		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
 			int b = dirs4[*desc-'a'];    // when alone, use narrow version
 			if(desc[1] == *desc) desc++; // doubling forces alone
@@ -324,12 +325,13 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 			} else desc++;
 			dirSet |= b;
 		    }
-		    if(!dirSet) dirSet = 0xFF;
+		    if(!dirSet) dirSet = (tx < 0 ? 0xFF                     // default is all directions, but in continuation leg
+					  : all == 0xFF ? 0xEF : 0x45);     // omits backward, and for 4-fold atoms also diags
 		    dirSet = (dirSet << angle | dirSet >> 8-angle) & 255;   // re-orient direction system
 		    ds2 = dirSet & 0xAA;          // extract diagonal directions
 		    if(dirSet &= 0x55)            // start with orthogonal moves, if present
-		         retry = 1;               // and schedule the diagonal moves for later
-		    else dx = 1, dirSet = ds2;    // if no orthogonal directions, do diagonal immediately
+		         retry = 1, dx = 0;       // and schedule the diagonal moves for later
+		    else dx = dy, dirSet = ds2;   // if no orthogonal directions, do diagonal immediately
 		    break;       // should not have direction indicators
 	  default:  return;      // syntax error: invalid atom
 	}
@@ -359,18 +361,17 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
         if(!cont) {
 	    if(!(mode & 15)) mode = his + 4;          // no mode spec, use default = mc
 	} else {
+	    strncpy(buf, cont, 80); cont = buf;       // copy next leg(s), so we can modify
+	    atom = buf; while(islower(*atom)) atom++; // skip to atom
 	    if(mode & 32) mode ^= 256 + 32;           // in non-final legs 'p' means 'pass through'
 	    if(mode & 64 + 512) {
 		mode |= 256;                          // and 'g' too, but converts leaper <-> slider
 		if(mode & 512) mode ^= 0x304;         // and 'y' is m-like 'g'
-		strncpy(buf, cont, 80); cont = buf;   // copy next leg(s), so we can modify
-		while(islower(*cont)) cont++;         // skip to atom
-		*cont = upgrade[*cont-'A'];           // replace atom, BRQ <-> FWK
-		if(expo == 1) *++cont = '0';          // turn other leapers into riders 
-		*++cont = '\0';                       // make sure any old range is stripped off
-		cont = buf;                           // use modified string for continuation leg
+		*atom = upgrade[*atom-'A'];           // replace atom, BRQ <-> FWK
+		atom[1] = atom[2] = '\0';             // make sure any old range is stripped off
+		if(expo == 1) atom[1] = '0';          // turn other leapers into riders 
 	    }
-	    if(!(mode & 0x30F)) mode = his + 0x104;   // and default = mcp
+	    if(!(mode & 0x30F)) mode = 4;             // and default of this leg = m
 	}
 	if(dy == 1) skip = jump - 1, jump = 1;        // on W & F atoms 'j' = skip first square
         do {
@@ -397,6 +398,8 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(cont) {                            // non-final leg
 		  if(mode&16 && his&occup) occup &= 3;// suppress hopping foe in t-mode
 		  if(occup & mode) {                  // valid intermediate square, do continuation
+		    char origAtom = *atom;
+		    if(!(bit & all)) *atom = rotate[*atom - 'A']; // orth-diag interconversion to make direction valid
 		    if(occup & mode & 0x104)          // no side effects, merge legs to one move
 			MovesFromString(board, flags, f, r, x, y, dir, cont, cb, cl);
 		    if(occup & mode & 3 && (killX < 0 || killX == x && killY == y)) {     // destructive first leg
@@ -409,6 +412,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 			    legNr >>= 1;
 			}
 		    }
+		    *atom = origAtom;        // undo any interconversion
 		  }
 		  if(occup != 4) break;      // occupied squares always terminate the leg
 		  continue;
@@ -430,7 +434,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(occup != 4) break; // not valid transit square
 	    } while(--i);
 	  }
-	  dx = dy = 1; dirSet = ds2;  // prepare for diagonal moves of K,Q
+	  dx = dy; dirSet = ds2;      // prepare for diagonal moves of K,Q
 	} while(retry-- && ds2);      // and start doing them
 	if(tx >= 0) break;            // don't do other atoms in continuation legs
     }
