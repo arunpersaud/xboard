@@ -1201,6 +1201,11 @@ InitBackEnd1 ()
 	DisplayFatalError(buf, 0, 2);
 	return;
 
+      case VariantNormal:     /* definitely works! */
+	if(strcmp(appData.variant, "normal") && appData.chessProgram) { // [HGM] hope this is an engine-defined variant
+	  safeStrCpy(engineVariant, appData.variant, MSG_SIZ);
+	  return;
+	}
       case VariantXiangqi:    /* [HGM] repetition rules not implemented */
       case VariantFairy:      /* [HGM] TestLegality definitely off! */
       case VariantGothic:     /* [HGM] should work */
@@ -1213,7 +1218,6 @@ InitBackEnd1 ()
       case VariantFalcon:     /* [HGM] untested */
       case VariantCrazyhouse: /* holdings not shown, ([HGM] fixed that!)
 			         offboard interposition not understood */
-      case VariantNormal:     /* definitely works! */
       case VariantWildCastle: /* pieces not automatically shuffled */
       case VariantNoCastle:   /* pieces not automatically shuffled */
       case VariantFischeRandom: /* [HGM] works and shuffles pieces */
