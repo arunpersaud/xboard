@@ -359,7 +359,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	    mode |= 1024; dy = 1;
 	}
         if(!cont) {
-	    if(!(mode & 15)) mode = his + 4;          // no mode spec, use default = mc
+	    if(!(mode & 15)) mode |= his + 4;         // no mode spec, use default = mc
 	} else {
 	    strncpy(buf, cont, 80); cont = buf;       // copy next leg(s), so we can modify
 	    atom = buf; while(islower(*atom)) atom++; // skip to atom
@@ -371,7 +371,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		atom[1] = atom[2] = '\0';             // make sure any old range is stripped off
 		if(expo == 1) atom[1] = '0';          // turn other leapers into riders 
 	    }
-	    if(!(mode & 0x30F)) mode = 4;             // and default of this leg = m
+	    if(!(mode & 0x30F)) mode |= 4;            // and default of this leg = m
 	}
 	if(dy == 1) skip = jump - 1, jump = 1;        // on W & F atoms 'j' = skip first square
         do {
