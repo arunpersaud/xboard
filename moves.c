@@ -433,6 +433,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 			cb(board, flags, mine == 1 ? WhiteKingSideCastle : BlackKingSideCastle, r, f, y, f + expo, cl);
 		    break;
 		}
+		if(mode & 16 && (board[y][x] == WhiteKing || board[y][x] == BlackKing)) break; // tame piece, cannot capture royal
 		if(occup & mode) cb(board, flags, NormalMove, r, f, y, x, cl);    // allowed, generate
 		if(occup != 4) break; // not valid transit square
 	    } while(--i);
