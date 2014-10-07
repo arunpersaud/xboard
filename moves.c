@@ -300,6 +300,9 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		    break;
 	  case 'N': all = 0xFF;  // oblique atom (degenerate 8-fold)
 		    if(tx >= 0) goto king;        // continuation legs specified in K/Q system!
+		    if(*desc == 'h') {            // chiral direction sets 'hr' and 'hl'
+			dirSet = (desc[1] == 'r' ? 0x55 :  0xAA); desc += 2;
+ 		    } else
 		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
 			int b = dirs2[*desc-'a']; // when alone, use narrow version
 			if(desc[1] == 'h') b = dirs1[*desc-'a'], desc += 2; // dirs1 is wide version
