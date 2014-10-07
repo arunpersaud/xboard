@@ -639,7 +639,12 @@ void
 ResizeBoardWindow (int w, int h, int inhibit)
 {
     GtkAllocation a;
+    int bw;
 //    if(clockKludge) return; // ignore as long as clock does not have final height
+    gtk_widget_get_allocation(optList[W_BOARD].handle, &a);
+    bw = a.width;
+    gtk_widget_get_allocation(shellWidget, &a);
+    marginW = a.width - bw;
     gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH + a.height + 1;
@@ -1179,7 +1184,7 @@ main (int argc, char **argv)
 	gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
 	clockKludge = hc = a.height;
 	gtk_widget_get_allocation(boardWidget, &a);
-	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
+//	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
 	marginH =  h - a.height - hc; // subtract current clock height, so it can be added back dynamically
     }
 
