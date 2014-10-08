@@ -1610,6 +1610,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
     CheckTestClosure cl;
     ChessSquare king = flags & F_WHITE_ON_MOVE ? WhiteKing : BlackKing;
     ChessSquare captured = EmptySquare, ep=0, trampled=0;
+    int saveKill = killX;
     /*  Suppress warnings on uninitialized variables    */
 
     if(gameInfo.variant == VariantXiangqi)
@@ -1632,7 +1633,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    board[rf][ft] = EmptySquare;
 	} else {
  	    captured = board[rt][ft];
-	    if(killX >= 0) { trampled = board[killY][killX]; board[killY][killX] = EmptySquare; }
+	    if(killX >= 0) { trampled = board[killY][killX]; board[killY][killX] = EmptySquare; killX = -1; }
 	}
 	if(rf == DROP_RANK) board[rt][ft] = ff; else { // [HGM] drop
 	    board[rt][ft] = board[rf][ff];
@@ -1680,7 +1681,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    board[rf][ft] = captured;
 	    board[rt][ft] = EmptySquare;
 	} else {
-	    if(killX >= 0) board[killY][killX] = trampled;
+	    if(saveKill >= 0) board[killY][killX] = trampled, killX = saveKill;
 	    board[rt][ft] = captured;
 	}
 	board[EP_STATUS] = ep;
