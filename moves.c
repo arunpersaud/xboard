@@ -379,7 +379,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	if(dy == 1) skip = jump - 1, jump = 1;        // on W & F atoms 'j' = skip first square
         do {
 	  for(dir=0, bit=1; dir<8; dir++, bit += bit) { // loop over directions
-	    int i = expo, j = skip, hop = mode, vx, vy;
+	    int i = expo, j = skip, hop = mode, vx, vy, loop = 0;
 	    if(!(bit & dirSet)) continue;             // does not move in this direction
 	    if(dy != 1) j = 0;                        // 
 	    vx = dx*rot[dir][0] + dy*rot[dir][1];     // rotate step vector
@@ -389,12 +389,12 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	    do {                                      // traverse ray
 		x += vx; y += vy;                     // step to next square
 		if(y < 0 || y >= BOARD_HEIGHT) break; // vertically off-board: always done
-		if(x <  BOARD_LEFT) { if(mode & 128) x += BOARD_RGHT - BOARD_LEFT; else break; }
-		if(x >= BOARD_RGHT) { if(mode & 128) x -= BOARD_RGHT - BOARD_LEFT; else break; }
+		if(x <  BOARD_LEFT) { if(mode & 128) x += BOARD_RGHT - BOARD_LEFT, loop++; else break; }
+		if(x >= BOARD_RGHT) { if(mode & 128) x -= BOARD_RGHT - BOARD_LEFT, loop++; else break; }
 		if(j) { j--; continue; }              // skip irrespective of occupation
 		if(!jump    && board[y - vy + vy/2][x - vx + vx/2] != EmptySquare) break; // blocked
 		if(jump > 1 && board[y - vy + vy/2][x - vx + vx/2] == EmptySquare) break; // no hop
-		if(x == f && y == r)          occup = 4;     else                         // start square counts as empty
+		if(x == f && y == r && !loop) occup = 4;     else // start square counts as empty (if not around cylinder!)
 		if(board[y][x] < BlackPawn)   occup = 0x101; else
 		if(board[y][x] < EmptySquare) occup = 0x102; else
 					      occup = 4;
