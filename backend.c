@@ -17817,8 +17817,17 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
     while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' '; else --p;
   } else {
   if(nrCastlingRights) {
+     int handW=0, handB=0;
+     if(gameInfo.variant == VariantSChess) { // for S-Chess, all virgin backrank pieces must be listed
+	for(i=0; i<BOARD_HEIGHT; i++) handW += boards[move][i][BOARD_RGHT]; // count white held pieces
+	for(i=0; i<BOARD_HEIGHT; i++) handB += boards[move][i][BOARD_LEFT-1]; // count black held pieces
+     }
      q = p;
      if(appData.fischerCastling) {
+	if(handW) { // in shuffle S-Chess simply dump all virgin pieces
+           for(i=BOARD_RGHT-1; i>=BOARD_LEFT; i--)
+               if(boards[move][VIRGIN][i] & VIRGIN_W) *p++ = i + AAA + 'A' - 'a';
+	} else {
        /* [HGM] write directly from rights */
            if(boards[move][CASTLING][2] != NoRights &&
               boards[move][CASTLING][0] != NoRights   )
@@ -17826,12 +17835,18 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
            if(boards[move][CASTLING][2] != NoRights &&
               boards[move][CASTLING][1] != NoRights   )
                 *p++ = boards[move][CASTLING][1] + AAA + 'A' - 'a';
+	}
+	if(handB) {
+           for(i=BOARD_RGHT-1; i>=BOARD_LEFT; i--)
+               if(boards[move][VIRGIN][i] & VIRGIN_B) *p++ = i + AAA;
+	} else {
            if(boards[move][CASTLING][5] != NoRights &&
               boards[move][CASTLING][3] != NoRights   )
                 *p++ = boards[move][CASTLING][3] + AAA;
            if(boards[move][CASTLING][5] != NoRights &&
               boards[move][CASTLING][4] != NoRights   )
                 *p++ = boards[move][CASTLING][4] + AAA;
+	}
      } else {
 
         /* [HGM] write true castling rights */
@@ -17841,8 +17856,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
                boards[move][CASTLING][2] != NoRights  ) k = 1, *p++ = 'K';
             q = (boards[move][CASTLING][1] == BOARD_LEFT &&
                  boards[move][CASTLING][2] != NoRights  );
-            if(gameInfo.variant == VariantSChess) { // for S-Chess, indicate all vrgin backrank pieces
-		for(i=j=0; i<BOARD_HEIGHT; i++) j += boards[move][i][BOARD_RGHT]; // count white held pieces
+            if(handW) { // for S-Chess with pieces in hand, list virgin pieces between K and Q
                 for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
                     if((boards[move][0][i] != WhiteKing || k+q == 0) &&
                         boards[move][VIRGIN][i] & VIRGIN_W) *p++ = i + AAA + 'A' - 'a';
@@ -17853,8 +17867,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
                boards[move][CASTLING][5] != NoRights  ) k = 1, *p++ = 'k';
             q = (boards[move][CASTLING][4] == BOARD_LEFT &&
                  boards[move][CASTLING][5] != NoRights  );
-            if(gameInfo.variant == VariantSChess) {
-		for(i=j=0; i<BOARD_HEIGHT; i++) j += boards[move][i][BOARD_LEFT-1]; // count black held pieces
+            if(handB) {
                 for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
                     if((boards[move][BOARD_HEIGHT-1][i] != BlackKing || k+q == 0) &&
                         boards[move][VIRGIN][i] & VIRGIN_B) *p++ = i + AAA;
