@@ -1111,6 +1111,7 @@ main (int argc, char **argv)
 	layoutName = "normalLayout";
     }
 
+    if(appData.logoSize) appData.logoSize = boardWidth/4-3;
     wpMain.width = -1; // prevent popup sizes window
     optList = BoardPopUp(squareSize, lineGap, (void*)
 #ifdef TODO_GTK
