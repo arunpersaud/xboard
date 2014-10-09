@@ -176,12 +176,15 @@ extern char *getenv();
    // redefine some defaults
 #  undef ICS_LOGON
 #  undef DATADIR
+#  undef LOCALEDIR
 #  undef SETTINGS_FILE
 #  define ICS_LOGON "Library/Preferences/XboardICS.conf"
 #  define DATADIR dataDir
+#  define LOCALEDIR localeDir
 #  define SETTINGS_FILE masterSettings
 #  define SYNC_MENUBAR gtkosx_application_sync_menubar(theApp)
    char dataDir[MSG_SIZ]; // for expanding ~~
+   char localeDir[MSG_SIZ];
    char masterSettings[MSG_SIZ];
 #else
 #  define SLASH '/'
@@ -873,6 +876,10 @@ main (int argc, char **argv)
 #ifdef __APPLE__
     {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
 	char *path = gtkosx_application_get_bundle_path();
+#ifdef ENABLE_NLS
+	char *res_path = gtkosx_application_get_resource_path();
+	snprintf(localeDir, MSG_SIZ, "%s/share/locale", res_path); // redefine locale dir for OSX bundle
+#endif
 	theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
 	strncpy(dataDir, path, MSG_SIZ);
 	snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
