@@ -2492,6 +2492,19 @@ FrameDelay (int time)
 
 #endif
 
+static int
+FindLogo (char *place, char *name, char *buf)
+{   // check if file exists in given place
+    FILE *f;
+    if(!place) return 0;
+    snprintf(buf, MSG_SIZ, "%s/%s.png", place, name);
+    if(*place && strcmp(place, ".") && (f = fopen(buf, "r")) ) {
+	fclose(f);
+	return 1;
+    }
+    return 0;
+}
+
 static void
 LoadLogo (ChessProgramState *cps, int n, Boolean ics)
 {
@@ -2502,7 +2515,11 @@ LoadLogo (ChessProgramState *cps, int n, Boolean ics)
 	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
 	    sprintf(buf, "%s/%s.png", appData.logoDir, appData.icsHost);
 	} else if(appData.logoDir && appData.logoDir[0]) {
-	    sprintf(buf, "%s/%s.png", appData.logoDir, cps->tidy);
+	} else { // engine; cascade
+	    if(!FindLogo(appData.logoDir, cps->tidy, buf) &&   // first try user log folder
+	       !FindLogo(appData.directory[n], "logo", buf) && // then engine directory
+	       !FindLogo("/usr/localshare/games/plugins/logos", cps->tidy, buf) ) // then system folders
+		FindLogo("/usr/share/games/plugins/logos", cps->tidy, buf);
 	}
     }
     if(logoName[0])

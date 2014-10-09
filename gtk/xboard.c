@@ -2240,24 +2240,33 @@ FrameDelay (int time)
 
 #endif
 
+static int
+FindLogo (char *place, char *name, char *buf)
+{   // check if file exists in given place
+    FILE *f;
+    if(!place) return 0;
+    snprintf(buf, MSG_SIZ, "%s/%s.png", place, name);
+    if(*place && strcmp(place, ".") && (f = fopen(buf, "r")) ) {
+	fclose(f);
+	return 1;
+    }
+    return 0;
+}
+
 static void
 LoadLogo (ChessProgramState *cps, int n, Boolean ics)
 {
     char buf[MSG_SIZ], *logoName = buf;
-    FILE *f;
     if(appData.logo[n][0]) {
 	logoName = appData.logo[n];
     } else if(appData.autoLogo) {
 	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
 	    sprintf(buf, "%s/%s.png", appData.logoDir, appData.icsHost);
-	} else { // engine; look in engine-dir (if any) first
-	    snprintf(buf, MSG_SIZ, "%s/logo.png", appData.directory[n]);
-	    if(appData.directory[n] && appData.directory[n][0]
-	       && strcmp(appData.directory[n], ".") && (f = fopen(buf, "r")) )
-		fclose(f);
-	    else // no engine dir or no logo.png in it: look in logo dir
-	    if(appData.logoDir && appData.logoDir[0])
-		sprintf(buf, "%s/%s.png", appData.logoDir, cps->tidy);
+	} else { // engine; cascade
+	    if(!FindLogo(appData.logoDir, cps->tidy, buf) &&   // first try user log folder
+	       !FindLogo(appData.directory[n], "logo", buf) && // then engine directory
+	       !FindLogo("/usr/local/share/games/plugins/logos", cps->tidy, buf) ) // then system folders
+		FindLogo("/usr/share/games/plugins/logos", cps->tidy, buf);
 	}
     }
     if(logoName[0])
