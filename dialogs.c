@@ -562,7 +562,6 @@ NewVariantProc ()
 {
    static int start;
    int i, last;
-   char buf[MSG_SIZ];
    ranksTmp = filesTmp = sizeTmp = -1; // prefer defaults over actual settings
    if(appData.noChessProgram) sprintf(warning, _("Only bughouse is not available in viewer mode.")); else
    sprintf(warning, _("All variants not supported by the first engine\n(currently %s) are disabled."), first.tidy);
@@ -586,9 +585,9 @@ NewVariantProc ()
    }
    variantDescriptors[start-2].type = (last < 0 ? EndMark : Skip);
    variantDescriptors[start-1].type = (last < 6 ? Skip : Break);
-   safeStrCpy(buf, engineVariant, MSG_SIZ); *engineVariant = NULLCHAR; // yeghh...
+   safeStrCpy(engineVariant+100, engineVariant, 100); *engineVariant = NULLCHAR; // yeghh...
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
-   safeStrCpy(engineVariant, buf, MSG_SIZ); // must temporarily clear to avoid enabling all variant buttons
+   safeStrCpy(engineVariant, engineVariant+100, MSG_SIZ); // must temporarily clear to avoid enabling all variant buttons
 }
 
 //------------------------------------------- Common Engine Options -------------------------------------
