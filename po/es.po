@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.7.2\n"
+"Project-Id-Version: GNU xboard 4.8.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2014-09-29 21:06-0700\n"
-"PO-Revision-Date: 2014-06-28 17:38+0200\n"
+"PO-Revision-Date: 2014-10-01 23:14+0200\n"
 "Last-Translator: Antonio Ceballos <aceballos@gmail.com>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -111,21 +111,19 @@ msgid "Pick new game"
 msgstr "Seleccionar una nueva partida"
 
 #: backend.c:1561
-#, fuzzy
 msgid ""
 "You restarted an already completed tourney.\n"
 "One more cycle will now be added to it.\n"
 "Games commence in 10 sec."
 msgstr ""
-"Se ha reiniciado un torneo que ya había concluido\n"
-"Se le va a añadir un nuevo ciclo\n"
-"Las partidas comienzan dentro de 10 s"
+"Se ha reiniciado un torneo que ya había concluido.\n"
+"Se le va a añadir un nuevo ciclo.\n"
+"Las partidas comienzan dentro de 10 s."
 
 #: backend.c:1568
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
-msgstr ""
-"Ya se han disputado o se están disputando todas las partidas del torneo '%s'"
+msgstr "Ya se han disputado o se están disputando todas las partidas del torneo '%s'"
 
 #: backend.c:1575
 msgid "Can't have a match with no chess programs"
@@ -315,7 +313,7 @@ msgstr "Retrasar el peón a la posición previa a la coronación"
 
 #: backend.c:7583
 msgid "only marked squares are legal"
-msgstr ""
+msgstr "solo son legales los escaques señalados"
 
 #: backend.c:7871
 msgid "Swiss tourney finished"
@@ -323,11 +321,11 @@ msgstr "Torneo suizo terminado"
 
 #: backend.c:8387
 msgid "could not load EGBB library"
-msgstr ""
+msgstr "no se ha podido cargar la biblioteca de base de datos de finales de partida"
 
 #: backend.c:8390
 msgid "wrong EGBB version"
-msgstr ""
+msgstr "versión incorrecta de base de datos de finales de partida"
 
 #: backend.c:8503
 msgid "Invalid pairing from pairing engine"
@@ -344,7 +342,7 @@ msgstr "El FEN recibido del motor es incorrecto"
 
 #: backend.c:9020
 msgid "Engine did not send setup for non-standard variant"
-msgstr ""
+msgstr "El motor no ha enviado la configuración para la variante no estándar"
 
 #: backend.c:9093 backend.c:14290 backend.c:14358
 #, c-format
@@ -381,13 +379,12 @@ msgstr "La máquina acepta su oferta de tablas"
 
 # TRANSLATORS: Action / Draw translatable?
 #: backend.c:9394
-#, fuzzy
 msgid ""
 "Machine offers a draw.\n"
 "Select Action / Draw to accept."
 msgstr ""
-"La máquina ofrece tablas\n"
-"Seleccione Action / Draw si está de acuerdo"
+"La máquina ofrece tablas.\n"
+"Seleccione Action / Draw si está de acuerdo."
 
 #. TRANSLATORS: PV = principal variation, the variation the chess engine thinks is the best for everyone
 #: backend.c:9479
@@ -416,7 +413,7 @@ msgstr "La variante %s no es admitida por %s"
 #: backend.c:10451
 #, c-format
 msgid ", but %s is"
-msgstr ""
+msgstr ", pero %s es"
 
 #: backend.c:10606
 #, c-format
@@ -707,13 +704,12 @@ msgid "Starting %s chess program"
 msgstr "Iniciando el programa de ajedrez %s"
 
 #: backend.c:14625 backend.c:15783
-#, fuzzy
 msgid ""
 "Wait until your turn,\n"
 "or select 'Move Now'."
 msgstr ""
-"Espere su turno\n"
-"o seleccione «Move Now»"
+"Espere su turno.\n"
+"o seleccione 'Move Now'."
 
 #: backend.c:14762
 msgid "Training mode off"
@@ -776,9 +772,8 @@ msgid "It is your turn"
 msgstr "Es su turno"
 
 #: backend.c:15881 backend.c:15888 backend.c:15974 backend.c:15981
-#, fuzzy
 msgid "Wait until your turn."
-msgstr "Espero su turno"
+msgstr "Espero su turno."
 
 #: backend.c:15893
 msgid "No hint available"
@@ -790,9 +785,7 @@ msgstr "La lista de partidas no se ha cargado o está vacía"
 
 #: backend.c:15946
 msgid "Book file exists! Try again for overwrite."
-msgstr ""
-"¡Ya existe el fichero del libro! Inténtelo de nuevo si quiere "
-"sobreescribirlo."
+msgstr "¡Ya existe el fichero del libro! Inténtelo de nuevo si quiere sobreescribirlo."
 
 #: backend.c:16427
 #, c-format
@@ -841,9 +834,7 @@ msgstr "La bandera negra cayó"
 
 #: backend.c:17347
 msgid "Clock adjustment not allowed in auto-flag mode"
-msgstr ""
-"El ajuste del reloj no está permitido en el modo de advertencia de tiempo "
-"automático"
+msgstr "El ajuste del reloj no está permitido en el modo de advertencia de tiempo automático"
 
 #: backend.c:18246
 msgid "Bad FEN position in clipboard"
@@ -870,9 +861,8 @@ msgid "Tournament file:          "
 msgstr "Fichero de torneos:       "
 
 #: dialogs.c:284
-#, fuzzy
 msgid "For concurrent playing of tourney with multiple XBoards:"
-msgstr "      torneo con múltiples XBoards)"
+msgstr "Para jugar en torneos de forma concurrente con múltiples XBoards:"
 
 #: dialogs.c:285
 msgid "Sync after round"
@@ -939,9 +929,8 @@ msgid "Time Control"
 msgstr "Control de tiempo"
 
 #: dialogs.c:308
-#, fuzzy
 msgid "Common Engine"
-msgstr "General de los motores..."
+msgstr "General de los motores"
 
 #: dialogs.c:309 dialogs.c:441
 msgid "General Options"
@@ -949,7 +938,7 @@ msgstr "Opciones generales"
 
 #: dialogs.c:310
 msgid "Continue Later"
-msgstr ""
+msgstr "Seguir más tarde"
 
 #: dialogs.c:311
 msgid "Replace Engine"
@@ -965,9 +954,7 @@ msgstr "Clonar torneo"
 
 #: dialogs.c:351
 msgid "First you must specify an existing tourney file to clone"
-msgstr ""
-"En primer lugar, debe usted especificar un fichero de torneos que exista, "
-"para ser clonado"
+msgstr "En primer lugar, debe usted especificar un fichero de torneos que exista, para ser clonado"
 
 #: dialogs.c:367 dialogs.c:1496
 msgid "# no engines are installed"
@@ -975,12 +962,11 @@ msgstr "# no hay ningún motor instalado"
 
 #: dialogs.c:375
 msgid "Internal error: PARTICIPANTS set wrong"
-msgstr ""
+msgstr "Error interno: PARTICIPANTS incorrecto"
 
 #: dialogs.c:383
-#, fuzzy
 msgid "Tournament Options"
-msgstr "Opciones de sonido"
+msgstr "Opciones de Torneo"
 
 #: dialogs.c:402
 msgid "Absolute Analysis Scores"
@@ -1021,7 +1007,7 @@ msgstr "Activar árboles de variaciones"
 
 #: dialogs.c:412
 msgid "Headers in Engine Output Window"
-msgstr ""
+msgstr "Cabeceras en la ventana de salida del motor"
 
 #: dialogs.c:413
 msgid "Hide Thinking from Human"
@@ -1100,43 +1086,36 @@ msgid "Zoom factor in Evaluation Graph:"
 msgstr "Factor de «zoom» en el grafo de evaluación:"
 
 #: dialogs.c:452
-#, fuzzy
 msgid "Normal"
-msgstr "normal"
+msgstr "Normal"
 
 #: dialogs.c:453
-#, fuzzy
 msgid "Makruk"
-msgstr "«makruk» (tailandés)"
+msgstr "«Makruk» (tailandés)"
 
 #: dialogs.c:454
 msgid "FRC"
 msgstr "FRC (ajedrez aleatorio de Fischer)"
 
 #: dialogs.c:455
-#, fuzzy
 msgid "Shatranj"
-msgstr "«shatranj»"
+msgstr "«Shatranj»"
 
 #: dialogs.c:456
-#, fuzzy
 msgid "Wild castle"
-msgstr "enroque salvaje"
+msgstr "Enroque salvaje"
 
 #: dialogs.c:457
-#, fuzzy
 msgid "Knightmate"
-msgstr "mate al caballo"
+msgstr "Mate al caballo"
 
 #: dialogs.c:458
-#, fuzzy
 msgid "No castle"
-msgstr "sin enroque"
+msgstr "Sin enroque"
 
 #: dialogs.c:459
-#, fuzzy
 msgid "Cylinder *"
-msgstr "cilíndrico *"
+msgstr "Cilíndrico *"
 
 #: dialogs.c:460
 msgid "3-checks"
@@ -1164,8 +1143,7 @@ msgstr "espartano"
 
 #: dialogs.c:466
 msgid "Board size ( -1 = default for selected variant):"
-msgstr ""
-"Tamaño del tablero ( -1 = el predeterminado para la variante seleccionada):"
+msgstr "Tamaño del tablero ( -1 = el predeterminado para la variante seleccionada):"
 
 #: dialogs.c:467
 msgid "Number of Board Ranks:"
@@ -1184,10 +1162,13 @@ msgid ""
 "Variants marked with * can only be played\n"
 "with legality testing off."
 msgstr ""
+"Las variantes señaladas con * solo pueden jugarse\n"
+"con la comprobación de legalidad desactivada."
 
+# What's this?
 #: dialogs.c:473
 msgid "ASEAN"
-msgstr ""
+msgstr "ASEAN"
 
 #: dialogs.c:474
 msgid "Great Shatranj (10x8)"
@@ -1198,9 +1179,8 @@ msgid "Seirawan"
 msgstr "Seirawan"
 
 #: dialogs.c:476
-#, fuzzy
 msgid "Falcon (10x8)"
-msgstr "halcón (10x8)"
+msgstr "Halcón (10x8)"
 
 #: dialogs.c:477
 msgid "Superchess"
@@ -1211,28 +1191,24 @@ msgid "Capablanca (10x8)"
 msgstr "Capablanca (10x8)"
 
 #: dialogs.c:479
-#, fuzzy
 msgid "Crazyhouse"
-msgstr "«crazyhouse»"
+msgstr "«Crazyhouse»"
 
 #: dialogs.c:480
 msgid "Gothic (10x8)"
 msgstr "Gótico (10x8)"
 
 #: dialogs.c:481
-#, fuzzy
 msgid "Bughouse"
-msgstr "pasapiezas"
+msgstr "Pasapiezas"
 
 #: dialogs.c:482
-#, fuzzy
 msgid "Janus (10x8)"
-msgstr "janus (10x8)"
+msgstr "Janus (10x8)"
 
 #: dialogs.c:483
-#, fuzzy
 msgid "Suicide"
-msgstr "suicida"
+msgstr "Suicida"
 
 #: dialogs.c:484
 msgid "CRC (10x8)"
@@ -1266,7 +1242,7 @@ msgstr "chino"
 
 #: dialogs.c:491
 msgid "mighty lion"
-msgstr ""
+msgstr "león poderoso"
 
 #: dialogs.c:492
 msgid "courier (12x8)"
@@ -1274,12 +1250,11 @@ msgstr "ajedrez del mensajero (12x8)"
 
 #: dialogs.c:493
 msgid "elven chess (10x10)"
-msgstr ""
+msgstr "ajedrez élfico (10x10)"
 
 #: dialogs.c:494
-#, fuzzy
 msgid "chu shogi (12x12)"
-msgstr "japonés (9x9)"
+msgstr "japonés (12x12)"
 
 #: dialogs.c:526
 #, c-format
@@ -1287,18 +1262,18 @@ msgid "Warning: second engine (%s) does not support this!"
 msgstr "Advertencia: ¡el segundo motor (%s) no admite esto!"
 
 #: dialogs.c:555
-#, fuzzy, c-format
+#, c-format
 msgid "Only bughouse is not available in viewer mode."
-msgstr "Solo pasapiezas no está disponible en el modo visor"
+msgstr "Solo pasapiezas no está disponible en el modo visor."
 
 #: dialogs.c:556
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "All variants not supported by the first engine\n"
 "(currently %s) are disabled."
 msgstr ""
 "Todas las variantes no disponibles en el primer motor\n"
-"(actualmente %s) están desactivas"
+"(actualmente %s) están desactivas."
 
 #: dialogs.c:573
 msgid "New Variant"
@@ -1317,9 +1292,8 @@ msgid "Hash-Table Size (MB):"
 msgstr "Tamaño de la tabla de transposición (MB):"
 
 #: dialogs.c:608
-#, fuzzy
 msgid "EGTB Path:"
-msgstr "Carpeta de la EGTB Nalimov:"
+msgstr "Carpeta de la EGTB:"
 
 #: dialogs.c:609
 msgid "EGTB Cache Size (MB):"
@@ -1446,9 +1420,8 @@ msgid "Auto-InputBox PopUp"
 msgstr "Ventana emergente de buzón automática"
 
 #: dialogs.c:673
-#, fuzzy
 msgid "Quit after game"
-msgstr "Esperando por otra(s) partida(s)"
+msgstr "Después de la partida salir"
 
 #: dialogs.c:674
 msgid "Premove"
@@ -1519,9 +1492,8 @@ msgid "Seek Text Colors:"
 msgstr "Colores del texto de búsqueda:"
 
 #: dialogs.c:693
-#, fuzzy
 msgid "Other Text Colors:"
-msgstr "Colores del texto del otro canal:"
+msgstr "Colores del otro texto:"
 
 #: dialogs.c:700
 msgid "ICS Options"
@@ -1706,7 +1678,7 @@ msgstr "«Pop»"
 
 #: dialogs.c:791
 msgid "Roar"
-msgstr ""
+msgstr "Rugido"
 
 #: dialogs.c:792
 msgid "Slap"
@@ -1801,7 +1773,7 @@ msgstr "Pedir:"
 
 #: dialogs.c:838
 msgid "Lion roar:"
-msgstr ""
+msgstr "Rugido de león:"
 
 #: dialogs.c:839
 msgid "Seek:"
@@ -1813,11 +1785,11 @@ msgstr "Opciones de sonido"
 
 #: dialogs.c:871
 msgid "Selectable themes:"
-msgstr ""
+msgstr "Temas seleccionables:"
 
 #: dialogs.c:873
 msgid "New name for current theme:"
-msgstr ""
+msgstr "Nuevo nombre para el tema actual:"
 
 #: dialogs.c:876
 msgid "White Piece Color:"
@@ -1877,13 +1849,11 @@ msgstr "Modo mono"
 
 #: dialogs.c:919
 msgid "Logo Size (0=off, requires restart):"
-msgstr ""
+msgstr "Tamaño del logo (0=desactivado, requiere reiniciar):"
 
 #: dialogs.c:920
-#, fuzzy
 msgid "Line Gap (-1 = default for board size):"
-msgstr ""
-"Hueco de la línea ( -1 = el predeterminado para el tamaño de ltablero):"
+msgstr "Hueco de la línea (-1 = el predeterminado para el tamaño del tablero):"
 
 #: dialogs.c:921
 msgid "Use Board Textures"
@@ -1906,9 +1876,8 @@ msgid "Directory with Pieces Images:"
 msgstr "Carpeta con imágenes de piezas:"
 
 #: dialogs.c:996
-#, fuzzy
 msgid "# no themes are defined"
-msgstr "# no hay ningún motor instalado"
+msgstr "# no hay ningún tema definido"
 
 #: dialogs.c:1008
 msgid "Board Options"
@@ -1927,9 +1896,8 @@ msgid "save changes"
 msgstr "guardar cambios"
 
 #: dialogs.c:1207
-#, fuzzy
 msgid "add next move"
-msgstr "Prever siguente jugada"
+msgstr "añadir siguente jugada"
 
 #: dialogs.c:1231
 msgid "Edit book"
@@ -1969,9 +1937,7 @@ msgstr "Sobrenombre (opcional):"
 
 #: dialogs.c:1459
 msgid "Use nickname in PGN player tags of engine-engine games"
-msgstr ""
-"Usar el sobrenombre de las etiquetas de jugadores del PGN en las partidas "
-"motor-motor"
+msgstr "Usar el sobrenombre de las etiquetas de jugadores del PGN en las partidas motor-motor"
 
 #: dialogs.c:1460
 msgid "Engine Directory:"
@@ -2019,7 +1985,7 @@ msgstr "barajar"
 
 #: dialogs.c:1547
 msgid "Fischer castling"
-msgstr ""
+msgstr "Enroque de Fischer"
 
 #: dialogs.c:1548
 msgid "Start-position number:"
@@ -2132,7 +2098,7 @@ msgstr "Dama"
 
 #: dialogs.c:1776
 msgid "Lion"
-msgstr ""
+msgstr "León"
 
 #: dialogs.c:1780
 msgid "Defer"
@@ -2144,13 +2110,12 @@ msgstr "Coronar"
 
 #: dialogs.c:1838
 msgid "Chats:"
-msgstr ""
+msgstr "Charlas:"
 
 #: dialogs.c:1839 dialogs.c:1840 dialogs.c:1841 dialogs.c:1842 dialogs.c:1843
 #: dialogs.c:1941 dialogs.c:2001 dialogs.c:2033
-#, fuzzy
 msgid "New Chat"
-msgstr "Nueva variante"
+msgstr "Nueva Charla"
 
 #: dialogs.c:1846
 msgid "Chat partner:"
@@ -2158,16 +2123,15 @@ msgstr "Charlar con compañero:"
 
 #: dialogs.c:1847
 msgid "End Chat"
-msgstr ""
+msgstr "Fin de la charla"
 
 #: dialogs.c:1848
 msgid "Hide"
-msgstr ""
+msgstr "Ocultar"
 
 #: dialogs.c:2058
-#, fuzzy
 msgid "ICS Interaction"
-msgstr "Opciones ICS"
+msgstr "Interacciones ICS"
 
 #: dialogs.c:2125
 msgid "factory"
@@ -2334,13 +2298,12 @@ msgid "TRY ANOTHER NAME"
 msgstr "INTENTAR OTRO NOMBRE"
 
 #: draw.c:354
-#, fuzzy
 msgid ""
 "No default pieces installed!\n"
 "Select your own using '-pieceImageDirectory'."
 msgstr ""
 "No hay piezas predeterminadas instaladas\n"
-"Seleccione su propio -pieceImageDirectory"
+"Seleccione su propio '-pieceImageDirectory'."
 
 #: engineoutput.c:111 menus.c:650
 #, c-format
@@ -2376,8 +2339,7 @@ msgstr "Fallo al abrir el fichero '%s'\n"
 #  TRANSLATORS: BOARDS_RANKS, BOARD_FILES translatable?
 #: gtk/xboard.c:983 xaw/xboard.c:1089
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Recompilar con BOARD_RANKS o BOARD_FILES mayor para admitir este tamaño"
+msgstr "Recompilar con BOARD_RANKS o BOARD_FILES mayor para admitir este tamaño"
 
 #: gtk/xboard.c:1002 xaw/xboard.c:1121
 #, c-format
@@ -2433,7 +2395,7 @@ msgid " (with Zippy code)"
 msgstr " (con el código de Zippy)"
 
 #: menus.c:367
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -2441,13 +2403,11 @@ msgid ""
 "Enhancements Copyright 1992-2014 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "The GTK build of this version is experimental and unstable\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2455,16 +2415,14 @@ msgstr ""
 "%s%s\n"
 "\n"
 "Copyright 1991 Digital Equipment Corporation\n"
-"Copyright de las mejoras 1992-2013 Free Software Foundation\n"
+"Copyright de las mejoras 1992-2014 Free Software Foundation\n"
 "Copyright de las mejoras 2005 Alessandro Scotti\n"
 "\n"
-"%s es software libre SIN NINGUNA GARANTÍA; ver el fichero COPYING para más "
-"información.\n"
+"%s es software libre SIN NINGUNA GARANTÍA; ver el fichero COPYING para más información.\n"
 "La versión de GTK utilizada es experimental e inestable\n"
 "\n"
 "Visite XBoard en la web en: http://www.gnu.org/software/xboard/\n"
-"Obtenga las características más recientes en: http://www.gnu.org/software/"
-"xboard/whats_new.html\n"
+"Obtenga las características más recientes en: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Informe de errores por correo a: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2478,14 +2436,12 @@ msgid "New Game"
 msgstr "Nueva partida"
 
 #: menus.c:602
-#, fuzzy
 msgid "New Shuffle Game..."
 msgstr "Nueva partida revuelta..."
 
 #: menus.c:603
-#, fuzzy
 msgid "New Variant..."
-msgstr "Nueva variante ..."
+msgstr "Nueva variante..."
 
 #: menus.c:605
 msgid "Load Game"
@@ -2512,9 +2468,8 @@ msgid "Save Position"
 msgstr "Guardar posición"
 
 #: menus.c:612
-#, fuzzy
 msgid "Save Selected Games"
-msgstr "Guardar partida"
+msgstr "Guardar partidas seleccionadas"
 
 #: menus.c:613
 msgid "Save Games as Book"
@@ -2626,7 +2581,7 @@ msgstr "Cuatro de entrada ICS"
 
 #: menus.c:659
 msgid "ICS/Chat Console"
-msgstr ""
+msgstr "Consola de ICS/Charla"
 
 #: menus.c:661
 msgid "Board..."
@@ -2729,27 +2684,22 @@ msgid "Adjudicate Draw"
 msgstr "Adjudicar tablas"
 
 #: menus.c:704
-#, fuzzy
 msgid "Edit Engine List..."
-msgstr "Cargar un nuevo primer motor ..."
+msgstr "Editar lista de motores..."
 
 #: menus.c:706
-#, fuzzy
 msgid "Load New 1st Engine..."
-msgstr "Cargar un nuevo primer motor ..."
+msgstr "Cargar un nuevo primer motor..."
 
 #: menus.c:707
-#, fuzzy
 msgid "Load New 2nd Engine..."
-msgstr "Cargar un nuevo segundo motor ..."
+msgstr "Cargar un nuevo segundo motor..."
 
 #: menus.c:709
-#, fuzzy
 msgid "Engine #1 Settings..."
 msgstr "Configuración del motor #1..."
 
 #: menus.c:710
-#, fuzzy
 msgid "Engine #2 Settings..."
 msgstr "Configuración del motor #2..."
 
@@ -2770,52 +2720,44 @@ msgid "Retract Move"
 msgstr "Revocar jugada"
 
 #: menus.c:722
-#, fuzzy
 msgid "General..."
 msgstr "General..."
 
 #: menus.c:724
-#, fuzzy
 msgid "Time Control..."
 msgstr "Controles de tiempo..."
 
 #: menus.c:725
-#, fuzzy
 msgid "Common Engine..."
 msgstr "General de los motores..."
 
 #: menus.c:726
-#, fuzzy
 msgid "Adjudications..."
 msgstr "Adjudicaciones..."
 
 #: menus.c:727
 msgid "ICS..."
-msgstr ""
+msgstr "ICS..."
 
 #: menus.c:728
 msgid "Tournament..."
-msgstr ""
+msgstr "Torneo..."
 
 #: menus.c:729
-#, fuzzy
 msgid "Load Game..."
-msgstr "Cargar partida ..."
+msgstr "Cargar partida..."
 
 #: menus.c:730
-#, fuzzy
 msgid "Save Game..."
-msgstr "Guardar partida ..."
+msgstr "Guardar partida..."
 
 #: menus.c:731
-#, fuzzy
 msgid "Game List..."
-msgstr "Lista de partidas ..."
+msgstr "Lista de partidas..."
 
 #: menus.c:732
-#, fuzzy
 msgid "Sounds..."
-msgstr "Sonidos ..."
+msgstr "Sonidos..."
 
 #: menus.c:735
 msgid "Always Queen"
@@ -2911,13 +2853,12 @@ msgid "Evaluation graph"
 msgstr "Gráfica de evaluación"
 
 #: nevalgraph.c:68
-#, fuzzy
 msgid "Blunder graph"
-msgstr "Gráfica de evaluación"
+msgstr "Gráfica de fallos garrafales"
 
 #: nevalgraph.c:106
 msgid "Blunder"
-msgstr ""
+msgstr "Fallo garrafal"
 
 #: nevalgraph.c:106
 msgid "Eval"
@@ -2991,15 +2932,14 @@ msgid "%s: unrecognized color %s\n"
 msgstr "%s: color no reconocido %s\n"
 
 #: usystem.c:230
-#, fuzzy, c-format
+#, c-format
 msgid "%s: can't parse foreground color in '%s'\n"
-msgstr "%s: no se puede analizar el color de primer plano en `%s'\n"
+msgstr "%s: no se puede analizar el color de primer plano en '%s'\n"
 
 #: usystem.c:259
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
-msgstr ""
-"%s: no se puede analizar los nombres de los colores; desactivando colorido\n"
+msgstr "%s: no se puede analizar los nombres de los colores; desactivando colorido\n"
 
 #: usystem.c:377
 #, c-format
@@ -3073,8 +3013,7 @@ msgstr "Aceptar"
 #~ "   Include system type & operating system in message.\n"
 #~ msgstr ""
 #~ "ATENCIÓN: No se ha encontrado estructura DIR en este sistema --\n"
-#~ "          No se puede asignar tamaño automáticamente a las piezas XPM/"
-#~ "XIM.\n"
+#~ "          No se puede asignar tamaño automáticamente a las piezas XPM/XIM.\n"
 #~ "   Por favor, informe de este error a %s.\n"
 #~ "   Incluya en su mensaje el tipo de sistema y de sistema operativo.\n"
 

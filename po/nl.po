@@ -1,16 +1,16 @@
 # Dutch translations for GNU XBoard.
-# Copyright (C) 2013 Free Software Foundation, Inc.
+# Copyright (C) 2014 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
 #
-# "The patterns change, and never are the same again."
+# "She makes her living brewing coffee for strangers..."
 #
 # Benno Schulenberg <benno@vertaalt.nl>, 2013, 2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.7.2\n"
+"Project-Id-Version: GNU xboard 4.8.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2014-09-29 21:06-0700\n"
-"PO-Revision-Date: 2014-01-12 20:00+0100\n"
+"PO-Revision-Date: 2014-10-02 10:54+0200\n"
 "Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "Language: nl\n"
@@ -113,7 +113,6 @@ msgid "Pick new game"
 msgstr "Kies een nieuwe partij"
 
 #: backend.c:1561
-#, fuzzy
 msgid ""
 "You restarted an already completed tourney.\n"
 "One more cycle will now be added to it.\n"
@@ -315,7 +314,7 @@ msgstr "Beweeg pion terug voor onderpromotie."
 
 #: backend.c:7583
 msgid "only marked squares are legal"
-msgstr ""
+msgstr "alleen gemarkeerde velden zijn geldig"
 
 #: backend.c:7871
 msgid "Swiss tourney finished"
@@ -323,11 +322,11 @@ msgstr "Zwitsers toernooi is beëindigd."
 
 #: backend.c:8387
 msgid "could not load EGBB library"
-msgstr ""
+msgstr "kan EGBB-bibliotheek niet laden"
 
 #: backend.c:8390
 msgid "wrong EGBB version"
-msgstr ""
+msgstr "onjuiste EGBB-versie"
 
 #: backend.c:8503
 msgid "Invalid pairing from pairing engine"
@@ -344,7 +343,7 @@ msgstr "Ongeldige FEN ontvangen van automaat"
 
 #: backend.c:9020
 msgid "Engine did not send setup for non-standard variant"
-msgstr ""
+msgstr "Automaat heeft geen opstelling gestuurd voor variant"
 
 #: backend.c:9093 backend.c:14290 backend.c:14358
 #, c-format
@@ -379,9 +378,7 @@ msgstr ""
 msgid "Machine accepts your draw offer"
 msgstr "Automaat accepteert uw remise-aanbod"
 
-# XXX punten
 #: backend.c:9394
-#, fuzzy
 msgid ""
 "Machine offers a draw.\n"
 "Select Action / Draw to accept."
@@ -416,7 +413,7 @@ msgstr "Variant %s wordt niet ondersteund door %s"
 #: backend.c:10451
 #, c-format
 msgid ", but %s is"
-msgstr ""
+msgstr ", maar %s is"
 
 #: backend.c:10606
 #, c-format
@@ -581,7 +578,7 @@ msgstr "Ongeldige bestandssprong"
 msgid "Saving position"
 msgstr "Opslaan van positie"
 
-# XXX Reload Same Game is not in POT
+# FIXME Reload Same Game is not in POT
 #: backend.c:13821
 msgid ""
 "You have edited the game history.\n"
@@ -631,6 +628,11 @@ msgid ""
 "\"cmail -remail -game %s\"\n"
 "on the command line."
 msgstr ""
+"U hebt al een zet gemaild.\n"
+"Wacht tot er een zet arriveert van uw tegenstander.\n"
+"Om dezelfde zet opnieuw te verzenden, typt u:\n"
+"\"cmail -remail -game %s\"\n"
+"op de opdrachtregel."
 
 #: backend.c:13925
 msgid "Failed to invoke cmail"
@@ -704,7 +706,6 @@ msgid "Starting %s chess program"
 msgstr "Starten van %s schaakprogramma"
 
 #: backend.c:14625 backend.c:15783
-#, fuzzy
 msgid ""
 "Wait until your turn,\n"
 "or select 'Move Now'."
@@ -740,10 +741,10 @@ msgstr "Waarschuwing: u bent nog een partij aan het bestuderen."
 msgid "Click clock to clear board"
 msgstr "Klik op klok om bord leeg te maken."
 
-# XXX analysis?
+# FIXME: analysis?
 #: backend.c:14936
 msgid "Close ICS engine analyze..."
-msgstr ""
+msgstr "Analyse van ICS-automaat sluiten..."
 
 #: backend.c:15254
 msgid "That square is occupied"
@@ -774,9 +775,8 @@ msgid "It is your turn"
 msgstr "U bent aan zet"
 
 #: backend.c:15881 backend.c:15888 backend.c:15974 backend.c:15981
-#, fuzzy
 msgid "Wait until your turn."
-msgstr "Wacht op uw beurt"
+msgstr "Wacht op uw beurt."
 
 #: backend.c:15893
 msgid "No hint available"
@@ -865,15 +865,15 @@ msgstr "Toernooibestand:          "
 
 #: dialogs.c:284
 msgid "For concurrent playing of tourney with multiple XBoards:"
-msgstr ""
+msgstr "Voor het gelijktijdig spelen van een toernooi met meerdere XBoards:"
 
 #: dialogs.c:285
 msgid "Sync after round"
-msgstr ""
+msgstr "Synchroniseren na een ronde"
 
 #: dialogs.c:286
 msgid "Sync after cycle"
-msgstr ""
+msgstr "Synchroniseren na een cyclus"
 
 #: dialogs.c:287
 msgid "Tourney participants:"
@@ -888,9 +888,8 @@ msgid "Tourney type (0 = round-robin, 1 = gauntlet):"
 msgstr "Toernooitype (0 = op-de-rij-af, 1 = handschoen):"
 
 #: dialogs.c:297
-#, fuzzy
 msgid "Number of tourney cycles (or Swiss rounds):"
-msgstr "Aantal toernooirondes:"
+msgstr "Aantal toernooirondes (of Zwitserse rondes):"
 
 #: dialogs.c:298
 msgid "Default Number of Games in Match (or Pairing):"
@@ -933,9 +932,8 @@ msgid "Time Control"
 msgstr "Tijdsbeperking"
 
 #: dialogs.c:308
-#, fuzzy
 msgid "Common Engine"
-msgstr "Automaten..."
+msgstr "Gemeenschappelijke automaat"
 
 #: dialogs.c:309 dialogs.c:441
 msgid "General Options"
@@ -943,7 +941,7 @@ msgstr "Algemene instellingen"
 
 #: dialogs.c:310
 msgid "Continue Later"
-msgstr ""
+msgstr "Later verdergaan"
 
 #: dialogs.c:311
 msgid "Replace Engine"
@@ -962,18 +960,16 @@ msgid "First you must specify an existing tourney file to clone"
 msgstr "U dient eerst een bestaand toernooibestand op te geven."
 
 #: dialogs.c:367 dialogs.c:1496
-#, fuzzy
 msgid "# no engines are installed"
 msgstr "# er zijn geen automaten geïnstalleerd"
 
 #: dialogs.c:375
 msgid "Internal error: PARTICIPANTS set wrong"
-msgstr ""
+msgstr "**Interne programmafout**: PARTICIPANTS is verkeerd ingesteld"
 
 #: dialogs.c:383
-#, fuzzy
 msgid "Tournament Options"
-msgstr "Geluidsinstellingen"
+msgstr "Toornooi-opties"
 
 #: dialogs.c:402
 msgid "Absolute Analysis Scores"
@@ -1084,7 +1080,7 @@ msgstr "Zetten knipperen (0 = niet knipperen):"
 msgid "Flash Rate (high = fast):"
 msgstr "Knippersnelheid (hoog = snel):"
 
-# XXX  reword
+# FIXME: reword
 #: dialogs.c:431
 msgid "Animation Speed (high = slow):"
 msgstr "Animatiesnelheid (hoog = langzaam):"
@@ -1094,12 +1090,10 @@ msgid "Zoom factor in Evaluation Graph:"
 msgstr "Zoomfactor in evaluatiegrafiek:"
 
 #: dialogs.c:452
-#, fuzzy
 msgid "Normal"
 msgstr "normaal"
 
 #: dialogs.c:453
-#, fuzzy
 msgid "Makruk"
 msgstr "Makruk"
 
@@ -1108,27 +1102,22 @@ msgid "FRC"
 msgstr "FRC"
 
 #: dialogs.c:455
-#, fuzzy
 msgid "Shatranj"
 msgstr "Shatranj"
 
 #: dialogs.c:456
-#, fuzzy
 msgid "Wild castle"
 msgstr "wilde rokade"
 
 #: dialogs.c:457
-#, fuzzy
 msgid "Knightmate"
 msgstr "paardmat"
 
 #: dialogs.c:458
-#, fuzzy
 msgid "No castle"
 msgstr "geen rokade"
 
 #: dialogs.c:459
-#, fuzzy
 msgid "Cylinder *"
 msgstr "cilinder *"
 
@@ -1177,6 +1166,8 @@ msgid ""
 "Variants marked with * can only be played\n"
 "with legality testing off."
 msgstr ""
+"Varianten gemarkeerd met * kunnen alleen\n"
+"gespeeld met geldigheidstest uitgeschakeld."
 
 #: dialogs.c:473
 msgid "ASEAN"
@@ -1191,7 +1182,6 @@ msgid "Seirawan"
 msgstr "Seirawan"
 
 #: dialogs.c:476
-#, fuzzy
 msgid "Falcon (10x8)"
 msgstr "Falcon (10x8)"
 
@@ -1204,26 +1194,22 @@ msgid "Capablanca (10x8)"
 msgstr "Capablanca (10x8)"
 
 #: dialogs.c:479
-#, fuzzy
 msgid "Crazyhouse"
-msgstr "crazyhouse"
+msgstr "Crazyhouse"
 
 #: dialogs.c:480
 msgid "Gothic (10x8)"
 msgstr "Gothic (10x8)"
 
 #: dialogs.c:481
-#, fuzzy
 msgid "Bughouse"
-msgstr "bughouse"
+msgstr "Bughouse"
 
 #: dialogs.c:482
-#, fuzzy
 msgid "Janus (10x8)"
 msgstr "Janus (10x8)"
 
 #: dialogs.c:483
-#, fuzzy
 msgid "Suicide"
 msgstr "suïcide"
 
@@ -1257,7 +1243,7 @@ msgstr "Xiangqi (9x10)"
 
 #: dialogs.c:491
 msgid "mighty lion"
-msgstr ""
+msgstr "Mighty Lion"
 
 #: dialogs.c:492
 msgid "courier (12x8)"
@@ -1265,25 +1251,26 @@ msgstr "Courier (12x8)"
 
 #: dialogs.c:493
 msgid "elven chess (10x10)"
-msgstr ""
+msgstr "Elvenschaak (10x10)"
 
 #: dialogs.c:494
-#, fuzzy
 msgid "chu shogi (12x12)"
-msgstr "Shogi (9x9)"
+msgstr "Chu shogi (12x12)"
 
 #: dialogs.c:526
 #, c-format
 msgid "Warning: second engine (%s) does not support this!"
 msgstr "Waarschuwing: tweede automaat (%s) ondersteunt dit niet."
 
+# FIXME: Bughouse with capital
+# FIXME: what *is* viewer mode?
 #: dialogs.c:555
 #, c-format
 msgid "Only bughouse is not available in viewer mode."
-msgstr ""
+msgstr "Alleen Bughouse is niet beschikbaar in viewer-modus."
 
 #: dialogs.c:556
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "All variants not supported by the first engine\n"
 "(currently %s) are disabled."
@@ -1309,9 +1296,8 @@ msgid "Hash-Table Size (MB):"
 msgstr "Grootte van hash-tabel (MB):"
 
 #: dialogs.c:608
-#, fuzzy
 msgid "EGTB Path:"
-msgstr "Nalimov-EGTB-pad:"
+msgstr "EGTB-pad:"
 
 #: dialogs.c:609
 msgid "EGTB Cache Size (MB):"
@@ -1319,7 +1305,7 @@ msgstr "Grootte van EGTB-cache (MB):"
 
 #: dialogs.c:610
 msgid "Use GUI Book"
-msgstr ""
+msgstr "GUI-boek gebruiken"
 
 #: dialogs.c:611
 msgid "Opening-Book Filename:"
@@ -1331,7 +1317,7 @@ msgstr "Boekdiepte (zetten):"
 
 #: dialogs.c:613
 msgid "Book Variety (0) vs. Strength (100):"
-msgstr ""
+msgstr "Gevarieerdheid (0) tot Sterkte (100):"
 
 #: dialogs.c:614
 msgid "Engine #1 Has Own Book"
@@ -1387,7 +1373,6 @@ msgid "Negate Score of Engine #2"
 msgstr "Score van automaat 2 negatief maken"
 
 #: dialogs.c:648
-#, fuzzy
 msgid "Adjudicate non-ICS Games"
 msgstr "Non-ICS-partijen beslissen"
 
@@ -1405,11 +1390,11 @@ msgstr "Vanzelf observeren"
 
 #: dialogs.c:664
 msgid "Auto-Raise Board"
-msgstr ""
+msgstr "Bord automatisch focussen"
 
 #: dialogs.c:665
 msgid "Auto-Create Logon Script"
-msgstr ""
+msgstr "Automatisch een logon-script maken"
 
 #: dialogs.c:666
 msgid "Background Observe while Playing"
@@ -1440,17 +1425,16 @@ msgid "Auto-InputBox PopUp"
 msgstr ""
 
 #: dialogs.c:673
-#, fuzzy
 msgid "Quit after game"
-msgstr "Wachten op andere partij(en)"
+msgstr "Afsluiten na partij"
 
 #: dialogs.c:674
 msgid "Premove"
-msgstr ""
+msgstr "Voorzet"
 
 #: dialogs.c:675
 msgid "Premove for White"
-msgstr ""
+msgstr "Voorzet voor wit"
 
 #: dialogs.c:676
 msgid "First White Move:"
@@ -1458,7 +1442,7 @@ msgstr "Eerste zet van wit:"
 
 #: dialogs.c:677
 msgid "Premove for Black"
-msgstr ""
+msgstr "Voorzet voor zwart"
 
 #: dialogs.c:678
 msgid "First Black Move:"
@@ -1695,7 +1679,7 @@ msgstr "Plop"
 
 #: dialogs.c:791
 msgid "Roar"
-msgstr ""
+msgstr "Brul"
 
 #: dialogs.c:792
 msgid "Slap"
@@ -1787,7 +1771,7 @@ msgstr "Verzoek:"
 
 #: dialogs.c:838
 msgid "Lion roar:"
-msgstr ""
+msgstr "Leeuwenbrul:"
 
 #: dialogs.c:839
 msgid "Seek:"
@@ -1799,11 +1783,11 @@ msgstr "Geluidsinstellingen"
 
 #: dialogs.c:871
 msgid "Selectable themes:"
-msgstr ""
+msgstr "Selecteerbare thema's:"
 
 #: dialogs.c:873
 msgid "New name for current theme:"
-msgstr ""
+msgstr "Nieuwe naam voor huidige thema:"
 
 #: dialogs.c:876
 msgid "White Piece Color:"
@@ -1890,9 +1874,8 @@ msgid "Directory with Pieces Images:"
 msgstr "Map met afbeeldingen van stukken:"
 
 #: dialogs.c:996
-#, fuzzy
 msgid "# no themes are defined"
-msgstr "# er zijn geen automaten geïnstalleerd"
+msgstr "# er zijn geen thema's gedefinieerd"
 
 #: dialogs.c:1008
 msgid "Board Options"
@@ -1911,9 +1894,8 @@ msgid "save changes"
 msgstr "wijzigingen opslaan"
 
 #: dialogs.c:1207
-#, fuzzy
 msgid "add next move"
-msgstr "Volgende zet overdenken"
+msgstr "Volgende zet toevoegen"
 
 #: dialogs.c:1231
 msgid "Edit book"
@@ -2002,7 +1984,7 @@ msgstr "Husselen"
 
 #: dialogs.c:1547
 msgid "Fischer castling"
-msgstr ""
+msgstr "Fischer-rokade"
 
 #: dialogs.c:1548
 msgid "Start-position number:"
@@ -2116,7 +2098,7 @@ msgstr "Koningin"
 
 #: dialogs.c:1776
 msgid "Lion"
-msgstr ""
+msgstr "Leeuw"
 
 #: dialogs.c:1780
 msgid "Defer"
@@ -2128,14 +2110,12 @@ msgstr "Promoveren"
 
 #: dialogs.c:1838
 msgid "Chats:"
-msgstr ""
+msgstr "Chats:"
 
-# XXX "NEW" is confusing, plural is better
 #: dialogs.c:1839 dialogs.c:1840 dialogs.c:1841 dialogs.c:1842 dialogs.c:1843
 #: dialogs.c:1941 dialogs.c:2001 dialogs.c:2033
-#, fuzzy
 msgid "New Chat"
-msgstr "Varianten"
+msgstr "Nieuwe chat"
 
 #: dialogs.c:1846
 msgid "Chat partner:"
@@ -2143,16 +2123,15 @@ msgstr "Chatpartner:"
 
 #: dialogs.c:1847
 msgid "End Chat"
-msgstr ""
+msgstr "Chat beëindigen"
 
 #: dialogs.c:1848
 msgid "Hide"
-msgstr ""
+msgstr "Verbergen"
 
 #: dialogs.c:2058
-#, fuzzy
 msgid "ICS Interaction"
-msgstr "ICS-instellingen"
+msgstr "ICS-interactie"
 
 #: dialogs.c:2125
 msgid "factory"
@@ -2320,13 +2299,12 @@ msgid "TRY ANOTHER NAME"
 msgstr "Kies een andere naam"
 
 #: draw.c:354
-#, fuzzy
 msgid ""
 "No default pieces installed!\n"
 "Select your own using '-pieceImageDirectory'."
 msgstr ""
-"Geen standaardstukken geïnstalleerd.\n"
-"Kies uw eigen '-pieceImageDirectory'."
+"Er zijn geen standaardstukken geïnstalleerd!\n"
+"Kies uw eigen met '-pieceImageDirectory'."
 
 #: engineoutput.c:111 menus.c:650
 #, c-format
@@ -2366,12 +2344,12 @@ msgstr ""
 #: gtk/xboard.c:1002 xaw/xboard.c:1121
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
-msgstr ""
+msgstr "%s: onjuiste syntax %s voor 'boardSize'\n"
 
 #: gtk/xboard.c:1045 xaw/xboard.c:1160
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
-msgstr ""
+msgstr "%s: onbekende naam %s voor 'boardSize'\n"
 
 #: gtk/xboard.c:1084 xaw/xboard.c:1197
 #, c-format
@@ -2417,7 +2395,7 @@ msgid " (with Zippy code)"
 msgstr " (met Zippy-code)"
 
 #: menus.c:367
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -2425,13 +2403,11 @@ msgid ""
 "Enhancements Copyright 1992-2014 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "The GTK build of this version is experimental and unstable\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2439,7 +2415,7 @@ msgstr ""
 "%s%s\n"
 "\n"
 "Copyright 1991 Digital Equipment Corporation\n"
-"Uitbreidingen Copyright 1992-2013 Free Software Foundation\n"
+"Uitbreidingen Copyright 1992-2014 Free Software Foundation\n"
 "Uitbreidingen Copyright 2005 Alessandro Scotti\n"
 "\n"
 "%s is vrije software en kent GEEN GARANTIE;\n"
@@ -2462,13 +2438,11 @@ msgid "New Game"
 msgstr "Nieuwe partij"
 
 #: menus.c:602
-#, fuzzy
 msgid "New Shuffle Game..."
 msgstr "Nieuwe husselpartij..."
 
 # XXX "NEW" is wrong
 #: menus.c:603
-#, fuzzy
 msgid "New Variant..."
 msgstr "Nieuwe variantpartij..."
 
@@ -2497,9 +2471,8 @@ msgid "Save Position"
 msgstr "Positie opslaan"
 
 #: menus.c:612
-#, fuzzy
 msgid "Save Selected Games"
-msgstr "Partij opslaan"
+msgstr "Geselecteerde partijen opslaan"
 
 #: menus.c:613
 msgid "Save Games as Book"
@@ -2714,27 +2687,22 @@ msgid "Adjudicate Draw"
 msgstr "Tot remise besluiten"
 
 #: menus.c:704
-#, fuzzy
 msgid "Edit Engine List..."
-msgstr "Instellingen van automaat 1..."
+msgstr "Automatenlijst bewerken..."
 
 #: menus.c:706
-#, fuzzy
 msgid "Load New 1st Engine..."
 msgstr "Nieuwe 1ste automaat laden..."
 
 #: menus.c:707
-#, fuzzy
 msgid "Load New 2nd Engine..."
 msgstr "Nieuwe 2de automaat laden..."
 
 #: menus.c:709
-#, fuzzy
 msgid "Engine #1 Settings..."
 msgstr "Instellingen van automaat 1..."
 
 #: menus.c:710
-#, fuzzy
 msgid "Engine #2 Settings..."
 msgstr "Instellingen van automaat 2..."
 
@@ -2755,12 +2723,10 @@ msgid "Retract Move"
 msgstr "Zet terugnemen"
 
 #: menus.c:722
-#, fuzzy
 msgid "General..."
 msgstr "Algemeen..."
 
 #: menus.c:724
-#, fuzzy
 msgid "Time Control..."
 msgstr "Tijdsbeperking..."
 
@@ -2770,35 +2736,30 @@ msgid "Common Engine..."
 msgstr "Automaten..."
 
 #: menus.c:726
-#, fuzzy
 msgid "Adjudications..."
 msgstr "Beslissingen..."
 
 #: menus.c:727
 msgid "ICS..."
-msgstr ""
+msgstr "ICS..."
 
 #: menus.c:728
 msgid "Tournament..."
-msgstr ""
+msgstr "Toernooi..."
 
 #: menus.c:729
-#, fuzzy
 msgid "Load Game..."
 msgstr "Partij laden..."
 
 #: menus.c:730
-#, fuzzy
 msgid "Save Game..."
 msgstr "Partij opslaan..."
 
 #: menus.c:731
-#, fuzzy
 msgid "Game List..."
 msgstr "Partijenlijst..."
 
 #: menus.c:732
-#, fuzzy
 msgid "Sounds..."
 msgstr "Geluiden..."
 
@@ -2896,13 +2857,12 @@ msgid "Evaluation graph"
 msgstr "Evaluatiegrafiek"
 
 #: nevalgraph.c:68
-#, fuzzy
 msgid "Blunder graph"
-msgstr "Evaluatiegrafiek"
+msgstr "Blundergrafiek"
 
 #: nevalgraph.c:106
 msgid "Blunder"
-msgstr ""
+msgstr "Blunder"
 
 #: nevalgraph.c:106
 msgid "Eval"
@@ -2976,7 +2936,7 @@ msgid "%s: unrecognized color %s\n"
 msgstr "%s: niet-herkende kleur %s\n"
 
 #: usystem.c:230
-#, fuzzy, c-format
+#, c-format
 msgid "%s: can't parse foreground color in '%s'\n"
 msgstr "%s: onbegrepen voorgrondkleur in '%s'\n"
 
@@ -2990,8 +2950,8 @@ msgstr "%s: onbegrepen kleurnamen; kleuring wordt uitgeschakeld\n"
 msgid "ERROR: Unknown user %s (in path %s)\n"
 msgstr "Fout: onbekende gebruiker %s (in pad %s)\n"
 
+# FIXME: has not been configured
 #: usystem.c:560
-#, fuzzy
 msgid "Socket support is not configured in"
 msgstr "Ondersteuning voor sockets is niet geconfigureerd"
 
@@ -3024,19 +2984,15 @@ msgstr "Shift"
 msgid "OK"
 msgstr "OK"
 
+#~ msgid "Match Options"
+#~ msgstr "Toernooi-instellingen"
+
 #~ msgid "Chat box"
 #~ msgstr "Chatbox"
 
 #~ msgid "Open Chat Window"
 #~ msgstr "Chatvenster openen"
 
-#~ msgid "Match Options"
-#~ msgstr "Toernooi-instellingen"
-
-#~ msgid "ICS ..."
-#~ msgstr "ICS..."
-
-# XXX wedstrijd OF overeenkomen??
 #~ msgid "Match ..."
 #~ msgstr "Toernooi..."
 
