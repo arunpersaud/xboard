@@ -256,6 +256,7 @@ void ManInner P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
 void update_ics_width P(());
 int CopyMemoProc P(());
+static int FindLogo P((char *place, char *name, char *buf));
 
 /*
 * XBoard depends on Xt R4 or higher
@@ -1292,8 +1293,10 @@ main (int argc, char **argv)
 
     if(appData.logoSize)
     {   // locate and read user logo
-	char buf[MSG_SIZ];
-	snprintf(buf, MSG_SIZ, "%s/%s.png", appData.logoDir, UserName());
+	char buf[MSG_SIZ], name[MSG_SIZ];
+	snprintf(name, MSG_SIZ, "/home/%s", UserName());
+	if(!FindLogo(name, ".logo", buf))
+	    FindLogo(appData.logoDir, name + 6, buf);
 	ASSIGN(userLogo, buf);
     }
 
@@ -2514,11 +2517,10 @@ LoadLogo (ChessProgramState *cps, int n, Boolean ics)
     } else if(appData.autoLogo) {
 	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
 	    sprintf(buf, "%s/%s.png", appData.logoDir, appData.icsHost);
-	} else if(appData.logoDir && appData.logoDir[0]) {
 	} else { // engine; cascade
 	    if(!FindLogo(appData.logoDir, cps->tidy, buf) &&   // first try user log folder
 	       !FindLogo(appData.directory[n], "logo", buf) && // then engine directory
-	       !FindLogo("/usr/localshare/games/plugins/logos", cps->tidy, buf) ) // then system folders
+	       !FindLogo("/usr/local/share/games/plugins/logos", cps->tidy, buf) ) // then system folders
 		FindLogo("/usr/share/games/plugins/logos", cps->tidy, buf);
 	}
     }
