@@ -2413,7 +2413,8 @@ DisplayLogos (Option *w1, Option *w2)
 {
 	void *whiteLogo = first.programLogo, *blackLogo = second.programLogo;
 	if(appData.autoLogo) {
-	  if(appData.noChessProgram) whiteLogo = blackLogo = NULL; else
+	  if(appData.noChessProgram) whiteLogo = blackLogo = NULL;
+	  if(appData.icsActive) whiteLogo = blackLogo = second.programLogo;
 	  switch(gameMode) { // pick logos based on game mode
 	    case IcsObserving:
 		whiteLogo = second.programLogo; // ICS logo
