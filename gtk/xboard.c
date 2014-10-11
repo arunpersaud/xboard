@@ -176,12 +176,15 @@ extern char *getenv();
    // redefine some defaults
 #  undef ICS_LOGON
 #  undef DATADIR
+#  undef LOCALEDIR
 #  undef SETTINGS_FILE
 #  define ICS_LOGON "Library/Preferences/XboardICS.conf"
 #  define DATADIR dataDir
+#  define LOCALEDIR localeDir
 #  define SETTINGS_FILE masterSettings
 #  define SYNC_MENUBAR gtkosx_application_sync_menubar(theApp)
    char dataDir[MSG_SIZ]; // for expanding ~~
+   char localeDir[MSG_SIZ];
    char masterSettings[MSG_SIZ];
 #else
 #  define SLASH '/'
@@ -223,6 +226,7 @@ void DisplayMove P((int moveNumber));
 void update_ics_width P(());
 int CopyMemoProc P(());
 static gboolean EventProc P((GtkWidget *widget, GdkEvent *event, gpointer g));
+static int FindLogo P((char *place, char *name, char *buf));
 
 #ifdef TODO_GTK
 #if ENABLE_NLS
@@ -639,7 +643,12 @@ void
 ResizeBoardWindow (int w, int h, int inhibit)
 {
     GtkAllocation a;
+    int bw;
 //    if(clockKludge) return; // ignore as long as clock does not have final height
+    gtk_widget_get_allocation(optList[W_BOARD].handle, &a);
+    bw = a.width;
+    gtk_widget_get_allocation(shellWidget, &a);
+    marginW = a.width - bw;
     gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH + a.height + 1;
@@ -868,6 +877,10 @@ main (int argc, char **argv)
 #ifdef __APPLE__
     {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
 	char *path = gtkosx_application_get_bundle_path();
+#ifdef ENABLE_NLS
+	char *res_path = gtkosx_application_get_resource_path();
+	snprintf(localeDir, MSG_SIZ, "%s/share/locale", res_path); // redefine locale dir for OSX bundle
+#endif
 	theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
 	strncpy(dataDir, path, MSG_SIZ);
 	snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
@@ -1099,6 +1112,7 @@ main (int argc, char **argv)
 	layoutName = "normalLayout";
     }
 
+    if(appData.logoSize) appData.logoSize = boardWidth/4-3;
     wpMain.width = -1; // prevent popup sizes window
     optList = BoardPopUp(squareSize, lineGap, (void*)
 #ifdef TODO_GTK
@@ -1179,7 +1193,7 @@ main (int argc, char **argv)
 	gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
 	clockKludge = hc = a.height;
 	gtk_widget_get_allocation(boardWidget, &a);
-	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
+//	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
 	marginH =  h - a.height - hc; // subtract current clock height, so it can be added back dynamically
     }
 
@@ -1188,8 +1202,10 @@ main (int argc, char **argv)
 
     if(appData.logoSize)
     {   // locate and read user logo
-	char buf[MSG_SIZ];
-	snprintf(buf, MSG_SIZ, "%s/%s.png", appData.logoDir, UserName());
+	char buf[MSG_SIZ], name[MSG_SIZ];
+	snprintf(name, MSG_SIZ, "/home/%s", UserName());
+	if(!FindLogo(name, ".logo", buf))
+	    FindLogo(appData.logoDir, name + 6, buf);
 	ASSIGN(userLogo, buf);
     }
 
@@ -2228,24 +2244,33 @@ FrameDelay (int time)
 
 #endif
 
+static int
+FindLogo (char *place, char *name, char *buf)
+{   // check if file exists in given place
+    FILE *f;
+    if(!place) return 0;
+    snprintf(buf, MSG_SIZ, "%s/%s.png", place, name);
+    if(*place && strcmp(place, ".") && (f = fopen(buf, "r")) ) {
+	fclose(f);
+	return 1;
+    }
+    return 0;
+}
+
 static void
 LoadLogo (ChessProgramState *cps, int n, Boolean ics)
 {
     char buf[MSG_SIZ], *logoName = buf;
-    FILE *f;
     if(appData.logo[n][0]) {
 	logoName = appData.logo[n];
     } else if(appData.autoLogo) {
 	if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
 	    sprintf(buf, "%s/%s.png", appData.logoDir, appData.icsHost);
-	} else { // engine; look in engine-dir (if any) first
-	    snprintf(buf, MSG_SIZ, "%s/logo.png", appData.directory[n]);
-	    if(appData.directory[n] && appData.directory[n][0]
-	       && strcmp(appData.directory[n], ".") && (f = fopen(buf, "r")) )
-		fclose(f);
-	    else // no engine dir or no logo.png in it: look in logo dir
-	    if(appData.logoDir && appData.logoDir[0])
-		sprintf(buf, "%s/%s.png", appData.logoDir, cps->tidy);
+	} else { // engine; cascade
+	    if(!FindLogo(appData.logoDir, cps->tidy, buf) &&   // first try user log folder
+	       !FindLogo(appData.directory[n], "logo", buf) && // then engine directory
+	       !FindLogo("/usr/local/share/games/plugins/logos", cps->tidy, buf) ) // then system folders
+		FindLogo("/usr/share/games/plugins/logos", cps->tidy, buf);
 	}
     }
     if(logoName[0])

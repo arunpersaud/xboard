@@ -494,6 +494,18 @@ static Option variantDescriptors[] = {
 { VariantChu,    SAME_ROW, 135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("chu shogi (12x12)")},
 //{ -1,                   0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_(" ")}, // dummy, to have good alignment
 // optional buttons for engine-defined variants
+{ 0, NO_OK, 0, NULL, NULL, "", NULL, EndMark , "" },
+{ 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Skip, ""},
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
+{ VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
 { VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
 { VariantUnknown, SAME_ROW,135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
 { VariantUnknown,       0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Skip, NULL },
@@ -550,11 +562,13 @@ NewVariantProc ()
 {
    static int start;
    int i, last;
-   char buf[MSG_SIZ];
    ranksTmp = filesTmp = sizeTmp = -1; // prefer defaults over actual settings
    if(appData.noChessProgram) sprintf(warning, _("Only bughouse is not available in viewer mode.")); else
    sprintf(warning, _("All variants not supported by the first engine\n(currently %s) are disabled."), first.tidy);
-   if(!start) while(variantDescriptors[start].type != Skip) start++; // locate first spare
+   if(!start) {
+	while(variantDescriptors[start].type != EndMark) start++; // locate spares
+	start += 2; // conditional EndMark and Break
+   }
    last = -1;
    for(i=0; variantDescriptors[start+i].type != EndMark; i++) { // create buttons for engine-defined variants
      char *v = EngineDefinedVariant(&first, i);
@@ -569,9 +583,11 @@ NewVariantProc ()
 	variantDescriptors[start+last+1].type = Button;
 	variantDescriptors[start+last+1].value = Skip;
    }
-   safeStrCpy(buf, engineVariant, MSG_SIZ); *engineVariant = NULLCHAR; // yeghh...
+   variantDescriptors[start-2].type = (last < 0 ? EndMark : Skip);
+   variantDescriptors[start-1].type = (last < 6 ? Skip : Break);
+   safeStrCpy(engineVariant+100, engineVariant, 100); *engineVariant = NULLCHAR; // yeghh...
    GenericPopUp(variantDescriptors, _("New Variant"), TransientDlg, BoardWindow, MODAL, 0);
-   safeStrCpy(engineVariant, buf, MSG_SIZ); // must temporarily clear to avoid enabling all variant buttons
+   safeStrCpy(engineVariant, engineVariant+100, MSG_SIZ); // must temporarily clear to avoid enabling all variant buttons
 }
 
 //------------------------------------------- Common Engine Options -------------------------------------
@@ -2397,7 +2413,8 @@ DisplayLogos (Option *w1, Option *w2)
 {
 	void *whiteLogo = first.programLogo, *blackLogo = second.programLogo;
 	if(appData.autoLogo) {
-
+	  if(appData.noChessProgram) whiteLogo = blackLogo = NULL;
+	  if(appData.icsActive) whiteLogo = blackLogo = second.programLogo;
 	  switch(gameMode) { // pick logos based on game mode
 	    case IcsObserving:
 		whiteLogo = second.programLogo; // ICS logo

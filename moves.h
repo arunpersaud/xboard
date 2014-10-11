@@ -178,4 +178,4 @@ ChessMove CoordsToAlgebraic P((Board board, int flags,
 			       int rf, int ff, int rt, int ft,
 			       int promoChar, char out[MOVE_LEN]));
 
-extern int quickFlag, killX, killY;
+extern int quickFlag, killX, killY, legNr;

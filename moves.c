@@ -218,6 +218,15 @@ CollectPieceDescriptors ()
 }
 
 // [HGM] gen: configurable move generation from Betza notation sent by engine.
+// Some notes about two-leg moves: GenPseudoLegal() works in two modes, depending on whether a 'kill-
+// square has been set: without one is generates all moves, and a global int legNr flags in bits 0 and 1
+// if the move has 1 or 2 legs. Only the marking of squares makes use of this info, by only marking
+// target squares of leg 1 (rejecting null move). A dummy move with MoveType 'FirstLeg' to the relay square
+// is generated, so a cyan marker can be put there, and other functions can ignore such a move. When the
+// user selects this square, it becomes the kill-square. Once a kill-square is set, only 2-leg moves are
+// generated that use that square as relay, plus 1-leg moves, so the 1-leg move that goes to the kill-square
+// can be marked during 2nd-leg entry to terminate the move there. For judging the pseudo-legality of the
+// 2nd leg, the from-square has to be considered empty, although the moving piece is still on it.
 
 Boolean pieceDefs;
 
@@ -226,9 +235,14 @@ char symmetry[] = "FBNW.FFW.NKN.NW.QR....W..N";
 char xStep[]    = "2110.130.102.10.00....0..2";
 char yStep[]    = "2132.133.313.20.11....1..3";
 char dirType[]  = "01000104000200000260050000";
+char upgrade[]  = "AFCD.BGH.JQL.NO.KW....R..Z";
+char rotate[]   = "DRCA.WHG.JKL.NO.QB....F..Z";
+
 //  alphabet   "a b    c d e f    g h    i j k l    m n o p q r    s    t u v    w x y z "
 int dirs1[] = { 0,0x3C,0,0,0,0xC3,0,0,   0,0,0,0xF0,0,0,0,0,0,0x0F,0   ,0,0,0   ,0,0,0,0 };
 int dirs2[] = { 0,0x18,0,0,0,0x81,0,0xFF,0,0,0,0x60,0,0,0,0,0,0x06,0x66,0,0,0x99,0,0,0,0 };
+int dirs3[] = { 0,0x38,0,0,0,0x83,0,0xFF,0,0,0,0xE0,0,0,0,0,0,0x0E,0xEE,0,0,0xBB,0,0,0,0 };
+int dirs4[] = { 0,0x10,0,0,0,0x01,0,0xFF,0,0,0,0x40,0,0,0,0,0,0x04,0x44,0,0,0x11,0,0,0,0 };
 
 int rot[][4] = { // rotation matrices for each direction
   { 1, 0, 0, 1 },
@@ -242,20 +256,30 @@ int rot[][4] = { // rotation matrices for each direction
 };
 
 void
-MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback cb, VOIDSTAR cl)
+OK (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOIDSTAR cl)
 {
-    char *p = desc;
+    (*(int*)cl)++;
+}
+
+void
+MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle, char *desc, MoveCallback cb, VOIDSTAR cl)
+{
+    char buf[80], *p = desc, *atom = NULL;
     int mine, his, dir, bit, occup, i;
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
     while(*p) {                  // more moves to go
-	int expo = 1, dx, dy, x, y, mode, dirSet, retry=0, initial=0, jump=1;
+	int expo = 1, dx, dy, x, y, mode, dirSet, ds2, retry=0, initial=0, jump=1, skip = 0, all = 0;
+	char *cont = NULL;
 	if(*p == 'i') initial = 1, desc = ++p;
 	while(islower(*p)) p++;  // skip prefixes
 	if(!isupper(*p)) return; // syntax error: no atom
+	dx = xStep[*p-'A'] - '0';// step vector of atom
+	dy = yStep[*p-'A'] - '0';
 	dirSet = 0;              // build direction set based on atom symmetry
 	switch(symmetry[*p-'A']) {
 	  case 'B': expo = 0;    // bishop, slide
-	  case 'F':              // diagonal atom (degenerate 4-fold)
+	  case 'F': all = 0xAA;  // diagonal atom (degenerate 4-fold)
+		    if(tx >= 0) goto king;        // continuation legs specified in K/Q system!
 		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
 			int b = dirs1[*desc-'a']; // use wide version
 			if( islower(desc[1]) &&
@@ -265,14 +289,20 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 			} else desc++;
 			dirSet |= b;
 		    }
-		    dirSet &= 0x99; if(!dirSet) dirSet = 0x99;
+		    dirSet &= 0xAA; if(!dirSet) dirSet = 0xAA;
 		    break;
 	  case 'R': expo = 0;    // rook, slide
-	  case 'W':              // orthogonal atom (non-deg 4-fold)
+	  case 'W': all = 0x55;  // orthogonal atom (non-deg 4-fold)
+		    if(tx >= 0) goto king;        // continuation legs specified in K/Q system!
 		    while(islower(*desc) && (dirType[*desc-'a'] & ~4) != '0') dirSet |= dirs2[*desc++-'a'];
 		    dirSet &= 0x55; if(!dirSet) dirSet = 0x55;
+		    dirSet = (dirSet << angle | dirSet >> 8-angle) & 255;   // re-orient direction system
 		    break;
-	  case 'N':              // oblique atom (degenerate 8-fold)
+	  case 'N': all = 0xFF;  // oblique atom (degenerate 8-fold)
+		    if(tx >= 0) goto king;        // continuation legs specified in K/Q system!
+		    if(*desc == 'h') {            // chiral direction sets 'hr' and 'hl'
+			dirSet = (desc[1] == 'r' ? 0x55 :  0xAA); desc += 2;
+ 		    } else
 		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
 			int b = dirs2[*desc-'a']; // when alone, use narrow version
 			if(desc[1] == 'h') b = dirs1[*desc-'a'], desc += 2; // dirs1 is wide version
@@ -286,26 +316,42 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 		    if(!dirSet) dirSet = 0xFF;
 		    break;
 	  case 'Q': expo = 0;    // queen, slide
-	  case 'K':              // non-deg (pseudo) 8-fold
-		    dirSet=0x55; // start with orthogonal moves
-		    retry = 1;   // and schedule the diagonal moves for later
+	  case 'K': all = 0xFF;  // non-deg (pseudo) 8-fold
+	  king:
+		    while(islower(*desc) && (i = dirType[*desc-'a']) != '0') {
+			int b = dirs4[*desc-'a'];    // when alone, use narrow version
+			if(desc[1] == *desc) desc++; // doubling forces alone
+			else if(islower(desc[1]) && i < '4'
+				&& ((i | dirType[desc[1]-'a']) & 3) == 3) { // combinable (perpendicular dim or same)
+			    b = dirs3[*desc-'a'] & dirs3[desc[1]-'a'];      // intersect wide & perp wide
+			    desc += 2;
+			} else desc++;
+			dirSet |= b;
+		    }
+		    if(!dirSet) dirSet = (tx < 0 ? 0xFF                     // default is all directions, but in continuation leg
+					  : all == 0xFF ? 0xEF : 0x45);     // omits backward, and for 4-fold atoms also diags
+		    dirSet = (dirSet << angle | dirSet >> 8-angle) & 255;   // re-orient direction system
+		    ds2 = dirSet & 0xAA;          // extract diagonal directions
+		    if(dirSet &= 0x55)            // start with orthogonal moves, if present
+		         retry = 1, dx = 0;       // and schedule the diagonal moves for later
+		    else dx = dy, dirSet = ds2;   // if no orthogonal directions, do diagonal immediately
 		    break;       // should not have direction indicators
 	  default:  return;      // syntax error: invalid atom
 	}
-	if(mine == 2) dirSet = dirSet >> 4 | dirSet << 4 & 255; // invert black moves
+	if(mine == 2 && tx < 0) dirSet = dirSet >> 4 | dirSet << 4 & 255;   // invert black moves
 	mode = 0;                // build mode mask
-	if(*desc == 'm') mode |= 4, desc++;
-	if(*desc == 'c') mode |= his, desc++;
-	if(*desc == 'd') mode |= mine, desc++;
-	if(*desc == 'e') mode |= 8, desc++;
-	if(!mode) mode = his + 4;// no mode spec, use default = mc
-	if(*desc == 'p') mode |= 32, desc++;
-	if(*desc == 'g') mode |= 64, desc++;
-	if(*desc == 'o') mode |= 128, desc++;
-	if(*desc == 'n') jump = 0, desc++;
-	while(*desc == 'j') jump++, desc++;
-	dx = xStep[*p-'A'] - '0';                     // step vector of atom
-	dy = yStep[*p-'A'] - '0';
+	if(*desc == 'm') mode |= 4, desc++;           // move to empty
+	if(*desc == 'c') mode |= his, desc++;         // capture foe
+	if(*desc == 'd') mode |= mine, desc++;        // destroy (capture friend)
+	if(*desc == 'e') mode |= 8, desc++;           // e.p. capture last mover
+	if(*desc == 't') mode |= 16, desc++;          // exclude enemies as hop platform ('test')
+	if(*desc == 'p') mode |= 32, desc++;          // hop over occupied
+	if(*desc == 'g') mode |= 64, desc++;          // hop and toggle range
+	if(*desc == 'o') mode |= 128, desc++;         // wrap around cylinder board
+	if(*desc == 'y') mode |= 512, desc++;         // toggle range on empty square
+	if(*desc == 'n') jump = 0, desc++;            // non-jumping
+	while(*desc == 'j') jump++, desc++;           // must jump (on B,R,Q: skip first square)
+	if(*desc == 'a') cont = ++desc;               // move again after doing what preceded it
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
 	if(expo > 9) p++;                             // allow double-digit
 	desc = p;                                     // this is start of next move
@@ -313,30 +359,72 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 		       r == 0              && board[TOUCHED_W] & 1<<f ||
 		       r == BOARD_HEIGHT-1 && board[TOUCHED_B] & 1<<f   ) ) continue;
 	if(expo > 1 && dx == 0 && dy == 0) {          // castling indicated by O + number
-	    mode |= 16; dy = 1;
+	    mode |= 1024; dy = 1;
 	}
+        if(!cont) {
+	    if(!(mode & 15)) mode |= his + 4;         // no mode spec, use default = mc
+	} else {
+	    strncpy(buf, cont, 80); cont = buf;       // copy next leg(s), so we can modify
+	    atom = buf; while(islower(*atom)) atom++; // skip to atom
+	    if(mode & 32) mode ^= 256 + 32;           // in non-final legs 'p' means 'pass through'
+	    if(mode & 64 + 512) {
+		mode |= 256;                          // and 'g' too, but converts leaper <-> slider
+		if(mode & 512) mode ^= 0x304;         // and 'y' is m-like 'g'
+		*atom = upgrade[*atom-'A'];           // replace atom, BRQ <-> FWK
+		atom[1] = atom[2] = '\0';             // make sure any old range is stripped off
+		if(expo == 1) atom[1] = '0';          // turn other leapers into riders 
+	    }
+	    if(!(mode & 0x30F)) mode |= 4;            // and default of this leg = m
+	}
+	if(dy == 1) skip = jump - 1, jump = 1;        // on W & F atoms 'j' = skip first square
         do {
 	  for(dir=0, bit=1; dir<8; dir++, bit += bit) { // loop over directions
-	    int i = expo, hop = mode, vx, vy;
+	    int i = expo, j = skip, hop = mode, vx, vy, loop = 0;
 	    if(!(bit & dirSet)) continue;             // does not move in this direction
+	    if(dy != 1) j = 0;                        // 
 	    vx = dx*rot[dir][0] + dy*rot[dir][1];     // rotate step vector
 	    vy = dx*rot[dir][2] + dy*rot[dir][3];
-	    x = f; y = r;                             // start square
-	    do {
+	    if(tx < 0) x = f, y = r;                  // start square
+	    else      x = tx, y = ty;                 // from previous to-square if continuation
+	    do {                                      // traverse ray
 		x += vx; y += vy;                     // step to next square
 		if(y < 0 || y >= BOARD_HEIGHT) break; // vertically off-board: always done
-		if(x <  BOARD_LEFT) { if(mode & 128) x += BOARD_RGHT - BOARD_LEFT; else break; }
-		if(x >= BOARD_RGHT) { if(mode & 128) x -= BOARD_RGHT - BOARD_LEFT; else break; }
+		if(x <  BOARD_LEFT) { if(mode & 128) x += BOARD_RGHT - BOARD_LEFT, loop++; else break; }
+		if(x >= BOARD_RGHT) { if(mode & 128) x -= BOARD_RGHT - BOARD_LEFT, loop++; else break; }
+		if(j) { j--; continue; }              // skip irrespective of occupation
 		if(!jump    && board[y - vy + vy/2][x - vx + vx/2] != EmptySquare) break; // blocked
 		if(jump > 1 && board[y - vy + vy/2][x - vx + vx/2] == EmptySquare) break; // no hop
-		if(board[y][x] < BlackPawn)   occup = 1; else
-		if(board[y][x] < EmptySquare) occup = 2; else
+		if(x == f && y == r && !loop) occup = 4;     else // start square counts as empty (if not around cylinder!)
+		if(board[y][x] < BlackPawn)   occup = 0x101; else
+		if(board[y][x] < EmptySquare) occup = 0x102; else
 					      occup = 4;
+		if(cont) {                            // non-final leg
+		  if(mode&16 && his&occup) occup &= 3;// suppress hopping foe in t-mode
+		  if(occup & mode) {                  // valid intermediate square, do continuation
+		    char origAtom = *atom;
+		    if(!(bit & all)) *atom = rotate[*atom - 'A']; // orth-diag interconversion to make direction valid
+		    if(occup & mode & 0x104)          // no side effects, merge legs to one move
+			MovesFromString(board, flags, f, r, x, y, dir, cont, cb, cl);
+		    if(occup & mode & 3 && (killX < 0 || killX == x && killY == y)) {     // destructive first leg
+			int cnt = 0;
+			MovesFromString(board, flags, f, r, x, y, dir, cont, &OK, &cnt);  // count possible continuations
+			if(cnt) {                                                         // and if there are
+			    if(killX < 0) cb(board, flags, FirstLeg, r, f, y, x, cl);     // then generate their first leg
+			    legNr <<= 1;
+			    MovesFromString(board, flags, f, r, x, y, dir, cont, cb, cl);
+			    legNr >>= 1;
+			}
+		    }
+		    *atom = origAtom;        // undo any interconversion
+		  }
+		  if(occup != 4) break;      // occupied squares always terminate the leg
+		  continue;
+		}
 		if(hop & 32+64) { if(occup != 4) { if(hop & 64 && i != 1) i = 2; hop &= 31; } continue; } // hopper
 		if(mode & 8 && y == board[EP_RANK] && occup == 4 && board[EP_FILE] == x) { // to e.p. square
 		    cb(board, flags, mine == 1 ? WhiteCapturesEnPassant : BlackCapturesEnPassant, r, f, y, x, cl);
 		}
-		if(mode & 16) {              // castling
+		if(mode & 1024) {            // castling
 		    i = 2;                   // kludge to elongate move indefinitely
 		    if(occup == 4) continue; // skip empty squares
 		    if(x == BOARD_LEFT   && board[y][x] == initialPosition[y][x]) // reached initial corner piece
@@ -345,12 +433,14 @@ MovesFromString (Board board, int flags, int f, int r, char *desc, MoveCallback 
 			cb(board, flags, mine == 1 ? WhiteKingSideCastle : BlackKingSideCastle, r, f, y, f + expo, cl);
 		    break;
 		}
-		if(occup & mode) cb(board, flags, NormalMove, r, f, y, x, cl); // allowed, generate
+		if(mode & 16 && (board[y][x] == WhiteKing || board[y][x] == BlackKing)) break; // tame piece, cannot capture royal
+		if(occup & mode) cb(board, flags, NormalMove, r, f, y, x, cl);    // allowed, generate
 		if(occup != 4) break; // not valid transit square
 	    } while(--i);
 	  }
-	  dx = dy = 1; dirSet = 0x99; // prepare for diagonal moves of K,Q
-	} while(retry--);             // and start doing them
+	  dx = dy; dirSet = ds2;      // prepare for diagonal moves of K,Q
+	} while(retry-- && ds2);      // and start doing them
+	if(tx >= 0) break;            // don't do other atoms in continuation legs
     }
 } // next atom
 
@@ -455,12 +545,18 @@ Sting (Board board, int flags, int rf, int ff, int dy, int dx, MoveCallback call
 { // Lion-like move of Horned Falcon and Souring Eagle
   int ft = ff + dx, rt = rf + dy;
   if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) return;
+  legNr += 2;
   if (!SameColor(board[rf][ff], board[rt][ft]))
     callback(board, flags, board[rt][ft] != EmptySquare ? FirstLeg : NormalMove, rf, ff, rt, ft, closure);
+  legNr -= 2;
   ft += dx; rt += dy;
   if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) return;
+  legNr += 2;
   if (!SameColor(board[rf][ff], board[rt][ft]))
     callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+  if (!SameColor(board[rf][ff], board[rf+dy][ff+dx]))
+    callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
+  legNr -= 2;
 }
 
 void
@@ -584,7 +680,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
                  piece = (ChessSquare) ( DEMOTED piece );
           if(filter != EmptySquare && piece != filter) continue;
           if(pieceDefs && pieceDesc[piece]) { // [HGM] gen: use engine-defined moves
-              MovesFromString(board, flags, ff, rf, pieceDesc[piece], callback, closure);
+              MovesFromString(board, flags, ff, rf, -1, -1, 0, pieceDesc[piece], callback, closure);
               continue;
           }
           if(IS_SHOGI(gameInfo.variant))
@@ -1090,8 +1186,10 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
               for(rt = rf - 2; rt <= rf + 2; rt++) for(ft = ff - 2; ft <= ff + 2; ft++) {
                 if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
                 if (!(ff == ft && rf == rt) && SameColor(board[rf][ff], board[rt][ft])) continue;
+                i = (killX >= 0 && (rt-killY)*(rt-killY) + (killX-ft)*(killX-ft) < 3); legNr += 2*i;
                 callback(board, flags, (rt-rf)*(rt-rf) + (ff-ft)*(ff-ft) < 3 && board[rt][ft] != EmptySquare ? FirstLeg : NormalMove,
                          rf, ff, rt, ft, closure);
+                legNr -= 2*i;
               }
               break;
 
@@ -1512,6 +1610,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
     CheckTestClosure cl;
     ChessSquare king = flags & F_WHITE_ON_MOVE ? WhiteKing : BlackKing;
     ChessSquare captured = EmptySquare, ep=0, trampled=0;
+    int saveKill = killX;
     /*  Suppress warnings on uninitialized variables    */
 
     if(gameInfo.variant == VariantXiangqi)
@@ -1534,11 +1633,11 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    board[rf][ft] = EmptySquare;
 	} else {
  	    captured = board[rt][ft];
-	    if(killX >= 0) { trampled = board[killY][killX]; board[killY][killX] = EmptySquare; }
+	    if(killX >= 0) { trampled = board[killY][killX]; board[killY][killX] = EmptySquare; killX = -1; }
 	}
 	if(rf == DROP_RANK) board[rt][ft] = ff; else { // [HGM] drop
 	    board[rt][ft] = board[rf][ff];
-	    board[rf][ff] = EmptySquare;
+	    if(rf != rt || ff != ft) board[rf][ff] = EmptySquare;
 	}
 	ep = board[EP_STATUS];
 	if( captured == WhiteLion || captured == BlackLion ) { // [HGM] lion: Chu Lion-capture rules
@@ -1582,7 +1681,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    board[rf][ft] = captured;
 	    board[rt][ft] = EmptySquare;
 	} else {
-	    if(killX >= 0) board[killY][killX] = trampled;
+	    if(saveKill >= 0) board[killY][killX] = trampled, killX = saveKill;
 	    board[rt][ft] = captured;
 	}
 	board[EP_STATUS] = ep;
@@ -1663,7 +1762,7 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
     /* [HGM] Cobra and Falcon are wildcard pieces; consider all their moves legal */
     /* (perhaps we should disallow moves that obviously leave us in check?)              */
     if((piece == WhiteFalcon || piece == BlackFalcon ||
-        piece == WhiteCobra  || piece == BlackCobra) && gameInfo.variant != VariantChu)
+        piece == WhiteCobra  || piece == BlackCobra) && gameInfo.variant != VariantChu && !pieceDesc[piece])
         return CheckTest(board, flags, rf, ff, rt, ft, FALSE) ? IllegalMove : NormalMove;
 
     cl.rf = rf;

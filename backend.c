@@ -1201,6 +1201,11 @@ InitBackEnd1 ()
 	DisplayFatalError(buf, 0, 2);
 	return;
 
+      case VariantNormal:     /* definitely works! */
+	if(strcmp(appData.variant, "normal") && appData.chessProgram) { // [HGM] hope this is an engine-defined variant
+	  safeStrCpy(engineVariant, appData.variant, MSG_SIZ);
+	  return;
+	}
       case VariantXiangqi:    /* [HGM] repetition rules not implemented */
       case VariantFairy:      /* [HGM] TestLegality definitely off! */
       case VariantGothic:     /* [HGM] should work */
@@ -1213,7 +1218,6 @@ InitBackEnd1 ()
       case VariantFalcon:     /* [HGM] untested */
       case VariantCrazyhouse: /* holdings not shown, ([HGM] fixed that!)
 			         offboard interposition not understood */
-      case VariantNormal:     /* definitely works! */
       case VariantWildCastle: /* pieces not automatically shuffled */
       case VariantNoCastle:   /* pieces not automatically shuffled */
       case VariantFischeRandom: /* [HGM] works and shuffles pieces */
@@ -5324,6 +5328,7 @@ UploadGameEvent ()
 }
 
 int killX = -1, killY = -1; // [HGM] lion: used for passing e.p. capture square to MakeMove
+int legNr = 1;
 
 void
 CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char move[7])
@@ -6103,7 +6108,7 @@ InitPosition (int redraw)
     case VariantFalcon:
       pieces = FalconArray;
       gameInfo.boardWidth = 10;
-      SetCharTable(pieceToChar, "PNBRQ.............FKpnbrq.............fk");
+      SetCharTable(pieceToChar, "PNBRQ............FKpnbrq............fk");
       break;
     case VariantXiangqi:
       pieces = XiangqiArray;
@@ -7259,7 +7264,7 @@ Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VO
 {
     typedef char Markers[BOARD_RANKS][BOARD_FILES];
     Markers *m = (Markers *) closure;
-    if(rf == fromY && ff == fromX && (killX < 0 && !(rt == rf && ft == ff) || abs(ft-killX) < 2 && abs(rt-killY) < 2))
+    if(rf == fromY && ff == fromX && (killX < 0 ? !(rt == rf && ft == ff) && legNr & 1 : rt == killY && ft == killX || legNr & 2))
 	(*m)[rt][ft] = 1 + (board[rt][ft] != EmptySquare
 			 || kind == WhiteCapturesEnPassant
 			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && killX < 0), legal[rt][ft] = 1;
@@ -8873,7 +8878,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
         ASSIGN(appData.pieceToCharTable, buf);
       }
-      if(startedFromSetupPosition) return;
       dummy = sscanf(message+s, "%dx%d+%d_%s", &w, &h, &hand, varName);
       if(dummy >= 3) {
         while(message[s] && message[s++] != ' ');
@@ -8883,8 +8887,10 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    if(dummy == 4) gameInfo.variant = StringToVariant(varName);     // parent variant
           InitPosition(1); // calls InitDrawingSizes to let new parameters take effect
           if(*buf) SetCharTable(pieceToChar, buf); // do again, for it was spoiled by InitPosition
+          startedFromSetupPosition = FALSE;
         }
       }
+      if(startedFromSetupPosition) return;
       ParseFEN(boards[0], &dummy, message+s, FALSE);
       DrawPosition(TRUE, boards[0]);
       startedFromSetupPosition = TRUE;
@@ -8893,13 +8899,15 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     if(sscanf(message, "piece %s %s", buf2, buf1) == 2) {
       ChessSquare piece = WhitePawn;
       char *p=buf2;
+      if(*p == '+') piece = CHUPROMOTED WhitePawn, p++;
+      piece += CharToPiece(*p) - WhitePawn;
       if(cps != &first || appData.testLegality && *engineVariant == NULLCHAR
+      /* always accept definition of  */       && piece != WhiteFalcon && piece != BlackFalcon
+      /* wild-card pieces.            */       && piece != WhiteCobra  && piece != BlackCobra
       /* For variants we don't have   */       && gameInfo.variant != VariantBerolina
       /* correct rules for, we cannot */       && gameInfo.variant != VariantCylinder
       /* enforce legality on our own! */       && gameInfo.variant != VariantUnknown
                                                && gameInfo.variant != VariantFairy    ) return;
-      if(*p == '+') piece = CHUPROMOTED WhitePawn, p++;
-      piece += CharToPiece(*p) - WhitePawn;
       if(piece < EmptySquare) {
         pieceDefs = TRUE;
         ASSIGN(pieceDesc[piece], buf1);
@@ -15520,6 +15528,7 @@ ForwardInner (int target)
 
     seekGraphUp = FALSE;
     MarkTargetSquares(1);
+    fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
 
     if (gameMode == PlayFromGameFile && !pausing)
       PauseEvent();
@@ -15638,6 +15647,7 @@ BackwardInner (int target)
     if (gameMode == EditPosition) return;
     seekGraphUp = FALSE;
     MarkTargetSquares(1);
+    fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
     if (currentMove <= backwardMostMove) {
 	ClearHighlights();
 	DrawPosition(full_redraw, boards[currentMove]);
@@ -17817,8 +17827,17 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
     while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' '; else --p;
   } else {
   if(nrCastlingRights) {
+     int handW=0, handB=0;
+     if(gameInfo.variant == VariantSChess) { // for S-Chess, all virgin backrank pieces must be listed
+	for(i=0; i<BOARD_HEIGHT; i++) handW += boards[move][i][BOARD_RGHT]; // count white held pieces
+	for(i=0; i<BOARD_HEIGHT; i++) handB += boards[move][i][BOARD_LEFT-1]; // count black held pieces
+     }
      q = p;
      if(appData.fischerCastling) {
+	if(handW) { // in shuffle S-Chess simply dump all virgin pieces
+           for(i=BOARD_RGHT-1; i>=BOARD_LEFT; i--)
+               if(boards[move][VIRGIN][i] & VIRGIN_W) *p++ = i + AAA + 'A' - 'a';
+	} else {
        /* [HGM] write directly from rights */
            if(boards[move][CASTLING][2] != NoRights &&
               boards[move][CASTLING][0] != NoRights   )
@@ -17826,12 +17845,18 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
            if(boards[move][CASTLING][2] != NoRights &&
               boards[move][CASTLING][1] != NoRights   )
                 *p++ = boards[move][CASTLING][1] + AAA + 'A' - 'a';
+	}
+	if(handB) {
+           for(i=BOARD_RGHT-1; i>=BOARD_LEFT; i--)
+               if(boards[move][VIRGIN][i] & VIRGIN_B) *p++ = i + AAA;
+	} else {
            if(boards[move][CASTLING][5] != NoRights &&
               boards[move][CASTLING][3] != NoRights   )
                 *p++ = boards[move][CASTLING][3] + AAA;
            if(boards[move][CASTLING][5] != NoRights &&
               boards[move][CASTLING][4] != NoRights   )
                 *p++ = boards[move][CASTLING][4] + AAA;
+	}
      } else {
 
         /* [HGM] write true castling rights */
@@ -17841,8 +17866,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
                boards[move][CASTLING][2] != NoRights  ) k = 1, *p++ = 'K';
             q = (boards[move][CASTLING][1] == BOARD_LEFT &&
                  boards[move][CASTLING][2] != NoRights  );
-            if(gameInfo.variant == VariantSChess) { // for S-Chess, indicate all vrgin backrank pieces
-		for(i=j=0; i<BOARD_HEIGHT; i++) j += boards[move][i][BOARD_RGHT]; // count white held pieces
+            if(handW) { // for S-Chess with pieces in hand, list virgin pieces between K and Q
                 for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
                     if((boards[move][0][i] != WhiteKing || k+q == 0) &&
                         boards[move][VIRGIN][i] & VIRGIN_W) *p++ = i + AAA + 'A' - 'a';
@@ -17853,8 +17877,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
                boards[move][CASTLING][5] != NoRights  ) k = 1, *p++ = 'k';
             q = (boards[move][CASTLING][4] == BOARD_LEFT &&
                  boards[move][CASTLING][5] != NoRights  );
-            if(gameInfo.variant == VariantSChess) {
-		for(i=j=0; i<BOARD_HEIGHT; i++) j += boards[move][i][BOARD_LEFT-1]; // count black held pieces
+            if(handB) {
                 for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
                     if((boards[move][BOARD_HEIGHT-1][i] != BlackKing || k+q == 0) &&
                         boards[move][VIRGIN][i] & VIRGIN_B) *p++ = i + AAA;
