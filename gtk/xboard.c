@@ -226,6 +226,7 @@ void DisplayMove P((int moveNumber));
 void update_ics_width P(());
 int CopyMemoProc P(());
 static gboolean EventProc P((GtkWidget *widget, GdkEvent *event, gpointer g));
+static int FindLogo P((char *place, char *name, char *buf));
 
 #ifdef TODO_GTK
 #if ENABLE_NLS
@@ -1201,8 +1202,10 @@ main (int argc, char **argv)
 
     if(appData.logoSize)
     {   // locate and read user logo
-	char buf[MSG_SIZ];
-	snprintf(buf, MSG_SIZ, "%s/%s.png", appData.logoDir, UserName());
+	char buf[MSG_SIZ], name[MSG_SIZ];
+	snprintf(name, MSG_SIZ, "/home/%s", UserName());
+	if(!FindLogo(name, ".logo", buf))
+	    FindLogo(appData.logoDir, name + 6, buf);
 	ASSIGN(userLogo, buf);
     }
 
