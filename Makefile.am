@@ -63,7 +63,7 @@ EXTRA_DIST = pixmaps themes png sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop xboard-config.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
-	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS $(FRONTENDextras)
+	xboard.conf SHORTLOG DIFFSTAT history.c ABOUT-NLS $(FRONTENDextras)
 
 DISTCLEANFILES = stamp-h
 
@@ -197,21 +197,6 @@ soundsdir = $(gamedatadir)/sounds
 dist_sounds_DATA = \
   sounds/cymbal.wav     sounds/pop2.wav   sounds/slap.wav     sounds/ding1.wav      sounds/laser.wav \
   sounds/woodthunk.wav  sounds/gong.wav   sounds/penalty.wav  sounds/honkhonk.wav   sounds/phone.wav  sounds/roar.wav
-
-
-### set correct dir in xboard.conf
-
-edit = sed -e 's|@pngdir[@]|$(pngdir)|g' \
-           -e 's|@soundsdir[@]|$(soundsdir)|g'
-
-xboard.conf: Makefile $(srcdir)/xboard.conf.in
-	@echo '  'GEN '  ' $@;
-	@rm -f $@ $@.tmp
-	@$(edit) $(srcdir)/$@.in >$@.tmp
-	@mv $@.tmp $@
-
-distclean-local:
-	-rm -f xboard.conf
 
 ### the man page depends on several files, so we add a special rule
 
