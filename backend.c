@@ -8893,6 +8893,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       if(startedFromSetupPosition) return;
       ParseFEN(boards[0], &dummy, message+s, FALSE);
       DrawPosition(TRUE, boards[0]);
+      CopyBoard(initialPosition, boards[0]);
       startedFromSetupPosition = TRUE;
       return;
     }
