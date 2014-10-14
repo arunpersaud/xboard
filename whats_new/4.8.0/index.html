@@ -30,6 +30,8 @@
 <a href="#tag-A15">Displaying a blunder graph</a>
 </li><li>
 <a href="#tag-A14">Slicing up a PGN database</a>
+</li><li>
+<a href="#tag-A16">Auto-install of engines</a>
 </li></ul>
 
 </td><td>
@@ -389,7 +391,7 @@ command-line option.
 
 <h3><a name="tag-A14">Selecting from a PGN database</a></h3>
 <p>
-There is a new item in the File menu: Save Selected Games.
+There is a new item in the File menu: Save Selected Games.k
 This will cause all games currently selected for display in the Game List
 (through applying a text filter, or using the Find Position button)
 to be appended to a file.
@@ -397,6 +399,40 @@ The number of pieces in the final position has been added as a search criterion.
 The 'Save Games as Book' function will now also only take the games
 selected for display into account.
 This should offer you more control over what you include in the book.
+</p>
+
+<h3><a name="tag-A15">Automatically adding new engines to XBoard's engine list</a></h3>
+<p>
+To efficiently use engine, e.g. being able to select them from the Load Engine dialog's listbox,
+or as tournament participant, the engine had to be first installed in XBoard's engine list.
+Just installing the engine package on your machine was not enough.
+This has now been changed, with the aid of a new Linux standard for 'AI plugins'.
+Engines compliant with this standard will install a tiny file to announce their presence
+in a system's standard plugin directory for the communication protocol they understand.
+GUIs that support that protocol can then hunt for new arrivals there,
+and the file will contain the essential info needed to run the engine.
+(E.g. the command needed to launch it for use with that protocol.)
+</p>
+<p>
+XBoard now has a persistent string option -autoInstall, which activates this feature when set to a non-empty string.
+Any time XBoard is launched it will then examine the contents of the plugin directories for XBoard and UCI protocol,
+and if it finds any engines there newer than the the persistent settings file
+(meaning this user sees them for the first time)
+it will add the required command to its engine list.
+In the future the standard will be further developed so the plugin files will also contain information
+on what variants the engine plays,
+so that the user can filter these automatic installs by the value set for the -autoInstall option.
+E.g. -autoInstall "shogi,xiangqi" would only automatically install new engines that play Shogi or Xiangqi,
+and ignore engines that play only Chess.
+</p>
+<p>
+XBoard also supports a new standard for engine logos:
+engine packages can install a png image derived from their name (e.g. fairymax.png)
+of their logo in a standard plugin-logos system directory.
+XBoard's -autoLogo option now also searches for engine logos in those standard places,
+after having tried the configured -logoDir and the directory specified for the engine
+(with -fd or -sd options; it searches for a file named logo.pgn there).
+For user logos it will also try ~/.logo.png.
 </p>
 
 <a name="tag-B"><h2>New variants and general variant support</h2></a>
