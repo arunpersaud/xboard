@@ -15078,6 +15078,8 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 
     switch (selection) {
       case ClearBoard:
+	fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
+	MarkTargetSquares(1);
 	CopyBoard(currentBoard, boards[0]);
 	CopyBoard(menuBoard, initialPosition);
 	if (gameMode == IcsExamining && ics_type == ICS_FICS) {
