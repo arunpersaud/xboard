@@ -221,6 +221,13 @@ GameListReplace (int page)
 }
 
 void
+GameListUpdate ()
+{
+    GameListPrepare(False, False);
+    GameListReplace(0);
+}
+
+void
 GameListPopUp (FILE *fp, char *filename)
 {
     if (glc == NULL) {

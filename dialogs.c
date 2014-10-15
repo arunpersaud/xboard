@@ -2149,6 +2149,7 @@ GLT_OK (int n)
 {
     GLT_ParseList();
     appData.gameListTags = strdup(lpUserGLT);
+    GameListUpdate();
     return 1;
 }
 
