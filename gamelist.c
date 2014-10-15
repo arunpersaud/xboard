@@ -180,6 +180,7 @@ GameListInitGameInfo (GameInfo *gameInfo)
     gameInfo->whiteRating = -1; /* unknown */
     gameInfo->blackRating = -1; /* unknown */
     gameInfo->variant = VariantNormal;
+    gameInfo->variantName = NULL;
     gameInfo->outOfBook = NULL;
     gameInfo->resultDetails = NULL;
 }
@@ -437,6 +438,9 @@ ClearGameInfo (GameInfo *gameInfo)
     if (gameInfo->extraTags != NULL) {
 	free(gameInfo->extraTags);
     }
+    if (gameInfo->variantName != NULL) {
+        free(gameInfo->variantName);
+    }
     if (gameInfo->outOfBook != NULL) {
         free(gameInfo->outOfBook);
     }
@@ -513,6 +517,8 @@ GameListLine (int number, GameInfo * gameInfo)
             strncpy( buf, gameInfo->timeControl ? gameInfo->timeControl : "?", MAX_FIELD_LEN );
             break;
         case GLT_VARIANT:
+            strncpy( buf, gameInfo->variantName ? gameInfo->variantName : VariantName(gameInfo->variant), MAX_FIELD_LEN );
+//            strncpy( buf, VariantName(gameInfo->variant), MAX_FIELD_LEN );
             break;
         case GLT_OUT_OF_BOOK:
             strncpy( buf, gameInfo->outOfBook ? gameInfo->outOfBook : "?", MAX_FIELD_LEN );
