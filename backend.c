@@ -12857,7 +12857,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	if (!err) numPGNTags++;
 
         /* [HGM] PGNvariant: automatically switch to variant given in PGN tag */
-        if(gameInfo.variant != oldVariant) {
+        if(gameInfo.variant != oldVariant && (gameInfo.variant != VariantNormal || gameInfo.variantName == NULL || *gameInfo.variantName == NULLCHAR)) {
             startedFromPositionFile = FALSE; /* [HGM] loadPos: variant switch likely makes position invalid */
 	    ResetFrontEnd(); // [HGM] might need other bitmaps. Cannot use Reset() because it clears gameInfo :-(
 	    InitPosition(TRUE);
