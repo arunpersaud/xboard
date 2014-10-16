@@ -190,7 +190,7 @@ AC_ARG_ENABLE([osxapp],
               [enable_OSXAPP=$withval],
               [enable_OSXAPP="no"])
 
-AS_IF([test "x$enable_OSXAPP" = "xyes"], [
+AS_IF([test x"$enable_OSXAPP" = x"yes"], [
      AC_PREFIX_DEFAULT([`pwd`/XBoard.app/Contents])
      with_GTK="yes"
      enable_mimedb="no"
@@ -204,10 +204,10 @@ AS_IF([test "x$enable_OSXAPP" = "xyes"], [
      GAMEDATADIR='$(datadir)/xboard'
 ])
 
-AM_CONDITIONAL(OSX_APP, test x"$enable_OSXAPP" = "xyes")
+AM_CONDITIONAL(OSX_APP, test x"$enable_OSXAPP" = x"yes")
 
-AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x"$enable_mimedb" = "xyes")
-if test x"$enable_mimedb" = "xyes"; then
+AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x"$enable_mimedb" = x"yes")
+if test x"$enable_mimedb" = x"yes"; then
    AC_PATH_PROG([XDG_MIME],[xdg-mime])
    AC_SUBST(XDG_MIME)
    AC_PATH_PROG([XDG_DESKTOP_MENU],[xdg-desktop-menu])
@@ -516,7 +516,7 @@ AC_ARG_ENABLE( [zippy],
 	       [],
 	       [enable_zippy="no"])
 
-if test x"$enable_zippy" != xno; then
+if test x"$enable_zippy" != x"no"; then
   AC_DEFINE(ZIPPY, 1,[should zippy be enabled])
 else
   AC_DEFINE(ZIPPY, 0,[should zippy be enabled])
