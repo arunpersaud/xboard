@@ -882,9 +882,9 @@ main (int argc, char **argv)
 	snprintf(localeDir, MSG_SIZ, "%s/share/locale", res_path); // redefine locale dir for OSX bundle
 #endif
 	theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
-	strncpy(dataDir, path, MSG_SIZ);
 	snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
-	snprintf(svgDir, MSG_SIZ, "%s/Contents/Resources/share/xboard/themes/default", path);
+	snprintf(dataDir, MSG_SIZ, "%s/Contents/Resources/share/xboard", path);
+	snprintf(svgDir, MSG_SIZ, "%s/themes/default", dataDir);
 	suppress = (argc == 1 || argc > 1 && argv[1][00] != '-'); // OSX sends signal even if name was already argv[1]!
 	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
 	// we must call application ready before we can get the signal,

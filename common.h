@@ -838,6 +838,7 @@ typedef struct {
     int whiteRating;    /* -1 if unknown */
     int blackRating;    /* -1 if unknown */
     VariantClass variant;
+    char *variantName;
     char *outOfBook;    /* [AS] Move and score when engine went out of book */
     int boardWidth;     /* [HGM] adjustable board size */
     int boardHeight;

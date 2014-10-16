@@ -8893,6 +8893,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       if(startedFromSetupPosition) return;
       ParseFEN(boards[0], &dummy, message+s, FALSE);
       DrawPosition(TRUE, boards[0]);
+      CopyBoard(initialPosition, boards[0]);
       startedFromSetupPosition = TRUE;
       return;
     }
@@ -12856,7 +12857,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	if (!err) numPGNTags++;
 
         /* [HGM] PGNvariant: automatically switch to variant given in PGN tag */
-        if(gameInfo.variant != oldVariant) {
+        if(gameInfo.variant != oldVariant && (gameInfo.variant != VariantNormal || gameInfo.variantName == NULL || *gameInfo.variantName == NULLCHAR)) {
             startedFromPositionFile = FALSE; /* [HGM] loadPos: variant switch likely makes position invalid */
 	    ResetFrontEnd(); // [HGM] might need other bitmaps. Cannot use Reset() because it clears gameInfo :-(
 	    InitPosition(TRUE);
@@ -15077,6 +15078,8 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 
     switch (selection) {
       case ClearBoard:
+	fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
+	MarkTargetSquares(1);
 	CopyBoard(currentBoard, boards[0]);
 	CopyBoard(menuBoard, initialPosition);
 	if (gameMode == IcsExamining && ics_type == ICS_FICS) {

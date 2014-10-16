@@ -63,7 +63,7 @@ EXTRA_DIST = pixmaps themes png sounds winboard \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop xboard-config.desktop \
 	xboard-fen-viewer.desktop  xboard-pgn-viewer.desktop  xboard-tourney.desktop xboard.xml \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
-	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS $(FRONTENDextras)
+	xboard.conf SHORTLOG DIFFSTAT history.c ABOUT-NLS $(FRONTENDextras)
 
 DISTCLEANFILES = stamp-h
 
@@ -198,21 +198,6 @@ dist_sounds_DATA = \
   sounds/cymbal.wav     sounds/pop2.wav   sounds/slap.wav     sounds/ding1.wav      sounds/laser.wav \
   sounds/woodthunk.wav  sounds/gong.wav   sounds/penalty.wav  sounds/honkhonk.wav   sounds/phone.wav  sounds/roar.wav
 
-
-### set correct dir in xboard.conf
-
-edit = sed -e 's|@pngdir[@]|$(pngdir)|g' \
-           -e 's|@soundsdir[@]|$(soundsdir)|g'
-
-xboard.conf: Makefile $(srcdir)/xboard.conf.in
-	@echo '  'GEN '  ' $@;
-	@rm -f $@ $@.tmp
-	@$(edit) $(srcdir)/$@.in >$@.tmp
-	@mv $@.tmp $@
-
-distclean-local:
-	-rm -f xboard.conf
-
 ### the man page depends on several files, so we add a special rule
 
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
@@ -256,3 +241,89 @@ if ENABLE_UPDATE_MIMEDB
 		$(XDG_ICON_RESOURCE) uninstall --context mimetypes --size 48 ini48.png application-x-xboard-opt;\
 	fi
 endif
+
+#if OSX_APP
+osxapp: all-recursive install install-recursive
+	$(MKDIR_P) $(datarootdir)/bin
+	$(MKDIR_P) $(datarootdir)/lib
+	$(MKDIR_P) $(sysconfdir)/gtk-2.0
+	$(MKDIR_P) $(sysconfdir)/pango
+	$(MKDIR_P) $(datadir)/gtk-engines
+	$(MKDIR_P) $(datadir)/themes
+	$(MKDIR_P) $(gamedatadir)/themes
+	$(INSTALL) ./osxapp/Info.plist $(prefix)
+	$(INSTALL) ./osxapp/PkgInfo $(prefix)
+	$(INSTALL) ./osxapp/XBoard.gtklauncher $(bindir)/XBoard
+	$(INSTALL) ./xboard $(bindir)/xboard-bin
+	cp -R ./osxapp/icons/. $(datarootdir)
+	$(INSTALL) ./osxapp/man.command    $(datarootdir)/bin/man.command
+	$(INSTALL) ./osxapp/info.command   $(datarootdir)/bin/info.command
+	sed -e 's?-soundProgram "aplay -q"?-soundProgram "afplay"?'\
+            -e 's?-firstChessProgram fairymax?-firstChessProgram "./fairymax"?'\
+	    -e 's?-firstChessProgramNames {fairymax?-firstChessProgramNames {"fairymax" -fcp "./fairymax" -fd "~~/../../bin/fairymax"?'\
+	    -e 's?"Fruit 2.1" -fcp fruit -fUCI?"fruit" -fcp "./fruit" -fd "~~/../../bin/fruit" -fUCI?'\
+	    -e '/"Crafty" -fcp crafty/d'\
+	    -e '/"GNU Chess" -fcp gnuchess/d'\
+	    -e 's?-polyglotDir ""?-polyglotDir "~~/../../bin"?'\
+	    -e 's?polyglot ?./polyglot ?'\
+	    -e 's?-icsNames {"fics" -icshost freechess.org -icshelper timeseal?-icsNames {"fics" -icshost 69.36.243.188 -icshelper ~~/../../bin/timeseal?'\
+	    -e 's?"icc" -icshost chessclub.com -icshelper timestamp?"icc" -icshost 207.99.83.228 -icshelper ~~/../../bin/timestamp?'\
+	    -e 's?"kc" -icshost alanimus.com -icshelper timeseal?"vics" -icshost winboard.nl -icshelper ~~/../../bin/timeseal?'\
+	    -e '/; Save user settings./d'\
+	    -e '/; Must be last in file to make user options prevail over system-wide settings!/d'\
+	    -e '/-saveSettingsOnExit true/d'\
+	    -e '/-saveSettingsFile "~\/.xboardrc"/d'\
+	    -e '/-settingsFile "~\/.xboardrc"/d'<./xboard.conf >$(sysconfdir)/xboard.conf
+	echo '; OSX' >>$(sysconfdir)/xboard.conf
+	echo ';'>>$(sysconfdir)/xboard.conf
+	echo '-clockFont "Sans Bold 26" '>>$(sysconfdir)/xboard.conf
+	echo '-pieceImageDirectory "~~/themes/default"' >>$(sysconfdir)/xboard.conf
+	echo '-autoLogo true' >>$(sysconfdir)/xboard.conf
+	echo '-logoDir "~~/logos"' >>$(sysconfdir)/xboard.conf
+	echo '-logoSize 100' >>$(sysconfdir)/xboard.conf
+	echo '-openCommand "cd %s/../../bin; open"' >>$(sysconfdir)/xboard.conf
+	echo '-firstDirectory "~~/../../bin/fairymax"' >>$(sysconfdir)/xboard.conf
+	echo '-secondDirectory "~~/../../bin/fairymax"' >>$(sysconfdir)/xboard.conf
+	echo '-secondChessProgram "./fairymax"' >>$(sysconfdir)/xboard.conf
+	echo ';' >>$(sysconfdir)/xboard.conf
+	echo '; Save user settings.' >>$(sysconfdir)/xboard.conf
+	echo '; Must be last in file to make user options prevail over system-wide settings!' >>$(sysconfdir)/xboard.conf
+	echo ';' >>$(sysconfdir)/xboard.conf
+	echo '-saveSettingsOnExit true' >>$(sysconfdir)/xboard.conf
+	echo '-saveSettingsFile "~/Library/Preferences/XBoardOSX.conf"' >>$(sysconfdir)/xboard.conf
+	echo '-settingsFile "~/Library/Preferences/XBoardOSX.conf"' >>$(sysconfdir)/xboard.conf
+
+	sed 's?/opt/local/lib?/tmp/skl/XBoard.app/Contents/Resources/lib?' </opt/local/etc/gtk-2.0/gdk-pixbuf.loaders >$(sysconfdir)/gtk-2.0/gdk-pixbuf.loaders
+	sed -e 's?/opt/local/lib?/tmp/skl/XBoard.app/Contents/Resources/lib?' -e 's?/opt/local/share/locale?/tmp/skl/XBoard.app/Contents/Resources/share/locale?' </opt/local/etc/gtk-2.0/gtk.immodules >$(sysconfdir)/gtk-2.0/gtk.immodules
+	$(INSTALL) ./osxapp/launcher_rc $(datarootdir)/
+	$(INSTALL) /opt/local/etc/gtk-2.0/im-multipress.conf $(sysconfdir)/gtk-2.0
+	$(INSTALL) ./osxapp/gtkrc $(sysconfdir)/gtk-2.0/gtkrc
+	$(INSTALL) ./osxapp/pango.modules $(sysconfdir)/pango/pangorc
+	cp -R /opt/local/lib/gtk-2.0 $(datarootdir)/lib
+	cp -R /opt/local/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
+	$(INSTALL) /opt/local/share/gtk-engines/murrine.xml $(datadir)/gtk-engines
+	cp -R ./osxapp/OSX-theme $(datadir)/themes
+	cp -R /opt/local/share/themes/Mac $(datadir)/themes
+	cp -R ./osxapp/default/. $(gamedatadir)/themes/default
+	$(INSTALL) ./png/marble_d.png $(gamedatadir)/themes/textures
+	$(INSTALL) ./png/marble_l.png $(gamedatadir)/themes/textures
+	$(INSTALL) ./png/xqwood.png $(gamedatadir)/themes/textures
+	cp -R ./osxapp/logos $(gamedatadir)/
+	cp -R ./osxapp/osx-localization/. $(datarootdir)/
+	for i in po/*gmo; do lang=`basename $$i .gmo`; $(INSTALL) /opt/local/share/locale/$$lang/LC_MESSAGES/gtk20.mo $(localedir)/$$lang/LC_MESSAGES/; done
+	dylibbundler -of -b -x $(bindir)/xboard-bin -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	dylibbundler -of -b -x $(datarootdir)/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/immodules/im-quartz.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libpixmap.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libmurrine.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	find ./XBoard.app -name '*.a' -print0 | xargs -0 rm
+	rm -r $(datarootdir)/lib/gtk-2.0/include
+	rm -r $(datarootdir)/share/applications
+	rm $(datarootdir)/share/info/dir
+	rm -r $(datarootdir)/share/icons
+	rm -r $(datarootdir)/share/mime
+	mv $(datarootdir)/share/games/xboard/themes/conf $(datarootdir)/share/xboard/conf
+	rm -r $(datarootdir)/share/xboard/pixmaps
+	rm -r $(datarootdir)/share/games
+#endif
+

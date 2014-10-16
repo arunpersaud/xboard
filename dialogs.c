@@ -286,11 +286,11 @@ static Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
 { 0,  LR,       175, NULL, NULL, NULL, NULL, Label, N_("Tourney participants:") },
 { 0, SAME_ROW|RR, 175, NULL, NULL, NULL, NULL, Label, N_("Select Engine:") },
-{ 150, T_VSCRL | T_FILL | T_WRAP,
+{ 200, T_VSCRL | T_FILL | T_WRAP,
                 175, NULL, (void*) &engineName, NULL, NULL, TextBox, "" },
-{ 150, SAME_ROW|RR,
+{ 200, SAME_ROW|RR,
                 175, NULL, (void*) engineMnemonic, (char*) &AddToTourney, NULL, ListBox, "" },
-{ 0, 0, 0, NULL, NULL, NULL, NULL, Break, "" }, // to decouple alignment above and below boxes
+{ 0, SAME_ROW, 0, NULL, NULL, NULL, NULL, Break, "" }, // to decouple alignment above and below boxes
 //{ 0,  COMBO_CALLBACK | NO_GETTEXT,
 //		  0, NULL, (void*) &AddToTourney, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
 { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
@@ -2149,6 +2149,7 @@ GLT_OK (int n)
 {
     GLT_ParseList();
     appData.gameListTags = strdup(lpUserGLT);
+    GameListUpdate();
     return 1;
 }
 

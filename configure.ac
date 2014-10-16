@@ -180,6 +180,42 @@ AC_ARG_WITH([gamedatadir],
             [GAMEDATADIR="$withval"],
             [GAMEDATADIR='$(datadir)/games/xboard'])
 
+AC_ARG_ENABLE(	[update-mimedb],
+		[AS_HELP_STRING([--disable-update-mimedb],[disable the update-mime-database after install [default=no]])],
+		[enable_mimedb="no"],
+		[enable_mimedb="yes"])
+
+AC_ARG_ENABLE([osxapp],
+	      [AS_HELP_STRING([--enable-osxapp],[build a OSX app])],
+              [enable_OSXAPP=$withval],
+              [enable_OSXAPP="no"])
+
+AS_IF([test "x$enable_osxapp" = "xyes"], [
+     AC_PREFIX_DEFAULT([`pwd`/XBoard.app/Contents])
+     with_GTK="yes"
+     enable_mimedb="no"
+     datarootdir='$(prefix)/Resources'
+     datadir='$(datarootdir)/share'
+     sysconfdir='$(datarootdir)/etc'
+     infodir='$(datadir)/info'
+     mandir='$(datadir)/man'
+     bindir='$(prefix)/MacOS'
+     localedir='$(datadir)/locale'
+     GAMEDATADIR='$(datadir)/xboard'
+])
+
+AM_CONDITIONAL(OSX_APP, test x"$enable_osxapp" = "xyes")
+
+AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x"$enable_mimedb" = "xyes")
+if test x"$enable_mimedb" = "xyes"; then
+   AC_PATH_PROG([XDG_MIME],[xdg-mime])
+   AC_SUBST(XDG_MIME)
+   AC_PATH_PROG([XDG_DESKTOP_MENU],[xdg-desktop-menu])
+   AC_SUBST(XDG_DESKTOP_MENU)
+   AC_PATH_PROG([XDG_ICON_RESOURCE],[xdg-icon-resource])
+   AC_SUBST(XDG_ICON_RESOURCE)
+fi
+
 AC_SUBST(ICONSDIR)
 AC_SUBST(SVGICONSDIR)
 AC_SUBST(DESKTOPDIR)
@@ -429,21 +465,16 @@ dnl| USE_PTYS=1
 dnl| add some libs for OS X
   *-apple-* )
     AC_MSG_WARN([Apple support is experimental, please report any problems to bug-xboard@gnu.org])
+    AC_MSG_WARN([Building an OS X app currently relies on some programs such as dylib that we don't test for])
+    AC_MSG_WARN([patches welcome ;)])
     AC_PATH_PROG(SW_VERS, sw_vers)
     if test "x$SW_VERS" != "x"; then
       AC_MSG_CHECKING(Mac OS X version)
       MACOSX_VERSION=`$SW_VERS -productVersion`
       AC_MSG_RESULT([$MACOSX_VERSION])
     fi
-    case "$MACOSX_VERSION" in
-      10.0*|10.1|10.1.*|10.2*|10.3*|10.4*|10.5*|10.6*)
-      FRONTEND_LIBS="$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk"
-        ;;
-      *)
-      FRONTEND_LIBS="$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names"
-        ;;
-    esac
-
+    FRONTEND_LIBS="$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names "
+    FRONTEND_CFLAGS="$FRONTEND_CFLAGS -I/opt/local/include -L/opt/local/lib"
   ;;
 esac
 
@@ -511,23 +542,6 @@ AC_SUBST(X_CFLAGS)
 AC_SUBST(X_LIBS)
 fi
 
-dnl | should we install desktop icons and mime associations?
-AC_ARG_ENABLE(	[update-mimedb],
-		[AS_HELP_STRING([--disable-update-mimedb],[disable the update-mime-database after install [default=no]])],
-		[enable_mimedb="no"],
-		[enable_mimedb="yes"])
-
-AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x"$enable_mimedb" = "xyes")
-
-if test x"$enable_mimedb" = "xyes"; then
-   AC_PATH_PROG([XDG_MIME],[xdg-mime])
-   AC_SUBST(XDG_MIME)
-   AC_PATH_PROG([XDG_DESKTOP_MENU],[xdg-desktop-menu])
-   AC_SUBST(XDG_DESKTOP_MENU)
-   AC_PATH_PROG([XDG_ICON_RESOURCE],[xdg-icon-resource])
-   AC_SUBST(XDG_ICON_RESOURCE)
-fi
-
 dnl create a string with configure options that can be passed to the
 dnl program, good for bug reports and version printout, see output below
 CONFIGURE_OPTIONS="prefix=$prefix; datarootdir=$datarootdir; \
@@ -540,7 +554,7 @@ ptys=$enable_ptys; zippy=$enable_zippy; sigint=$enable_sigint"
 AC_SUBST(CONFIGURE_OPTIONS)
 
 dnl |  output Makefile
-AC_CONFIG_FILES([Makefile cmail po/Makefile.in])
+AC_CONFIG_FILES([Makefile cmail po/Makefile.in osxapp/Info.plist])
 AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])
 AC_CONFIG_COMMANDS([chmod-cmail],[chmod 755 cmail])
 AC_OUTPUT
