@@ -8908,6 +8908,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       /* For variants we don't have   */       && gameInfo.variant != VariantBerolina
       /* correct rules for, we cannot */       && gameInfo.variant != VariantCylinder
       /* enforce legality on our own! */       && gameInfo.variant != VariantUnknown
+                                               && gameInfo.variant != VariantGreat
                                                && gameInfo.variant != VariantFairy    ) return;
       if(piece < EmptySquare) {
         pieceDefs = TRUE;
