@@ -180,13 +180,13 @@ AC_ARG_WITH([gamedatadir],
             [GAMEDATADIR="$withval"],
             [GAMEDATADIR='$(datadir)/games/xboard'])
 
-AC_ARG_ENABLE(	[update-mimedb],
-		[AS_HELP_STRING([--disable-update-mimedb],[disable the update-mime-database after install [default=no]])],
-		[enable_mimedb="no"],
-		[enable_mimedb="yes"])
+AC_ARG_ENABLE([update-mimedb],
+	      [AS_HELP_STRING([--disable-update-mimedb],[disable the update-mime-database after install [default=no]])],
+	      [enable_mimedb="no"],
+	      [enable_mimedb="yes"])
 
 AC_ARG_ENABLE([osxapp],
-	      [AS_HELP_STRING([--enable-osxapp],[build a OSX app])],
+	      [AS_HELP_STRING([--enable-osxapp],[build a OSX app [default=no]])],
               [enable_OSXAPP=$withval],
               [enable_OSXAPP="no"])
 
@@ -465,7 +465,8 @@ dnl| USE_PTYS=1
 dnl| add some libs for OS X
   *-apple-* )
     AC_MSG_WARN([Apple support is experimental, please report any problems to bug-xboard@gnu.org])
-    AC_MSG_WARN([Building an OS X app currently relies on some programs such as dylib that we don't test for])
+    AC_MSG_WARN([use --enable-osxapp to enable the build target and automatically adjust target directories])
+    AC_MSG_WARN([Building an OSX app currently relies on some programs such as dylib that we don't test for])
     AC_MSG_WARN([patches welcome ;)])
     AC_PATH_PROG(SW_VERS, sw_vers)
     if test "x$SW_VERS" != "x"; then

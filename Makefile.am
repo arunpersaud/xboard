@@ -242,7 +242,7 @@ if ENABLE_UPDATE_MIMEDB
 	fi
 endif
 
-#if OSX_APP
+if OSX_APP
 osxapp: all-recursive install install-recursive
 	$(MKDIR_P) $(datarootdir)/bin
 	$(MKDIR_P) $(datarootdir)/lib
@@ -325,5 +325,5 @@ osxapp: all-recursive install install-recursive
 	mv $(datarootdir)/share/games/xboard/themes/conf $(datarootdir)/share/xboard/conf
 	rm -r $(datarootdir)/share/xboard/pixmaps
 	rm -r $(datarootdir)/share/games
-#endif
+endif
 
