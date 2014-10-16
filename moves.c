@@ -268,7 +268,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
     int mine, his, dir, bit, occup, i;
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
     while(*p) {                  // more moves to go
-	int expo = 1, dx, dy, x, y, mode, dirSet, ds2, retry=0, initial=0, jump=1, skip = 0, all = 0;
+	int expo = 1, dx, dy, x, y, mode, dirSet, ds2=0, retry=0, initial=0, jump=1, skip = 0, all = 0;
 	char *cont = NULL;
 	if(*p == 'i') initial = 1, desc = ++p;
 	while(islower(*p)) p++;  // skip prefixes

@@ -119,6 +119,7 @@ ParsePGNTag (char *tag, GameInfo *gameInfo)
     } else if (StrCaseCmp(name, "VariantMen") == 0) {
         /* for now ignore this tag, as we have no method yet */
         /* for assigning the pieces to XBoard pictograms     */
+        success = TRUE;
     } else if (StrCaseCmp(name, PGN_OUT_OF_BOOK) == 0) {
         /* [AS] Out of book annotation */
         success = StrSavePtr(value, &gameInfo->outOfBook) != NULL;
