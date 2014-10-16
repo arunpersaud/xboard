@@ -136,7 +136,7 @@ FRONTEND_CFLAGS=""
 FRONTEND_LIBS=""
 
 AC_ARG_WITH([gtk],
-            [AS_HELP_STRING([--with-gtk],[use GTK front-end (experimental)])],
+            [AS_HELP_STRING([--with-gtk],[use GTK front-end])],
             [with_GTK=$withval],
             [with_GTK="no"])
 
