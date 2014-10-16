@@ -3,6 +3,1566 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2014-10-15 21:06:36 -0700 Arun Persaud <arun@nubati.net>:
+fix osxapp enable option in configure.ac
+
+
+2014-10-15 21:06:00 -0700 Arun Persaud <arun@nubati.net>:
+remove experimental from gtk build option
+
+
+2014-10-15 21:02:38 -0700 Arun Persaud <arun@nubati.net>:
+only enable osxapp build target on apple systems, clean up configure.ac a tiny bit
+
+
+2014-10-15 20:57:28 -0700 Arun Persaud <arun@nubati.net>:
+update NEWS file
+
+
+2014-10-15 23:48:14 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Don't switch to engine-defined variant on game loading
+
+When loading a game from PGN the variant tag will have been decoded as
+'normal' in case of an engine-defined variant, and we certainly would
+not want to switch to that. Better stay in the variant the user had
+selected before, and hope for the best.
+
+2014-10-15 21:50:44 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement displaying of variant tag in Game List
+
+The variant tag was displayed as an empty string in game-header lines.
+Processing it during PGN load was not able to handle engine-defined
+variants anyway; they were recognized as 'normal'. A new field in the
+GameInfo struct now holds variantName in text form, and this is the
+primary place from which it is displayed in the Game List.
+
+2014-10-15 21:06:53 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Update Game List when setting new Game List Tags
+
+Using the Game List Tags dialog to alter the gae header lines now
+automatically causes an update of the Game list according to the new
+tags specification.
+
+2014-10-15 20:26:31 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Reset move entry on Clear Board
+
+The board markers would stay on when the board was cleared, and a
+no-longer-present piece would stay selected, leading to deletion of the
+first piece that you tried to select.
+
+2014-10-14 09:38:05 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Split Tournament dialog in side-by-side panes
+
+This seems to cure a sickness in some Xaw versions, which refused
+to display text in the text widgets, or make them sensitive for mouse
+clicks if the last three buttons were added. It also helps keeping
+the 'OK' button on-screen in the GTK version.
+
+2014-10-12 19:43:24 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Remember position obtained from setup
+
+When the engine sends a setup command, it should be remembered as
+initialPosition, in order for the castling 'rook' test of the Betza
+move generator to work.
+
+2014-09-13 12:35:12 -0700 Joshua Pettus <jshpettus@gmail.com>:
+Add build script to configure for a XBoard.app for OS X
+
+This relies on the the gtk build and adds some special code in
+gtk/xboard.c so that XBoard can be installed inside the app directory
+independ on where the app file is located.
+
+2014-10-12 10:09:51 -0700 Arun Persaud <arun@nubati.net>:
+replaced hardcoded pngdir with built-in ~~
+
+don't need to create xboard.conf from xboard.conf.in anymore
+
+2014-10-12 00:18:50 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Some improvement on new Shogi SVG pieces
+
+
+2014-10-11 10:55:41 -0700 Arun Persaud <arun@nubati.net>:
+updated spanish, ukranian, and dutch translation
+
+
+2014-10-11 19:42:03 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix logos Xaw
+
+The patch for logo standard left a typo and an excess line in the Xaw
+version. This is fixed, and also implements the user-logo cascade for
+the Xaw version.
+
+2014-10-11 19:26:23 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Try also /home/<user>/.logo.pgn for user logo
+
+The user logo now also has a cascade, first looking in the user's home
+folder for a file .logo.png, and then in the -logoDir for <user>.png.
+
+2014-10-11 16:38:03 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix ICS logo display
+
+
+2014-10-10 18:14:09 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Show current variant on New Variant buttons GTK in bold
+
+If an engine-defined variant is selected, we compare its name to the
+inscription on the button, otherwise we compare the variant numbers.
+(Test to trigger this is a bit awkward, to not inadvertantly apply it
+to the ICS Text Menu, which also has colored buttoms.)
+
+2014-10-10 17:01:51 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Increase number of engine-defined-variants Buttons XB
+
+An third column is added to the New Variant dialog when necessary.
+
+2014-10-09 23:25:26 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Force GTK logo size to quarter board width
+
+This is what GTK will do anyway, because clocks and logos are in a hbox
+that equally divides space, so telling XBoard different just misinforms it.
+
+2014-10-09 17:08:45 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Replace default Shogi pieces
+
+The SVG Shogi pieces are replaced by a new set, made by Joshua Pettus.
+This set also contains and Elephant and Crown Prince.
+
+2014-10-09 09:35:33 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement new logo standard
+
+XBoard now looks in the system directories for plugin logos,
+/usr/(local/)share/games/plugins/logos, according to the cascade
+-logoDir, engine dir (-fd,-sd), /usr/local/..., /usr/...
+
+2014-10-09 08:47:25 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Relocate OS X' LOCALEDIR
+
+
+2014-10-08 21:56:28 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix check test with multi-leg moves
+
+The check test after a multi-leg move was still using the same kill
+square in the opponent's reply, making it blind to King captures in
+a second leg. So far we got away with that because the Shogi multi-leg
+pieces also can reach all their potential victims in a single step,
+but with engine-defined multi-leg moves there is no guarantee this
+will always be the case.
+
+2014-10-08 21:55:17 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix infinite loop in cylinder moves
+
+
+2014-10-07 19:13:54 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Let t on final leg in Betza notation forbid checking
+
+To allow approximate definition of pieces that are too difficult to
+describe exactly, we can revoke their capture rights on Kings,
+to prevent imagined moves that happen to threaten a King forces the
+opponent to evade this imagined check, making most of his moves illegal.
+Then the piece can be safely replaced by an upward-compatible one,
+leaving rejection of the extra moves to the engine.
+
+2014-10-07 18:56:59 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement Betza hr and hr as chiral move sets
+
+To easily separate right- and left-handed moves on oblique atoms
+(which needs opposite use of l and r in their multi-leg continuations),
+the direction sets hr and hl are added.
+
+2014-10-07 08:20:06 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Preserve other Betza mode bits on setting default modality
+
+
+2014-10-06 20:20:00 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Switch to new Betza orth-diag conversion standard
+
+The interconversion from orthogonal to diagonal atoms is now possible
+for any 4-way atom, based on specification of an 'in-between' direction,
+irrespective of modality. Also take backward out of default continuation
+direction-set.
+
+2014-10-03 10:31:47 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement Betza t modifier for hop-own
+
+The 't' modifier will restrict any form of hopping as specified by
+p or g modifiers to friendly pieces. This only works on non-final legs.
+
+2014-10-02 19:32:45 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement directional modifiers on KQ, and let y&g upgrade
+
+The Betza y and g modifiers now not only change range, but also upgrade
+the directional capabilities of the atom to full non-degenerate 8-fold.
+Directional modifiers can now be used in that symmetry too, to maximally
+exploit this, and implement 4-fold pieces that make 45-degree turns.
+Let oblique continuation legs also use the non-degenerate system.
+
+2014-10-02 15:19:09 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement Betza y modifier
+
+The non-standard modifier 'y' is the spontaneous counterpart of 'g',
+changing the range of the atom, and upgrading its directionality.
+
+2014-10-02 10:21:43 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement Betza g modifier for non-final legs
+
+The g modifier is implemented as a p that turns a rider into the
+corresponding leaper when it hops, and vice versa. This is done by
+stripping off any existing range indicator, and making the range
+infinite by suffixing '0' when the old range was 1 (whether implied
+or explicitly written). Except that for sliders/steppers this is done
+by atom-name conversion after stripping off the range. Limited range
+thus in general turns into leaper (D -> D0, Dn -> D), but with FWK
+W3 -> R and R3 -> W, etc.
+
+2014-10-01 15:32:14 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement Betza a modifier
+
+This is pretty complex, and might overload the current primitive two-leg
+legality testing when pieces are defined that can reach squares only in
+two legs.
+
+2014-10-01 09:28:32 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement Betza j on W,F as skip first square
+
+
+2014-10-04 21:56:14 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Always accept piece commands for Falcon and Cobra
+
+The wild-card pieces Falcon and Cobra do not have any moves assigned to
+them, and XBoard would accept any move for them even when legality
+checking is on. So for these pieces it is always better to trust the
+engine's piece definition.
+
+2014-10-04 21:52:51 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix pieceToCharTable of Falcon Chess
+
+This variant was using the Falcon piece, but defining ID F for the
+unused Lance instead.
+
+2014-10-04 19:59:13 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Don't preserve setup position on board-size change
+
+Normally the setup command sent by an engine is ignored if the user
+already has set up a position, to not render it impossible to do the
+latter. But if the setup command orders a different board size nothing
+the user has set up can possibly remain valid.
+
+2014-10-04 19:39:06 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Reset move entry on stepping through game
+
+A forward or backward step through the game after selecting a from-square
+did not erase the latter, so that it became impossible to select a
+from-square for an opponent move, as it would be interpreted as the
+to-square for the patially entered move. This was especially annoying
+with legality testing off, as the legality test there, based on the
+square markings, does not reset the entry state either, but waits
+until you do click a legal to-square, so that you had to attempt
+moving with pieces of the side not to move to get out of this state.
+Now stepping through another position will reset the move-entry state
+completely, always considering the first click a from-square selection.
+
+2014-10-07 20:55:00 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix engine-defined variant as startup
+
+Non-standard names were all recognized as 'normal' in InitBackend1().
+Now if the -variant argument was not "normal", it is assumed to be an
+engine-defined variant if we run with engine.
+
+2014-10-07 18:53:50 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix clipping of board GTK
+
+ResizeBoardWindow now measures the with of the window dressing by
+brute force, interrogating GTK both for the width of the top-level
+window and the board widget, and subtracting the two.
+
+2014-10-08 18:28:09 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix writing of Seirawan960 virginity in FEN
+
+When variant seirawan was played with Fischer castling, only the
+castling rights were written, and not the virginity of other pieces.
+Now all virgin files are dumped in Shredder-FEN style.
+
+2014-09-29 21:07:17 -0700 Arun Persaud <arun@nubati.net>:
+update po/pot files
+
+
+2014-09-29 21:00:42 -0700 Arun Persaud <arun@nubati.net>:
+new version number for release 4.8.0
+
+
+2014-09-13 14:33:37 -0700 Arun Persaud <arun@nubati.net>:
+fixed whitespace error in configure.ac for os x
+
+
+2014-09-20 10:06:17 -0700 Arun Persaud <arun@nubati.net>:
+update gettext configuration to not include any generated files in git
+
+before we had a somewhat mixed setup, which seems to create problems
+when a different gettext version was installed on the users machine compared
+to the version used to generate the files in git. This should solve
+the problem. The user will now have to generate these files using autopoint,
+which we call from autogen.sh.
+
+2014-09-28 22:19:00 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Configure XBoard for -size 49 in master settings
+
+Now the code for auto-sizing works, it turns out this does more harm than
+good in the GTK build, as it takes maximum size that fits the screen as
+initial size, and the board window then cannot be shrunk below that.
+So we configure a hard -size 49 for a cold startup.
+
+2014-09-28 21:27:22 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement ff etc. in Betza parser
+
+Dupliacated directional modifiers can be needed with oblique moves
+to unambiguously specify a direction set, e.g. ffrrN.
+
+2014-09-28 13:40:13 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Rename PGN Pieces tag to VariantMen
+
+Following a suggestion from Steven Edwards, this indeed makes a much
+clearer name. Also add code to skip the tag on reading, rather than
+allowing it to end up with the 'extra tags', as the latter could lead
+to duplication of the tag on subsequent saves.
+
+2014-09-28 11:18:10 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Suppress use of promo-Gold bitmaps in Tori Shogi (WB)
+
+In Tori Shogi the Swallow Pawn does not promote to Tokin, so the use
+of a Gold General pictogram would only be confusing. So we stick to
+the regular fairy bitmaps in Tori, which is recognized by the board
+having 7 ranks in Shogi.
+
+2014-09-28 10:55:10 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Prevent board-size oscillations
+
+It could happen that after resize there was room for enlarging the
+squares by one pixel, but that this crossed the boundary where the line
+gaps also become wider, and there is no room for making both squares
+and line gap. This would cause perpetual oscillations of the window size.
+Resizing is now suppressed when a 1-pixel square-size increase would also
+result in a line-gap increase.
+
+2014-09-28 10:09:17 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Allow use of second-row pieces for non-promoted in drop games
+
+Second-row pieces were automatically demoted on capture, but this
+should really happen only when the piece-to-char table says it is a
+shogi-promoted piece (assigned a '+' there). Pieces assigned a letter
+should really stay themselves.
+ PieceToNumber had to be adapted to skip '+' pieces in order to count
+correctly for second-row pieces, as did the code in UserMoveEvent() that
+mapped the from-square onto the piece type. (Why do we do that anyway?
+The piece type was displayed on the from-square!)
+
+2014-09-26 20:24:05 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix reset of 50-move counter on FRC castling
+
+The FxR internal representation was taken a bit too seriously!
+
+2014-09-26 20:15:33 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix abort of machine game on variant mismatch
+
+When the second engine did not support the current variant, and we clicked
+Two Machines, there was an error popup, but the Two Machines menu item
+stayed checkmarked. Now we explicitly uncheck it, and switch to EditGame
+mode.
+
+2014-09-26 19:47:08 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Make unsupported variant on loading 1st engine non-fatal
+
+Like in the startup code, when the loaded engine does not play the
+currently selected variant, we now figure out what the engine does play,
+and switch to that. The error message still pops up, but not non-fatal.
+
+2014-09-25 23:37:24 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Print PGN Piece tag listing engine-defined pieces
+
+A newly defined PGN tag is printed, which summarizes all non-standard
+pieces. Black copies of identically named white pieces are suppressed.
+In the future also non-standard naming should be reported here.
+
+2014-09-25 19:11:21 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Always accept piece commands in partly supported variants
+
+Normally piece commands are ignored when legality checking is on, as
+XBoard's idea of legality should obviously overrule the engine's.
+In variants that are not or only partly supported, however, XBoard has
+no own idea of what is legal, so it is better to take the engine's
+advice than enforcing wrong rules.
+
+2014-09-25 12:29:15 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Size seek graph to also cover board rim WinBoard
+
+The seek graph always used the plain board size, but in WB it is
+possible to diplay a rim around the board, and the seekgraph would
+then be positioned in the upper-left corner of the rim, leaving the
+lower and right board edge and rim uncovered. Its size is now increased
+to fill the entire window (as leaving a rim around it seems not useful).
+
+2014-09-25 11:48:00 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Reparse ambiguous move under built-in rules
+
+When a move parses as ambiguous under engine-defined piece locomotion,
+we re-parse it with XBoard's native idea of the pieces, just in case
+it is a move from a game that was saved without the engine having
+redefined the pieces. This keeps games created before the introduction
+of the 'piece' command loadable.
+
+2014-09-25 11:14:06 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Prevent multi-path moves from parsing as ambiguous
+
+In Cylinder Chess the MovesFromString() generator might generate duplicate
+moves, one wrapping, the other direct. When they were both counted as
+matching the SAN input move, Disambiguate() would think it an ambiguous
+move. So a move that came from the same square as the one we already
+have must not be counted.
+
+2014-09-24 21:47:59 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix cross-edge e.p. capture in Cylinder Chess
+
+ApplyMove() did not remove the e.p. victim when an edge-crossing e.p.
+capture was made, because e.p. rights are only set to neighboring files
+(after checking there is a Pawn there to capture). The e.p. heuristic
+has now been changed to also assume e.p. on file-changing Pawn moves
+that span a large number of files, assuming that these will be wrapping
+moves. Eventually we should change to better e.p. logic that can be
+integrated with engine-configured move generation, as the current system
+would fail for any Pawn that captures more than just neighbor ranks.
+
+2014-09-24 19:43:27 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement Betza o modifier for cylinder boards
+
+
+2014-09-24 17:02:37 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Improve virginity test for engine-defined pieces
+
+Two squares in the board are now reserved for flags that indicate
+whether back-rank pieces have been touched. This allows MovesFromString()
+to accurately test virginity of these pieces, rather than having to assume
+it when the piece matches that in the opening position. For other ranks
+the latter test is still used, as these are normally (irreversible) Pawns,
+which cannot return there (and in drop games, when they would, would again
+be considered virgin enough for the purpose of double-pushing!).
+
+2014-09-24 13:20:31 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement Betza p and g modifiers in piece command
+
+
+2014-09-24 08:28:40 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Repair piece defs with showTargetSquares off
+
+The proxy legality checking based on marking of target square was
+rejecting all moves when target squares were not highlighted.
+
+2014-09-23 21:53:55 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Allow definition of castling in piece command
+
+Castling is defined by the O atom, with a suffix indicating the number
+of steps the King must step in the direction of the corner. Kings keep
+their normal castling unless overruled by this. Can currently only be
+used on the variant's royal piece, as XBoard's ApplyMove() is not smart
+enough to understand displacing the corner piece is implied when it is
+used on other pieces.
+
+2014-09-23 21:49:44 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Update description of piece command in protocol specs
+
+
+2014-09-23 14:52:16 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Improve SAN of Pawn moves and allow Betza e.p. definition
+
+The move descriptions in 'piece' commands can now use 'i' and 'n'
+modifiers to define a blockable double push. ('n' only work for moves
+of stride 2!) The test for initial moves now is based on comparison with
+the opening position, rather than on a way-to-generous heuristic. (This
+still does not prove in generak the piece did not move, though, but it
+does for Pawns.) A new 'e' modifier stands for e.p. capture; to implement
+this the rank and file of the e.p. square are now stored in the board.
+(EP_STATUS was holding the file of the moved Pawn, which in Berolina Chess
+is not the file of the e.p. square!)
+ The generation of SAN moves for Pawns can now reliably distinguish between
+captures and non-captures even in Berolina, when the move generator informs
+it whether the move was e.p. capture.
+
+2014-09-22 22:48:50 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Retune -stickyWindows GTK
+
+This still does not work well, and in particular windows refuse to stick
+to the top of the board window.
+
+2014-09-22 21:59:00 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix detection of screen size GTK
+
+A gdk call that can get the screen without there first being a window
+mapped to it is used now. This fixes initial sizing of the board window
+on a cold start.
+
+2014-09-22 21:57:23 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Configure a size for the Eval Graph
+
+If no size for the Eval Graph window is configured in the master
+settings file, the window will pop up as 2x4 pixels.
+
+2014-09-22 20:39:21 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Prevent crash on specifying non-existent texture XB
+
+By setting the texture width to 0 when the texture could not be loaded,
+XBoard will never attempt to draw it.
+
+2014-09-22 20:30:50 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Configure some themes in XBoard master settings
+
+The -themeNames option is set to contain some themes that could be
+defined with the default pieces and textures that come with XBoard.
+
+2014-09-22 18:48:00 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Remove debug printf
+
+
+2014-09-21 16:47:41 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Control Eval Graph with mouse
+
+Let mousewheel control evalZoom, and right-click toggle between
+normal view and differential view ('blunder graph').
+
+2014-09-21 16:10:19 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Add extra font field to Option struct
+
+Storing the font in the textValue field was too kludgy, as this field
+is already heavily used in the various Option types, for storing handles,
+or defining colors and callbacks. A 'font' field is now added at the end,
+so that it can be optionally initialized in the rare case it is needed.
+
+2014-09-21 13:44:11 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Repair damage done by merging with v4.7.x
+
+
+2014-09-21 08:36:22 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Sort fail lows and fail highs below others
+
+Every more recent line should always float up aove lines that were
+indicated to be fail lows or fail highs through ? or ! PV suffixes.
+
+2014-09-20 12:58:32 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Describe the new texture conventions in manual
+
+The exact rules for how textures are scaled in response to their
+filename is described in the manual.
+
+2014-09-19 10:22:14 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Force exactly overlayed texture scaling through filename
+
+A filename suffix -NxM.png on a texture image will cause XBoard to scale
+the image as if it were the image of a complete board of N files and M
+ranks, to make the square size equal to that of the current board,
+and adjust the cutting parameters such that contiguous squares are cut
+out of it. (If the current board format is larger than NxM, the remaining
+space will be padded with white!)
+ If N=M=0, N and M are assumed to correspond to the current board size,
+and the bitmap will be scaled to fit the height of the board.
+ If no suffix is present, the old cut-and-tile algorithm is used. It will
+be assumed the texture bitmap is intended for a single square, unless the
+pathname contains a file that starts with "xq", in which case it is assumed
+that the file contains a Xiangqi board.
+
+2014-09-18 23:30:09 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Allow two Pawns per file in Tori Shogi
+
+When the board has 7 ranks it is assumed to be Tori Shogi, and the
+requirement for maximally one Pawn per file is relaxed to two.
+
+2014-09-18 23:08:36 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Test legality even when off if engine defined pieces
+
+After reception of a piece command XBoard will mark target squares
+even when legality testing is off, and now also will require the lifted
+piece to land on a marked square (like when the engine highlighted them
+through a highlight command).
+ A problem is that this does not work for drops, as drops do not mark
+target squares. So drops are always accepted. Which of course is bad
+for Pawn drops. But there really is no way yet for an engine to specify
+how pieces can be dropped, similar to the 'piece' command.
+
+2014-09-17 22:32:43 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix texture scaling
+
+
+2014-09-17 13:41:58 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement engine-defined pieces
+
+When legality testing is off, XBoard now listens to 'piece' commands
+to redefine its move generator. After such a piece command is received,
+target-square marking also can be used when legality testing is off.
+The engine keeps in charge of legality testing, though.
+ Only a very basic version of Betza notation is currently understood for
+the move description: mode modifiers have to appear in the order mcd,
+and gpz modifiers are ignored. Multi-leg moves as in Betza 2.0 is not
+implemented at all. A leading i modifier limits the moves to the first
+two ranks, which is no good at all. (But XBoard does not keep track of
+which pieces have moved, and this at least would work for Pawns in a
+FIDE-like setup, in particular Berolina.)
+
+2014-09-17 09:44:15 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Scale texture bitmaps that are not large enough
+
+Texture bitmaps are now sized up by an integer factor to be at least
+as large as the board (if they seem intended for a full XQ board, which is
+assumed when they are larger than 256x256) or the square. This necessitated
+the textures to be re-initialized in InitDrawingSizes whenever the window
+size changes.
+
+2014-09-16 19:04:19 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Ignore color arguments not starting with #
+
+Old settings files from xpm-using version might still contain color
+designations like 'white' or 'red'. Since Cairo would interpret these
+as black, it is better to ignore them, so the default color is used.
+
+2014-09-15 15:30:40 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Implement -autoInstall option
+
+When -autoInstall is a non-empty string, XBoard will scan the system's
+plugin specs directories for UCI and WB protocol, to see if new engines
+were added since the last settings save. If so, they are added to the
+list of installed engines.
+ The variants listed in the plugin-spec files are currently ignored,
+but the option is already configured to install engines for all variants.
+
+2014-09-14 22:47:55 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix typo
+
+
+2014-09-14 21:41:04 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Make inlined functions static
+
+Clang apparently chokes on non-static inline functions,
+and they were not used from other files anyway.
+
+2014-09-09 20:29:15 -0700 Arun Persaud <arun@nubati.net>:
+updated spanish translation, added new polish translation
+
+
+2014-09-13 09:12:54 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Look for logo in engine dir first (GTK)
+
+When setting engine logos, we look for a file logo.png in the engine
+directory, before trying <enginename>.png in the -logoDir. This is useful
+on OS X. Fix bug that checks for existence of -fd/sd rather than -logoDir,
+when using the latter (also in Xaw).
+
+2014-09-11 23:10:59 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix checkmarking of OS X menu items
+
+The routine MarkMenuItem() was moved to xboard.c, where it can see
+the OSX-specific #defines, and calls to sync_menu_bar were added
+to it, and to EnableNamendMenuItem().
+
+2014-09-11 22:48:10 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix crash of tournament dialog GTK
+
+The font/color disambiguation of the Option.textField in Label and
+ulti-line TextBox options cannot stand it if unused elements are
+initialized as "" rather than NULL.
+
+2014-09-11 19:17:55 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Let OS X display dock icon
+
+
+2014-09-11 12:41:50 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix Xaw button color error
+
+The textValue field, now also used to indicate font, was used in two
+places when popping up buttons, and the font patch only addressed one.
+
+2014-09-11 10:23:42 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Make SVGDIR a variable
+
+Replace all occurrences of SVGDIR in the source by svgDir, a char array
+that is initialized to SVGDIR, so that it can be altered at run time.
+This is needed to make portable apps. Where SVGDIR was used in string
+concatenation, the code had to be re-written to use snprintf to do the
+concatenation at run time, through a new function LoadIconFile.
+The extension of image files used there is now made dependent on the
+__APPLE__ switch, so that it can use .png in OS X (which does not seem
+to understand SVG icons).
+
+2014-09-10 21:20:40 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix warning in dead code Show
+
+
+2014-09-10 20:49:38 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Reorder variants, to comply with Polyglot book specs
+
+XBoard's variant number is used as a key to access Polyglot opening
+books, and thus cannot be changed without consequences. (As it was when
+we introduced ASEAN and Chu Shogi.)
+  We also renamed Chu Chess to Elven Chess (under which name it is now
+described on chessvariants.org).
+
+2014-09-10 19:52:12 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Reserve piece command in protocol specs
+
+
+2014-09-10 18:54:45 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+suppress Alien Edition standard variants
+
+Variants that are standard in the Alien Edition should not be
+recognized as engine-defined variants: the engines that announce
+them will not respond with the required setup command, so allowing
+the user to select them just leads to trouble.
+
+2014-09-10 13:51:44 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix SetWidgetFont GTK
+
+This was testing for an empty font spec in the wrong way, with as a side
+effect that some pointers to font strings would be interpreted as colors.
+
+2014-09-10 15:56:59 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Update protocol specs
+
+
+2014-09-09 21:43:39 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Let message field and button bar use GTK -messageFont
+
+The -messageFont spec (using the default coordFont pixel size, like the
+others) is now used to modify the fonts of message field and buttons
+in the button bar. They pass a pointer to the appData font variable in
+their Option's textField. This conflicts with the use of this field in
+buttons for specifying a color, as done in the New Variant buttons.
+This is resolved by checking if the first byte of the pointed-to value
+is a #. The Xaw version must ignore the textField if it does not
+specify a color.
+
+2014-09-09 20:51:54 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix GTK fonts
+
+
+2014-09-09 19:57:52 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Use coordFont default pixel size for other fonts
+
+The message-font is way too large for the dialogs. A better solution
+would be to redo the entire table of SIZE_DEFAULTS in xboard.h, as
+this file is front-end-specific anyway.
+
+2014-09-09 19:39:50 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Use -gameListFont in Game List
+
+Not implemented in a very generic way, but hacked into the code that
+added the handler. There aren't many other listboxes that would need
+adjustable font.
+
+2014-09-09 16:49:18 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix Chat window for Xaw build
+
+The ICS output field and Hide button are removed from the ICS Interaction
+window, to make it similar to the old Chat window. This required adding
+some tests in the handlers of this window, to prevent segfaults due to
+accessing it.
+
+2014-09-09 15:53:29 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix infinite-regression problem on OS X
+
+Apparently the OpenFile handler can already be called during
+gtkosx_application_ready (or gtk_signal_connect), so we have to make
+sure 'suppress' is set before we call those.
+
+2014-09-09 10:47:41 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Correct for .Xresources form->paneA renaming in manual
+
+In the Xaw build the name of the form widget of dialog.layout.form...
+hierarchy was changed to paneA, paneB, ... when allowing multi-pane
+dialogs through the Break Option (such as the Engine Output window).
+
+2014-09-09 10:36:42 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Use GTK fonts in Engine Output and Move History
+
+
+2014-09-08 20:42:11 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Include some conditional OS X fixes
+
+DATADIR must be corrected to ~~ in the OS X app, and the info command
+must be started in a different way.
+
+2014-09-08 20:12:08 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix WB DoEvents error
+
+
+2014-09-08 19:06:35 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Limit auto-extending to click on first move of PV
+
+Even when auto-exted on clicks on the tail of a PV will no longer cause
+any moves to be added to the game. Only clicks on or before the first
+move can do that now.
+
+2014-09-08 16:20:26 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Animate multi-leg in auto-play and forward event
+
+Replaying multi-leg moves is now also done by animating both legs.
+In addition, the highlights are set on final and intermediate square,
+rather than from-square.
+(There seems to be a great deal of code duplication here. Why doesn't
+AutoPlayOneMove simply call ForwardInner?)
+
+2014-09-08 14:45:51 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix key bindings for non-menu functions
+
+The accelerator keystrokes for next game, previous game and debug mode,
+which don't have menu items, and are grouped in the menu table 'noMenu',
+were not treated in the building of the translation table, as 'noMenu'
+does not occur on the menu bar. An extra iteration is done now to
+treat this menu group.
+
+2014-09-08 14:24:59 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix Xaw key bindings
+
+The routine to automatically construct the translation table for
+accelerator keys did not respect the rule that more specific keystrokes
+(like :Meta<Key>Home:) have to be defined before more general ones
+(like :<Key>Home:). As a result Alt+Home would activate the Revert
+item, intended for plain Home.
+
+2014-09-08 14:20:08 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Define default font names
+
+
+2014-09-08 09:25:18 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix MSVC problems
+
+Book.c did not include config.h, and thus missed the redefinition of
+snprintf (which is not known in MSVC). The use of 'inline' in parser.c
+also needed an MSVC redefinition, now added to winboard/config.h.
+
+2014-09-08 09:22:55 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix GTK font patch
+
+
+2014-09-07 23:35:22 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Replace strcasecmp by StrCaseCmp
+
+The MicroSoft compiler does not know strcasecmp, so we better use
+our own function for this everywhere.
+
+2014-09-07 23:28:29 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Let GTK build pay attention to font arguments
+
+Multi-line text edits now use the initial value of the Option.textValue
+field as a pointer to a (char*) holding a font name, to be used for
+the text displayed in it. (After which they overwrite the field with
+the textView handle.) The font options -tagsFont, -commentFont, icsFont,
+-moveHistoryFont and -gameListFont are now activated in the GTK build,
+to control the corresponding memos.
+
+2014-09-07 13:58:15 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix auto-display comment option in General Options
+
+This options had the same ID as auto-Queen, making it ignored.
+
+2014-09-07 13:43:48 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Call DoEvents during time-consuming operations
+
+Processing of a game file for reading it, searching positions, saving
+selected games or creating a book from them can take minutes. To keep
+the application responsive during that time, the main loops of those
+tasks calls DoEvents(). A possible risk is that the user can now do
+too much, and will initiate actions that interfere with the tast in
+progress.
+
+2014-09-07 13:32:49 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix GameListHighlight WB
+
+The routine to highlight a game line in the Game List listbox of WinBoard
+used an extremely inefficient linear search to find the game amongst the
+selected games. This has now been replaced by bisection, after finding
+an upper limit to the number of entries in the listbox by doubling
+a trial size.
+
+2014-09-07 12:10:50 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Provide DoEvents function in front-ends
+
+A routine to process all pending events in a non-blocking way is now
+provided in the Xaw, GTK+ and WinBoard front-ends, so that time-consuming
+tasks (such as PGN loading or opening-book creation) can call it to keep
+the user control over the application alive.
+
+2014-09-06 23:13:01 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix syntax error in bitbase code
+
+
+2014-09-06 22:35:22 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Describe Save Selected Games menu in manual
+
+
+2014-09-06 22:29:43 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Let Save Games as Book only use selected games
+
+The book-creation code now only takes games into account that are
+selected for display in the Game List.
+
+2014-09-06 22:20:19 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Rewrite key-binding section of manual
+
+This section still wrongly described the key-binding procedure from
+before the rewrite of the XBoard front-end.
+
+2014-09-06 13:21:13 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Connect scroll event to Graph Option in GTK
+
+The mouse wheel is now detected in graphics widgets, and passed to
+the user handler as button 4/5 mouse events.
+
+2014-09-06 13:15:55 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Make sure node count is positive
+
+Engines that print the node count as an int overflow into negative values
+when the count exceeds 2G. This is really an engine bug, but as it
+interferes extremely annoyingly with the alignment of the Thinking Output
+XBoard now repairs it by adding 4G to undo the overflow.
+
+2014-09-05 14:03:49 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Connect mousewheel to Forward/BackwardEvent (XB)
+
+The mouse buttons 4 and 5 are now processed in the handler for the
+board widget.
+
+2014-09-05 13:41:34 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix size of time in Engine Output window
+
+When the thinking time exceeds an hour, the format hr:min:sec is now used,
+in stead of min:sec.cents. This prevents the field from extending beyond
+the tab stop when thr hours kick in, and should work upto 100 hrs.
+(Going beyond that at the moment does not seem useful.)
+
+2014-09-04 22:57:07 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Verify if font-spec looks like one in Xaw
+
+To make XBoard resistant to mixed use of Xaw and GTK builds, which
+would not understand each others font specs stored in the settings
+file (they have in common), we now determine if the value looks like
+an X-font. If it doesn't, the Xaw version ignores it. The GTK build already
+ignored it if it did lool like an X-font spec.
+
+2014-09-04 17:03:55 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix alignment in Engine Output window
+
+Numbers above 1000M would become too wide for their field. This is
+solved by introducing the abbreviation 'G'. Values below 10M or 10G
+now get an extra digit in their fraction, so that the precision is
+at least 1%.
+
+2014-09-01 14:44:54 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Add Save Selected Games menu item
+
+A menu item to save all selected games in the Game List on a single
+file is added.
+
+2014-09-01 12:03:58 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Add final piece count to search criteria
+
+The Load Options dialog now has a text field in which a range can be
+entered (like 8-10). Position search will then only select games that
+had their final number of pieces in this range.
+
+2014-08-29 21:15:29 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix castling rights on using -lgf
+
+The dummy InitPosition to force loading pieces was taking place after
+InitBackend2(), while the latter could have already loaded a game
+from an -lgf argument (which would then be spoiled by the InitPosition).
+It has been moved to before InitBackend2() now.
+
+2014-07-29 15:03:04 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix crash on double-click in Game List Tags
+
+A double-click in the Game List Tags listbox has no function, but it
+crashed XBoard, because the textValue field of teh ListBox Option definition,
+supposed to contain a pointer to the user-supplied handler, contained a
+pointer to an empty string.
+
+2014-07-02 14:34:53 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix typing of null moves
+
+Entering a null move through the move type-in could fail because the
+to-square coordinates (not used in its encoding) could have invalid values,
+which would reject the move in an early stage of UserMoveEvent().
+Null moves are now exempted from this vaidity test, while variants where
+null moves are legal now accept them in any gameMode.
+
+2014-07-02 14:04:22 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix adjusting clocks in Xaw version
+
+The handler attached to Label options failed to flip the sign of the
+option number when a button other than Button1 was pressed, so that time
+would always be subtracted on Shift + ClockClick and never added.
+Shift now also suppresses interpretation as null move when playing.
+(In Analyze / EditGame mode it is still null move starting a variation.)
+
+2014-07-02 12:37:18 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix null-move entry during play
+
+Null moving by clicking the clock was only accepted in Edit Game and Analyze
+mode, while in Chu Shogi and spin-offs it is also allowed during play.
+An F_NULL_MOVE flag was introduced to make it easy to test for such variants,
+and Machine White/Black mode now also interpret clock clicks as a null move
+if the opponent's flag has not yet fallen.
+
+2014-04-09 09:53:56 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Let EditPosition double-click on piece promote it
+
+For pieces with Shogi-like promotion (i.e. if the promoted piece has
+pieceToChar defined as '+'), let a second click on it in Edit Position
+mode promote or demote it (as the case requires) when the piece menu is off,
+rather than remove it (as was the old behavior.
+
+2014-04-09 09:19:43 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Make EditPosition pallette work in Asian variants
+
+Construction of the pallette position was not working in variants that
+did not have Pawns start on 2nd rank, or that had multiple ranks of pieces.
+Now the algorithm is applied to all ranks.
+
+2014-04-05 23:00:17 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix crash on opening Tags window Xaw
+
+Suppressing the optional book button made the Xaw generic popup crash,
+because the following button had the SAME_ROW modality, and was thus
+positioned w.r.t. a non-existent widget.
+
+2014-04-05 20:39:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix writing of Chu-Shogi FENs
+
+Promoted pieces were getting the wrong ID letter, of the piece demoted
+by 11, rather than 22.
+
+2014-04-01 18:20:29 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow pseudo-engines to adjust the clocks
+
+Implement new options -first/secondPseudo, which declare the corresponding
+engine to be a pseudo-engine, which will then be granted super-powers
+through some new engine->GUI commands. For instance, to adjust the time
+remaining on the GUI clocks through wtime and btime commands (using msec).
+
+2014-04-01 12:00:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix piece inscriptions
+
+
+2014-04-01 11:16:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix reading Chu Shogi FENs
+
+The X (for Phoenix) was interpreted a 10 empty squares.
+
+2014-03-17 23:26:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix loading positions in engine-defined variant
+
+Paste Position did not work when an engine-defined variant had redefined
+the pieceToCharTable, as the position would be interpreted and sent to the
+engine before receiving the setup command. Copying the pieceToCharTable
+received from an earlier game to appData cures this, because it will then
+be used by InitPosition, which would reset the table to default otherwise.
+ Another problem was that setupSpoiledMachineBlack would not be reset
+after a game with no moves, leading to a spurious 'go' command to the engine.
+
+2014-03-17 23:05:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Render inscriptions on Chu-promoted pieces in red
+
+
+2014-03-17 22:56:07 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow writing text on pieces
+
+A new persistent string option -inscriptions allows the user to define
+characters to be written on the various piece types. The string is
+interpreted as UTF-8. This option is useful for on-the-fly synthesis
+of Shogi pieces, where the string can contain the various kanji in
+the canonical pieceToCharTable order. Except that only a single color
+has to be given.
+
+2014-03-12 22:08:04 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix initial sizing of board
+
+Previous patches had destroyed the ability to obey the -size option.
+
+2014-03-10 21:15:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix width of menu bar
+
+The truncated name might not have been terminated with '\0'.
+TinyLayout now specifies the number of characters kept in the menu names.
+In the OS X version truncating is never needed, as the menu bar is
+at the top of the screen, independent of board size.
+
+2014-03-09 20:38:51 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warnings fonts patch
+
+
+2014-03-02 23:10:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement (clock-)font handling in GTK
+
+The options -clockFont, -coordFont and -messageFont are activated,
+and supposed to have string values like "Sans Bold 12". The default
+values have the point size as 'wild-card' %d, however "Sans Bold %d",
+and are expanded by a printf with the point size taken from the defaults
+table. The expanded versions are saved back into the settings file,
+prefixed with a size tag, as usual.
+ So far -clockFont is the only font that is actually applied while
+writing.
+ The 'clock kludge' was interfering with the initial sizing, as for some
+sizes the initial clock-widget height happened to be equal to the final
+height. It was therefore abandoned, and we seem to be able to live without
+it.
+ Sizes smaller than 49 were dominated (for 8-wide boards) by the menu bar.
+Therefore tinyLayout now uses single-letter menu labels.
+
+2014-03-02 20:45:57 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Also search indirection files in user's .xboard tree
+
+
+2014-03-02 18:53:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix error Engine Output text highlighting
+
+In wengineoutput.c higeTextStart and End where decalred both static and
+extern, which somecompilers justifiably don't like.
+
+2014-03-01 16:09:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Board-dialog bug WB
+
+The drawing code for the sample square did ot restore the correct brush.
+
+2014-02-28 21:48:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix various warnings
+
+Mostly written but never read errors. Also removed a debug printf that was
+causing a format warning.
+
+2014-02-26 16:34:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Kludge repair of expose after startup resize
+
+Redraw of the main board after resize is delegated to DragProc, which is
+scheduled after a delay, to make sure the user is done sizing (mainly to
+reposition docked windows). But at startup the program-requested resize when
+an engine does not support variant normal and needs a different board format
+takes so long that the finale size expose occurs after the DragProc timeout.
+As a result, the board was never drawn on the resized canvas.
+  This is quite hard to fix in a satisfactory way. For now the suppression
+of board redrawing during resize is disabled during the first 10 seconds
+after startup, as any resize during that time is likely to be the result
+of a program request.
+
+2014-02-26 13:08:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use first engine as default for second
+
+Rather than having the same fixed default for both engines, we noww only
+have a fixed default for the first, and use the actual first as default
+for the second. One advantage is that this guarantees the second engine
+plays the same variants as the first by default.
+
+2014-02-23 23:51:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow adding played move to book
+
+A button is added in the Edit Book dialog to prime XBoard for adding the
+next move entered through the user interface to the book window, without
+actually playing it.
+
+2014-02-23 22:54:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Play move right-clicked in Edit Book dialog
+
+A handler for button-3 down-clicks is added to the Edit Tags dialog,
+which fakes the clicked word was typed in the move type-in box.
+
+2014-02-23 19:23:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix pop-down of ChatDlg and TextMenuDlg from menu
+
+Unlike other windows these two would not react to clicking the menu item
+once they were up. Now they pop down in that case.
+
+2014-02-21 11:10:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Preserve window width on board-format change
+
+When a variant switch would cause recalculation of the board window,
+we now first recalculate square size to keep the window width fixed.
+Also adapt initial width on high boards.
+
+2014-02-18 22:37:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Equip Board Options dialog with themes listbox
+
+The option -themeNames is made persistent for XBoard, and its value is
+displayed in a listbox added to the View -> Board dialog. The user
+can select themes from this, and manipulate the contents similar to
+the engine list in Load Engine. A textedit allows the user to define a
+theme name for the current settings, and doing so adds the theme to the
+-themeNames list.
+
+2014-02-07 11:22:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement copy function in ICS Text Menu
+
+A command consisting of the word $copy will place the clicked word on
+the clipboard. When there was already text selected during the click,
+that selected text will be used for $copy and $name, rather than the
+right-clicked word.
+
+2014-02-07 09:48:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+When ICS Console open EOF from keyboard is no error
+
+In case the user started without a terminal, we just close the input source,
+and suppress future writing to the xterm.
+
+2014-02-06 18:46:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Leave xterm at start of new line after quitting XBoard
+
+
+2014-02-06 18:36:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Also display channel tell in ICS Console during private chat
+
+Channel tells of players for which a chat wa opened were displayed in that
+chat, as well as in the channel chatbox, if the latter was open. But when
+there was no channel chatbox it would not appear as colorized channel tell
+in the console. This is now fixed, and in the private chat box such a
+message is indicated as 'broadcast'.
+
+2014-02-05 23:08:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Write broadcasts also to private chatbox of talker
+
+The shouts or channel chatboxes capture messages first, but if a private
+chat with the talker is opened, it now goes there too. Prefixed with
+the type of broadcast.
+
+2014-03-02 13:18:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Xaw Chat Console
+
+
+2014-02-05 22:38:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let Ctrl-O key open chat for last talker
+
+
+2014-02-05 22:15:03 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add End Chat button
+
+This button clears the current chat, so that it becomes free for
+assignement to another partner.
+
+2014-02-05 21:59:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Ctrl-N in chat opens empty chat
+
+This key isequivalent to pressing the left-most New Chat button.
+If no unused chat present, it the command will be ignored.
+
+2014-02-05 21:29:42 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Preserve unfinished input lines during chat switch
+
+This is problematic, as apparently we cannot write in widgets that are
+active with key hits, so attempting to write it back in response to Tab
+did not work. This is now done with a delay, for lack of a better method.
+
+2014-02-04 13:57:16 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Recognize Esc and Tab in ICS Console input
+
+Esc is used to close the chat, or transfer focus to the board window.
+Tab is used to navigate between chats (or open the first). Priority
+is given to dirty chats.
+
+2014-02-03 20:35:31 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let ICS Console pop up GTK in stead of ICS Input Box
+
+
+2014-02-03 19:45:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add context menu to ICS console XB-GTK
+
+A right-click handler is added to the output memos of the ICS Interaction
+window. It pops up the ICS text menu. It is remembered whether the menu
+was already up; if not, it will be popped down after a command is selected
+from it. Like the WinBoard context menu, the commands will be able to use
+the clicked word.
+The -icsMenu 'command' $chat is now recognized as a special case, not to
+be sent to the ICS, but executed by XBoard. It will assign one of the
+five chats to the clicked name. If no empty chat is available, the last
+chat will be used (but not cleared).
+ The -icsMenu in the master config file is now configured to contain
+this command, but unfortunately this will not become effective for users
+that already have a settings file.
+The Text Menu now puts $input commands in ICS Console Input field when the
+ICS Input Box is not up.
+ The text placed in the input field for completion (as per $input directive)
+turned out to be selected in GTK, so that when you stated typing, it was
+erased again!
+ By making the Text menu dialog subject to WindowPlacement control,
+and interrogating the poition of the ICS Console window, the Text Menu
+can be popped up such that the mouse pointer is on the bottom-left button.
+
+2014-02-02 21:17:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Integrate ICS output into Chat Window
+
+An extra pane has been added to the Chat Window to display the ICS output.
+In GTK this output is colorized just as in the xterm. For Xaw this is not
+possible. This pane is always visible, and the chat output can be hidden,
+to double its size. Entered input will go to the selected chat (when not
+hidden) as a tell or shout, or to the ICS as a command. The Chat-Partner
+field is hidden together with the chat pane and the Hide button. Each of
+the five chats now has a dedicated button; for unused chats (empty Chat-
+Partner field) these now gets the text 'New Chat' inscribed on it.
+Focussing is made more intelligent (to the Partner field when shown and
+empty, otherwise to the input field).
+The Up and Down arrows now work in the input field to recall old input.
+ ScrollToCursor() was broken in GTK, because a mark was made for only
+a single buffer. Now each buffer has its own end mark.
+ Another problem was that using ScrollToCursow immediately after a memo
+was shrunk (because a neighboring one expanded) it would still use the
+old memo size, so that the bottom part remained out of view. Delaying it
+50 ms solved that problem.
+ A new option -icsUp was added to store the visibility in the settings.
+It is updated only in ICS mode. The ICS Console pops up automatically
+when the stored parameters say so. It is also made sticky.
+ Unlike the xterm the textView does not extend background color to unwritten
+positions behind the line. A separate GTK call is now added to set the
+unwritten part to the same color as the background in normal text.
+ A  control was added in the ICS Options dialog for setting the colors
+of normal text (-colorNormal).
+
+2014-02-02 17:27:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add logo-size control XBoard
+
+This is mainly for the benefit of OS X useres who cannot find their
+settings file. It requires a restart to become effective, which is
+really sub-standard.
+
+2014-02-02 17:18:56 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Edit Engine List menu item to XBoard
+
+In OS X the settings file is hard to find...
+
+2014-02-02 16:41:13 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warnings
+
+Some unread variables are commented out, rather than removed, because they
+can be useful for future development.
+
+2014-02-02 16:33:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix moves of Spartan Captain
+
+The rewrite of the move generator did no longer pay attention to rookRange,
+so that the Spartan Captain moved like a Rook.
+
+2014-02-02 16:18:07 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Option type 'Skip'
+
+The value -1 used to suppress rendering of option controls was drawing
+error messages, because enums are unsigned. So a new member Skip was added
+to the enum.
+
+2014-02-02 14:40:16 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Detect Fischer castling in FENs
+
+Castling rights with unorthodox piece placement imply Fischer castling.
+Make sure shuffling is done after detecting this, because it means K & R
+can also be shuffled (as long as K remains between both R).
+
+2014-02-02 14:09:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow shuffling indicators in FEN
+
+If the back ranks are enclosed by < > in a FEN, the route to shuffle
+initial positions is invoked on it.
+
+2014-02-02 13:51:37 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow wild-cards in FEN
+
+A question mark in a FEN will now be interpreted as a piece randomly
+chosen from the holdings. (From which it will be removed.) Intended
+for use in symmetric black/white pairs; when used on asymetric locations
+or with non-identical holdings the results will be undefined.
+
+2014-02-02 10:40:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Seirawan reverse-castling animation
+
+In Chess960 animation of castlings is suppressed, because the move is encoded
+as KxR, so that the to-square in general is not the final destination of the
+King. So it is just confusing to the eye to see the King slide to the Rook,
+and then jump to an entirely different square. In S-Chess castlings can
+similarly be encoded as RxK (to indicate gating at the Rook square), and
+animation of those moves should be suppressed for the same reason. But it
+wasn't, and in Fischer castlings denoted as RxK this even caused the Rook
+to disappear when it didn't need to moved.
+ Perhaps one day a smart method of animating Fischer castlings can be
+designed. (E.g. remove Rook, animate King move to true to-square, place Rook?
+But what if the King doesn't move at all? Animate Rook then? Normal castlings
+now animate the King, and then just displace the Rook.)
+
+2014-02-02 10:22:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make Fischer castling generally available
+
+A new volatile option -fischerCastlings allows every variant to be played
+with Fischer castling, which so far was only allowed in variants FRC/CRC.
+This only makes sense in shuffle variants, where King and Rooks might not
+be in their orthodox locations. But even when they are, it has consequences
+for the user interface, which will require dragging King on Rook as the only
+way to enter castling. Like -shuffleOpenings the setting will be cleared
+as soon as you switch variant (unless you switch to FRC/CRC, where they
+Fischer castling is on by default). It can be set from the New Shuffle dialog.
+
+2014-01-19 22:41:52 -0800 Arun Persaud <arun@nubati.net>:
+updated po/pot files
+
+
+2014-01-19 22:19:10 -0800 Arun Persaud <arun@nubati.net>:
+new version number for developer release
+
+
+2014-01-19 22:15:33 -0800 Arun Persaud <arun@nubati.net>:
+updated Dutch translation
+
+
+2014-01-19 20:44:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put ponder checkbox in Common Engine dialog WB
+
+This is yet another duplicate of the one in General Options and Adjudiactions.
+
+2014-01-19 20:27:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Expand %s in -openCommand to DATADIR and fix OSX settings-file name
+
+This can be used in OS X to biggy-back a cd to a directory in the App
+on the open command.
+
+2014-01-18 23:42:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add some checkboxes in General Options dialog WB
+
+Checkboxes are added for -variations, -memoHeaders and -autoExtend.
+
+2014-01-18 23:26:03 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warning in CheckTest
+
+
+2014-01-18 22:40:27 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix printing of engine-output headers
+
+They were not printed on analyis of the first position after opening
+the Engine Output window.
+
+2014-01-16 23:07:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix sticky windows on Win8
+
+
+2014-01-16 22:54:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Drag touching edges together (WB)
+
+When an auxiliary window is dragged by an edge, the snap code now checks
+if that edge was touching another window. If so, that other window is sized
+to keep touching the dragged edge. Unless it was also touching the main
+window.
+
+2014-01-15 22:35:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement new mate-score standard
+
+Matescores are now indicated in the protocol as +/- 100000+DTM,
+and in the Engine Output window as #DTM or #-DTM.
+
+2014-01-15 21:28:51 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put fail-high/fail-low indicators in protocol specs
+
+
+2014-01-15 20:43:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+switch to new tbhits protocol
+
+The extended info is now expected as 3 bare integers, the last one
+separated from the PV by at least one tab character.
+The protocol extension is described in the CECP specs document.
+
+2014-01-14 22:37:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix sorting of Engine Output
+
+The moveKey of the top line was never stored, so that more recent
+lower scores could not pass it even if they had the same move.
+
+2014-01-14 22:35:22 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Handle fali-low & fail high
+
+A ? or ! at the end of the PV are now also written behind the score.
+
+2014-01-14 20:31:46 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement extended thinking output
+
+The PV field can now start with three quantities, selective depth,
+engine speed and tablebase hits, disguised as PGN comment. XBoard will
+strip that off, and allow them to be displayed in separate columns of
+the engine-output window.
+
+2014-01-14 14:46:47 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow hide/show of columns in Engine Output
+
+A new persistent Boolean option -memoHeaders enables a new feature:
+text headers are shown above the depth, score, nodes, time columns in the
+engine output. Right-clicking them will subsequently hide the corresponding
+data, and move the column header to above the PV in a 'not shown' list,
+where it can be clicked again to re-open the column.
+Configure maseter settings to switch -memoHeaders on by default.
+
+2014-01-14 09:55:40 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ManProc for OS X
+
+
+2014-01-14 10:02:22 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix access to ~~/themes/conf for OS X
+
+In OS X DATADIR is a variable.
+
+2014-01-13 19:23:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add 'Continue later' button to Tournament dialog XB
+
+To do GenericReadout without triggering a call to the OK function,
+we introduced a new value for the option-number parameter, -2.
+
+2014-01-13 17:32:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Tournament Options dialog
+
+Deleting a Label option had renumbered the remaining Options, breaking
+the dialog and causing a crash when an engine was selected. A considyency
+check is now added to catch this condition, and throw an error popup
+when we mess up again.
+
+2014-01-13 17:09:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow popup of TC and Common Engine from Tournament dialog
+
+A new dialog class MasterDlg was added, similar to TransientDlg,
+but to allow two dialogs to be up simultaneously. The Tournament Options
+dialog was migrated to this class, so it can now get buttons to pop up
+the Time Control and Common Engine dialog, like WinBoard. It even has
+a button for the General options dialog.
+Special care had to be taken to prevent popdown of the MasterDlg when
+a Transient child is still up (similar to browser or error childs).
+
+2014-01-13 16:21:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add --show-config special option
+
+This prints a list of configure parameters, and then exits. If a second
+argument is given, it only prints the value of that config parameter,
+so that tricks like cp *.svg `xboard --show-config Datadir`/themes/chu
+can be used in install scripts of packages with piece images.
+
+2014-01-13 14:25:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Overhaul kill code
+
+Engines were not always forcefully killed in XBoard, which could make
+the tournament manager hang when an engine became unresponsive to "quit".
+The various levels of killing are now revised, and the -delayAfterQuit
+is absorbed in DestroyChildProcess(). There is a hard killing mode 9,
+which immediately sends SIGKILL, intended for engines that have already
+proven to malfunction or could not start at all. In other cases SIGTERM
+is sent according to specs, but a SIGKILL is scheduled -delayAfterQuit + 1
+sec later just in case the SIGTERM would be ignored.
+
+2014-01-13 13:38:47 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix name of master settings file in OS X
+
+The name needs to be relative to the bundle path, but ~~ expansion
+did not work for compiled-in defaults, as the expansion takes place
+when parsing an option. The dataDir is now also kept in an array rather
+than as a pointer, to allow it to appear in statically initialized tables.
+
+2014-01-08 16:25:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Chu promotion of L, HM and GB
+
+The promotion popup would not be shown for HM and GB with legality testing
+on because the piece types used for them were wild-card pieces. The Lance
+was treated as a Pawn in HasPrmotionChoice().
+
+2014-01-08 16:09:15 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove redefine of DATADIR that leaked in from v4.7.x
+
 2014-01-05 12:52:46 -0800 Arun Persaud <arun@nubati.net>:
 updated po/pot files
 

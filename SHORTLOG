@@ -1,3 +1,357 @@
+** Version 4.8.0 **
+
+(git log --pretty=short --no-merges --cherry-pick --left-only v4.8.x...v4.7.3^ |git shortlog --no-merges)
+
+Arun Persaud (35):
+      Updated German translation
+      Updated Ukrainian translations
+      Added Dutch translation
+      Translation: fixed some inconsistencies reported by Benno Schulenberg
+      fixed some whitespace issues in configure.ac
+      configure.ac: don't set xaw if we choose gtk
+      expose the configure options to xboard
+      output configure options when looking at --version
+      fixed some more translation strings
+      more translations fixes: use uppercase for variant names
+      updated Dutch translation
+      updated German translation
+      updated Dutch translation
+      updated Spanish translation
+      another round of translation string fixes
+      Updated Spanish translation
+      remove xpm from XBoard
+      converted icons from xpm to png
+      added check for apply OS X
+      new version number for developer release
+      updated po/pot files
+      updated Dutch translation
+      new version number for developer release
+      updated po/pot files
+      updated spanish translation, added new polish translation
+      update gettext configuration to not include any generated files in git
+      fixed whitespace error in configure.ac for os x
+      new version number for release 4.8.0
+      update po/pot files
+      updated spanish, ukranian, and dutch translation
+      replaced hardcoded pngdir with built-in ~~
+      update NEWS file
+      only enable osxapp build target on apple systems, clean up configure.ac a tiny bit
+      remove experimental from gtk build option
+      fix osxapp enable option in configure.ac
+
+H.G. Muller (166):
+      Implement variant ASEAN
+      Make PGN parser immune to unprotected time stamps
+      Make writing of move counts in PositionToFEN optional
+      Do not always start Makruk & ASEAN as setup position
+      Build in limited EPD capability for engine fingerprintig
+      Add quit-after-game checkbox in ICS options dialog XB
+      Fix book creation
+      Fix GUI book after setup position
+      Allow drops / promotions/ deferrals to be edited into book
+      Add Save button to Edit Tags dialog
+      Allow entry of negative numbers in spin control (WB)
+      Fix grabbing of selected piece
+      Fix initial board sizing WB
+      Add checkboxes for autoDisplayTags/Comments in menu WB
+      Allow seting of -egtPath through menu WB
+      Implement board-marker protocol
+      Use highlight command to specify move legality
+      Expand number of marker colors to 8
+      Implement hover command
+      Let magenta marker activate sweep promotion
+      Allow engine to click squares on behalf of user
+      Fix XBoard hover command
+      Fix -zippyVariants option
+      Allow engine to define its own variant names
+      Fix engine-defined names
+      Fix variant choice for second engine
+      Implement (inaccessible) dark squares
+      Make XBoard xpm-free
+      Rename Match dialog to Tournament
+      Automaticaly install Java engines
+      Save clocks with unfinished PGN games
+      Only save clock settings in PGN when an engine plays
+      Improve Edit Position mode
+      Clear memory of erased position on variant switch
+      Automatically adapt board format to FEN
+      Increase number of piece types to 44
+      Implement Chu Shogi
+      Fix hover event
+      Fix sweep promotions
+      Implement LionChess
+      Fix deselection of Lion
+      Fix promotion popup in Chu Shogi
+      Fix reading of SAN Lion double moves
+      Refactor move generator, and add Chu-Shogi pieces
+      Fix Shogi promoted pieces
+      Change Blind-Tiger symbol to claw
+      Fix SAN of promoted Chu pieces
+      Fix loading of game with multi-leg moves
+      Add claw svg to make-install
+      Animate both legs of Lion move
+      Implement roaring of Lion
+      Fix re-appearing of board markers
+      Fix double-leg moves on small boards
+      Fix sending and parsing of null moves and double moves
+      Fix target squares second leg
+      Adapt WinBoard front-end to Mighty Lion
+      Beef up variant detection
+      Fix promoted Elephant image in Shogi (XB)
+      Fix legality test of pinned-Lion moves
+      Implement ChuChess
+      Always alternate promo-sweep for shogi-style promoting piece
+      Allow piece promotion by pieceToChar in all variants
+      Fix disambiguation of shogi-style promotions
+      Fix default of Chu Chess piece promotions
+      Fix sweep promotions
+      Allow Lion sweep-selection in Chu Chess
+      Fix hover event (again)
+      Supply oriental theme settings
+      Change color of XQ board to better contrast with pieces
+      Fix promoting of Sho Elephant
+      Automatically switch to variant engine supports
+      Implement -installEngine option
+      Allow Crown-Prince image to differ from King
+      Fix Chu-Shogi Lance deferral
+      Fix mate and stalemate test in Chu Shogi
+      Implement option complex for installing engines
+      Make filler buttons in New Variant insensitive
+      Fix promotion in Ai-Wok
+      Make building of Windows .hlp file optional
+      Fix compile error promo dialog WB
+      Fix WB New Variant dialog
+      Cure weirdness when dragging outside of board
+      Write -date stamp always with 10 characters
+      Update protocol specs for setup command
+      Put some OSX code into gtk version
+      Remove use of strndup
+      Activate ManProc in GTK
+      Fix crash on use of dialog Browse buttons GTK
+      Implement EGBB probing and -first/secondDrawDepth
+      Set ~~ to bundle path for OS X
+      Start rank counting at 1 for boards deeper than 10
+      Fix DATADIR in Xaw
+      Remove redefine of DATADIR that leaked in from v4.7.x
+      Fix Chu promotion of L, HM and GB
+      Fix name of master settings file in OS X
+      Overhaul kill code
+      Add --show-config special option
+      Allow popup of TC and Common Engine from Tournament dialog
+      Fix Tournament Options dialog
+      Add 'Continue later' button to Tournament dialog XB
+      Fix ManProc for OS X
+      Fix access to ~~/themes/conf for OS X
+      Fix ManProc for OS X
+      Fix sorting of Engine Output
+      Fix sticky windows on Win8
+      Fix printing of engine-output headers
+      Allow hide/show of columns in Engine Output
+      Implement extended thinking output
+      Handle fali-low & fail high
+      Fix sorting of Engine Output
+      switch to new tbhits protocol
+      Put fail-high/fail-low indicators in protocol specs
+      Implement new mate-score standard
+      Drag touching edges together (WB)
+      Fix sticky windows on Win8
+      Fix printing of engine-output headers
+      Fix warning in CheckTest
+      Add some checkboxes in General Options dialog WB
+      Expand %s in -openCommand to DATADIR and fix OSX settings-file name
+      Put ponder checkbox in Common Engine dialog WB
+      Make Fischer castling generally available
+      Fix Seirawan reverse-castling animation
+      Allow wild-cards in FEN
+      Allow shuffling indicators in FEN
+      Detect Fischer castling in FENs
+      Add Option type 'Skip'
+      Fix moves of Spartan Captain
+      Fix warnings
+      Add Edit Engine List menu item to XBoard
+      Add logo-size control XBoard
+      Integrate ICS output into Chat Window
+      Add context menu to ICS console XB-GTK
+      Let ICS Console pop up GTK in stead of ICS Input Box
+      Recognize Esc and Tab in ICS Console input
+      Preserve unfinished input lines during chat switch
+      Ctrl-N in chat opens empty chat
+      Add End Chat button
+      Let Ctrl-O key open chat for last talker
+      Fix Xaw Chat Console
+      Write broadcasts also to private chatbox of talker
+      Also display channel tell in ICS Console during private chat
+      Leave xterm at start of new line after quitting XBoard
+      When ICS Console open EOF from keyboard is no error
+      Implement copy function in ICS Text Menu
+      Equip Board Options dialog with themes listbox
+      Preserve window width on board-format change
+      Fix pop-down of ChatDlg and TextMenuDlg from menu
+      Play move right-clicked in Edit Book dialog
+      Allow adding played move to book
+      Use first engine as default for second
+      Kludge repair of expose after startup resize
+      Fix various warnings
+      Fix Board-dialog bug WB
+      Fix error Engine Output text highlighting
+      Also search indirection files in user's .xboard tree
+      Implement (clock-)font handling in GTK
+      Fix warnings fonts patch
+      Fix width of menu bar
+      Fix initial sizing of board
+      Allow writing text on pieces
+      Render inscriptions on Chu-promoted pieces in red
+      Fix loading positions in engine-defined variant
+      Fix reading Chu Shogi FENs
+      Fix piece inscriptions
+      Allow pseudo-engines to adjust the clocks
+      Fix writing of Chu-Shogi FENs
+
+H.G.Muller (133):
+      Fix crash on opening Tags window Xaw
+      Make EditPosition pallette work in Asian variants
+      Let EditPosition double-click on piece promote it
+      Fix null-move entry during play
+      Fix adjusting clocks in Xaw version
+      Fix typing of null moves
+      Fix crash on double-click in Game List Tags
+      Fix castling rights on using -lgf
+      Add final piece count to search criteria
+      Add Save Selected Games menu item
+      Fix alignment in Engine Output window
+      Verify if font-spec looks like one in Xaw
+      Fix size of time in Engine Output window
+      Connect mousewheel to Forward/BackwardEvent (XB)
+      Make sure node count is positive
+      Connect scroll event to Graph Option in GTK
+      Rewrite key-binding section of manual
+      Let Save Games as Book only use selected games
+      Describe Save Selected Games menu in manual
+      Fix syntax error in bitbase code
+      Provide DoEvents function in front-ends
+      Fix GameListHighlight WB
+      Call DoEvents during time-consuming operations
+      Fix auto-display comment option in General Options
+      Let GTK build pay attention to font arguments
+      Replace strcasecmp by StrCaseCmp
+      Fix GTK font patch
+      Fix MSVC problems
+      Define default font names
+      Fix Xaw key bindings
+      Fix key bindings for non-menu functions
+      Animate multi-leg in auto-play and forward event
+      Limit auto-extending to click on first move of PV
+      Fix WB DoEvents error
+      Include some conditional OS X fixes
+      Use GTK fonts in Engine Output and Move History
+      Correct for .Xresources form->paneA renaming in manual
+      Fix infinite-regression problem on OS X
+      Fix Chat window for Xaw build
+      Use -gameListFont in Game List
+      Use coordFont default pixel size for other fonts
+      Fix GTK fonts
+      Let message field and button bar use GTK -messageFont
+      Update protocol specs
+      Fix SetWidgetFont GTK
+      suppress Alien Edition standard variants
+      Reserve piece command in protocol specs
+      Reorder variants, to comply with Polyglot book specs
+      Fix warning in dead code Show
+      Make SVGDIR a variable
+      Fix Xaw button color error
+      Let OS X display dock icon
+      Fix crash of tournament dialog GTK
+      Fix checkmarking of OS X menu items
+      Look for logo in engine dir first (GTK)
+      Make inlined functions static
+      Fix typo
+      Implement -autoInstall option
+      Ignore color arguments not starting with #
+      Scale texture bitmaps that are not large enough
+      Implement engine-defined pieces
+      Fix texture scaling
+      Test legality even when off if engine defined pieces
+      Allow two Pawns per file in Tori Shogi
+      Force exactly overlayed texture scaling through filename
+      Describe the new texture conventions in manual
+      Sort fail lows and fail highs below others
+      Repair damage done by merging with v4.7.x
+      Add extra font field to Option struct
+      Control Eval Graph with mouse
+      Remove debug printf
+      Configure some themes in XBoard master settings
+      Prevent crash on specifying non-existent texture XB
+      Configure a size for the Eval Graph
+      Fix detection of screen size GTK
+      Retune -stickyWindows GTK
+      Improve SAN of Pawn moves and allow Betza e.p. definition
+      Update description of piece command in protocol specs
+      Allow definition of castling in piece command
+      Repair piece defs with showTargetSquares off
+      Implement Betza p and g modifiers in piece command
+      Improve virginity test for engine-defined pieces
+      Implement Betza o modifier for cylinder boards
+      Fix cross-edge e.p. capture in Cylinder Chess
+      Prevent multi-path moves from parsing as ambiguous
+      Reparse ambiguous move under built-in rules
+      Size seek graph to also cover board rim WinBoard
+      Always accept piece commands in partly supported variants
+      Print PGN Piece tag listing engine-defined pieces
+      Make unsupported variant on loading 1st engine non-fatal
+      Fix abort of machine game on variant mismatch
+      Fix reset of 50-move counter on FRC castling
+      Allow use of second-row pieces for non-promoted in drop games
+      Prevent board-size oscillations
+      Suppress use of promo-Gold bitmaps in Tori Shogi (WB)
+      Rename PGN Pieces tag to VariantMen
+      Implement ff etc. in Betza parser
+      Configure XBoard for -size 49 in master settings
+      Fix writing of Seirawan960 virginity in FEN
+      Fix clipping of board GTK
+      Fix engine-defined variant as startup
+      Reset move entry on stepping through game
+      Don't preserve setup position on board-size change
+      Fix pieceToCharTable of Falcon Chess
+      Always accept piece commands for Falcon and Cobra
+      Implement Betza j on W,F as skip first square
+      Implement Betza a modifier
+      Implement Betza g modifier for non-final legs
+      Implement Betza y modifier
+      Implement directional modifiers on KQ, and let y&g upgrade
+      Implement Betza t modifier for hop-own
+      Switch to new Betza orth-diag conversion standard
+      Preserve other Betza mode bits on setting default modality
+      Implement Betza hr and hr as chiral move sets
+      Let t on final leg in Betza notation forbid checking
+      Fix infinite loop in cylinder moves
+      Fix check test with multi-leg moves
+      Relocate OS X' LOCALEDIR
+      Implement new logo standard
+      Replace default Shogi pieces
+      Force GTK logo size to quarter board width
+      Increase number of engine-defined-variants Buttons XB
+      Show current variant on New Variant buttons GTK in bold
+      Fix ICS logo display
+      Try also /home/<user>/.logo.pgn for user logo
+      Fix logos Xaw
+      Some improvement on new Shogi SVG pieces
+      Remember position obtained from setup
+      Split Tournament dialog in side-by-side panes
+      Reset move entry on Clear Board
+      Update Game List when setting new Game List Tags
+      Implement displaying of variant tag in Game List
+      Don't switch to engine-defined variant on game loading
+
+Joshua Pettus (1):
+      Add build script to configure for a XBoard.app for OS X
+
+hasufell (4):
+      BUILD: make paths modifiable (tiny change)
+      BUILD: fix configure switches (tiny change)
+      BUILD: make Xaw frontend default (tiny change)
+      BUILD: fix withXaw conditional (tiny change)
+
+
 ** Version 4.7.3 **
 
 (git shortlog --no-merges v4.7.2..HEAD)
