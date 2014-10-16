@@ -115,7 +115,8 @@ ParsePGNTag (char *tag, GameInfo *gameInfo)
     } else if (StrCaseCmp(name, "Variant") == 0) {
         /* xboard-defined extension */
 	success = StrSavePtr(value, &gameInfo->variantName) != NULL;
-        gameInfo->variant = StringToVariant(value);
+        if(*value && strcmp(value, engineVariant)) // keep current engine-defined variant if it matches
+            gameInfo->variant = StringToVariant(value);
     } else if (StrCaseCmp(name, "VariantMen") == 0) {
         /* for now ignore this tag, as we have no method yet */
         /* for assigning the pieces to XBoard pictograms     */
