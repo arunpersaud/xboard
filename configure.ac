@@ -190,7 +190,7 @@ AC_ARG_ENABLE([osxapp],
               [enable_OSXAPP=$withval],
               [enable_OSXAPP="no"])
 
-AS_IF([test "x$enable_osxapp" = "xyes"], [
+AS_IF([test "x$enable_OSXAPP" = "xyes"], [
      AC_PREFIX_DEFAULT([`pwd`/XBoard.app/Contents])
      with_GTK="yes"
      enable_mimedb="no"
@@ -204,7 +204,7 @@ AS_IF([test "x$enable_osxapp" = "xyes"], [
      GAMEDATADIR='$(datadir)/xboard'
 ])
 
-AM_CONDITIONAL(OSX_APP, test x"$enable_osxapp" = "xyes")
+AM_CONDITIONAL(OSX_APP, test x"$enable_OSXAPP" = "xyes")
 
 AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x"$enable_mimedb" = "xyes")
 if test x"$enable_mimedb" = "xyes"; then
