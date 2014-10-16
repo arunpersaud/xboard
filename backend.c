@@ -12877,6 +12877,8 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	    return FALSE;
 	  }
 	  CopyBoard(boards[0], initial_position);
+	  if(*engineVariant) // [HGM] for now, assume FEN in engine-defined variant game is default initial position
+	    CopyBoard(initialPosition, initial_position);
 	  if (blackPlaysFirst) {
 	    currentMove = forwardMostMove = backwardMostMove = 1;
 	    CopyBoard(boards[1], initial_position);
