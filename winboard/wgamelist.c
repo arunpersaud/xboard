@@ -48,16 +48,8 @@ static BOOLEAN gameListUp = FALSE;
 static FILE* gameFile;
 static char* gameFileName = NULL;
 
-struct GameListStats
-{
-    int white_wins;
-    int black_wins;
-    int drawn;
-    int unfinished;
-};
-
 /* [AS] Setup the game list according to the specified filter */
-static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct GameListStats * stats, BOOL byPos, BOOL narrow )
+int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct GameListStats * stats, BOOL byPos, BOOL narrow )
 {
     ListGame * lg = (ListGame *) gameList.head;
     int nItem;
@@ -65,6 +57,9 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
     BOOL hasFilter = FALSE;
     int count = 0;
     struct GameListStats dummy;
+
+    if(!hDlg) hDlg = gameListDialog; // [HGM] to allow calling from Game List Options dialog
+    if(!hDlg) return 0;
 
     /* Initialize stats (use a dummy variable if caller not interested in them) */
     if( stats == NULL ) {

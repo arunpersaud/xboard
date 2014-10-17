@@ -211,6 +211,15 @@ extern HWND evalGraphDialog;
 
 extern HWND engineOutputDialog;
 
+struct GameListStats
+{
+    int white_wins;
+    int black_wins;
+    int drawn;
+    int unfinished;
+};
+
+int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct GameListStats * stats, BOOL byPos, BOOL narrow );
 VOID ShowGameListProc(void);
 extern HWND gameListDialog;
 

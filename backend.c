@@ -8908,6 +8908,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       /* For variants we don't have   */       && gameInfo.variant != VariantBerolina
       /* correct rules for, we cannot */       && gameInfo.variant != VariantCylinder
       /* enforce legality on our own! */       && gameInfo.variant != VariantUnknown
+                                               && gameInfo.variant != VariantGreat
                                                && gameInfo.variant != VariantFairy    ) return;
       if(piece < EmptySquare) {
         pieceDefs = TRUE;
@@ -12876,6 +12877,8 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	    return FALSE;
 	  }
 	  CopyBoard(boards[0], initial_position);
+	  if(*engineVariant) // [HGM] for now, assume FEN in engine-defined variant game is default initial position
+	    CopyBoard(initialPosition, initial_position);
 	  if (blackPlaysFirst) {
 	    currentMove = forwardMostMove = backwardMostMove = 1;
 	    CopyBoard(boards[1], initial_position);
@@ -17870,7 +17873,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
             q = (boards[move][CASTLING][1] == BOARD_LEFT &&
                  boards[move][CASTLING][2] != NoRights  );
             if(handW) { // for S-Chess with pieces in hand, list virgin pieces between K and Q
-                for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
+                for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q; i--)
                     if((boards[move][0][i] != WhiteKing || k+q == 0) &&
                         boards[move][VIRGIN][i] & VIRGIN_W) *p++ = i + AAA + 'A' - 'a';
             }
@@ -17881,7 +17884,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
             q = (boards[move][CASTLING][4] == BOARD_LEFT &&
                  boards[move][CASTLING][5] != NoRights  );
             if(handB) {
-                for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q && j; i--)
+                for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q; i--)
                     if((boards[move][BOARD_HEIGHT-1][i] != BlackKing || k+q == 0) &&
                         boards[move][VIRGIN][i] & VIRGIN_B) *p++ = i + AAA;
             }

@@ -8712,8 +8712,11 @@ int GameListOptions()
     result = DialogBoxParam( hInst, MAKEINTRESOURCE(DLG_GameListOptions), hwndMain, (DLGPROC)lpProc, (LPARAM)lpUserGLT );
 
     if( result == 0 ) {
+        char *oldTags = appData.gameListTags;
         /* [AS] Memory leak here! */
         appData.gameListTags = strdup( lpUserGLT ); 
+        if(strcmp(oldTags, appData.gameListTags)) // [HGM] redo Game List when we changed something
+            GameListToListBox(NULL, TRUE, ".", NULL, FALSE, FALSE); // "." as filter is kludge to select all
     }
 
     return result;
@@ -9776,6 +9779,7 @@ OutputToProcess(ProcRef pr, char *message, int count, int *outError)
   int outCount = SOCKET_ERROR;
   ChildProc *cp = (ChildProc *) pr;
   static OVERLAPPED ovl;
+
   static int line = 0;
 
   if (pr == NoProc)
