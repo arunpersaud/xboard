@@ -191,8 +191,8 @@ AC_ARG_ENABLE([osxapp],
               [enable_OSXAPP="no"])
 
 AS_IF([test x"$enable_OSXAPP" = x"yes"], [
-     AC_PREFIX_DEFAULT([`pwd`/XBoard.app/Contents])
-     AC_DEFINE([OSXAPP], [1], [We are building an OSX APP, redefine some functions])],
+     prefix=`pwd`/XBoard.app/Contents
+     AC_DEFINE([OSXAPP], [1], [We are building an OSX APP, redefine some functions])
      with_GTK="yes"
      enable_mimedb="no"
      datarootdir='$(prefix)/Resources'
@@ -202,8 +202,7 @@ AS_IF([test x"$enable_OSXAPP" = x"yes"], [
      mandir='$(datadir)/man'
      bindir='$(prefix)/MacOS'
      localedir='$(datadir)/locale'
-     GAMEDATADIR='$(datadir)/xboard'
-])
+     GAMEDATADIR='$(datadir)/xboard'],[])
 
 AM_CONDITIONAL(OSX_APP, test x"$enable_OSXAPP" = x"yes")
 
