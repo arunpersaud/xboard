@@ -187,11 +187,12 @@ AC_ARG_ENABLE([update-mimedb],
 
 AC_ARG_ENABLE([osxapp],
 	      [AS_HELP_STRING([--enable-osxapp],[build a OSX app [default=no]])],
-              [enable_OSXAPP=$withval],
+              [enable_OSXAPP=$enableval],
               [enable_OSXAPP="no"])
 
 AS_IF([test x"$enable_OSXAPP" = x"yes"], [
      AC_PREFIX_DEFAULT([`pwd`/XBoard.app/Contents])
+     AC_DEFINE([OSXAPP], [1], [We are building an OSX APP, redefine some functions])],
      with_GTK="yes"
      enable_mimedb="no"
      datarootdir='$(prefix)/Resources'

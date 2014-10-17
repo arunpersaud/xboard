@@ -167,7 +167,7 @@ extern char *getenv();
 #include "gettext.h"
 #include "draw.h"
 
-#ifdef __APPLE__
+#ifdef OSXAPP
 #  include <gtkmacintegration/gtkosxapplication.h>
    // prevent pathname of positional file argument provided by OS X being be mistaken for option name
    // (price is that we won't recognize Windows option format anymore).
@@ -828,7 +828,7 @@ LoadIconFile (gchar *svgFilename)
     return gdk_pixbuf_new_from_file(buf, NULL);
 }
 
-#ifdef __APPLE__
+#ifdef OSXAPP
 static char clickedFile[MSG_SIZ];
 static int suppress;
 
@@ -874,7 +874,7 @@ main (int argc, char **argv)
 
     /* set up GTK */
     gtk_init (&argc, &argv);
-#ifdef __APPLE__
+#ifdef OSXAPP
     {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
 	char *path = gtkosx_application_get_bundle_path();
 #ifdef ENABLE_NLS
@@ -1951,7 +1951,7 @@ TempForwardProc (Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void
 ManProc ()
 {   // called from menu
-#ifdef __APPLE__
+#ifdef OSXAPP
     char buf[MSG_SIZ];
     snprintf(buf, MSG_SIZ, "%s ./man.command", appData.sysOpen);
     system(buf);
@@ -2064,7 +2064,7 @@ SetClockIcon (int color)
     GdkPixbuf *pm = *clockIcons[color];
     if (mainwindowIcon != pm) {
         mainwindowIcon = pm;
-#ifdef __APPLE__
+#ifdef OSXAPP
         gtkosx_application_set_dock_icon_pixbuf(theApp, mainwindowIcon);
 #else
         gtk_window_set_icon(GTK_WINDOW(shellWidget), mainwindowIcon);
