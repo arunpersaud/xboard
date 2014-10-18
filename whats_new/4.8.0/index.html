@@ -668,10 +668,10 @@ so that the GUI would only have to take it back, after all.
 	Prevent crash on double-click in XB Game List Tags dialog.
   </li>
   <li>
-	Fix the auto-display comment control in the General Options dialog of WinBoard, which was ignored.
+	Fix the 'auto-display comment' control in the General Options dialog of WinBoard, which was ignored.
   </li>
   <li>
-	Fix adjusting clocks by clicking them in Xaw build.
+	Fix adjusting clocks by clicking them, in Xaw build.
   </li>
   <li>
 	Fix zooming of Evaluation Graph XB with mousewheel, which was not working at all.
@@ -683,7 +683,7 @@ so that the GUI would only have to take it back, after all.
 	WinBoard's seek graph is now sized to also cover any board rim.
   </li>
   <li>
-	Key bindings XB for non menu items are no longer ignored.
+	Key bindings XB for non-menu items are no longer ignored.
   </li>
   <li>
 	Set castling rights correctly after loading of game file from command line.
@@ -712,6 +712,15 @@ so that the GUI would only have to take it back, after all.
 	Blow up textures that are too small.
   </li>
   <li>
+	Display of the variant tag in the Game List now works.
+  </li>
+  <li>
+	Reset move entry (clearing target-square markers) on 'clear board' in Edit Position mode.
+  </li>
+  <li>
+	The Game List is automatically updated when you alter the tag selection for the game lines.
+  </li>
+  <li>
 	Ignore invalid color specs in stead of treating them as black (important because Cairo does not understand old xpm color names).
   </li>
   <li>
@@ -731,6 +740,9 @@ so that the GUI would only have to take it back, after all.
   </li>
   <li>
 	Make WB window sizing handle multiple screens.
+  </li>
+  <li>
+	Indicate current variant in New Variant dialog of the GTK build (by printing it in boldface onthe button).
   </li>
   <li>
 	50-move counter is no longer reset on Chess960 castlings.
@@ -777,7 +789,7 @@ Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
 
 <p>Updated:
 <!-- timestamp start -->
-$Date: 2014/10/18 05:14:41 $
+$Date: 2014/10/18 05:14:56 $
 <!-- timestamp end -->
 </p>
 </div>
