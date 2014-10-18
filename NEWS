@@ -78,6 +78,13 @@
     * Fix animation of Seirawan Chess castling + gating at Rook
       square, which made Rook disappear.
     * Fix adjudication of stalemates in variant Giveaway.
+    * Display of the variant tag in the Game List now works.
+    * Reset move entry (clearing target-square markers) on 'clear
+      board' in Edit Position mode.
+    * The Game List is automatically updated when you alter the tag
+      selection for the game lines.
+    * Indicate current variant in New Variant dialog of the GTK build
+      (by printing it in boldface on the button).
 
 
 ** Version 4.7.3 **
