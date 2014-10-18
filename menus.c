@@ -313,7 +313,7 @@ void
 InfoProc ()
 {
     char buf[MSG_SIZ];
-#ifdef __APPLE__
+#ifdef OSXAPP
     snprintf(buf, MSG_SIZ, "%s ./info.command", appData.sysOpen);
 #else
     snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",

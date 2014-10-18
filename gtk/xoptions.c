@@ -51,7 +51,7 @@ extern char *getenv();
 #include <cairo/cairo-xlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#ifdef __APPLE__
+#ifdef OSXAPP
 #  include <gtkmacintegration/gtkosxapplication.h>
 #endif
 
@@ -425,7 +425,7 @@ CreateMenuPopup (Option *opt, int n, int def)
       {
 	char *msg = mb[i].string;
 	if(!msg) break;
-#ifdef __APPLE__
+#ifdef OSXAPP
 	if(!strcmp(msg, "Quit ")) continue;             // Quit item will appear automatically in App menu
 	if(!strcmp(msg, "About XBoard")) msg = "About"; // 'XBoard' will be appended automatically when moved to App menu 1st item
 #endif
@@ -443,7 +443,7 @@ CreateMenuPopup (Option *opt, int n, int def)
 	    GdkModifierType accelerator_mods;
 
 	    gtk_accelerator_parse(mb[i].accel, &accelerator_key, &accelerator_mods);
-#ifdef __APPLE__
+#ifdef OSXAPP
    	    if(accelerator_mods & GDK_CONTROL_MASK) {  // in OSX use Meta where Linux uses Ctrl
 		accelerator_mods &= ~GDK_CONTROL_MASK; // clear Ctrl flag
 		accelerator_mods |= GDK_META_MASK;     // set Meta flag
@@ -1562,7 +1562,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  case DropDown:
 	    top--;
 	    msg = _(option[i].name); // write name on the menu button
-#ifndef __APPLE__
+#ifndef OSXAPP
 	    if(tinyLayout) { strcpy(def, msg); def[tinyLayout] = NULLCHAR; msg = def; } // clip menu text to keep menu bar small
 #endif
 //	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
@@ -1590,7 +1590,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    break;
 	  case BarEnd:
 	    top--;
-#ifndef __APPLE__
+#ifndef OSXAPP
             gtk_table_attach(GTK_TABLE(table), menuBar, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
 
 	    if(option[i].target) ((ButtonCallback*)option[i].target)(boxStart); // callback that can make sizing decisions

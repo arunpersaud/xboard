@@ -1614,7 +1614,7 @@ SaveSettings(char* name)
       if(*(char**)ad->argLoc == NULL) break; // just in case
       { char buf[MSG_SIZ];
         snprintf(buf, MSG_SIZ, "%s", *(char**)ad->argLoc);
-#ifdef __APPLE__
+#ifdef OSXAPP
         if(strstr(buf, DATADIR) == buf)
           snprintf(buf, MSG_SIZ, "~~%s", *(char**)ad->argLoc + strlen(DATADIR));
 #endif
