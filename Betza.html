@@ -1,0 +1,373 @@
+<html>
+<header>
+<title>Betza notation</title>
+</header>
+<body>
+<h1>Betza notation and XBoard</h1>
+<p>
+This page describes Betza's notation system for piece moves,
+so far as relevant for the XBoard project.
+XBoard uses this notation to allow engines to inform it on the moves of non-standard pieces in Chess variants,
+so that features like target-square highlighting, legality checking and SAN generation
+can work with their usual accuracy even in the presence of such pieces.
+The current XBoard (4.8.0) only implements a simple form of Betza notation.
+Future versions might have full understanding of Betza 2.0.
+But the latter is already of relevance now,
+as it is used to describe the moves of the more complex pieces
+on the web pages that describe the rules of the variants supported by XBoard.
+</p>
+<h2>The basics</h2>
+<p>
+<b>Atoms -</b> Betza notation describes Chess pieces by dividing their moves into groups with the same board step,
+such as all 8 moves of the Knight.
+By default these moves can be made as capture as well as non-capture.
+Such a group of symmetry-equivalent moves ('atom') is indicated by a single capital,
+usually the common abbreviation of the piece that has those moves, and only those moves
+(see table 1).
+The atom <b>O</b> (oh) is sometimes used for null move (staying in place, but consuming the turn),
+and <b>U</b> for 'universal leaper' (able to leap to every square on the board except the one it is on),
+but XBoard 4.8.0 does not implement those.
+If a piece can do several unrelated moves, it is described by a concatenation of the descriptions of each group. 
+</p>
+<pre>
+Table 1: moves of atoms
+=======================
+G Z C H C Z G     W = Wazir     (1,0)
+Z A N D N A Z     F = Ferz      (1,1)
+C N F W F N C     D = Dabbaba   (2,0)
+H D W * W D H     N = Knight    (2,1)
+C N F W F N C     A = Alfil     (2,2)
+Z A N D N A Z     C = Camel     (3,1) older notation J
+G Z C H C Z G     Z = Zebra     (3,2) older notation L
+</pre>
+<p>
+<b>Range -</b> To describe sliders, the letter indicating the atom must be followed by a number,
+which then indicates the maximum number of times the step described by the atom can be repeated in absence of obstacles.
+By convention a 0 here means 'without limit'.
+(Older versions of the notation duplicated the atom name for this, but XBoard does not understand that.)
+Thus <b>N0</b> (obsolete <b>NN</b>) describes the Nightrider, repeating Knight steps in the same (but arbitrary) direction.
+There are some shorthands for common expressions: <b>B</b>, <b>R</b>, <b>Q</b> and <b>K</b> describe the orthodox Chess pieces,
+which formally should have been written as <b>F0</b>, <b>W0</b>, <b>F0W0</b> = <b>BR</b> and <b>FW</b>, respectively.
+This way an Archbishop can be written as <b>BN</b>. (Or <b>NB</b>; the order has no significance.)
+</p>
+<p>
+<b>Directional modifiers -</b> If a piece does not have all the 8 moves belonging to the atom (or 4 for purely diagonal or orthogonal moves),
+the subset of it can be indicated by 'directional modifier' prefixes.
+These are lower-case letters indicating directions or sets of directions:
+f, b, r, l, v, s, h for forward, backward, right, left, vertical (f+b), sideway (l+r),
+and half, respectively.
+Note that the exact meaning of each of these depends on the type of atom;
+for orthogonal moves f, b, r and l each specify a single move,
+for diagonal and oblique moves they specify move pairs.
+To subdivide the pairs, a second directional modifier for the perpendicular direction must again be written in front of the first.
+So <b>lfN</b> corresponds to the move Ng1-f3, the left-most move of the forward pair.
+Combinations like 'fh' can only be used on oblique moves, and do the opposite:
+the 'h' expands the meaning of 'f' to all 4 moves that have a component in that general direction.
+Directional modifiers that do not combine to a single direction imply that moving in each of the corresponding directions is allowed.
+E.g. <b>frW</b> can move one step forward, or one step right (but not backward or left).
+If what was parsed upto now can combine with the next letter, it will.
+To avoid unwanted combining of adjacent directional modifiers to a single direction,
+they sometimes need to be doubled, e.g. <b>ffrrN</b> is a Knight with the two forwardmost and rightmost moves.
+</p>
+<pre>
+Table 2: directional modifiers
+==============================
+ K  N  K  N  K     Outer ring applies to 8-fold movers N and K
+ N  F  W  F  K     Inner ring applies to 4-fold movers F and W
+ K  W  *  W  K
+ N  F  W  F  K
+ K  N  K  N  K
+
+ half-planes      right/left pairs   single directions       chiral
+fh fh fh fh fh     lv lv  . rv rv     lf lf ff rf rf      . hl  . hr  .
+fh  f  .  f fh     ll  .  .  . rr     fl lf  f rf fr     hr  .  .  . hl
+ .  .  *  .  .      .  .  *  .  .     ll  l  *  r rr      .  .  *  .  .
+bh  b  .  b bh     ll  .  .  . rr     bl lb  b rb br     hl  .  .  . hr
+bh bh bh bh bh     lv lv  . rv rv     lb lb bb rb rb      . hr  . hl  .
+
+                  forw/backw pairs  diam. pairs/quartets
+lh lh  . rh rh     fs ff  . ff fs      .  v  v  v  .
+lh  l  .  r rh     fs  .  .  . fs      s  .  v  .  s
+lh  .  *  . rh      .  .  *  .  .      s  s  *  s  s
+lh  l  .  r rh     bs  .  .  . bs      s  .  v  .  s
+lh lh  . rh rh     bs bb  . bb bs      .  v  v  v  .
+</pre>
+<p>
+<b>Modality modifiers -</b> If a piece is 'divergent', i.e. it cannot both capture and non-capture with the same move,
+then a 'move modality' prefix will describe what the move can do (c = capture, m = non-capture).
+A Shatranj Pawn (which does not have initial double-push or e.p.) thus is <b>fmWfcF</b>.
+</p>
+<h2>Advanced modifiers</h2>
+<p>
+<b>Jumping -</b> The original Betza notation includes a number of special-purpose modifiers,
+defined in a rather ad-hoc way to indicate certain aspects of common pieces that could not be handled by the basic system.
+'Lame leapers' are pieces that can be blocked on squares they cannot move to,
+and are indicated by modifiers 'j' and 'n', for 'must jump' and 'non-jumping'.
+By default moves to non-neighboring squares can do both, as they completely ignore the state of other board squares,
+even those geometrically between their origin and destination.
+A Xiangqi Elephant would thus be <b>nA</b>, where a Shatranj Alfil is simply <b>A</b>.
+The weakness of these modifiers is that they are only unambiguously defined on purely diagonal or orthogonal atoms,
+as in other cases it is not clear what constitutes the path taken to reach the destination.
+In XBoard 4.8.0 'n' or 'j' are only testing a single intermediate square, exactly halfway,
+which should be considered broken for all atoms other than <b>N</b>, <b>A</b>, and <b>D</b>.
+As fractional steps are rounded towards zero, this happens to make <b>nN</b> the Xiangqi Horse.
+When (correctly) applied to atoms of longer stride, it can make sense to distinguish between prefixes 'j' (must jump one)
+and 'jj' (can jump many).
+</p>
+<p>
+<b>Hopping -</b> Hoppers are pieces that must move over an occupied square (the 'platform') that they might be able to move to in other situations.
+Famous examples are the Xiangqi Cannon ('Pao', a Rook which must jump before it can capture),
+and the Grasshopper (a Queen that can only land on squares directly behind the first obstacle in its path).
+The modifier 'p' can prefix slider moves, and indicates that these moves can and must jump exactly one obstacle,
+so that the Cannon can be denoted as <b>mRcpR</b>.
+The modifier 'g' indicates a slider move that in a similar way can only continue a single step after hitting the obstacle,
+so that a Grasshopper is <b>gQ</b>.
+The more general case, where pieces could also change direction ('bifurcators') or stride after hopping the platform,
+could not be covered in the original Betza system without introducing new ad-hoc modifiers describing each case separately.
+XBoard 4.8.0 implements both 'g' and 'p'.
+</p>
+<p>
+<b>Specials -</b> Other ad-hoc modifiers in the original Betza system are 'q' and 'z',
+for riders that move along curved and zig-zag trajectories.
+I.e. they take their consecutive steps not in the same direction, but with a fixed angle between them,
+rotating in the same direction on every new step for 'q', and alternating direction for 'z'.
+It is a bit ill-defined how exactly the direction changes; one assumes by the minimum amount, which depends on the atom.
+The prefix 'o' is used to indicate moves on a cylinder board, which would wrap around from the side edges.
+XBoard 4.8.0 does not implement the 'q' and 'z' modifiers, but it does implement 'o'.
+</p>
+<h2>XBoard-specific ad-hoc extensions and restrictions ('XBetza')</h2>
+<p>
+<b>En passant -</b> Not in the original Betza system, but very much in the spirit of it,
+a prefix 'i' can be put on a move that is only allowed for 'virgin' pieces.
+Similarly, 'e' is a very useful additional move modality next to 'm' and 'c',
+indicating en-passant captures (which go to that empty square where the previous opponent's move could have been blocked due to an 'n' prefix,
+had it not been empty, and remove that moved piece as a side effect).
+These modifiers are implemented in XBoard 4.8.0, to allow accurate description of Pawns;
+a FIDE Pawn would be <b>fmWfceFifmnD</b>, which includes both the blockable initial double push <b>ifmnD</b> and the e.p. capture <b>feF</b>
+on top of the Shatranj Pawn.
+The actual creation of e.p. rights and removal of the victim is still done by the hard-coded logic for Pawn moves, however,
+irrespective of what you specify.
+</p>
+<p>
+<b>Castling -</b> Unique to XBoard is a way to describe conventional castling with an <b>O</b> (oh) atom,
+where the following number indicates the number of steps the piece having this move takes in the direction of the corner.
+It implies that the corner piece then has to swing around it,
+and applies the usual restrictions on virginity of the corner piece,
+and not moving through check (if the described piece is royal, but currently XBoard only understands castling of Kings).
+Not writing a castling move on the King makes it keep its original castling for the current variant!
+To get a King that cannot castle in variants where it normally does, specify an initial position without castling rights. 
+</p>
+<b>Drops -</b> The atom <b>@</b> indicates a piece can be dropped from the hand. (Never mind how it got there!)
+Directional modifiers make no sense here,
+so the corresponding letters are reused to indicate other things.
+'f' restricts the drop to board files that do not contain a piece of this type yet.
+Similarly 's' forbids a drop on squares the same color as where there already is such a piece,
+and 'b' even forbids the drop if there is already such a piece anywhere on the board.
+These modifiers can be duplicated to crank up the maximum to two pieces of the same type.
+XBoard 4.8.0 does not implement this atom, as it has its own hard-wired code for judging drops,
+separate from the move generator, and does not highlight possible drop squares.
+It terminates parsing the Betza string when it encounters '@' (as for any unrecognized atom),
+so if it is included for future reference, it should better be the final atom.
+</p>
+<p>
+A numeric suffix on the <b>@</b>, which normally would indicate a range,
+indicates the depth of the 'drop zone' measured in ranks,
+(default 1),
+starting at the back rank.
+A 'j' prefix means the back-rank itself is exempted.
+So in Crazyhouse Pawns would have <b>j@7</b>, the other pieces <b>@8</b>.
+In Shogi we have P:<b>fWf@8</b>, L:<b>fR@8</b>, N:<b>fN@7</b>, while other pieces would have <b>@9</b>.
+</p>
+<p>
+<b>Skipping -</b> A 'j' modifier on a slider (<b>W<i>n</i></b> or <b>F<i>n</i></b>, as opposed to rider, which makes larger strides),
+indicates it skips the first square, irrespective of its occupancy.
+This overloading of the 'j' symbol is possible because the original meaning ('must jump')
+makes no sense on <b>W</b> or <b>F</b>.
+</p>
+<p>
+<b>Multi-leg -</b> Newly proposed is the 'a' ('again') modifier,
+which indicates that the piece can do <i>another move</i> after its first one is completed.
+modifiers preceding 'a' apply to the first 'leg' of the move, whatever follows is describes the second leg.
+The direction and modality of the legs can thus be specified independently.
+Together with some new conventions for the interpretation of the existing modifiers in such a context,
+this makes an immensely powerful system, able to describe complex trajectories and many exotic modes of capture.
+(e.g. a Checker can capture on its first <b>fF</b> step,
+and then must move again in the same direction to an empty square, <b>fcafmF</b>).
+Directions for a continuation leg are indicated <i>relative</i> to the previous leg,
+where continuing in the same direction counts as 'forward'.
+So <b>masR</b> would be a Rook that can do two moves per turn ('a'),
+the second perpendicular to the first ('s'),
+where the first should be a non-capture, ('m'), and the second can both capture and non-capture, as usual.
+The continuation directions are specified in the (8-fold) K system even for 4-way atoms;
+when purely orthogonal or diagonal atoms get a continuation direction specified that they do not have,
+(i.e. intermediate to the directions they stand for),
+they are <i>converted</i> into each other for the remainder of that move.
+F interconverts with W, (and thus B with R), D with A and G with H this way.
+E.g. <b>mafsR</b> for a trajectory that starts orthogonal and then bends 45 degrees ('fs') on any empty square ('m') reached that way.
+</p>
+<p>
+For non-final legs there are more options for the modality that make sense than just mc:
+because the moving piece doesn't intend to stay on that square, it is not necessary to clean the latter out.
+We can also leave an occupant undisturbed, denoted by 'p', ('hop' or 'pass through').
+Thus <b>pasR</b> would be a Rook that can turn a corner only at the point where it hits the first obstacle,
+while <b>casR</b> would be a Rook that can capture a foe, and then continue at 90-degrees,
+possibly for a second capture.
+Of course it is possible to combine modalities, like <b>cpasR</b>, which either captures the platform, or leaves it undisturbed.
+The 'a' can be applied multiple times;
+<b>mamaK</b> means three King steps arbitrary changing direction, traversing empty intermediate squares only,
+while it can capture (or just move to) the final square in the third step.
+</p>
+<p>
+By default continuation legs go in all directions <i>except exactly backwards</i>.
+Default modality in non-final legs is 'm', i.e. the intermediate square must be empty.
+(So the leading 'm' in many of the preceding examples can actually be dropped, e.g. <b>aaK</b>,
+although this often does not make it easier to understand the notation.)
+The final leg follows the rules for single-leg moves, i.e. default modality 'mc',
+while 'p' has a slightly different meaning there.
+Note that an 'mp' modality on a non-final step makes it ignore the relay square completely.
+This can be used to glue leaper moves into longer leaps in a 'transparent' way, e.g. <b>mpafN</b> for a (2,4) leaper.
+</p>
+<p>
+The modifier 'g' can be generalized to non-final legs in a similar way as 'p',
+the difference between the two (as always) being that the latter limits the range after the hop to a single step.
+Thus <b>gQ</b> = <b>gafQ</b>, just as <b>pR</b> = <b>pafR</b>.
+This can be generalized even further by making this work in the opposite direction as well,
+turning leapers into sliders when the range already was 1.
+This makes <b>gafK</b> a time-reversed Grasshopper, different from <b>pafK</b> = <b>nAnD</b>.
+The range is changed by interconvering FWK with BRQ after stripping off any explicitly written range,
+while on other atoms the written or implied range will be changed from 1 to infinite and from not-1 to 1.
+This makes <b>gafsR</b> behave differently from <b>gafsW0</b>:
+the first turns into <b>fsW</b> = <b>fF</b> and must thus land directly (diagonally) behind the platform,
+but the latter changes into <b>fsR</b> = <b>fB</b> with unlimited range.
+An extra modifier 't' can be combined with 'g' and 'p' to exclude hopping over enemy pieces.
+</p>
+<p>
+Like 'g' is a range-changing version of 'p', both doing their thing at an occupied square,
+the non-standard modifier 'y' can be seen as a range-changing version of 'm',
+doing their thing on empty squares.
+So where <b>masR</b> is a Hook Mover that does two perpendicular Rook moves,
+<b>yafsW</b> would be a piece that makes a Bishop move after single W step.
+This can also be used to indicate pieces that bend their path just before or after an obstacle as 3-leg moves:
+<b>gabyabsR</b> would be a collision-type bifurcator, which moves like Rook to an obstacle and changes to W there ('g'),
+takes one step back ('b'), spontaneously restoring the slider range ('y'),
+and then continues with a sideway backward (compared to the previous leg, so forward w.r.t. the starting direction) = B move.
+</p>
+<p>
+Beware: once a path bends, 'l' and 'r' are no longer symmetry equivalent,
+and using 's' after that would describe two essentially different paths.
+Oblique atoms already bend in the first step.
+To make it easier to specify a unique path for their continuation,
+the 'hr' and 'hl' direction-set specifiers are added to indicate the set of right-handed
+an left-handed moves of those.
+(In XBoard 4.8.0 these cannot be combined with other direction specifications!)
+Thus a 'Chiral Knight' <b>hrN</b> on e4 attacks only to f6, g3, d2 and c5,
+and writing the 'hr' and 'hl' moves separately allows you to write the
+symmetry-equivalent path on the 'hl' moves with 'r' and 'l' interchanged.
+Which you already could (and had to) do for chiral moves starting as orthogonal or diagonal atoms,
+such as <b>afraflWaflafrW</b> for a lame <b>C</b> that can be blocked at W or N squares.
+</p>
+<p>
+<b>Tame pieces -</b> XBoard interprets a modifier 't' on a final (or only) leg of a move as a prohibition to capture Kings.
+This is intended as a work-around, to allow approximate description of pieces that are too complex for the current implemetation to handle.
+Such an approximate description will either lack some legal moves,
+(which is fatal, because XBoard will then reject those),
+or have some extra imagined moves.
+The latter would also be fatal, because checking with such an imagined move will make XBoard reject most opponent moves,
+as it will insist the opponent evades the imagined check first.
+By labeling all imagined moves as non-checking, XBoard will never reject anything that is legal,
+while allowing something that was in fact illegal can always be rejected by the engine.
+</p>
+<p>
+<b>XBoard limitations -</b> In Betza notation the modifiers can usually be permuted in many ways without altering the meaning,
+but the XBoard implementation is more demanding;
+the modifiers <u>must</u> come in the order i, <i>directional</i>, m, c, d, e, t, p, g, o, y, n, j.
+Sinning against this directive will make it ignore many of the modifiers.
+Ranges can be at most two digits and must not start with a redundant zero.
+Parsing will terminate without error message when an unknown atom is encountered.
+XBoard's internal move logic is limited to a single side-effect capture.
+There is no limit on the number of 'non-destructive' legs, however.
+Moves with a non-final-leg capture must be specified after other moves to that capture square.
+Castling is reserved for Kings, (but any corner piece will do), and e.p. capture to Pawns.
+</p>
+<h1>Betza 2.0</h1>
+<p>
+The proposed Betza 2.0 extension of Betza notation is based on the concept of 'chaining':
+a move can in general consist out of multiple legs,
+which could have arbitrarily different properties.
+(This is a generalization of the 'a' modifier, which has the limitation that both steps must belong to the same atom.)
+So each leg is described using the full power of the basic Betza notation system,
+and that they are part of the same move is indicated by chaining them with a dash ('-').
+This method makes many of the ad-hoc modifiers of the original Betza system redundant;
+a Xiangqi Elephant, for instance, can be described as <b>mF-F</b>, the first leg moving to an empty neighboring square,
+the second leg continuing to the final destination without restriction.
+The chain must thus be traversed as a whole, there can be no stopping half-way,
+and by default later legs go in the same direction as the previous one.
+A Checker can be described as <b>fmF(fcF-mF)</b>, where the first leg now is capture-only,
+allowed only when it can complete the chain by continuing to an empty square.
+(Parentheses are allowed in Betza 2.0 to enhance readability.)
+</p>
+<p>
+To reap the full power of the chaining concept, some extra move modalities are needed on the legs,
+which would make no sense on a complete move (i.e. on the final leg).
+Unfortunately the original Betza system had more or less used up the alphabet completely.
+But as it is always evident whether an atom is a complete move, or just a leg of a chain,
+the same letters can be reused with (slightly) different meaning.
+E.g. 'p' indicated a move that hopped, but on a leg it indicates the hop itself,
+i.e. it has become a modality modifier that specifies moving into an occupied square without removing the occupant.
+So the Cannon capture move becomes <b>pR-cR</b>: move to the platform as Rook, and continue to capture as Rook.
+A Grasshopper becomes <b>pQ-K</b>: move to platform as Queen, and then continue (in the same direction) as King.
+The 'g' prefix thus has become entirely superfluous, although <b>gQ</b> is of course more compact than <b>pQ-K</b>.
+The latter is much more flexible, though, as it allows general 'identity change' after the hop,
+such as for a 'bifurcator' <b>pR-B</b>, which moves to an obstacle like Rook, and then continues as Bishop.
+</p>
+<p>
+Chaining allows detailed specification of the path taken to the destination square,
+so that lame leapers can be described unambiguously even if they have oblique moves.
+The Xiangqi Horse is mW-F, explicitly indicating it can be blocked only on the W squares.
+To minimize writing, the default modality on non-final legs is taken as 'm' rather than 'mc',
+as this is the far-more-common case, so that <b>W-F</b> will do for the Horse.
+Bent trajectories can be indicated by slamming directional modifiers of the continuation legs.
+Unlike general directional modifiers on complete moves, which are sets of directions,
+continuation legs must specify a single direction to keep the path unique.
+The convention here is that the directions are described relative to the previous leg,
+where 'f' then indicates the direction that deflects least,
+and thus is the default in continuation legs.
+(Where for complete moves the default is of course the set of all directions.) 
+</p>
+<p>
+Other useful move modalities on non-final legs are 'd' ('destroy', i.e. capture own piece),
+'t' ('test', i.e. hop over own piece only),
+'o' (stray off board, to either re-enter it with a further leg or wrap around,
+to describe bouncing and cylinder pieces),
+and 'u' (to unload something that was captured or destroyed on an earlier leg,
+to implement magnetic pieces and catapults, which displace other pieces as side effect of their move).
+General side effects can then be implemented by specifying a path that makes the piece visit
+all squares on which these side-effects should take place,
+to remove pieces, carry them around and put them down elsewhere.
+It would even be possible to describe castling by having the King carry the Rook to its destination,
+e.g. <b>irdiW03-buD-bW</b> on the white King for O-O,
+where the extra convention is used that 'di' indicates you can destroy virgin pieces only.
+</p>
+<h2>Quirky stuff</h2>
+<p>
+Betza 2.0 allows the use of parentheses for readability,
+but also to turn a complex path into an atom,
+on which a range can be specified to indicate how many times that entire path can be repeated.
+E.g. <b>(W-F)0</b> is the Mao-rider, which repeats the (blockable) steps of the Xiangqi Horse.
+The advantage over original Betza's <b>nN0</b> is that it can specify more precisely where the moves can be blocked.
+</p>
+<p>
+The default left-leg modality and right-leg direction implied by a range count
+can be overruled by putting modifiers on the range count itself.
+Thus, where <b>N0</b> means Nightrider, <b>Nrf0</b> indicates a 'Rose', with a curved trajectory.
+The advantage over original Betza's  <b>qN</b> is the possibility to precisely indicate the curvature.
+This can also be used to get non-standard modality for intermediate steps:
+<b>Rc0</b> describes a Rook that captures all enemies in its path!
+(But it would be blocked by an own piece.
+To also hop over these would require  <b>Rct0</b>,
+and to destroy friend and foe alike  <b>Rcd0</b>.)
+A modality prefix on the entire chain would only affect the final step.
+</p>
+
+</body>
+</html>
