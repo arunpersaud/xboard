@@ -1,0 +1,658 @@
+<!--#include virtual="/server/html5-header.html" -->
+<title>XBoard - GNU Project - Free Software Foundation - NEWS</title>
+<!--#include virtual="/server/banner.html" -->
+<!--#set var="article_name" value="/server/standards/boilerplate" -->
+<!--#include virtual="/server/gnun/initial-translations-list.html" -->
+
+<h2>What is new in WinBoard / XBoard 4.8.0?</h2>
+<table cellpadding="20"><tr valign="top"><td>
+
+<a href="#tag-A"><h4>New features for the next release</h4></a>
+<ul><li>
+<a href="#tag-A5">Resuming saved unfinished games</a>
+</li><li>
+<a href="#tag-A6">Setting up positions more easily</a>
+</li><li>
+<a href="#tag-A7">Bitbase adjudication</a>
+</li><li>
+<a href="#tag-A8">Showing tablebase hits</a>
+</li><li>
+<a href="#tag-A9">A new ICS window</a>
+</li><li>
+<a href="#tag-A10">Recalling board themes (XB)</a>
+</li><li>
+<a href="#tag-A11">Playing moves by clicking them</a>
+</li><li>
+<a href="#tag-A12">Fonts in the XBoard GTK build</a>
+</li><li>
+<a href="#tag-A13">Using the mousewheel (XB)</a>
+</li><li>
+<a href="#tag-A15">Displaying a blunder graph</a>
+</li><li>
+<a href="#tag-A14">Slicing up a PGN database</a>
+</li></ul>
+
+</td><td>
+
+<a href="#tag-B"><h4>New variant support</h4></a>
+<ul><li>
+<a href="#tag-B1">ASEAN Chess</a>
+</li><li>
+<a href="#tag-B2">Chu Shogi</a>
+</li><li>
+<a href="#tag-B3">Mighty Lion</a>
+</li><li>
+<a href="#tag-A2">Highlighting squares on engine command</a>
+</li><li>
+<a href="#tag-A3">Let the engine finish a user move</a>
+</li><li>
+<a href="#tag-A4">Non-standard variant names</a>
+</li><li>
+<a href="#tag-B4">Fischer castling in any variant</a>
+</li><li>
+<a href="#tag-B5">Knowing the moves of unknown pieces</a>
+
+</li></ul>
+
+</td><td>
+
+<img src="../4.5.0/winboardF.png">
+  <p>
+    <a href="../4.8.0/index.html">Follow-up</a>
+  </p>
+  <p>
+    <a href="../4.7.0/index.html">Preceding release (4.7.0)</a>
+  </p>
+  <p>
+    <a href="http://hgm.nubati.net/news.html">Experimental and future stuff</a>
+  </p>
+</td></tr></table>
+
+<a name="tag-A"><h2>The following features are new in XBoard 4.8.beta:</h2></a>
+
+<h3><a name="tag-A5">Saving the clock settings with the game</a></h3>
+<p>
+When a (local, i.e. non-ICS) game still in progress is interrupted and saved,
+e.g. because you use the 'Abort' menu item, or close XBoard,
+it now saves the clock settings of white and black in the result comment.
+When you load an unfinished game with such saved times in it,
+it automatically restores the clocks to the values that were saved.
+This makes it easier to resume such a game.
+</p>
+
+<table cellpadding="20"><tr><td valign="top">
+<h3><a name="tag-A6">Setting up positions</a></h3>
+<p>
+In Edit Position mode the board can be cleared by clicking on the clock, or through a piece-menu item.
+Upto now this irreversibly destroyed whatever position existed before.
+This has now been changed:
+by repeatedly issuing the clear command, the position can be made to cycle through the states
+old position, empty board, 'piece palette', initial position, old position, etc.
+This makes it possible to recover from an accidental clear command.
+</p><p>
+The 'piece palette' position has each back-rank piece occurring exactly once,
+removing all duplicates from the initial position.
+So for orthodox Chess only the pieces on a1-e1 and a8-e8 stay.
+The idea is that this is a much more convenient starting point for setting up arbitrary poitions than an empty board:
+the pieces that were left can be used as a kind of tool bar from wich you can draw the pieces you need,
+to put them in the desired place.
+Pieces that you don't need can be dragged off board to get rid of them,
+pieces you only need once can be simply moved to the desired location,
+and pieces you need twice can be duplicated by moving them with the Ctrl key pressed.
+Pawns, finally, can be created by static right- or middle-clicks on the squares were you want them
+(pressing Shift to swap the colors for those who do not have a middle mouse button, as usual).
+The 'piece pallette' thus is an especially convenient starting point for setting up positions with an intermediate number of pieces,
+where you would have to 'create' too many pieces when starting from an empty board,
+and remove too many when starting from the initial position.
+</p>
+<p>
+Clicking an already selected piece a second time in Edit Position mode used to make it disappear.
+This was more an annoyance than a feature, as it often happened by accident,
+and it then required multiple mouse clicks to get the piece back.
+There are plenty of other ways to remove a piece, like drawing it off board,
+or moving an empty square on top of it.
+So the second click on a piece is now used as a signal to promote or demote it,
+which is very useful in Shogi-like variants, where all pieces can promote,
+but the promoted versions are usually not present in the 'palette',
+as the latter is derived from the opening position.
+</p>
+</td><td valign="top">
+<img src="PiecePalette.png">
+</td></tr></table>
+
+<h3><a name="tag-A7">Quickly finishing dead-drawn games</a></h3>
+<p>
+In the late end-game (with 5 or fewer men on the board) of orthodox Chess
+there are nowadays tables available that show whether the game can be won against best defense (bitbases),
+and sometimes even how (tablebases).
+Engines that use tablebases can play instantly in such won or lost positions,
+as they can just play the best move indicated in the tablebase without any further search.
+When they get into a position that is a theoretical draw, however, they might still think as long as always.
+The tablebase does not make any distinction between draws that are 'nearly won' and those that are 'nearly lost',
+so that just playing one of the moves listed as draw will quickly blunder away
+any chances the engine might have had to win against imperfect defense.
+E.g. in a KBPPKB draw with unlike Bishops, the tablebase would not tell the engine that sacrificing BPP on the first 3 moves is not a good idea.
+So it is important to give the engine some time to select the reasonable drawing move and reject pointless sacrifices,
+in order to keep a fallible opponent under pressure.
+<p></p>
+Very deep searches are hardly helpful, however, as the tablebase already guarantees us there is nothing to find.
+Just not blundering away material, and striving for good mobility, centralization and advancing of passers,
+while hoping for an opponent blunder
+(which the tablebase will then of course immediately recognize as a win)
+is usually sufficient.
+It is especially very annoying when two engines, both using tablebases,
+so that you know they can never blunder away the draw,
+don't want to agree to the inevitable draw (because of their contempt setting),
+but go on for 50 moves (or several times 50 moves, when they can drag it out with Pawn moves)
+in a futile attempt to swindle their opponent
+<p></p>
+XBoard now has an option to avoid this,
+without corrupting test results for engines that do not use tablebases
+by awarding them wins they would never be able to find themselves,
+(just because XBoard's tablebase says they are wins),
+or awarding them draws that they would not be able to hold on their own.
+This new option <b>-first/secondDrawDepth N</b> can be installed with engines that use tablebases,
+to limit their search depth to the given N, and thus speed up their play to near instancy (e.g. with N=3).
+This should not hurt them, as their use of tablebases guarantees they will never lose the draw,
+and never miss a win after an opponent blunder.
+When two such engines, both installed with the option, reach a drawn position,
+the game will end almost instantly, by playing as many moves as needed to reach a 50-move or repetion draw.
+If only one of the engines uses tablebases and is installed with the option,
+that engine would play instantly the drawing move that is best according to its 'intuition',
+but the other engine would be forced to prove its worth,
+by showing it can find the moves to secure the draw.
+And when the latter engine is in a won position, the option would be ineffective,
+but the tablebase user should be able to instantly play the best defense anyway,
+letting its opponent show he is able to win against that.
+<p></p>
+To allow the option to work, XBoard can now interface to Scorpio bitbases.
+To this end it must know the path to the bitbase files,
+defined as "scorpio:PATHNAME" as (comma-separated) element in the -egtFormats option.
+In WinBoard this option can be set through the "Nalimov path" textedit in the Common Engine Options dialog
+(and will be distingushed from a true Nalimov path by the "scorpio:" prefix).
+When the list of -egtFormats includes a "scorpio" specification,
+the DrawDepth options will cause them to be probed when there are 5 or fewer orthodox Chess men on an 8x8 board,
+and an 'sd N' command will be sent to the corresponding engine just before it receives a move,
+in order to retrict its search depth.
+</p>
+
+<h3><a name="tag-A8">Showing or hiding engine output</a></h3>
+<p>
+XBoard used to preceed the PVs printed by the engines always with 4 colums:
+search depth, score, time and number of nodes searched.
+The protocol specs have now been extended to allow engines to also send selective depth, speed (knps) and tablebase hits,
+and for engines that send those, there can now be 7 columns of numeric data before the PV in the Engine Output window.
+(And because the latest Polyglot implements this protocol extension, this will include all UCI engines!)
+</p>
+<table cellpadding="20"><tr><td valign="top">
+<img src="TBhits.png">
+</td><td valign="top">
+<p>
+It can be annoying to have so many columns eating away space for the PV, however.
+Especially with data you might not want to see, or the engine might not even print.
+So and option -memoHeaders has been added with which you can print headers above the columns.
+Right-clicking these headers can then show or hide the corresponding column.
+Only the depth and PV will always be displayed.
+</p>
+</td></tr></table>
+
+<h3><a name="tag-A9">Combining ICS output, Input Box and Chat Window in the GTK version</a></h3>
+<p>
+XBoard always printed the communication with the ICS in the terminal from which it was launched.
+This x-terminal allowed colorization of the ICS messages by kind,
+something that was not possible in the Athena widgets of XBoard's own dialogs.
+In GTK it is possible to color text line by line in a text edit, though.
+So XBoard now also displays this text in a dialog of its own.
+Once this feature is fully developed, the x-terminal will be abandoned.
+</p>
+<p>
+The solution that has been chosen combines the ICS Input Box,
+the Chat Window and the new ICS Output widget into a single window.
+Normally this will contain a large output pane to display the (colorized) ICS output,
+with an input field (the old ICS Input Box) below it.
+Anything you type there will then be sent to the ICS.
+There is a row of buttons at the top of the window, however,
+which you can use to open a Chat.
+Pressing them divides the window into two panes,
+the ICS output going to the upper one, while the lower one will be dedicated to one particular chat.
+The Chat Partner can then be entered above the chat pane (a player name, channel number or message type),
+after which all messages from that source will be diverted to that pane.
+The Input field at the bottom of the window will be sent as a message to the designated Chat partner
+(prefixed with the appropriate tell, xtell or shout command).
+To give ICS commands again, you will have to hide the Chat pane by pressing the Hide button above it.
+</p>
+<p>
+You can assign five dedicated chat windows this way,
+navigating between them with the buttons at the top of the window.
+If there is activity in one of the windows that is not currently displayed,
+the corresponding button will turn orange.
+</p>
+<p>
+This new ICS Interaction window can be controlled from the keyboard:
+Typing &lt;Tab> in the input text entry will navigate between busy chats
+(opening the chat pane if necessary)
+starting with those that have been active since you last saw them.
+Typing &lt;Esc> wil hide the chat pane, so you can start entering ICS commands.
+If the chat pane was already closed, it will transfer focus to the board window,
+so you can exercise menu functions by typing accelerator keystrokes.
+Typing printable characters when the board has focus will automatically
+transfer that focus to the input field of the ICS window again,
+making it pop up if necessary.
+(The latter can be controlled by the option -autoBox true|false.)
+Typing Ctrl-N will navigate to an idle chat (or chat nr 5 if there is none),
+giving focus to the 'Chat partner' entry so you can assign it.
+Typing Ctrl-O will similarly navigate to an idle chat,
+automatically assigning it to the origin of the latest message you received in the ICS pane,
+allowing you to easily answer it.
+</p>
+<p>
+The ICS pane has a context menu similar to WinBoard's:
+when you right-click a word in it, the ICS Text Menu dialog pops up under your mouse,
+and you can select commands from it that would automatically incorporate the clicked word.
+Such as challenching a person, opening a chat for a person, channel or shouts.
+Note that the ICS Text Menu is user-configurable through the -icsMenu option
+in your ~/.xboardrc file.
+</p>
+<p>
+The general handling of chats has also been improved a bit:
+broadcasts by a person will also appear in a private chat you have open for that person,
+clearly marked as broadcasts.
+That will not suppress the appearance of the broadcast in the chat
+you have open for that channel, or the ICS pane.
+</p>
+
+<table cellpadding="20"><tr><td valign="top">
+<img src="NewChat.png">
+</td><td valign="top">
+<img src="NewICS.png">
+</td></tr></table>
+
+<h3><a name="tag-A10">Storing board settings, and recalling them with a mouse click</a></h3>
+<p>
+The View->Board dialog of XBoard allowed the user to interactively set piece and square colors,
+define board textures or alternative piece images, and other graphical board roperties.
+But if many settings had to be changed in order to, say,
+change from a theme suitable for Chess to one for Xiangqi,
+the user had to do that for each of them separately.
+In WinBoard an entire set of properties defining the board look could be saved as 'theme'.
+XBoard now also has that feature.
+The themes are saved in the settings file as a persistent multi-line option -themeNames,
+and will be displayed in a listbox that has been added to the View->Board dialog.
+The user just has to click a theme name there to recall all settings defining that theme.
+New themes can be created by defining a name for it in a textedit under this listbox,
+and OK-ing the dialog when such a name has been entered saves the currently specified board look as this theme,
+so that it can be recalled from the listbox later.
+</p>
+
+<img src="ThemesXB.png">
+
+<h3><a name="tag-A11">Playing moves by clicking them in a text window</a></h3>
+<p>
+XBoard already supported the possibility to play moves from the Engine Output window
+in analysis mode, by right-clicking on the PV they were part of.
+This was integrated with the possibility to walk through the PV
+by moving the mouse with the right button kept down,
+using the main board as a 'variation board'.
+This way you could even play a number of moves of the PV.
+The PV-walk in analysis mode started at the position after the first move of it,
+so that a static click would play that move.
+If you would move to another position along the PV before releasing the button,
+then all moves upto that position would be played,
+and analysis would continue there.
+</p>
+<p>
+This could be a bit confusing for people that often wanted to walk through alternate PVs.
+(To walk the latest PV you can right-click the board, which never plays a move.)
+They would have to make sure to return to the start of the PV before releasing the button,
+in order not to play unwanted moves.
+Therefore the 'auto-extend' option could be used to disable this feature.
+This control over when to add moves as a result of PV clicking has now been improved:
+In WinBoard the auto-extend option can be set interactively from the General Options dialog.
+Furthermore, playing of move(s) is only ever done when you clicked the first move of the PV
+(or the data left of it).
+When you click the remainder of the PV,
+you can walk it without having to worry whether this will alter the position.
+</p>
+<p>
+The Edit Book window now has a similar feature:
+right-clicking a move from the displayed list of book moves there
+will now also cause the move to be performed.
+It now also has the reverse feature:
+with a button in this window you can tell XBoard that
+the next move you are going to play on the board should not really be played,
+but added to the book (with a default weight of 1).
+</p>
+
+<table cellpadding="20"><tr><td valign="top">
+<h3><a name="tag-A12">Fonts in the GTK build</a></h3>
+<p>
+So far the font options were ignored in XBoard's GTK build.
+Now their number is even expanded:
+next to the existing -clockFont, -messageFont and -coordFont there are now
+-icsFont, -tagsFont, -commentFont, -moveHistoryFont and -gameListFont.
+Font specifications are not compatible between Xaw and GTK;
+for the latter they have to be described by names like "Sans Normal 10"
+or "Monospace Bold 8".
+To let XBoard pick a font size it considers suitable for the board size,
+use %d in stead of a hard number (like "Sans Italic %d").
+</p>
+<p>
+The icsFont is used in the ICS pane of the ICS console, and should be a mono-spaced font.
+The moveHistory font is used in the text memos of both Move History and Engine Output dialog,
+to give you the opportunity to use a figurine font in those
+for displaying the moves that are printed there.
+The gameListFont is used in the listbox of the Game List;
+when you often use large PGN files you might want to have an extra small font there.
+The messageFont currently only affects the row of widgets directly above the board:
+the message field where the latest PV is displayed,
+and the buttons of the button bar to navigate through the game.
+It must be used to prevent these from dominating the width of the board window
+at small square sizes.
+The tagsFont and commentFont similarly affect the text memos in the
+Edit Tags and Edit Comment dialogs, and are mainly supplied because WinBoard has those too.
+</p>
+</td><td valign="top">
+<img src="FontGTK.png">
+</td></tr></table>
+
+<h3><a name="tag-A13">Using the mousewheel to step through the game</a></h3>
+<p>
+WinBoard already had this, but in XBoard you can now also use the mousewheel
+to step through the current game,
+when the mouse pointer is above the board, irrespective of whether it has focus.
+(This according to GTK custom; in WinBoard it would work when the board had focus,
+irrespective of where the mouse was pointing.)
+</p>
+
+<table cellpadding="20"><tr><td valign="top">
+<img src="Blunder.png">
+</td><td valign="top">
+<h3><a name="tag-A15">Enhanced funcionality of the Evaluation Graph</a></h3>
+<p>
+A new mode of displaying engine analysis of an entire game has been added,
+the so called blunder graph.
+In this mode the Evaluation Graph does not display the evaluations itself,
+but the difference in evaluation on subsequent moves.
+(This only makes sense when the evaluations come from the same engine,
+such as after the use of Analyze Game.)
+This way poor moves, which cause a jump in evaluation, stick out more visibly.
+</p>
+</td></tr></table>
+<p>
+To toggle between normal evaluation display and blunder graph,
+you can right-click anywhere in the Eval Graph window.
+(Left-clicking still brings you to the move you click.)
+The mouse wheel can now be used on the Eval Graph to zoom the [-1, 1] score range,
+which formerly would allow only non-interactive control through the -evalZoom
+command-line option.
+</p>
+
+<h3><a name="tag-A14">Selecting from a PGN database</a></h3>
+<p>
+There is a new item in the File menu: Save Selected Games.
+This will cause all games currently selected for display in the Game List
+(through applying a text filter, or using the Find Position button)
+to be appended to a file.
+The number of pieces in the final position has been added as a search criterion.
+The 'Save Games as Book' function will now also only take the games
+selected for display into account.
+This should offer you more control over what you include in the book.
+</p>
+
+<a name="tag-B"><h2>New variants and general variant support</h2></a>
+
+<h3><a name="tag-B1">ASEAN Chess: a new Chess variant</a></h3>
+<p>
+ASEAN Chess is a synthesis of Makruk and other South-East Asean Chess variants.
+It is very similar to Makruk, the main difference being that the count rules are simpler
+(but WinBoard did not implement these anyway),
+and that promotion is only on last rank.
+This is now added as a new supported variant to XBoard.
+</p>
+
+<h3><a name="tag-B2">Chu Shogi</a></h3>
+
+<p>
+Chu shogi is an ancient form of Japanese Chess on a 12x12 board, which was already documented in the year 1250.
+It has been the dominant form of Chess in Japan for many centuries, and is still quite popular,
+although it has been overtaken in popularity by the 9x9 game with piece drops in recent times.
+As there are no piece drops in Chu Shogi, it has a much more Chess-like feel than the modern game.
+</p>
+<table cellpadding="20"><tr><td valign="top">
+<p>
+Like other large Shogi variants, Chu Shogi is characterized by a very large number of piece types.
+Not only are there 46 pieces (12 of them Pawns) of 21 different types in the initial setup,
+but almost all pieces promote on reaching the last 4 ranks, often to pieces that move differently from all initially present pieces.
+(And even if they move the same, they are formally still different piece types, as they cannot promote a second time.)
+To implement a game with so many piece types in XBoard was a challenge,
+as upto now XBoard supported only 22 piece types (11 'basic' types, asn 11 promoted types).
+This has now been extended to 44, Chu shogi considering all 22 existing types as 'basic',
+and adding 22 new 'promoted' types.
+(Not all of those are needed in Chu shogi, though, so they don't have all been assigned new piece graphics.)
+A Chess-like representation was chosen, to make it possible to use the existing piece symbols.
+(The Japanese of course play this game with kanji pieces,
+which are also available for XBoard in SVG format.)
+</p>
+<p>
+Another issue was the Lion piece, which has a special two-step move,
+not uniquely characterized by a from- and to-square, but also needing an intermediate square,
+where it can capture a second piece in an en-passant-like fashion.
+This required quite some enhancements in XBoard;
+more about that below.
+Although XBoard is aware of all the piece moves,
+it does not implement the more subtle details of the Chu Shogi rules,
+and has to on the engine (e.g. <a href="HaChu.html">HaChu</a>)
+for more accurate judging move legality and highlighting target squares.
+So it is advisable to play this game with legality testing off.
+</p>
+</td><td valign="top">
+<img src="XChu.png">
+</td></tr></table>
+
+<table cellpadding="20"><tr><td valign="top">
+<img src="Mighty.png">
+</td><td valign="top">
+<h3><a name="tag-B3">Mighty-Lion and Elven Chess</a></h3>
+
+<p>
+To make the Chu-Shogi Lion a bit more accessible to Chess players,
+a newly designed variant 'Mighty-Lion Chess' was added to XBoard.
+This uses the Lion as the only unorthodox piece added to the FIDE game,
+so that it is possible to enjoy an introduction to this piece without having to learn about the plethora of new pieces in Chu Shogi.
+In this variant the Knights on the Queen side are simply replaced by Lions.
+</p>
+<p>
+The simplest way to view the Lion is as a piece that moves as a King, but then twice per turn,
+freely changing direction between steps.
+And if such a two-step path would be blocked, it can jump to the final square directly.
+This way it has 24 unblockable moves.
+It can capture something in each of its steps, so upto two pieces per turn:
+one in the conventional way, but the other by passing through it, leaving the square empty.
+It could, however, also elect to make only a single step.
+XBoard highlights the squares from which a continuation step would be possible in cyan, when you pick up the Lion.
+(It is essential that the option 'Show Target Squares' is on in this game.)
+If you put down the Lion on such a cyan square, XBoard will not consider that the final destination,
+but remembers it as a square the Lion should pass through,
+and highlights the squares you can reach with the second step.
+Clicking on one of those (which might include the clicked cyan square) then finishes the move.
+</p>
+<p>
+Like in Chu Shogi there are rules against trading the Lions
+(to prevent you would quickly be left with a game of normal Chess).
+Basically they forbid two Lions to be captured in consecutive half-moves:
+a Lion cannot capture a Lion if recapture is possible,
+and when a non-Lion captures a Lion the opponent Lion is invulnerable ('iron') on the next half-move.
+That makes trading the Lions away a very uncommon occurence.
+</p>
+<p>
+For those that want even more excitement:
+the same Lion piece also features in the newly added Elven Chess,
+next to three other new pieces on a 10x10 board.
+</p>
+</td></tr></table>
+
+<h3><a name="tag-A2">Colored board markers applied by the engine</a></h3>
+With the option 'Show Target Squares', XBoard can be made to mark board squares where the 'lifted' piece can move to
+by fat yellow (non-captures) or red (captures) dots.
+This obviously can only work when XBoard knows the rules for moving the pieces,
+i.e. when legality checking is switched on.
+When the latter is switched off, XBoard cannot know how the pieces move
+(as the only reason to switch it off would be that pieces do not move as XBoard thinks they should,
+to prevent move being rejected as illegal),
+and this feature does not work.
+</p>
+<p>
+There now is the possibility to restore this functionality with the help of an engine.
+Engines of course always will have to be fully aware of the rules of the game they play
+(or they would play illegal moves themselves).
+So they also know where a lifted piece can move to.
+Problem is that upto now they would not know which piece is lifted,
+as XBoard only sends them the move after the piece has been put down again.
+To remedy this, an extension of the communication protocol has been defined.
+</p>
+<p>
+Engines that want to make use of this new feature can inform the GUI of this by sending a new 'feature heighlight=1' at startup.
+The GUI will then inform them any time the user grabs a piece for dragging (or selects it by a static click),
+by sending it a 'lift' command with the square coordinates.
+The engine can reply to this command with a 'highlight' command, which specifies which board squares have to be marked
+with colored dots, of eight different colors.
+When the engine does this, the GUI can use the markers to decide if the move the user makes when he puts the piece down is legal,
+without first sending it to the engine and wait if it is rejected or not:
+any move that does not land on a marked square will be considered illegal.
+But the color of the square the piece lands on will be used to trigger special GUI actions.
+E.g. moving to a purple square will make the GUI assume the move is a promotion,
+and invoke the promotion popup (or trigger sweep promotion),
+even when it would otherwise not think so.
+This way engines can more flexibly implement variants the GUI knows nothing about,
+by modifing the GUI behavior through the color markers.
+</p>
+
+<h3><a name="tag-A3">Let an engine click squares on behalf of the user</a></h3>
+<p>
+Another feature helpful in implementing strange variants is the 'click' command an engine can send to the GUI.
+This command will contain square coordinates, and the GUI should react to it as if the user would have clicked on the mentioned square.
+The engine can use this in response to the 'lift' command to implement one-click moving,
+even when the GUI has no idea what the rules for moving pieces are, and thus cannot know it.
+</p>
+
+<table cellpadding="20"><tr><td valign="top">
+<h3><a name="tag-A4">Engine-defined variant names</a></h3>
+<p>
+Although XBoard knows many different Chess variants, there are far more it doesn't know.
+It still can play many of these, by using the board-size overrules in the New Variant dialog,
+providing a start position fitting for this new board size,
+telling it which pieces participate, and how they are indicated in move and position notation,
+and switching legality checking off, so it doesn't complain if we use pieces in ways they were not intended.
+This requires a lot of massaging by the user, though.
+</p>
+</td><td valign="top">
+<img src="Defined.png">
+</td></tr></table>
+<p>
+The engine can now be made to do most of this.
+For one, the engine is allowed to use arbitrary names for variants, in the variants feature it sends as startup.
+Even names that XBoard doesn't recognize will now appear in the New Variant dialog,
+so the user can select them.
+If the engine is set to play such an 'engine-defined' variant,
+it should (in reply to the 'variant' command) tell the GUI the specifics of this variant.
+The 'setup' command that has been added to the communication protocol will provide this information.
+The engine can use it to define board format and holdings size, participating pieces, initial position,
+and the 'parent variant'.
+The latter must be a variant that is known to XBoard,
+and it will switch to that (but using the redefined board and setup) for playing the game.
+In an engine-engine game only the first engine will be listened to,
+and the initial position will be loaded into the second engine (to allow for shuffle games with random initial position).
+</p>
+<p>
+This means that almost everything the user had to configure to play a non-standard variant now can be done automatically by the engine.
+The only thing the user still has to do is control whether legality checking is on or off.
+(Some variants, although non-standard, use only pieces that XBoard knows, and those can be played with legality checking on.)
+</p>
+
+<h3><a name="tag-B4">Fischer castling outside Chess960</a></h3>
+<p>
+Upto now the ability to castle with Rooks not in a corner, or Kings not on the central files
+was a unique ability of FRC and (on 10x8 board) CRC.
+This made it impossible to combine this kind of castling with rules that were unique to other variants,
+such as for example gating of pieces onto the board, as in Seirawan Chess.
+XBoard now has an option -fischerCastling, which can be used with any variant, to allow Fischer castling there.
+This complements the already existing option -shuffleOpenings, which could be used to play any variant in a shuffle version.
+The shuffling respects the castling rules, though.
+So variants without Fischer castling would leave King and Rooks in place.
+But when Fischer castling is allowed, either natively or by use of the new option,
+the only restriction is that the King will remain between the Rooks.
+This makes it possible to configure XBoard for Seirawan960.
+In XBoard the -fischerCastlings setting can be controlled from the New Shuffle dialog.
+</p>
+<p>
+Another new feature is in the reading of FENs.
+Back-rank pieces can now be enclosed in &lt;>, to indicate that they should not be placed as the FEN specifies,
+but that they should be shuffled first.
+It will be deduced from the specified placement (before shuffling) and castling rights whether Fischer castling should be assumed.
+Another symbol in such "meta-FENs" is the question mark.
+If it is used together with a specified holdings,
+it indicates a piece should be selected at random from the holdings,
+and then placed at the location of the question mark.
+This van be used to specify the starting position of Seirawan2880,
+where one of the three Queen, Elephant or Hawk will be on the board initially,
+and then shuffled with the other pieces in 960 possible ways.
+</p>
+
+<h3><a name="tag-B5">Letting the engine configure the GUI's move generator</a></h3>
+<p>
+XBoard protocol has been extended with a command to tell the GUI how pieces move.
+This allows XBoard to become fully aware of the rules of games it never heard of,
+even when these involve pieces that are not amongst the 22 standard piece types it has built-in support for.
+Formerly variants involving such pieces could only be played with legality testing off,
+which would also disable the 'show target squares' option to show the user where the piece he grabs can move to.
+And imagining wrong moves for a piece would also generate lousy move notation (SAN),
+with missing or spurious disambiguation,
+and cause inaccurate mate detection.
+When the engine sends 'piece' commands at the start of a game to (re)define the piece moves,
+all that functionality is restored.
+Legality testing will still have to be switched off (or the piece definitions would be ignored),
+but even then 'show target squares' would work, and XBoard would test move legality,
+the GUI acting as a proxy for the engine.
+No sense in sending a move to the engine of which the engine told you in advance that it will reject it,
+so that the GUI would only have to take it back, after all.
+</p>
+
+<h3><a name="tag-C">Fixed bugs</a></h3>
+<ul>
+  <li>
+  </li>
+</ul>
+
+
+</div><!-- for id="content", starts in the include above -->
+<!--#include virtual="/server/footer.html" -->
+<div id="footer">
+
+<p>Please send general FSF &amp; GNU inquiries to
+<a href="mailto:gnu@gnu.org">&lt;gnu@gnu.org&gt;</a>.
+There are also <a href="/contact/">other ways to contact</a>
+the FSF.<br />
+Please send broken links and other corrections or suggestions to
+<a href="mailto:bug-xboard@gnu.org">&lt;bug-xboard@gnu.org&gt;</a>.</p>
+
+<p>Please see the <a
+href="/server/standards/README.translations.html">Translations
+README</a> for information on coordinating and submitting translations
+of this article.</p>
+
+<p>Copyright &copy; 2009, 2010, 2011, 2012 Free Software Foundation, Inc.</p>
+
+<p>This page is licensed under a <a rel="license"
+href="http://creativecommons.org/licenses/by-nd/3.0/us/">Creative
+Commons Attribution-NoDerivs 3.0 United States License</a>.</p>
+
+<p>Updated:
+<!-- timestamp start -->
+$Date: 2014/10/18 05:13:47 $
+<!-- timestamp end -->
+</p>
+</div>
+</div>
+</body>
+</html>
+
