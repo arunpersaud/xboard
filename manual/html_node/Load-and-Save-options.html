@@ -34,9 +34,9 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <h3 class="section">4.5 Load and Save options</h3>
 
-<p><a name="index-Options_002c-Load-and-Save-398"></a><a name="index-Load-and-Save-options-399"></a>
+<p><a name="index-Options_002c-Load-and-Save-399"></a><a name="index-Load-and-Save-options-400"></a>
      <dl>
-<dt>-lgf or -loadGameFile file<dt>-lgi or -loadGameIndex index<dd><a name="index-lgf_002c-option-400"></a><a name="index-loadGameFile_002c-option-401"></a><a name="index-lgi_002c-option-402"></a><a name="index-loadGameIndex_002c-option-403"></a>If the <code>loadGameFile</code> option is set, XBoard loads the specified
+<dt>-lgf or -loadGameFile file<dt>-lgi or -loadGameIndex index<dd><a name="index-lgf_002c-option-401"></a><a name="index-loadGameFile_002c-option-402"></a><a name="index-lgi_002c-option-403"></a><a name="index-loadGameIndex_002c-option-404"></a>If the <code>loadGameFile</code> option is set, XBoard loads the specified
 game file at startup. The file name <samp><span class="file">-</span></samp> specifies the standard
 input. If there is more than one game in the file, XBoard
 pops up a menu of the available games, with entries based on their PGN
@@ -59,17 +59,17 @@ first game of the file when it has reached a specified value.
 positions or games in auto-increment <code>matchMode</code>. 
 See <code>loadPositionIndex</code> and <code>loadGameIndex</code>. 
 default: 0 (no rewind). 
-<br><dt>-td or -timeDelay seconds<dd><a name="index-td_002c-option-404"></a><a name="index-timeDelay_002c-option-405"></a>Time delay between moves during &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; or &lsquo;<samp><span class="samp">Analyze File</span></samp>&rsquo;. 
+<br><dt>-td or -timeDelay seconds<dd><a name="index-td_002c-option-405"></a><a name="index-timeDelay_002c-option-406"></a>Time delay between moves during &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; or &lsquo;<samp><span class="samp">Analyze File</span></samp>&rsquo;. 
 Fractional seconds are allowed; try &lsquo;<samp><span class="samp">-td 0.4</span></samp>&rsquo;. 
 A time delay value of -1 tells
 XBoard not to step through game files automatically. Default: 1 second. 
-<br><dt>-sgf or -saveGameFile file<dd><a name="index-sgf_002c-option-406"></a><a name="index-saveGameFile_002c-option-407"></a>If this option is set, XBoard appends a record of every game
+<br><dt>-sgf or -saveGameFile file<dd><a name="index-sgf_002c-option-407"></a><a name="index-saveGameFile_002c-option-408"></a>If this option is set, XBoard appends a record of every game
 played to the specified file. The file name <samp><span class="file">-</span></samp> specifies the
 standard output. 
-<br><dt>-autosave/-xautosave or -autoSaveGames true/false<dd><a name="index-autosave_002c-option-408"></a><a name="index-autoSaveGames_002c-option-409"></a>Sets the Auto Save menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
+<br><dt>-autosave/-xautosave or -autoSaveGames true/false<dd><a name="index-autosave_002c-option-409"></a><a name="index-autoSaveGames_002c-option-410"></a>Sets the Auto Save menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
 Ignored if <code>saveGameFile</code> is set. 
-<br><dt>-onlyOwnGames true/false<dd><a name="index-onlyOwnGames_002c-option-410"></a>Suppresses auto-saving of ICS observed games. Default: false. 
-<br><dt>-lpf or -loadPositionFile file<dt>-lpi or -loadPositionIndex index<dd><a name="index-lpf_002c-option-411"></a><a name="index-loadPositionFile_002c-option-412"></a><a name="index-lpi_002c-option-413"></a><a name="index-loadPositionIndex_002c-option-414"></a>If the <code>loadPositionFile</code> option is set, XBoard loads the
+<br><dt>-onlyOwnGames true/false<dd><a name="index-onlyOwnGames_002c-option-411"></a>Suppresses auto-saving of ICS observed games. Default: false. 
+<br><dt>-lpf or -loadPositionFile file<dt>-lpi or -loadPositionIndex index<dd><a name="index-lpf_002c-option-412"></a><a name="index-loadPositionFile_002c-option-413"></a><a name="index-lpi_002c-option-414"></a><a name="index-loadPositionIndex_002c-option-415"></a>If the <code>loadPositionFile</code> option is set, XBoard loads the
 specified position file at startup. The file name <samp><span class="file">-</span></samp> specifies the
 standard input. If the <code>loadPositionIndex</code> option is set to N,
 the Nth position found in the file is loaded; otherwise the
@@ -82,27 +82,27 @@ causes the index to be incremented every two games, so that each position
 in the file is used twice (with the engines playing opposite colors). 
 The <code>rewindIndex</code> option causes the index to be reset to the
 first position of the file when it has reached a specified value. 
-<br><dt>-spf or -savePositionFile file<dd><a name="index-spf_002c-option-415"></a><a name="index-savePositionFile_002c-option-416"></a>If this option is set, XBoard appends the final position reached
+<br><dt>-spf or -savePositionFile file<dd><a name="index-spf_002c-option-416"></a><a name="index-savePositionFile_002c-option-417"></a>If this option is set, XBoard appends the final position reached
 in every game played to the specified file. The file name <samp><span class="file">-</span></samp>
 specifies the standard output. 
-<br><dt>-pgnExtendedInfo true/false<dd><a name="index-pgnExtendedInfo_002c-option-417"></a>If this option is set, XBoard saves depth, score and time used for each
+<br><dt>-pgnExtendedInfo true/false<dd><a name="index-pgnExtendedInfo_002c-option-418"></a>If this option is set, XBoard saves depth, score and time used for each
 move that the engine found as a comment in the PGN file. 
 Default: false. 
-<br><dt>-pgnEventHeader string<dd><a name="index-pgnEventHeader_002c-option-418"></a>Sets the name used in the PGN event tag to string. 
+<br><dt>-pgnEventHeader string<dd><a name="index-pgnEventHeader_002c-option-419"></a>Sets the name used in the PGN event tag to string. 
 Default: "Computer Chess Game". 
-<br><dt>-pgnNumberTag true/false<dd><a name="index-pgnNumberTag_002c-option-419"></a>Include the (unique) sequence number of a tournament game into the saved
+<br><dt>-pgnNumberTag true/false<dd><a name="index-pgnNumberTag_002c-option-420"></a>Include the (unique) sequence number of a tournament game into the saved
 PGN file as a 'number' tag. 
 Default: false. 
-<br><dt>-saveOutOfBookInfo true/false<dd><a name="index-saveOutOfBookInfo_002c-option-420"></a>Include the information on how the engine(s) game out of its opening book
+<br><dt>-saveOutOfBookInfo true/false<dd><a name="index-saveOutOfBookInfo_002c-option-421"></a>Include the information on how the engine(s) game out of its opening book
 in a special 'annotator' tag with the PGN file. 
 Default: true. 
-<br><dt>-oldsave/-xoldsave or -oldSaveStyle true/false<dd><a name="index-oldsave_002c-option-421"></a><a name="index-oldSaveStyle_002c-option-422"></a>Sets the Old Save Style menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
-<br><dt>-gameListTags string<dd><a name="index-gameListTags_002c-option-423"></a>The character string lists the PGN tags that should be printed in the
+<br><dt>-oldsave/-xoldsave or -oldSaveStyle true/false<dd><a name="index-oldsave_002c-option-422"></a><a name="index-oldSaveStyle_002c-option-423"></a>Sets the Old Save Style menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
+<br><dt>-gameListTags string<dd><a name="index-gameListTags_002c-option-424"></a>The character string lists the PGN tags that should be printed in the
 Game List, and their order. The meaning of the codes is e=event,
 s=site, d=date, o=round, p=players, r=result, w=white Elo, b=black Elo,
 t=time control, v=variant, a=out-of-book info, c=result comment. 
 Default: "eprd"
-<br><dt>-ini or -settingsFile filename<dt>-saveSettingsFile filename<dt>@filename<dd><a name="index-saveSettingsFile_002c-option-424"></a><a name="index-SettingsFile_002c-option-425"></a><a name="index-init_002c-option-426"></a><a name="index-at-sign_002c-option-427"></a>When XBoard encounters an option -settingsFile (or -ini for short),
+<br><dt>-ini or -settingsFile filename<dt>-saveSettingsFile filename<dt>@filename<dd><a name="index-saveSettingsFile_002c-option-425"></a><a name="index-SettingsFile_002c-option-426"></a><a name="index-init_002c-option-427"></a><a name="index-at-sign_002c-option-428"></a>When XBoard encounters an option -settingsFile (or -ini for short),
 or @filename, it tries to read the mentioned file,
 and substitutes the contents of it (presumaby more command-line options)
 in place of the option. 
@@ -121,7 +121,7 @@ and will be used to contain system-wide default setings, amongst which
 a -saveSettingsFile and -settingsFile options to specify a settings file
 accessible to the individual user, such as ~/.xboardrc in the user's
 home directory. 
-<br><dt>-saveSettingsOnExit true/false<dd><a name="index-saveSettingsOnExit_002c-option-428"></a>Controls saving of options on the settings file.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. 
+<br><dt>-saveSettingsOnExit true/false<dd><a name="index-saveSettingsOnExit_002c-option-429"></a>Controls saving of options on the settings file.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. 
 Default: true. 
 </dl>
 

@@ -32,57 +32,42 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Menus.html#Menus">Menus</a>
 
 <h3 class="section">3.9 Other Shortcut Keys</h3>
 
-<p><a name="index-Keys-186"></a><a name="index-Shortcut-keys-187"></a>
+<p><a name="index-Keys-187"></a><a name="index-Shortcut-keys-188"></a>
      <dl>
-<dt>Show Last Move<dd><a name="index-Show-Last-Move_002c-Shortcut-Key-188"></a>By hitting <kbd>Enter</kbd> the last move will be re-animated. 
-<br><dt>Load Next Game<dd><a name="index-Load-Next-Game_002c-Menu-Item-189"></a>Loads the next game from the last game record file you loaded. 
+<dt>Show Last Move<dd><a name="index-Show-Last-Move_002c-Shortcut-Key-189"></a>By hitting <kbd>Enter</kbd> the last move will be re-animated. 
+<br><dt>Load Next Game<dd><a name="index-Load-Next-Game_002c-Menu-Item-190"></a>Loads the next game from the last game record file you loaded. 
 The <kbd>Alt+PgDn</kbd> key triggers this action. 
-<br><dt>Load Previous Game<dd><a name="index-Load-Previous-Game_002c-Menu-Item-190"></a>Loads the previous game from the last game record file you
+<br><dt>Load Previous Game<dd><a name="index-Load-Previous-Game_002c-Menu-Item-191"></a>Loads the previous game from the last game record file you
 loaded.  The <kbd>Alt+PgUp</kbd> key triggers this action. 
 Not available if the last game was loaded from a pipe. 
-<br><dt>Reload Same Game<dd><a name="index-Reload-Same-Game_002c-Menu-Item-191"></a>Reloads the last game you loaded. 
+<br><dt>Reload Same Game<dd><a name="index-Reload-Same-Game_002c-Menu-Item-192"></a>Reloads the last game you loaded. 
 Not available if the last game was loaded from a pipe. 
 Currently no keystroke is assigned to this ReloadGameProc. 
-<br><dt>Reload Same Position<dd><a name="index-Reload-Same-Position_002c-Menu-Item-192"></a>Reloads the last position you loaded. 
+<br><dt>Reload Same Position<dd><a name="index-Reload-Same-Position_002c-Menu-Item-193"></a>Reloads the last position you loaded. 
 Not available if the last position was loaded from a pipe. 
 Currently no keystroke is assigned to this ReloadPositionProc. 
 </dl>
 
-   <p>You can add or remove shortcut keys using the X resources
-<code>form.translations</code>. Here is an example of what would go in your
-<samp><span class="file">.Xresources</span></samp> file:
+   <p>In the Xaw build of XBoard you can add or remove shortcut keys
+using the X resources <code>paneA.translations</code>. 
+Here is an example of what could go into your
+<samp><span class="file">.Xdefaults</span></samp> file:
 
-<pre class="example">     XBoard*form.translations: \
-       Shift&lt;Key&gt;?: AboutGameProc() \n\
-       &lt;Key&gt;y: AcceptProc() \n\
-       &lt;Key&gt;n: DeclineProc() \n\
-       &lt;Key&gt;i: NothingProc()
+<pre class="example">     XBoard*paneA.translations: \
+       Shift&lt;Key&gt;?: MenuItem(Help.About) \n\
+       Ctrl&lt;Key&gt;y: MenuItem(Action.Accept) \n\
+       Ctrl&lt;Key&gt;n: MenuItem(Action.Decline) \n\
+       Ctrl&lt;Key&gt;i: MenuItem(Nothing)
 </pre>
-   <p class="noindent">Binding a key to <code>NothingProc</code> makes it do nothing, thus removing
-it as a shortcut key. The XBoard commands that can be bound to keys
+   <p class="noindent">So the key should always be bound to the action 'MenuItem',
+with the (hierarchical) name of the menu item as argument. 
+There are a few actions available for which no menu item exists:
+Binding a key to <code>Nothing</code> makes it do nothing, thus removing
+it as a shortcut key. Other such functions that can be bound to keys
 are:
 
-<pre class="example">     AbortProc, AboutGameProc, AboutProc, AcceptProc, AdjournProc,
-     AlwaysQueenProc, AnalysisModeProc, AnalyzeFileProc,
-     AnimateDraggingProc, AnimateMovingProc, AutobsProc, AutoflagProc,
-     AutoflipProc, AutoraiseProc, AutosaveProc, BackwardProc,
-     BlindfoldProc, BookProc, CallFlagProc, CopyGameProc, CopyPositionProc,
-     DebugProc, DeclineProc, DrawProc, EditCommentProc, EditGameProc,
-     EditPositionProc, EditTagsProc, EnterKeyProc, FlashMovesProc,
-     FlipViewProc, ForwardProc, GetMoveListProc, HighlightLastMoveProc,
-     HintProc, IcsAlarmProc, IcsClientProc, IcsInputBoxProc,
-     InfoProc, LoadGameProc, LoadNextGameProc, LoadNextPositionProc,
-     LoadPositionProc, LoadPrevGameProc, LoadPrevPositionProc,
-     LoadSelectedProc, MachineBlackProc, MachineWhiteProc, MailMoveProc,
-     ManProc, MoveNowProc, MoveSoundProc, NothingProc, OldSaveStyleProc,
-     PasteGameProc, PastePositionProc, PauseProc, PeriodicUpdatesProc,
-     PonderNextMoveProc, PopupExitMessageProc, PopupMoveErrorsProc,
-     PremoveProc, QuietPlayProc, QuitProc, ReloadCmailMsgProc,
-     ReloadGameProc, ReloadPositionProc, RematchProc, ResetProc,
-     ResignProc, RetractMoveProc, RevertProc, SaveGameProc,
-     SavePositionProc, ShowCoordsProc, ShowGameListProc, ShowThinkingProc,
-     StopExaminingProc, StopObservingProc, TestLegalityProc, ToEndProc,
-     ToStartProc, TrainingProc, TruncateGameProc, and TwoMachinesProc.
+<pre class="example">     AboutGame, DebugProc (switches the -debug option on or off),
+     LoadNextGame, LoadPrevGame, ReloadGame, ReloadPosition.
 </pre>
    </body></html>
 

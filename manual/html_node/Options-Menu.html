@@ -34,13 +34,16 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Menus.html#Menus">Menus</a>
 
 <h3 class="section">3.7 Options Menu</h3>
 
-<p><a name="index-Menu_002c-Options-94"></a><a name="index-Options-Menu-95"></a>
+<p><a name="index-Menu_002c-Options-95"></a><a name="index-Options-Menu-96"></a>
+
+<h4 class="subsection">3.7.1 General Options</h4>
+
+<p><a name="index-General-Options_002c-Menu-Item-97"></a>The following items to set option values appear in the dialog
+summoned by the general Options menu item.
      <dl>
-<dt>General Options<dd><a name="index-General-Options_002c-Menu-Item-96"></a>The following items to set option values appear in the dialog
-summoned by the general Options menu item. 
-<dt>Absolute Analysis Scores<dd><a name="index-Absolute-Analysis-Scores_002c-Menu-Item-97"></a>Controls if scores on the Engine Output window during analysis
+<dt>Absolute Analysis Scores<dd><a name="index-Absolute-Analysis-Scores_002c-Menu-Item-98"></a>Controls if scores on the Engine Output window during analysis
 will be printed from the white or the side-to-move point-of-view. 
-<dt>Almost Always Queen<dd><a name="index-Almost-Always-Queen_002c-Menu-Item-98"></a>If this option is on, 7th-rank pawns automatically change into
+<br><dt>Almost Always Queen<dd><a name="index-Almost-Always-Queen_002c-Menu-Item-99"></a>If this option is on, 7th-rank pawns automatically change into
 Queens when you pick them up,
 and when you drag them to the promotion square and release them there,
 they will promote to that. 
@@ -55,18 +58,18 @@ which would force promotion to Queen when true.
 Otherwise XBoard would bring up a dialog
 box whenever you move a pawn to the last rank, asking what piece
 you want to promote to. 
-<dt>Animate Dragging<dd><a name="index-Animate-Dragging_002c-Menu-Item-99"></a>If Animate Dragging is on, while you are dragging a piece with the
+<br><dt>Animate Dragging<dd><a name="index-Animate-Dragging_002c-Menu-Item-100"></a>If Animate Dragging is on, while you are dragging a piece with the
 mouse, an image of the piece follows the mouse cursor. 
 If Animate Dragging is off, there is no visual feedback while you are
 dragging a piece, but if Animate Moving is on, the move will be
 animated when it is complete. 
-<dt>Animate Moving<dd><a name="index-Animate-Moving_002c-Menu-Item-100"></a>If Animate Moving is on, all piece moves are animated.  An image of the
+<br><dt>Animate Moving<dd><a name="index-Animate-Moving_002c-Menu-Item-101"></a>If Animate Moving is on, all piece moves are animated.  An image of the
 piece is shown moving from the old square to the new square when the
 move is completed (unless the move was already animated by Animate Dragging). 
 If Animate Moving is off, a moved piece instantly disappears from its
 old square and reappears on its new square when the move is complete. 
 The shifted <kbd>Ctrl-A</kbd> key is a keyboard equivalent. 
-<dt>Auto Flag<dd><a name="index-Auto-Flag_002c-Menu-Item-101"></a>If this option is on and one player runs out of time
+<br><dt>Auto Flag<dd><a name="index-Auto-Flag_002c-Menu-Item-102"></a>If this option is on and one player runs out of time
 before the other,
 XBoard
 will automatically call his flag, claiming a win on time. 
@@ -76,7 +79,7 @@ and the ICS may award you a draw instead of a win if you have
 insufficient mating material.  In local chess engine mode,
 XBoard
 may call either player's flag and will not take material into account (?). 
-<dt>Auto Flip View<dd><a name="index-Auto-Flip-View_002c-Menu-Item-102"></a>If the Auto Flip View option is on when you start a game, the board
+<br><dt>Auto Flip View<dd><a name="index-Auto-Flip-View_002c-Menu-Item-103"></a>If the Auto Flip View option is on when you start a game, the board
 will be automatically oriented so that your pawns move from the bottom
 of the window towards the top.
 
@@ -87,21 +90,21 @@ orientation is determined by the <code>flipView</code> command line option;
 if it is false (the default), White's pawns move from bottom to top
 at the start of each game; if it is true, Black's pawns move from
 bottom to top. See <a href="User-interface-options.html#User-interface-options">User interface options</a>. 
-<dt>Blindfold<dd><a name="index-Blindfold_002c-Menu-Item-103"></a>If this option is on, XBoard displays the board as usual but does
+<br><dt>Blindfold<dd><a name="index-Blindfold_002c-Menu-Item-104"></a>If this option is on, XBoard displays the board as usual but does
 not display pieces or move highlights.  You can still move in the
 usual way (with the mouse or by typing moves in ICS mode), even though
 the pieces are invisible. 
-<dt>Drop Menu<dd><a name="index-Drop-Menu_002c-Menu-Item-104"></a>Controls if right-clicking the board in crazyhouse / bughouse
+<br><dt>Drop Menu<dd><a name="index-Drop-Menu_002c-Menu-Item-105"></a>Controls if right-clicking the board in crazyhouse / bughouse
 will pop up a menu to drop a piece on the clicked square
 (old, deprecated behavior)
 or allow you to step through an engine PV
 (new, recommended behavior). 
-<dt>Enable Variation Trees<dd><a name="index-Enable-Variation-Trees_002c-Menu-Item-105"></a>If this option is on, playing a move in Edit Game or Analyze mode
+<br><dt>Enable Variation Trees<dd><a name="index-Enable-Variation-Trees_002c-Menu-Item-106"></a>If this option is on, playing a move in Edit Game or Analyze mode
 while keeping the Shift key pressed will start a new variation. 
 You can then recall the previous line through the &lsquo;<samp><span class="samp">Revert</span></samp>&rsquo; menu item. 
 When off, playing a move will truncate the game and append the move
 irreversibly. 
-<dt>Hide Thinking<dd><a name="index-Hide-Thinking_002c-Menu-Item-106"></a>If this option is off, the chess engine's notion of the score and best
+<br><dt>Hide Thinking<dd><a name="index-Hide-Thinking_002c-Menu-Item-107"></a>If this option is off, the chess engine's notion of the score and best
 line of play from the current position is displayed as it is
 thinking. The score indicates how many pawns ahead (or if negative,
 behind) the chess engine thinks it is. In matches between two
@@ -109,14 +112,14 @@ machines, the score is prefixed by &lsquo;<samp><span class="samp">W</span></sam
 whether it is showing White's thinking or Black's, and only the thinking
 of the engine that is on move is shown. 
 The shifted <kbd>Ctrl-H</kbd> key is a keyboard equivalent. 
-<dt>Highlight Last Move<dd><a name="index-Highlight-Last-Move_002c-Menu-Item-107"></a>If Highlight Last Move is on, after a move is made, the starting and
+<br><dt>Highlight Last Move<dd><a name="index-Highlight-Last-Move_002c-Menu-Item-108"></a>If Highlight Last Move is on, after a move is made, the starting and
 ending squares remain highlighted. In addition, after you use Backward
 or Back to Start, the starting and ending squares of the last move to
 be unmade are highlighted. 
-<dt>Highlight with Arrow<dd><a name="index-Highlight-with-Arrow_002c-Menu-Item-108"></a>Causes the highlighting described in Highlight Last Move to be done
+<br><dt>Highlight with Arrow<dd><a name="index-Highlight-with-Arrow_002c-Menu-Item-109"></a>Causes the highlighting described in Highlight Last Move to be done
 by drawing an arrow between the highlighted squares,
 so that it is visible even when the width of the grid lines is set to zero. 
-<dt>Move Sound<dd><a name="index-Move-Sound_002c-Menu-Item-109"></a>Enables the sounding of an audible signal when the computer performs a move. 
+<br><dt>Move Sound<dd><a name="index-Move-Sound_002c-Menu-Item-110"></a>Enables the sounding of an audible signal when the computer performs a move. 
 For the selection of the sound, see &lsquo;<samp><span class="samp">Sound Options</span></samp>&rsquo;. 
 If you turn on this option when using XBoard with the Internet
 Chess Server, you will probably want to give the
@@ -124,7 +127,7 @@ Chess Server, you will probably want to give the
 command to the ICS, since otherwise the ICS will ring the terminal bell
 after every move (not just yours). (The <samp><span class="file">.icsrc</span></samp> file
 is a good place for this; see <a href="ICS-options.html#ICS-options">ICS options</a>.) 
-<dt>One-Click Moving<dd><a name="index-One_002dClick-Moving_002c-Menu-Item-110"></a>If this option is on, XBoard does not wait for you to click both the
+<br><dt>One-Click Moving<dd><a name="index-One_002dClick-Moving_002c-Menu-Item-111"></a>If this option is on, XBoard does not wait for you to click both the
 from- and the to-square, or drag the piece, but performs a move as soon
 as it is uniqely specified. 
 This applies to clicking an own piece that only has a single legal move,
@@ -135,40 +138,40 @@ will cause that capture to be made.
 Promoting a Pawn by clicking its to-square will suppress the promotion
 popup or other methods for selecting an under-promotion,
 and make it promote to Queen. 
-<dt>Periodic Updates<dd><a name="index-Periodic-Updates_002c-Menu-Item-111"></a>If this option is off (or if
+<br><dt>Periodic Updates<dd><a name="index-Periodic-Updates_002c-Menu-Item-112"></a>If this option is off (or if
 you are using a chess engine that does not support periodic updates),
 the analysis window
 will only be updated when the analysis changes. If this option is
 on, the Analysis Window will be updated every two seconds. 
-<dt>Play Move(s) of Clicked PV<dd><a name="index-Play-Move_0028s_0029-of-Clicked-PV_002c-Menu-Item-112"></a>If this option is on, right-clicking a PV in the Engine Output window
+<br><dt>Play Move(s) of Clicked PV<dd><a name="index-Play-Move_0028s_0029-of-Clicked-PV_002c-Menu-Item-113"></a>If this option is on, right-clicking a PV in the Engine Output window
 during Analyze mode will cause the first move of that PV to be played. 
 You could also play more than one (or no) PV move by moving the mouse
 to engage in the PV walk such a right-click will start,
 to seek out another position along the PV where you want to continue
 the analysis, before releasing the mouse button. 
-<dt>Ponder Next Move<dd><a name="index-Ponder-Next-Move_002c-Menu-Item-113"></a>If this option is off, the chess engine will think only when it is on
+<br><dt>Ponder Next Move<dd><a name="index-Ponder-Next-Move_002c-Menu-Item-114"></a>If this option is off, the chess engine will think only when it is on
 move.  If the option is on, the engine will also think while waiting
 for you to make your move. 
 The shifted <kbd>Ctrl-P</kbd> key is a keyboard equivalent. 
-<dt>Popup Exit Message<dd><a name="index-Popup-Exit-Message_002c-Menu-Item-114"></a>If this option is on, when XBoard wants to display a message just
+<br><dt>Popup Exit Message<dd><a name="index-Popup-Exit-Message_002c-Menu-Item-115"></a>If this option is on, when XBoard wants to display a message just
 before exiting, it brings up a modal dialog box and waits for you to
 click OK before exiting.  If the option is off, XBoard prints the
 message to standard error (the terminal) and exits immediately. 
-<dt>Popup Move Errors<dd><a name="index-Popup-Move-Errors_002c-Menu-Item-115"></a>If this option is off, when you make an error in moving (such as
+<br><dt>Popup Move Errors<dd><a name="index-Popup-Move-Errors_002c-Menu-Item-116"></a>If this option is off, when you make an error in moving (such as
 attempting an illegal move or moving the wrong color piece), the
 error message is displayed in the message area.  If the option is
 on, move errors are displayed in small pop-up windows like other errors. 
 You can dismiss an error pop-up either by clicking its OK button or by
 clicking anywhere on the board, including down-clicking to start a move. 
-<dt>Scores in Move List<dd><a name="index-Scores-in-Move-List_002c-Menu-Item-116"></a>If this option is on, XBoard will display the depth and score
+<br><dt>Scores in Move List<dd><a name="index-Scores-in-Move-List_002c-Menu-Item-117"></a>If this option is on, XBoard will display the depth and score
 of engine moves in the Move List, in the format of a PGN comment. 
-<dt>Show Coords<dd><a name="index-Show-Coords_002c-Menu-Item-117"></a>If this option is on, XBoard displays algebraic coordinates
+<br><dt>Show Coords<dd><a name="index-Show-Coords_002c-Menu-Item-118"></a>If this option is on, XBoard displays algebraic coordinates
 along the board's left and bottom edges. 
-<dt>Show Target Squares<dd><a name="index-Show-Target-Squares_002c-Menu-Item-118"></a>If this option is on, all squares a piece that is 'picked up' with the mouse
+<br><dt>Show Target Squares<dd><a name="index-Show-Target-Squares_002c-Menu-Item-119"></a>If this option is on, all squares a piece that is 'picked up' with the mouse
 can legally move to are highighted with a fat colored dot in the
 highlightColor (non-captures) or premoveHighlightColor (captures). 
 Legality testing must be on for XBoard to know how the piece moves. 
-<dt>Test Legality<dd><a name="index-Test-Legality_002c-Menu-Item-119"></a>If this option is on, XBoard tests whether the moves you try to make
+<br><dt>Test Legality<dd><a name="index-Test-Legality_002c-Menu-Item-120"></a>If this option is on, XBoard tests whether the moves you try to make
 with the mouse are legal and refuses to let you make an illegal move. 
 The shifted <kbd>Ctrl-L</kbd> key is a keyboard equivalent. 
 Moves loaded from a file with &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; are also checked.  If
@@ -178,30 +181,37 @@ off this option is useful if you are playing a chess variant with
 rules that XBoard does not understand.  (Bughouse, suicide, and wild
 variants where the king may castle after starting on the d file are
 generally supported with Test Legality on.) 
-<dt>Flash Moves<dt>Flash Rate<dd><a name="index-Flash-Moves_002c-Menu-Item-120"></a><a name="index-Flash-Rate_002c-Menu-Item-121"></a>If this option is non-zero, whenever a move is completed,
+<br><dt>Flash Moves<dt>Flash Rate<dd><a name="index-Flash-Moves_002c-Menu-Item-121"></a><a name="index-Flash-Rate_002c-Menu-Item-122"></a>If this option is non-zero, whenever a move is completed,
 the moved piece flashes the specified number of times. 
 The flash-rate setting determines how rapidly this flashing occurs. 
-<dt>Animation Speed<dd><a name="index-Animation-Speed_002c-Menu-Item-122"></a>Determines the duration (in msec) of an animation step,
+<br><dt>Animation Speed<dd><a name="index-Animation-Speed_002c-Menu-Item-123"></a>Determines the duration (in msec) of an animation step,
 when &lsquo;<samp><span class="samp">Animate Moving</span></samp>&rsquo; is swiched on. 
-<dt>Zoom factor in Evaluation Graph<dd><a name="index-Zoom-factor-in-Evaluation-Graph_002c-Menu-Item-123"></a>Sets the valueof the <code>evalZoom</code> option,
+<br><dt>Zoom factor in Evaluation Graph<dd><a name="index-Zoom-factor-in-Evaluation-Graph_002c-Menu-Item-124"></a>Sets the valueof the <code>evalZoom</code> option,
 indicating the factor by which the score interval (-1,1) should be
 blown up on the vertical axis of the Evaluation Graph. 
-<br><dt>Time Control<dd><a name="index-Time-Control_002c-Menu-Item-124"></a>Pops up a sub-menu where you can set the time-control parameters interactively. 
+</dl>
+
+<h4 class="subsection">3.7.2 Time Control</h4>
+
+<p><a name="index-Time-Control_002c-Menu-Item-125"></a>Pops up a sub-menu where you can set the time-control parameters interactively. 
 Allows you to select classical or incremental time controls,
 set the moves per session, session duration, and time increment. 
 Also allows specification of time-odds factors for one or both engines. 
 If an engine is given a time-odds factor N, all time quota it gets,
 be it at the beginning of a session or through the time increment or
 fixed time per move, will be divided by N. 
-The shifted <kbd>Alt+T</kbd> key is a keyboard equivalent. 
-<br><dt>Common Engine<dd><a name="index-Common-Engine_002c-Menu-Item-125"></a>Pops up a sub-menu where you can set some engine parameters common to most engines,
+The shifted <kbd>Alt+T</kbd> key is a keyboard equivalent.
+
+<h4 class="subsection">3.7.3 Common Engine</h4>
+
+<p><a name="index-Common-Engine_002c-Menu-Item-126"></a>Pops up a sub-menu where you can set some engine parameters common to most engines,
 such as hash-table size, tablebase cache size, maximum number of processors
 that SMP engines can use, and where to find the Polyglot adapter needed
 to run UCI engines under XBoard. The feature that allows setting of these parameters on
 engines is new since XBoard 4.3.15, so not many XBoard/WinBoard engines respond
 to it yet, but UCI engines should.
 
-     <p>It is also possible to specify a GUI opening book here, i.e. an opening
+   <p>It is also possible to specify a GUI opening book here, i.e. an opening
 book that XBoard consults for any position a playing engine gets in. 
 It then forces the engine to play the book move, rather than to think up its own,
 if that position is found in the book. 
@@ -215,8 +225,11 @@ specified in the book.
 When set to 0, only the move(s) with the highest probability will be played. 
 When set to 100, all listed moves will be played with equal pobability. 
 Other settings interpolate between that. 
-The shifted <kbd>Alt+U</kbd> key is a keyboard equivalent. 
-<br><dt>Adjudications<dd><a name="index-Adjudications_002c-Menu-Item-126"></a>Pops up a sub-menu where you can enable or disable various adjudications
+The shifted <kbd>Alt+U</kbd> key is a keyboard equivalent.
+
+<h4 class="subsection">3.7.4 Adjudications</h4>
+
+<p><a name="index-Adjudications_002c-Menu-Item-127"></a>Pops up a sub-menu where you can enable or disable various adjudications
 that XBoard can perform in engine-engine games. 
 The shifted <kbd>Alt+J</kbd> key is a keyboard equivalent. 
 You can instruct XBoard to detect and terminate the game on checkmate
@@ -237,22 +250,25 @@ For the latter adjudication to work, XBoard should be able to properly understan
 the engine's scores. To facilitate the latter, you can inform xboard here if
 the engines report scores from the viewpoint of white, or from that of their own color.
 
-     <br><dt>ICS Options<dd><a name="index-ICS-Options_002c-Menu-Item-127"></a>The following options occur in a dialog summoned by the
-ICS Options menu item. 
-<dt>Auto Kibitz<dd><a name="index-Auto-Kibitz_002c-Menu-Item-128"></a>Setting this option when playing with or aginst a chess program on an ICS
+<h4 class="subsection">3.7.5 ICS Options</h4>
+
+<p><a name="index-ICS-Options_002c-Menu-Item-128"></a>The following options occur in a dialog summoned by the
+ICS Options menu item.
+     <dl>
+<dt>Auto Kibitz<dd><a name="index-Auto-Kibitz_002c-Menu-Item-129"></a>Setting this option when playing with or aginst a chess program on an ICS
 will cause the last line of thinking output of the engine before its move
 to be sent to the ICS in a kibitz command. 
 In addition, any kibitz message received through the ICS from
 an opponent chess program will be diverted to the engine-output window,
 (and suppressed in the console),
 where you can play through its PV by right-clicking it. 
-<dt>Auto Comment<dd><a name="index-Auto-Comment_002c-Menu-Item-129"></a>If this option is on, any remarks made on ICS while you are observing or
+<br><dt>Auto Comment<dd><a name="index-Auto-Comment_002c-Menu-Item-130"></a>If this option is on, any remarks made on ICS while you are observing or
 playing a game are recorded as a comment on the current move.  This includes
 remarks made with the ICS commands <kbd>say</kbd>, <kbd>tell</kbd>, <kbd>whisper</kbd>,
 and <kbd>kibitz</kbd>. 
 Limitation: remarks that you type yourself are not recognized;
 XBoard scans only the output from ICS, not the input you type to it. 
-<dt>Auto Observe<dd><a name="index-Auto-Observe_002c-Menu-Item-130"></a>If this option is on and you add a player to your <code>gnotify</code>
+<br><dt>Auto Observe<dd><a name="index-Auto-Observe_002c-Menu-Item-131"></a>If this option is on and you add a player to your <code>gnotify</code>
 list on ICS, XBoard will automatically observe all of that
 player's games, unless you are doing something else (such as
 observing or playing a game of your own) when one starts. 
@@ -265,24 +281,24 @@ your ICS
 variable is set to 0, or if the ICS you are using does not
 properly support observing from Black's point of view,
 you will see the game from White's point of view. 
-<dt>Auto Raise Board<dd><a name="index-Auto-Raise-Board_002c-Menu-Item-131"></a>If this option is on, whenever a new game begins, the chessboard window
+<br><dt>Auto Raise Board<dd><a name="index-Auto-Raise-Board_002c-Menu-Item-132"></a>If this option is on, whenever a new game begins, the chessboard window
 is deiconized (if necessary) and raised to the top of the stack of windows. 
-<dt>Auto Save<dd><a name="index-Auto-Save_002c-Menu-Item-132"></a>If this option is true, at the end of every game XBoard prompts
+<br><dt>Auto Save<dd><a name="index-Auto-Save_002c-Menu-Item-133"></a>If this option is true, at the end of every game XBoard prompts
 you for a file name and appends a record of the game to the file
 you specify. 
 Disabled if the <code>saveGameFile</code> command-line
 option is set, as in that case all games are saved to the specified file. 
 See <a href="Load-and-Save-options.html#Load-and-Save-options">Load and Save options</a>. 
-<dt>Background Observe<dd><a name="index-Background-Observe_002c-Menu-Item-133"></a>Setting this option will make XBoard suppress display of any boards
+<br><dt>Background Observe<dd><a name="index-Background-Observe_002c-Menu-Item-134"></a>Setting this option will make XBoard suppress display of any boards
 from observed games while you are playing. 
 In stead the last such board will be remembered,
 and shown to you when you right-click the board. 
 This allows you to peek at your bughouse partner's game when you want,
 without disturbing your own game too much. 
-<dt>Dual Board<dd><a name="index-Dual-Board_002c-Menu-Item-134"></a>Setting this option in combination with &lsquo;<samp><span class="samp">Background Observe</span></samp>&rsquo;
+<br><dt>Dual Board<dd><a name="index-Dual-Board_002c-Menu-Item-135"></a>Setting this option in combination with &lsquo;<samp><span class="samp">Background Observe</span></samp>&rsquo;
 will display boards of observed games while you are playing
 on a second board next to that of your own game. 
-<dt>Get Move List<dd><a name="index-Get-Move-List_002c-Menu-Item-135"></a>If this option is on, whenever XBoard
+<br><dt>Get Move List<dd><a name="index-Get-Move-List_002c-Menu-Item-136"></a>If this option is on, whenever XBoard
 receives the first board of a new ICS game (or a different game from
 the one it is currently displaying), it
 retrieves the list of past moves from the ICS. 
@@ -294,20 +310,20 @@ to keep from wasting time and network bandwidth fetching the move lists over
 and over. 
 When you turn this option on from the menu, XBoard
 immediately fetches the move list of the current game (if any). 
-<dt>Quiet Play<dd><a name="index-Quiet-Play_002c-Menu-Item-136"></a>If this option is on, XBoard will automatically issue an ICS
+<br><dt>Quiet Play<dd><a name="index-Quiet-Play_002c-Menu-Item-137"></a>If this option is on, XBoard will automatically issue an ICS
 <kbd>set shout 0</kbd>
 command whenever you start a game and a
 <kbd>set shout 1</kbd>
 command whenever you finish one.  Thus, you will not be distracted
 by shouts from other ICS users while playing. 
-<dt>Seek Graph<dd><a name="index-Seek-Graph_002c-Menu-Item-137"></a>Setting this option will cause XBoard to display an graph of
+<br><dt>Seek Graph<dd><a name="index-Seek-Graph_002c-Menu-Item-138"></a>Setting this option will cause XBoard to display an graph of
 currently active seek ads when you left-click the board
 while idle and logged on to an ICS. 
-<dt>Auto-Refresh Seek Graph<dd><a name="index-Auto_002dRefresh-Seek-Graph_002c-Menu-Item-138"></a>In combination with the &lsquo;<samp><span class="samp">Seek Graph</span></samp>&rsquo; option this
+<br><dt>Auto-Refresh Seek Graph<dd><a name="index-Auto_002dRefresh-Seek-Graph_002c-Menu-Item-139"></a>In combination with the &lsquo;<samp><span class="samp">Seek Graph</span></samp>&rsquo; option this
 will cause automatic update of the seek graph while it is up. 
 This only works on FICS and ICC,
 and requires a lot of bandwidth on a busy server. 
-<dt>Premove<dt>Premove White<dt>Premove Black<dt>First White Move<dt>First Black Move<dd><a name="index-Premove_002c-Menu-Item-139"></a><a name="index-Premove-White_002c-Menu-Item-140"></a><a name="index-Premove-Black_002c-Menu-Item-141"></a><a name="index-First-White-Move_002c-Menu-Item-142"></a><a name="index-First-Black-Move_002c-Menu-Item-143"></a>If this option is on while playing a game on an ICS, you can register
+<br><dt>Premove<dt>Premove White<dt>Premove Black<dt>First White Move<dt>First Black Move<dd><a name="index-Premove_002c-Menu-Item-140"></a><a name="index-Premove-White_002c-Menu-Item-141"></a><a name="index-Premove-Black_002c-Menu-Item-142"></a><a name="index-First-White-Move_002c-Menu-Item-143"></a><a name="index-First-Black-Move_002c-Menu-Item-144"></a>If this option is on while playing a game on an ICS, you can register
 your next planned move before it is your turn.  Move the piece with
 the mouse in the ordinary way, and the starting and ending squares
 will be highlighted with a special color (red by default).  When it is
@@ -319,7 +335,7 @@ entirely.
 
      <p>You can also enter premoves for the first white and black moves
 of the game. 
-<dt>ICS Alarm<dt>ICS Alarm Time<dd><a name="index-ICS-Alarm_002c-Menu-Item-144"></a><a name="index-ICS-Alarm-Time_002c-Menu-Item-145"></a>When this option is on, an alarm sound is played when your clock
+<br><dt>ICS Alarm<dt>ICS Alarm Time<dd><a name="index-ICS-Alarm_002c-Menu-Item-145"></a><a name="index-ICS-Alarm-Time_002c-Menu-Item-146"></a>When this option is on, an alarm sound is played when your clock
 counts down to the icsAlarmTime in an ICS game. 
 (By default, the time is 5 seconds, but you can pecify other values
 with the Alarm Time spin control.) 
@@ -328,15 +344,19 @@ alarm will sound each time the clock counts down to the icsAlarmTime.
 By default, the alarm sound is the terminal bell, but on some systems
 you can change it to a sound file using the soundIcsAlarm option; see
 below. 
-<dt>Colorize Messages<dd><a name="index-Colorize-Messages_002c-Menu-Item-146"></a>Ticking this options causes various types of ICS messages do be
+<br><dt>Colorize Messages<dd><a name="index-Colorize-Messages_002c-Menu-Item-147"></a>Ticking this options causes various types of ICS messages do be
 displayed with different foreground or background colors in the console. 
 The colors can be individually selected for each type,
-through the accompanying text edits.
+through the accompanying text edits. 
+</dl>
 
-     <br><dt>Match Options<dd><a name="index-Match-Options_002c-Menu-Item-147"></a>Summons a dialog where you can set options important for playing automatic
+<h4 class="subsection">3.7.6 Match Options</h4>
+
+<p><a name="index-Match-Options_002c-Menu-Item-148"></a>Summons a dialog where you can set options important for playing automatic
 matches between two chess programs
-(e.g. by using the &lsquo;<samp><span class="samp">Machine Match</span></samp>&rsquo; menu item in the &lsquo;<samp><span class="samp">Mode</span></samp>&rsquo; menu). 
-<dt>Tournament file<dd><a name="index-Tournament-file_002c-Menu-item-148"></a>To run a tournament, XBoard needs a file to record its progress,
+(e.g. by using the &lsquo;<samp><span class="samp">Machine Match</span></samp>&rsquo; menu item in the &lsquo;<samp><span class="samp">Mode</span></samp>&rsquo; menu).
+     <dl>
+<dt>Tournament file<dd><a name="index-Tournament-file_002c-Menu-item-149"></a>To run a tournament, XBoard needs a file to record its progress,
 so it can resume the tourney when it is interrupted. 
 When you want to conduct anything more complex than a simple
 two-player match with the currently loaded engines,
@@ -354,19 +374,19 @@ Provided that you specify participants;
 without participants no tournament file will be made, but other entered values
 (e.g. for the file with opening positions) will take effect. 
 Default: configured by the <code>defaultTourneyName</code> option. 
-<dt>Sync after round<dt>Sync after cycle<dd><a name="index-Sync-after-round_002c-Menu-Item-149"></a><a name="index-Sync-after-cycle_002c-Menu-Item-150"></a>The sync options, when on, will cause WinBoard to refrain from starting games
+<br><dt>Sync after round<dt>Sync after cycle<dd><a name="index-Sync-after-round_002c-Menu-Item-150"></a><a name="index-Sync-after-cycle_002c-Menu-Item-151"></a>The sync options, when on, will cause WinBoard to refrain from starting games
 of the next round or cycle before all games of the previous round or cycle are finished. 
 This guarantees correct ordering in the games file,
 even when multiple XBoard instances are concurrently playing games for the same tourney. 
 Default: sync after cycle, but not after round. 
-<dt>Select Engine<dt>Tourney participants<dd><a name="index-Select-Engine_002c-Menu-Item-151"></a><a name="index-Tourney-participants_002c-Menu-Item-152"></a>With the Select Engine drop-down list you can pick an engine from your list
+<br><dt>Select Engine<dt>Tourney participants<dd><a name="index-Select-Engine_002c-Menu-Item-152"></a><a name="index-Tourney-participants_002c-Menu-Item-153"></a>With the Select Engine drop-down list you can pick an engine from your list
 of installed engines in the settings file, to be added to the tournament. 
 The engines selected so far will be listed in the ‘Tourney participants’ memo. 
 The latter is a normal text edit, so you can use normal text-editing functions
 to delete engines you selected by accident, or change their order. 
 Do not type names yourself there, because names that do not exactly match
 one of the names from the drop-down list will lead to undefined behavior. 
-<dt>Tourney type<dd><a name="index-Tourney-type_002c-Menu-Item-153"></a>Here you can specify the type of tournament you want. 
+<br><dt>Tourney type<dd><a name="index-Tourney-type_002c-Menu-Item-154"></a>Here you can specify the type of tournament you want. 
 XBoard’s intrinsic tournament manager support round-robins (type = 0),
 where each participant plays every other participant, and (multi-)gauntlets,
 where one (or a few) so-called ‘gauntlet engines’ play an independent set of opponents. 
@@ -377,7 +397,7 @@ A value of -1 instructs XBoard to play Swiss; for this to work an external
 pairing engine must be specified through the <code>pairingEngine</code> option. 
 Each Swiss round will be considered a tourney cycle in that case. 
 Default:0
-<dt>Number of tourney cycles<dt>Default number of Games<dd><a name="index-Number-of-tourney-cycles_002c-Menu-Item-154"></a><a name="index-Default-number-of-Games_002c-Menu-Item-155"></a>You can specify tourneys where every two opponents play each other multiple times. 
+<br><dt>Number of tourney cycles<dt>Default number of Games<dd><a name="index-Number-of-tourney-cycles_002c-Menu-Item-155"></a><a name="index-Default-number-of-Games_002c-Menu-Item-156"></a>You can specify tourneys where every two opponents play each other multiple times. 
 Such multiple games can be played in a row,
 as specified by the ‘number of games per pairing’,
 or by repeating the entire tournament schedule a number of times
@@ -386,9 +406,9 @@ The total number of times two engine meet will be the product of these two.
 Default is 1 cycle;
 the number of games per pairing is the same as the default number of match games,
 stored in your settings file through the <code>defaultMatchGames</code> option. 
-<dt>Save Tourney Games<dd><a name="index-Save-Tourney-Games_002c-Menu-Item-156"></a>File where the tournament games are saved
+<br><dt>Save Tourney Games<dd><a name="index-Save-Tourney-Games_002c-Menu-Item-157"></a>File where the tournament games are saved
 (duplicate of the item in the &lsquo;<samp><span class="samp">Save Game Options</span></samp>&rsquo;). 
-<dt>Game File with Opening Lines<dt>File with Start Positions<dt>Game Number<dt>Position Number<dt>Rewind Index after<dd><a name="index-Game-File-with-Opening-Lines_002c-Menu-Item-157"></a><a name="index-File-with-Start-Positions_002c-Menu-Item-158"></a><a name="index-Game-Number_002c-Menu-Item-159"></a><a name="index-Position-Number_002c-Menu-Item-160"></a><a name="index-Rewind-Index-after_002c-Menu-Item-161"></a>These items optionally specify the file with move sequences or board positions the tourney
+<br><dt>Game File with Opening Lines<dt>File with Start Positions<dt>Game Number<dt>Position Number<dt>Rewind Index after<dd><a name="index-Game-File-with-Opening-Lines_002c-Menu-Item-158"></a><a name="index-File-with-Start-Positions_002c-Menu-Item-159"></a><a name="index-Game-Number_002c-Menu-Item-160"></a><a name="index-Position-Number_002c-Menu-Item-161"></a><a name="index-Rewind-Index-after_002c-Menu-Item-162"></a>These items optionally specify the file with move sequences or board positions the tourney
 games should start from. 
 The corresponding numbers specify the number of the game or position in the file. 
 Here a value -1 means automatic stepping through all games on the file,
@@ -401,12 +421,12 @@ In this case the first (odd) games will randomly select from the book,
 but the second (even) games will select the same moves from the book as the previous game. 
 (Note this leads to the same opening only if both engines use the GUI book!) 
 Default: No game or position file will be used. The default index if such a file is used is 1. 
-<dt>Disable own engine bools be default<dd><a name="index-Disable-own-engine-bools-be-default_002c-Menu-Item-162"></a>Setting this option reverses the default situation for use of the GUI opening book
+<br><dt>Disable own engine bools be default<dd><a name="index-Disable-own-engine-bools-be-default_002c-Menu-Item-163"></a>Setting this option reverses the default situation for use of the GUI opening book
 in tournaments from what it normally is, namely not using it. 
 So unless the engine is installed with an option to explicitly specify it should
 not use the GUI book (i.e. <code>-firstHasOwnBookUCI true</code>),
 it will be made to use the GUI book. 
-<dt>Replace Engine<dt>Upgrade Engine<dd><a name="index-Replace-Engine_002c-Menu-Item-163"></a><a name="index-Upgrade-Engine_002c-Menu-Item-164"></a>With these two buttons you can alter the participants of an already running tournament. 
+<br><dt>Replace Engine<dt>Upgrade Engine<dd><a name="index-Replace-Engine_002c-Menu-Item-164"></a><a name="index-Upgrade-Engine_002c-Menu-Item-165"></a>With these two buttons you can alter the participants of an already running tournament. 
 After opening the Match Options dialog on an XBoard that is playing for the tourney,
 you will see all the tourney parameters in the dialog fields. 
 You can then replace the name of one engine by that of another
@@ -419,24 +439,28 @@ be invalidated, and they will be replayed with the substitute engine.
 In this latter case the engine must not be playing when you do this,
 but otherwise there is no need to pause the tournament play
 for making a substitution. 
-<dt>Clone Tourney<dd><a name="index-CloneTourney_002c-Menu-Item-165"></a>Pressing this button after you have specified an existing tournament file
+<br><dt>Clone Tourney<dd><a name="index-CloneTourney_002c-Menu-Item-166"></a>Pressing this button after you have specified an existing tournament file
 will copy the contents of the latter to the dialog,
 and then puts the originally proposed name for the tourney file back. 
 You can then run a tourney with the same parameters
 (possibly after changing the proposed name of the tourney file for the new tourney)
-by pressing 'OK'.
+by pressing 'OK'. 
+</dl>
 
-     <br><dt>Load Game Options<dd><a name="index-Load-Game-Options_002c-Menu-Item-166"></a>Summons a dialog where you can set the <code>autoDisplayComment</code> and
+<h4 class="subsection">3.7.7 Load Game Options</h4>
+
+<p><a name="index-Load-Game-Options_002c-Menu-Item-167"></a>Summons a dialog where you can set the <code>autoDisplayComment</code> and
 <code>autoDisplayTags</code> options, (which control popups when viewing loaded games),
 and specify the rate at which loaded games are auto-played,
 in seconds per move (which can be a fractional number, like 1.6). 
 You can also set search criteria for determining which games
 will be displayed in the Game List for a multi-game file,
 and thus be eligible for loading:
-<dt>Elo of strongest player<dt>Elo of weakest player<dt>year<dd><a name="index-Elo-of-strongest-player_002c-Menu-Item-167"></a><a name="index-Elo-of-weakest-player_002c-Menu-Item-168"></a><a name="index-year_002c-Menu-Item-169"></a>These numeric fields set thresholds (lower limits) on the Elo rating of the mentioned player,
+     <dl>
+<dt>Elo of strongest player<dt>Elo of weakest player<dt>year<dd><a name="index-Elo-of-strongest-player_002c-Menu-Item-168"></a><a name="index-Elo-of-weakest-player_002c-Menu-Item-169"></a><a name="index-year_002c-Menu-Item-170"></a>These numeric fields set thresholds (lower limits) on the Elo rating of the mentioned player,
 or the date the game was played. 
 Defaults: 0
-<dt>Search mode<dd><a name="index-Search-mode_002c-Menu-Item-170"></a><a name="index-find-position_002c-Menu-Item-171"></a><a name="index-narrow_002c-Menu-Item-172"></a>This setting determines which positions in a game will be considered a match
+<br><dt>Search mode<dd><a name="index-Search-mode_002c-Menu-Item-171"></a><a name="index-find-position_002c-Menu-Item-172"></a><a name="index-narrow_002c-Menu-Item-173"></a>This setting determines which positions in a game will be considered a match
 to the position currently displayed in the board window
 when you press the &lsquo;<samp><span class="samp">find position</span></samp>&rsquo; button in the Game List. 
 You can search for an exact match,
@@ -454,18 +478,21 @@ The &lsquo;<samp><span class="samp">narrow</span></samp>&rsquo; button is simila
 but only searches in the already selected games,
 rather than the complete game file,
 and can thus be used to refine a search based on multiple criteria. 
-<dt>number of consecutive positions<dd><a name="index-number-of-consecutive-positions_002c-Menu-Item-173"></a>When you are searching by material, rather than for an exact match,
+<br><dt>number of consecutive positions<dd><a name="index-number-of-consecutive-positions_002c-Menu-Item-174"></a>When you are searching by material, rather than for an exact match,
 this parameter indicates forhowmany consecutive game positions
 the same amount of material must be on the board before it is
 considered a match. 
-<dt>Also match reversed colors<dt>Also match left-right flipped position<dd><a name="index-Also-match-reversed-colors_002c-Menu-Item-174"></a><a name="index-Also-match-left_002dright-flipped-position_002c-Menu-Item-175"></a>When looking for matching positions rather than by material,
+<br><dt>Also match reversed colors<dt>Also match left-right flipped position<dd><a name="index-Also-match-reversed-colors_002c-Menu-Item-175"></a><a name="index-Also-match-left_002dright-flipped-position_002c-Menu-Item-176"></a>When looking for matching positions rather than by material,
 these settings determine whether mirror images
 (in case of a vertical flip in combination with color reversal)
 will be also considered a match. 
 The left-right flipping is only useful after all castling rights
-have expired (or in Xiangqi).
+have expired (or in Xiangqi). 
+</dl>
 
-     <br><dt>Save Game Options<dd><a name="index-Save-Game-Options_002c-Menu-Item-176"></a>Summons a dialog where you can specify the files on which XBoard should
+<h4 class="subsection">3.7.8 Save Game Options</h4>
+
+<p><a name="index-Save-Game-Options_002c-Menu-Item-177"></a>Summons a dialog where you can specify the files on which XBoard should
 automatically save any played or entered games,
 (the <code>saveGameFile</code> option),
 or the final position of such games (the <code>savePositionfile</code> option). 
@@ -481,10 +508,14 @@ and if a tag with info about the score with which the engine came out of book
 should be included. 
 For Chess, always set the format to PGN, rather than "old save stye"!
 
-     <br><dt>Game List<dd><a name="index-Game-List-Tags_002c-Menu-Item-177"></a>Pops up a dialog where you can select the PGN tags that should appear
+<h4 class="subsection">3.7.9 Game List</h4>
+
+<p><a name="index-Game-List-Tags_002c-Menu-Item-178"></a>Pops up a dialog where you can select the PGN tags that should appear
 on the lines in the game list, and their order.
 
-     <br><dt>Sound Options<dd><a name="index-Sound-Options_002c-Menu-Item-178"></a>Summons a dialog where you can specify the sounds that should accompany
+<h4 class="subsection">3.7.10 Sound Options</h4>
+
+<p><a name="index-Sound-Options_002c-Menu-Item-179"></a>Summons a dialog where you can specify the sounds that should accompany
 various events that can occur XBoard. 
 Most events are only relevant to ICS play,
 but the move sound is an important exception. 
@@ -505,7 +536,9 @@ move if you are observing a game on the Internet Chess Server).
 The sound is not played after moves you make or moves read from a
 saved game file.
 
-     <br><dt>Save Settings Now<dd><a name="index-Save-Settings-Now_002c-Menu-Item-179"></a>Selecting this menu item causes the current XBoard settings to be
+<h4 class="subsection">3.7.11 Save Settings Now</h4>
+
+<p><a name="index-Save-Settings-Now_002c-Menu-Item-180"></a>Selecting this menu item causes the current XBoard settings to be
 written to the settings file, so they will also apply in future sessions. 
 Note that some settings are 'volatile', and are not saved,
 because XBoard considers it too unlikely that you want those to apply
@@ -518,29 +551,31 @@ Such options would still be understood when they appear in the settings
 file in case they were put there with the aid of a text editor, but they
 would disappear from the file as soon as you save the settings.
 
-     <p>Note that XBoard no longer pays attention to options values specified
+   <p>Note that XBoard no longer pays attention to options values specified
 in the .Xresources file. 
 (Specifying key bindings there will still work, though.) 
 To alter the default of volatile options, you can use the following method:
 Rename your ~/.xboardrc settings file (to ~/.yboardrc, say), and create
 a new file ~/.xboardrc, which only contains the options
 
-     <pre class="example">          -settingsFile  ~/.yboardrc
-          -saveSettingsFile  ~/.yboardrc
+<pre class="example">     -settingsFile  ~/.yboardrc
+     -saveSettingsFile  ~/.yboardrc
 </pre>
-     <p class="noindent">This will cause your settings to be saved on ~/.yboardrc in the future,
+   <p class="noindent">This will cause your settings to be saved on ~/.yboardrc in the future,
 so that ~/.xboardrc is no longer overwritten. 
 You can then safely specify volatile options in ~/.xboardrc, either
 before or after the settingsFile options. 
 Note that when you specify persistent options after the settingsFile options
 in ~/.xboardrc, you will essentially turn them into volatile options
 with the specified value as default, because that value will overrule
-the value loaded from the settings file (being read later). 
-<br><dt>Save Settings on Exit<dd><a name="index-Save-Settings-on-Exit_002c-Menu-Item-180"></a>Setting this option has no immediate effect, but causes the settings
+the value loaded from the settings file (being read later).
+
+<h4 class="subsection">3.7.12 Save Settings on Exit</h4>
+
+<p><a name="index-Save-Settings-on-Exit_002c-Menu-Item-181"></a>Setting this option has no immediate effect, but causes the settings
 to be saved when you quit XBoard. What happens then is otherwise
 identical to what happens when you use select "Save Settings Now",
-see there. 
-</dl>
+see there.
 
    </body></html>
 
