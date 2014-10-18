@@ -4,11 +4,14 @@
 
  .gitignore                                         |   20 +
  ABOUT-NLS                                          | 1282 --------
+ ChangeLog                                          | 1560 ++++++++++
+ DIFFSTAT                                           |  435 +++
  Makefile.am                                        |  176 +-
- NEWS                                               |   82 +
+ NEWS                                               |   89 +
+ SHORTLOG                                           |  354 +++
  args.h                                             |  107 +-
  autogen.sh                                         |    3 +-
- backend.c                                          | 1299 +++++++--
+ backend.c                                          | 1306 +++++++--
  backend.h                                          |   26 +-
  board.c                                            |   15 +-
  book.c                                             |   12 +
@@ -25,7 +28,7 @@
  conf/xiangqi                                       |   30 +
  conf/xq                                            |   36 +
  config.rpath                                       |  672 -----
- configure.ac                                       |  168 +-
+ configure.ac                                       |  170 +-
  dialogs.c                                          |  710 ++++-
  dialogs.h                                          |   17 +-
  draw.c                                             |  136 +-
@@ -37,10 +40,10 @@
  evalgraph.h                                        |    3 +-
  frontend.h                                         |    7 +-
  gamelist.c                                         |   10 +-
- gtk/xboard.c                                       |  299 +-
+ gtk/xboard.c                                       |  307 +-
  gtk/xboard.h                                       |   39 +-
  gtk/xengineoutput.c                                |   21 +-
- gtk/xoptions.c                                     |  159 +-
+ gtk/xoptions.c                                     |  167 +-
  m4/gettext.m4                                      |  383 ---
  m4/iconv.m4                                        |  214 --
  m4/lib-ld.m4                                       |  110 -
@@ -126,7 +129,7 @@
  .../zh_TW.lproj/GtkosxApplication.strings          |  Bin 0 -> 944 bytes
  osxapp/pango.modules                               |    5 +
  parser.c                                           |   29 +-
- pgntags.c                                          |    8 +-
+ pgntags.c                                          |    8 +
  pixmaps/ANALYZING_14.xpm                           |   23 -
  pixmaps/BLACK_14.xpm                               |   23 -
  pixmaps/CLEAR_14.xpm                               |   23 -
@@ -251,8 +254,9 @@
  winboard/wedittags.c                               |   53 +-
  winboard/wengineoutput.c                           |    3 +-
  winboard/wevalgraph.c                              |   11 +-
- winboard/wgamelist.c                               |   25 +-
- winboard/winboard.c                                |  155 +-
+ winboard/wgamelist.c                               |   38 +-
+ winboard/winboard.c                                |  159 +-
+ winboard/winboard.h                                |    9 +
  winboard/winboard.rc                               |   97 +-
  winboard/woptions.c                                |   66 +-
  winboard/wsettings.c                               |   15 +-
@@ -266,7 +270,7 @@
  xboard2.h                                          |    2 +-
  zic2xpm.c                                          |  597 ----
  zic2xpm.man                                        |   73 -
- 264 files changed, 28180 insertions(+), 19410 deletions(-)
+ 268 files changed, 30568 insertions(+), 19429 deletions(-)
  delete mode 100644 ABOUT-NLS
  create mode 100644 conf/chu
  create mode 100644 conf/ics

@@ -3,6 +3,69 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2014-10-17 21:17:56 -0700 Arun Persaud <arun@nubati.net>:
+updated NEWS
+
+
+2014-10-17 21:17:28 -0700 Arun Persaud <arun@nubati.net>:
+forget a few __APPLE__ ifdefs; changed to OSXAPP
+
+
+2014-10-17 00:01:44 -0700 Arun Persaud <arun@nubati.net>:
+fix typo and prefix
+
+AC_PREFIX_DEFAULT was always set, even if AS_IF didn't get called? Some kind of caching?
+Using just prefix=... seems to work though
+
+2014-10-16 23:34:22 -0700 Arun Persaud <arun@nubati.net>:
+USE OSXAPP instead of APPLE and fix withval->enableval in AC_ARG_ENABLE
+
+
+2014-10-16 21:44:33 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix loading of engine-defined PGN games
+
+Somehow there could be disagreement over what the official opening
+position of an engine-defined variant was during loading of the game.
+It then refused Betza-defined castling, which tests the corner pieces
+based on this initial position. We now assume the FEN tag, which such
+a PGN game will always contain, holds the official opening position,
+so that castling will always be assumed possible (if there is a corner
+piece).
+
+2014-10-16 20:29:27 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Preserve parent variant for PGN of engine-defined game
+
+Rather than decoding an unknown variant name, (which will result in
+'normal'), we keep the currently set (parent) variant when an
+engine-defined variant is currently set that matches the name in
+the PGN variant tag of the loaded game.
+
+2014-10-16 17:54:13 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix some uninitialized variable bugs
+
+The writing of Seirawan castling rights in FEN was still dependent on a
+now unused variable, and encountering a VariantMen tag in a PGN file
+could have created the misconception the memory was full.
+
+2014-10-16 17:41:01 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Update Game List after tag selection changed
+
+When the Game List Options dialog changes the tags to be displayed in
+the Game List lines, we now automatically redo the entire Game List.
+
+2014-10-16 16:38:00 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Always accept piece commands in variant great
+
+Great Shatranj belongs to the variants XBoard does not know the rules of,
+and should thus always accept engine piece commands.
+
+2014-10-15 21:28:36 -0700 Arun Persaud <arun@nubati.net>:
+make all tests for strings in configure use the same scheme
+
+
+2014-10-15 21:23:26 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, DIFFSTAT, and SHORTLOG
+
 2014-10-15 21:06:36 -0700 Arun Persaud <arun@nubati.net>:
 fix osxapp enable option in configure.ac
 

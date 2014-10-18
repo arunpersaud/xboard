@@ -2,7 +2,7 @@
 
 (git log --pretty=short --no-merges --cherry-pick --left-only v4.8.x...v4.7.3^ |git shortlog --no-merges)
 
-Arun Persaud (35):
+Arun Persaud (41):
       Updated German translation
       Updated Ukrainian translations
       Added Dutch translation
@@ -38,6 +38,12 @@ Arun Persaud (35):
       only enable osxapp build target on apple systems, clean up configure.ac a tiny bit
       remove experimental from gtk build option
       fix osxapp enable option in configure.ac
+      updated Changelog, DIFFSTAT, and SHORTLOG
+      make all tests for strings in configure use the same scheme
+      USE OSXAPP instead of APPLE and fix withval->enableval in AC_ARG_ENABLE
+      fix typo and prefix
+      forget a few __APPLE__ ifdefs; changed to OSXAPP
+      updated NEWS
 
 H.G. Muller (166):
       Implement variant ASEAN
@@ -207,7 +213,7 @@ H.G. Muller (166):
       Allow pseudo-engines to adjust the clocks
       Fix writing of Chu-Shogi FENs
 
-H.G.Muller (133):
+H.G.Muller (138):
       Fix crash on opening Tags window Xaw
       Make EditPosition pallette work in Asian variants
       Let EditPosition double-click on piece promote it
@@ -341,6 +347,11 @@ H.G.Muller (133):
       Update Game List when setting new Game List Tags
       Implement displaying of variant tag in Game List
       Don't switch to engine-defined variant on game loading
+      Always accept piece commands in variant great
+      Update Game List after tag selection changed
+      Fix some uninitialized variable bugs
+      Preserve parent variant for PGN of engine-defined game
+      Fix loading of engine-defined PGN games
 
 Joshua Pettus (1):
       Add build script to configure for a XBoard.app for OS X
