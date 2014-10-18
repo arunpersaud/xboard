@@ -137,7 +137,10 @@ FEN (Forsythe-Edwards notation) format unless the <code>oldSaveStyle</code>
 option is true, in which case they are saved in an older,
 human-readable format that is specific to XBoard. Both formats
 can be read back by the &lsquo;<samp><span class="samp">Load Position</span></samp>&rsquo; command. 
-<br><dt>Save Games as Book<dd><a name="index-Save-Games-as-Book_002c-Menu-Item-16"></a>Creates an opening book from the currently loaded game file. 
+<br><dt>Save Selected Games<dd><a name="index-Save-Selected-Games-16"></a>Will cause all games selected for display in the current Game List
+to be appended to a file of the user's choice. 
+<br><dt>Save Games as Book<dd><a name="index-Save-Games-as-Book_002c-Menu-Item-17"></a>Creates an opening book from the currently loaded game file,
+incorporating only the games currently selected in the Game List. 
 The book will be saved on the file specified in the &lsquo;<samp><span class="samp">Common Engine</span></samp>&rsquo;
 options dialog. 
 The value of &lsquo;<samp><span class="samp">Book Depth</span></samp>&rsquo; specified in that same dialog will
@@ -146,10 +149,10 @@ the internal book buffer.
 This command can take a long time to process,
 and the size of the buffer is currently limited. 
 At the end the buffer will be saved as a Polyglot book,
-but the buffer will ot be cleared,
+but the buffer will not be cleared,
 so that you can continue adding games from other game files. 
-<br><dt>Mail Move<dt>Reload CMail Message<dd><a name="index-Mail-Move_002c-Menu-Item-17"></a><a name="index-Reload-CMail-Message_002c-Menu-Item-18"></a>See <a href="CMail.html#CMail">CMail</a>. 
-<br><dt>Exit<dd><a name="index-Exit_002c-Menu-Item-19"></a>Exits from XBoard. The <kbd>Ctrl-Q</kbd> key is a keyboard equivalent. 
+<br><dt>Mail Move<dt>Reload CMail Message<dd><a name="index-Mail-Move_002c-Menu-Item-18"></a><a name="index-Reload-CMail-Message_002c-Menu-Item-19"></a>See <a href="CMail.html#CMail">CMail</a>. 
+<br><dt>Exit<dd><a name="index-Exit_002c-Menu-Item-20"></a>Exits from XBoard. The <kbd>Ctrl-Q</kbd> key is a keyboard equivalent. 
 </dl>
 
    </body></html>

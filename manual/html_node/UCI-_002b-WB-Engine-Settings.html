@@ -35,18 +35,18 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <h3 class="section">4.2 UCI + WB Engine Settings</h3>
 
-<p><a name="index-Engine-Settings-260"></a><a name="index-Settings_002c-Engine-261"></a>
+<p><a name="index-Engine-Settings-261"></a><a name="index-Settings_002c-Engine-262"></a>
      <dl>
-<dt>-fUCI or -firstIsUCI true/false<dt>-sUCI or -secondIsUCI true/false<dd><a name="index-fUCI_002c-option-262"></a><a name="index-sUCI_002c-option-263"></a><a name="index-firstIsUCI_002c-option-264"></a><a name="index-secondIsUCI_002c-option-265"></a>Indicates if the mentioned engine executable file is an UCI engine,
+<dt>-fUCI or -firstIsUCI true/false<dt>-sUCI or -secondIsUCI true/false<dd><a name="index-fUCI_002c-option-263"></a><a name="index-sUCI_002c-option-264"></a><a name="index-firstIsUCI_002c-option-265"></a><a name="index-secondIsUCI_002c-option-266"></a>Indicates if the mentioned engine executable file is an UCI engine,
 and should be run with the aid of the Polyglot adapter rather than directly. 
 Xboard will then pass the other UCI options and engine name to Polyglot
 on its command line, according to the option <code>adapterCommand</code>. 
-<br><dt>-fUCCI<dt>-sUCCI<dt>-fUSI<dt>-sUSI<dd><a name="index-fUCCI_002c-option-266"></a><a name="index-sUCCI_002c-option-267"></a><a name="index-fUSI_002c-option-268"></a><a name="index-sUSI_002c-option-269"></a>Options similar to <code>fUCI</code> and <code>sUCI</code>, except that they
+<br><dt>-fUCCI<dt>-sUCCI<dt>-fUSI<dt>-sUSI<dd><a name="index-fUCCI_002c-option-267"></a><a name="index-sUCCI_002c-option-268"></a><a name="index-fUSI_002c-option-269"></a><a name="index-sUSI_002c-option-270"></a>Options similar to <code>fUCI</code> and <code>sUCI</code>, except that they
 use the indicated engine with the protocol adapter specified in
 the &lsquo;<samp><span class="samp">uxiAdapter</span></samp>&rsquo; option. 
 This can then be configured for running an UCCI or USI adapter,
 as the need arises. 
-<br><dt>-adapterCommand string<dd><a name="index-adapterCommand_002c-option-270"></a>The string conatins the command that should be issued by XBoard
+<br><dt>-adapterCommand string<dd><a name="index-adapterCommand_002c-option-271"></a>The string conatins the command that should be issued by XBoard
 to start an engine that is accompanied by the <code>fUCI</code> option. 
 Any identifier following a percent sign in the command (e.g. %fcp)
 will be considered the name of an XBoard option, and be replaced
@@ -55,32 +55,32 @@ For starting the second engine, any leading "f" or "first" in
 the option name will first be replaced by "s" or "second",
 before finding its value. 
 Default: 'polyglot -noini -ec "%fcp" -ed "%fd"'
-<br><dt>-uxiAdapter string<dd><a name="index-uxiAdapter_002c-option-271"></a>Similar to <code>adapterCommand</code>, but used for engines accompanied
+<br><dt>-uxiAdapter string<dd><a name="index-uxiAdapter_002c-option-272"></a>Similar to <code>adapterCommand</code>, but used for engines accompanied
 by the <code>fUCCI</code> or <code>fUSI</code> option, so you can configure
 XBoard to be ready to handle more than one flavor of non-native protocols. 
 Default: ""
-<br><dt>-polyglotDir filename<dd><a name="index-polyglotDir_002c-option-272"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines resides. 
+<br><dt>-polyglotDir filename<dd><a name="index-polyglotDir_002c-option-273"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines resides. 
 Default: "". 
-<br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-273"></a>Specifies if the Polyglot book should be used as GUI book. 
-<br><dt>-polyglotBook filename<dd><a name="index-polyglotBook_002c-option-274"></a>Gives the filename of the opening book. 
+<br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-274"></a>Specifies if the Polyglot book should be used as GUI book. 
+<br><dt>-polyglotBook filename<dd><a name="index-polyglotBook_002c-option-275"></a>Gives the filename of the opening book. 
 The book is only used when the <code>usePolyglotBook</code> option is set to true,
 and the option <code>firstHasOwnBookUCI</code> or <code>secondHasOwnBookUCI</code>
 applying to the engine is set to false. 
 The engine will be kept in force mode as long as the current position is in book,
 and XBoard will select the book moves for it. Default: "". 
-<br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-275"></a><a name="index-sNoOwnBookUCI_002c-option-276"></a><a name="index-firstHasOwnBookUCI_002c-option-277"></a><a name="index-secondHasOwnBookUCI_002c-option-278"></a><a name="index-firstXBook_002c-option-279"></a><a name="index-secondXBook_002c-option-280"></a>Indicates if the mentioned engine has its own opening book it should play from,
+<br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-276"></a><a name="index-sNoOwnBookUCI_002c-option-277"></a><a name="index-firstHasOwnBookUCI_002c-option-278"></a><a name="index-secondHasOwnBookUCI_002c-option-279"></a><a name="index-firstXBook_002c-option-280"></a><a name="index-secondXBook_002c-option-281"></a>Indicates if the mentioned engine has its own opening book it should play from,
 rather than using the external book through XBoard. 
 Default: depends on setting of the option <code>discourageOwnBooks</code>. 
-<br><dt>-discourageOwnBooks true/false<dd><a name="index-discourageOwnBooks_002c-option-281"></a>When set, newly loaded engines will be assumed to use the GUI book,
+<br><dt>-discourageOwnBooks true/false<dd><a name="index-discourageOwnBooks_002c-option-282"></a>When set, newly loaded engines will be assumed to use the GUI book,
 unless they explicitly specify differently. 
 Otherwise they will be assumed to not use the GUI book,
 unless the specify differently (e.g. with <code>firstXBook</code>). 
 Default: false. 
-<br><dt>-bookDepth n<dd><a name="index-bookDepth_002c-option-282"></a>Limits the use of the GUI book to the first n moves of each side. 
+<br><dt>-bookDepth n<dd><a name="index-bookDepth_002c-option-283"></a>Limits the use of the GUI book to the first n moves of each side. 
 Default: 12. 
-<br><dt>-bookVariation n<dd><a name="index-bookVariation_002c-option-283"></a>A value n from 0 to 100 tunes the choice of moves from the GUI books
+<br><dt>-bookVariation n<dd><a name="index-bookVariation_002c-option-284"></a>A value n from 0 to 100 tunes the choice of moves from the GUI books
 from totally random to best-only. Default: 50
-<br><dt>-mcBookMode<dd><a name="index-mcBookMode_002c-option-284"></a>When this volatile option is specified, the probing algorithm of the
+<br><dt>-mcBookMode<dd><a name="index-mcBookMode_002c-option-285"></a>When this volatile option is specified, the probing algorithm of the
 GUI book is altered to always select the move that is most under-represented
 based on its performance. 
 When all moves are played in approximately the right proportion,
@@ -93,20 +93,20 @@ The only output are the saved games, which can be converted to an
 actual book later, with the &lsquo;<samp><span class="samp">Save Games as Book</span></samp>&rsquo; command. 
 This command can also be used to pre-fill the book buffer
 before adding new games based on the probing algorithm. 
-<br><dt>-fn string or -firstPgnName string<dt>-sn string or -secondPgnName string<dd><a name="index-firstPgnName_002c-option-285"></a><a name="index-secondPgnName_002c-option-286"></a><a name="index-fn_002c-option-287"></a><a name="index-sn_002c-option-288"></a>Indicates the name that should be used for the engine in PGN tags of
+<br><dt>-fn string or -firstPgnName string<dt>-sn string or -secondPgnName string<dd><a name="index-firstPgnName_002c-option-286"></a><a name="index-secondPgnName_002c-option-287"></a><a name="index-fn_002c-option-288"></a><a name="index-sn_002c-option-289"></a>Indicates the name that should be used for the engine in PGN tags of
 engine-engine games. 
 Intended to allow you to install verions of the same engine with different settings,
 and still distinguish them. 
 Default: "". 
-<br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-289"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
+<br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-290"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
 this number is also used to calculate the memory setting of XBoard/WinBoard engines,
 for those that support the memory feature of the XBoard/WinBoard protocol. Default: 64. 
-<br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-290"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
+<br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-291"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
 this number is also used to calculate the memory setting of XBoard/WinBoard engines,
 for those that support the memory feature of the XBoard/WinBoard protocol. Default: 4. 
-<br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-291"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
+<br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-292"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
 Default: "/usr/local/share/egtb". 
-<br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-292"></a>Specifies which end-game tables are installed on the computer, and where. 
+<br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-293"></a>Specifies which end-game tables are installed on the computer, and where. 
 The argument is a comma-separated list of format specifications,
 each specification consisting of a format name, a colon, and a directory path name,
 e.g. "nalimov:/usr/local/share/egtb". 
