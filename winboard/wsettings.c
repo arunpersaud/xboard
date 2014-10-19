@@ -575,8 +575,8 @@ void AddOption(int x, int y, Control type, int i)
     int extra, num = ES_NUMBER;
 
     switch(type) {
-//	case Slider+100:
-//	    num = 0; // needs text control for accepting negative numbers
+	case Spin+100:
+	    num = 0; // needs text control for accepting negative numbers
 	case Slider:
 	case Spin:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
