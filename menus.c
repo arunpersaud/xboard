@@ -1176,6 +1176,7 @@ InstallNewEngine (char *command, char *dir, char *variants, char *protocol)
 	snprintf(buf + strlen(buf), MSG_SIZ - strlen(buf), " -fd %s", dir);
     if(!strcmp(protocol, "uci"))
 	snprintf(buf + strlen(buf), MSG_SIZ - strlen(buf), " -fUCI");
+    if(strstr(firstChessProgramNames, buf)) return; // avoid duplicats
     // append line
     quote = malloc(strlen(firstChessProgramNames) + strlen(buf) + 2);
     sprintf(quote, "%s%s\n", firstChessProgramNames, buf);
