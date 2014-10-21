@@ -848,7 +848,7 @@ InitEngine (ChessProgramState *cps, int n)
     if(cps->tidy == NULL) cps->tidy = (char*) malloc(MSG_SIZ);
     TidyProgramName(cps->program, cps->host, cps->tidy);
     cps->matchWins = 0;
-    ASSIGN(cps->variants, appData.variant);
+    ASSIGN(cps->variants, appData.noChessProgram ? "" : appData.variant);
     cps->analysisSupport = 2; /* detect */
     cps->analyzing = FALSE;
     cps->initDone = FALSE;
@@ -1202,7 +1202,7 @@ InitBackEnd1 ()
 	return;
 
       case VariantNormal:     /* definitely works! */
-	if(strcmp(appData.variant, "normal") && appData.chessProgram) { // [HGM] hope this is an engine-defined variant
+	if(strcmp(appData.variant, "normal") && !appData.noChessProgram) { // [HGM] hope this is an engine-defined variant
 	  safeStrCpy(engineVariant, appData.variant, MSG_SIZ);
 	  return;
 	}
