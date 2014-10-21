@@ -2108,14 +2108,14 @@ StringToVariant (char *e)
     int wnum = -1;
     VariantClass v = VariantNormal;
     int i, found = FALSE;
-    char buf[MSG_SIZ];
+    char buf[MSG_SIZ], c;
     int len;
 
     if (!e) return v;
 
     /* [HGM] skip over optional board-size prefixes */
-    if( sscanf(e, "%dx%d_", &i, &i) == 2 ||
-        sscanf(e, "%dx%d+%d_", &i, &i, &i) == 3 ) {
+    if( sscanf(e, "%dx%d_%c", &i, &i, &c) == 3 ||
+        sscanf(e, "%dx%d+%d_%c", &i, &i, &i, &c) == 4 ) {
         while( *e++ != '_');
     }
 
@@ -2125,7 +2125,7 @@ StringToVariant (char *e)
     } else
     for (i=0; i<sizeof(variantNames)/sizeof(char*); i++) {
       if (p = StrCaseStr(e, variantNames[i])) {
-	if(p && i >= VariantShogi && isalpha(p[strlen(variantNames[i])])) continue;
+	if(p && i >= VariantShogi && (p != e || isalpha(p[strlen(variantNames[i])]))) continue;
 	v = (VariantClass) i;
 	found = TRUE;
 	break;
