@@ -651,9 +651,10 @@ ResizeBoardWindow (int w, int h, int inhibit)
     marginW = a.width - bw;
     gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
     gtk_widget_set_size_request(optList[W_BOARD].handle, w, h);   // protect board widget
-    w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
-    h += marginH + a.height + 1;
+//    w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
+//    h += marginH + a.height + 1;
     gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
+    DoEvents();
     gtk_widget_set_size_request(optList[W_BOARD].handle, -1, -1); // liberate board again
 }
 
@@ -1196,7 +1197,7 @@ main (int argc, char **argv)
 	clockKludge = hc = a.height;
 	gtk_widget_get_allocation(boardWidget, &a);
 //	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
-	marginH =  h - a.height - hc; // subtract current clock height, so it can be added back dynamically
+//	marginH =  h - a.height - hc; // subtract current clock height, so it can be added back dynamically
     }
 
     CreateAnyPieces(1);
@@ -1655,9 +1656,10 @@ ReSize (WindowPlacement *wp)
 {
 	GtkAllocation a;
 	int sqx, sqy, w, h, hc, lg = lineGap;
+	static int first = 1;
 	gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
 	hc = a.height; // clock height can depend on single / double line clock text!
-        if(clockKludge && hc != clockKludge) wp->height += hc - clockKludge, clockKludge = 0;
+//        if(clockKludge && hc != clockKludge) wp->height += hc - clockKludge, clockKludge = 0;
 	wpMain.height = BOARD_HEIGHT * (squareSize + lineGap) + lineGap + marginH + hc;
 	if(wp->width == wpMain.width && wp->height == wpMain.height) return; // not sized
 	sqx = (wp->width  - lg - marginW) / BOARD_WIDTH - lg;
@@ -1673,7 +1675,7 @@ ReSize (WindowPlacement *wp)
 	    lg = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
 	    if(sqx == oldSqx + 1 && lg == lineGap + 1) sqx = oldSqx, squareSize = 0; // prevent oscillations, force resize by kludge
 	}
-	if(sqx != squareSize) {
+	if(sqx != squareSize && !first) {
 	    squareSize = sqx; // adopt new square size
 	    CreatePNGPieces(); // make newly scaled pieces
 	    InitDrawingSizes(0, 0); // creates grid etc.
@@ -1682,6 +1684,7 @@ ReSize (WindowPlacement *wp)
 	h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
 	if(optList[W_BOARD].max   > w) optList[W_BOARD].max = w;
 	if(optList[W_BOARD].value > h) optList[W_BOARD].value = h;
+	first = 0;
 }
 
 static guint delayedDragTag = 0;
