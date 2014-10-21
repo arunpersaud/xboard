@@ -650,9 +650,11 @@ ResizeBoardWindow (int w, int h, int inhibit)
     gtk_widget_get_allocation(shellWidget, &a);
     marginW = a.width - bw;
     gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
+    gtk_widget_set_size_request(optList[W_BOARD].handle, w, h);   // protect board widget
     w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
     h += marginH + a.height + 1;
     gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
+    gtk_widget_set_size_request(optList[W_BOARD].handle, -1, -1); // liberate board again
 }
 
 int

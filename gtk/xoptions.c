@@ -1529,7 +1529,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    break;
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
-//            gtk_widget_set_size_request(graph, option[i].max, option[i].value);
+            gtk_widget_set_size_request(graph, option[i].max, option[i].value);
 	    if(0){ GtkAllocation a;
 		a.x = 0; a.y = 0; a.width = option[i].max, a.height = option[i].value;
 		gtk_widget_set_allocation(graph, &a);
@@ -1665,6 +1665,9 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
       if(wp[dlgNr]->width > 0 && wp[dlgNr]->height > 0)
 	gtk_window_resize(GTK_WINDOW(dialog), wp[dlgNr]->width, wp[dlgNr]->height);
     }
+
+    for(i=0; option[i].type != EndMark; i++) if(option[i].type == Graph)
+	gtk_widget_set_size_request(option[i].handle, -1, -1); // remove size requests after realization, so user can shrink
 
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
 }
