@@ -1196,8 +1196,8 @@ main (int argc, char **argv)
 	gtk_widget_get_allocation(optList[W_WHITE].handle, &a);
 	clockKludge = hc = a.height;
 	gtk_widget_get_allocation(boardWidget, &a);
-//	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
-//	marginH =  h - a.height - hc; // subtract current clock height, so it can be added back dynamically
+	marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
+	marginH =  h - a.height - hc; // subtract current clock height, so it can be added back dynamically
     }
 
     CreateAnyPieces(1);
@@ -1655,19 +1655,29 @@ void
 ReSize (WindowPlacement *wp)
 {
 	GtkAllocation a;
-	int sqx, sqy, w, h, hc, lg = lineGap;
+	int sqx, sqy, w, h, lg = lineGap;
 	static int first = 1;
-	gtk_widget_get_allocation(optList[W_BOARD].handle, &a);
 	if(wp->width == wpMain.width && wp->height == wpMain.height && !first) return; // not sized
-	sqx = (a.width - lg) / BOARD_WIDTH - lg;
-	sqy = (a.height - lg) / BOARD_HEIGHT - lg;
+	gtk_widget_get_allocation(optList[W_DROP+1].handle, &a); // table that should contain everything
+	w = a.width; h = a.height;
+	gtk_widget_get_allocation(shellWidget, &a);
+	if(a.width < w || a.height < h) { // outer window smaller than dialog content?
+	    w = a.width - w; h = a.height - h; // subtract matrgins, measured as table minus board dimensions
+	    gtk_widget_get_allocation(optList[W_BOARD].handle, &a);
+	    w += a.width; h += a.height;
+	} else {
+	    gtk_widget_get_allocation(optList[W_BOARD].handle, &a);
+	    w = a.width; h = a.height;
+	}
+	sqx = (w - lg) / BOARD_WIDTH - lg;
+	sqy = (h - lg) / BOARD_HEIGHT - lg;
 	if(sqy < sqx) sqx = sqy;
         if(sqx < 20) return;
 	if(appData.overrideLineGap < 0) { // do second iteration with adjusted lineGap
 	    int oldSqx = sqx;
 	    lg = lineGap = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
-	    sqx = (a.width  - lg) / BOARD_WIDTH - lg;
-	    sqy = (a.height - lg) / BOARD_HEIGHT - lg;
+	    sqx = (w  - lg) / BOARD_WIDTH - lg;
+	    sqy = (h - lg) / BOARD_HEIGHT - lg;
 	    if(sqy < sqx) sqx = sqy;
 	    lg = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
 	    if(sqx == oldSqx + 1 && lg == lineGap + 1) sqx = oldSqx, squareSize = 0; // prevent oscillations, force resize by kludge
