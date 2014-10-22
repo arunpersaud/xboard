@@ -474,7 +474,10 @@ dnl| add some libs for OS X
       MACOSX_VERSION=`$SW_VERS -productVersion`
       AC_MSG_RESULT([$MACOSX_VERSION])
     fi
-    FRONTEND_LIBS="$FRONTEND_LIBS -lgtkmacintegration -headerpad_max_install_names "
+    FRONTEND_LIBS="$FRONTEND_LIBS -headerpad_max_install_names "
+    if test x"$enable_OSXAPP" = x"yes" ; then
+        FRONTEND_LIBS="$FRONTEND_LIBS -lgtkmacintegration"
+    fi
     FRONTEND_CFLAGS="$FRONTEND_CFLAGS -I/opt/local/include -L/opt/local/lib"
   ;;
 esac
