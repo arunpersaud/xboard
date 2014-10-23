@@ -1620,8 +1620,9 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
         king = flags & F_WHITE_ON_MOVE ? WhiteWazir : BlackWazir;
     if(gameInfo.variant == VariantKnightmate)
         king = flags & F_WHITE_ON_MOVE ? WhiteUnicorn : BlackUnicorn;
-    if(gameInfo.variant == VariantChu) { // strictly speaking this is not needed, as Chu officially has no check
+    if(gameInfo.variant == VariantChu || gameInfo.variant == VariantShogi) { // strictly speaking this is not needed, as Chu officially has no check
 	int r, f, k = king, royals=0, prince = flags & F_WHITE_ON_MOVE ? WhiteMonarch : BlackMonarch;
+	if(gameInfo.variant == VariantShogi) prince -= 11;                   // White/BlackFalcon
 	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
 	    if(board[r][f] == k || board[r][f] == prince) {
 		if(++royals > 1) return FALSE; // no check if we have two royals (ignores double captureby Lion!)
