@@ -756,6 +756,7 @@ typedef struct {
     char *logo[ENGINES];/* [HGM] logo      */
     char *pairingEngine;/* [HGM] pairing   */
     Boolean autoLogo;
+    Boolean fixedSize;
     Boolean noGUI;      /* [HGM] fast: suppress all display updates */
     char *engOptions[ENGINES]; /* [HGM] options   */
     char *fenOverride[ENGINES];

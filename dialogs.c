@@ -2590,13 +2590,14 @@ Option *
 BoardPopUp (int squareSize, int lineGap, void *clockFontThingy)
 {
     int i, size = BOARD_WIDTH*(squareSize + lineGap) + lineGap, logo = appData.logoSize;
+    int f = 2*appData.fixedSize; // width fudge, needed for unknown reasons to not clip board
     mainOptions[W_WHITE].choice = (char**) clockFontThingy;
     mainOptions[W_BLACK].choice = (char**) clockFontThingy;
     mainOptions[W_BOARD].value = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
     mainOptions[W_BOARD].max = mainOptions[W_SMALL].max = size; // board size
     mainOptions[W_SMALL].max = size - 2; // board title (subtract border!)
     mainOptions[W_BLACK].max = mainOptions[W_WHITE].max = size/2-3; // clock width
-    mainOptions[W_MESSG].max = appData.showButtonBar ? size-135 : size-2; // message
+    mainOptions[W_MESSG].max = appData.showButtonBar ? size-135+f : size-2+f; // message
     mainOptions[W_MENU].max = size-40; // menu bar
     mainOptions[W_TITLE].type = appData.titleInWindow ? Label : Skip ;
     if(logo && logo <= size/4) { // Activate logos

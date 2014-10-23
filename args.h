@@ -610,6 +610,7 @@ ArgDescriptor argDescriptors[] = {
   { "finger", ArgFilename, (void *) &appData.finger, FALSE, (ArgIniType) "" },
   { "inscriptions", ArgString, (void *) &appData.inscriptions, XBOARD, (ArgIniType) "" },
   { "autoInstall", ArgString, (void *) &appData.autoInstall, XBOARD, (ArgIniType) "" },
+  { "fixedSize", ArgBoolean, (void *) &appData.fixedSize, TRUE, (ArgIniType) FALSE },
 
   // [HGM] tournament options
   { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },

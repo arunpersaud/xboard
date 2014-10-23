@@ -1691,7 +1691,7 @@ ReSize (WindowPlacement *wp)
 	h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
 	if(optList[W_BOARD].max   > w) optList[W_BOARD].max = w;
 	if(optList[W_BOARD].value > h) optList[W_BOARD].value = h;
-	first = 0;
+	first = appData.fixedSize;
 }
 
 static guint delayedDragTag = 0;

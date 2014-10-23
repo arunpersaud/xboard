@@ -1627,6 +1627,11 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
     }
 
     gtk_table_resize(GTK_TABLE(table), top+1, r);
+    if(dlgNr == BoardWindow && appData.fixedSize) { // inhibit sizing
+	GtkWidget *h = gtk_hbox_new(FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (h), table, TRUE, FALSE, 2);
+	table = h;
+    }
     if(pane)
 	gtk_box_pack_start (GTK_BOX (pane), table, expandable, TRUE, 0);
     else
