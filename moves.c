@@ -265,8 +265,11 @@ void
 MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle, char *desc, MoveCallback cb, VOIDSTAR cl)
 {
     char buf[80], *p = desc, *atom = NULL;
-    int mine, his, dir, bit, occup, i;
+    int mine, his, dir, bit, occup, i, promoRank = -1;
+    ChessMove promo= NormalMove; ChessSquare pc = board[r][f];
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
+    if(pc == WhitePawn || pc == WhiteLance) promo = WhitePromotion, promoRank = BOARD_HEIGHT-1; else
+    if(pc == BlackPawn || pc == BlackLance) promo = BlackPromotion, promoRank = 0;
     while(*p) {                  // more moves to go
 	int expo = 1, dx, dy, x, y, mode, dirSet, ds2=0, retry=0, initial=0, jump=1, skip = 0, all = 0;
 	char *cont = NULL;
@@ -434,7 +437,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		    break;
 		}
 		if(mode & 16 && (board[y][x] == WhiteKing || board[y][x] == BlackKing)) break; // tame piece, cannot capture royal
-		if(occup & mode) cb(board, flags, NormalMove, r, f, y, x, cl);    // allowed, generate
+		if(occup & mode) cb(board, flags, y == promoRank ? promo : NormalMove, r, f, y, x, cl); // allowed, generate
 		if(occup != 4) break; // not valid transit square
 	    } while(--i);
 	  }
