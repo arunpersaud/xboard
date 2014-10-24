@@ -86,6 +86,12 @@
     * Indicate current variant in New Variant dialog of the GTK build
       (by printing it in boldface on the button).
 
+   * Known Problems
+    * GTK: in a tiling window manager the size of the board seems to be
+      calculated incorrectly. A temporary fix for this is to use a fixed
+      size by using the "-size <N>" and "-fixedSize true" options
+      on the command line.
+
 
 ** Version 4.7.3 **
 

@@ -2,7 +2,7 @@
 
 (git log --pretty=short --no-merges --cherry-pick --left-only v4.8.x...v4.7.3^ |git shortlog --no-merges)
 
-Arun Persaud (41):
+Arun Persaud (44):
       Updated German translation
       Updated Ukrainian translations
       Added Dutch translation
@@ -44,6 +44,9 @@ Arun Persaud (41):
       fix typo and prefix
       forget a few __APPLE__ ifdefs; changed to OSXAPP
       updated NEWS
+      updated ChangeLog, DIFFSTAT and SHORTLOG
+      line numbers in PO got updated
+      mac: only use gtk compile flag, if osxapp is enabled
 
 H.G. Muller (166):
       Implement variant ASEAN
@@ -213,7 +216,7 @@ H.G. Muller (166):
       Allow pseudo-engines to adjust the clocks
       Fix writing of Chu-Shogi FENs
 
-H.G.Muller (138):
+H.G.Muller (150):
       Fix crash on opening Tags window Xaw
       Make EditPosition pallette work in Asian variants
       Let EditPosition double-click on piece promote it
@@ -352,9 +355,22 @@ H.G.Muller (138):
       Fix some uninitialized variable bugs
       Preserve parent variant for PGN of engine-defined game
       Fix loading of engine-defined PGN games
+      Fix display of Spin Options with negative range
+      Let GTK dialogs open with actual-size Graph widgets
+      Ignore first configure event
+      Base new square size on board widget allocation GTK
+      Suppress duplicat autoInstalls
+      Fix variant-name recognition
+      Prevent unknown variant getting button in -ncp mode
+      Fix -xbuttons window width GTK
+      Attempt to make GTK sizing work with tiling WM
+      Fix promotion in Betza move generator
+      Also do dual-royal test in variant shogi
+      Add persistent Boolean option -fixedSize
 
-Joshua Pettus (1):
+Joshua Pettus (2):
       Add build script to configure for a XBoard.app for OS X
+      removed gtk theme from OSX app
 
 hasufell (4):
       BUILD: make paths modifiable (tiny change)

@@ -4,18 +4,18 @@
 
  .gitignore                                         |   20 +
  ABOUT-NLS                                          | 1282 --------
- ChangeLog                                          | 1560 ++++++++++
- DIFFSTAT                                           |  435 +++
- Makefile.am                                        |  176 +-
+ ChangeLog                                          | 1623 +++++++++++
+ DIFFSTAT                                           |  439 +++
+ Makefile.am                                        |  172 +-
  NEWS                                               |   89 +
- SHORTLOG                                           |  354 +++
- args.h                                             |  107 +-
+ SHORTLOG                                           |  365 +++
+ args.h                                             |  108 +-
  autogen.sh                                         |    3 +-
- backend.c                                          | 1306 +++++++--
+ backend.c                                          | 1314 +++++++--
  backend.h                                          |   26 +-
  board.c                                            |   15 +-
  book.c                                             |   12 +
- common.h                                           |   65 +-
+ common.h                                           |   66 +-
  conf/chu                                           |   42 +
  conf/ics                                           |   10 +
  conf/judkins                                       |   19 +
@@ -28,8 +28,8 @@
  conf/xiangqi                                       |   30 +
  conf/xq                                            |   36 +
  config.rpath                                       |  672 -----
- configure.ac                                       |  170 +-
- dialogs.c                                          |  710 ++++-
+ configure.ac                                       |  173 +-
+ dialogs.c                                          |  713 ++++-
  dialogs.h                                          |   17 +-
  draw.c                                             |  136 +-
  draw.h                                             |    3 +-
@@ -40,10 +40,10 @@
  evalgraph.h                                        |    3 +-
  frontend.h                                         |    7 +-
  gamelist.c                                         |   10 +-
- gtk/xboard.c                                       |  307 +-
+ gtk/xboard.c                                       |  341 ++-
  gtk/xboard.h                                       |   39 +-
  gtk/xengineoutput.c                                |   21 +-
- gtk/xoptions.c                                     |  167 +-
+ gtk/xoptions.c                                     |  179 +-
  m4/gettext.m4                                      |  383 ---
  m4/iconv.m4                                        |  214 --
  m4/lib-ld.m4                                       |  110 -
@@ -52,9 +52,9 @@
  m4/nls.m4                                          |   32 -
  m4/po.m4                                           |  449 ---
  m4/progtest.m4                                     |   92 -
- menus.c                                            |  151 +-
+ menus.c                                            |  152 +-
  menus.h                                            |    3 +
- moves.c                                            | 1024 +++++--
+ moves.c                                            | 1028 +++++--
  moves.h                                            |   12 +-
  nengineoutput.c                                    |   14 +-
  nevalgraph.c                                       |   17 +-
@@ -99,7 +99,7 @@
  osxapp/default/eo_White.png                        |  Bin 0 -> 400 bytes
  osxapp/default/icon_black.png                      |  Bin 0 -> 36898 bytes
  osxapp/default/icon_white.png                      |  Bin 0 -> 36619 bytes
- osxapp/gtkrc                                       |    9 +
+ osxapp/gtkrc                                       |    4 +
  osxapp/icons/XBoard.icns                           |  Bin 0 -> 200555 bytes
  osxapp/icons/fen.icns                              |  Bin 0 -> 160673 bytes
  osxapp/icons/pgn.icns                              |  Bin 0 -> 165002 bytes
@@ -155,25 +155,25 @@
  po/Makevars.template                               |   41 -
  po/Rules-quot                                      |   47 -
  po/boldquot.sed                                    |   10 -
- po/da.po                                           | 1652 ++++++-----
- po/de.po                                           | 1847 ++++++------
+ po/da.po                                           | 1656 ++++++-----
+ po/de.po                                           | 1851 ++++++------
  po/en@boldquot.header                              |   25 -
  po/en@quot.header                                  |   22 -
- po/es.po                                           | 2789 +++++++++---------
+ po/es.po                                           | 2783 +++++++++---------
  po/insert-header.sin                               |   23 -
- po/it.po                                           | 1610 +++++-----
- po/nl.po                                           | 3012 +++++++++++++++++++
+ po/it.po                                           | 1612 +++++-----
+ po/nl.po                                           | 3014 +++++++++++++++++++
  po/pl.po                                           | 3077 ++++++++++++++++++++
  po/quot.sed                                        |    6 -
  po/remove-potcdate.sin                             |   19 -
- po/ru.po                                           | 1605 +++++-----
- po/tr.po                                           | 1586 +++++-----
- po/uk.po                                           | 1737 ++++++-----
- po/vi.po                                           | 1594 +++++-----
- po/xboard.pot                                      | 1571 +++++-----
- po/zh_CN.po                                        | 1602 +++++-----
- po/zh_HK.po                                        | 1603 +++++-----
- po/zh_TW.po                                        | 1602 +++++-----
+ po/ru.po                                           | 1607 +++++-----
+ po/tr.po                                           | 1588 +++++-----
+ po/uk.po                                           | 1682 ++++++-----
+ po/vi.po                                           | 1596 +++++-----
+ po/xboard.pot                                      | 1573 +++++-----
+ po/zh_CN.po                                        | 1604 +++++-----
+ po/zh_HK.po                                        | 1605 +++++-----
+ po/zh_TW.po                                        | 1604 +++++-----
  sounds/roar.wav                                    |  Bin 0 -> 24664 bytes
  svg/BlackClaw.svg                                  |  162 ++
  svg/BlackDolphin.svg                               |  104 +
@@ -259,7 +259,7 @@
  winboard/winboard.h                                |    9 +
  winboard/winboard.rc                               |   97 +-
  winboard/woptions.c                                |   66 +-
- winboard/wsettings.c                               |   15 +-
+ winboard/wsettings.c                               |   13 +-
  winboard/wsnap.c                                   |   72 +-
  xaw/xboard.c                                       |  249 +-
  xaw/xboard.h                                       |    2 +-
@@ -270,7 +270,7 @@
  xboard2.h                                          |    2 +-
  zic2xpm.c                                          |  597 ----
  zic2xpm.man                                        |   73 -
- 268 files changed, 30568 insertions(+), 19429 deletions(-)
+ 268 files changed, 30688 insertions(+), 19408 deletions(-)
  delete mode 100644 ABOUT-NLS
  create mode 100644 conf/chu
  create mode 100644 conf/ics
