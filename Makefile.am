@@ -248,7 +248,6 @@ osxapp: all-recursive install install-recursive
 	$(MKDIR_P) $(datarootdir)/lib
 	$(MKDIR_P) $(sysconfdir)/gtk-2.0
 	$(MKDIR_P) $(sysconfdir)/pango
-	$(MKDIR_P) $(datadir)/gtk-engines
 	$(MKDIR_P) $(datadir)/themes
 	$(MKDIR_P) $(gamedatadir)/themes
 	$(INSTALL) ./osxapp/Info.plist $(prefix)
@@ -301,8 +300,6 @@ osxapp: all-recursive install install-recursive
 	$(INSTALL) ./osxapp/pango.modules $(sysconfdir)/pango/pangorc
 	cp -R /opt/local/lib/gtk-2.0 $(datarootdir)/lib
 	cp -R /opt/local/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
-	$(INSTALL) /opt/local/share/gtk-engines/murrine.xml $(datadir)/gtk-engines
-	cp -R ./osxapp/OSX-theme $(datadir)/themes
 	cp -R /opt/local/share/themes/Mac $(datadir)/themes
 	cp -R ./osxapp/default/. $(gamedatadir)/themes/default
 	$(INSTALL) ./png/marble_d.png $(gamedatadir)/themes/textures
@@ -315,7 +312,6 @@ osxapp: all-recursive install install-recursive
 	dylibbundler -of -b -x $(datarootdir)/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/immodules/im-quartz.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libpixmap.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libmurrine.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	find ./XBoard.app -name '*.a' -print0 | xargs -0 rm
 	rm -r $(datarootdir)/lib/gtk-2.0/include
 	rm -r $(datarootdir)/share/applications
