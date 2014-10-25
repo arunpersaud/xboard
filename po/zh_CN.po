@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard master-20110507\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2014-10-17 21:25-0700\n"
+"POT-Creation-Date: 2014-10-24 08:20-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,37 +18,37 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: args.h:839
+#: args.h:840
 #, c-format
 msgid "%s in settings file\n"
 msgstr ""
 
-#: args.h:873
+#: args.h:874
 #, c-format
 msgid "Bad integer value %s"
 msgstr ""
 
-#: args.h:979 args.h:1240
+#: args.h:980 args.h:1241
 #, c-format
 msgid "Unrecognized argument %s"
 msgstr ""
 
-#: args.h:1010
+#: args.h:1011
 #, c-format
 msgid "No value provided for argument %s"
 msgstr ""
 
-#: args.h:1070
+#: args.h:1071
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
 msgstr ""
 
-#: args.h:1181
+#: args.h:1182
 #, c-format
 msgid "Failed to open indirection file %s"
 msgstr ""
 
-#: args.h:1198
+#: args.h:1199
 #, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr ""
@@ -2149,7 +2149,7 @@ msgstr ""
 msgid "Note"
 msgstr "注释"
 
-#: dialogs.c:2370 dialogs.c:2655 dialogs.c:2658
+#: dialogs.c:2370 dialogs.c:2656 dialogs.c:2659
 msgid "White"
 msgstr "白方"
 
@@ -2177,7 +2177,7 @@ msgstr "清空格子"
 msgid "Clear board"
 msgstr "清空棋盘"
 
-#: dialogs.c:2374 dialogs.c:2667 dialogs.c:2670
+#: dialogs.c:2374 dialogs.c:2668 dialogs.c:2671
 msgid "Black"
 msgstr "黑方"
 
@@ -2229,51 +2229,51 @@ msgstr ""
 msgid ">>"
 msgstr ""
 
-#: dialogs.c:2773
+#: dialogs.c:2774
 msgid "Directories:"
 msgstr ""
 
-#: dialogs.c:2774
+#: dialogs.c:2775
 #, fuzzy
 msgid "Files:"
 msgstr "文件(F)"
 
-#: dialogs.c:2775
+#: dialogs.c:2776
 msgid "by name"
 msgstr ""
 
-#: dialogs.c:2776
+#: dialogs.c:2777
 msgid "by type"
 msgstr ""
 
-#: dialogs.c:2779
+#: dialogs.c:2780
 #, fuzzy
 msgid "Filename:"
 msgstr "过滤器"
 
-#: dialogs.c:2780
+#: dialogs.c:2781
 msgid "New directory"
 msgstr ""
 
-#: dialogs.c:2781
+#: dialogs.c:2782
 #, fuzzy
 msgid "File type:"
 msgstr "过滤器"
 
-#: dialogs.c:2856
+#: dialogs.c:2857
 #, fuzzy
 msgid "Contents of"
 msgstr "编辑注释(C) *.*"
 
-#: dialogs.c:2882
+#: dialogs.c:2883
 msgid "  next page"
 msgstr ""
 
-#: dialogs.c:2899
+#: dialogs.c:2900
 msgid "FIRST TYPE DIRECTORY NAME HERE"
 msgstr ""
 
-#: dialogs.c:2900
+#: dialogs.c:2901
 msgid "TRY ANOTHER NAME"
 msgstr ""
 
@@ -2304,50 +2304,50 @@ msgstr "NPS"
 msgid "Reading game file (%d)"
 msgstr "棋局文件错误"
 
-#: gtk/xboard.c:972 xaw/xboard.c:1072
+#: gtk/xboard.c:975 xaw/xboard.c:1072
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr ""
 
-#: gtk/xboard.c:981 xaw/xboard.c:1081
+#: gtk/xboard.c:984 xaw/xboard.c:1081
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr ""
 
-#: gtk/xboard.c:996 xaw/xboard.c:1090
+#: gtk/xboard.c:999 xaw/xboard.c:1090
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
 
-#: gtk/xboard.c:1015 xaw/xboard.c:1122
+#: gtk/xboard.c:1018 xaw/xboard.c:1122
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr ""
 
-#: gtk/xboard.c:1058 xaw/xboard.c:1161
+#: gtk/xboard.c:1061 xaw/xboard.c:1161
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr ""
 
-#: gtk/xboard.c:1097 xaw/xboard.c:1198
+#: gtk/xboard.c:1100 xaw/xboard.c:1198
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr ""
 
-#: gtk/xboard.c:1411 xaw/xboard.c:1490
+#: gtk/xboard.c:1414 xaw/xboard.c:1490
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr ""
 
-#: gtk/xboard.c:1436 xaw/xboard.c:1513
+#: gtk/xboard.c:1439 xaw/xboard.c:1513
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr ""
 
-#: gtk/xboard.c:1888 xaw/xboard.c:2003
+#: gtk/xboard.c:1900 xaw/xboard.c:2003
 msgid "Can't open temp file"
 msgstr ""
 
-#: gtk/xboard.c:2371
+#: gtk/xboard.c:2383
 #, fuzzy
 msgid "Failed to open file"
 msgstr "Failed to invoke cmail"

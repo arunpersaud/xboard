@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard-4.8.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2014-10-17 21:25-0700\n"
+"POT-Creation-Date: 2014-10-24 08:20-0700\n"
 "PO-Revision-Date: 2014-09-30 22:13+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
@@ -19,37 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
 "%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
-#: args.h:839
+#: args.h:840
 #, c-format
 msgid "%s in settings file\n"
 msgstr "%s у файлі параметрів\n"
 
-#: args.h:873
+#: args.h:874
 #, c-format
 msgid "Bad integer value %s"
 msgstr "Помилкове ціле значення %s"
 
-#: args.h:979 args.h:1240
+#: args.h:980 args.h:1241
 #, c-format
 msgid "Unrecognized argument %s"
 msgstr "Невідомий аргумент %s"
 
-#: args.h:1010
+#: args.h:1011
 #, c-format
 msgid "No value provided for argument %s"
 msgstr "Не вказано значення для аргументу %s"
 
-#: args.h:1070
+#: args.h:1071
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
 msgstr "Неповне екранування \\ у значенні для %s"
 
-#: args.h:1181
+#: args.h:1182
 #, c-format
 msgid "Failed to open indirection file %s"
 msgstr "Не вдалося відкрити файл переспрямування %s"
 
-#: args.h:1198
+#: args.h:1199
 #, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr "Невідоме значення булевого аргументу %s"
@@ -2173,7 +2173,7 @@ msgstr "Інформація"
 msgid "Note"
 msgstr "Нотатка"
 
-#: dialogs.c:2370 dialogs.c:2655 dialogs.c:2658
+#: dialogs.c:2370 dialogs.c:2656 dialogs.c:2659
 msgid "White"
 msgstr "Білі"
 
@@ -2201,7 +2201,7 @@ msgstr "Порожня клітинка"
 msgid "Clear board"
 msgstr "Спорожнити дошку"
 
-#: dialogs.c:2374 dialogs.c:2667 dialogs.c:2670
+#: dialogs.c:2374 dialogs.c:2668 dialogs.c:2671
 msgid "Black"
 msgstr "Чорні"
 
@@ -2253,47 +2253,47 @@ msgstr ">"
 msgid ">>"
 msgstr ">>"
 
-#: dialogs.c:2773
+#: dialogs.c:2774
 msgid "Directories:"
 msgstr "Каталоги:"
 
-#: dialogs.c:2774
+#: dialogs.c:2775
 msgid "Files:"
 msgstr "Файли:"
 
-#: dialogs.c:2775
+#: dialogs.c:2776
 msgid "by name"
 msgstr "за назвою"
 
-#: dialogs.c:2776
+#: dialogs.c:2777
 msgid "by type"
 msgstr "за типом"
 
-#: dialogs.c:2779
+#: dialogs.c:2780
 msgid "Filename:"
 msgstr "Назва файла:"
 
-#: dialogs.c:2780
+#: dialogs.c:2781
 msgid "New directory"
 msgstr "Новий каталог"
 
-#: dialogs.c:2781
+#: dialogs.c:2782
 msgid "File type:"
 msgstr "Тип файлів:"
 
-#: dialogs.c:2856
+#: dialogs.c:2857
 msgid "Contents of"
 msgstr "Вміст"
 
-#: dialogs.c:2882
+#: dialogs.c:2883
 msgid "  next page"
 msgstr "  наступна сторінка"
 
-#: dialogs.c:2899
+#: dialogs.c:2900
 msgid "FIRST TYPE DIRECTORY NAME HERE"
 msgstr "СПОЧАТКУ ВКАЖІТЬ ТУТ НАЗВУ КАТАЛОГУ"
 
-#: dialogs.c:2900
+#: dialogs.c:2901
 msgid "TRY ANOTHER NAME"
 msgstr "СПРОБУЙТЕ ІНШУ НАЗВУ"
 
@@ -2328,52 +2328,52 @@ msgstr "NPS"
 msgid "Reading game file (%d)"
 msgstr "Читання файла гри (%d)"
 
-#: gtk/xboard.c:972 xaw/xboard.c:1072
+#: gtk/xboard.c:975 xaw/xboard.c:1072
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr "%s: не вдалося перейти до каталогу CHESSDIR: "
 
-#: gtk/xboard.c:981 xaw/xboard.c:1081
+#: gtk/xboard.c:984 xaw/xboard.c:1081
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr "Не вдалося відкрити файл «%s»\n"
 
-#: gtk/xboard.c:996 xaw/xboard.c:1090
+#: gtk/xboard.c:999 xaw/xboard.c:1090
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
 "Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з "
 "більшими значеннями BOARD_RANKS або BOARD_FILES"
 
-#: gtk/xboard.c:1015 xaw/xboard.c:1122
+#: gtk/xboard.c:1018 xaw/xboard.c:1122
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr "%s: помилковий синтаксис boardSize %s\n"
 
-#: gtk/xboard.c:1058 xaw/xboard.c:1161
+#: gtk/xboard.c:1061 xaw/xboard.c:1161
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr "%s: невідома назва boardSize %s\n"
 
-#: gtk/xboard.c:1097 xaw/xboard.c:1198
+#: gtk/xboard.c:1100 xaw/xboard.c:1198
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr "%s: занадто мало кольорів; спробуємо монохромний режим\n"
 
-#: gtk/xboard.c:1411 xaw/xboard.c:1490
+#: gtk/xboard.c:1414 xaw/xboard.c:1490
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr "Не вдалося створити набір шрифтів для %s.\n"
 
-#: gtk/xboard.c:1436 xaw/xboard.c:1513
+#: gtk/xboard.c:1439 xaw/xboard.c:1513
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr "%s: взірцеві %s не відповідає жоден шрифт\n"
 
-#: gtk/xboard.c:1888 xaw/xboard.c:2003
+#: gtk/xboard.c:1900 xaw/xboard.c:2003
 msgid "Can't open temp file"
 msgstr "Не вдалося відкрити тимчасовий файл даних"
 
-#: gtk/xboard.c:2371
+#: gtk/xboard.c:2383
 msgid "Failed to open file"
 msgstr "Не вдалося відкрити файл"
 

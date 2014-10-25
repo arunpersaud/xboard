@@ -21,48 +21,48 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard 4.6.0.20120304\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2014-10-17 21:25-0700\n"
+"POT-Creation-Date: 2014-10-24 08:20-0700\n"
 "PO-Revision-Date: 2012-03-06 12:27+0100\n"
 "Last-Translator: Byrial Ole Jensen <byrial@vip.cybercity.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: da\n"
 "X-Generator: Lokalize 1.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: args.h:839
+#: args.h:840
 #, c-format
 msgid "%s in settings file\n"
 msgstr "%s i indstillingsfil\n"
 
-#: args.h:873
+#: args.h:874
 #, c-format
 msgid "Bad integer value %s"
 msgstr "Forkert heltalsværdi %s"
 
-#: args.h:979 args.h:1240
+#: args.h:980 args.h:1241
 #, c-format
 msgid "Unrecognized argument %s"
 msgstr "Ikke genkendt argument %s"
 
-#: args.h:1010
+#: args.h:1011
 #, c-format
 msgid "No value provided for argument %s"
 msgstr "Ingen værdi givet for argumentet %s"
 
-#: args.h:1070
+#: args.h:1071
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
 msgstr "Ukomplet \\-undvigesekvens i værdi for %s"
 
-#: args.h:1181
+#: args.h:1182
 #, c-format
 msgid "Failed to open indirection file %s"
 msgstr "Åbning af inkluderet fil \"%s\" mislykkedes"
 
-#: args.h:1198
+#: args.h:1199
 #, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr "Ikke genkendt boolesk argumentværdi %s"
@@ -2203,7 +2203,7 @@ msgstr "Meddelelse"
 msgid "Note"
 msgstr "Notits"
 
-#: dialogs.c:2370 dialogs.c:2655 dialogs.c:2658
+#: dialogs.c:2370 dialogs.c:2656 dialogs.c:2659
 msgid "White"
 msgstr "Hvid"
 
@@ -2231,7 +2231,7 @@ msgstr "Tomt felt"
 msgid "Clear board"
 msgstr "Ryd bræt"
 
-#: dialogs.c:2374 dialogs.c:2667 dialogs.c:2670
+#: dialogs.c:2374 dialogs.c:2668 dialogs.c:2671
 msgid "Black"
 msgstr "Sort"
 
@@ -2283,54 +2283,54 @@ msgstr ""
 msgid ">>"
 msgstr ""
 
-#: dialogs.c:2773
+#: dialogs.c:2774
 #, fuzzy
 msgid "Directories:"
 msgstr "Lydkatalog:"
 
-#: dialogs.c:2774
+#: dialogs.c:2775
 #, fuzzy
 msgid "Files:"
 msgstr "Fil"
 
-#: dialogs.c:2775
+#: dialogs.c:2776
 msgid "by name"
 msgstr ""
 
-#: dialogs.c:2776
+#: dialogs.c:2777
 msgid "by type"
 msgstr ""
 
-#: dialogs.c:2779
+#: dialogs.c:2780
 #, fuzzy
 msgid "Filename:"
 msgstr "Filter:"
 
-#: dialogs.c:2780
+#: dialogs.c:2781
 #, fuzzy
 msgid "New directory"
 msgstr "Skakprogramkatalog:"
 
-#: dialogs.c:2781
+#: dialogs.c:2782
 #, fuzzy
 msgid "File type:"
 msgstr "Filter:"
 
-#: dialogs.c:2856
+#: dialogs.c:2857
 #, fuzzy
 msgid "Contents of"
 msgstr "Kommentarer"
 
-#: dialogs.c:2882
+#: dialogs.c:2883
 #, fuzzy
 msgid "  next page"
 msgstr "næste side"
 
-#: dialogs.c:2899
+#: dialogs.c:2900
 msgid "FIRST TYPE DIRECTORY NAME HERE"
 msgstr ""
 
-#: dialogs.c:2900
+#: dialogs.c:2901
 msgid "TRY ANOTHER NAME"
 msgstr ""
 
@@ -2363,52 +2363,52 @@ msgstr "SPS"
 msgid "Reading game file (%d)"
 msgstr "Læser partifil (%d)"
 
-#: gtk/xboard.c:972 xaw/xboard.c:1072
+#: gtk/xboard.c:975 xaw/xboard.c:1072
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr "%s: kan ikke cd til CHESSDIR: "
 
-#: gtk/xboard.c:981 xaw/xboard.c:1081
+#: gtk/xboard.c:984 xaw/xboard.c:1081
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr "Åbning af filen \"%s\" mislykkedes\n"
 
-#: gtk/xboard.c:996 xaw/xboard.c:1090
+#: gtk/xboard.c:999 xaw/xboard.c:1090
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
 "Genoversæt med større BOARD_RANKS eller BOARD_FILES for at understøtte denne "
 "størrelse"
 
-#: gtk/xboard.c:1015 xaw/xboard.c:1122
+#: gtk/xboard.c:1018 xaw/xboard.c:1122
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr "%s: forkert boardSize-syntaks %s\n"
 
-#: gtk/xboard.c:1058 xaw/xboard.c:1161
+#: gtk/xboard.c:1061 xaw/xboard.c:1161
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr "%s: ikke genkendt boardSize-navn %s\n"
 
-#: gtk/xboard.c:1097 xaw/xboard.c:1198
+#: gtk/xboard.c:1100 xaw/xboard.c:1198
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr "%s: for få farver tilgængelige; prøver monokrom tilstand\n"
 
-#: gtk/xboard.c:1411 xaw/xboard.c:1490
+#: gtk/xboard.c:1414 xaw/xboard.c:1490
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr "Kan ikke lave skrifttypegruppe for %s.\n"
 
-#: gtk/xboard.c:1436 xaw/xboard.c:1513
+#: gtk/xboard.c:1439 xaw/xboard.c:1513
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr "%s: Ingen skrifttyper matcher mønstret %s\n"
 
-#: gtk/xboard.c:1888 xaw/xboard.c:2003
+#: gtk/xboard.c:1900 xaw/xboard.c:2003
 msgid "Can't open temp file"
 msgstr "Kan ikke åbne midlertidig fil"
 
-#: gtk/xboard.c:2371
+#: gtk/xboard.c:2383
 msgid "Failed to open file"
 msgstr "Åbning af fil mislykkedes"
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard 4.8.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2014-10-17 21:25-0700\n"
+"POT-Creation-Date: 2014-10-24 08:20-0700\n"
 "PO-Revision-Date: 2014-10-02 10:54+0200\n"
 "Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -20,37 +20,37 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.0\n"
 
-#: args.h:839
+#: args.h:840
 #, c-format
 msgid "%s in settings file\n"
 msgstr "%s in instellingenbestand\n"
 
-#: args.h:873
+#: args.h:874
 #, c-format
 msgid "Bad integer value %s"
 msgstr "Ongeldig geheel getal: %s"
 
-#: args.h:979 args.h:1240
+#: args.h:980 args.h:1241
 #, c-format
 msgid "Unrecognized argument %s"
 msgstr "Niet-herkend argument: %s"
 
-#: args.h:1010
+#: args.h:1011
 #, c-format
 msgid "No value provided for argument %s"
 msgstr "Geen waarde gegeven voor argument %s"
 
-#: args.h:1070
+#: args.h:1071
 #, c-format
 msgid "Incomplete \\ escape in value for %s"
 msgstr "Onvolledige \\-stuurcode in waarde voor %s"
 
-#: args.h:1181
+#: args.h:1182
 #, c-format
 msgid "Failed to open indirection file %s"
 msgstr "Kan indirectiebestand %s niet openen"
 
-#: args.h:1198
+#: args.h:1199
 #, c-format
 msgid "Unrecognized boolean argument value %s"
 msgstr "Niet-herkende booleaanse waarde: %s"
@@ -2173,7 +2173,7 @@ msgstr "Informatie"
 msgid "Note"
 msgstr "Notitie"
 
-#: dialogs.c:2370 dialogs.c:2655 dialogs.c:2658
+#: dialogs.c:2370 dialogs.c:2656 dialogs.c:2659
 msgid "White"
 msgstr "Wit"
 
@@ -2201,7 +2201,7 @@ msgstr "Leeg veld"
 msgid "Clear board"
 msgstr "Bord leegmaken"
 
-#: dialogs.c:2374 dialogs.c:2667 dialogs.c:2670
+#: dialogs.c:2374 dialogs.c:2668 dialogs.c:2671
 msgid "Black"
 msgstr "Zwart"
 
@@ -2254,47 +2254,47 @@ msgstr ">"
 msgid ">>"
 msgstr ">>"
 
-#: dialogs.c:2773
+#: dialogs.c:2774
 msgid "Directories:"
 msgstr "Mappen:"
 
-#: dialogs.c:2774
+#: dialogs.c:2775
 msgid "Files:"
 msgstr "Bestanden:"
 
-#: dialogs.c:2775
+#: dialogs.c:2776
 msgid "by name"
 msgstr "op naam"
 
-#: dialogs.c:2776
+#: dialogs.c:2777
 msgid "by type"
 msgstr "op type"
 
-#: dialogs.c:2779
+#: dialogs.c:2780
 msgid "Filename:"
 msgstr "Bestandsnaam:"
 
-#: dialogs.c:2780
+#: dialogs.c:2781
 msgid "New directory"
 msgstr "Nieuwe map"
 
-#: dialogs.c:2781
+#: dialogs.c:2782
 msgid "File type:"
 msgstr "Bestandstype:"
 
-#: dialogs.c:2856
+#: dialogs.c:2857
 msgid "Contents of"
 msgstr "Inhoud van"
 
-#: dialogs.c:2882
+#: dialogs.c:2883
 msgid "  next page"
 msgstr "  volgende pagina"
 
-#: dialogs.c:2899
+#: dialogs.c:2900
 msgid "FIRST TYPE DIRECTORY NAME HERE"
 msgstr "Typ hier eerst een mapnaam"
 
-#: dialogs.c:2900
+#: dialogs.c:2901
 msgid "TRY ANOTHER NAME"
 msgstr "Kies een andere naam"
 
@@ -2327,50 +2327,50 @@ msgstr "NPS"
 msgid "Reading game file (%d)"
 msgstr "Lezen van partijbestand (%d)"
 
-#: gtk/xboard.c:972 xaw/xboard.c:1072
+#: gtk/xboard.c:975 xaw/xboard.c:1072
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr "%s: Kan huidige map niet wijzigen naar CHESSDIR: "
 
-#: gtk/xboard.c:981 xaw/xboard.c:1081
+#: gtk/xboard.c:984 xaw/xboard.c:1081
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr "Kan bestand '%s' niet openen\n"
 
-#: gtk/xboard.c:996 xaw/xboard.c:1090
+#: gtk/xboard.c:999 xaw/xboard.c:1090
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
 
-#: gtk/xboard.c:1015 xaw/xboard.c:1122
+#: gtk/xboard.c:1018 xaw/xboard.c:1122
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr "%s: onjuiste syntax %s voor 'boardSize'\n"
 
-#: gtk/xboard.c:1058 xaw/xboard.c:1161
+#: gtk/xboard.c:1061 xaw/xboard.c:1161
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr "%s: onbekende naam %s voor 'boardSize'\n"
 
-#: gtk/xboard.c:1097 xaw/xboard.c:1198
+#: gtk/xboard.c:1100 xaw/xboard.c:1198
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr "%s: te weinig kleuren beschikbaar; monochroommodus wordt geprobeerd\n"
 
-#: gtk/xboard.c:1411 xaw/xboard.c:1490
+#: gtk/xboard.c:1414 xaw/xboard.c:1490
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr "Kan geen lettertypenset aanmaken voor %s.\n"
 
-#: gtk/xboard.c:1436 xaw/xboard.c:1513
+#: gtk/xboard.c:1439 xaw/xboard.c:1513
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr "%s: er zijn geen lettertypen die overeenkomen met patroon %s\n"
 
-#: gtk/xboard.c:1888 xaw/xboard.c:2003
+#: gtk/xboard.c:1900 xaw/xboard.c:2003
 msgid "Can't open temp file"
 msgstr "Kan tijdelijk bestand niet openen"
 
-#: gtk/xboard.c:2371
+#: gtk/xboard.c:2383
 msgid "Failed to open file"
 msgstr "Kan bestand niet openen"
 
