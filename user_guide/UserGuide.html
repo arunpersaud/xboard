@@ -20,7 +20,7 @@ The auxiliary windows are:
 </ul>
 <p>
 These auxiliary windows can be kept open all the time, and tiled so they are always in view,
-without disturbing the operation of the main (chess-boadrd) window.
+without disturbing the operation of the main (chess-board) window.
 In addition, there are a large number of dialog windows that grab the full attention of the user interface,
 so that the block operation of anything else.
 These are used for altering the settings of XBoard during the session.
@@ -87,11 +87,19 @@ You still have the possibility to select another piece, by clicking it:
 only a clicked empty square or opponent piece will be interpreted as a to-square.
 You can also deselect the selected piece by clicking it, in which case the highlight on it will go off.
 </p>
+<table cellpadding="10"><tr><td valign="top">
+<img src="../whats_new/4.7.0/Transpa.png">
+</td><td valign="top">
 <p>
 Keeping the Shift key down while entering a move gives it a special meaning:
 the move is in that case not added to the mainline of the game (possibly truncating it first),
 but as a variation, so that you can Revert to the original game later.
+In analysis mode only, keeping the Ctrl key down during a move does not play that move,
+but excludes it from the analysis (if the engine supports such a feature),
+or re-includes it if it was already excludedYou are alerted to this visually by the piece you dragged
+remaining on its original square, dragging away a semi-transparant 'ghost' of it only.
 </p>
+</td></tr></table>
 <p>
 <b>Variation board -</b> A right-click (anywhere) on the chess board will normally be taken as a request to 'walk' the latest principal variation indicated by an engine.
 This would normally be the one displayed in the message field.
@@ -118,6 +126,10 @@ In a click-click move any second click would be a to-square,
 even if it captures a piece of your own.
 You will also be able to move empty squares and even 'capture' pieces with them,
 or drag pieces off the board to get rid of them.
+Keeping the Ctrl key pressed during the move will not move the piece, but 'copy' it.
+I.e. it will both move the piece to the indicated destination,
+as well as leave one on the original square.
+</p><p>
 But the most important difference is the function of the right-click,
 which now is used to put a new piece on the square you clicked.
 Depending on the settings, this can either go through popping up a menu from which you select,
@@ -142,6 +154,10 @@ In situations where this could be meaningful, clicking the clock of the side tha
 but in analysis or for setting up a position, it can be useful and is allowed.)
 When setting up a position, clicking the clock of the side that already has the move
 will clear the board.
+Repeating such clicking cycles through a number of positions that could be useful starting points for setting up a position,
+such as one with only a single piece of every type,
+(which you then can duplicate through Ctrl-move),
+and finally will bring the position back that you erased.
 </p>
 <p>
 <b>Seek graph -</b> When logged in to an Internet Chess Server, the area where the board is normally drawn doubles as 'seek graph',
@@ -156,6 +172,11 @@ in this case right-clicking on a dot would 'push it to the back', so that dots b
 When you hover over a dot the message window will show you the details of the corresponding seek ad,
 and an exclamation point there will warn you there were dots hiding behind it.
 </p>
+<p>
+The shape and color of the dots already gives you some information on the kind of game:
+Red is rated, green is unrated, yellow is an ICS 'wild' game.
+Squares correspond to computer opponents, dots to human players.
+</p>
 </td></tr></table>
 <ul>
 <li>Detour Under-promotion (<a href="#tags-B1">General Options</a>) determines if a promotion menu will pop up on promotion moves</li>
@@ -168,6 +189,7 @@ and an exclamation point there will warn you there were dots hiding behind it.
 <li>One-click moving (<a href="#tags-B1">General Options</a>) can make a piece move by clicking only from- or to-square</li>
 <li>Show Target Squares (<a href="#tags-B1">General Options</a>) marks square where the selected / dragged piece can move to</li>
 <li>Hide Thinking from Human (<a href="#tags-B1">General Options</a>) determines if engine thinking is displayed in the message field</li>
+<li>Play moves of clicked PV (<a href="#tags-B1">General Options</a>) control adding moves from the engine-output window to the game</li>
 <li>-variations (command-line option) determines whether you can enter variations</li>
 <li>-showButtonBar (command-line option) determines whether the navigation buttons are present</li>
 </ul>
@@ -185,7 +207,7 @@ In this case XBoard will 'upgrade' this variation to become the main line of the
 You can then step through the variation to make it visible on the board.
 </p>
 <ul>
-<li>Auto-dispay comment (<a href="#tags-B10">Load Options</a>) causes automatic pop up whenever you encounter a commented move.</li>
+<li>Auto-dispay comment (<a href="#tags-B10">Load Options</a>) causes automatic pop up of this window whenever you encounter a commented move.</li>
 </ul>
 </td><td valign ="top">
 <img src="Comment.png">
@@ -202,7 +224,13 @@ These PV lines are diplayed in the engine-output window, preceded by the search 
 and the score assigned to them, (plus the less interesting time and number of positions searched).
 </p>
 <table cellpadding="20"><tr><td valign="top">
+<p>
 <img src="../whats_new/4.4.0/EngOutXB.png">
+</p><p>
+<img src="Columns.png">
+</p><p>
+<img src="../whats_new/4.7.0/ExcluHeader.png">
+</p>
 </td><td valign ="top">
 <p>
 Left clicks in the Engine Output window are reserved for the normal editing functions,
@@ -215,15 +243,34 @@ when you release the button, the position on the variation board becomes the new
 and all moves leading up to it will be added to the game.
 Because the variation walk will start in the position after the first PV move there,
 a static click on a PV would just make you play the suggested engine move.
+(As of XBoard 4.8, such automatic playing of PV moves happens only when you click the first move of the PV, or left of it.)
 In other modes, walking a PV will start at the end of the PV, and never change the game.
 When you release the button, you will simply jump back to the original game.
 When an engine produces a move, XBoard would force you back to the real game anyway, even without releasing the button.
 </p>
 <p>
+In XBoard 4.8 the columns with information in front of the PV can be opened and closed
+by right-clicking the column headers.
+(This does not affect lines that already have been printed,
+and so becomes only fully effective in the next search.)
+There are three new columns with information: selective search depth, tablebase hits and nodes/sec,
+which normally start closed.
+Not all engines give this information, although most UCI engines running under Polyglot 2.02 should
+(if the Polyglot ShowTbHits option is switched on!).
+</p>
+<p>
+<b>Multi-PV and move exclusion -</b>
 Some engines support a multi-PV mode, where they don't only give continuations for the best move,
 but also for second-best, or more.
 In this case XBoard will print a header line above the PV's containing the words 'fewer' and 'more',
 and when you right-click on those, the number of moves the engine calculates will be decreased or increased.
+Excluded moves will also be listed in a header line, with a minus sign in front of them.
+You can re-include them by right-clicking on them;
+they stay in the list, however (the minus turning into a plus sign),
+so that you can exclude them again by clicking.
+The list always contains a number of 'meta-moves', such as 'best' and 'tail',
+'best' standing for the first move of the current PV (which of course is always an included move).
+'Tail' stands for 'all moves not explicitly listed', so they can be included as well as excluded from the search in a single click.
 </p>
 </td></tr></table>
 
@@ -254,6 +301,13 @@ If two engines are playing, each side has its own histogram / line,
 distinguishable by their color.
 Clicking in the graph navigates you to the position corrsponding to the point where you clicked.
 </p>
+<p>
+In XBoard 4.8 and later the graph can be toggled to 'blunder mode' by right-clicking in it.
+This will show how much score was given up on each move,
+but is only meaningful if both sides were scored by the same engine (from analyzing the game).
+The score range (-1, 1) can be magnified on the vertical axis,
+and operating the mouse wheel inside the graph will adjust this 'zoom factor'.
+</p>
 <ul>
 <li>Zoom factor (<a href="#tags-B1">General Options</a>) set magnifiation of the {-1, 1} score range</li>
 <li>-evalThreshold (command-line option) minimum score to be considered different from 0</li>
@@ -281,10 +335,14 @@ When you do that, only those games containing the position currently on the boar
 (or enough like it, according to the matching criterea you specified in the Load Game Options dialog,
 reachable through the 'Thresholds' button)
 will remain in the list, in that case.
+'Find position' will always look through the entire PGN file (respecting the text-filter criteria),
+but a similar 'Narrow' button would only consider the games already selected in a previous operation.
 </p>
 <ul>
 <li>(<a href="#tags-B11">Game List Options</a>) selects the PGN tags included in the header</li>
 <li>(<a href="#tags-B10">Load Options</a>) can set all kind of filter and position-search criteria</li>
+<li>Save Selected Games in the File menu creates a new multi-game PGN file with all currently selected games</li>
+<li>Save Games as Book in the File menu turns the selected games into a (Polyglot) opening book</li>
 </ul>
 </td><td valign ="top">
 <img src="NewGameList.png">
@@ -301,16 +359,26 @@ To save any changes brought about by editing, you have to press a button at the 
 <li>Auto-display Tags (<a href="#tags-B10">Load Options</a>) cause automatic popup on loading a game</li>
 </ul>
 
+<table cellpadding="10"><tr><td>
+<img src="../whats_new/4.6.0/EditBook.png">
+</td><td>
 <h3><a name="tag-A1">Edit book</h3>
 <p>
-The Tags window is a text window that supports normal editing functions,
-but otherise has no special functions.
+The Edit Book window is a text window that supports normal editing functions, similar to the Tags window.
 It displays moves available for the current position (displayed on the board) in the currently installed opening book.
 To save any changes brought about by editing, you have to press a button at the bottom of the window.
+</p>
+<p>
+As of XBoard 4.8, the tabulated book moves can be played by right-clicking them.
+There also is a button 'add next move';
+when you click that, the next move you perform on the board will be added to the book with weight 1,
+without being actually made (so that you stay in the same position,
+and get an opportunity to add more moves, and edit their weights).
 </p>
 <ul>
 <li>Polyglot Book (<a href="#tags-B4">Common Engine Options</a>) determines which book file we edit</li>
 </ul>
+</td></tr></table>
 
 <h3>Menus</h3>
 <p>
@@ -354,10 +422,14 @@ Edit Position allows you to set up a position.
 <p>
 Analysis mode is similar to Edit Game mode in that the user plays both sides,
 but now the engine is thinking, and you can follow its thoughts about the current position in the engine-output window.
+Selecting Analyze mode again when it is already on toggles analysis by the second engine on or off.
 With Analyze Game, you will make XBoard step through the currently loaded game automatically,
 while the engine is analyzing every position in it.
 The results of this analysis are then added to the moves as comments
 (i.e. score / depth as comments, as well as the PV indicated by the engine in PGN variation format).
+Normally analysis stops when the end of the game is reached.
+When you load a game when analysis is already on, however, all remaining games in the PGN file are analyzed.
+(And when auto-saving of games is on, the annotated games will all be saved in another file.)
 </p>
 <p>
 ICS client is only available when you are already connected to an Internet Chess Server,
@@ -365,6 +437,9 @@ and allows you to continue interacting with it after you have been switching to 
 (Such as loading a game from a file, in order to upload it to the ICS for examining,
 or editing a game with comments in order to save it.)
 </p>
+<ul>
+<li>'Auto-play speed' in the <a href="#tags-B10">Load Options</a> dialog sets the analysis time per move in Analyze Game</li>
+</ul>
 
 <table cellpadding="20"><tr><td valign="top">
 <p>
@@ -399,12 +474,12 @@ You can suppress popup of several popups (e.g. drop menu in favor of PV walking)
 </p>
 <p>
 Test Legality will already make XBoard refuse entry of illegal moves;
-when you switch it off, you can enter them, but an ICS or engine would still rfuse them,
+when you switch it off, you can enter them, but an ICS or engine would still refuse them,
 and XBoard would then take the move back.
 Switching it off can be useful, though, when you use XBoard for a chess variant it does not know the rules of.
 In that case the engine will be the final authority on what moves the user can enter.
 Some other options won't work when legality testing is off:
-XBoard won't be able to adjudicate checkmates and stalemates, 'Show Target Squares' where a pickedup piece can move to,
+XBoard won't be able to adjudicate checkmates and stalemates, 'Show Target Squares' where a picked-up piece can move to,
 or use 'One-click Moving' (see below).
 </p>
 <p>
@@ -442,24 +517,24 @@ If you specify a file for this, all games will be appended to the file.
 (XBoard never over-writes game or position files, but always appends.)
 If not, it will prompt you for a file name every time it saves,
 proposing a name derived from the players.
-It is recommended to alays save as PGN.
+It is recommended to always save as PGN.
 Other thing you can set here are the text in the Event tag,
 whether score & depth of engine moves will be saved as comment to the moves,
 whether the score when the engine came out of book will be saved as a PGN tag,
-and whether tourney games will get s Number tag with a sequence number.
+and whether tourney games will get a Number tag with a sequence number.
 </p>
 </td></tr></table>
 
 <table cellpadding="20"><tr><td valign="top">
 <h3><a name="tags-B3">Adjudication options</h3>
 <p>
-XBoard can recognize checkmates and stalmates,
+XBoard can recognize checkmates and stalemates,
 and end games when they occur without waiting for the engine to claim it.
 It can thus also check if engines claim these events unjustly, and forfeit them for that.
 Positions without mating potential can be recognized in the more common variants,
 and be declared draw instantly.
 Some material combinations that would only allow helpmates (such as KBKN) can also be adjudicated draw after a short delay,
-under contro of the 'Trivial Draws' option
+under control of the 'Trivial Draws' option
 </p>
 <p>
 You can also set the number of repeats and reversible moves after which a draw should be declared,
@@ -520,6 +595,8 @@ If the engine is already 'installed', i.e. present in the list maintained in XBo
 you can simply select it from the drop-down list at the top of the dialog.
 You then only have to select if you want to load it as first or second engine,
 and can press OK.
+(As of XBoard 4.7 the drop-down has been replaced by a listbox in which you just have to double-click the name,
+and there are separate dialogs for the first and second engine.)
 The rest of the dialog is then not used.
 </p>
 <p>
@@ -530,17 +607,17 @@ like '-xboard', or a specification of the hash size.
 You must tick a box if the engine is UCI.
 By default it will be assumed you want to remember this new engine in the engine list,
 so that next time you can select it directly from the drop-down list.
-If you don't want this, you can untick the 'Add to list' chackbox.
+If you don't want this, you can untick the 'Add to list' checkbox.
 </p>
 <p>
-You can also specify a 'nickname', whih is the name under which it will appear in the drop-down list,
+You can also specify a 'nickname', which is the name under which it will appear in the drop-down list,
 if you are not satisfied with the name of the executable.
 (Some engines have horribly cryptic names for their command,
 and you might want to install versions of the same engine with different settings,
 and use nicknames to keep them apart.)
 Other checkboxes allow you to determine if this engine should request using XBoard's opening book,
-if it is an obsolete engne using version 1 of the protocol
-(whih would otherwise take many seconds to load),
+if it is an obsolete engine using version 1 of the protocol
+(which would otherwise take many seconds to load),
 and if the engine should be installed to always play the currently active variant
 (this is only usful for engines that do not play normal chess).
 </p>
@@ -554,7 +631,7 @@ and if the engine should be installed to always play the currently active varian
 <h3><a name="tags-B6">Board options</h3>
 <p>
 In the View menu there is the Board Options dialog to make you configure the look of the board.
-There ae two modes for rendering board squares: through an externally given (pixmap) image file, or evenly colored.
+There are two modes for rendering board squares: through an externally given (pixmap) image file, or evenly colored.
 In the latter case you can select the colors with the 'color pickers' at the top of the dialog.
 In XBoard colors are indicated by hexadedecimal numbers for their Red, Green and Blue value.
 This cryptic notation is displayed in a text-edit, and if you understand the coding system, 
@@ -576,10 +653,17 @@ The width of the highlight lines can be hand-tuned with the 'Line Gap' option.
 </p>
 <p>
 You can also specify external pieces, as bitmaps or pixmaps.
+(XBoard 4.7 and later only support SVG or PNG images, set through the same 'piece-image directory'.)
 A complete set of pieces of the current board size would have to be contained in the specified diretories.
 The other options speak for themselves.
 </p>
 </td></tr></table>
+<p>
+<b>Themes -</b> As of XBoard 4.8 the entire combination of graphical settings can be saved as a 'theme':
+just enter a name for the theme in the (otherwise empty) text edit for it, and press 'OK'.
+This name will then be displayed in the listbox left in the dialog (together with the names of already existing themes),
+where double-clicking it will recall the corresponding settings.
+</p>
 
 <h3><a name="tags-B7">Sound options</h3>
 <table cellpadding="20"><tr><td valign="top">
@@ -588,11 +672,11 @@ XBoard cannot generate sounds by itself, but can invoke an external sound player
 These sounds can be coupled to certain events, like your opponent making a move,
 the game ending in a win, loss or draw, etc.
 Many of the events can only ocur when you aue XBoard to connect to an Internet Chess Server,
-such as someone challeging you for a game, others sending you a 'tell' message, a 'shout' being broadasted on the server.
-For each of the events there is a drop-down list from which you can selet the sound you want to hear when it occurs.
+such as someone challeging you for a game, others sending you a 'tell' message, a 'shout' being broadcasted on the server.
+For each of the events there is a drop-down list from which you can select the sound you want to hear when it occurs.
 Apart from the predefined sounds that come with XBoard,
 you can supply your own sound files:
-yust select one in the text edit at the top,
+just select one in the text edit at the top,
 and choose 'Above WAV File' from the drop-down list.
 You can also select your preferred sound-player command, and the directory where the predefined sounds are stored.
 </p>
@@ -608,7 +692,7 @@ and now can send with a single click of the mouse!
 </p>
 <p>
 The button texts, and commands to send are all specified through the multi-line option -icsMenu,
-which is stored in the settings file (~/xboardrc).
+which is stored in the settings file (~/.xboardrc).
 The easiest way to change it is probably editing this file (sorry about that...).
 Buttons are described by "buttonText;command;" pairs, where the command can contain linefeeds
 (i.e. be multiple ICS commands).
@@ -631,7 +715,7 @@ They consist of a comma-separated triple for font color, background color and ??
 To activate this, the Colorize option has to be ticked.
 </p>
 <p>
-You can also switch premoving (i.e. entering your move in advance, whil the opponent is still thinking) on or off,
+You can also switch premoving (i.e. entering your move in advance, while the opponent is still thinking) on or off,
 and specify premoves for the first move of the game.
 An Alarm can be set to sound when the time left on your clock drops below a certain value.
 (Use the Sound Options dialog to pick the sound!)
@@ -653,8 +737,9 @@ At the same time it will cause such incoming kibitzed thinking output to be dive
 <p>
 Seek graph controls if a left-click on the board while idle will bring up a graph of players seeking a game.
 When this option is on, Auto-Refresh Seek Graph controls if it is automatically updated,
-(works only on FIC and ICS, and consumes a lot of bandwidth),
+(works only on FICS and ICS, and consumes a lot of bandwidth),
 or whether you have to right-click the graph (in an empty part) for that.
+(This setting only takes effect after starting a new ICS session, as the ICS does not allow them to be changed 'on the fly'.)
 The color of the dots in the seek graph codes for rated / unrated / wild,
 while the shape (circle / square) encodes for human / computer.
 </p>
@@ -663,7 +748,7 @@ The option Background Observe suppresses display of any boards of observed games
 The latest such received board can then be peeked at by right-clicking on the board, however.
 In combination with this, you can use the experimental option Dual Board to see such background-observed games
 on a separate board all the time.
-Such observed games arenot recorded by XBoard though.
+Such observed games are not recorded by XBoard though.
 (I.e. you cannot save them on file afterwards, but you can of course always fetch them again from the ICS later, 
 and save them then.)
 </p>
@@ -739,7 +824,7 @@ The pause between matches is important for engines that do not support 'ping',
 which have the nasty habit of sometimes producing a move for the previous game when the next game has already started,
 (because the opponent unexpectedly resigned),
 without XBoard being able to detect that.
-Th only remedy is to wait long enough for such engines to finish their search and produce the move before the next game starts.
+The only remedy is to wait long enough for such engines to finish their search and produce the move before the next game starts.
 The file for saving the games can be set here, as well as from the Save Options dialog.
 The other parameters, in the upper half of the dialog are only important for tourneys with more than two engines
 (or at least, other than the two currently loaded engines),
@@ -763,3 +848,29 @@ in the order they appear in the list box.
 <img src="../whats_new/4.6.0/Tourney.png">
 </td></tr></table>
 
+<h3><a name="tag-A7">ICS Interaction / Chat window</h3>
+<p>
+When connected to an Internet Chess Server,
+the communication with the latter can be done through the terminal from which XBoard was started.
+The GTK build of XBoard also has a dedicated window for thism which can be opened from the View menu.
+It shows the ICS output in an upper pane,
+and at the bottom has a text entry where you can type commands to the ICS.
+Right-clicking in the upper pane pops up the <a href="#tags-B8">ICS Text Menu</a>,
+which then is aware of the word that you clicked, and can use it as the $name variable in the command you select from it.
+For instance to 'challenge' or 'finger' a particular person who 'shouted' something in the window.
+</p><p>
+You can also open a chat with such a person, through an 'Open Chat' entry in the ICS Text Menu,
+or by pressing one of the 'New Chat' at the top of the ICS Interaction window.
+(In the latter case you would have to type the person't name, though.)
+This spilts the output pane in two, the lower half now reserved for messages from that person
+(the 'Chat Partner'), which can also be a broadcast channel (numbered, or 'shouts').
+Everything you type in the line at the bottom would then not be sent to the ICS as a command,
+but to the chat partner as a 'tell' message (without you having to type the tell or the person's name).
+You can conduct up to 5 such chats simultaneously,
+and switch between them with the Tab key,
+or switch back to giving ICS commands through the Esc key (closing the lower pane).
+Of course the chat switching can also be done using the buttons provided for it on the window,
+which will carry the name of the Chat Partner as soon as a chat gets assigned to one.
+</p>
+<img src="../whats_new/4.8.0/NewICS.png">
+<img src="../whats_new/4.8.0/NewChat.png">
