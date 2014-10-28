@@ -1461,7 +1461,7 @@ SecondSettingsProc ()
 //----------------------------------------------- Load Engine --------------------------------------
 
 char *engineDir, *engineLine, *nickName, *params;
-Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick, secondEng;
+Boolean isUCI, isUSI, hasBook, storeVariant, v1, addToList, useNick, secondEng;
 
 static void EngSel P((int n, int sel));
 static int InstallOK P((int n));
@@ -1477,6 +1477,7 @@ static Option installOptions[] = {
 {   0,  0,    0, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine Command:") },
 {   0,  LR,   0, NULL, NULL, NULL, NULL, Label, N_("(Directory will be derived from engine path when empty)") },
 {   0,  0,    0, NULL, (void*) &isUCI, NULL, NULL, CheckBox, N_("UCI") },
+{   0,  0,    0, NULL, (void*) &isUSI, NULL, NULL, CheckBox, N_("USI/UCCI (uses specified -uxiAdapter)") },
 {   0,  0,    0, NULL, (void*) &v1, NULL, NULL, CheckBox, N_("WB protocol v1 (do not wait for engine features)") },
 {   0,  0,    0, NULL, (void*) &hasBook, NULL, NULL, CheckBox, N_("Must not use GUI book") },
 {   0,  0,    0, NULL, (void*) &addToList, NULL, NULL, CheckBox, N_("Add this engine to the list") },
@@ -1491,6 +1492,10 @@ InstallOK (int n)
 	ASSIGN(engineLine, engineList[n]);
     }
     PopDown(TransientDlg); // early popdown, to allow FreezeUI to instate grab
+    if(isUSI) {
+	isUCI = 2; // kludge to pass isUSI to Load()
+	if(!*appData.ucciAdapter) { ASSIGN(appData.ucciAdapter, "usi2wb -%variant \"%fcp\"\"%fd\""); } // make sure -uxiAdapter is defined
+    }
     if(!secondEng) Load(&first, 0); else Load(&second, 1);
     return FALSE; // no double PopDown!
 }
@@ -1516,7 +1521,7 @@ EngSel (int n, int sel)
 static void
 LoadEngineProc (int engineNr, char *title)
 {
-   isUCI = storeVariant = v1 = useNick = False; addToList = hasBook = True; // defaults
+   isUCI = isUSI = storeVariant = v1 = useNick = False; addToList = hasBook = True; // defaults
    secondEng = engineNr;
    if(engineLine)   free(engineLine);   engineLine = strdup("");
    if(engineDir)    free(engineDir);    engineDir = strdup(".");
