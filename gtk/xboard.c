@@ -890,6 +890,7 @@ main (int argc, char **argv)
 	snprintf(svgDir, MSG_SIZ, "%s/themes/default", dataDir);
 	suppress = (argc == 1 || argc > 1 && argv[1][00] != '-'); // OSX sends signal even if name was already argv[1]!
 	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
+	g_signal_connect(theApp, "NSApplicationWillTerminate", G_CALLBACK(ExitEvent), NULL);
 	// we must call application ready before we can get the signal,
 	// and supply a (dummy) menu bar before that, to avoid problems with dual apples in it
 	gtkosx_application_set_menu_bar(theApp, GTK_MENU_SHELL(gtk_menu_bar_new()));
