@@ -267,6 +267,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
     char buf[80], *p = desc, *atom = NULL;
     int mine, his, dir, bit, occup, i, promoRank = -1;
     ChessMove promo= NormalMove; ChessSquare pc = board[r][f];
+    if(pc == DarkSquare) return; // this is not a piece, but a 'hole' in the board
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
     if(pc == WhitePawn || pc == WhiteLance) promo = WhitePromotion, promoRank = BOARD_HEIGHT-1; else
     if(pc == BlackPawn || pc == BlackLance) promo = BlackPromotion, promoRank = 0;
@@ -394,6 +395,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(y < 0 || y >= BOARD_HEIGHT) break; // vertically off-board: always done
 		if(x <  BOARD_LEFT) { if(mode & 128) x += BOARD_RGHT - BOARD_LEFT, loop++; else break; }
 		if(x >= BOARD_RGHT) { if(mode & 128) x -= BOARD_RGHT - BOARD_LEFT, loop++; else break; }
+		if(board[y][x] == DarkSquare) break;  // black squares are supposed to be off board
 		if(j) { j--; continue; }              // skip irrespective of occupation
 		if(!jump    && board[y - vy + vy/2][x - vx + vx/2] != EmptySquare) break; // blocked
 		if(jump > 1 && board[y - vy + vy/2][x - vx + vx/2] == EmptySquare) break; // no hop
