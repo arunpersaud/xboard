@@ -9889,7 +9889,7 @@ ParseGameHistory (char *game)
 void
 ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 {
-  ChessSquare captured = board[toY][toX], piece, king; int p, oldEP = EP_NONE, berolina = 0;
+  ChessSquare captured = board[toY][toX], piece, king; int p, rookX, oldEP = EP_NONE, berolina = 0;
   int promoRank = gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand || gameInfo.variant == VariantChuChess ? 3 : 1;
 
     /* [HGM] compute & store e.p. status and castling rights for new position */
@@ -10010,15 +10010,17 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
         && toY == fromY && toX > fromX+1) {
 	board[fromY][fromX] = EmptySquare;
         board[toY][toX] = king;
-        board[toY][toX-1] = board[fromY][BOARD_RGHT-1];
-        board[fromY][BOARD_RGHT-1] = EmptySquare;
+	for(rookX=BOARD_RGHT-1; board[toY][rookX] == DarkSquare && rookX > toX + 1; rookX--);
+        board[toY][toX-1] = board[fromY][rookX];
+        board[fromY][rookX] = EmptySquare;
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
                && toY == fromY && toX < fromX-1) {
 	board[fromY][fromX] = EmptySquare;
         board[toY][toX] = king;
-        board[toY][toX+1] = board[fromY][BOARD_LEFT];
-        board[fromY][BOARD_LEFT] = EmptySquare;
+	for(rookX=BOARD_LEFT; board[toY][rookX] == DarkSquare && rookX < toX - 1; rookX++);
+        board[toY][toX+1] = board[fromY][rookX];
+        board[fromY][rookX] = EmptySquare;
     } else if ((board[fromY][fromX] == WhitePawn && gameInfo.variant != VariantXiangqi ||
                 board[fromY][fromX] == WhiteLance && gameInfo.variant != VariantSuper && gameInfo.variant != VariantChu)
                && toY >= BOARD_HEIGHT-promoRank && promoChar // defaulting to Q is done elsewhere
@@ -10057,15 +10059,17 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
                && toY == fromY && toX > fromX+1) {
 	board[fromY][fromX] = EmptySquare;
         board[toY][toX] = king;
-        board[toY][toX-1] = board[fromY][BOARD_RGHT-1];
-        board[fromY][BOARD_RGHT-1] = EmptySquare;
+	for(rookX=BOARD_RGHT-1; board[toY][rookX] == DarkSquare && rookX > toX + 1; rookX--);
+        board[toY][toX-1] = board[fromY][rookX];
+        board[fromY][rookX] = EmptySquare;
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
                && toY == fromY && toX < fromX-1) {
 	board[fromY][fromX] = EmptySquare;
         board[toY][toX] = king;
-        board[toY][toX+1] = board[fromY][BOARD_LEFT];
-        board[fromY][BOARD_LEFT] = EmptySquare;
+	for(rookX=BOARD_LEFT; board[toY][rookX] == DarkSquare && rookX < toX - 1; rookX++);
+        board[toY][toX+1] = board[fromY][rookX];
+        board[fromY][rookX] = EmptySquare;
     } else if (fromY == 7 && fromX == 3
 	       && board[fromY][fromX] == BlackKing
 	       && toY == 7 && toX == 5) {
