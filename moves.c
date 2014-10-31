@@ -432,9 +432,9 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(mode & 1024) {            // castling
 		    i = 2;                   // kludge to elongate move indefinitely
 		    if(occup == 4) continue; // skip empty squares
-		    if(x == BOARD_LEFT   && board[y][x] == initialPosition[y][x]) // reached initial corner piece
+		    if((x == BOARD_LEFT || vx < 0 && board[y][x-1] == DarkSquare)  && board[y][x] == initialPosition[y][x]) // reached initial corner piece
 			cb(board, flags, mine == 1 ? WhiteQueenSideCastle : BlackQueenSideCastle, r, f, y, f - expo, cl);
-		    if(x == BOARD_RGHT-1 && board[y][x] == initialPosition[y][x])
+		    if((x == BOARD_RGHT-1 || vx > 0 && board[y][x+1] == DarkSquare) && board[y][x] == initialPosition[y][x])
 			cb(board, flags, mine == 1 ? WhiteKingSideCastle : BlackKingSideCastle, r, f, y, f + expo, cl);
 		    break;
 		}
