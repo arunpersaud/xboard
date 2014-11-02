@@ -9890,14 +9890,14 @@ ParseGameHistory (char *game)
 void
 ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 {
-  ChessSquare captured = board[toY][toX], piece, king, killed; int p, rookX, oldEP = EP_NONE, berolina = 0;
+  ChessSquare captured = board[toY][toX], piece, pawn, king, killed; int p, rookX, oldEP, epRank, berolina = 0;
   int promoRank = gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand || gameInfo.variant == VariantChuChess ? 3 : 1;
 
     /* [HGM] compute & store e.p. status and castling rights for new position */
     /* we can always do that 'in place', now pointers to these rights are passed to ApplyMove */
 
       if(gameInfo.variant == VariantBerolina) berolina = EP_BEROLIN_A;
-      oldEP = (signed char)board[EP_STATUS];
+      oldEP = (signed char)board[EP_FILE]; epRank = board[EP_RANK];
       board[EP_STATUS] = EP_NONE;
       board[EP_FILE] = board[EP_RANK] = 100;
 
@@ -9927,14 +9927,14 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
            }
       }
 
-      piece = board[fromY][fromX];
-      if( piece == WhiteLance || piece == BlackLance ) {
+      pawn = board[fromY][fromX];
+      if( pawn == WhiteLance || pawn == BlackLance ) {
            if( gameInfo.variant != VariantSuper && gameInfo.variant != VariantChu ) {
                if(gameInfo.variant == VariantSpartan) board[EP_STATUS] = EP_PAWN_MOVE; // in Spartan no e.p. rights must be set
-               else piece += WhiteLance - WhitePawn; // Lance is Pawn-like in most variants, so let Pawn code treat it by this kludge
+               else pawn += WhitePawn - WhiteLance; // Lance is Pawn-like in most variants, so let Pawn code treat it by this kludge
            }
       }
-      if( piece == WhitePawn ) {
+      if( pawn == WhitePawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
            if( toY-fromY>=2) {
@@ -9947,7 +9947,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	              board[EP_STATUS] = toX;
 	   }
       } else
-      if( piece == BlackPawn ) {
+      if( pawn == BlackPawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
            if( toY-fromY<= -2) {
@@ -10046,11 +10046,11 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	       && (toX != fromX)
                && gameInfo.variant != VariantXiangqi
                && gameInfo.variant != VariantBerolina
-	       && (board[fromY][fromX] == WhitePawn)
+	       && (pawn == WhitePawn)
 	       && (board[toY][toX] == EmptySquare)) {
 	board[fromY][fromX] = EmptySquare;
-	board[toY][toX] = WhitePawn;
-	if(toY == board[EP_RANK] - 128 + 1)
+	board[toY][toX] = piece;
+	if(toY == epRank - 128 + 1)
 	    captured = board[toY - 2][toX], board[toY - 2][toX] = EmptySquare;
 	else
 	    captured = board[toY - 1][toX], board[toY - 1][toX] = EmptySquare;
@@ -10111,11 +10111,11 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	       && (toX != fromX)
                && gameInfo.variant != VariantXiangqi
                && gameInfo.variant != VariantBerolina
-	       && (board[fromY][fromX] == BlackPawn)
+	       && (pawn == BlackPawn)
 	       && (board[toY][toX] == EmptySquare)) {
 	board[fromY][fromX] = EmptySquare;
-	board[toY][toX] = BlackPawn;
-	if(toY == board[EP_RANK] - 128 - 1)
+	board[toY][toX] = piece;
+	if(toY == epRank - 128 - 1)
 	    captured = board[toY + 2][toX], board[toY + 2][toX] = EmptySquare;
 	else
 	    captured = board[toY + 1][toX], board[toY + 1][toX] = EmptySquare;
