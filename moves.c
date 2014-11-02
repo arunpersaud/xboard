@@ -1698,7 +1698,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    board[rf][ft] = captured;
 	    board[rt][ft] = EmptySquare;
 	} else {
-	    if(saveKill >= 0) board[killY][killX] = trampled, killX = saveKill;
+	    if(saveKill >= 0) board[killY][killX = saveKill] = trampled;
 	    board[rt][ft] = captured;
 	}
 	board[EP_STATUS] = ep;
