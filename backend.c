@@ -9925,11 +9925,14 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
            }
       }
 
-      if( board[fromY][fromX] == WhiteLance || board[fromY][fromX] == BlackLance ) {
-           if( gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi )
-               board[EP_STATUS] = EP_PAWN_MOVE; // Lance is Pawn-like in most variants
-      } else
-      if( board[fromY][fromX] == WhitePawn ) {
+      piece = board[fromY][fromX];
+      if( piece == WhiteLance || piece == BlackLance ) {
+           if( gameInfo.variant != VariantSuper && gameInfo.variant != VariantChu ) {
+               if(gameInfo.variant == VariantSpartan) board[EP_STATUS] = EP_PAWN_MOVE; // in Spartan no e.p. rights must be set
+               else piece += WhiteLance - WhitePawn; // Lance is Pawn-like in most variants, so let Pawn code treat it by this kludge
+           }
+      }
+      if( piece == WhitePawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
            if( toY-fromY>=2) {
@@ -9942,7 +9945,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	              board[EP_STATUS] = toX;
 	   }
       } else
-      if( board[fromY][fromX] == BlackPawn ) {
+      if( piece == BlackPawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
            if( toY-fromY<= -2) {
