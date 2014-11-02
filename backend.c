@@ -9932,8 +9932,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
       if( board[fromY][fromX] == WhitePawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
-           if( toY-fromY==2) {
-               board[EP_FILE] = (fromX + toX)/2; board[EP_RANK] = (fromY + toY)/2;
+           if( toY-fromY>=2) {
+               board[EP_FILE] = (fromX + toX)/2; board[EP_RANK] = toY - 1 | 128*(toY - fromY > 2);
                if(toX>BOARD_LEFT   && board[toY][toX-1] == BlackPawn &&
 			gameInfo.variant != VariantBerolina || toX < fromX)
 	              board[EP_STATUS] = toX | berolina;
@@ -9945,8 +9945,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
       if( board[fromY][fromX] == BlackPawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
-           if( toY-fromY== -2) {
-               board[EP_FILE] = (fromX + toX)/2; board[EP_RANK] = (fromY + toY)/2;
+           if( toY-fromY<= -2) {
+               board[EP_FILE] = (fromX + toX)/2; board[EP_RANK] = toY + 1 | 128*(fromY - toY > 2);
                if(toX>BOARD_LEFT   && board[toY][toX-1] == WhitePawn &&
 			gameInfo.variant != VariantBerolina || toX < fromX)
 	              board[EP_STATUS] = toX | berolina;
@@ -10039,8 +10039,10 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	       && (board[toY][toX] == EmptySquare)) {
 	board[fromY][fromX] = EmptySquare;
 	board[toY][toX] = WhitePawn;
-	captured = board[toY - 1][toX];
-	board[toY - 1][toX] = EmptySquare;
+	if(toY == board[EP_RANK] - 128 + 1)
+	    captured = board[toY - 2][toX], board[toY - 2][toX] = EmptySquare;
+	else
+	    captured = board[toY - 1][toX], board[toY - 1][toX] = EmptySquare;
     } else if ((fromY == BOARD_HEIGHT-4)
 	       && (toX == fromX)
                && gameInfo.variant == VariantBerolina
@@ -10102,8 +10104,10 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	       && (board[toY][toX] == EmptySquare)) {
 	board[fromY][fromX] = EmptySquare;
 	board[toY][toX] = BlackPawn;
-	captured = board[toY + 1][toX];
-	board[toY + 1][toX] = EmptySquare;
+	if(toY == board[EP_RANK] - 128 - 1)
+	    captured = board[toY + 2][toX], board[toY + 2][toX] = EmptySquare;
+	else
+	    captured = board[toY + 1][toX], board[toY + 1][toX] = EmptySquare;
     } else if ((fromY == 3)
 	       && (toX == fromX)
                && gameInfo.variant == VariantBerolina

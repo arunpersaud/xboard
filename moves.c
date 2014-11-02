@@ -265,7 +265,7 @@ void
 MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle, char *desc, MoveCallback cb, VOIDSTAR cl)
 {
     char buf[80], *p = desc, *atom = NULL;
-    int mine, his, dir, bit, occup, i, promoRank = -1;
+    int mine, his, dir, bit, occup, i, ep, promoRank = -1;
     ChessMove promo= NormalMove; ChessSquare pc = board[r][f];
     if(pc == DarkSquare) return; // this is not a piece, but a 'hole' in the board
     if(flags & F_WHITE_ON_MOVE) his = 2, mine = 1; else his = 1, mine = 2;
@@ -426,7 +426,8 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		  continue;
 		}
 		if(hop & 32+64) { if(occup != 4) { if(hop & 64 && i != 1) i = 2; hop &= 31; } continue; } // hopper
-		if(mode & 8 && y == board[EP_RANK] && occup == 4 && board[EP_FILE] == x) { // to e.p. square
+		ep = board[EP_RANK];
+		if(mode & 8 && occup == 4 && board[EP_FILE] == x && (y == (ep & 127) || y - vy == ep - 128)) { // to e.p. square (or 2nd e.p. square)
 		    cb(board, flags, mine == 1 ? WhiteCapturesEnPassant : BlackCapturesEnPassant, r, f, y, x, cl);
 		}
 		if(mode & 1024) {            // castling
