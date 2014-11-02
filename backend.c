@@ -7501,6 +7501,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	toP = boards[currentMove][y][x];
 	frc = appData.fischerCastling || gameInfo.variant == VariantSChess;
  	if( (killX < 0 || x != fromX || y != fromY) && // [HGM] lion: do not interpret igui as deselect!
+	    legal[y][x] == 0 && // if engine told we can move to here, do it even if own piece
 	   ((WhitePawn <= fromP && fromP <= WhiteKing &&
 	     WhitePawn <= toP && toP <= WhiteKing &&
 	     !(fromP == WhiteKing && toP == WhiteRook && frc) &&
@@ -9889,7 +9890,7 @@ ParseGameHistory (char *game)
 void
 ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 {
-  ChessSquare captured = board[toY][toX], piece, king; int p, rookX, oldEP = EP_NONE, berolina = 0;
+  ChessSquare captured = board[toY][toX], piece, king, killed; int p, rookX, oldEP = EP_NONE, berolina = 0;
   int promoRank = gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand || gameInfo.variant == VariantChuChess ? 3 : 1;
 
     /* [HGM] compute & store e.p. status and castling rights for new position */
@@ -9913,6 +9914,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 
       if( killX >= 0 && killY >= 0 ) // [HGM] lion: Lion trampled over something
 //           victim = board[killY][killX],
+           killed = board[killY][killX],
            board[killY][killX] = EmptySquare,
            board[EP_STATUS] = EP_CAPTURE;
 
@@ -9984,6 +9986,12 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
      if(gameInfo.variant == VariantKnightmate)
          king += (int) WhiteUnicorn - (int) WhiteKing;
 
+    if(piece != WhiteKing && piece != BlackKing && pieceDesc[piece] && killX >= 0 && strchr(pieceDesc[piece], 'O') // Betza castling-enabled
+       && (piece < BlackPawn ? killed < BlackPawn : killed >= BlackPawn)) {    // and captures own
+	board[toY][toX] = piece; board[fromY][fromX] = EmptySquare;
+	board[toY][toX + (killX < fromX ? 1 : -1)] = killed;
+        board[EP_STATUS] = EP_NONE; // capture was fake!
+    } else
     /* Code added by Tord: */
     /* FRC castling assumed when king captures friendly rook. [HGM] or RxK for S-Chess */
     if (board[fromY][fromX] == WhiteKing && board[toY][toX] == WhiteRook ||
