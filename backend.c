@@ -15121,7 +15121,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
                                     AAA + x, ONE + y);
 			    SendToICS(buf);
 			}
-		    } else {
+		    } else if(boards[0][y][x] != DarkSquare) {
 			if(boards[0][y][x] != p) nonEmpty++;
 			boards[0][y][x] = p;
 		    }
