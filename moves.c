@@ -435,15 +435,15 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		    if(occup == 4) continue; // skip empty squares
 		    if((x == BOARD_LEFT || vx < 0 && board[y][x-1] == DarkSquare)  && board[y][x] == initialPosition[y][x]) { // reached initial corner piece
 		      if(pc != WhiteKing && pc != BlackKing) { // non-royal castling (to be entered as two-leg move via 'Rook')
-			if(killX < 0) cb(board, flags, FirstLeg,   r, f, y, x, cl);
-			legNr <<= 1;  cb(board, flags, NormalMove, r, f, y, f - expo, cl); legNr >>= 1;
+			if(killX < 0) cb(board, flags, FirstLeg,   r, f, y, x, cl); if(killX < f)
+			legNr <<= 1,  cb(board, flags, NormalMove, r, f, y, f - expo, cl), legNr >>= 1;
 		      } else
 			cb(board, flags, mine == 1 ? WhiteQueenSideCastle : BlackQueenSideCastle, r, f, y, f - expo, cl);
 		    }
 		    if((x == BOARD_RGHT-1 || vx > 0 && board[y][x+1] == DarkSquare) && board[y][x] == initialPosition[y][x]) {
 		      if(pc != WhiteKing && pc != BlackKing) {
-			if(killX < 0) cb(board, flags, FirstLeg,   r, f, y, x, cl);
-			legNr <<= 1;  cb(board, flags, NormalMove, r, f, y, f + expo, cl); legNr >>= 1;
+			if(killX < 0) cb(board, flags, FirstLeg,   r, f, y, x, cl); if(killX > f)
+			legNr <<= 1,  cb(board, flags, NormalMove, r, f, y, f + expo, cl), legNr >>= 1;
 		      } else
 			cb(board, flags, mine == 1 ? WhiteKingSideCastle : BlackKingSideCastle, r, f, y, f + expo, cl);
 		    }
