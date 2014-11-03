@@ -6948,7 +6948,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 	/* EditPosition, empty square, or different color piece;
 	   click-click move is possible */
 	if (toX == -2 || toY == -2) {
-	    boards[0][fromY][fromX] = EmptySquare;
+	    boards[0][fromY][fromX] = (boards[0][fromY][fromX] == EmptySquare ? DarkSquare : EmptySquare);
 	    DrawPosition(FALSE, boards[currentMove]);
 	    return;
 	} else if (toX >= 0 && toY >= 0) {
