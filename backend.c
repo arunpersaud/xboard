@@ -7323,8 +7323,8 @@ CanPromote (ChessSquare piece, int y)
          gameInfo.variant == VariantMakruk   || gameInfo.variant == VariantASEAN) return FALSE;
 	return (piece == BlackPawn && y <= zone ||
 		piece == WhitePawn && y >= BOARD_HEIGHT-1-zone ||
-		piece == BlackLance && y == 1 ||
-		piece == WhiteLance && y == BOARD_HEIGHT-2 );
+		piece == BlackLance && y <= zone ||
+		piece == WhiteLance && y >= BOARD_HEIGHT-1-zone );
 }
 
 void
