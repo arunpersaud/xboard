@@ -102,8 +102,8 @@ typedef struct {
 IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
 
 int junk;
-unsigned int saveDate;
-unsigned int dateStamp;
+int saveDate;
+int dateStamp;
 Boolean singleList;
 Boolean autoClose;
 char *homeDir;
