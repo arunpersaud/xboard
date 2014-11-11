@@ -2724,6 +2724,7 @@ DisplayMessage (char *message, char *extMessage)
 
 #define MAXFILES 1000
 
+static DialogClass savDlg;
 static ChessProgramState *savCps;
 static FILE **savFP;
 static char *fileName, *extFilter, *savMode, **namePtr;
@@ -2806,7 +2807,7 @@ BrowseOK (int n)
 		    snprintf(title, MSG_SIZ, "%s", fileName);
 		else
 		    snprintf(title, MSG_SIZ, "%s/%s", curDir, fileName);
-		SetWidgetText((Option*) savFP, title, TransientDlg);
+		SetWidgetText((Option*) savFP, title, savDlg);
 		currentCps = savCps; // could return to Engine Settings dialog!
 		return TRUE;
 	}
@@ -2963,7 +2964,7 @@ void
 Browse (DialogClass dlg, char *label, char *proposed, char *ext, Boolean pathFlag, char *mode, char **name, FILE **fp)
 {
     int j=0;
-    savFP = fp; savMode = mode, namePtr = name, savCps = currentCps, oldVal = values[9]; // save params, for use in callback
+    savFP = fp; savMode = mode, namePtr = name, savCps = currentCps, oldVal = values[9], savDlg = dlg; // save params, for use in callback
     ASSIGN(extFilter, ext);
     ASSIGN(fileName, proposed ? proposed : "");
     for(j=0; Extensions[j]; j++) // look up actual value in list of possible values, to get selection nr
