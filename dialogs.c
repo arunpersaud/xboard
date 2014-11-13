@@ -2544,6 +2544,12 @@ Exp (int n, int x, int y)
     static int but1, but3, oldW, oldH;
     int menuNr = -3, sizing, f, r;
     TimeMark now;
+    extern Boolean right;
+
+    if(right) {  // kludgy way to let button 1 double as button 3 when back-end requests this
+	if(but1 && n == 0) but1 = 0, but3 = 1;
+	else if(n == -1) n = -3, right = FALSE;
+    }
 
     if(n == 0) { // motion
 	if(SeekGraphClick(Press, x, y, 1)) return NULL;

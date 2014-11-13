@@ -7367,6 +7367,8 @@ void ReportClick(char *action, int x, int y)
 	SendToProgram(buf, &first);
 }
 
+Boolean right; // instructs front-end to use button-1 events as if they were button 3
+
 void
 LeftClick (ClickType clickType, int xPix, int yPix)
 {
@@ -7377,13 +7379,6 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     ChessSquare piece;
     static TimeMark lastClickTime, prevClickTime;
 
-    if(SeekGraphClick(clickType, xPix, yPix, 0)) return;
-
-    prevClickTime = lastClickTime; GetTimeMark(&lastClickTime);
-
-    if (clickType == Press) ErrorPopDown();
-    lastClickType = clickType, lastLeftX = xPix, lastLeftY = yPix; // [HGM] alien: remember state
-
     x = EventToSquare(xPix, BOARD_WIDTH);
     y = EventToSquare(yPix, BOARD_HEIGHT);
     if (!flipView && y >= 0) {
@@ -7392,6 +7387,20 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     if (flipView && x >= 0) {
 	x = BOARD_WIDTH - 1 - x;
     }
+
+    if(appData.monoMouse && gameMode == EditPosition && clickType == Press && boards[currentMove][y][x] == EmptySquare) {
+	static int dummy;
+	RightClick(clickType, xPix, yPix, &dummy, &dummy);
+	right = TRUE;
+	return;
+    }
+
+    if(SeekGraphClick(clickType, xPix, yPix, 0)) return;
+
+    prevClickTime = lastClickTime; GetTimeMark(&lastClickTime);
+
+    if (clickType == Press) ErrorPopDown();
+    lastClickType = clickType, lastLeftX = xPix, lastLeftY = yPix; // [HGM] alien: remember state
 
     if(promoSweep != EmptySquare) { // up-click during sweep-select of promo-piece
 	defaultPromoChoice = promoSweep;

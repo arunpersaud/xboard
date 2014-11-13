@@ -777,6 +777,7 @@ typedef struct {
     Boolean autoCopyPV;
     Boolean pieceMenu;
     Boolean sweepSelect;
+    Boolean monoMouse;
     Boolean whitePOV;
     Boolean scoreWhite;
     Boolean pvSAN[ENGINES];

@@ -230,6 +230,7 @@ ArgDescriptor argDescriptors[] = {
   { "dropMenu", ArgBoolean, (void *) &appData.dropMenu, TRUE, (ArgIniType) FALSE },
   { "pieceMenu", ArgBoolean, (void *) &appData.pieceMenu, TRUE, (ArgIniType) TRUE },
   { "sweepPromotions", ArgBoolean, (void *) &appData.sweepSelect, TRUE, (ArgIniType) FALSE },
+  { "monoMouse", ArgBoolean, (void *) &appData.monoMouse, XBOARD, (ArgIniType) FALSE },
   { "remoteShell", ArgFilename, (void *) &appData.remoteShell, FALSE, (ArgIniType) REMOTE_SHELL },
   { "rsh", ArgFilename, (void *) &appData.remoteShell, FALSE, INVALID },
   { "remoteUser", ArgString, (void *) &appData.remoteUser, FALSE, (ArgIniType) "" },
