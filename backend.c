@@ -7388,7 +7388,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	x = BOARD_WIDTH - 1 - x;
     }
 
-    if(appData.monoMouse && gameMode == EditPosition && clickType == Press && boards[currentMove][y][x] == EmptySquare) {
+    if(appData.monoMouse && gameMode == EditPosition && fromX < 0 && clickType == Press && boards[currentMove][y][x] == EmptySquare) {
 	static int dummy;
 	RightClick(clickType, xPix, yPix, &dummy, &dummy);
 	right = TRUE;
