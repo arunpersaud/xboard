@@ -5221,7 +5221,7 @@ SendMoveToICS (ChessMove moveType, int fromX, int fromY, int toX, int toY, char 
       case WhitePromotion:
       case BlackPromotion:
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
-           gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN)
+           gameInfo.variant == VariantMakruk)
 	  snprintf(user_move, MSG_SIZ, "%c%c%c%c=%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY,
 		PieceToChar(WhiteFerz));
@@ -6516,8 +6516,10 @@ DefaultPromoChoice (int white)
 {
     ChessSquare result;
     if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
-       gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN)
+       gameInfo.variant == VariantMakruk)
 	result = WhiteFerz; // no choice
+    else if(gameInfo.variant == VariantASEAN)
+	result = WhiteRook; // no choice
     else if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway)
 	result= WhiteKing; // in Suicide Q is the last thing we want
     else if(gameInfo.variant == VariantSpartan)
@@ -6609,7 +6611,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
 
     // we either have a choice what to promote to, or (in Shogi) whether to promote
     if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
-       gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN) {
+       gameInfo.variant == VariantMakruk) {
 	ChessSquare p=BlackFerz;  // no choice
 	while(p < EmptySquare) {  //but make sure we use piece that exists
 	    *promoChoice = PieceToChar(p++);
@@ -7320,7 +7322,7 @@ CanPromote (ChessSquare piece, int y)
 	if(IS_SHOGI(gameInfo.variant)          || gameInfo.variant == VariantXiangqi ||
 	   gameInfo.variant == VariantSuper    || gameInfo.variant == VariantGreat   ||
 	   gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
-         gameInfo.variant == VariantMakruk   || gameInfo.variant == VariantASEAN) return FALSE;
+         gameInfo.variant == VariantMakruk) return FALSE;
 	return (piece == BlackPawn && y <= zone ||
 		piece == WhitePawn && y >= BOARD_HEIGHT-1-zone ||
 		piece == BlackLance && y == 1 ||

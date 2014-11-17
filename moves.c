@@ -2094,8 +2094,10 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
     if (closure->kind == WhitePromotion || closure->kind == BlackPromotion) {
         if(c == NULLCHAR) { // missing promoChar on mandatory promotion; use default for variant
             if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
-               gameInfo.variant == VariantMakruk || gameInfo.variant == VariantASEAN)
+               gameInfo.variant == VariantMakruk)
                 c = PieceToChar(BlackFerz);
+            else if(gameInfo.variant == VariantASEAN)
+                c = PieceToChar(BlackRook);
             else if(gameInfo.variant == VariantGreat)
                 c = PieceToChar(BlackMan);
             else if(gameInfo.variant == VariantGrand)
