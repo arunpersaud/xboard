@@ -284,6 +284,7 @@ ArgDescriptor argDescriptors[] = {
   { "lpf", ArgFilename, (void *) &appData.loadPositionFile, FALSE, INVALID },
   { "loadPositionIndex", ArgInt, (void *) &appData.loadPositionIndex, FALSE, (ArgIniType) 1 },
   { "lpi", ArgInt, (void *) &appData.loadPositionIndex, FALSE, INVALID },
+  { "positionDir", ArgFilename, (void *) &appData.positionDir, FALSE, (ArgIniType) "" },
   { "savePositionFile", ArgFilename, (void *) &appData.savePositionFile, FALSE, (ArgIniType) "" },
   { "spf", ArgFilename, (void *) &appData.savePositionFile, FALSE, INVALID },
   { "matchMode", ArgBoolean, (void *) &appData.matchMode, FALSE, (ArgIniType) FALSE },
