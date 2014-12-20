@@ -2317,6 +2317,12 @@ void FileNamePopUpWrapper(label, def, filter, proc, pathFlag, openMode, name, fp
   char fileext[10] = "";
   char *result     = NULL;
   char *cp;
+  char curDir[MSG_SIZ];
+
+  if(def && *def && def[strlen(def)-1] == '/') {
+    getcwd(curDir, MSG_SIZ);
+    chdir(def);
+  }
 
   /* make a copy of the filter string, so that strtok can work with it*/
   cp = strdup(filter);
@@ -2395,6 +2401,8 @@ void FileNamePopUpWrapper(label, def, filter, proc, pathFlag, openMode, name, fp
 
   gtk_widget_destroy (dialog);
   ModeHighlight();
+
+  if(def && *def && def[strlen(def)-1] == '/') chdir(curDir);
 
   free(cp);
   return;

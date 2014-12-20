@@ -486,6 +486,7 @@ typedef struct {
     char *pgnName[ENGINES];
     Boolean firstPlaysBlack;
     Boolean noChessProgram;
+    char *positionDir;
     char *host[ENGINES];
     char *themeNames;
     char *pieceDirectory;
