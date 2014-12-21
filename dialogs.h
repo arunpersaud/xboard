@@ -169,6 +169,7 @@ void SetScroll P((Option *opt, float f));
 void AddHandler  P((Option *opt, DialogClass dlg, int nr));
 void SendText P((int n));
 void DisplayLogos P((Option *left, Option *right));
+void StartDir P((char *filter, char *newName));
 void Browse P((DialogClass dlg, char *label, char *proposed, char *ext,
                        Boolean pathFlag, char *mode, char **name, FILE **fp));
 void FileNamePopUpWrapper P((char *label, char *def, char *filter, FileProc proc,

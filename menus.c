@@ -105,6 +105,7 @@ extern char *getenv();
 char  *gameCopyFilename, *gamePasteFilename;
 Boolean saveSettingsOnExit;
 char *settingsFileName;
+char gamesDir[MSG_SIZ], positionsDir[MSG_SIZ], textureDir[MSG_SIZ], bookDir[MSG_SIZ], piecesDir[MSG_SIZ];
 
 static int
 LoadGamePopUp (FILE *f, int gameNumber, char *title)
@@ -173,12 +174,10 @@ ReloadPositionProc ()
 void
 LoadPositionProc()
 {
-    static char buf[MSG_SIZ];
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    snprintf(buf, MSG_SIZ, "%s/", appData.positionDir);
-    FileNamePopUp(_("Load position file name?"), buf, ".fen .epd .pos", LoadPosition, "rb");
+    FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb");
 }
 
 void

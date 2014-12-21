@@ -2319,10 +2319,7 @@ void FileNamePopUpWrapper(label, def, filter, proc, pathFlag, openMode, name, fp
   char *cp;
   char curDir[MSG_SIZ];
 
-  if(def && *def && def[strlen(def)-1] == '/') {
-    getcwd(curDir, MSG_SIZ);
-    chdir(def);
-  }
+  StartDir(filter, NULL); // change to start directory for this file type
 
   /* make a copy of the filter string, so that strtok can work with it*/
   cp = strdup(filter);
@@ -2396,8 +2393,10 @@ void FileNamePopUpWrapper(label, def, filter, proc, pathFlag, openMode, name, fp
 	    ASSIGN(*name, filename);
 	    ScheduleDelayedEvent(DelayedLoad, 50);
         }
+      StartDir(filter, filename);
       g_free (filename);
-    };
+    }
+  else StartDir(filter, "");
 
   gtk_widget_destroy (dialog);
   ModeHighlight();

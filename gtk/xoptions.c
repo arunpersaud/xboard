@@ -1016,7 +1016,9 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     gtkfilter     = gtk_file_filter_new();
     gtkfilter_all = gtk_file_filter_new();
 
-    char fileext[MSG_SIZ];
+    char fileext[MSG_SIZ], *filter = currentOption[opt_i].textValue;
+
+    StartDir(filter, NULL); // change to start directory for this file type
 
     /* select file or folder depending on option_type */
     if (currentOption[opt_i].type == PathName)
@@ -1060,9 +1062,10 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
         entry = currentOption[opt_i].handle;
         gtk_entry_set_text (GTK_ENTRY (entry), filename);
+	StartDir(filter, filename); // back to original, and remember this one
         g_free (filename);
-
       }
+    else StartDir(filter, ""); // change back to original directory
     gtk_widget_destroy (dialog);
     dialog = NULL;
 }

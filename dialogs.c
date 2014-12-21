@@ -2967,6 +2967,34 @@ DirSelProc (int n, int sel)
 }
 
 void
+StartDir (char *filter, char *newName)
+{
+    static char *gamesDir, *trnDir, *imgDir, *bookDir;
+    static char curDir[MSG_SIZ];
+    char **res = NULL;
+    if(!filter || !*filter) return;
+    if(strstr(filter, "pgn")) res = &gamesDir; else
+    if(strstr(filter, "bin")) res = &bookDir; else
+    if(strstr(filter, "png")) res = &imgDir; else
+    if(strstr(filter, "trn")) res = &trnDir; else
+    if(strstr(filter, "fen")) res = &appData.positionDir;
+    if(res) {
+	if(newName) {
+	    char *p, *q;
+	    if(*newName) {
+		ASSIGN(*res, newName);
+		for(p=*res; q=strchr(p, '/');) p = q + 1; *p = NULLCHAR;
+	    }
+	    if(*curDir) chdir(curDir);
+	    *curDir = NULLCHAR;
+	} else {
+	    getcwd(curDir, MSG_SIZ);
+	    if(*res && **res) chdir(*res);
+	}
+    }
+}
+
+void
 Browse (DialogClass dlg, char *label, char *proposed, char *ext, Boolean pathFlag, char *mode, char **name, FILE **fp)
 {
     int j=0;
