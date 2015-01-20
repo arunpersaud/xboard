@@ -25,6 +25,10 @@
 -trivialDraws false
 -materialDraws false
 ;
+; direct Load Position to handicap positions
+;
+-positionDir ~~/positions/shogihandicaps
+;
 ; common non-compliant notations
 ;
 -colorNickNames "sg"
