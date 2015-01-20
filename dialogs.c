@@ -2476,14 +2476,14 @@ CCB (int n)
 
 Option mainOptions[] = { // description of main window in terms of generic dialog creator
 { 0, 0xCA, 0, NULL, NULL, "", NULL, BarBegin, "" }, // menu bar
-  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("File") },
-  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Edit") },
-  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("View") },
-  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Mode") },
-  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Action") },
-  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Engine") },
-  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Options") },
-  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("Help") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("_File") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("_Edit") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("_View") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("_Mode") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("_Action") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("E_ngine") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("_Options") },
+  { 0, COMBO_CALLBACK, 0, NULL, (void*)&MenuCallback, NULL, NULL, DropDown, N_("_Help") },
 { 0, 0, 0, NULL, (void*)&SizeKludge, "", NULL, BarEnd, "" },
 { 0, LR|T2T|BORDER|SAME_ROW, 0, NULL, NULL, NULL, NULL, Label, "1" }, // optional title in window
 { 50,    LL|TT,            100, NULL, (void*) &LogoW, NULL, NULL, Skip, "" }, // white logo

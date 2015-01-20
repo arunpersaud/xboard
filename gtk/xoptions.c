@@ -1571,7 +1571,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 //	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 //	    XtSetArg(args[j], XtNlabel, msg);  j++;
 	    option[i].handle = (void*)
-		(menuButton = gtk_menu_item_new_with_label(msg));
+		(menuButton = gtk_menu_item_new_with_mnemonic(msg));
 	    gtk_widget_show(menuButton);
 	    option[i].textValue = (char*) (menu = CreateMenuPopup(option + i, i + 256*dlgNr, -1));
 	    gtk_menu_item_set_submenu(GTK_MENU_ITEM (menuButton), menu);
