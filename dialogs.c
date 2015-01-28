@@ -1901,6 +1901,7 @@ IcsHist (int n, Option *opt, DialogClass dlg)
     if(opt != &chatOptions[CHAT_IN] && !(opt == &chatOptions[CHAT_PARTNER] && n == 33)) return 0;
     switch(n) {
       case 33: // <Esc>
+	if(1) BoardToTop(); else
 	if(hidden) BoardToTop();
 	else PaneSwitch();
 	break;
@@ -2094,6 +2095,7 @@ ChatProc ()
 void
 ConsoleAutoPopUp (char *buf)
 {
+	if(*buf == 27) { if(appData.icsActive && DialogExists(ChatDlg)) HardSetFocus (&chatOptions[CHAT_IN], ChatDlg); return; }
 	if(!appData.autoBox) return;
 	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
 	    if(DialogExists(ChatDlg)) { // box already exists: append to current contents
