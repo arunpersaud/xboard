@@ -1923,7 +1923,7 @@ IcsHist (int n, Option *opt, DialogClass dlg)
         while(!dirty[chat = (chat + 1)%MAX_CHAT]) if(chat == start) break;
 	if(!dirty[chat])
         while(!chatPartner[chat = (chat + 1)%MAX_CHAT][0]) if(chat == start) break;
-	if(chat == start && hidden) chat = 0; // if all unused, start left
+	if(chat == start && hidden) break; // if all unused, ignore
         ChatSwitch(chat + 1);
 	break;
       case 1:
