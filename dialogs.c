@@ -1900,6 +1900,9 @@ IcsHist (int n, Option *opt, DialogClass dlg)
 
     if(opt != &chatOptions[CHAT_IN] && !(opt == &chatOptions[CHAT_PARTNER] && n == 33)) return 0;
     switch(n) {
+      case 8:
+	if(!hidden) PaneSwitch();
+	break;
       case 33: // <Esc>
 	if(1) BoardToTop(); else
 	if(hidden) BoardToTop();

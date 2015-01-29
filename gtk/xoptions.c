@@ -502,6 +502,7 @@ TypeInProc (GtkWidget *widget, GdkEventKey *event, gpointer gdata)
     shiftState = event->state & GDK_SHIFT_MASK;
     controlState = event->state & GDK_CONTROL_MASK;
     switch(event->keyval) {
+      case 'h':       return (controlState && IcsHist( 8, opt, dlg));
       case 'n':       return (controlState && IcsHist(14, opt, dlg));
       case 'o':       return (controlState && IcsHist(15, opt, dlg));
       case GDK_Tab:   IcsHist(10, opt, dlg); break;
