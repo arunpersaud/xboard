@@ -1979,6 +1979,10 @@ ChatOK (int n)
 	      snprintf(buf, MSG_SIZ, "whisper %s\n", line); // WHISPER box uses "whisper" to send
 	else if(!strcmp("shouts", chatPartner[activePartner]))
 	      snprintf(buf, MSG_SIZ, "shout %s\n", line); // SHOUT box uses "shout" to send
+	else if(!strcmp("c-shouts", chatPartner[activePartner]))
+	      snprintf(buf, MSG_SIZ, "cshout %s\n", line); // C-SHOUT box uses "cshout" to send
+	else if(!strcmp("kibitzes", chatPartner[activePartner]))
+	      snprintf(buf, MSG_SIZ, "kibitz %s\n", line); // KIBITZ box uses "kibitz" to send
 	else {
 	    if(!atoi(chatPartner[activePartner])) {
 		snprintf(buf, MSG_SIZ, "> %s\n", line); // echo only tells to handle, not channel
