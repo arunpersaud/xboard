@@ -1923,7 +1923,7 @@ IcsHist (int n, Option *opt, DialogClass dlg)
         while(!dirty[chat = (chat + 1)%MAX_CHAT]) if(chat == start) break;
 	if(!dirty[chat])
         while(!chatPartner[chat = (chat + 1)%MAX_CHAT][0]) if(chat == start) break;
-	if(chat == start && hidden) break; // if all unused, ignore
+	if(!chatPartner[chat][0]) break; // if all unused, ignore
         ChatSwitch(chat + 1);
 	break;
       case 1:
@@ -1962,11 +1962,12 @@ ChatOK (int n)
 {   // can only be called through <Enter> in chat-partner text-edit, as there is no OK button
     char buf[MSG_SIZ];
 
-    if(!hidden && (!partner || strcmp(partner, chatPartner[activePartner]))) {
+    if(!hidden && (!partner || strcmp(partner, chatPartner[activePartner]) || !*partner)) {
 	safeStrCpy(chatPartner[activePartner], partner, MSG_SIZ);
 	SetWidgetText(&chatOptions[CHAT_OUT], "", -1); // clear text if we alter partner
 	SetWidgetText(&chatOptions[CHAT_IN], "", ChatDlg); // clear text if we alter partner
 	SetWidgetLabel(&chatOptions[activePartner+1], chatPartner[activePartner][0] ? chatPartner[activePartner] : _("New Chat"));
+	if(!*partner) PaneSwitch();
 	HardSetFocus(&chatOptions[CHAT_IN], 0);
     }
     if(line[0] || hidden) { // something was typed (for ICS commands we also allow empty line!)
