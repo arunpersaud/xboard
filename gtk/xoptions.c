@@ -1435,7 +1435,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
 		gtk_widget_set_sensitive(label, TRUE);
 	    }
-            Pack(hbox, table, label, left, left+3, top, 0);
+            Pack(hbox, table, label, left, left+r, top, 0);
 	    break;
           case SaveButton:
           case Button:
