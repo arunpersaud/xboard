@@ -5141,10 +5141,17 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
 	else SendToProgram(moveList[moveNum], cps);
       } else
       if(moveList[moveNum][4] == ';') { // [HGM] lion: move is double-step over intermediate square
-	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", moveList[moveNum][0], moveList[moveNum][1] - '0', // convert to two moves
-					       moveList[moveNum][5], moveList[moveNum][6] - '0',
-					       moveList[moveNum][5], moveList[moveNum][6] - '0',
-					       moveList[moveNum][2], moveList[moveNum][3] - '0');
+	char *m = moveList[moveNum];
+	if((boards[moveNum][m[6]-ONE][m[5]-AAA] < BlackPawn) == (boards[moveNum][m[1]-ONE][m[0]-AAA] < BlackPawn)) // move is kludge to indicate castling
+	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", m[0], m[1] - '0', // convert to two moves
+					       m[2], m[3] - '0',
+					       m[5], m[6] - '0',
+					       m[2] + (m[0] > m[5] ? 1 : -1), m[3] - '0');
+	else
+	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", m[0], m[1] - '0', // convert to two moves
+					       m[5], m[6] - '0',
+					       m[5], m[6] - '0',
+					       m[2], m[3] - '0');
 	  SendToProgram(buf, cps);
       } else
       if(BOARD_HEIGHT > 10) { // [HGM] big: convert ranks to double-digit where needed
