@@ -5501,7 +5501,6 @@ char yy_textstr[8000];
 Boolean
 ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fromY, int *toX, int *toY, char *promoChar)
 {
-    int badFrom;
     *moveType = yylexstr(moveNum, move, yy_textstr, sizeof yy_textstr);
 
     switch (*moveType) {
@@ -5528,14 +5527,13 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
       case BlackASideCastleFR:
       /* End of code added by Tord */
       case IllegalMove:		/* bug or odd chess variant */
+	if(currentMoveString[1] == '@') goto drop; // illegal drop
         *fromX = currentMoveString[0] - AAA;
         *fromY = currentMoveString[1] - ONE;
         *toX = currentMoveString[2] - AAA;
         *toY = currentMoveString[3] - ONE;
 	*promoChar = currentMoveString[4];
-	badFrom = (*fromX < BOARD_LEFT || *fromX >= BOARD_RGHT || *fromY < 0 || *fromY >= BOARD_HEIGHT);
-	if(currentMoveString[1] == '@') { badFrom = FALSE; *fromX = CharToPiece(currentMoveString[0]); *fromY = DROP_RANK; } // illegal drop
-        if (badFrom ||
+        if (*fromX < BOARD_LEFT || *fromX >= BOARD_RGHT || *fromY < 0 || *fromY >= BOARD_HEIGHT ||
             *toX < BOARD_LEFT || *toX >= BOARD_RGHT || *toY < 0 || *toY >= BOARD_HEIGHT) {
     if (appData.debugMode) {
         fprintf(debugFP, "Off-board move (%d,%d)-(%d,%d)%c, type = %d\n", *fromX, *fromY, *toX, *toY, *promoChar, *moveType);
@@ -5553,6 +5551,7 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
 
       case WhiteDrop:
       case BlackDrop:
+      drop:
 	*fromX = *moveType == WhiteDrop ?
 	  (int) CharToPiece(ToUpper(currentMoveString[0])) :
 	  (int) CharToPiece(ToLower(currentMoveString[0]));
