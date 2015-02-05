@@ -10044,19 +10044,19 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
         && toY == fromY && toX > fromX+1) {
+	for(rookX=fromX+1; board[toY][rookX] == EmptySquare && rookX < BOARD_RGHT-1; rookX++); // castle with nearest piece
+        board[fromY][toX-1] = board[fromY][rookX];
+        board[fromY][rookX] = EmptySquare;
 	board[fromY][fromX] = EmptySquare;
         board[toY][toX] = king;
-	for(rookX=BOARD_RGHT-1; board[toY][rookX] == DarkSquare && rookX > toX + 1; rookX--);
-        board[toY][toX-1] = board[fromY][rookX];
-        board[fromY][rookX] = EmptySquare;
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
                && toY == fromY && toX < fromX-1) {
+	for(rookX=fromX-1; board[toY][rookX] == EmptySquare && rookX > 0; rookX--); // castle with nearest piece
+        board[fromY][toX+1] = board[fromY][rookX];
+        board[fromY][rookX] = EmptySquare;
 	board[fromY][fromX] = EmptySquare;
         board[toY][toX] = king;
-	for(rookX=BOARD_LEFT; board[toY][rookX] == DarkSquare && rookX < toX - 1; rookX++);
-        board[toY][toX+1] = board[fromY][rookX];
-        board[fromY][rookX] = EmptySquare;
     } else if ((board[fromY][fromX] == WhitePawn && gameInfo.variant != VariantXiangqi ||
                 board[fromY][fromX] == WhiteLance && gameInfo.variant != VariantSuper && gameInfo.variant != VariantChu)
                && toY >= BOARD_HEIGHT-promoRank && promoChar // defaulting to Q is done elsewhere
@@ -10095,19 +10095,19 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
                && toY == fromY && toX > fromX+1) {
+	for(rookX=toX+1; board[toY][rookX] == EmptySquare && rookX < BOARD_RGHT - 1; rookX++);
+        board[fromY][toX-1] = board[fromY][rookX];
+        board[fromY][rookX] = EmptySquare;
 	board[fromY][fromX] = EmptySquare;
         board[toY][toX] = king;
-	for(rookX=BOARD_RGHT-1; board[toY][rookX] == DarkSquare && rookX > toX + 1; rookX--);
-        board[toY][toX-1] = board[fromY][rookX];
-        board[fromY][rookX] = EmptySquare;
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
                && toY == fromY && toX < fromX-1) {
+	for(rookX=toX-1; board[toY][rookX] == EmptySquare && rookX > 0; rookX--);
+        board[fromY][toX+1] = board[fromY][rookX];
+        board[fromY][rookX] = EmptySquare;
 	board[fromY][fromX] = EmptySquare;
         board[toY][toX] = king;
-	for(rookX=BOARD_LEFT; board[toY][rookX] == DarkSquare && rookX < toX - 1; rookX++);
-        board[toY][toX+1] = board[fromY][rookX];
-        board[fromY][rookX] = EmptySquare;
     } else if (fromY == 7 && fromX == 3
 	       && board[fromY][fromX] == BlackKing
 	       && toY == 7 && toX == 5) {
