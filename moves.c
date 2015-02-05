@@ -385,7 +385,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	  for(dir=0, bit=1; dir<8; dir++, bit += bit) { // loop over directions
 	    int i = expo, j = skip, hop = mode, vx, vy, loop = 0;
 	    if(!(bit & dirSet)) continue;             // does not move in this direction
-	    if(dy != 1) j = 0;                        // 
+	    if(dy != 1 || mode & 1024) j = 0;         // 
 	    vx = dx*rot[dir][0] + dy*rot[dir][1];     // rotate step vector
 	    vy = dx*rot[dir][2] + dy*rot[dir][3];
 	    if(tx < 0) x = f, y = r;                  // start square
@@ -433,14 +433,16 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(mode & 1024) {            // castling
 		    i = 2;                   // kludge to elongate move indefinitely
 		    if(occup == 4) continue; // skip empty squares
-		    if((x == BOARD_LEFT || vx < 0 && board[y][x-1] == DarkSquare)  && board[y][x] == initialPosition[y][x]) { // reached initial corner piece
+		    if((x == BOARD_LEFT + skip || x > BOARD_LEFT + skip && vx < 0 && board[y][x-1-skip] == DarkSquare)
+								    && board[y][x] == initialPosition[y][x]) { // reached initial corner piece
 		      if(pc != WhiteKing && pc != BlackKing) { // non-royal castling (to be entered as two-leg move via 'Rook')
 			if(killX < 0) cb(board, flags, FirstLeg,   r, f, y, x, cl); if(killX < f)
 			legNr <<= 1,  cb(board, flags, NormalMove, r, f, y, f - expo, cl), legNr >>= 1;
 		      } else
 			cb(board, flags, mine == 1 ? WhiteQueenSideCastle : BlackQueenSideCastle, r, f, y, f - expo, cl);
 		    }
-		    if((x == BOARD_RGHT-1 || vx > 0 && board[y][x+1] == DarkSquare) && board[y][x] == initialPosition[y][x]) {
+		    if((x == BOARD_RGHT-1-skip || x < BOARD_RGHT-1-skip && vx > 0 && board[y][x+1+skip] == DarkSquare)
+								    && board[y][x] == initialPosition[y][x]) {
 		      if(pc != WhiteKing && pc != BlackKing) {
 			if(killX < 0) cb(board, flags, FirstLeg,   r, f, y, x, cl); if(killX > f)
 			legNr <<= 1,  cb(board, flags, NormalMove, r, f, y, f + expo, cl), legNr >>= 1;
