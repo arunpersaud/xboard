@@ -8667,12 +8667,13 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    safeStrCpy(firstLeg, machineMove, 20); // just remember it for processing when second leg arrives
 	    return;
 	} else if(firstLeg[0]) { // there was a previous leg;
-	    // only support case where same piece makes two step (and don't even test that!)
+	    // only support case where same piece makes two step
 	    char buf[20], *p = machineMove+1, *q = buf+1, f;
 	    safeStrCpy(buf, machineMove, 20);
 	    while(isdigit(*q)) q++; // find start of to-square
 	    safeStrCpy(machineMove, firstLeg, 20);
-	    while(isdigit(*p)) p++;
+	    while(isdigit(*p)) p++; // to-square of first leg (which is now copied to machineMove)
+	    if(*p == *buf)          // if first-leg to not equal to second-leg from first leg says unmodified (assume it ia King move of castling)
 	    safeStrCpy(p, q, 20); // glue to-square of second leg to from-square of first, to process over-all move
 	    sscanf(buf, "%c%d", &f, &killY); killX = f - AAA; killY -= ONE - '0'; // pass intermediate square to MakeMove in global
 	    firstLeg[0] = NULLCHAR;
