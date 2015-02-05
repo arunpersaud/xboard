@@ -5494,6 +5494,7 @@ char yy_textstr[8000];
 Boolean
 ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fromY, int *toX, int *toY, char *promoChar)
 {
+    int badFrom;
     *moveType = yylexstr(moveNum, move, yy_textstr, sizeof yy_textstr);
 
     switch (*moveType) {
@@ -5525,7 +5526,9 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
         *toX = currentMoveString[2] - AAA;
         *toY = currentMoveString[3] - ONE;
 	*promoChar = currentMoveString[4];
-        if (*fromX < BOARD_LEFT || *fromX >= BOARD_RGHT || *fromY < 0 || *fromY >= BOARD_HEIGHT ||
+	badFrom = (*fromX < BOARD_LEFT || *fromX >= BOARD_RGHT || *fromY < 0 || *fromY >= BOARD_HEIGHT);
+	if(currentMoveString[1] == '@') { badFrom = FALSE; *fromX = CharToPiece(currentMoveString[0]); *fromY = DROP_RANK; } // illegal drop
+        if (badFrom ||
             *toX < BOARD_LEFT || *toX >= BOARD_RGHT || *toY < 0 || *toY >= BOARD_HEIGHT) {
     if (appData.debugMode) {
         fprintf(debugFP, "Off-board move (%d,%d)-(%d,%d)%c, type = %d\n", *fromX, *fromY, *toX, *toY, *promoChar, *moveType);
