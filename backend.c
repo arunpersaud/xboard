@@ -10011,8 +10011,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
      if(gameInfo.variant == VariantKnightmate)
          king += (int) WhiteUnicorn - (int) WhiteKing;
 
-    if(piece != WhiteKing && piece != BlackKing && pieceDesc[piece] && killX >= 0 && strchr(pieceDesc[piece], 'O') // Betza castling-enabled
-       && (piece < BlackPawn ? killed < BlackPawn : killed >= BlackPawn)) {    // and captures own
+    if(pieceDesc[piece] && killX >= 0 && strchr(pieceDesc[piece], 'O') // Betza castling-enabled
+       && (piece < BlackPawn ? killed < BlackPawn : killed >= BlackPawn)) {    // and tramples own
 	board[toY][toX] = piece; board[fromY][fromX] = EmptySquare;
 	board[toY][toX + (killX < fromX ? 1 : -1)] = killed;
         board[EP_STATUS] = EP_NONE; // capture was fake!
