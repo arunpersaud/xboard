@@ -1568,7 +1568,11 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    top--;
 	    msg = _(option[i].name); // write name on the menu button
 #ifndef OSXAPP
-	    if(tinyLayout) { strcpy(def, msg); def[tinyLayout] = NULLCHAR; msg = def; } // clip menu text to keep menu bar small
+	    if(tinyLayout) { // clip menu text to keep menu bar small
+		int clip = tinyLayout + 1;
+		strcpy(def, msg + (msg[clip-1] == '_'));
+		def[clip] = NULLCHAR; msg = def;
+	    }
 #endif
 //	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 //	    XtSetArg(args[j], XtNlabel, msg);  j++;
