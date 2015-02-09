@@ -17999,7 +17999,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
 Boolean
 ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 {
-    int i, j, k, w=0, subst=0, shuffle=0;
+    int i, j, k, w=0, subst=0, shuffle=0, wKingRank = -1, bKingRank = -1;
     char *p, c;
     int emptycount, virgin[BOARD_FILES];
     ChessSquare piece;
@@ -18064,6 +18064,8 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                     p++;
                 }
                 board[i][(j++)+gameInfo.holdingsWidth] = piece;
+                if(piece == WhiteKing) wKingRank = i;
+                if(piece == BlackKing) bKingRank = i;
 	    } else {
 		return FALSE;
 	    }
@@ -18163,6 +18165,13 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
     /* [HGM] We NO LONGER ignore the rest of the FEN notation */
     /* return the extra info in global variiables             */
 
+    while(*p==' ') p++;
+
+    if(!isdigit(*p) && *p != '-') { // we seem to have castling rights. Make sure they are on the rank the King actually is.
+        if(wKingRank >= 0) for(i=0; i<3; i++) castlingRank[i] = wKingRank;
+        if(bKingRank >= 0) for(i=3; i<6; i++) castlingRank[i] = bKingRank;
+    }
+
     /* set defaults in case FEN is incomplete */
     board[EP_STATUS] = EP_UNKNOWN;
     for(i=0; i<nrCastlingRights; i++ ) {
@@ -18179,7 +18188,6 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 				  && board[castlingRank[5]][initialRights[5]] != BlackKing) board[CASTLING][5] = NoRights;
     FENrulePlies = 0;
 
-    while(*p==' ') p++;
     if(nrCastlingRights) {
       int fischer = 0;
       if(gameInfo.variant == VariantSChess) for(i=0; i<BOARD_FILES; i++) virgin[i] = 0;
@@ -18196,8 +18204,8 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
         int c = *p++, whiteKingFile=NoRights, blackKingFile=NoRights;
 
         for(i=BOARD_LEFT; i<BOARD_RGHT; i++) {
-            if(board[BOARD_HEIGHT-1][i] == BlackKing) blackKingFile = i;
-            if(board[0             ][i] == WhiteKing) whiteKingFile = i;
+            if(board[castlingRank[5]][i] == BlackKing) blackKingFile = i;
+            if(board[castlingRank[2]][i] == WhiteKing) whiteKingFile = i;
         }
         if(gameInfo.variant == VariantTwoKings || gameInfo.variant == VariantKnightmate)
             whiteKingFile = blackKingFile = BOARD_WIDTH >> 1; // for these variant scanning fails
@@ -18207,7 +18215,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                                      && board[BOARD_HEIGHT-1][blackKingFile] != BlackKing) blackKingFile = NoRights;
         switch(c) {
           case'K':
-              for(i=BOARD_RGHT-1; board[0][i]!=WhiteRook && i>whiteKingFile; i--);
+              for(i=BOARD_RGHT-1; board[castlingRank[2]][i]!=WhiteRook && i>whiteKingFile; i--);
               board[CASTLING][0] = i != whiteKingFile ? i : NoRights;
               board[CASTLING][2] = whiteKingFile;
 	      if(board[CASTLING][0] != NoRights) virgin[board[CASTLING][0]] |= VIRGIN_W;
@@ -18215,7 +18223,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
               if(whiteKingFile != BOARD_WIDTH>>1|| i != BOARD_RGHT-1) fischer = 1;
               break;
           case'Q':
-              for(i=BOARD_LEFT;  i<BOARD_RGHT && board[0][i]!=WhiteRook && i<whiteKingFile; i++);
+              for(i=BOARD_LEFT;  i<BOARD_RGHT && board[castlingRank[2]][i]!=WhiteRook && i<whiteKingFile; i++);
               board[CASTLING][1] = i != whiteKingFile ? i : NoRights;
               board[CASTLING][2] = whiteKingFile;
 	      if(board[CASTLING][1] != NoRights) virgin[board[CASTLING][1]] |= VIRGIN_W;
@@ -18223,7 +18231,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
               if(whiteKingFile != BOARD_WIDTH>>1|| i != BOARD_LEFT) fischer = 1;
               break;
           case'k':
-              for(i=BOARD_RGHT-1; board[BOARD_HEIGHT-1][i]!=BlackRook && i>blackKingFile; i--);
+              for(i=BOARD_RGHT-1; board[castlingRank[5]][i]!=BlackRook && i>blackKingFile; i--);
               board[CASTLING][3] = i != blackKingFile ? i : NoRights;
               board[CASTLING][5] = blackKingFile;
 	      if(board[CASTLING][3] != NoRights) virgin[board[CASTLING][3]] |= VIRGIN_B;
@@ -18231,7 +18239,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
               if(blackKingFile != BOARD_WIDTH>>1|| i != BOARD_RGHT-1) fischer = 1;
               break;
           case'q':
-              for(i=BOARD_LEFT; i<BOARD_RGHT && board[BOARD_HEIGHT-1][i]!=BlackRook && i<blackKingFile; i++);
+              for(i=BOARD_LEFT; i<BOARD_RGHT && board[castlingRank[5]][i]!=BlackRook && i<blackKingFile; i++);
               board[CASTLING][4] = i != blackKingFile ? i : NoRights;
               board[CASTLING][5] = blackKingFile;
 	      if(board[CASTLING][4] != NoRights) virgin[board[CASTLING][4]] |= VIRGIN_B;
