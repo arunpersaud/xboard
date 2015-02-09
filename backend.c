@@ -7519,7 +7519,7 @@ printf("to click %d,%d\n",x,y);
 	toP = boards[currentMove][y][x];
 	frc = appData.fischerCastling || gameInfo.variant == VariantSChess;
  	if( (killX < 0 || x != fromX || y != fromY) && // [HGM] lion: do not interpret igui as deselect!
-	    legal[y][x] == 0 && // if engine told we can move to here, do it even if own piece
+	    marker[y][x] == 0 && // if engine told we can move to here, do it even if own piece
 	   ((WhitePawn <= fromP && fromP <= WhiteKing &&
 	     WhitePawn <= toP && toP <= WhiteKing &&
 	     !(fromP == WhiteKing && toP == WhiteRook && frc) &&
