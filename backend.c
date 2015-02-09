@@ -7726,7 +7726,9 @@ printf("(%d,%d)-(%d,%d) %d %d\n",fromX,fromY,toX,toY,x,y);
 
     if(gatingPiece != EmptySquare && gameInfo.variant == VariantSChess) promoChoice = ToLower(PieceToChar(gatingPiece));
 
-    if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, appData.sweepSelect)) {
+    if(legal[toY][toX] == 2) promoChoice = ToLower(PieceToChar(defaultPromoChoice)); // highlight-induced promotion
+
+    if (legal[toY][toX] == 2 || HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, appData.sweepSelect)) {
 	SetHighlights(fromX, fromY, toX, toY);
         MarkTargetSquares(1);
 	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat || gameInfo.variant == VariantGrand) {
