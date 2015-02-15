@@ -5399,8 +5399,8 @@ Sweep (int step)
 	if(step && !(toggleFlag && Partner(&promoSweep))) promoSweep -= step;
 	if(promoSweep == EmptySquare) promoSweep = BlackPawn; // wrap
 	else if((int)promoSweep == -1) promoSweep = WhiteKing;
-	else if(promoSweep == BlackPawn && step < 0) promoSweep = WhitePawn;
-	else if(promoSweep == WhiteKing && step > 0) promoSweep = BlackKing;
+	else if(promoSweep == BlackPawn && step < 0 && !toggleFlag) promoSweep = WhitePawn;
+	else if(promoSweep == WhiteKing && step > 0 && !toggleFlag) promoSweep = BlackKing;
 	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
 	    !toggleFlag && PieceToChar(promoSweep) == '+' || // skip promoted versions of other
