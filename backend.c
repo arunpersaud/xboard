@@ -7574,7 +7574,7 @@ printf("A type=%d\n",clickType);
 	return;
     }
 
-    if (clickType == Release && x == fromX && y == fromY && killX < 0) {
+    if (clickType == Release && x == fromX && y == fromY && killX < 0 && !sweepSelecting) {
 	DragPieceEnd(xPix, yPix); dragging = 0;
 	if(clearFlag) {
 	    // a deferred attempt to click-click move an empty square on top of a piece
@@ -7588,10 +7588,9 @@ printf("A type=%d\n",clickType);
 	    /* Undo animation damage if any */
 	    DrawPosition(FALSE, NULL);
 	}
-	if (second || sweepSelecting) {
+	if (second) {
 	    /* Second up/down in same square; just abort move */
-	    if(sweepSelecting) DrawPosition(FALSE, boards[currentMove]);
-	    second = sweepSelecting = 0;
+	    second = 0;
 	    fromX = fromY = -1;
 	    gatingPiece = EmptySquare;
 	    MarkTargetSquares(1);
