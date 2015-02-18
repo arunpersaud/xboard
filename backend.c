@@ -7556,7 +7556,7 @@ printf("to click %d,%d\n",x,y);
 		else gatingPiece = doubleClick ? fromP : EmptySquare;
 		fromX = x;
 		fromY = y; dragging = 1;
-		ReportClick("lift", x, y);
+		if(!second) ReportClick("lift", x, y);
 		MarkTargetSquares(0);
 		DragPieceBegin(xPix, yPix, FALSE);
 		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][y][x], y)) {
