@@ -6566,7 +6566,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
         promotionZoneSize = BOARD_HEIGHT/3;
         highestPromotingPiece = (p >= WhiteLion || PieceToChar(piece + 22) == '.') ? WhitePawn : WhiteLion;
     } else if(gameInfo.variant == VariantShogi) {
-        promotionZoneSize = BOARD_HEIGHT/3;
+        promotionZoneSize = BOARD_HEIGHT/3 +(BOARD_HEIGHT == 8);
         highestPromotingPiece = (int)WhiteAlfil;
     } else if(gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand || gameInfo.variant == VariantChuChess) {
         promotionZoneSize = 3;

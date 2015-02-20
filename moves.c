@@ -1823,6 +1823,7 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
         /* [HGM] Shogi promotions. '=' means defer */
         if(rf != DROP_RANK && cl.kind == NormalMove) {
             ChessSquare piece = board[rf][ff];
+            int zone = BOARD_HEIGHT/3 + (BOARD_HEIGHT == 8);
 
             if(promoChar == PieceToChar(BlackQueen)) promoChar = NULLCHAR; /* [HGM] Kludge */
             if(promoChar == 'd' && (piece == WhiteRook   || piece == BlackRook)   ||
@@ -1834,7 +1835,7 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
                 return CharToPiece(promoChar) == EmptySquare ? ImpossibleMove : IllegalMove;
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
-                     (rf >= BOARD_HEIGHT - BOARD_HEIGHT/3 || rt >= BOARD_HEIGHT - BOARD_HEIGHT/3) ) {
+                     (rf >= BOARD_HEIGHT - zone || rt >= BOARD_HEIGHT - zone) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && rt > BOARD_HEIGHT-2 ||
                          piece == WhiteKnight && rt > BOARD_HEIGHT-3) /* promotion mandatory */
                        cl.kind = promoChar == '=' ? IllegalMove : WhitePromotion;
@@ -1842,7 +1843,7 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
                        cl.kind = promoChar == '+' ? WhitePromotion : WhiteNonPromotion;
                 } else cl.kind = promoChar == '+' ? IllegalMove : NormalMove;
             } else {
-                if( (int) piece < (int) BlackWazir && (rf < BOARD_HEIGHT/3 || rt < BOARD_HEIGHT/3) ) {
+                if( (int) piece < (int) BlackWazir && (rf < zone || rt < zone) ) {
                     if( (piece == BlackPawn || piece == BlackQueen) && rt < 1 ||
                          piece == BlackKnight && rt < 2 ) /* promotion obligatory */
                        cl.kind = promoChar == '=' ? IllegalMove : BlackPromotion;
@@ -2079,6 +2080,7 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
         /* [HGM] Shogi promotions. On input, '=' means defer, '+' promote. Afterwards, c is set to '+' for promotions, NULL other */
         if(closure->rfIn != DROP_RANK && closure->kind == NormalMove) {
             ChessSquare piece = closure->piece;
+            int zone = BOARD_HEIGHT/3 + (BOARD_HEIGHT == 8);
             if (c == 'd' && (piece == WhiteRook   || piece == BlackRook)   ||
                 c == 'h' && (piece == WhiteBishop || piece == BlackBishop) ||
                 c == 'g' && (piece <= WhiteFerz || piece <= BlackFerz && piece >= BlackPawn) )
@@ -2086,7 +2088,7 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
             if(c != NULLCHAR && c != '+' && c != '=') closure->kind = IllegalMove; // otherwise specifying a piece is illegal
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
-                     (closure->rf >= BOARD_HEIGHT-(BOARD_HEIGHT/3) || closure->rt >= BOARD_HEIGHT-(BOARD_HEIGHT/3)) ) {
+                     (closure->rf >= BOARD_HEIGHT-zone || closure->rt >= BOARD_HEIGHT-zone) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && closure->rt > BOARD_HEIGHT-2 ||
                          piece == WhiteKnight && closure->rt > BOARD_HEIGHT-3) /* promotion mandatory */
                        closure->kind = c == '=' ? IllegalMove : WhitePromotion;
@@ -2094,7 +2096,7 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
                        closure->kind = c == '+' ? WhitePromotion : WhiteNonPromotion;
                 } else closure->kind = c == '+' ? IllegalMove : NormalMove;
             } else {
-                if( (int) piece < (int) BlackWazir && (closure->rf < BOARD_HEIGHT/3 || closure->rt < BOARD_HEIGHT/3) ) {
+                if( (int) piece < (int) BlackWazir && (closure->rf < zone || closure->rt < zone) ) {
                     if( (piece == BlackPawn || piece == BlackQueen) && closure->rt < 1 ||
                          piece == BlackKnight && closure->rt < 2 ) /* promotion obligatory */
                        closure->kind = c == '=' ? IllegalMove : BlackPromotion;
