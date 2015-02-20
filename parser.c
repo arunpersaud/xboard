@@ -267,6 +267,7 @@ NextUnit (char **p)
 		fromY = DROP_RANK; fromX = cl.pieceIn;
 		currentMoveString[0] = piece;
 		currentMoveString[1] = '@';
+		currentMoveString[4] = NULLCHAR;
 		return LegalityTest(boards[yyboardindex], PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, fromY, fromX, toY, toX, NULLCHAR);
 	    }
 	    if(type[1] == NOTHING && type[0] != NOTHING) { // there is a disambiguator
