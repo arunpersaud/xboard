@@ -5528,7 +5528,7 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
       /* End of code added by Tord */
       case IllegalMove:		/* bug or odd chess variant */
 	if(currentMoveString[1] == '@') { // illegal drop
-	  *fromX = *moveType == WhiteOnMove(moveNum) ?
+	  *fromX = WhiteOnMove(moveNum) ?
 	    (int) CharToPiece(ToUpper(currentMoveString[0])) :
 	    (int) CharToPiece(ToLower(currentMoveString[0]));
 	  goto drop;
