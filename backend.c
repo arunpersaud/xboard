@@ -12075,8 +12075,13 @@ LoadGameOneMove (ChessMove readAhead)
 	    if (appData.debugMode)
 	      fprintf(debugFP, "Parsed %s into IllegalMove %s\n",
 		      yy_text, currentMoveString);
-            fromX = currentMoveString[0] - AAA;
-            fromY = currentMoveString[1] - ONE;
+            if(currentMoveString[1] == '@') {
+                fromX = CharToPiece(WhiteOnMove(currentMove) ? ToUpper(currentMoveString[0]) : ToLower(currentMoveString[0]));
+                fromY = DROP_RANK;
+            } else {
+                fromX = currentMoveString[0] - AAA;
+                fromY = currentMoveString[1] - ONE;
+            }
             toX = currentMoveString[2] - AAA;
             toY = currentMoveString[3] - ONE;
 	    promoChar = currentMoveString[4];
