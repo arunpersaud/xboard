@@ -2031,7 +2031,7 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
         GenLegal(board, flags|F_IGNORE_CHECK, DisambiguateCallback, (VOIDSTAR) closure, closure->pieceIn);
 	if (closure->count == 0) {
 	    /* No, it's not even that */
-	  if(!appData.testLegality && closure->pieceIn != EmptySquare) {
+	  if(!appData.testLegality && !pieceDefs && closure->pieceIn != EmptySquare) {
 	    int f, r; // if there is only a single piece of the requested type on the board, use that
 	    closure->rt = closure->rtIn, closure->ft = closure->ftIn;
 	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++)
