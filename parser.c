@@ -51,6 +51,134 @@ static char fromString = 0, lastChar = '\n';
 #define ALPHABETIC 2
 #define BADNUMBER (-2000000000)
 
+#define XCO    0
+#define YCO   53
+#define PIECE 94
+#define MISC 155
+
+unsigned char kanjiTab[] = {
+  '1', 0357, 0274, 0221, // kanji notation for arabic digits
+  '2', 0357, 0274, 0222,
+  '3', 0357, 0274, 0223,
+  '4', 0357, 0274, 0224,
+  '5', 0357, 0274, 0225,
+  '6', 0357, 0274, 0226,
+  '7', 0357, 0274, 0227,
+  '8', 0357, 0274, 0230,
+  '9', 0357, 0274, 0231,
+  'x', 0345, 0220, 0214,
+  's', 0345, 0205, 0210, // sente
+  'g', 0345, 0276, 0214, // gote
+  '-', 0346, 0212, 0225, // resign
+   0,
+  'a', 0344, 0270, 0200, // in reality these are numbers in Japanese a=1, b=2 etc.
+  'b', 0344, 0272, 0214,
+  'c', 0344, 0270, 0211,
+  'd', 0345, 0233, 0233,
+  'e', 0344, 0272, 0224,
+  'f', 0345, 0205, 0255,
+  'g', 0344, 0270, 0203,
+  'h', 0345, 0205, 0253,
+  'i', 0344, 0271, 0235,
+  ' ', 0343, 0200, 0200,
+   0,
+  'K', 0347, 0216, 0211, // piece names
+  'K', 0347, 0216, 0213,
+  'G', 0351, 0207, 0221,
+  'S', 0351, 0212, 0200,
+  'R', 0351, 0243, 0233,
+  'B', 0350, 0247, 0222,
+  'N', 0346, 0241, 0202,
+  'L', 0351, 0246, 0231,
+  'P', 0346, 0255, 0251,
+  'D', 0351, 0276, 0215,
+  'H', 0351, 0246, 0254,
+  'G', 0, 0, 0,
+  'G', 0, 0, 0,
+  'G', 0, 0, 0,
+  'G', 0, 0, 0,
+   0,
+  '+', 0346, 0210, 0220, // helper
+  '@', 0346, 0211, 0223,
+  'p', 0346, 0211, 0213, // player
+  ':', 0357, 0274, 0232,
+  '-', 0344, 0272, 0206,
+   0
+};
+int NextUnit P((char **p));
+
+
+int kifu = 0;
+
+char
+GetKanji (char **p, int start)
+{
+    unsigned char *q = *(unsigned char **) p;
+    int i;
+    for(i=start; kanjiTab[i]; i+=4) {
+	if(q[0] == kanjiTab[i+1] && q[1] == kanjiTab[i+2] && q[2] == kanjiTab[i+3]) {
+	    (*p) += 3;
+	    return kanjiTab[i];
+	}
+    }
+
+    if((q[0] & 0xE0) == 0xC0 && (q[1] & 0xC0) == 0x80) (*p) += 2; else // for now skip unrecognized utf-8 characters
+    if((q[0] & 0xF0) == 0xE0 && (q[1] & 0xC0) == 0x80 && (q[2] & 0xC0) == 0x80) (*p) += 3; else
+    if((q[0] & 0xF8) == 0xF0 && (q[1] & 0xC0) == 0x80 && (q[2] & 0xC0) == 0x80 && (q[3] & 0xC0) == 0x80) (*p) += 4;
+    else if(**p & 0x80) return -1; // not valid utf-8
+
+    return 0; // unrecognized but valid kanji (skipped), or plain ASCII
+}
+
+int
+KifuMove (char **p)
+{
+    static char buf[MSG_SIZ];
+    char *ptr = buf+2, *q, k, first = **p;
+    k = GetKanji(p, XCO);
+    if(k < 0) { (*p)++; return Nothing; } // must try shift-JIS here
+    if(k >= '1' && k <= '9') {
+	buf[0] = k; buf[1] = GetKanji(p, YCO); // to-square coords
+    } else if(k == 'x') {
+	if(GetKanji(p, YCO) != ' ') (*p) -= 3; // skip spacer kanji after recapture 
+    } else if((k == 's' || k == 'g') && GetKanji(p, MISC) == 'p' && GetKanji(p, MISC) == ':') { // player name
+	snprintf(yytext, MSG_SIZ, "[%s \"", k == 's' ? "White" : "Black"); // construct PGN tag
+	for(q=yytext+8; **p && **p != '\n' && q < yytext + MSG_SIZ; ) *q++ = *(*p)++;
+	strcpy(q, "\"]\n"); parseStart = yytext; lastChar = '\n';
+	return PGNTag;
+    } else if(k == '-' && GetKanji(p, MISC) == '-') { // resign
+	int res;
+	parseStart = yytext;
+	if(quickFlag ? quickFlag&1 : WhiteOnMove(yyboardindex))
+	     res = BlackWins, strcpy(yytext, "0-1 {resign}"); 
+	else res = WhiteWins, strcpy(yytext, "1-0 {resign}");
+	return res;
+    } else {
+	if((first & 255) >= 0343) { kifu = 1; while(**p && **p != '\n') (*p)++; } // unrecognized Japanese kanji: skip to end of line
+	return Nothing;
+    }
+    k = GetKanji(p, PIECE);
+    buf[2] = k; // piece ID
+    k = GetKanji(p, MISC);
+    // here we must handle traditional disambiguation
+    if(k == '@') { // drop move
+	buf[3] = '@', buf[4] = buf[0], buf[5] = buf[1]; buf[6] = NULLCHAR;
+	if(appData.debugMode) fprintf(debugFP, "kifu drop %s\n", ptr);
+	return NextUnit(&ptr);
+    }
+    // k should be either 0 or '+' here
+    if(**p == '(' && (*p)[3] == ')') { // kif disambiguation
+	buf[3] = (*p)[1]; buf[4] = (*p)[2] + 'a' - '1'; buf[5] = buf[0]; buf[6] = buf[1]; buf[7] = k; buf[8] = NULLCHAR;
+	(*p) += 4; ptr++; // strip off piece name if we know full from-square
+	if(appData.debugMode) fprintf(debugFP, "kifu move %s\n", ptr);
+	return NextUnit(&ptr);
+    } else {
+	buf[3] = buf[0]; buf[4] = buf[1]; buf[5] = k; buf[6] = NULLCHAR;
+	if(appData.debugMode) fprintf(debugFP, "kif2 move %s\n", ptr);
+	return NextUnit(&ptr);
+    }
+}
+
 int
 ReadLine ()
 {   // Read one line from the input file, and append to the buffer
@@ -181,10 +309,10 @@ NextUnit (char **p)
 	}
 	parseStart = oldp = *p; // remember where we begin
 
-
 	// ********* attempt to recognize a SAN move in the leading non-blank text *****
 	piece = separator = promoted = slash = n = 0;
 	for(i=0; i<4; i++) coord[i] = -1, type[i] = NOTHING;
+	if(**p & 0x80) return KifuMove(p); // non-ascii. Could be some kanj notation for Shogi or Xiangqi
 	if(**p == '+') (*p)++, promoted++;
 	if(**p >= 'a' && **p <= 'z' && (*p)[1]== '@') piece =*(*p)++ + 'A' - 'a'; else
 	if(**p >= 'A' && **p <= 'Z') {
@@ -350,7 +478,7 @@ badMove:// we failed to find algebraic move
 
 	// ********* PGN tags ******************************************
 	if(**p == '[') {
-	    oldp = ++(*p);
+	    oldp = ++(*p); kifu = 0;
 	    if(Match("--", p)) { // "[--" could be start of position diagram
 		if(!Scan(']', p) && (*p)[-3] == '-' && (*p)[-2] == '-') return PositionDiagram;
 		*p = oldp;
@@ -444,6 +572,7 @@ badMove:// we failed to find algebraic move
 	    commentEnd = *p; if(i) return Comment; // return comment that runs to EOF immediately
 	}
         if(commentEnd) SkipWhite(p);
+	if(lastChar == '\n' && kifu && **p == '*') { while(**p && **p != '\n') (*p)++; return Comment; } // .kif comment
 	if(Match("*", p)) result = GameUnfinished;
 	else if(**p == '0') {
 	    if( Match("0-1", p) || Match("0/1", p) || Match("0:1", p) ||
@@ -590,6 +719,7 @@ yylex ()
 {   // this replaces the flex-generated parser
     int result = NextUnit(&parsePtr);
     char *p = parseStart, *q = yytext;
+    if(p == yytext) return result;   // kludge to allow kanji expansion
     while(p < parsePtr) *q++ = *p++; // copy the matched text to yytext[]
     *q = NULLCHAR;
     lastChar = q[-1];
