@@ -55,6 +55,7 @@ static char fromString = 0, lastChar = '\n';
 #define YCO   53
 #define PIECE 94
 #define MISC 155
+#define JIS  200
 
 unsigned char kanjiTab[] = {
   '1', 0357, 0274, 0221, // kanji notation for arabic digits
@@ -91,11 +92,11 @@ unsigned char kanjiTab[] = {
   'N', 0346, 0241, 0202,
   'L', 0351, 0246, 0231,
   'P', 0346, 0255, 0251,
-  'D', 0351, 0276, 0215,
-  'H', 0351, 0246, 0254,
-  'G', 0, 0, 0,
-  'G', 0, 0, 0,
-  'G', 0, 0, 0,
+  'r', 0351, 0276, 0215,
+  'b', 0351, 0246, 0254,
+  'p', 0343, 0201, 0250,
+  'r', 0347, 0253, 0234,
+  '+', 0346, 0210, 0220,
   'G', 0, 0, 0,
    0,
   '+', 0346, 0210, 0220, // helper
@@ -103,10 +104,72 @@ unsigned char kanjiTab[] = {
   'p', 0346, 0211, 0213, // player
   ':', 0357, 0274, 0232,
   '-', 0344, 0272, 0206,
-   0
+  'f', 0344, 0270, 0212,
+  's', 0345, 0257, 0204,
+  'b', 0345, 0274, 0225,
+  'r', 0345, 0267, 0246,
+  'l', 0345, 0217, 0263,
+  'v', 0347, 0233, 0264,
+   0,
+   // shift-JIS
+  '1', 0202, 0120, 0,
+  '2', 0202, 0121, 0,
+  '3', 0202, 0122, 0,
+  '4', 0202, 0123, 0,
+  '5', 0202, 0124, 0,
+  '6', 0202, 0125, 0,
+  '7', 0202, 0126, 0,
+  '8', 0202, 0127, 0,
+  '9', 0202, 0130, 0,
+  'x', 0223, 0257, 0,
+  's', 0220, 0346, 0,
+  'g', 0214, 0343, 0,
+  '-', 0223, 0212, 0,
+   0,
+  'a', 0210, 0352, 0, 
+  'b', 0223, 0361, 0, 
+  'c', 0216, 0117, 0, 
+  'd', 0216, 0154, 0, 
+  'e', 0214, 0334, 0, 
+  'f', 0230, 0132, 0, 
+  'g', 0216, 0265, 0, 
+  'h', 0224, 0252, 0, 
+  'i', 0213, 0343, 0, 
+  ' ', 0201, 0100, 0, 
+   0,
+  'K', 0213, 0312, 0, 
+  'K', 0213, 0312, 0, 
+  'G', 0213, 0340, 0, 
+  'S', 0213, 0342, 0, 
+  'R', 0224, 0362, 0, 
+  'B', 0212, 0160, 0,
+  'N', 0225, 0340, 0, 
+  'L', 0215, 0201, 0, 
+  'P', 0214, 0152, 0, 
+  'r', 0224, 0156, 0, 
+  'b', 0227, 0264, 0, 
+  'p', 0202, 0306, 0, 
+  'r', 0227, 0263, 0, 
+  '+', 0220, 0254, 0, 
+  'G', 0, 0, 0, 
+   0,
+  '+', 0220, 0254, 0, 
+  '@', 0221, 0305, 0, 
+//  'p', 0214, 0343, 0,
+  'p', 0216, 0350, 0,
+  ':', 0201, 0106, 0,
+  '-', 0227, 0271, 0,
+  'f', 0217, 0343, 0,
+  's', 0212, 0361, 0,
+  'b', 0210, 0370, 0,
+  'r', 0215, 0266, 0,
+  'l', 0211, 0105, 0,
+  'v', 0222, 0274, 0,
+   0,
+     
 };
-int NextUnit P((char **p));
 
+int NextUnit P((char **p));
 
 int kifu = 0;
 
@@ -115,9 +178,23 @@ GetKanji (char **p, int start)
 {
     unsigned char *q = *(unsigned char **) p;
     int i;
+
+    if((*q & 0x80) == 0) return 0; // plain ASCII, refuse to parse
+fprintf(debugFP, "kanji %03o %03o\n", *q, q[1]);
+    if((**p & 0xC0) == 0x80) { // this is an illegal starting code in utf-8, so assume shift-JIS
+	for(i=start+JIS; kanjiTab[i]; i+=4) {
+	    if(q[0] == kanjiTab[i+1] && q[1] == kanjiTab[i+2]) {
+		(*p) += 2; kifu = 0x80;
+		return kanjiTab[i];
+	    }
+	}
+	(*p) += (kifu ? 2 : 1); // assume this is an unrecognized kanji when reading kif files
+	return 0;
+    }
+
     for(i=start; kanjiTab[i]; i+=4) {
 	if(q[0] == kanjiTab[i+1] && q[1] == kanjiTab[i+2] && q[2] == kanjiTab[i+3]) {
-	    (*p) += 3;
+	    (*p) += 3; kifu = 0x80;
 	    return kanjiTab[i];
 	}
     }
@@ -134,7 +211,8 @@ int
 KifuMove (char **p)
 {
     static char buf[MSG_SIZ];
-    char *ptr = buf+2, *q, k, first = **p;
+    char *ptr = buf+3, *q, k;
+    int wom = quickFlag ? quickFlag&1 : WhiteOnMove(yyboardindex);
     k = GetKanji(p, XCO);
     if(k < 0) { (*p)++; return Nothing; } // must try shift-JIS here
     if(k >= '1' && k <= '9') {
@@ -143,37 +221,62 @@ KifuMove (char **p)
 	if(GetKanji(p, YCO) != ' ') (*p) -= 3; // skip spacer kanji after recapture 
     } else if((k == 's' || k == 'g') && GetKanji(p, MISC) == 'p' && GetKanji(p, MISC) == ':') { // player name
 	snprintf(yytext, MSG_SIZ, "[%s \"", k == 's' ? "White" : "Black"); // construct PGN tag
-	for(q=yytext+8; **p && **p != '\n' && q < yytext + MSG_SIZ; ) *q++ = *(*p)++;
+	for(q=yytext+8; **p && **p != '\n' && **p != '\r' && q < yytext + MSG_SIZ; ) *q++ = *(*p)++;
 	strcpy(q, "\"]\n"); parseStart = yytext; lastChar = '\n';
 	return PGNTag;
     } else if(k == '-' && GetKanji(p, MISC) == '-') { // resign
 	int res;
 	parseStart = yytext;
-	if(quickFlag ? quickFlag&1 : WhiteOnMove(yyboardindex))
+	if(wom)
 	     res = BlackWins, strcpy(yytext, "0-1 {resign}"); 
 	else res = WhiteWins, strcpy(yytext, "1-0 {resign}");
 	return res;
     } else {
-	if((first & 255) >= 0343) { kifu = 1; while(**p && **p != '\n') (*p)++; } // unrecognized Japanese kanji: skip to end of line
+	while(**p && **p != '\n') (*p)++; // unrecognized Japanese kanji: skip to end of line
 	return Nothing;
     }
-    k = GetKanji(p, PIECE);
-    buf[2] = k; // piece ID
+    buf[3] = GetKanji(p, PIECE); // piece ID
+    if(buf[3] == '+') buf[2] = '+', buf[3] = GetKanji(p, PIECE); // +N, +L, +S
     k = GetKanji(p, MISC);
-    // here we must handle traditional disambiguation
     if(k == '@') { // drop move
-	buf[3] = '@', buf[4] = buf[0], buf[5] = buf[1]; buf[6] = NULLCHAR;
+	buf[4] = '@', buf[5] = buf[0], buf[6] = buf[1]; buf[7] = NULLCHAR;
 	if(appData.debugMode) fprintf(debugFP, "kifu drop %s\n", ptr);
 	return NextUnit(&ptr);
     }
-    // k should be either 0 or '+' here
+
+    kifu = 0x80;
+    do { // read disambiguation (and promotion) kanji
+	switch(k) {
+	  case '+': kifu |= 1; break;
+	  case 'f': kifu |= 2; break;
+	  case 'b': kifu |= 4; break;
+	  case 's': kifu |= 8; break;
+	  case 'l': kifu |= 0x10; break;
+	  case 'r': kifu |= 0x20; break;
+	  case 'v': kifu |= 0x40; break;
+	}
+    } while(k = GetKanji(p, MISC));
+
     if(**p == '(' && (*p)[3] == ')') { // kif disambiguation
-	buf[3] = (*p)[1]; buf[4] = (*p)[2] + 'a' - '1'; buf[5] = buf[0]; buf[6] = buf[1]; buf[7] = k; buf[8] = NULLCHAR;
+	buf[4] = (*p)[1]; buf[5] = (*p)[2] + 'a' - '1'; buf[6] = buf[0]; buf[7] = buf[1]; buf[8] = (kifu & 1)*'+'; buf[9] = NULLCHAR;
 	(*p) += 4; ptr++; // strip off piece name if we know full from-square
 	if(appData.debugMode) fprintf(debugFP, "kifu move %s\n", ptr);
 	return NextUnit(&ptr);
-    } else {
-	buf[3] = buf[0]; buf[4] = buf[1]; buf[5] = k; buf[6] = NULLCHAR;
+    } else { // kif2
+	char *q = buf+4;
+	if(islower(buf[3])) // kludge: kanji for promoted types translate as lower case
+	    buf[3] += 'A' - 'a', buf[2] = '+', ptr--;        // so prefix with '+'
+	if(kifu * ~1) { // disambiguation was given, and thus is probably needed
+	    if(buf[3] != 'B' && buf[3] != 'R') {                // stepper, so distance must be <= 1 (N or L never need vertical disambiguation!)
+		if(kifu & 0x10) *q++ = buf[0] - (wom ? -1 : 1); // translate left/right/straight to PSN file disambiguators
+		if(kifu & 0x20) *q++ = buf[0] + (wom ? -1 : 1);
+		if(kifu & 0x40) *q++ = buf[0], kifu |= 2;       // kludge: 'straight' only needs disambiguation if forward!
+		if(kifu & 2) *q++ = buf[1] + (wom ? -1 : 1);    // translate forward/backward/sideway to PSN rank disambiguators
+		if(kifu & 4) *q++ = buf[1] - (wom ? -1 : 1);
+		if(kifu & 8) *q++ = buf[1];
+	    } // for B, R, +B and +R it gets ugly, as we cannot deduce the distance, and the Disambiguate callback has to directly look at 'kifu'
+	}
+	*q++ = buf[0]; *q++ = buf[1]; *q++ = (kifu & 1)*'+'; *q = NULLCHAR;
 	if(appData.debugMode) fprintf(debugFP, "kif2 move %s\n", ptr);
 	return NextUnit(&ptr);
     }
@@ -547,7 +650,7 @@ badMove:// we failed to find algebraic move
 	        return (int) LegalityTest(boards[yyboardindex],
 			      PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: e.p.!
 			      rf, ff, rt, ft, promo);
-	    }
+	    } else if(Match("01", p)) return Nothing; // prevent this from being mistaken for move number 1
 	}
 
 
@@ -658,6 +761,7 @@ badMove:// we failed to find algebraic move
 	    *p = oldp; // we might need to re-match the skipped stuff
 	}
 
+	if(Match("---", p)) { while(**p == '-') (*p)++; return Nothing; } // prevent separators parsing as null move
 	if(Match("@@@@", p) || Match("--", p) || Match("Z0", p) || Match("pass", p) || Match("null", p)) {
 	    strncpy(currentMoveString, "@@@@", 5);
 	    return yyboardindex & F_WHITE_ON_MOVE ? WhiteDrop : BlackDrop;

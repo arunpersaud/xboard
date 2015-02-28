@@ -1973,6 +1973,7 @@ DisambiguateCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
 {
     register DisambiguateClosure *cl = (DisambiguateClosure *) closure;
     int wildCard = FALSE; ChessSquare piece = board[rf][ff];
+    extern int kifu; // in parser.c
 
     // [HGM] wild: for wild-card pieces rt and rf are dummies
     if(piece == WhiteFalcon || piece == BlackFalcon ||
@@ -1989,6 +1990,18 @@ DisambiguateCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
 	(cl->ftIn == -1 || cl->ftIn == ft || wildCard)) {
 
 	if(cl->count && rf == cl->rf && ff == cl->ff) return; // duplicate move
+
+	if(cl->count == 1 && kifu & 0x7E && cl->rfIn == -1 && cl->ffIn == -1) { // traditional Shogi disambiguation required
+	    int this = 1, other = 1;
+	    if(kifu & 2) this &= (flags & 1 ? rt > rf : rt < rf), other &= (flags & 1 ? cl->rt > cl->rf : cl->rt < cl->rf);
+	    if(kifu & 4) this &= (flags & 1 ? rt < rf : rt > rf), other &= (flags & 1 ? cl->rt < cl->rf : cl->rt > cl->rf);
+	    if(kifu & 8) this &= (rf == rt), other &= (cl->rt == cl->rf);
+	    if(kifu & 0x10) this &= (flags & 1 ? ft <= ff : ft >= ff), other &= (flags & 1 ? cl->ft <= cl->ff : cl->ft >= cl->ff);
+	    if(kifu & 0x20) this &= (flags & 1 ? ft >= ff : ft <= ff), other &= (flags & 1 ? cl->ft >= cl->ff : cl->ft <= cl->ff);
+	    if(kifu & 0x40) this &= (ft == ff), other &= (cl->ft == cl->ff); // should never be used
+	    if(!other) cl->count--; // the old move did not satisfy the requested relative position, erase it
+	    if(!this) return;       // the current move does not satisfy the requested relative position, ignore it
+	}
 
 	cl->count++;
 	if(cl->count == 1 || board[rt][ft] != EmptySquare) {
