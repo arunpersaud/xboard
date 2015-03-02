@@ -634,6 +634,7 @@ ArgDescriptor argDescriptors[] = {
   { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },
   { "boardWidth", ArgInt, (void *) &appData.NrFiles, FALSE, (ArgIniType) -1 },
   { "boardHeight", ArgInt, (void *) &appData.NrRanks, FALSE, (ArgIniType) -1 },
+  { "rankOffset", ArgInt, (void *) &appData.rankOffset, FALSE, (ArgIniType) 0 },
   { "holdingsSize", ArgInt, (void *) &appData.holdingsSize, FALSE, (ArgIniType) -1 },
   { "defaultMatchGames", ArgInt, (void *) &appData.defaultMatchGames, TRUE, (ArgIniType) 10 },
   { "matchPause", ArgInt, (void *) &appData.matchPause, TRUE, (ArgIniType) 10000 },

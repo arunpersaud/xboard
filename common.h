@@ -186,7 +186,7 @@ typedef char *String;
 #define EP_FILE      CASTLING][(BOARD_FILES-3) /* [HGM] in upper rank        */
 #define EP_STATUS    CASTLING][(BOARD_FILES-2) /* [HGM] in upper rank        */
 #define HOLDINGS_SET CASTLING][(BOARD_FILES-1) /* [HGM] in upper-right corner*/
-#define ONE          ('1'-(BOARD_HEIGHT==10))  /* [HGM] foremost board rank  */
+#define ONE          ('1'-(BOARD_HEIGHT==10)-appData.rankOffset)  /* [HGM] foremost board rank  */
 #define AAA          ('a'-BOARD_LEFT)          /* [HGM] leftmost board file  */
 #define VIRGIN_W                 1             /* [HGM] flags in Board[VIRGIN][X] */
 #define VIRGIN_B                 2
@@ -689,6 +689,7 @@ typedef struct {
     /* [HGM] Board size */
     int NrFiles;
     int NrRanks;
+    int rankOffset;
     int holdingsSize;
     int matchPause;
     char * pieceToCharTable;
