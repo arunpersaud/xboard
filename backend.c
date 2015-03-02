@@ -12698,7 +12698,10 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
     int numPGNTags = 0;
     int err, pos = -1;
     GameMode oldGameMode;
-    VariantClass oldVariant = gameInfo.variant; /* [HGM] PGNvariant */
+    VariantClass v, oldVariant = gameInfo.variant; /* [HGM] PGNvariant */
+    char oldName[MSG_SIZ];
+
+    safeStrCpy(oldName, engineVariant, MSG_SIZ); v = oldVariant;
 
     if (appData.debugMode)
 	fprintf(debugFP, "LoadGame(): on entry, gameMode %d\n", gameMode);
@@ -13056,6 +13059,10 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	StartChessProgram(&first);
     }
     InitChessProgram(&first, FALSE);
+    if(gameInfo.variant == VariantUnknown && *oldName) {
+	safeStrCpy(engineVariant, oldName, MSG_SIZ);
+	gameInfo.variant = v;
+    }
     SendToProgram("force\n", &first);
     if (startedFromSetupPosition) {
 	SendBoard(&first, forwardMostMove);
@@ -13248,8 +13255,8 @@ LoadPosition (FILE *f, int positionNumber, char *title)
 	DisplayError(_("Position not found in file"), 0);
 	return FALSE;
     }
-    // [HGM] FEN can begin with digit, any piece letter valid in this variant, or a + for Shogi promoted pieces
-    fenMode = line[0] >= '0' && line[0] <= '9' || line[0] == '+' || CharToPiece(line[0]) != EmptySquare;
+    // [HGM] FEN can begin with digit, any piece letter valid in this variant, or a + for Shogi promoted pieces (or * for blackout)
+    fenMode = line[0] >= '0' && line[0] <= '9' || line[0] == '+' || line[0] == '*' || CharToPiece(line[0]) != EmptySquare;
 
     if (pn >= 2) {
 	if (fenMode || line[0] == '#') pn--;
