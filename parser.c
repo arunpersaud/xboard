@@ -675,7 +675,12 @@ badMove:// we failed to find algebraic move
 	    commentEnd = *p; if(i) return Comment; // return comment that runs to EOF immediately
 	}
         if(commentEnd) SkipWhite(p);
-	if(lastChar == '\n' && kifu && **p == '*') { while(**p && **p != '\n') (*p)++; return Comment; } // .kif comment
+	if(kifu && **p == '*') { // .kif comment
+	    char *q = yytext;
+	    while(**p && **p != '\n') { if(q < yytext + 10*MSG_SIZ-3) *q++ = **p; (*p)++; }
+	    parseStart = yytext; *yytext = '{'; strcpy(q, "}\n"); // wrap in braces
+	    return Comment;
+	}
 	if(Match("*", p)) result = GameUnfinished;
 	else if(**p == '0') {
 	    if( Match("0-1", p) || Match("0/1", p) || Match("0:1", p) ||
