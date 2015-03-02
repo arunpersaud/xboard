@@ -359,6 +359,8 @@ GameListBuild (FILE *f)
         case GameIsDrawn:
         case GameUnfinished:
 	    if(!currentListGame) break;
+	    if(currentListGame->gameInfo.result == GameUnfinished)
+		currentListGame->gameInfo.result = cm; // correct result tag with actual result
 	    if (currentListGame->gameInfo.resultDetails != NULL) {
 		free(currentListGame->gameInfo.resultDetails);
 	    }

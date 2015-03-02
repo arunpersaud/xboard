@@ -228,8 +228,8 @@ KifuMove (char **p)
 	int res;
 	parseStart = yytext;
 	if(wom)
-	     res = BlackWins, strcpy(yytext, "0-1 {resign}"); 
-	else res = WhiteWins, strcpy(yytext, "1-0 {resign}");
+	     res = BlackWins, strcpy(yytext, "{sente resigns} 0-1"); 
+	else res = WhiteWins, strcpy(yytext, "{gote resigns} 1-0");
 	return res;
     } else {
 	while(**p && **p != '\n') (*p)++; // unrecognized Japanese kanji: skip to end of line
