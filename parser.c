@@ -180,7 +180,6 @@ GetKanji (char **p, int start)
     int i;
 
     if((*q & 0x80) == 0) return 0; // plain ASCII, refuse to parse
-fprintf(debugFP, "kanji %03o %03o\n", *q, q[1]);
     if((**p & 0xC0) == 0x80) { // this is an illegal starting code in utf-8, so assume shift-JIS
 	for(i=start+JIS; kanjiTab[i]; i+=4) {
 	    if(q[0] == kanjiTab[i+1] && q[1] == kanjiTab[i+2]) {
