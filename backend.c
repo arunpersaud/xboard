@@ -5947,23 +5947,39 @@ SetUpShuffle (Board board, int number)
 }
 
 int
+ptclen (const char *s)
+{
+    int n = 0;
+    while(*s) n += (*s != '\'' && *s != '"' && *s != '`' && *s != '!'), s++;
+    return n;
+}
+
+int
 SetCharTable (char *table, const char * map)
 /* [HGM] moved here from winboard.c because of its general usefulness */
 /*       Basically a safe strcpy that uses the last character as King */
 {
     int result = FALSE; int NrPieces;
 
-    if( map != NULL && (NrPieces=strlen(map)) <= (int) EmptySquare
+    if( map != NULL && (NrPieces=ptclen(map)) <= (int) EmptySquare
                     && NrPieces >= 12 && !(NrPieces&1)) {
-        int i; /* [HGM] Accept even length from 12 to 34 */
+        int i, j = 0; /* [HGM] Accept even length from 12 to 88 */
 
         for( i=0; i<(int) EmptySquare; i++ ) table[i] = '.';
         for( i=0; i<NrPieces/2-1; i++ ) {
-            table[i] = map[i];
-            table[i + (int)BlackPawn - (int) WhitePawn] = map[i+NrPieces/2];
+            if(map[j] == ':') i = CHUPROMOTED WhitePawn, j++;
+            table[i] = map[j++];
+            if(map[j] == '\'') table[i] += 64;
+            if(map[j] == '!') table[i] += 128;
         }
-        table[(int) WhiteKing]  = map[NrPieces/2-1];
-        table[(int) BlackKing]  = map[NrPieces-1];
+        table[(int) WhiteKing]  = map[j++];
+        for( i=0; i<NrPieces/2-1; i++ ) {
+            if(map[j] == ':') i = CHUPROMOTED BlackPawn, j++;
+            table[WHITE_TO_BLACK i] = map[j++];
+            if(map[j] == '\'') table[WHITE_TO_BLACK i] += 64;
+            if(map[j] == '!') table[WHITE_TO_BLACK i] += 128;
+        }
+        table[(int) BlackKing]  = map[j++];
 
         result = TRUE;
     }
