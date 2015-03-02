@@ -328,7 +328,8 @@ hash (int moveNr)
 		    pieceGroup = p_enc / 12;
 		    p_enc      = p_enc % 12;
 		    Zobrist = RandomPiece[64*p_enc + (squareNr & 63)];
-		    switch(pieceGroup) {
+		    if(pieceGroup & 4) Zobrist *= 987654321;
+		    switch(pieceGroup & 3) {
 			case 1: // pieces 5-10 (FEACWM)
 				Zobrist = (Zobrist << 16) ^ (Zobrist >> 48);
 				break;
@@ -339,7 +340,8 @@ hash (int moveNr)
 				Zobrist = (Zobrist << 48) ^ (Zobrist >> 16);
 				break;
 		    }
-		    if(squareNr >= 64) Zobrist = (Zobrist << 8) ^ (Zobrist >> 56);
+		    if(squareNr &  64) Zobrist = (Zobrist << 8) ^ (Zobrist >> 56);
+		    if(squareNr & 128) Zobrist = (Zobrist << 4) ^ (Zobrist >> 60);
 		    // holdings have separate (additive) key, to encode presence of multiple pieces on same square
 		    if(f == BOARD_LEFT-2) holdingsKey += Zobrist * boards[moveNr][r][f+1]; else
 		    if(f == BOARD_RGHT+1) holdingsKey += Zobrist * boards[moveNr][r][f-1]; else
