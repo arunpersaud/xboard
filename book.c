@@ -313,8 +313,9 @@ hash (int moveNr)
             ChessSquare p = boards[moveNr][r][f];
 	    if(f == BOARD_LEFT-1 || f == BOARD_RGHT) continue; // between board and holdings
             if(p != EmptySquare){
-		    int j = (int)p;
+		    int j = (int)p, promoted = 0;
 		    j -= (j >= (int)BlackPawn) ? (int)BlackPawn :(int)WhitePawn;
+		    if(j >= CHUPROMOTED WhitePawn) promoted++, j -= CHUPROMOTED WhitePawn;
 		    if(j > (int)WhiteQueen) j++;  // make space for King
 		    if(j > (int) WhiteKing) j = (int)WhiteQueen + 1;
 		    p_enc = 2*j + ((int)p < (int)BlackPawn);
@@ -340,6 +341,7 @@ hash (int moveNr)
 				Zobrist = (Zobrist << 48) ^ (Zobrist >> 16);
 				break;
 		    }
+		    if(promoted) Zobrist ^= 123456789*RandomPiece[squareNr & 63];
 		    if(squareNr &  64) Zobrist = (Zobrist << 8) ^ (Zobrist >> 56);
 		    if(squareNr & 128) Zobrist = (Zobrist << 4) ^ (Zobrist >> 60);
 		    // holdings have separate (additive) key, to encode presence of multiple pieces on same square
