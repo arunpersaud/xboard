@@ -502,10 +502,18 @@ move_to_string (char move_s[6], uint16 move)
     move_s[2] = tf + 'a';
     move_s[3] = tr + '1' - (BOARD_HEIGHT > 9);
 
+    if(IS_SHOGI(gameInfo.variant) && p) {
+	if(p == 2) p = 10;     // Lion moves, for boards so big that 10 is out of range
+	else if(p != 7) p = 8; // use '+' for all others that do not explicitly defer
+    }
+
     // kludge: encode drops as special promotion code
     if(gameInfo.holdingsSize && p == 9) {
 	move_s[0] = f + '@'; // from square encodes piece type
 	move_s[1] = '@';     // drop symbol
+	p = 0;
+    } else if(p == 10) { // decode Lion move
+	
 	p = 0;
     }
 
@@ -716,7 +724,7 @@ char *
 MovesToText(int count, entry_t *entries)
 {
 	int i, totalWeight = 0;
-	char algMove[6];
+	char algMove[12];
 	char *p = (char*) malloc(40*count+1);
 	for(i=0; i<count; i++) totalWeight += entries[i].weight;
 	*p = 0;
@@ -741,6 +749,7 @@ CoordsToMove (int fromX, int fromY, int toX, int toY, char promoChar)
     int from = fromX - BOARD_LEFT + fromY * width;
     for(i=0; promote_pieces[i]; i++) if(promote_pieces[i] == promoChar) break;
     if(!promote_pieces[i]) i = 0;
+    else if(i == 9 && gameInfo.variant == VariantChu) i = 1; // on 12x12 only 3 promotion codes available, so use 1 to indicate promotion
     if(fromY == DROP_RANK) i = 9, from = ToUpper(PieceToChar(fromX)) - '@';
     return to + (i * width * BOARD_HEIGHT + from) * width * BOARD_HEIGHT;
 }
@@ -983,7 +992,6 @@ AddGameToBook (int always)
     }
 
     if(appData.debugMode) fprintf(debugFP, "add game to book (%d-%d)\n", backwardMostMove, forwardMostMove);
-
     for(i=backwardMostMove; i<forwardMostMove && i < 2*appData.bookDepth; i++)
 	AddToBook(i, WhiteOnMove(i) ? result : 2-result); // flip result when black moves
 }
