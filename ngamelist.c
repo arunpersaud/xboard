@@ -223,6 +223,7 @@ GameListReplace (int page)
 void
 GameListUpdate ()
 {
+    if(!DialogExists(GameListDlg)) return;
     GameListPrepare(False, False);
     GameListReplace(0);
 }
