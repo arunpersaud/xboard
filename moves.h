@@ -51,16 +51,19 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
+#define SUFFIXES "'!"
+
 extern ChessSquare PromoPiece P((ChessMove moveType));
 extern ChessMove PromoCharToMoveType P((int whiteOnMove, int promoChar));
 extern char PieceToChar P((ChessSquare p));
+extern char PieceSuffix P((ChessSquare p));
 extern ChessSquare CharToPiece P((int c));
 extern int PieceToNumber P((ChessSquare p));
 
 extern void CopyBoard P((Board to, Board from));
 extern int CompareBoards P((Board board1, Board board2));
-extern char pieceToChar[(int)EmptySquare+1];
-extern char pieceNickName[(int)EmptySquare];
+extern unsigned char pieceToChar[(int)EmptySquare+1];
+extern unsigned char pieceNickName[(int)EmptySquare];
 extern char *pieceDesc[(int)EmptySquare];
 extern Board initialPosition;
 extern Boolean pieceDefs;

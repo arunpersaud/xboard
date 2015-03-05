@@ -418,7 +418,10 @@ NextUnit (char **p)
 	if(**p == '+') (*p)++, promoted++;
 	if(**p >= 'a' && **p <= 'z' && (*p)[1]== '@') piece =*(*p)++ + 'A' - 'a'; else
 	if(**p >= 'A' && **p <= 'Z') {
+	     static char s[] = SUFFIXES;
+	     char *q;
 	     piece = *(*p)++; // Note we could test for 2-byte non-ascii names here
+	     if(q = strchr(s, **p)) (*p)++, piece += 64*(q - s + 1);
 	     if(**p == '/') slash = *(*p)++;
 	}
         while(n < 4) {
@@ -489,7 +492,7 @@ NextUnit (char **p)
 	    else if(toY >= BOARD_HEIGHT || toY < 0)   return ImpossibleMove; // vert off-board to-square
 	    if(toX < BOARD_LEFT || toX >= BOARD_RGHT) return ImpossibleMove;
 	    if(piece) {
-		cl.pieceIn = CharToPiece(wom ? piece : ToLower(piece));
+		cl.pieceIn = CharToPiece(wom ? piece : piece + 'a' - 'A');
 		if(cl.pieceIn == EmptySquare) return ImpossibleMove; // non-existent piece
 		if(promoted) cl.pieceIn = (ChessSquare) (CHUPROMOTED cl.pieceIn);
 	    } else cl.pieceIn = EmptySquare;

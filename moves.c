@@ -114,19 +114,32 @@ SameColor (ChessSquare piece1, ChessSquare piece2)
 #define SameColor(piece1, piece2) (piece1 < EmptySquare && piece2 < EmptySquare && (piece1 < BlackPawn) == (piece2 < BlackPawn) || piece1 == DarkSquare || piece2 == DarkSquare)
 #endif
 
-char pieceToChar[] = {
+unsigned char pieceToChar[EmptySquare+1] = {
                         'P', 'N', 'B', 'R', 'Q', 'F', 'E', 'A', 'C', 'W', 'M',
                         'O', 'H', 'I', 'J', 'G', 'D', 'V', 'L', 'S', 'U', 'K',
                         'p', 'n', 'b', 'r', 'q', 'f', 'e', 'a', 'c', 'w', 'm',
                         'o', 'h', 'i', 'j', 'g', 'd', 'v', 'l', 's', 'u', 'k',
                         'x' };
-char pieceNickName[EmptySquare];
+unsigned char pieceNickName[EmptySquare];
 
 char
 PieceToChar (ChessSquare p)
 {
+    int c;
     if((int)p < 0 || (int)p >= (int)EmptySquare) return('x'); /* [HGM] for safety */
-    return pieceToChar[(int) p];
+    c = pieceToChar[(int) p];
+    if(c & 128) c = c & 63 | 64;
+    return c;
+}
+
+char
+PieceSuffix (ChessSquare p)
+{
+    int c;
+    if((int)p < 0 || (int)p >= (int)EmptySquare) return 0; /* [HGM] for safety */
+    c = pieceToChar[(int) p];
+    if(c < 128) return 0;
+    return SUFFIXES[c - 128 >> 6];
 }
 
 int
@@ -2339,6 +2352,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
         }
         if(c=='+') *outp++ = c;
         *outp++ = ToUpper(PieceToChar(piece));
+        if(*outp = PieceSuffix(piece)) outp++;
 
 	if (cl.file || (cl.either && !cl.rank)) {
             *outp++ = ff + AAA;

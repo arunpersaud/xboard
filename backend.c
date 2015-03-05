@@ -5947,37 +5947,38 @@ SetUpShuffle (Board board, int number)
 }
 
 int
-ptclen (const char *s)
+ptclen (const char *s, char *escapes)
 {
     int n = 0;
-    while(*s) n += (*s != '\'' && *s != '"' && *s != '`' && *s != '!'), s++;
+    if(!*escapes) return strlen(s);
+    while(*s) n += (*s != ':' && !strchr(escapes, *s)), s++;
     return n;
 }
 
 int
-SetCharTable (char *table, const char * map)
+SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
 /* [HGM] moved here from winboard.c because of its general usefulness */
 /*       Basically a safe strcpy that uses the last character as King */
 {
     int result = FALSE; int NrPieces;
 
-    if( map != NULL && (NrPieces=ptclen(map)) <= (int) EmptySquare
+    if( map != NULL && (NrPieces=ptclen(map, escapes)) <= (int) EmptySquare
                     && NrPieces >= 12 && !(NrPieces&1)) {
         int i, j = 0; /* [HGM] Accept even length from 12 to 88 */
 
         for( i=0; i<(int) EmptySquare; i++ ) table[i] = '.';
         for( i=0; i<NrPieces/2-1; i++ ) {
-            if(map[j] == ':') i = CHUPROMOTED WhitePawn, j++;
+            char *p;
+            if(map[j] == ':' && *escapes) i = CHUPROMOTED WhitePawn, j++;
             table[i] = map[j++];
-            if(map[j] == '\'') table[i] += 64;
-            if(map[j] == '!') table[i] += 128;
+            if(p = strchr(escapes, map[j])) j++, table[i] += 64*(p - escapes + 1);
         }
         table[(int) WhiteKing]  = map[j++];
         for( i=0; i<NrPieces/2-1; i++ ) {
-            if(map[j] == ':') i = CHUPROMOTED BlackPawn, j++;
+            char *p;
+            if(map[j] == ':' && *escapes) i = CHUPROMOTED BlackPawn, j++;
             table[WHITE_TO_BLACK i] = map[j++];
-            if(map[j] == '\'') table[WHITE_TO_BLACK i] += 64;
-            if(map[j] == '!') table[WHITE_TO_BLACK i] += 128;
+            if(p = strchr(escapes, map[j])) j++, table[WHITE_TO_BLACK i] += 64*(p - escapes + 1);
         }
         table[(int) BlackKing]  = map[j++];
 
@@ -5985,6 +5986,12 @@ SetCharTable (char *table, const char * map)
     }
 
     return result;
+}
+
+int
+SetCharTable (unsigned char *table, const char * map)
+{
+    return SetCharTableEsc(table, map, "");
 }
 
 void
@@ -6160,8 +6167,8 @@ InitPosition (int redraw)
       gameInfo.boardWidth  = 12;
       gameInfo.boardHeight = 12;
       nrCastlingRights = 0;
-      SetCharTable(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN+.++.++++++++++.+++++K"
-                                "p.brqsexogcathd.vmlifn+.++.++++++++++.+++++k");
+      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN:+.++.++++++++++.+++++K"
+                                   "p.brqsexogcathd.vmlifn:+.++.++++++++++.+++++k", SUFFIXES);
       break;
     case VariantCourier:
       pieces = CourierArray;
@@ -6247,7 +6254,7 @@ InitPosition (int redraw)
 
     /* User pieceToChar list overrules defaults */
     if(appData.pieceToCharTable != NULL)
-        SetCharTable(pieceToChar, appData.pieceToCharTable);
+        SetCharTableEsc(pieceToChar, appData.pieceToCharTable, SUFFIXES);
 
     for( j=0; j<BOARD_WIDTH; j++ ) { ChessSquare s = EmptySquare;
 
@@ -8923,7 +8930,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
       *buf = NULLCHAR;
       if(sscanf(message, "setup (%s", buf) == 1) {
-        s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
+        s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTableEsc(pieceToChar, buf, SUFFIXES);
         ASSIGN(appData.pieceToCharTable, buf);
       }
       dummy = sscanf(message+s, "%dx%d+%d_%s", &w, &h, &hand, varName);
@@ -8934,7 +8941,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    appData.NrFiles = w; appData.NrRanks = h; appData.holdingsSize = hand;
 	    if(dummy == 4) gameInfo.variant = StringToVariant(varName);     // parent variant
           InitPosition(1); // calls InitDrawingSizes to let new parameters take effect
-          if(*buf) SetCharTable(pieceToChar, buf); // do again, for it was spoiled by InitPosition
+          if(*buf) SetCharTableEsc(pieceToChar, buf, SUFFIXES); // do again, for it was spoiled by InitPosition
           startedFromSetupPosition = FALSE;
         }
       }
@@ -17864,6 +17871,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
                     piece = (ChessSquare)(CHUDEMOTED piece);
                 }
                 *p++ = (piece == DarkSquare ? '*' : PieceToChar(piece));
+                if(*p = PieceSuffix(piece)) p++;
                 if(p[-1] == '~') {
                     /* [HGM] flag promoted pieces as '<promoted>~' (Crazyhouse) */
                     p[-1] = PieceToChar((ChessSquare)(CHUDEMOTED piece));
@@ -18083,13 +18091,20 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                 if (i != 0  && i != BOARD_HEIGHT-1) return FALSE; // only on back-rank
 		board[i][(j++)+gameInfo.holdingsWidth] = ClearBoard; p++; subst++; // placeHolder
             } else if (*p == '+' || isalpha(*p)) {
+		char *q, *s = SUFFIXES;
                 if (j >= gameInfo.boardWidth) return FALSE;
                 if(*p=='+') {
-                    piece = CharToPiece(*++p);
+                    char c = *++p;
+                    if(q = strchr(s, p[1])) p++;
+                    piece = CharToPiece(c + (q ? 64*(q - s + 1) : 0));
                     if(piece == EmptySquare) return FALSE; /* unknown piece */
                     piece = (ChessSquare) (CHUPROMOTED piece ); p++;
                     if(PieceToChar(piece) != '+') return FALSE; /* unpromotable piece */
-                } else piece = CharToPiece(*p++);
+                } else {
+                    char c = *p++;
+		    if(q = strchr(s, *p)) p++;
+		    piece = CharToPiece(c + (q ? 64*(q - s + 1) : 0));
+		}
 
                 if(piece==EmptySquare) return FALSE; /* unknown piece */
                 if(*p == '~') { /* [HGM] make it a promoted piece for Crazyhouse */
