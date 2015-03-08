@@ -500,9 +500,9 @@ move_to_string (char move_s[6], uint16 move)
     tr = t / width;
     tf = t % width;
     move_s[0] = ff + 'a';
-    move_s[1] = fr + '1' - (BOARD_HEIGHT > 9);
+    move_s[1] = fr + '1' - (BOARD_HEIGHT == 10);
     move_s[2] = tf + 'a';
-    move_s[3] = tr + '1' - (BOARD_HEIGHT > 9);
+    move_s[3] = tr + '1' - (BOARD_HEIGHT == 10);
 
     if(IS_SHOGI(gameInfo.variant) && p) {
 	if(p == 2) p = 10;     // Lion moves, for boards so big that 10 is out of range
