@@ -485,7 +485,7 @@ find_key (FILE *f, uint64 key, entry_t *entry)
 }
 
 void
-move_to_string (char move_s[6], uint16 move)
+move_to_string (char move_s[10], uint16 move)
 {
     int f,fr,ff,t,tr,tf,p;
     int width = BOARD_RGHT - BOARD_LEFT, size; // allow for alternative board formats
@@ -499,10 +499,7 @@ move_to_string (char move_s[6], uint16 move)
     t  = move % size;
     tr = t / width;
     tf = t % width;
-    move_s[0] = ff + 'a';
-    move_s[1] = fr + '1' - (BOARD_HEIGHT == 10);
-    move_s[2] = tf + 'a';
-    move_s[3] = tr + '1' - (BOARD_HEIGHT == 10);
+    snprintf(move_s, 9, "%c%d%c%d", ff + 'a', fr + 1 - (BOARD_HEIGHT == 10), tf + 'a', tr + 1 - (BOARD_HEIGHT == 10));
 
     if(IS_SHOGI(gameInfo.variant) && p) {
 	if(p == 2) p = 10;     // Lion moves, for boards so big that 10 is out of range
@@ -521,10 +518,9 @@ move_to_string (char move_s[6], uint16 move)
 
     // add promotion piece, if any
     if(p){
-        move_s[4] = promote_pieces[p];
-        move_s[5] = '\0';
-    }else{
-        move_s[4] = '\0';
+	int len = strlen(move_s);
+        move_s[len] = promote_pieces[p];
+        move_s[len+1] = '\0';
     }
 
     if(gameInfo.variant != VariantNormal) return;
