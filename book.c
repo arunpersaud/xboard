@@ -575,6 +575,8 @@ GetBookMoves (FILE *f, int moveNr, entry_t entries[], int max)
     return count;
 }
 
+static int dirty;
+
 int
 ReadFromBookFile (int moveNr, char *book, entry_t entries[])
 {   // retrieve all entries for given position from book in 'entries', return number.
@@ -582,6 +584,7 @@ ReadFromBookFile (int moveNr, char *book, entry_t entries[])
     static char curBook[MSG_SIZ];
 
     if(book == NULL) return -1;
+    if(dirty) { if(f) fclose(f); dirty = 0; f = NULL; }
     if(!f || strcmp(book, curBook)){ // keep book file open until book changed
 	strncpy(curBook, book, MSG_SIZ);
 	if(f) fclose(f);
@@ -873,6 +876,7 @@ SaveToBook (char *text)
 	    writepos += len2;
 	} while(len1);
     }
+    dirty = 1;
     fclose(f);
 }
 
