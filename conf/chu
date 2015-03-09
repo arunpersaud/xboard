@@ -28,7 +28,7 @@
 ;
 ; make the Lion roar on double captures
 ;
--roarSound roar.wav
+-soundRoar roar.wav
 ;
 ; redefine default engine
 ;

@@ -179,7 +179,7 @@ dist_xiangqi_DATA = themes/xiangqi/BlackAdvisor.svg  themes/xiangqi/WhiteAdvisor
 ### directory and files for themes (and other) configuration files
 
 themesdir = $(datadir)/games/xboard/themes/conf
-dist_themes_DATA = conf/shogi conf/xq conf/chu conf/ics conf/mini conf/mini.fen conf/sho conf/sho.fen
+dist_themes_DATA = conf/shogi conf/xq conf/ics conf/mini conf/mini.fen conf/sho conf/sho.fen
 
 ### directory and files for pixmaps
 
