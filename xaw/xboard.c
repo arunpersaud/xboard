@@ -2123,6 +2123,15 @@ ManProc ()
 }
 
 void
+InfoProc ()
+{
+    char buf[MSG_SIZ];
+    snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
+             INFODIR, INFOFILE);
+    system(buf);
+}
+
+void
 SetWindowTitle (char *text, char *title, char *icon)
 {
     Arg args[16];

@@ -255,8 +255,6 @@ osxapp: all-recursive install install-recursive
 	$(INSTALL) ./osxapp/XBoard.gtklauncher $(bindir)/XBoard
 	$(INSTALL) ./xboard $(bindir)/xboard-bin
 	cp -R ./osxapp/icons/. $(datarootdir)
-	$(INSTALL) ./osxapp/man.command    $(datarootdir)/bin/man.command
-	$(INSTALL) ./osxapp/info.command   $(datarootdir)/bin/info.command
 	sed -e 's?-soundProgram "aplay -q"?-soundProgram "afplay"?'\
             -e 's?-firstChessProgram fairymax?-firstChessProgram "./fairymax"?'\
 	    -e 's?-firstChessProgramNames {fairymax?-firstChessProgramNames {"fairymax" -fcp "./fairymax" -fd "~~/../../bin/fairymax"?'\
@@ -280,7 +278,7 @@ osxapp: all-recursive install install-recursive
 	echo '-autoLogo true' >>$(sysconfdir)/xboard.conf
 	echo '-logoDir "~~/logos"' >>$(sysconfdir)/xboard.conf
 	echo '-logoSize 100' >>$(sysconfdir)/xboard.conf
-	echo '-openCommand "cd %s/../../bin; open"' >>$(sysconfdir)/xboard.conf
+	echo '-openCommand "open"' >>$(sysconfdir)/xboard.conf
 	echo '-firstDirectory "~~/../../bin/fairymax"' >>$(sysconfdir)/xboard.conf
 	echo '-secondDirectory "~~/../../bin/fairymax"' >>$(sysconfdir)/xboard.conf
 	echo '-secondChessProgram "./fairymax"' >>$(sysconfdir)/xboard.conf

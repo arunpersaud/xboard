@@ -313,19 +313,6 @@ SaveSettingsProc ()
 }
 
 void
-InfoProc ()
-{
-    char buf[MSG_SIZ];
-#ifdef OSXAPP
-    snprintf(buf, MSG_SIZ, "%s ./info.command", appData.sysOpen);
-#else
-    snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
-	    INFODIR, INFOFILE);
-#endif
-    system(buf);
-}
-
-void
 BugReportProc ()
 {
     char buf[MSG_SIZ];

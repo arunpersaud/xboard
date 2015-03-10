@@ -1966,12 +1966,26 @@ ManProc ()
 {   // called from menu
 #ifdef OSXAPP
     char buf[MSG_SIZ];
-    snprintf(buf, MSG_SIZ, "%s ./man.command", appData.sysOpen);
+    snprintf(buf, MSG_SIZ, "osascript -e 'tell application \"Terminal\"' -e 'activate' -e 'do script \"man %s/../man/man6/xboard.6\"' -e 'end tell'", dataDir);
     system(buf);
 #else
     system("xterm -e man xboard &");
 #endif
 }
+
+void
+InfoProc ()
+{
+    char buf[MSG_SIZ];
+#ifdef OSXAPP
+    snprintf(buf, MSG_SIZ, "osascript -e 'tell application \"Terminal\"' -e 'activate' -e 'do script \"info -d %s/../info -f xboard.info\"' -e 'end tell'", dataDir);
+#else
+        snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
+                 INFODIR, INFOFILE);
+#endif
+    system(buf);
+}
+
 
 void
 SetWindowTitle (char *text, char *title, char *icon)
