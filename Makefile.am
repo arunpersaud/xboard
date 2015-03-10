@@ -295,9 +295,11 @@ osxapp: all-recursive install install-recursive
 	$(INSTALL) ./osxapp/launcher_rc $(datarootdir)/
 	$(INSTALL) /opt/local/etc/gtk-2.0/im-multipress.conf $(sysconfdir)/gtk-2.0
 	$(INSTALL) ./osxapp/gtkrc $(sysconfdir)/gtk-2.0/gtkrc
-	$(INSTALL) ./osxapp/pango.modules $(sysconfdir)/pango/pangorc
+	sed -e '/ModuleFiles = \/opt\/local\/etc\/pango\/pango.modules/d' </opt/local/etc/pango/pangorc >$(sysconfdir)/pango/pangorc
+	sed -e 's?/opt/local/lib/pango/1.8.0/modules/??' </opt/local/etc/pango/pango.modules >$(sysconfdir)/pango/pango.modules
 	cp -R /opt/local/lib/gtk-2.0 $(datarootdir)/lib
 	cp -R /opt/local/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
+	cp -R /opt/local/lib/pango $(datarootdir)/lib
 	cp -R /opt/local/share/themes/Mac $(datadir)/themes
 	cp -R ./osxapp/default/. $(gamedatadir)/themes/default
 	$(INSTALL) ./png/marble_d.png $(gamedatadir)/themes/textures
@@ -310,7 +312,12 @@ osxapp: all-recursive install install-recursive
 	dylibbundler -of -b -x $(datarootdir)/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/immodules/im-quartz.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libpixmap.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-arabic-lang.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-basic-coretext.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-basic-fc.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
+	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-indic-lang.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	find ./XBoard.app -name '*.a' -print0 | xargs -0 rm
+	find ./XBoard.app -name '*.la' -print0 | xargs -0 rm
 	rm -r $(datarootdir)/lib/gtk-2.0/include
 	rm -r $(datarootdir)/share/applications
 	rm $(datarootdir)/share/info/dir
