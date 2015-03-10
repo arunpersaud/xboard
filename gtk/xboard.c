@@ -168,7 +168,7 @@ extern char *getenv();
 #include "draw.h"
 
 #ifdef OSXAPP
-#  include <gtkmacintegration/gtkosxapplication.h>
+#  include <gtkmacintegration-gtk2/gtkosxapplication.h>
    // prevent pathname of positional file argument provided by OS X being be mistaken for option name
    // (price is that we won't recognize Windows option format anymore).
 #  define SLASH '-'
