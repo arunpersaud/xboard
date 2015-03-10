@@ -261,11 +261,8 @@ osxapp: all-recursive install install-recursive
 	    -e 's?"Fruit 2.1" -fcp fruit -fUCI?"fruit" -fcp "./fruit" -fd "~~/../../bin/fruit" -fUCI?'\
 	    -e '/"Crafty" -fcp crafty/d'\
 	    -e '/"GNU Chess" -fcp gnuchess/d'\
-	    -e 's?-polyglotDir ""?-polyglotDir "~~/../../bin"?'\
-	    -e 's?polyglot ?./polyglot ?'\
-	    -e 's?-icsNames {"fics" -icshost freechess.org -icshelper timeseal?-icsNames {"fics" -icshost 69.36.243.188 -icshelper ~~/../../bin/timeseal?'\
-	    -e 's?"icc" -icshost chessclub.com -icshelper timestamp?"icc" -icshost 207.99.83.228 -icshelper ~~/../../bin/timestamp?'\
-	    -e 's?"kc" -icshost alanimus.com -icshelper timeseal?"vics" -icshost winboard.nl -icshelper ~~/../../bin/timeseal?'\
+	    -e 's?"icc" -icshost chessclub.com -icshelper timestamp?"icc" -icshost 207.99.83.228 -icshelper timestamp?'\
+	    -e 's?"kc" -icshost alanimus.com -icshelper timeseal?"vics" -icshost winboard.nl -icshelper timeseal?'\
 	    -e '/; Save user settings./d'\
 	    -e '/; Must be last in file to make user options prevail over system-wide settings!/d'\
 	    -e '/-saveSettingsOnExit true/d'\
@@ -282,13 +279,14 @@ osxapp: all-recursive install install-recursive
 	echo '-firstDirectory "~~/../../bin/fairymax"' >>$(sysconfdir)/xboard.conf
 	echo '-secondDirectory "~~/../../bin/fairymax"' >>$(sysconfdir)/xboard.conf
 	echo '-secondChessProgram "./fairymax"' >>$(sysconfdir)/xboard.conf
+	echo '-uxiAdapter "uci2wb -%variant %fcp %fd"' >>$(sysconfdir)/xboard.conf
 	echo ';' >>$(sysconfdir)/xboard.conf
 	echo '; Save user settings.' >>$(sysconfdir)/xboard.conf
 	echo '; Must be last in file to make user options prevail over system-wide settings!' >>$(sysconfdir)/xboard.conf
 	echo ';' >>$(sysconfdir)/xboard.conf
 	echo '-saveSettingsOnExit true' >>$(sysconfdir)/xboard.conf
-	echo '-saveSettingsFile "~/Library/Preferences/XBoardOSX.conf"' >>$(sysconfdir)/xboard.conf
-	echo '-settingsFile "~/Library/Preferences/XBoardOSX.conf"' >>$(sysconfdir)/xboard.conf
+	echo '-saveSettingsFile "~/Library/Preferences/XBoard.conf"' >>$(sysconfdir)/xboard.conf
+	echo '-settingsFile "~/Library/Preferences/XBoard.conf"' >>$(sysconfdir)/xboard.conf
 
 	sed 's?/opt/local/lib?/tmp/skl/XBoard.app/Contents/Resources/lib?' </opt/local/etc/gtk-2.0/gdk-pixbuf.loaders >$(sysconfdir)/gtk-2.0/gdk-pixbuf.loaders
 	sed -e 's?/opt/local/lib?/tmp/skl/XBoard.app/Contents/Resources/lib?' -e 's?/opt/local/share/locale?/tmp/skl/XBoard.app/Contents/Resources/share/locale?' </opt/local/etc/gtk-2.0/gtk.immodules >$(sysconfdir)/gtk-2.0/gtk.immodules
