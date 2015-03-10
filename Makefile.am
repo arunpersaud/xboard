@@ -304,7 +304,7 @@ osxapp: all-recursive install install-recursive
 	$(INSTALL) ./png/marble_l.png $(gamedatadir)/themes/textures
 	$(INSTALL) ./png/xqwood.png $(gamedatadir)/themes/textures
 	cp -R ./osxapp/logos $(gamedatadir)/
-	cp -R ./osxapp/osx-localization/. $(datarootdir)/
+	cp -R /opt/local/share/strings/. $(datarootdir)/
 	for i in po/*gmo; do lang=`basename $$i .gmo`; $(INSTALL) /opt/local/share/locale/$$lang/LC_MESSAGES/gtk20.mo $(localedir)/$$lang/LC_MESSAGES/; done
 	dylibbundler -of -b -x $(bindir)/xboard-bin -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
