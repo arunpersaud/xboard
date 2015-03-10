@@ -5976,7 +5976,7 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
         table[(int) WhiteKing]  = map[j++];
         for( i=0; i<NrPieces/2-1; i++ ) {
             char *p;
-            if(map[j] == ':' && *escapes) i = CHUPROMOTED BlackPawn, j++;
+            if(map[j] == ':' && *escapes) i = CHUPROMOTED WhitePawn, j++;
             table[WHITE_TO_BLACK i] = map[j++];
             if(p = strchr(escapes, map[j])) j++, table[WHITE_TO_BLACK i] += 64*(p - escapes + 1);
         }
@@ -8954,9 +8954,10 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     }
     if(sscanf(message, "piece %s %s", buf2, buf1) == 2) {
       ChessSquare piece = WhitePawn;
-      char *p=buf2;
-      if(*p == '+') piece = CHUPROMOTED WhitePawn, p++;
-      piece += CharToPiece(*p) - WhitePawn;
+      char *p=buf2, *q, *s = SUFFIXES, ID = *p;
+      if(*p == '+') piece = CHUPROMOTED WhitePawn, ID = *++p;
+      if(q = strchr(s, p[1])) ID += 64*(q - s + 1), p++;
+      piece += CharToPiece(ID) - WhitePawn;
       if(cps != &first || appData.testLegality && *engineVariant == NULLCHAR
       /* always accept definition of  */       && piece != WhiteFalcon && piece != BlackFalcon
       /* wild-card pieces.            */       && piece != WhiteCobra  && piece != BlackCobra
@@ -9091,7 +9092,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	return;
     }
     if(!strncmp(message, "highlight ", 10)) {
-	if(appData.testLegality && appData.markers) return;
+	if((appData.testLegality || *engineVariant) && appData.markers) return;
 	MarkByFEN(message+10); // [HGM] alien: allow engine to mark board squares
 	return;
     }
