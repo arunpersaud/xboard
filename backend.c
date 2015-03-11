@@ -7056,6 +7056,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
     if(addToBookFlag) { // adding moves to book
 	char buf[MSG_SIZ], move[MSG_SIZ];
         CoordsToAlgebraic(boards[currentMove], PosFlags(currentMove), fromY, fromX, toY, toX, promoChar, move);
+	if(killX >= 0) snprintf(move, MSG_SIZ, "%c%dx%c%d-%c%d", fromX + AAA, fromY + ONE - '0', killX + AAA, killY + ONE - '0', toX + AAA, toY + ONE - '0');
 	snprintf(buf, MSG_SIZ, "  0.0%%     1  %s\n", move);
 	AddBookMove(buf);
 	addToBookFlag = FALSE;
@@ -8695,7 +8696,12 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	if(machineMove[strlen(machineMove)-1] == ',') { // move ends in coma: non-final leg of composite move
 	    safeStrCpy(firstLeg, machineMove, 20); // just remember it for processing when second leg arrives
 	    return;
-	} else if(firstLeg[0]) { // there was a previous leg;
+	}
+	if(p = strchr(machineMove, ',')) {         // we got both legs in one (happens on book move)
+	    safeStrCpy(firstLeg, machineMove, 20); // kludge: fake we received the first leg earlier, and clip it off
+	    safeStrCpy(machineMove, firstLeg + (p - machineMove) + 1, 20);
+	}
+	if(firstLeg[0]) { // there was a previous leg;
 	    // only support case where same piece makes two step
 	    char buf[20], *p = machineMove+1, *q = buf+1, f;
 	    safeStrCpy(buf, machineMove, 20);

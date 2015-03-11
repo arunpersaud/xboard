@@ -484,8 +484,11 @@ find_key (FILE *f, uint64 key, entry_t *entry)
     }
 }
 
+static int xStep[] = { 0, 1, 1, 1, 0,-1,-1,-1 };
+static int yStep[] = { 1, 1, 0,-1,-1,-1, 0, 1 };
+
 void
-move_to_string (char move_s[10], uint16 move)
+move_to_string (char move_s[20], uint16 move)
 {
     int f,fr,ff,t,tr,tf,p;
     int width = BOARD_RGHT - BOARD_LEFT, size; // allow for alternative board formats
@@ -512,7 +515,12 @@ move_to_string (char move_s[10], uint16 move)
 	move_s[1] = '@';     // drop symbol
 	p = 0;
     } else if(p == 10) { // decode Lion move
-	
+	int i = t & 7, j = t >> 3 & 7;
+	tf = ff + xStep[i] + xStep[j]; tr = fr + yStep[i] + yStep[j]; // calculate true to-square
+	snprintf(move_s, 20, "%c%d%c%d,%c%d%c%d", ff + 'a', fr + 1 - (BOARD_HEIGHT == 10),
+						  ff + xStep[i] + 'a', fr + yStep[i] + 1 - (BOARD_HEIGHT == 10),
+						  ff + xStep[i] + 'a', fr + yStep[i] + 1 - (BOARD_HEIGHT == 10),
+						  tf + 'a', tr + 1 - (BOARD_HEIGHT == 10) );
 	p = 0;
     }
 
@@ -730,8 +738,10 @@ MovesToText(int count, entry_t *entries)
 	for(i=0; i<count; i++) totalWeight += entries[i].weight;
 	*p = 0;
 	for(i=0; i<count; i++) {
-	    char buf[MSG_SIZ];
+	    char buf[MSG_SIZ], c1, c2, c3; int i1, i2, i3;
 	    move_to_string(algMove, entries[i].move);
+	    if(sscanf(algMove, "%c%d%*c%*d,%c%d%c%d", &c1, &i1, &c2, &i2, &c3, &i3) == 6)
+		snprintf(algMove, 12, "%c%dx%c%d-%c%d", c1, i1, c2, i2, c3, i3); // cast double-moves in format SAN parser will understand
 	    buf[0] = NULLCHAR;
 	    if(entries[i].learnCount || entries[i].learnPoints)
 		snprintf(buf, MSG_SIZ, " {%d/%d}", entries[i].learnPoints, entries[i].learnCount);
@@ -752,6 +762,18 @@ CoordsToMove (int fromX, int fromY, int toX, int toY, char promoChar)
     if(!promote_pieces[i]) i = 0;
     else if(i == 9 && gameInfo.variant == VariantChu) i = 1; // on 12x12 only 3 promotion codes available, so use 1 to indicate promotion
     if(fromY == DROP_RANK) i = 9, from = ToUpper(PieceToChar(fromX)) - '@';
+    if(killX >= 0) { // multi-leg move
+	int dx = killX - fromX, dy = killY - fromY;
+	for(i=0; i<8; i++) if(dx == xStep[i] && dy == yStep[i]) {
+	    int j;
+	    dx = toX - killX; dy = toY - killY;
+	    for(j=0; j<8; j++) if(dx == xStep[j] && dy == yStep[j]) {
+		// special encoding in to-square, with promoType = 2. Assumes board >= 64 squares!
+		return i + 8*j + (2 * width * BOARD_HEIGHT + from) * width * BOARD_HEIGHT;
+	    }
+	}
+	i = 0; // if not a valid Lion move, ignore kill-square and promoChar
+    }
     return to + (i * width * BOARD_HEIGHT + from) * width * BOARD_HEIGHT;
 }
 
@@ -772,6 +794,7 @@ TextToMoves (char *text, int moveNum, entry_t *entries)
 	    valid = ParseOneMove(text, moveNum, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
 	    text = strstr(text, yy_textstr) + strlen(yy_textstr); // skip what we parsed
 	    if(!valid || moveType != NormalMove && moveType != WhiteDrop && moveType != BlackDrop
+						&& moveType != FirstLeg
                                                 && moveType != WhitePromotion && moveType != BlackPromotion
                                                 && moveType != WhiteCapturesEnPassant && moveType != BlackCapturesEnPassant
                                                 && moveType != WhiteKingSideCastle && moveType != BlackKingSideCastle
@@ -783,7 +806,7 @@ TextToMoves (char *text, int moveNum, entry_t *entries)
 		entries[count].learnPoints = 0;
 		entries[count].learnCount  = 0;
 	    }
-	    entries[count].move = CoordsToMove(fromX, fromY, toX, toY, promoChar);
+	    entries[count].move = CoordsToMove(fromX, fromY, toX, toY, promoChar); killX = killY = -1;
 	    entries[count].key  = hashKey;
 	    entries[count].weight = w;
 	    count++;
