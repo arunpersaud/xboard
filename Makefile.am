@@ -300,8 +300,8 @@ osxapp: all-recursive install install-recursive
 	cp -R /opt/local/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
 	cp -R /opt/local/lib/pango $(datarootdir)/lib
 	cp -R /opt/local/share/themes/Mac $(datadir)/themes
-	cp -R ./osxapp/Mac/gtk-2.0 $(datadir)/themes/Mac
-	cp -R ./osxapp/default/. $(gamedatadir)/themes/default
+	cp -R ./osxapp/gtk2-themes/Mac/gtk-2.0 $(datadir)/themes/Mac
+	cp -R ./osxapp/themes/default/. $(gamedatadir)/themes/default
 	cp /opt/local/share/gtk-engines/murrine.xml $(datadir)/gtk-engines/murrine.xml
 	$(INSTALL) ./png/marble_d.png $(gamedatadir)/themes/textures
 	$(INSTALL) ./png/marble_l.png $(gamedatadir)/themes/textures
