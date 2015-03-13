@@ -162,10 +162,14 @@ SelectPieces(VariantClass v)
 	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteLion];
 	}
 	if(v == VariantChu) {
-	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteKing+1];
-	   pngPieceBitmaps[i][(int)WhiteUnicorn] = pngPieceBitmaps2[i][(int)WhiteCat];
-	   pngPieceBitmaps[i][(int)WhiteSilver]  = pngPieceBitmaps2[i][(int)WhiteSword];
-	   pngPieceBitmaps[i][(int)WhiteFalcon]  = pngPieceBitmaps2[i][(int)WhiteDagger];
+	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteClaw];
+	   pngPieceBitmaps[i][(int)WhiteClaw]    = pngPieceBitmaps2[i][(int)WhiteNightrider];
+	   pngPieceBitmaps[i][(int)WhiteUnicorn] = pngPieceBitmaps2[i][(int)WhiteHorned];
+	   pngPieceBitmaps[i][(int)WhiteSilver]  = pngPieceBitmaps2[i][(int)WhiteStag];
+	   pngPieceBitmaps[i][(int)WhiteFalcon]  = pngPieceBitmaps2[i][(int)WhiteEagle];
+	   pngPieceBitmaps[i][(int)WhiteHorned]  = pngPieceBitmaps2[i][(int)WhiteUnicorn];
+	   pngPieceBitmaps[i][(int)WhiteStag]    = pngPieceBitmaps2[i][(int)WhiteSilver];
+	   pngPieceBitmaps[i][(int)WhiteEagle]   = pngPieceBitmaps2[i][(int)WhiteFalcon];
 	}
     }
 }
@@ -282,9 +286,9 @@ CreatePNGBoard (char *s, int kind)
 
 char *pngPieceNames[] = // must be in same order as internal piece encoding
 { "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
-  "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
-  "GoldPawn", "HSword", "PromoHorse", "PromoDragon", "Leopard", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
-  "Dolphin", "Chancellor", "Unicorn", "Hawk", "Sword", "Crown", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
+  "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Crown", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
+  "GoldPawn", "Claw", "PromoHorse", "PromoDragon", "GoldLance", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
+  "Dolphin", "Sword", "Leopard", "HSword", "GoldSilver", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
   "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
