@@ -284,11 +284,12 @@ char *pngPieceNames[] = // must be in same order as internal piece encoding
 { "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Princess", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
   "GoldPawn", "HSword", "PromoHorse", "PromoDragon", "Leopard", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
-  "Dolphin", "Chancellor", "Unicorn", "Hawk", "Sword", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
+  "Dolphin", "Chancellor", "Unicorn", "Hawk", "Sword", "Crown", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
   "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
-char *backupPiece[] = { "King", "Queen", "Lion" }; // pieces that map on other when not kanji
+char *backupPiece[] = { "Princess", NULL, NULL, NULL, NULL, NULL, NULL,
+			NULL, NULL, NULL, NULL, NULL, NULL, "King", "Queen", "Lion" }; // pieces that map on other when not kanji
 
 RsvgHandle *
 LoadSVG (char *dir, int color, int piece, int retry)
@@ -299,9 +300,11 @@ LoadSVG (char *dir, int color, int piece, int retry)
   GError *svgerror=NULL;
   cairo_surface_t *img;
   cairo_t *cr;
+  char *name = (retry ? backupPiece[piece - WhiteGrasshopper] : pngPieceNames[piece]);
 
-    snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White",
-             retry ? backupPiece[piece - WhiteMonarch] : pngPieceNames[piece]);
+    if(!name) return NULL;
+
+    snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White", name);
 
     if(svg || *dir && (svg = rsvg_handle_new_from_file(buf, &svgerror))) {
 
@@ -319,7 +322,7 @@ LoadSVG (char *dir, int color, int piece, int retry)
 
       return svg;
     }
-    if(!retry && piece >= WhiteMonarch && piece <= WhiteNothing) // pieces that are only different in kanji sets
+    if(!retry && piece >= WhiteGrasshopper && piece <= WhiteNothing) // pieces that are only different in kanji sets
         return LoadSVG(dir, color, piece, 1);
     if(svgerror)
 	g_error_free(svgerror);
