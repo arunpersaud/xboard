@@ -1829,7 +1829,10 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
         if(cl.kind != NormalMove || promoChar == NULLCHAR || promoChar == '=') return cl.kind;
         if(promoChar != '+')
             return CharToPiece(promoChar) == EmptySquare ? ImpossibleMove : IllegalMove;
-        if(PieceToChar(CHUPROMOTED board[rf][ff]) != '+') return ImpossibleMove;
+        if(PieceToChar(CHUPROMOTED board[rf][ff]) != '+') {
+	    if(PieceToChar(CHUPROMOTED (board[rf][ff] < BlackPawn ? WhitePawn : BlackPawn)) != '.')
+	    return ImpossibleMove;
+	}
         return flags & F_WHITE_ON_MOVE ? WhitePromotion : BlackPromotion;
     } else
     if(gameInfo.variant == VariantShogi) {
