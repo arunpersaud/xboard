@@ -5334,11 +5334,11 @@ UploadGameEvent ()
     SendToICS(ics_type == ICS_ICC ? "tag result Game in progress\n" : "commit\n");
 }
 
-int killX = -1, killY = -1; // [HGM] lion: used for passing e.p. capture square to MakeMove
+int killX = -1, killY = -1, kill2X, kill2Y; // [HGM] lion: used for passing e.p. capture square to MakeMove
 int legNr = 1;
 
 void
-CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char move[7])
+CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char move[9])
 {
     if (rf == DROP_RANK) {
       if(ff == EmptySquare) sprintf(move, "@@@@\n"); else // [HGM] pass
@@ -5348,7 +5348,10 @@ CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char 
 	if (promoChar == 'x' || promoChar == NULLCHAR) {
 	  sprintf(move, "%c%c%c%c\n",
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt);
-	  if(killX >= 0 && killY >= 0) sprintf(move+4, ";%c%c\n", AAA + killX, ONE + killY);
+	  if(killX >= 0 && killY >= 0) {
+	    sprintf(move+4, ";%c%c\n", AAA + killX, ONE + killY);
+	    if(kill2X >= 0 && kill2Y >= 0) sprintf(move+7, "%c%c\n", AAA + killX, ONE + killY);
+	  }
 	} else {
 	    sprintf(move, "%c%c%c%c%c\n",
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt, promoChar);
@@ -7707,7 +7710,9 @@ printf("(%d,%d)-(%d,%d) %d %d\n",fromX,fromY,toX,toY,x,y);
 	if(marker[y][x] == 5) { // [HGM] lion: this was the release of a to-click or drag on a cyan square
 	  dragging *= 2;            // flag button-less dragging if we are dragging
 	  MarkTargetSquares(1);
-	  if(x == killX && y == killY) killX = killY = -1; else {
+	  if(x == killX && y == killY) killX = kill2X, killY = kill2Y, kill2X = kill2Y = -1; // cancel last kill
+	  else {
+	    kill2X = killX; kill2Y = killY;
 	    killX = x; killY = y;     //remeber this square as intermediate
 	    ReportClick("put", x, y); // and inform engine
 	    ReportClick("lift", x, y);
@@ -8692,7 +8697,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         if(cps->alphaRank) AlphaRank(machineMove, 4);
 
 	// [HGM] lion: (some very limited) support for Alien protocol
-	killX = killY = -1;
+	killX = killY = kill2X = kill2Y = -1;
 	if(machineMove[strlen(machineMove)-1] == ',') { // move ends in coma: non-final leg of composite move
 	    safeStrCpy(firstLeg, machineMove, 20); // just remember it for processing when second leg arrives
 	    return;
@@ -8720,8 +8725,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  snprintf(buf1, MSG_SIZ*10, _("Illegal move \"%s\" from %s machine"),
 		    machineMove, _(cps->which));
 	    DisplayMoveError(buf1);
-            snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c via %c%c) res=%d",
-                    machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, killX+AAA, killY+ONE, moveType);
+            snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c via %c%c, %c%c) res=%d",
+                    machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, killX+AAA, killY+ONE, kill2X+AAA, kill2Y+ONE, moveType);
 	    if (gameMode == TwoMachinesPlay) {
 	      GameEnds(machineWhite ? BlackWins : WhiteWins,
                        buf1, GE_XBOARD);
@@ -9098,7 +9103,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	return;
     }
     if(!strncmp(message, "highlight ", 10)) {
-	if((appData.testLegality || *engineVariant) && appData.markers) return;
+	if(appData.testLegality && !*engineVariant && appData.markers) return;
 	MarkByFEN(message+10); // [HGM] alien: allow engine to mark board squares
 	return;
     }
@@ -9951,7 +9956,7 @@ ParseGameHistory (char *game)
 void
 ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 {
-  ChessSquare captured = board[toY][toX], piece, pawn, king, killed; int p, rookX, oldEP, epRank, berolina = 0;
+  ChessSquare captured = board[toY][toX], piece, pawn, king, killed, killed2; int p, rookX, oldEP, epRank, berolina = 0;
   int promoRank = gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand || gameInfo.variant == VariantChuChess ? 3 : 1;
 
     /* [HGM] compute & store e.p. status and castling rights for new position */
@@ -9973,11 +9978,14 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 //      ChessSquare victim;
       int i;
 
-      if( killX >= 0 && killY >= 0 ) // [HGM] lion: Lion trampled over something
+      if( killX >= 0 && killY >= 0 ) { // [HGM] lion: Lion trampled over something
 //           victim = board[killY][killX],
            killed = board[killY][killX],
            board[killY][killX] = EmptySquare,
            board[EP_STATUS] = EP_CAPTURE;
+           if( kill2X >= 0 && kill2Y >= 0)
+             killed2 = board[kill2Y][kill2X], board[kill2Y][kill2X] = EmptySquare;
+      }
 
       if( board[toY][toX] != EmptySquare ) {
            board[EP_STATUS] = EP_CAPTURE;
