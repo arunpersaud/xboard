@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xboard 4.8.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2014-09-29 21:06-0700\n"
-"PO-Revision-Date: 2015-04-17 22:30+0100\n"
+"PO-Revision-Date: 2015-04-24 19:08+0100\n"
 "Last-Translator: Roland Illig <roland.illig@gmx.de>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -112,19 +112,14 @@ msgid "Pick new game"
 msgstr "Wähle neues Spiel"
 
 #: backend.c:1561
-#, fuzzy
-#| msgid ""
-#| "You restarted an already completed tourney\n"
-#| "One more cycle will now be added to it\n"
-#| "Games commence in 10 sec"
 msgid ""
 "You restarted an already completed tourney.\n"
 "One more cycle will now be added to it.\n"
 "Games commence in 10 sec."
 msgstr ""
-"Ein schon beendetes Turnier wurde neu gestartet\n"
-"Eine neue Runde wird hinzugefügt\n"
-"Die Spiele werden in 10 Sekunden starten"
+"Sie haben ein Turnier neu gestartet, das schon beendet war.\n"
+"Eine neue Runde wird hinzugefügt.\n"
+"Die Spiele werden in 10 Sekunden starten."
 
 #: backend.c:1568
 #, c-format
@@ -708,16 +703,12 @@ msgid "Starting %s chess program"
 msgstr "Schachprogramm %s wird gestartet"
 
 #: backend.c:14625 backend.c:15783
-#, fuzzy
-#| msgid ""
-#| "Wait until your turn,\n"
-#| "or select Move Now"
 msgid ""
 "Wait until your turn,\n"
 "or select 'Move Now'."
 msgstr ""
-"Warte bis Sie am Zug sind\n"
-"oder wähle »Ziehe jetzt«"
+"Warten Sie, bis Sie am Zug sind,\n"
+"oder wählen Sie »Jetzt ziehen«."
 
 #: backend.c:14762
 msgid "Training mode off"
@@ -780,10 +771,8 @@ msgid "It is your turn"
 msgstr "Sie sind am Zug"
 
 #: backend.c:15881 backend.c:15888 backend.c:15974 backend.c:15981
-#, fuzzy
-#| msgid "Wait until your turn"
 msgid "Wait until your turn."
-msgstr "Warten Sie bis Sie am Zug sind"
+msgstr "Warten Sie, bis Sie am Zug sind."
 
 #: backend.c:15893
 msgid "No hint available"
@@ -939,10 +928,8 @@ msgid "Time Control"
 msgstr "Zeitkontrolle"
 
 #: dialogs.c:308
-#, fuzzy
-#| msgid "Common Engine ..."
 msgid "Common Engine"
-msgstr "Allgemein Schachprogramme…"
+msgstr "Allgemeines Schachprogramm"
 
 #: dialogs.c:309 dialogs.c:441
 msgid "General Options"
@@ -1019,7 +1006,7 @@ msgstr "Erlaube Varianten"
 
 #: dialogs.c:412
 msgid "Headers in Engine Output Window"
-msgstr ""
+msgstr "Kopfzeilen im Schachprogramm-Ausgabefenster"
 
 #: dialogs.c:413
 msgid "Hide Thinking from Human"
@@ -1071,27 +1058,27 @@ msgstr "Zeige Zielfeld"
 
 #: dialogs.c:426
 msgid "Sticky Windows"
-msgstr ""
+msgstr "Haftende Fenster"
 
 #: dialogs.c:427 menus.c:755
 msgid "Test Legality"
-msgstr ""
+msgstr "Auf erlaubte Züge prüfen"
 
 #: dialogs.c:428
 msgid "Top-Level Dialogs"
-msgstr ""
+msgstr "Haupt-Dialoge"
 
 #: dialogs.c:429
 msgid "Flash Moves (0 = no flashing):"
-msgstr ""
+msgstr "Züge blinken lassen (0 = nicht blinken):"
 
 #: dialogs.c:430
 msgid "Flash Rate (high = fast):"
-msgstr ""
+msgstr "Blinkgeschwindigkeit (hoch = schnell):"
 
 #: dialogs.c:431
 msgid "Animation Speed (high = slow):"
-msgstr ""
+msgstr "Animationsgeschwindigkeit (hoch = langsam):"
 
 #: dialogs.c:432
 msgid "Zoom factor in Evaluation Graph:"
@@ -1103,21 +1090,19 @@ msgstr "Normal"
 
 #: dialogs.c:453
 msgid "Makruk"
-msgstr ""
+msgstr "Makruk"
 
 #: dialogs.c:454
 msgid "FRC"
-msgstr ""
+msgstr "Schach960"
 
 #: dialogs.c:455
 msgid "Shatranj"
-msgstr ""
+msgstr "Schatrandsch"
 
 #: dialogs.c:456
-#, fuzzy
-#| msgid "no castle"
 msgid "Wild castle"
-msgstr "keine Rochade"
+msgstr ""
 
 #: dialogs.c:457
 msgid "Knightmate"
@@ -1129,19 +1114,19 @@ msgstr "Keine Rochade"
 
 #: dialogs.c:459
 msgid "Cylinder *"
-msgstr ""
+msgstr "Zylinder *"
 
 #: dialogs.c:460
 msgid "3-checks"
-msgstr ""
+msgstr "3-fach-Schach"
 
 #: dialogs.c:461
 msgid "berolina *"
-msgstr ""
+msgstr "Berolina *"
 
 #: dialogs.c:462
 msgid "atomic"
-msgstr ""
+msgstr "Atomschach"
 
 #: dialogs.c:463
 msgid "two kings"
@@ -1153,7 +1138,7 @@ msgstr " "
 
 #: dialogs.c:465
 msgid "Spartan"
-msgstr ""
+msgstr "Sparta-Schach"
 
 #: dialogs.c:466
 msgid "Board size ( -1 = default for selected variant):"
@@ -1169,67 +1154,67 @@ msgstr "Anzahl der Linien:"
 
 #: dialogs.c:469
 msgid "Holdings Size:"
-msgstr ""
+msgstr "Vorrats-Größe:"
 
 #: dialogs.c:471
 msgid ""
 "Variants marked with * can only be played\n"
 "with legality testing off."
 msgstr ""
+"Varianten, die mit * markiert sind, können nur gespielt\n"
+"werden, wenn die Prüfung auf erlaubte Züge ausgeschaltet ist."
 
 #: dialogs.c:473
 msgid "ASEAN"
-msgstr ""
+msgstr "ASEAN-Schach"
 
 #: dialogs.c:474
 msgid "Great Shatranj (10x8)"
-msgstr ""
+msgstr "Groß-Schatrandsch (10×8)"
 
 #: dialogs.c:475
 msgid "Seirawan"
-msgstr ""
+msgstr "Seiwaran"
 
 #: dialogs.c:476
 msgid "Falcon (10x8)"
-msgstr ""
+msgstr "Falken-Schach"
 
 #: dialogs.c:477
 msgid "Superchess"
-msgstr ""
+msgstr "Superschach"
 
 #: dialogs.c:478
 msgid "Capablanca (10x8)"
-msgstr ""
+msgstr "Capablanca (10×8)"
 
 #: dialogs.c:479
 msgid "Crazyhouse"
-msgstr ""
+msgstr "Crazyhouse"
 
 #: dialogs.c:480
 msgid "Gothic (10x8)"
-msgstr ""
+msgstr "Gothic (10×8)"
 
 #: dialogs.c:481
-#, fuzzy
-#| msgid "bughouse"
 msgid "Bughouse"
-msgstr "Tandemschach"
+msgstr "Bughouse"
 
 #: dialogs.c:482
 msgid "Janus (10x8)"
-msgstr ""
+msgstr "Janusschach (10×8)"
 
 #: dialogs.c:483
 msgid "Suicide"
-msgstr ""
+msgstr "Räuberschach"
 
 #: dialogs.c:484
 msgid "CRC (10x8)"
-msgstr ""
+msgstr "CRC (10×8)"
 
 #: dialogs.c:485
 msgid "give-away"
-msgstr ""
+msgstr "Verzichten"
 
 #: dialogs.c:486
 msgid "grand (10x10)"
@@ -1237,7 +1222,7 @@ msgstr "groß (10×10)"
 
 #: dialogs.c:487
 msgid "losers"
-msgstr ""
+msgstr "Losers"
 
 #: dialogs.c:488
 msgid "shogi (9x9)"
@@ -1245,7 +1230,7 @@ msgstr "Shogi (9×9)"
 
 #: dialogs.c:489
 msgid "fairy"
-msgstr ""
+msgstr "Feenschach"
 
 #: dialogs.c:490
 msgid "xiangqi (9x10)"
@@ -1257,7 +1242,7 @@ msgstr ""
 
 #: dialogs.c:492
 msgid "courier (12x8)"
-msgstr ""
+msgstr "Kurier (12×8)"
 
 #: dialogs.c:493
 msgid "elven chess (10x10)"
@@ -1265,7 +1250,7 @@ msgstr "Elfenschach (10×10)"
 
 #: dialogs.c:494
 msgid "chu shogi (12x12)"
-msgstr ""
+msgstr "Chu-Shogi (12×12)"
 
 #: dialogs.c:526
 #, c-format
@@ -1312,7 +1297,7 @@ msgstr "EGTB-Cachegröße (MB):"
 
 #: dialogs.c:610
 msgid "Use GUI Book"
-msgstr ""
+msgstr "GUI-Buch benutzen"
 
 #: dialogs.c:611
 msgid "Opening-Book Filename:"
@@ -1336,7 +1321,7 @@ msgstr "Engine #2 hat eigenes Buch"
 
 #: dialogs.c:626
 msgid "Common Engine Settings"
-msgstr ""
+msgstr "Allgemeine Schachprogramm-Einstellungen"
 
 #: dialogs.c:632
 msgid "Detect all Mates"
@@ -1379,9 +1364,8 @@ msgid "Negate Score of Engine #2"
 msgstr "Negiere Bewertung des 2. Schachprogramms"
 
 #: dialogs.c:648
-#, fuzzy
 msgid "Adjudicate non-ICS Games"
-msgstr "Gewinn Weiß zuerkennen"
+msgstr ""
 
 #: dialogs.c:661
 msgid "Auto-Kibitz"
@@ -1504,10 +1488,8 @@ msgid "Seek Text Colors:"
 msgstr "Textfarbe Spielgesuch:"
 
 #: dialogs.c:693
-#, fuzzy
-#| msgid "Other Channel Text Colors:"
 msgid "Other Text Colors:"
-msgstr "Textfarbe andere Kanäle:"
+msgstr "Andere Textfarben:"
 
 #: dialogs.c:700
 msgid "ICS Options"
@@ -1589,11 +1571,11 @@ msgstr "Suchmodus:"
 
 #: dialogs.c:734
 msgid "Also match reversed colors"
-msgstr ""
+msgstr "Auch mit vertauschten Farben suchen"
 
 #: dialogs.c:735
 msgid "Also match left-right flipped position"
-msgstr ""
+msgstr "Auch gespiegelte Positionen suchen"
 
 #: dialogs.c:744
 msgid "Load Game Options"
@@ -1617,7 +1599,7 @@ msgstr "Speichere Endstellung in Datei:"
 
 #: dialogs.c:760
 msgid "PGN Event Header:"
-msgstr ""
+msgstr "PGN-Veranstaltungs-Kopfzeile:"
 
 #: dialogs.c:761
 msgid "Old Save Style (as opposed to PGN)"
@@ -1645,11 +1627,11 @@ msgstr "Kein Ton"
 
 #: dialogs.c:781
 msgid "Default Beep"
-msgstr ""
+msgstr "Standard-Piepton"
 
 #: dialogs.c:782
 msgid "Above WAV File"
-msgstr ""
+msgstr "Obige WAV-Datei"
 
 #: dialogs.c:783
 msgid "Car Horn"
@@ -1657,15 +1639,15 @@ msgstr "Hupe"
 
 #: dialogs.c:784
 msgid "Cymbal"
-msgstr ""
+msgstr "Becken"
 
 #: dialogs.c:785
 msgid "Ding"
-msgstr ""
+msgstr "Ding"
 
 #: dialogs.c:786
 msgid "Gong"
-msgstr ""
+msgstr "Gong"
 
 #: dialogs.c:787
 msgid "Laser"
@@ -1673,27 +1655,27 @@ msgstr "Laser"
 
 #: dialogs.c:788
 msgid "Penalty"
-msgstr ""
+msgstr "Strafe"
 
 #: dialogs.c:789
 msgid "Phone"
-msgstr ""
+msgstr "Telefon"
 
 #: dialogs.c:790
 msgid "Pop"
-msgstr ""
+msgstr "Pop"
 
 #: dialogs.c:791
 msgid "Roar"
-msgstr ""
+msgstr "Fauchen"
 
 #: dialogs.c:792
 msgid "Slap"
-msgstr ""
+msgstr "Schlagbass"
 
 #: dialogs.c:793
 msgid "Wood Thunk"
-msgstr ""
+msgstr "Holzblock"
 
 #: dialogs.c:795
 msgid "User File"
@@ -1701,11 +1683,11 @@ msgstr "Benutzerdatei"
 
 #: dialogs.c:818
 msgid "User WAV File:"
-msgstr ""
+msgstr "Eigene WAV-Datei:"
 
 #: dialogs.c:819
 msgid "Sound Program:"
-msgstr ""
+msgstr "Abspielprogramm:"
 
 #: dialogs.c:820
 msgid "Try-Out Sound:"
@@ -1777,7 +1759,7 @@ msgstr ""
 
 #: dialogs.c:838
 msgid "Lion roar:"
-msgstr ""
+msgstr "Löwenfauchen:"
 
 #: dialogs.c:839
 msgid "Seek:"
@@ -1789,11 +1771,11 @@ msgstr "Klangeinstellungen"
 
 #: dialogs.c:871
 msgid "Selectable themes:"
-msgstr ""
+msgstr "Wählbare Designs:"
 
 #: dialogs.c:873
 msgid "New name for current theme:"
-msgstr ""
+msgstr "Neuer Name für aktuelles Design:"
 
 #: dialogs.c:876
 msgid "White Piece Color:"
@@ -1853,7 +1835,7 @@ msgstr ""
 
 #: dialogs.c:919
 msgid "Logo Size (0=off, requires restart):"
-msgstr ""
+msgstr "Logo-Größe (0=aus, benötigt Neustart):"
 
 #: dialogs.c:920
 msgid "Line Gap (-1 = default for board size):"
@@ -1880,10 +1862,8 @@ msgid "Directory with Pieces Images:"
 msgstr "Verzeichnis mit Bildern für Figuren:"
 
 #: dialogs.c:996
-#, fuzzy
-#| msgid "# no engines are installed"
 msgid "# no themes are defined"
-msgstr "# keine Schachprogramme installiert"
+msgstr "# keine Designs installiert"
 
 #: dialogs.c:1008
 msgid "Board Options"
@@ -1902,10 +1882,8 @@ msgid "save changes"
 msgstr "Änderungen speichern"
 
 #: dialogs.c:1207
-#, fuzzy
-#| msgid "Load Next Game"
 msgid "add next move"
-msgstr "Nächstes Spiel laden"
+msgstr "Nächsten Zug hinzufügen"
 
 #: dialogs.c:1231
 msgid "Edit book"
@@ -1949,7 +1927,7 @@ msgstr ""
 
 #: dialogs.c:1460
 msgid "Engine Directory:"
-msgstr ""
+msgstr "Schachprogramm-Verzeichnis:"
 
 #: dialogs.c:1461
 msgid "Engine Command:"
@@ -1993,7 +1971,7 @@ msgstr "Shuffle"
 
 #: dialogs.c:1547
 msgid "Fischer castling"
-msgstr ""
+msgstr "Fischer-Rochade"
 
 #: dialogs.c:1548
 msgid "Start-position number:"
@@ -2106,7 +2084,7 @@ msgstr "Königin"
 
 #: dialogs.c:1776
 msgid "Lion"
-msgstr ""
+msgstr "Löwe"
 
 #: dialogs.c:1780
 msgid "Defer"
@@ -2118,32 +2096,28 @@ msgstr "Umwandeln"
 
 #: dialogs.c:1838
 msgid "Chats:"
-msgstr ""
+msgstr "Chats:"
 
 #: dialogs.c:1839 dialogs.c:1840 dialogs.c:1841 dialogs.c:1842 dialogs.c:1843
 #: dialogs.c:1941 dialogs.c:2001 dialogs.c:2033
-#, fuzzy
-#| msgid "New Variant"
 msgid "New Chat"
-msgstr "Neue Variante"
+msgstr "Neuer Chat"
 
 #: dialogs.c:1846
 msgid "Chat partner:"
-msgstr ""
+msgstr "Chatpartner:"
 
 #: dialogs.c:1847
 msgid "End Chat"
-msgstr ""
+msgstr "Chat beenden"
 
 #: dialogs.c:1848
 msgid "Hide"
-msgstr ""
+msgstr "Verstecken"
 
 #: dialogs.c:2058
-#, fuzzy
-#| msgid "ICS Options"
 msgid "ICS Interaction"
-msgstr "ICS Optionen"
+msgstr "ICS-Interaktion"
 
 #: dialogs.c:2125
 msgid "factory"
@@ -2251,19 +2225,19 @@ msgstr "Hilfe"
 
 #: dialogs.c:2473
 msgid "<<"
-msgstr ""
+msgstr "<<"
 
 #: dialogs.c:2474
 msgid "<"
-msgstr ""
+msgstr "<"
 
 #: dialogs.c:2476
 msgid ">"
-msgstr ""
+msgstr ">"
 
 #: dialogs.c:2477
 msgid ">>"
-msgstr ""
+msgstr ">>"
 
 #: dialogs.c:2755
 msgid "Directories:"
@@ -2431,14 +2405,10 @@ msgid "New Game"
 msgstr "Neue Partie"
 
 #: menus.c:602
-#, fuzzy
-#| msgid "New Shuffle Game ..."
 msgid "New Shuffle Game..."
-msgstr "Neue Shuffle Partie… "
+msgstr "Neue zufällige Partie…"
 
 #: menus.c:603
-#, fuzzy
-#| msgid "New Variant ..."
 msgid "New Variant..."
 msgstr "Neue Variante…"
 
@@ -2467,10 +2437,8 @@ msgid "Save Position"
 msgstr "Speichere Stellung"
 
 #: menus.c:612
-#, fuzzy
-#| msgid "Save Game"
 msgid "Save Selected Games"
-msgstr "Partie speichern…"
+msgstr "Ausgewählte Partien speichern"
 
 #: menus.c:613
 msgid "Save Games as Book"
@@ -2486,7 +2454,7 @@ msgstr "CMail Nachricht erneut laden"
 
 #: menus.c:618
 msgid "Quit "
-msgstr ""
+msgstr "Beenden"
 
 #: menus.c:623
 msgid "Copy Game"
@@ -2530,7 +2498,7 @@ msgstr "Editiere Buch"
 
 #: menus.c:636
 msgid "Revert"
-msgstr ""
+msgstr "Neuladen"
 
 #: menus.c:637
 msgid "Annotate"
@@ -2638,7 +2606,7 @@ msgstr "Ablehnen"
 
 #: menus.c:685
 msgid "Rematch"
-msgstr ""
+msgstr "Revanche"
 
 #: menus.c:687
 msgid "Call Flag"
@@ -2685,20 +2653,14 @@ msgid "Adjudicate Draw"
 msgstr "Als Remis abschätzen"
 
 #: menus.c:704
-#, fuzzy
-#| msgid "Load New 1st Engine ..."
 msgid "Edit Engine List..."
-msgstr "Neues erstes Schachprogramm laden…"
+msgstr "Schachprogramm-Liste bearbeiten…"
 
 #: menus.c:706
-#, fuzzy
-#| msgid "Load New 1st Engine ..."
 msgid "Load New 1st Engine..."
 msgstr "Neues erstes Schachprogramm laden…"
 
 #: menus.c:707
-#, fuzzy
-#| msgid "Load New 2nd Engine ..."
 msgid "Load New 2nd Engine..."
 msgstr "Neues zweites Schachprogramm laden…"
 
@@ -2731,22 +2693,16 @@ msgid "General..."
 msgstr "Allgemein…"
 
 #: menus.c:724
-#, fuzzy
-#| msgid "Time Control ..."
 msgid "Time Control..."
-msgstr "Zeitkontrolle…"
+msgstr "Zeitnahme…"
 
 #: menus.c:725
-#, fuzzy
-#| msgid "Common Engine ..."
 msgid "Common Engine..."
-msgstr "Allgemein Schachprogramme…"
+msgstr ""
 
 #: menus.c:726
-#, fuzzy
-#| msgid "Adjudications ..."
 msgid "Adjudications..."
-msgstr "Zuerkennung…"
+msgstr ""
 
 #: menus.c:727
 msgid "ICS..."
@@ -2754,7 +2710,7 @@ msgstr ""
 
 #: menus.c:728
 msgid "Tournament..."
-msgstr ""
+msgstr "Turnier…"
 
 #: menus.c:729
 msgid "Load Game..."
@@ -2806,7 +2762,7 @@ msgstr "Zeige Koordinaten"
 
 #: menus.c:754
 msgid "Hide Thinking"
-msgstr ""
+msgstr "Denken verstecken"
 
 #: menus.c:758
 msgid "Save Settings Now"
@@ -2864,14 +2820,12 @@ msgid "Evaluation graph"
 msgstr "Auswertungsgraph"
 
 #: nevalgraph.c:68
-#, fuzzy
-#| msgid "Evaluation graph"
 msgid "Blunder graph"
-msgstr "Auswertungsgraph"
+msgstr "Patzer-Graph"
 
 #: nevalgraph.c:106
 msgid "Blunder"
-msgstr ""
+msgstr "Patzer"
 
 #: nevalgraph.c:106
 msgid "Eval"
@@ -2945,8 +2899,7 @@ msgid "%s: unrecognized color %s\n"
 msgstr "%s: nicht erkannte Farbe %s\n"
 
 #: usystem.c:230
-#, fuzzy, c-format
-#| msgid "%s: can't parse foreground color in `%s'\n"
+#, c-format
 msgid "%s: can't parse foreground color in '%s'\n"
 msgstr "%s: Kann Vordergrundfarbe in »%s« nicht parsen\n"
 
