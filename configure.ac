@@ -552,7 +552,7 @@ CONFIGURE_OPTIONS="prefix=$prefix; datarootdir=$datarootdir; \
 datadir=$datadir; gamedatadir=$GAMEDATADIR; desktopdir=$DESKTOPDIR; \
 mimedir=$MIMEDIR; iconsdir=$ICONSDIR; svgiconsdir=$SVGICONSDIR; infodir=$infodir; \
 sysconfigdir=$sysconfigdir; update_mimedb=$enable_mimedb; NLS=$USE_NLS; \
-GKT=$with_GTK; Xaw3d=$with_Xaw3d; Xaw=$with_Xaw; \
+GTK=$with_GTK; Xaw3d=$with_Xaw3d; Xaw=$with_Xaw; \
 ptys=$enable_ptys; zippy=$enable_zippy; sigint=$enable_sigint"
 
 AC_SUBST(CONFIGURE_OPTIONS)
