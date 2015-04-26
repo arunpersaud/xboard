@@ -2,14 +2,16 @@
 # Copyright (C) 2014 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
 #
-# Florian Ganee <florian.ganee@insa-rouen.fr>, 2014.
+# Florian Ganee <flo.ganee@gmail.com>, 2014.
+# Stéphane Aulery <lkppo@free.fr>, 2015.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.8.0-pre1\n"
+"Project-Id-Version: xboard 4.8.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2014-09-29 21:06-0700\n"
-"PO-Revision-Date: 2014-12-10 20:19+0100\n"
-"Last-Translator: Florian Ganee <flo.ganee@gmail.com>\n"
+"PO-Revision-Date: 2015-04-26 15:27+0200\n"
+"Last-Translator: Stéphane Aulery <lkppo@free.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1680,7 +1682,7 @@ msgstr "Claquement "
 
 #: dialogs.c:793
 msgid "Wood Thunk"
-msgstr ""
+msgstr "Wood Thunk"
 
 #: dialogs.c:795
 msgid "User File"
