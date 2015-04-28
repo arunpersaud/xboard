@@ -244,6 +244,7 @@ endif
 
 if OSX_APP
 osxapp: all-recursive install install-recursive
+macportsprefix = $(shell which port | sed s/[/]bin[/]port//)
 	$(MKDIR_P) $(datarootdir)/bin
 	$(MKDIR_P) $(datarootdir)/lib
 	$(MKDIR_P) $(sysconfdir)/gtk-2.0
@@ -289,26 +290,26 @@ osxapp: all-recursive install install-recursive
 	echo '-saveSettingsFile "~/Library/Preferences/XBoard.conf"' >>$(sysconfdir)/xboard.conf
 	echo '-settingsFile "~/Library/Preferences/XBoard.conf"' >>$(sysconfdir)/xboard.conf
 
-	sed 's?/opt/local/lib?/tmp/skl/XBoard.app/Contents/Resources/lib?' </opt/local/etc/gtk-2.0/gdk-pixbuf.loaders >$(sysconfdir)/gtk-2.0/gdk-pixbuf.loaders
-	sed -e 's?/opt/local/lib?/tmp/skl/XBoard.app/Contents/Resources/lib?' -e 's?/opt/local/share/locale?/tmp/skl/XBoard.app/Contents/Resources/share/locale?' </opt/local/etc/gtk-2.0/gtk.immodules >$(sysconfdir)/gtk-2.0/gtk.immodules
+	sed 's?$(macportsprefix)/lib?/tmp/skl/XBoard.app/Contents/Resources/lib?' <$(macportsprefix)/etc/gtk-2.0/gdk-pixbuf.loaders >$(sysconfdir)/gtk-2.0/gdk-pixbuf.loaders
+	sed -e 's?$(macportsprefix)/lib?/tmp/skl/XBoard.app/Contents/Resources/lib?' -e 's?$(macportsprefix)/share/locale?/tmp/skl/XBoard.app/Contents/Resources/share/locale?' <$(macportsprefix)/etc/gtk-2.0/gtk.immodules >$(sysconfdir)/gtk-2.0/gtk.immodules
 	$(INSTALL) ./osxapp/launcher_rc $(datarootdir)/
-	$(INSTALL) /opt/local/etc/gtk-2.0/im-multipress.conf $(sysconfdir)/gtk-2.0
+	$(INSTALL) $(macportsprefix)/etc/gtk-2.0/im-multipress.conf $(sysconfdir)/gtk-2.0
 	$(INSTALL) ./osxapp/gtkrc $(sysconfdir)/gtk-2.0/gtkrc
-	sed -e '/ModuleFiles = \/opt\/local\/etc\/pango\/pango.modules/d' </opt/local/etc/pango/pangorc >$(sysconfdir)/pango/pangorc
-	sed -e 's?/opt/local/lib/pango/1.8.0/modules/??' </opt/local/etc/pango/pango.modules >$(sysconfdir)/pango/pango.modules
-	cp -R /opt/local/lib/gtk-2.0 $(datarootdir)/lib
-	cp -R /opt/local/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
-	cp -R /opt/local/lib/pango $(datarootdir)/lib
-	cp -R /opt/local/share/themes/Mac $(datadir)/themes
+	sed -e '/ModuleFiles = \/opt\/local\/etc\/pango\/pango.modules/d' <$(macportsprefix)/etc/pango/pangorc >$(sysconfdir)/pango/pangorc
+	sed -e 's?$(macportsprefix)/lib/pango/1.8.0/modules/??' <$(macportsprefix)/etc/pango/pango.modules >$(sysconfdir)/pango/pango.modules
+	cp -R $(macportsprefix)/lib/gtk-2.0 $(datarootdir)/lib
+	cp -R $(macportsprefix)/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
+	cp -R $(macportsprefix)/lib/pango $(datarootdir)/lib
+	cp -R $(macportsprefix)/share/themes/Mac $(datadir)/themes
 	cp -R ./osxapp/gtk2-themes/Mac/gtk-2.0 $(datadir)/themes/Mac
 	cp -R ./osxapp/themes/default/. $(gamedatadir)/themes/default
-	cp /opt/local/share/gtk-engines/murrine.xml $(datadir)/gtk-engines/murrine.xml
+	cp $(macportsprefix)/share/gtk-engines/murrine.xml $(datadir)/gtk-engines/murrine.xml
 	$(INSTALL) ./png/marble_d.png $(gamedatadir)/themes/textures
 	$(INSTALL) ./png/marble_l.png $(gamedatadir)/themes/textures
 	$(INSTALL) ./png/xqwood.png $(gamedatadir)/themes/textures
 	cp -R ./osxapp/logos $(gamedatadir)/
-	cp -R /opt/local/share/strings/. $(datarootdir)/
-	for i in po/*gmo; do lang=`basename $$i .gmo`; $(INSTALL) /opt/local/share/locale/$$lang/LC_MESSAGES/gtk20.mo $(localedir)/$$lang/LC_MESSAGES/; done
+	cp -R $(macportsprefix)/share/strings/. $(datarootdir)/
+	for i in po/*gmo; do lang=`basename $$i .gmo`; $(INSTALL) $(macportsprefix)/share/locale/$$lang/LC_MESSAGES/gtk20.mo $(localedir)/$$lang/LC_MESSAGES/; done
 	dylibbundler -of -b -x $(bindir)/xboard-bin -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/immodules/im-quartz.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
