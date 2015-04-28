@@ -295,7 +295,7 @@ macportsprefix = $(shell which port | sed s/[/]bin[/]port//)
 	$(INSTALL) ./osxapp/launcher_rc $(datarootdir)/
 	$(INSTALL) $(macportsprefix)/etc/gtk-2.0/im-multipress.conf $(sysconfdir)/gtk-2.0
 	$(INSTALL) ./osxapp/gtkrc $(sysconfdir)/gtk-2.0/gtkrc
-	sed -e '/ModuleFiles = \/opt\/local\/etc\/pango\/pango.modules/d' <$(macportsprefix)/etc/pango/pangorc >$(sysconfdir)/pango/pangorc
+	sed -e '/ModuleFiles = .*\/etc\/pango\/pango.modules/d' <$(macportsprefix)/etc/pango/pangorc >$(sysconfdir)/pango/pangorc
 	sed -e 's?$(macportsprefix)/lib/pango/1.8.0/modules/??' <$(macportsprefix)/etc/pango/pango.modules >$(sysconfdir)/pango/pango.modules
 	cp -R $(macportsprefix)/lib/gtk-2.0 $(datarootdir)/lib
 	cp -R $(macportsprefix)/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
