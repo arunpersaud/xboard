@@ -1,16 +1,16 @@
 # Dutch translations for GNU XBoard.
-# Copyright (C) 2014 Free Software Foundation, Inc.
+# Copyright (C) 2015 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
 #
 # "She makes her living brewing coffee for strangers..."
 #
-# Benno Schulenberg <benno@vertaalt.nl>, 2013, 2014.
+# Benno Schulenberg <benno@vertaalt.nl>, 2013, 2014, 2015.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.8.0-pre1\n"
+"Project-Id-Version: GNU xboard 4.8.0\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2014-10-24 08:20-0700\n"
-"PO-Revision-Date: 2014-10-02 10:54+0200\n"
+"PO-Revision-Date: 2015-04-27 20:38+0200\n"
 "Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "Language: nl\n"
@@ -1010,7 +1010,7 @@ msgstr "Variatiebomen inschakelen"
 
 #: dialogs.c:412
 msgid "Headers in Engine Output Window"
-msgstr ""
+msgstr "Kopregels in uitvoervenster van automaat"
 
 #: dialogs.c:413
 msgid "Hide Thinking from Human"
@@ -1034,7 +1034,7 @@ msgstr "Periodieke updates (in analysemodus)"
 
 #: dialogs.c:419
 msgid "Play Move(s) of Clicked PV (Analysis)"
-msgstr ""
+msgstr "Zet(ten) spelen van aangeklikte PV (Analyse)"
 
 #: dialogs.c:420 dialogs.c:620 menus.c:750
 msgid "Ponder Next Move"
@@ -1062,7 +1062,7 @@ msgstr "Doelvelden tonen"
 
 #: dialogs.c:426
 msgid "Sticky Windows"
-msgstr ""
+msgstr "Kleverige vensters"
 
 #: dialogs.c:427 menus.c:755
 msgid "Test Legality"
@@ -1171,7 +1171,7 @@ msgstr ""
 
 #: dialogs.c:473
 msgid "ASEAN"
-msgstr ""
+msgstr "ASEAN"
 
 #: dialogs.c:474
 msgid "Great Shatranj (10x8)"
@@ -1227,7 +1227,7 @@ msgstr "Grand (10x10)"
 
 #: dialogs.c:487
 msgid "losers"
-msgstr "verliezers"
+msgstr "Losers"
 
 #: dialogs.c:488
 msgid "shogi (9x9)"
@@ -1422,7 +1422,7 @@ msgstr "Zoekgrafiek vanzelf verversen"
 
 #: dialogs.c:688
 msgid "Auto-InputBox PopUp"
-msgstr ""
+msgstr "Invoervak vanzelf tonen"
 
 #: dialogs.c:689
 msgid "Quit after game"
@@ -1450,11 +1450,11 @@ msgstr "Eerste zet van zwart:"
 
 #: dialogs.c:696
 msgid "Alarm"
-msgstr ""
+msgstr "Wekker"
 
 #: dialogs.c:697
 msgid "Alarm Time (msec):"
-msgstr ""
+msgstr "Wektijd (msec):"
 
 #: dialogs.c:699
 msgid "Colorize Messages"
@@ -1474,7 +1474,7 @@ msgstr "Kanaal-1-tekstkleuren:"
 
 #: dialogs.c:703
 msgid "Other Channel Text Colors:"
-msgstr "Anderekanaal-tekstkleuren:"
+msgstr "Anderekanalen-tekstkleuren:"
 
 #: dialogs.c:704
 msgid "Kibitz Text Colors:"
@@ -1482,11 +1482,11 @@ msgstr "Kibitz-tekstkleuren:"
 
 #: dialogs.c:705
 msgid "Tell Text Colors:"
-msgstr ""
+msgstr "Tell-tekstkleuren:"
 
 #: dialogs.c:706
 msgid "Challenge Text Colors:"
-msgstr ""
+msgstr "Uitdagings-tekstkleuren:"
 
 #: dialogs.c:707
 msgid "Request Text Colors:"
@@ -1497,9 +1497,8 @@ msgid "Seek Text Colors:"
 msgstr "Tekstkleuren voor zoeken:"
 
 #: dialogs.c:709
-#, fuzzy
 msgid "Other Text Colors:"
-msgstr "Anderekanaal-tekstkleuren:"
+msgstr "Kleuren voor andere tekst:"
 
 #: dialogs.c:716
 msgid "ICS Options"
@@ -1554,12 +1553,16 @@ msgid ""
 "\n"
 "options to use in game-viewer mode:"
 msgstr ""
+"\n"
+"Te gebruiken opties in viewer-modus:"
 
 #: dialogs.c:743
 msgid ""
 "\n"
 "Thresholds for position filtering in game list:"
 msgstr ""
+"\n"
+"Drempelwaarden voor positiefiltering in partijenlijst:"
 
 #: dialogs.c:744
 msgid "Elo of strongest player at least:"
@@ -1611,11 +1614,11 @@ msgstr "Eindposities opslaan in:"
 
 #: dialogs.c:776
 msgid "PGN Event Header:"
-msgstr ""
+msgstr "PGN-gebeurtenis-kopregel:"
 
 #: dialogs.c:777
 msgid "Old Save Style (as opposed to PGN)"
-msgstr ""
+msgstr "Oude opslagstijl (in plaats van PGN)"
 
 #: dialogs.c:778
 msgid "Include Number Tag in tourney PGN"
@@ -1623,11 +1626,11 @@ msgstr "Nummerlabel in toernooi-PGN opnemen"
 
 #: dialogs.c:779
 msgid "Save Score/Depth Info in PGN"
-msgstr ""
+msgstr "Score-/diepte-informatie opslaan in PGN"
 
 #: dialogs.c:780
 msgid "Save Out-of-Book Info in PGN           "
-msgstr ""
+msgstr "Uit-het-boek-informatie opslaan in PGN "
 
 #: dialogs.c:787
 msgid "Save Game Options"
@@ -1731,11 +1734,11 @@ msgstr "Onafgemaakt:"
 
 #: dialogs.c:843
 msgid "Alarm:"
-msgstr ""
+msgstr "Wekker:"
 
 #: dialogs.c:844
 msgid "Challenge:"
-msgstr ""
+msgstr "Uitdaging:"
 
 #: dialogs.c:846
 msgid "Sounds Directory:"
@@ -1743,11 +1746,11 @@ msgstr "Geluidenmap:"
 
 #: dialogs.c:847
 msgid "Shout:"
-msgstr ""
+msgstr "Shout:"
 
 #: dialogs.c:848
 msgid "S-Shout:"
-msgstr ""
+msgstr "S-Shout:"
 
 #: dialogs.c:849
 msgid "Channel:"
@@ -1759,7 +1762,7 @@ msgstr "Kanaal 1:"
 
 #: dialogs.c:851
 msgid "Tell:"
-msgstr "Mededeling"
+msgstr "Tell:"
 
 #: dialogs.c:852
 msgid "Kibitz:"
@@ -1787,7 +1790,7 @@ msgstr "Selecteerbare thema's:"
 
 #: dialogs.c:889
 msgid "New name for current theme:"
-msgstr "Nieuwe naam voor huidige thema:"
+msgstr "Nieuwe naam voor huidig thema:"
 
 #: dialogs.c:892
 msgid "White Piece Color:"
@@ -1835,23 +1838,23 @@ msgstr "Markeringskleur:"
 
 #: dialogs.c:926
 msgid "Premove Highlight Color:"
-msgstr ""
+msgstr "Voorzet-markeringskleur:"
 
 #: dialogs.c:932
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr ""
+msgstr "Stukken op Shogi-manier omdraaien  (gekleurde knoppen herstellen standaard)"
 
 #: dialogs.c:934
 msgid "Mono Mode"
-msgstr ""
+msgstr "Mono-modus"
 
 #: dialogs.c:935
 msgid "Logo Size (0=off, requires restart):"
-msgstr ""
+msgstr "Logogrootte (0=uit, vereist een herstart):"
 
 #: dialogs.c:936
 msgid "Line Gap (-1 = default for board size):"
-msgstr ""
+msgstr "Regeltussenruimte (-1 = standaard voor bordgrootte):"
 
 #: dialogs.c:937
 msgid "Use Board Textures"
@@ -1867,7 +1870,7 @@ msgstr "Textuurbestand voor donkere velden:"
 
 #: dialogs.c:940
 msgid "Use external piece bitmaps with their own colors"
-msgstr ""
+msgstr "Externe bitmaps met eigen kleuren voor stukken gebruiken"
 
 #: dialogs.c:941
 msgid "Directory with Pieces Images:"
@@ -1935,7 +1938,7 @@ msgstr "Bijnaam (optioneel):"
 
 #: dialogs.c:1475
 msgid "Use nickname in PGN player tags of engine-engine games"
-msgstr ""
+msgstr "Bijnaam gebruiken in PGN-spelerlabels van automaat-automaat-partijen"
 
 #: dialogs.c:1476
 msgid "Engine Directory:"
@@ -1955,11 +1958,11 @@ msgstr "UCI"
 
 #: dialogs.c:1480
 msgid "WB protocol v1 (do not wait for engine features)"
-msgstr ""
+msgstr "WB-protocol v1 (niet op automaateigenschappen wachten)"
 
 #: dialogs.c:1481
 msgid "Must not use GUI book"
-msgstr ""
+msgstr "Hoort geen GUI-boek te gebruiken"
 
 #: dialogs.c:1482
 msgid "Add this engine to the list"
@@ -2339,7 +2342,7 @@ msgstr "Kan bestand '%s' niet openen\n"
 
 #: gtk/xboard.c:999 xaw/xboard.c:1090
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
+msgstr "*** Hercompileer met grotere BOARD_RANKS of BOARD_FILES om deze grootte te ondersteunen"
 
 #: gtk/xboard.c:1018 xaw/xboard.c:1122
 #, c-format
@@ -2403,13 +2406,11 @@ msgid ""
 "Enhancements Copyright 1992-2014 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "The GTK build of this version is experimental and unstable\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2586,7 +2587,7 @@ msgstr "ICS-invoervak"
 
 #: menus.c:659
 msgid "ICS/Chat Console"
-msgstr ""
+msgstr "ICS/chat-console"
 
 #: menus.c:661
 msgid "Board..."
@@ -2642,7 +2643,7 @@ msgstr "Weigeren"
 
 #: menus.c:685
 msgid "Rematch"
-msgstr ""
+msgstr "Revanche"
 
 #: menus.c:687
 msgid "Call Flag"
@@ -2733,9 +2734,8 @@ msgid "Time Control..."
 msgstr "Tijdsbeperking..."
 
 #: menus.c:725
-#, fuzzy
 msgid "Common Engine..."
-msgstr "Automaten..."
+msgstr "Gemeenschappelijke automaat..."
 
 #: menus.c:726
 msgid "Adjudications..."
@@ -2868,7 +2868,7 @@ msgstr "Blunder"
 
 #: nevalgraph.c:106
 msgid "Eval"
-msgstr ""
+msgstr "Eval"
 
 #: ngamelist.c:87
 msgid "find position"
