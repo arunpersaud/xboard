@@ -136,9 +136,9 @@ FRONTEND_CFLAGS=""
 FRONTEND_LIBS=""
 
 AC_ARG_WITH([gtk],
-            [AS_HELP_STRING([--with-gtk],[use GTK front-end])],
+            [AS_HELP_STRING([--with-gtk],[use GTK front-end (default)])],
             [with_GTK=$withval],
-            [with_GTK="no"])
+            [with_GTK="yes"])
 
 AC_ARG_WITH([Xaw3d],
             [AS_HELP_STRING([--with-Xaw3d],[use Xaw3d front-end (not fully supported anymore)])],
@@ -146,9 +146,9 @@ AC_ARG_WITH([Xaw3d],
             [with_Xaw3d="no"])
 
 AC_ARG_WITH([Xaw],
-            [AS_HELP_STRING([--with-Xaw],[use Xaw front-end (default)])],
+            [AS_HELP_STRING([--with-Xaw],[use Xaw front-end])],
             [with_Xaw="$withval"],
-            [with_Xaw="yes"])
+            [with_Xaw="no"])
 
 AC_ARG_WITH([iconsdir],
             [AS_HELP_STRING([--with-iconsdir=DIR],
