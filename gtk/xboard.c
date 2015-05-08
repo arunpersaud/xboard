@@ -2321,6 +2321,12 @@ void FileNamePopUpWrapper(label, def, filter, proc, pathFlag, openMode, name, fp
 
   StartDir(filter, NULL); // change to start directory for this file type
 
+  if(def && *def && def[strlen(def)-1] == '/') {
+    getcwd(curDir, MSG_SIZ);
+    chdir(def);
+  }
+
+
   /* make a copy of the filter string, so that strtok can work with it*/
   cp = strdup(filter);
 

@@ -3,6 +3,106 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2014-10-24 00:04:22 -0700 Joshua Pettus <jshpettus@gmail.com>:
+removed gtk theme from OSX app
+
+2014-10-23 23:33:18 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Add persistent Boolean option -fixedSize
+
+When set, this option suppresses sizing of the board and clocks when
+the window is sized by the user. This is achieved by wrapping the entire
+dialog in a non-expanding hbox.
+
+2014-10-23 21:23:14 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Also do dual-royal test in variant shogi
+
+For the benefit of Sho Shogi we also have to be prepared to find a
+Crown Prince in variant shogi, so it can be used as a parent variant
+for Sho Shogi with legality testing on.
+
+2014-10-23 16:22:54 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix promotion in Betza move generator
+
+The Betza move generator was geenrating allmoves as NormalMove, but in
+that case XBoard would not allow the move to have a promotion suffix.
+Now Pawns and Lances reaching last rank will be assumed to promote.
+
+2014-10-22 13:06:25 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Attempt to make GTK sizing work with tiling WM
+
+The Rezise routine now takes the size of the entire dialog table
+(for me always equal to the outer-window size), and checks if the
+actual outer window is smaller. If it is, it shrinks the board to fit,
+under the assumption that a tiling window manager offers only a limited
+'viewport' to our dialog, and we want everything to be visible inside that.
+
+2014-10-22 11:04:47 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix -xbuttons window width GTK
+
+Because Label options not followed by a SAME_ROW element were only
+packed into the first two columns of the dialog table, the board window
+reserved space for a third column behind the message window if there
+was no button bar.
+
+2014-10-21 20:37:41 -0700 Arun Persaud <arun@nubati.net>:
+mac: only use gtk compile flag, if osxapp is enabled
+
+
+2014-10-21 22:40:39 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Prevent unknown variant getting button in -ncp mode
+
+Normally we fake the engines play the requested variant, for the benefit
+of engines that do not send a variants feature (e.g. v1 engines). But this
+should not be done if there is no engine, as it would lead XBoard to
+believe an unknown variant name is an engine-defined variant supported
+by a currently loaded engine, and create a button for it in the New Variant
+dialog.
+
+2014-10-21 22:07:09 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix variant-name recognition
+
+StringToVariant did recognize whether the name to recognize had suffuxes
+compared to the tabulated name, but not if it had prefixes. So 'shoshogi'
+would be recognized as 'shogi'.
+
+2014-10-21 21:52:21 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Suppress duplicat autoInstalls
+
+If the engine line constructed for -autoInstall already occurs in
+the engine list, we should not install it again.
+
+2014-10-21 18:41:03 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Base new square size on board widget allocation GTK
+
+No longer pay attention to the size of the top-level window, but base
+everything on the size of the board widget itself.
+
+2014-10-21 13:45:51 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Ignore first configure event
+
+The first configure event will be the one that adds the window decorations
+to the board window, and must not be used to calculate a new square size,
+but to expand the outer window instead.
+
+2014-10-21 11:35:21 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Let GTK dialogs open with actual-size Graph widgets
+
+The Graph Option size values are now uses as size_request, to give
+proper dialog sizing at popup. But the size_request is then reset
+so that free sizing by the user becomes possible.
+
+2014-10-19 13:16:43 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix display of Spin Options with negative range
+
+
+2014-10-17 21:35:25 -0700 Arun Persaud <arun@nubati.net>:
+line numbers in PO got updated
+
+
+2014-10-17 21:23:47 -0700 Arun Persaud <arun@nubati.net>:
+updated ChangeLog, DIFFSTAT and SHORTLOG
+
+
 2014-10-17 21:17:56 -0700 Arun Persaud <arun@nubati.net>:
 updated NEWS
 

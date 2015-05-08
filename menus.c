@@ -174,10 +174,12 @@ ReloadPositionProc ()
 void
 LoadPositionProc()
 {
+    static char buf[MSG_SIZ];
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb");
+    snprintf(buf, MSG_SIZ, "%s/", appData.positionDir);
+    FileNamePopUp(_("Load position file name?"), buf, ".fen .epd .pos", LoadPosition, "rb");
 }
 
 void
