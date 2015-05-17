@@ -1,7 +1,7 @@
 /*
  * dialogs.h -- shared variables for generic dialog popup of XBoard
  *
- * Copyright 2000, 2009, 2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
+ * Copyright 2000, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
