@@ -1283,6 +1283,7 @@ LFfromMFP(LOGFONT* lf, MyFontParams *mfp)
   lf->lfCharSet = mfp->charset;
   lf->lfOutPrecision = OUT_DEFAULT_PRECIS;
 
+
   lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
   lf->lfQuality = DEFAULT_QUALITY;
   lf->lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;
@@ -4611,7 +4612,7 @@ PromotionPopup(HWND hwnd)
 void
 PromotionPopUp(char choice)
 {
-  promoStyle = (choice == '+');
+  promoStyle = (choice == '+' || IS_SHOGI(gameInfo.variant));
   DrawPosition(TRUE, NULL);
   PromotionPopup(hwndMain);
 }
@@ -5088,6 +5089,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_TwoMachines:
       TwoMachinesEvent();
       /*
+
        * refresh the tags dialog only if it's visible
        */
       if (gameMode == TwoMachinesPlay && IsWindowVisible(editTagsDialog)) {
