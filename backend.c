@@ -5334,7 +5334,7 @@ UploadGameEvent ()
     SendToICS(ics_type == ICS_ICC ? "tag result Game in progress\n" : "commit\n");
 }
 
-int killX = -1, killY = -1, kill2X, kill2Y; // [HGM] lion: used for passing e.p. capture square to MakeMove
+int killX = -1, killY = -1, kill2X = -1, kill2Y = -1; // [HGM] lion: used for passing e.p. capture square to MakeMove
 int legNr = 1;
 
 void
