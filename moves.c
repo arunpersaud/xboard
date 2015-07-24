@@ -1673,10 +1673,11 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	}
 	ep = board[EP_STATUS];
 	if( captured == WhiteLion || captured == BlackLion ) { // [HGM] lion: Chu Lion-capture rules
-	    ChessSquare victim = killX < 0 ? EmptySquare : trampled;
+	    ChessSquare victim = saveKill < 0 ? EmptySquare : trampled;
 	    if( (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion) &&           // capturer is Lion
 		(ff - ft > 1 || ft - ff > 1 || rf - rt > 1 || rt - rf > 1) &&           // captures from a distance
-		(victim == EmptySquare || victim == WhitePawn || victim == BlackPawn) ) // no or worthless 'bridge'
+		(victim == EmptySquare || victim == WhitePawn || victim == BlackPawn    // no or worthless 'bridge'
+				     || victim == WhiteCobra || victim == BlackCobra) ) // (Pawn or Go Between)
 		     board[EP_STATUS] = EP_ROYAL_LION; // on distant Lion x Lion victim must not be pseudo-legally protected
 	}
     }
