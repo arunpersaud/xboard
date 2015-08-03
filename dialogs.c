@@ -1946,6 +1946,7 @@ OutputChatMessage (int partner, char *mess)
     char *p = texts[partner];
     int len = strlen(mess) + 1;
 
+    if(!DialogExists(ChatDlg)) return;
     if(p) len += strlen(p);
     texts[partner] = (char*) malloc(len);
     snprintf(texts[partner], len, "%s%s", p ? p : "", mess);
