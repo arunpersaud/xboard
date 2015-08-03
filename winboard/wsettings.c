@@ -893,6 +893,10 @@ void PseudoOK(HWND hDlg)
 
     if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1); else
     if(!appData.loadGameFile[0]) appData.loadGameIndex = -2*twice; // kludge to pass value of "twice" for use in GUI book
+    if(!autoinc && !twice) { // prevent auto-inc being remembered in index value if checkboxes not ticked
+	if(appData.loadGameIndex < 0) appData.loadGameIndex = 0;
+	if(appData.loadPositionIndex < 0) appData.loadPositionIndex = 0;
+    }
     if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
 }
 
