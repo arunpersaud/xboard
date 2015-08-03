@@ -886,6 +886,7 @@ int MatchOK()
 
 void PseudoOK(HWND hDlg)
 {
+    if(matchMode) return;
     okFunc = 0;
     GetOptionValues(hDlg, activeCps, activeList);
     EndDialog( hDlg, 0 );

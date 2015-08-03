@@ -331,6 +331,7 @@ UpgradeParticipant ()
 static void
 PseudoOK ()
 {
+    if(matchMode) return;
     GenericReadout(matchOptions, -2); // read all, but suppress calling of MatchOK
     ASSIGN(appData.participants, engineName);
     ASSIGN(appData.tourneyFile, tfName);
