@@ -898,6 +898,7 @@ void PseudoOK(HWND hDlg)
 	if(appData.loadPositionIndex < 0) appData.loadPositionIndex = 0;
     }
     if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
+    ASSIGN(appData.tourneyFile, tfName);
 }
 
 char *GetParticipants(HWND hDlg)

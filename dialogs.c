@@ -333,6 +333,7 @@ PseudoOK ()
 {
     GenericReadout(matchOptions, -2); // read all, but suppress calling of MatchOK
     ASSIGN(appData.participants, engineName);
+    ASSIGN(appData.tourneyFile, tfName);
     PopDown(MasterDlg); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
 }
 
