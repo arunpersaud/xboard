@@ -742,6 +742,7 @@ DrawText (char *string, int x, int y, int align)
 {
 	int xx = x, yy = y;
 	cairo_text_extents_t te;
+	cairo_matrix_t m;
 	cairo_t *cr;
 
 	cr = cairo_create (csBoardWindow);
@@ -752,6 +753,7 @@ DrawText (char *string, int x, int y, int align)
 	cairo_set_font_size (cr, align < 0 ? 2*squareSize/3 : squareSize/4);
 	// calculate where it goes
 	cairo_text_extents (cr, string, &te);
+	cairo_get_font_matrix(cr, &m);
 
 	if (align == 1) {
 	    xx += squareSize - te.width - te.x_bearing - 1;
@@ -764,7 +766,11 @@ DrawText (char *string, int x, int y, int align)
 	} else if (align == 4) {
 	    xx += te.x_bearing + 1, yy += -te.y_bearing + 3;
 	} else if (align < 0) {
-	    xx += squareSize/2 - te.width/2, yy += 9*squareSize/16 - te.y_bearing/2;
+	    int s = 1;
+	    if(align < -2) align += 2, s = -1;
+	    xx += squareSize/2 - s*te.width/2 - s + 1, yy += (8+s)*squareSize/16 - s*te.y_bearing/2;
+	    m.xx = -m.xx, m.yy = -m.yy;
+	    if(s < 0) cairo_set_font_matrix(cr, &m);
 	}
 
 	cairo_move_to (cr, xx-1, yy);
@@ -779,9 +785,9 @@ void
 InscribeKanji (ChessSquare piece, int x, int y)
 {
     char *p, *q, buf[10];
-    int n;
+    int n, black = 2*(appData.upsideDown && flipView);
     if(piece == EmptySquare) return;
-    if(piece >= BlackPawn) piece = BLACK_TO_WHITE piece;
+    if(piece >= BlackPawn) piece = BLACK_TO_WHITE piece, black = 2 - black;
     p = appData.inscriptions;
     n = piece;
     while(piece > WhitePawn) {
@@ -797,7 +803,7 @@ InscribeKanji (ChessSquare piece, int x, int y)
     strncpy(buf, p, 10);
     for(q=buf; (*++q & 0xC0) == 0x80;);
     *q = NULLCHAR;
-    DrawText(buf, x, y, n > WhiteLion ? -2 : -1);
+    DrawText(buf, x, y, (n > WhiteLion ? -2 : -1) - black);
 }
 
 void
