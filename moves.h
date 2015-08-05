@@ -55,7 +55,6 @@
 
 extern ChessSquare PromoPiece P((ChessMove moveType));
 extern ChessMove PromoCharToMoveType P((int whiteOnMove, int promoChar));
-extern char PieceToChar P((ChessSquare p));
 extern char PieceSuffix P((ChessSquare p));
 extern ChessSquare CharToPiece P((int c));
 extern int PieceToNumber P((ChessSquare p));

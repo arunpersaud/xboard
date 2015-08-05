@@ -217,6 +217,7 @@ void ics_printf P((char *format, ...));
 int GetEngineLine P((char *nick, int engine));
 void AddGameToBook P((int always));
 void FlushBook P((void));
+char PieceToChar P((ChessSquare p));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));

@@ -803,7 +803,7 @@ InscribeKanji (ChessSquare piece, int x, int y)
     strncpy(buf, p, 10);
     for(q=buf; (*++q & 0xC0) == 0x80;);
     *q = NULLCHAR;
-    DrawText(buf, x, y, (n > WhiteLion ? -2 : -1) - black);
+    DrawText(buf, x, y, (PieceToChar(n) == '+' ? -2 : -1) - black);
 }
 
 void
