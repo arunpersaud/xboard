@@ -739,7 +739,7 @@ DrawDot (int marker, int x, int y, int r)
 }
 
 static void
-DrawUnicode (char *string, int x, int y, char id, int flip)
+DrawUnicode (cairo_surface_t *canvas, char *string, int x, int y, char id, int flip)
 {
 //	cairo_text_extents_t te;
 	cairo_t *cr;
@@ -748,7 +748,7 @@ DrawUnicode (char *string, int x, int y, char id, int flip)
 	PangoFontDescription *desc;
 	char fontName[MSG_SIZ];
 
-	cr = cairo_create (csBoardWindow);
+	cr = cairo_create (canvas);
 	cairo_translate(cr, x + s*squareSize/6 + (1-s)*squareSize/2, y + s*squareSize/5 + (1-s)*squareSize/2);
 	if(s < 0) cairo_rotate(cr, G_PI);
 	layout = pango_cairo_create_layout(cr);
@@ -800,7 +800,7 @@ DrawText (char *string, int x, int y, int align)
 }
 
 void
-InscribeKanji (ChessSquare piece, int x, int y)
+InscribeKanji (cairo_surface_t *canvas, ChessSquare piece, int x, int y)
 {
     char *p, *q, buf[10];
     int n, flip = appData.upsideDown && flipView == (piece < BlackPawn);
@@ -821,7 +821,7 @@ InscribeKanji (ChessSquare piece, int x, int y)
     strncpy(buf, p, 10);
     for(q=buf; (*++q & 0xC0) == 0x80;);
     *q = NULLCHAR;
-    DrawUnicode(buf, x, y, PieceToChar(n), flip);
+    DrawUnicode(canvas, buf, x, y, PieceToChar(n), flip);
 }
 
 void
@@ -833,7 +833,7 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
 	BlankSquare(csBoardWindow, x, y, square_color, piece, 1);
     } else {
 	pngDrawPiece(csBoardWindow, piece, square_color, x, y);
-        if(appData.inscriptions[0]) InscribeKanji(piece, x, y);
+        if(appData.inscriptions[0]) InscribeKanji(csBoardWindow, piece, x, y);
     }
 
     if(align) { // square carries inscription (coord or piece count)
@@ -882,6 +882,7 @@ CairoOverlayPiece (ChessSquare piece, cairo_surface_t *dest)
   if(doubleClick) cairo_paint_with_alpha (pieceSource, 0.6);
   else cairo_paint(pieceSource);
   cairo_destroy (pieceSource);
+  if(appData.inscriptions[0]) InscribeKanji(dest, piece, 0, 0);
 }
 
 void
