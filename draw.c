@@ -746,17 +746,19 @@ DrawUnicode (cairo_surface_t *canvas, char *string, int x, int y, char id, int f
 	int s = 1 - 2*flip;
 	PangoLayout *layout;
 	PangoFontDescription *desc;
+	PangoRectangle r;
 	char fontName[MSG_SIZ];
 
 	cr = cairo_create (canvas);
-	cairo_translate(cr, x + s*squareSize/6 + (1-s)*squareSize/2, y + s*squareSize/5 + (1-s)*squareSize/2);
-	if(s < 0) cairo_rotate(cr, G_PI);
 	layout = pango_cairo_create_layout(cr);
 	pango_layout_set_text(layout, string, -1);
 	snprintf(fontName, MSG_SIZ, "Sans Bold %dpx", 2*squareSize/3);
 	desc = pango_font_description_from_string(fontName);
 	pango_layout_set_font_description(layout, desc);
 	pango_font_description_free(desc);
+        pango_layout_get_pixel_extents(layout, NULL, &r);
+	cairo_translate(cr, x + squareSize/2 - s*r.width/2, y + (8+s)*squareSize/16 - s*r.height/2);
+	if(s < 0) cairo_rotate(cr, G_PI);
 	cairo_set_source_rgb(cr, (id == '+' ? 1.0 : 0.0), 0.0, 0.0);
 	pango_cairo_update_layout(cr, layout);
 	pango_cairo_show_layout(cr, layout);
