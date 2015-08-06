@@ -311,8 +311,15 @@ LoadSVG (char *dir, int color, int piece, int retry)
 
     snprintf(buf, MSG_SIZ, "%s/%s%s.svg", dir, color ? "Black" : "White", name);
 
-    if(svg || *dir && (svg = rsvg_handle_new_from_file(buf, &svgerror))) {
+    if(!svg && *dir) {
+      svg = rsvg_handle_new_from_file(buf, &svgerror);
+      if(!svg && *appData.inscriptions) { // if there is no piece-specific SVG, but we make inscriptions, try general background
+	snprintf(buf, MSG_SIZ, "%s/%sTile.svg", dir, color ? "Black" : "White");
+	svg = rsvg_handle_new_from_file(buf, &svgerror);
+      }
+    }
 
+    if(svg) {
       rsvg_handle_get_dimensions(svg, &svg_dimensions);
       img = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, squareSize,  squareSize);
 
