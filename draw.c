@@ -57,6 +57,7 @@
 #include <cairo/cairo-xlib.h>
 #include <librsvg/rsvg.h>
 #include <librsvg/rsvg-cairo.h>
+#include <pango/pangocairo.h>
 
 #if STDC_HEADERS
 # include <stdlib.h>
@@ -738,11 +739,36 @@ DrawDot (int marker, int x, int y, int r)
 }
 
 static void
+DrawUnicode (char *string, int x, int y, char id, int flip)
+{
+//	cairo_text_extents_t te;
+	cairo_t *cr;
+	int s = 1 - 2*flip;
+	PangoLayout *layout;
+	PangoFontDescription *desc;
+	char fontName[MSG_SIZ];
+
+	cr = cairo_create (csBoardWindow);
+	cairo_translate(cr, x + s*squareSize/6 + (1-s)*squareSize/2, y + s*squareSize/5 + (1-s)*squareSize/2);
+	if(s < 0) cairo_rotate(cr, G_PI);
+	layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout, string, -1);
+	snprintf(fontName, MSG_SIZ, "Sans Bold %dpx", 2*squareSize/3);
+	desc = pango_font_description_from_string(fontName);
+	pango_layout_set_font_description(layout, desc);
+	pango_font_description_free(desc);
+	cairo_set_source_rgb(cr, (id == '+' ? 1.0 : 0.0), 0.0, 0.0);
+	pango_cairo_update_layout(cr, layout);
+	pango_cairo_show_layout(cr, layout);
+	g_object_unref(layout);
+	cairo_destroy(cr);
+}
+
+static void
 DrawText (char *string, int x, int y, int align)
 {
 	int xx = x, yy = y;
 	cairo_text_extents_t te;
-	cairo_matrix_t m;
 	cairo_t *cr;
 
 	cr = cairo_create (csBoardWindow);
@@ -753,7 +779,6 @@ DrawText (char *string, int x, int y, int align)
 	cairo_set_font_size (cr, align < 0 ? 2*squareSize/3 : squareSize/4);
 	// calculate where it goes
 	cairo_text_extents (cr, string, &te);
-	cairo_get_font_matrix(cr, &m);
 
 	if (align == 1) {
 	    xx += squareSize - te.width - te.x_bearing - 1;
@@ -765,16 +790,9 @@ DrawText (char *string, int x, int y, int align)
 	    yy += -te.y_bearing + 3;
 	} else if (align == 4) {
 	    xx += te.x_bearing + 1, yy += -te.y_bearing + 3;
-	} else if (align < 0) {
-	    int s = 1;
-	    if(align < -2) align += 2, s = -1;
-	    xx += squareSize/2 - s*te.width/2 - s + 1, yy += (8+s)*squareSize/16 - s*te.y_bearing/2;
-	    m.xx = -m.xx, m.yy = -m.yy;
-	    if(s < 0) cairo_set_font_matrix(cr, &m);
 	}
 
 	cairo_move_to (cr, xx-1, yy);
-	if(align == -2) cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); else
 	if(align < 3) cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 	else          cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 	cairo_show_text (cr, string);
@@ -785,9 +803,9 @@ void
 InscribeKanji (ChessSquare piece, int x, int y)
 {
     char *p, *q, buf[10];
-    int n, black = 2*(appData.upsideDown && flipView);
+    int n, flip = appData.upsideDown && flipView == (piece < BlackPawn);
     if(piece == EmptySquare) return;
-    if(piece >= BlackPawn) piece = BLACK_TO_WHITE piece, black = 2 - black;
+    if(piece >= BlackPawn) piece = BLACK_TO_WHITE piece;
     p = appData.inscriptions;
     n = piece;
     while(piece > WhitePawn) {
@@ -803,7 +821,7 @@ InscribeKanji (ChessSquare piece, int x, int y)
     strncpy(buf, p, 10);
     for(q=buf; (*++q & 0xC0) == 0x80;);
     *q = NULLCHAR;
-    DrawText(buf, x, y, (PieceToChar(n) == '+' ? -2 : -1) - black);
+    DrawUnicode(buf, x, y, PieceToChar(n), flip);
 }
 
 void
