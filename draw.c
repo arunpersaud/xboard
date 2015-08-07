@@ -759,7 +759,7 @@ DrawUnicode (cairo_surface_t *canvas, char *string, int x, int y, char id, int f
 	cr = cairo_create (canvas);
 	layout = pango_cairo_create_layout(cr);
 	pango_layout_set_text(layout, string, -1);
-	snprintf(fontName, MSG_SIZ, "Sans Bold %dpx", 2*squareSize/3);
+	snprintf(fontName, MSG_SIZ, "Sans Normal %dpx", 5*squareSize/8);
 	desc = pango_font_description_from_string(fontName);
 	pango_layout_set_font_description(layout, desc);
 	pango_font_description_free(desc);
