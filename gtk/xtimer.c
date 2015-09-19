@@ -183,13 +183,14 @@ StartLoadGameTimer (long millisec)
 
 guint analysisClockTag = 0;
 
-void
+int
 AnalysisClockCallback(gpointer data)
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile
          || appData.icsEngineAnalyze) { // [DM]
 	AnalysisPeriodicEvent(0);
     }
+    return 1;
 }
 
 void
