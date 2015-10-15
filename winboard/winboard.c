@@ -5091,6 +5091,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_Match: // [HGM] match: flows into next case, after setting Match Mode and nr of Games
+      if(matchMode) EnableMenuItem(GetMenu(hwndMain), IDM_Match, MF_BYCOMMAND|MF_GRAYED);
       MatchEvent(2); // distinguish from command-line-triggered case (matchMode=1)
       break;
 
@@ -8215,6 +8216,8 @@ ModeHighlight()
     nowChecked = 0;
     break;
   }
+  if(prevChecked == IDM_TwoMachine) // [HGM] 'Machine Match' might have gotten disabled when stopping match
+    EnableMenuItem(GetMenu(hwndMain), IDM_Match, MF_BYCOMMAND|MF_ENABLED)
   CheckMark(prevChecked, MF_UNCHECKED);
   CheckMark(nowChecked, MF_CHECKED);
   CheckMark(IDM_Match, matchMode && matchGame < appData.matchGames ? MF_CHECKED : MF_UNCHECKED);

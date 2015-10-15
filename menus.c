@@ -257,6 +257,8 @@ QuitProc ()
 void
 MatchProc ()
 {
+    static Enables matchOff[] = { { "Mode.MachineMatch", False }, { NULL, False } };
+    if(matchMode) SetMenuEnables(matchOff);
     MatchEvent(2);
 }
 

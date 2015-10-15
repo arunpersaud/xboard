@@ -1799,8 +1799,9 @@ ModeHighlight ()
     if (wname != NULL) {
 	MarkMenuItem(wname, True);
     }
-    oldmode = gameMode;
+    if(oldMode == TwoMachinesPlay) EnableNamedMenuItem("Mode.MachineMatch", True);
     MarkMenuItem("Mode.MachineMatch", matchMode && matchGame < appData.matchGames);
+    oldmode = gameMode;
 
     /* Maybe all the enables should be handled here, not just this one */
     EnableNamedMenuItem("Mode.Training", gameMode == Training || gameMode == PlayFromGameFile);
