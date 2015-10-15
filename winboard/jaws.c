@@ -270,7 +270,7 @@ InitJAWS()
 
 		AdaptMenu();
 		menuBarText[0][8] = menuBarText[0][7]; menuBarText[0][7] = "&JAWS";
-		for(i=0; i<9; i++) menuBarText[1][i] = menuBarText[0][i];
+		for(i=0; i<9; i++) menuBarText[2][i] = menuBarText[1][i] = menuBarText[0][i];
 	}
 
 	hAccelJAWS = CreateAcceleratorTable(acceleratorsJAWS, 14);

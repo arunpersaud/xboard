@@ -534,12 +534,12 @@ typedef struct {
 
 SizeInfo sizeInfo[] = 
 {
-  { "tiny",     21, 0, 1, 1, 0, 0 },
-  { "teeny",    25, 1, 1, 1, 0, 0 },
-  { "dinky",    29, 1, 1, 1, 0, 0 },
-  { "petite",   33, 1, 1, 1, 0, 0 },
-  { "slim",     37, 2, 1, 0, 0, 0 },
-  { "small",    40, 2, 1, 0, 0, 0 },
+  { "tiny",     21, 0, 1, 2, 0, 0 },
+  { "teeny",    25, 1, 1, 2, 0, 0 },
+  { "dinky",    29, 1, 1, 2, 0, 0 },
+  { "petite",   33, 1, 1, 2, 0, 0 },
+  { "slim",     37, 2, 1, 1, 0, 0 },
+  { "small",    40, 2, 1, 1, 0, 0 },
   { "mediocre", 45, 2, 1, 0, 0, 0 },
   { "middling", 49, 2, 0, 0, 0, 0 },
   { "average",  54, 2, 0, 0, 0, 0 },
@@ -587,7 +587,7 @@ typedef struct {
   WNDPROC wndproc;
 } MyButtonDesc;
 
-#define BUTTON_WIDTH (tinyLayout ? 16 : 32)
+#define BUTTON_WIDTH (tinyLayout == 2 ? 16 : 32)
 #define N_BUTTONS 5
 
 MyButtonDesc buttonDesc[N_BUTTONS] =
@@ -601,8 +601,9 @@ MyButtonDesc buttonDesc[N_BUTTONS] =
 
 int tinyLayout = 0, smallLayout = 0;
 #define MENU_BAR_ITEMS 9
-char *menuBarText[2][MENU_BAR_ITEMS+1] = {
+char *menuBarText[3][MENU_BAR_ITEMS+1] = {
   { N_("&File"), N_("&Edit"), N_("&View"), N_("&Mode"), N_("&Action"), N_("E&ngine"), N_("&Options"), N_("&Help"), NULL },
+  { N_("&Fil"), N_("&Ed"), N_("&Vw"), N_("&Mod"), N_("&Act"), N_("E&ng"), N_("&Opt"), N_("&Hlp"), NULL },
   { N_("&F"), N_("&E"), N_("&V"), N_("&M"), N_("&A"), N_("&N"), N_("&O"), N_("&H"), NULL },
 };
 
@@ -1282,6 +1283,7 @@ LFfromMFP(LOGFONT* lf, MyFontParams *mfp)
   lf->lfStrikeOut = mfp->strikeout;
   lf->lfCharSet = mfp->charset;
   lf->lfOutPrecision = OUT_DEFAULT_PRECIS;
+
 
 
   lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
@@ -2357,7 +2359,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
   if (tinyLayout != oldTinyLayout) {
     long style = GetWindowLongPtr(hwndMain, GWL_STYLE);
-    if (tinyLayout) {
+    if (tinyLayout == 2) {
       style &= ~WS_SYSMENU;
       InsertMenu(hmenu, IDM_Exit, MF_BYCOMMAND, IDM_Minimize,
 		 "&Minimize\tCtrl+F4");
@@ -2393,7 +2395,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   ReleaseDC(hwndMain, hdc);
 
   /* Compute where everything goes */
-  if((first.programLogo || second.programLogo) && !tinyLayout) {
+  if((first.programLogo || second.programLogo) && tinyLayout != 2) {
         /* [HGM] logo: if either logo is on, reserve space for it */
 	logoHeight =  2*clockSize.cy;
 	leftLogoRect.left   = OUTER_MARGIN;
@@ -2514,7 +2516,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 		     messageRect.top, BUTTON_WIDTH, messageSize.cy, hwndMain,
 		     (HMENU) buttonDesc[i].id,
 		     (HINSTANCE) GetWindowLongPtr(hwndMain, GWLP_HINSTANCE), NULL);
-      if (tinyLayout) {
+      if (tinyLayout == 2) {
 	SendMessage(buttonDesc[i].hwnd, WM_SETFONT, 
 		    (WPARAM)font[boardSize][MESSAGE_FONT]->hf,
 		    MAKELPARAM(FALSE, 0));
@@ -3991,6 +3993,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   }
 
   if( appData.highlightMoveWithArrow ) {
+
     DrawArrowHighlight(hdcmem);
   }
 
@@ -4511,6 +4514,7 @@ static int promoStyle;
 LRESULT CALLBACK
 Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+
   char promoChar;
 
   switch (message) {
@@ -7646,7 +7650,7 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
 
   if (twoBoards && partnerUp) return;
   if (appData.clockMode) {
-    if (tinyLayout)
+    if (tinyLayout == 2)
       snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%c %s %s", color[0], TimeString(timeRemaining), flagFell);
     else
       snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%s:%c%s %s", color, (logoHeight>0 ? 0 : ' '), TimeString(timeRemaining), flagFell);
