@@ -231,11 +231,12 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
         header[which][0] = NULLCHAR;
         if(gameMode == AnalyzeMode) {
           ChessProgramState *cps = (which ? &second : &first);
+          char exclu = cps->excludeMoves ? exclusionHeader : "";
           if((multi = MultiPV(cps)) >= 0) {
             snprintf(header[which], MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
                                        appData.whitePOV || appData.scoreWhite ? "white" : "mover", cps->option[multi].value);
 	  }
-          if(!which) snprintf(header[which]+strlen(header[which]), MSG_SIZ-strlen(header[which]), "%s%s", exclusionHeader, columnHeader);
+          if(!which) snprintf(header[which]+strlen(header[which]), MSG_SIZ-strlen(header[which]), "%s%s", exclu, columnHeader);
           InsertIntoMemo( which, header[which], 0);
         } else {
           snprintf(header[which], MSG_SIZ, "%s", columnHeader);
