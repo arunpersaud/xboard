@@ -2353,6 +2353,10 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   minorSize = 0; /* [HGM] Kludge to see if demagnified pieces need to be shifted  */
   border = appData.useBorder && appData.border[0] ? squareSize/2 : 0;
 
+  // [HGM] decide on tininess based on total board width rather than square size
+  tinyLayout = squareSize * (BOARD_WIDTH);
+  tinyLayout = tinyLayout < 35*8 ? 2 : tinyLayout < 43*8 ? 1 : 0;
+
   if( appData.overrideLineGap >= 0 && appData.overrideLineGap <= 5 ) {
       lineGap = appData.overrideLineGap;
   }
