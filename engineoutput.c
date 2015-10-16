@@ -231,7 +231,7 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
         header[which][0] = NULLCHAR;
         if(gameMode == AnalyzeMode) {
           ChessProgramState *cps = (which ? &second : &first);
-          char exclu = cps->excludeMoves ? exclusionHeader : "";
+          char *exclu = cps->excludeMoves ? exclusionHeader : "";
           if((multi = MultiPV(cps)) >= 0) {
             snprintf(header[which], MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
                                        appData.whitePOV || appData.scoreWhite ? "white" : "mover", cps->option[multi].value);
