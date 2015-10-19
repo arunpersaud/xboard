@@ -1773,7 +1773,7 @@ void
 ModeHighlight ()
 {
     static int oldPausing = FALSE;
-    static GameMode oldmode = (GameMode) -1;
+    static GameMode oldMode = (GameMode) -1;
     char *wname;
     if (!boardWidget) return;
 
@@ -1791,7 +1791,7 @@ ModeHighlight ()
 	}
     }
 
-    wname = ModeToWidgetName(oldmode);
+    wname = ModeToWidgetName(oldMode);
     if (wname != NULL) {
 	MarkMenuItem(wname, False);
     }
@@ -1801,7 +1801,7 @@ ModeHighlight ()
     }
     if(oldMode == TwoMachinesPlay) EnableNamedMenuItem("Mode.MachineMatch", True);
     MarkMenuItem("Mode.MachineMatch", matchMode && matchGame < appData.matchGames);
-    oldmode = gameMode;
+    oldMode = gameMode;
 
     /* Maybe all the enables should be handled here, not just this one */
     EnableNamedMenuItem("Mode.Training", gameMode == Training || gameMode == PlayFromGameFile);
