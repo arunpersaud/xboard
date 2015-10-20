@@ -443,7 +443,6 @@ InsertionPoint (int len, EngineOutputData *ed)
       return offs + strlen(header[ed->which]);
 }
 
-#define MATE_SCORE 100000
 static char spaces[] = "            "; // [HGM] align: spaces for padding
 
 static void

@@ -226,6 +226,7 @@ typedef char *String;
 #define BELLCHAR                '\007'
 #define NULLCHAR                '\000'
 #define FEATURE_TIMEOUT         10000 /*ms*/
+#define MATE_SCORE              100000
 
 #define CLOCK_FONT 0
 #define MESSAGE_FONT 1

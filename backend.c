@@ -9533,6 +9533,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    buf1[0] = NULLCHAR;
 	    if (sscanf(message, "%d%c %d %d " u64Display " %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5) {
+		char score_buf[MSG_SIZ];
 
 		if(nodes>>32 == u64Const(0xFFFFFFFF))   // [HGM] negative node count read
 		    nodes += u64Const(0x100000000);
@@ -9633,11 +9634,17 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                     [AS] Protect the thinkOutput buffer from overflow... this
                     is only useful if buf1 hasn't overflowed first!
                 */
-		snprintf(thinkOutput, sizeof(thinkOutput)/sizeof(thinkOutput[0]), "[%d]%c%+.2f %s%s",
+		if(curscore >= MATE_SCORE) 
+		    snprintf(score_buf, MSG_SIZ, "#%d", curscore - MATE_SCORE);
+		else if(curscore <= -MATE_SCORE) 
+		    snprintf(score_buf, MSG_SIZ, "#%d", curscore + MATE_SCORE);
+		else
+		    snprintf(score_buf, MSG_SIZ, "%+.2f", ((double) curscore) / 100.0);
+		snprintf(thinkOutput, sizeof(thinkOutput)/sizeof(thinkOutput[0]), "[%d]%c%s %s%s",
 			 plylev,
 			 (gameMode == TwoMachinesPlay ?
 			  ToUpper(cps->twoMachinesColor[0]) : ' '),
-			 ((double) curscore) / 100.0,
+			 score_buf,
 			 prefixHint ? lastHint : "",
 			 prefixHint ? " " : "" );
 
