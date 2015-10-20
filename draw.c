@@ -288,12 +288,15 @@ CreatePNGBoard (char *s, int kind)
 char *pngPieceNames[] = // must be in same order as internal piece encoding
 { "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Crown", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
+  "Tile", "Tile", "Tile", "Tile", "Tile",
   "GoldPawn", "Claw", "PromoHorse", "PromoDragon", "GoldLance", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
-  "Dolphin", "Sword", "Leopard", "HSword", "GoldSilver", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop", "King",
+  "Dolphin", "Sword", "Leopard", "HSword", "GoldSilver", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop",
+  "Tile", "Tile", "Tile", "Tile", "Tile", "King",
   "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
 char *backupPiece[] = { "Princess", NULL, NULL, NULL, NULL, NULL, NULL,
+                        NULL, NULL, NULL, NULL, NULL,
 			NULL, NULL, NULL, NULL, NULL, NULL, "King", "Queen", "Lion" }; // pieces that map on other when not kanji
 
 RsvgHandle *
@@ -365,7 +368,8 @@ ScaleOnePiece (int color, int piece)
 
   if(!pngPieceImages[color][piece]) { // we still did not manage to acquire a piece bitmap
     static int warned = 0;
-    if(!(svgPieces[color][piece] = LoadSVG(svgDir, color, piece, 0)) && !warned) { // try to fall back on installed svg 
+    if(!(svgPieces[color][piece] = LoadSVG(svgDir, color, piece, 0)) // try to fall back on installed svg 
+       && !warned && strcmp(pngPieceNames[piece], "Tile")) {         // but do not complain about missing 'Tile'
       char *msg = _("No default pieces installed!\nSelect your own using '-pieceImageDirectory'.");
       printf("%s\n", msg); // give up
       DisplayError(msg, 0);
