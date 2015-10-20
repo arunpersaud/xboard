@@ -402,6 +402,14 @@ SetEngineColorIcon (int which)
 // [HGM] multivar: sort Thinking Output within one depth on score
 
 static int
+MateFlip (int n)
+{   // map mate-score to monotonous scale, so sorting compares them correctly
+    if(n >=  MATE_SCORE) return 2*MATE_SCORE - n;
+    if(n <= -MATE_SCORE) return -2*MATE_SCORE - n;
+    return n;
+}
+
+static int
 InsertionPoint (int len, EngineOutputData *ed)
 {
 	int i, offs = 0, newScore = ed->score, n = ed->which;
@@ -425,7 +433,7 @@ InsertionPoint (int len, EngineOutputData *ed)
 		keys[i+n+2] = ed->moveKey;
 		fail[i+n+2] = failType;
 		if(ed->moveKey != keys[i+n] && // same move always tops previous one (as a higher score must be a fail low)
-		   newScore < scores[i+n] && fail[i+n] == ' ') break;
+		   MateFlip(newScore) < MateFlip(scores[i+n]) && fail[i+n] == ' ') break;
 		// if it had higher score as previous, move previous in stead
 		scores[i+n+2] = ed->moveKey == keys[i+n] ? newScore : scores[i+n]; // correct scores of fail-low/high searches
 		textEnd[i+n+2] = textEnd[i+n] + len;
