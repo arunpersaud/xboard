@@ -610,6 +610,7 @@ ArgDescriptor argDescriptors[] = {
   { "ub", ArgBoolean, (void *) &appData.useBorder, FALSE, INVALID },
   { "border", ArgFilename, (void *) &appData.border, TRUE, (ArgIniType) "" },
   { "finger", ArgFilename, (void *) &appData.finger, FALSE, (ArgIniType) "" },
+  { "epd", ArgTrue, (void *) &appData.epd, FALSE, INVALID },
   { "inscriptions", ArgString, (void *) &appData.inscriptions, FALSE, (ArgIniType) "" },
   { "autoInstall", ArgString, (void *) &appData.autoInstall, XBOARD, (ArgIniType) "" },
   { "fixedSize", ArgBoolean, (void *) &appData.fixedSize, TRUE, (ArgIniType) FALSE },

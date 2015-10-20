@@ -528,6 +528,7 @@ typedef struct {
     Boolean fischerCastling;/* [HGM] fischer: allow Fischr castling in any variant */
     Boolean matchMode;
     int matchGames;
+    Boolean epd;
     Boolean monoMode;
     Boolean debugMode;
     Boolean clockMode;

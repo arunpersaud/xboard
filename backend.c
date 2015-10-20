@@ -296,6 +296,8 @@ int promoDefaultAltered;
 int keepInfo = 0; /* [HGM] to protect PGN tags in auto-step game analysis */
 static int initPing = -1;
 int border;       /* [HGM] width of board rim, needed to size seek graph  */
+char bestMove[MSG_SIZ];
+int solvingTime, totalTime;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -8793,6 +8795,17 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
            free(fen);
            GameEnds(GameUnfinished, NULL, GE_XBOARD);
         }
+        if(appData.epd) {
+           if(solvingTime >= 0) {
+              snprintf(buf1, MSG_SIZ, "%d. %4.2fs\n", matchGame, solvingTime/100.);
+              totalTime += solvingTime; first.matchWins++;
+           } else {
+              snprintf(buf1, MSG_SIZ, "%d. wrong (%s)\n", matchGame, parseList[backwardMostMove]);
+              second.matchWins++;
+           }
+           OutputKibitz(2, buf1);
+           GameEnds(GameUnfinished, NULL, GE_XBOARD);
+        }
 
         /* [AS] Adjudicate game if needed (note: remember that forwardMostMove now points past the last move) */
         if( gameMode == TwoMachinesPlay && appData.adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
@@ -9541,6 +9554,14 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                 }
 
 		if(appData.pvSAN[cps==&second]) pv = PvToSAN(buf1);
+
+		if(*bestMove) { // rememer time best EPD move was first found
+		    int ff1, tf1, fr1, tr1, ff2, tf2, fr2, tr2; char pp1, pp2;
+		    ChessMove mt;
+		    int ok = ParseOneMove(bestMove, forwardMostMove, &mt, &ff1, &fr1, &tf1, &tr1, &pp1);
+		    ok    &= ParseOneMove(pv, forwardMostMove, &mt, &ff2, &fr2, &tf2, &tr2, &pp2);
+		    solvingTime = (ok && ff1==ff2 && fr1==fr2 && tf1==tf2 && tr1==tr2 && pp1==pp2 ? time : -1);
+		}
 
 		if(serverMoves && (time > 100 || time == 0 && plylev > 7)) {
 			char buf[MSG_SIZ];
@@ -13312,10 +13333,14 @@ LoadPosition (FILE *f, int positionNumber, char *title)
     }
 
     if (fenMode) {
+	char *p;
 	if (!ParseFEN(initial_position, &blackPlaysFirst, line, TRUE)) {
 	    DisplayError(_("Bad FEN position in file"), 0);
 	    return FALSE;
 	}
+	if((p = strstr(line, ";")) && (p = strstr(p+1, "bm "))) { // EPD with best move
+	    sscanf(p+3, "%s", bestMove);
+	} else *bestMove = NULLCHAR;
     } else {
 	(void) fgets(line, MSG_SIZ, f);
 	(void) fgets(line, MSG_SIZ, f);
