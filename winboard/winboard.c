@@ -6726,7 +6726,7 @@ TypeInNameDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case IDOK:
       GetDlgItemText(hDlg, OPT_Name, move, sizeof(move));
       appData.userName = strdup(move);
-      SetUserLogo();
+      SetUserLogo(); DisplayLogos();
       SetGameInfo();
       if(gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack) {
 	snprintf(move, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
