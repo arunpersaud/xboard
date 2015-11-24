@@ -2589,10 +2589,12 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 	 piece = (ChessSquare) ((int) piece + 1)) {
       if (pieceBitmap[i][piece] != NULL)
 	DeleteObject(pieceBitmap[i][piece]);
+      pieceBitmap[i][piece] = NULL;
     }
   }
 
   fontBitmapSquareSize = 0; /* [HGM] render: make sure pieces will be recreated, as we might need others now */
+
   // Orthodox Chess pieces
   pieceBitmap[0][WhitePawn] = DoLoadBitmap(hInst, "p", squareSize, "s");
   pieceBitmap[0][WhiteKnight] = DoLoadBitmap(hInst, "n", squareSize, "s");
@@ -2796,6 +2798,15 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "sl", squareSize, "w");
   pieceBitmap[2][WhiteSilver] = DoLoadBitmap(hInst, "sw", squareSize, "w");
   minorSize = 0;
+  }
+
+  if(appData.pieceDirectory[0]) for(i=WhitePawn; i<BlackPawn; i++) { // try for all missing pieces with new naming convention
+    char buf[MSG_SIZ];
+    if(pieceBitmap[0][i]) continue;
+    snprintf(buf, MSG_SIZ, "piece%d_", i);
+    pieceBitmap[0][i] = DoLoadBitmap(hInst, buf, squareSize, "s");
+    pieceBitmap[1][i] = DoLoadBitmap(hInst, buf, squareSize, "o");
+    pieceBitmap[2][i] = DoLoadBitmap(hInst, buf, squareSize, "w");
   }
 }
 
@@ -7671,6 +7682,7 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
     oldFg = SetTextColor(hdc, RGB(0, 0, 0)); /* black */
     oldBg = SetBkColor(hdc, RGB(255, 255, 255)); /* white */
   }
+
   oldFont = SelectObject(hdc, font[boardSize][CLOCK_FONT]->hf);
 
   JAWS_SILENCE
@@ -7986,6 +7998,7 @@ Enables gnuEnables[] = {
   { IDM_Revert, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Annotate, MF_BYCOMMAND|MF_GRAYED },
   { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
+
 
   // Needed to switch from ncp to GNU mode on Engine Load
   { ACTION_POS, MF_BYPOSITION|MF_ENABLED },
