@@ -408,8 +408,8 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(y < 0 || y >= BOARD_HEIGHT) break; // vertically off-board: always done
 		if(x <  BOARD_LEFT) { if(mode & 128) x += BOARD_RGHT - BOARD_LEFT, loop++; else break; }
 		if(x >= BOARD_RGHT) { if(mode & 128) x -= BOARD_RGHT - BOARD_LEFT, loop++; else break; }
-		if(board[y][x] == DarkSquare) break;  // black squares are supposed to be off board
 		if(j) { j--; continue; }              // skip irrespective of occupation
+		if(board[y][x] == DarkSquare) break;  // black squares are supposed to be off board
 		if(!jump    && board[y - vy + vy/2][x - vx + vx/2] != EmptySquare) break; // blocked
 		if(jump > 1 && board[y - vy + vy/2][x - vx + vx/2] == EmptySquare) break; // no hop
 		if(x == f && y == r && !loop) occup = 4;     else // start square counts as empty (if not around cylinder!)
