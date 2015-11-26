@@ -8983,7 +8983,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       char *p=buf2, *q, *s = SUFFIXES, ID = *p;
       if(*p == '+') piece = CHUPROMOTED WhitePawn, ID = *++p;
       if(q = strchr(s, p[1])) ID += 64*(q - s + 1), p++;
-      piece += CharToPiece(ID) - WhitePawn;
+      piece += CharToPiece(ID & 255) - WhitePawn;
       if(cps != &first || appData.testLegality && *engineVariant == NULLCHAR
       /* always accept definition of  */       && piece != WhiteFalcon && piece != BlackFalcon
       /* wild-card pieces.            */       && piece != WhiteCobra  && piece != BlackCobra
@@ -8995,7 +8995,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       if(piece < EmptySquare) {
         pieceDefs = TRUE;
         ASSIGN(pieceDesc[piece], buf1);
-        if(isupper(*p) && p[1] == '&') { ASSIGN(pieceDesc[WHITE_TO_BLACK piece], buf1); }
+        if((ID & 32) == 0 && p[1] == '&') { ASSIGN(pieceDesc[WHITE_TO_BLACK piece], buf1); }
       }
       return;
     }
