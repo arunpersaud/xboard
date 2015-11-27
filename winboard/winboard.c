@@ -1106,6 +1106,8 @@ InitGeometry()
   screenGeometry.bottom = screenGeometry.top + screenHeight;
 }
 
+ChessProgramState broadcast;
+
 BOOL
 InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 {
@@ -1138,7 +1140,18 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
     appData.ringBellAfterMoves = TRUE;
   }
   if (appData.debugMode) {
-    debugFP = fopen(appData.nameOfDebugFile, "w");
+    char *c = appData.nameOfDebugFile;
+    if(strstr(c, "///") == c) {
+      broadcast.which = "broadcaster";
+      broadcast.pr   = NoProc;
+      broadcast.isr  = NULL;
+      broadcast.prog = c + 3;
+      broadcast.dir  = ".";
+      broadcast.host = "localhost";
+      StartChessProgram(&broadcast);
+      debugFP = (FILE*) _fdopen(_open_osfhandle((long)(((ChildProc*)(broadcast.pr))->hTo), _O_WRONLY), "w");
+    } else
+    debugFP = fopen(c, "w");
     setbuf(debugFP, NULL);
   }
 
