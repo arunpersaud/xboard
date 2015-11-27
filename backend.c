@@ -8109,7 +8109,7 @@ Adjudicate (ChessProgramState *cps)
 	// most tests only when we understand the game, i.e. legality-checking on
 	    if( appData.testLegality )
 	    {   /* [HGM] Some more adjudications for obstinate engines */
-		int nrW, nrB, bishopColor, staleW, staleB, nr[EmptySquare+1], i;
+		int nrW, nrB, bishopColor, staleW, staleB, nr[EmptySquare+2], i;
 		static int moveCount = 6;
 		ChessMove result;
 		char *reason = NULL;
