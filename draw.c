@@ -657,18 +657,25 @@ DrawLogo (Option *opt, void *logo)
     cairo_t *cr;
     int w, h;
 
-    if(!logo || !opt) return;
-    img = cairo_image_surface_create_from_png (logo);
-    w = cairo_image_surface_get_width (img);
-    h = cairo_image_surface_get_height (img);
+    if(!opt) return;
     cr = cairo_create(DRAWABLE(opt));
-//    cairo_scale(cr, (float)appData.logoSize/w, appData.logoSize/(2.*h));
-    cairo_scale(cr, (float)opt->max/w, (float)opt->value/h);
-    cairo_set_source_surface (cr, img, 0, 0);
-    cairo_paint (cr);
+    cairo_rectangle (cr, 0, 0, opt->max, opt->value);
+    cairo_set_source_rgba(cr, 0.5, 0.5, 0.5, 1.0);
+    cairo_fill(cr); // paint background in case logo does not exist
+    if(logo) {
+        img = cairo_image_surface_create_from_png (logo);
+        if(cairo_surface_status(img) == CAIRO_STATUS_SUCCESS) {
+	    w = cairo_image_surface_get_width (img);
+	    h = cairo_image_surface_get_height (img);
+//        cairo_scale(cr, (float)appData.logoSize/w, appData.logoSize/(2.*h));
+	    cairo_scale(cr, (float)opt->max/w, (float)opt->value/h);
+	    cairo_set_source_surface (cr, img, 0, 0);
+	    cairo_paint (cr);
+        }
+	cairo_surface_destroy (img);
+    }
     cairo_destroy (cr);
-    cairo_surface_destroy (img);
-    GraphExpose(opt, 0, 0, appData.logoSize, appData.logoSize/2);
+    GraphExpose(opt, 0, 0, opt->max, opt->value);
 }
 
 static void
