@@ -11420,16 +11420,17 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	       && gameInfo.variant != VariantLosers && gameInfo.variant != VariantGiveaway
 	       && gameInfo.variant != VariantSuicide // [HGM] losers: except in losers, of course...
 	       && result != GameIsDrawn)
-	    {   int i, j, k=0, color = (result==WhiteWins ? (int)WhitePawn : (int)BlackPawn);
+	    {   int i, j, k=0, oppoKings = 0, color = (result==WhiteWins ? (int)WhitePawn : (int)BlackPawn);
 		for(j=BOARD_LEFT; j<BOARD_RGHT; j++) for(i=0; i<BOARD_HEIGHT; i++) {
 			int p = (signed char)boards[forwardMostMove][i][j] - color;
 			if(p >= 0 && p <= (int)WhiteKing) k++;
+			oppoKings += (p + color == WhiteKing + BlackPawn - color);
 		}
 		if (appData.debugMode) {
 	 	     fprintf(debugFP, "GE(%d, %s, %d) bare king k=%d color=%d\n",
 		 	result, resultDetails ? resultDetails : "(null)", whosays, k, color);
 		}
-		if(k <= 1) {
+		if(k <= 1 && oppoKings > 0) { // the latter needed in Atomic, where bare K wins if opponent King already destroyed
 			result = GameIsDrawn;
 			snprintf(buf, MSG_SIZ, "%s but bare king", resultDetails);
 			resultDetails = buf;
