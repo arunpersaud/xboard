@@ -5974,14 +5974,14 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
         for( i=0; i<(int) EmptySquare; i++ ) table[i] = '.';
         for( i=offs=0; i<NrPieces/2-1; i++ ) {
             char *p;
-            if(map[j] == '/' && *escapes) offs = CHUPROMOTED WhitePawn - i, j++;
+            if(map[j] == '/' && *escapes) offs = WhiteTokin - i, j++;
             table[i + offs] = map[j++];
             if(p = strchr(escapes, map[j])) j++, table[i + offs] += 64*(p - escapes + 1);
         }
         table[(int) WhiteKing]  = map[j++];
         for( i=offs=0; i<NrPieces/2-1; i++ ) {
             char *p;
-            if(map[j] == '/' && *escapes) offs = CHUPROMOTED WhitePawn - i, j++;
+            if(map[j] == '/' && *escapes) offs = WhiteTokin - i, j++;
             table[WHITE_TO_BLACK i + offs] = map[j++];
             if(p = strchr(escapes, map[j])) j++, table[WHITE_TO_BLACK i + offs] += 64*(p - escapes + 1);
         }
