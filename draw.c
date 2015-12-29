@@ -288,10 +288,10 @@ CreatePNGBoard (char *s, int kind)
 char *pngPieceNames[] = // must be in same order as internal piece encoding
 { "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Crown", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
-  "Tile", "Tile", "Tile", "Tile", "Tile",
+  "Wolf", "Camel", "Zebra", "Wizard", "Lance",
   "GoldPawn", "Claw", "PromoHorse", "PromoDragon", "GoldLance", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
   "Dolphin", "Sword", "Leopard", "HSword", "GoldSilver", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop",
-  "Tile", "Tile", "Tile", "Tile", "Tile", "King",
+  "Dragon", "Viking", "Iron", "Copper", "Tower", "King",
   "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
