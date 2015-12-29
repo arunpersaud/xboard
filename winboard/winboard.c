@@ -2705,6 +2705,9 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     pieceBitmap[0][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "s");
     pieceBitmap[1][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "o");
     pieceBitmap[2][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "w");
+    pieceBitmap[0][WhiteAmazon] = DoLoadBitmap(hInst, "l", squareSize, "s");
+    pieceBitmap[1][WhiteAmazon] = DoLoadBitmap(hInst, "l", squareSize, "o");
+    pieceBitmap[2][WhiteAmazon] = DoLoadBitmap(hInst, "l", squareSize, "w");
     pieceBitmap[0][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "s");
     pieceBitmap[1][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "o");
     pieceBitmap[2][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "w");
@@ -5722,6 +5725,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, hwndConsole, &wpConsole );
 	    wpMain.x = lpwp->x;
             wpMain.y = lpwp->y;
+
         }
     }
     break;
