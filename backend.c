@@ -5956,7 +5956,7 @@ ptclen (const char *s, char *escapes)
 {
     int n = 0;
     if(!*escapes) return strlen(s);
-    while(*s) n += (*s != ':' && !strchr(escapes, *s)), s++;
+    while(*s) n += (*s != '/' && !strchr(escapes, *s)), s++;
     return n;
 }
 
@@ -5965,25 +5965,25 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
 /* [HGM] moved here from winboard.c because of its general usefulness */
 /*       Basically a safe strcpy that uses the last character as King */
 {
-    int result = FALSE; int NrPieces;
+    int result = FALSE; int NrPieces, offs;
 
     if( map != NULL && (NrPieces=ptclen(map, escapes)) <= (int) EmptySquare
                     && NrPieces >= 12 && !(NrPieces&1)) {
         int i, j = 0; /* [HGM] Accept even length from 12 to 88 */
 
         for( i=0; i<(int) EmptySquare; i++ ) table[i] = '.';
-        for( i=0; i<NrPieces/2-1; i++ ) {
+        for( i=offs=0; i<NrPieces/2-1; i++ ) {
             char *p;
-            if(map[j] == ':' && *escapes) i = CHUPROMOTED WhitePawn, j++;
-            table[i] = map[j++];
-            if(p = strchr(escapes, map[j])) j++, table[i] += 64*(p - escapes + 1);
+            if(map[j] == '/' && *escapes) offs = CHUPROMOTED WhitePawn - i, j++;
+            table[i + offs] = map[j++];
+            if(p = strchr(escapes, map[j])) j++, table[i + offs] += 64*(p - escapes + 1);
         }
         table[(int) WhiteKing]  = map[j++];
-        for( i=0; i<NrPieces/2-1; i++ ) {
+        for( i=offs=0; i<NrPieces/2-1; i++ ) {
             char *p;
-            if(map[j] == ':' && *escapes) i = CHUPROMOTED WhitePawn, j++;
-            table[WHITE_TO_BLACK i] = map[j++];
-            if(p = strchr(escapes, map[j])) j++, table[WHITE_TO_BLACK i] += 64*(p - escapes + 1);
+            if(map[j] == '/' && *escapes) offs = CHUPROMOTED WhitePawn - i, j++;
+            table[WHITE_TO_BLACK i + offs] = map[j++];
+            if(p = strchr(escapes, map[j])) j++, table[WHITE_TO_BLACK i + offs] += 64*(p - escapes + 1);
         }
         table[(int) BlackKing]  = map[j++];
 
@@ -6172,8 +6172,8 @@ InitPosition (int redraw)
       gameInfo.boardWidth  = 12;
       gameInfo.boardHeight = 12;
       nrCastlingRights = 0;
-      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN:+.++.++++++++++.+++++K"
-                                   "p.brqsexogcathd.vmlifn:+.++.++++++++++.+++++k", SUFFIXES);
+      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN/+.++.++++++++++.+++++K"
+                                   "p.brqsexogcathd.vmlifn/+.++.++++++++++.+++++k", SUFFIXES);
       break;
     case VariantCourier:
       pieces = CourierArray;
