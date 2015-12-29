@@ -171,6 +171,8 @@ SelectPieces(VariantClass v)
 	   pngPieceBitmaps[i][(int)WhiteHorned]  = pngPieceBitmaps2[i][(int)WhiteUnicorn];
 	   pngPieceBitmaps[i][(int)WhiteStag]    = pngPieceBitmaps2[i][(int)WhiteSilver];
 	   pngPieceBitmaps[i][(int)WhiteEagle]   = pngPieceBitmaps2[i][(int)WhiteFalcon];
+	   pngPieceBitmaps[i][(int)WhiteMan]     = pngPieceBitmaps2[i][(int)WhiteCopper];
+	   pngPieceBitmaps[i][(int)WhiteCopper]  = pngPieceBitmaps2[i][(int)WhiteMan];
 	}
     }
 }
