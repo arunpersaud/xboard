@@ -299,7 +299,7 @@ typedef enum {
     WhitePSword, WhiteMonarch, WhiteMother, WhiteNothing, WhitePRook, WhitePDagger,
     WhiteDolphin, WhiteStag, WhiteHorned, WhiteEagle, WhiteSword,
     WhiteCrown, WhiteHCrown, WhiteHorse, WhiteDrunk, WhitePBishop,
-    WhiteFlying, WhiteViking, WhiteIron, WhiteCopper, WhiteTower, 
+    WhiteGnu, WhiteViking, WhiteIron, WhiteCopper, WhiteTower, 
     WhiteKing,
     BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
     BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan,
@@ -310,7 +310,7 @@ typedef enum {
     BlackPSword, BlackMonarch, BlackMother, BlackNothing, BlackPRook, BlackPDagger,
     BlackDolphin, BlackStag, BlackHorned, BlackEagle, BlackSword,
     BlackCrown, BlackHCrown, BlackHorse, BlackDrunk, BlackPBishop,
-    BlackFlying, BlackViking, BlackIron, BlackCopper, BlackTower,
+    BlackGnu, BlackViking, BlackIron, BlackCopper, BlackTower,
     BlackKing,
     EmptySquare, DarkSquare,
     NoRights, // [HGM] gamestate: for castling rights hidden in board[CASTLING]

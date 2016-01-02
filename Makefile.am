@@ -148,7 +148,7 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/BlackWolf.svg	    svg/WhiteWolf.svg         \
            svg/BlackCamel.svg	    svg/WhiteCamel.svg        \
            svg/BlackZebra.svg	    svg/WhiteZebra.svg        \
-           svg/BlackDragon.svg	    svg/WhiteDragon.svg       \
+           svg/BlackGnu.svg	    svg/WhiteGnu.svg          \
            svg/BlackWizard.svg	    svg/WhiteWizard.svg       \
            svg/BlackViking.svg	    svg/WhiteViking.svg       \
            svg/BlackIron.svg	    svg/WhiteIron.svg         \

@@ -293,7 +293,7 @@ char *pngPieceNames[] = // must be in same order as internal piece encoding
   "Wolf", "Camel", "Zebra", "Wizard", "Lance",
   "GoldPawn", "Claw", "PromoHorse", "PromoDragon", "GoldLance", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
   "Dolphin", "Sword", "Leopard", "HSword", "GoldSilver", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop",
-  "Dragon", "Viking", "Iron", "Copper", "Tower", "King",
+  "Gnu", "Viking", "Iron", "Copper", "Tower", "King",
   "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
