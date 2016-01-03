@@ -619,12 +619,12 @@ badMove:// we failed to find algebraic move
 		if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
 
 		if (wom) {
-		    rf = 0;
-		    rt = 0;
+		    rf = castlingRank[0];
+		    rt = castlingRank[0];
 		    king = WhiteKing;
 		} else {
-	            rf = BOARD_HEIGHT-1;
-        	    rt = BOARD_HEIGHT-1;
+	            rf = castlingRank[3];
+        	    rt = castlingRank[3];
 		    king = BlackKing;
 		}
 		ff = (BOARD_WIDTH-1)>>1; // this would be d-file
