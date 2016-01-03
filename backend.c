@@ -18094,7 +18094,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
     int i, j, k, w=0, subst=0, shuffle=0, wKingRank = -1, bKingRank = -1;
     char *p, c;
     int emptycount, virgin[BOARD_FILES];
-    ChessSquare piece;
+    ChessSquare piece, king = (gameInfo.variant == VariantKnightmate ? WhiteUnicorn : WhiteKing);
 
     p = fen;
 
@@ -18163,8 +18163,8 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                     p++;
                 }
                 board[i][(j++)+gameInfo.holdingsWidth] = piece;
-                if(piece == WhiteKing) wKingRank = i;
-                if(piece == BlackKing) bKingRank = i;
+                if(piece == king) wKingRank = i;
+                if(piece == WHITE_TO_BLACK king) bKingRank = i;
 	    } else {
 		return FALSE;
 	    }
