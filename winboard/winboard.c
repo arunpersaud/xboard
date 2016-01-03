@@ -1145,7 +1145,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
       broadcast.which = "broadcaster";
       broadcast.pr   = NoProc;
       broadcast.isr  = NULL;
-      broadcast.prog = c + 3;
+      broadcast.program = c + 3;
       broadcast.dir  = ".";
       broadcast.host = "localhost";
       StartChessProgram(&broadcast);
@@ -8246,8 +8246,8 @@ ModeHighlight()
     nowChecked = 0;
     break;
   }
-  if(prevChecked == IDM_TwoMachine) // [HGM] 'Machine Match' might have gotten disabled when stopping match
-    EnableMenuItem(GetMenu(hwndMain), IDM_Match, MF_BYCOMMAND|MF_ENABLED)
+  if(prevChecked == IDM_TwoMachines) // [HGM] 'Machine Match' might have gotten disabled when stopping match
+    EnableMenuItem(GetMenu(hwndMain), IDM_Match, MF_BYCOMMAND|MF_ENABLED);
   CheckMark(prevChecked, MF_UNCHECKED);
   CheckMark(nowChecked, MF_CHECKED);
   CheckMark(IDM_Match, matchMode && matchGame < appData.matchGames ? MF_CHECKED : MF_UNCHECKED);
