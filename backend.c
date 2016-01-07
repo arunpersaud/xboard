@@ -6399,11 +6399,11 @@ SendBoard (ChessProgramState *cps, int moveNum)
 	  if ((int) *bp < (int) BlackPawn) {
 	    if(j == BOARD_RGHT+1)
 		 snprintf(message, MSG_SIZ, "%c@%d\n", PieceToChar(*bp), bp[-1]);
-	    else snprintf(message, MSG_SIZ, "%c%c%c\n", PieceToChar(*bp), AAA + j, ONE + i);
+	    else snprintf(message, MSG_SIZ, "%c%c%d\n", PieceToChar(*bp), AAA + j, ONE + i - '0');
             if(message[0] == '+' || message[0] == '~') {
-	      snprintf(message, MSG_SIZ,"%c%c%c+\n",
+	      snprintf(message, MSG_SIZ,"%c%c%d+\n",
                         PieceToChar((ChessSquare)(DEMOTED *bp)),
-                        AAA + j, ONE + i);
+                        AAA + j, ONE + i - '0');
             }
             if(cps->alphaRank) { /* [HGM] shogi: translate coords */
                 message[1] = BOARD_RGHT   - 1 - j + '1';
@@ -6423,12 +6423,12 @@ SendBoard (ChessProgramState *cps, int moveNum)
 	      && ((int) *bp >= (int) BlackPawn)) {
 	    if(j == BOARD_LEFT-2)
 		 snprintf(message, MSG_SIZ, "%c@%d\n", ToUpper(PieceToChar(*bp)), bp[1]);
-	    else snprintf(message,MSG_SIZ, "%c%c%c\n", ToUpper(PieceToChar(*bp)),
-                    AAA + j, ONE + i);
+	    else snprintf(message,MSG_SIZ, "%c%c%d\n", ToUpper(PieceToChar(*bp)),
+                    AAA + j, ONE + i - '0');
             if(message[0] == '+' || message[0] == '~') {
-	      snprintf(message, MSG_SIZ,"%c%c%c+\n",
+	      snprintf(message, MSG_SIZ,"%c%c%d+\n",
                         PieceToChar((ChessSquare)(DEMOTED *bp)),
-                        AAA + j, ONE + i);
+                        AAA + j, ONE + i - '0');
             }
             if(cps->alphaRank) { /* [HGM] shogi: translate coords */
                 message[1] = BOARD_RGHT   - 1 - j + '1';
