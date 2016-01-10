@@ -10115,6 +10115,9 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
       }
     /* End of code added by Tord */
 
+    } else if (pieceDesc[piece] && piece == king && !strchr(pieceDesc[piece], 'O') && strchr(pieceDesc[piece], 'i')) {
+	board[fromY][fromX] = EmptySquare; // never castle if King has virgin moves defined on it other than castling
+	board[toY][toX] = piece;
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
         && toY == fromY && toX > fromX+1) {
