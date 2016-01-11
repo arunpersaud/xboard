@@ -22,6 +22,7 @@
 
 #include "config.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include "common.h"
@@ -632,8 +633,12 @@ badMove:// we failed to find algebraic move
 		    /* ICS wild castling */
         	    ft = castlingType == 1 ? BOARD_LEFT+1 : (gameInfo.variant == VariantJanus ? BOARD_RGHT-2 : BOARD_RGHT-3);
 		} else {
+		    char *q;
         	    ff = BOARD_WIDTH>>1; // e-file
 	            ft = castlingType == 1 ? BOARD_RGHT-2 : BOARD_LEFT+2;
+		    if(pieceDesc[king] && (q = strchr(pieceDesc[king], 'O'))) { // redefined to non-default King stride
+			ft = (castlingType == 1 ? ff + atoi(q+1) : ff - atoi(q+1));
+		    }
 		}
 		if(PosFlags(0) & F_FRC_TYPE_CASTLING) {
 		    if (wom) {
