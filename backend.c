@@ -18311,10 +18311,10 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
         }
         if(gameInfo.variant == VariantTwoKings || gameInfo.variant == VariantKnightmate)
             whiteKingFile = blackKingFile = BOARD_WIDTH >> 1; // for these variant scanning fails
-        if(whiteKingFile == NoRights || board[0][whiteKingFile] != WhiteUnicorn
-                                     && board[0][whiteKingFile] != WhiteKing) whiteKingFile = NoRights;
-        if(blackKingFile == NoRights || board[BOARD_HEIGHT-1][blackKingFile] != BlackUnicorn
-                                     && board[BOARD_HEIGHT-1][blackKingFile] != BlackKing) blackKingFile = NoRights;
+        if(whiteKingFile == NoRights || board[castlingRank[2]][whiteKingFile] != WhiteUnicorn
+                                     && board[castlingRank[2]][whiteKingFile] != WhiteKing) whiteKingFile = NoRights;
+        if(blackKingFile == NoRights || board[castlingRank[5]][blackKingFile] != BlackUnicorn
+                                     && board[castlingRank[5]][blackKingFile] != BlackKing) blackKingFile = NoRights;
         switch(c) {
           case'K':
               for(i=BOARD_RGHT-1; board[castlingRank[2]][i]!=WhiteRook && i>whiteKingFile; i--);
