@@ -154,6 +154,8 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/BlackIron.svg	    svg/WhiteIron.svg         \
            svg/BlackCopper.svg	    svg/WhiteCopper.svg       \
            svg/BlackTower.svg	    svg/WhiteTower.svg        \
+           svg/BlackDragon.svg	    svg/WhiteDragon.svg       \
+           svg/BlackCub.svg	    svg/WhiteCub.svg          \
            svg/eo_Analyzing.svg     svg/eo_Black.svg          \
            svg/eo_Clear.svg         svg/eo_Ponder.svg         \
            svg/eo_Thinking.svg      svg/eo_Unknown.svg        \
