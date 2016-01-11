@@ -18007,9 +18007,9 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
         /* [HGM] write true castling rights */
         if( nrCastlingRights == 6 ) {
             int q, k=0;
-            if(boards[move][CASTLING][0] == BOARD_RGHT-1 &&
+            if(boards[move][CASTLING][0] != NoRights &&
                boards[move][CASTLING][2] != NoRights  ) k = 1, *p++ = 'K';
-            q = (boards[move][CASTLING][1] == BOARD_LEFT &&
+            q = (boards[move][CASTLING][1] != NoRights &&
                  boards[move][CASTLING][2] != NoRights  );
             if(handW) { // for S-Chess with pieces in hand, list virgin pieces between K and Q
                 for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q; i--)
@@ -18018,9 +18018,9 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
             }
 	    if(q) *p++ = 'Q';
             k = 0;
-            if(boards[move][CASTLING][3] == BOARD_RGHT-1 &&
+            if(boards[move][CASTLING][3] != NoRights &&
                boards[move][CASTLING][5] != NoRights  ) k = 1, *p++ = 'k';
-            q = (boards[move][CASTLING][4] == BOARD_LEFT &&
+            q = (boards[move][CASTLING][4] != NoRights &&
                  boards[move][CASTLING][5] != NoRights  );
             if(handB) {
                 for(i=BOARD_RGHT-1-k; i>=BOARD_LEFT+q; i--)
