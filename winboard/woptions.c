@@ -883,7 +883,7 @@ VariantWhichRadio(HWND hDlg)
 	if(IsDlgButtonChecked(hDlg, j) &&
 	   (appData.noChessProgram || strstr(first.variants, VariantName(i-1)))) return (VariantClass) i-1;
   }
-  for(i=0; i<9; i++) { // check for engine-defined variants
+  for(i=0; i<15; i++) { // check for engine-defined variants
     if(IsDlgButtonChecked(hDlg, OPT_EngineVariant+i) ) {
 	GetDlgItemText(hDlg, OPT_EngineVariant+i, engineVariant, MSG_SIZ); // remember name, so we can resolve it later
 	return VariantUnknown;
@@ -904,7 +904,7 @@ VariantShowRadio(HWND hDlg)
 	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || strstr(first.variants, VariantName(i-1)));
   }
   *engineVariant = c;
-  for(i=0; i<9; i++) { // initialize engine-defined variants
+  for(i=0; i<15; i++) { // initialize engine-defined variants
     char *v = EngineDefinedVariant(&first, i); // get name of #i
     if(v) { // there is such a variant
 	EnableWindow(GetDlgItem(hDlg, OPT_EngineVariant+i), TRUE);     // and enable the button
