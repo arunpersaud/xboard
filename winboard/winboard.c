@@ -2714,6 +2714,18 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     pieceBitmap[0][WhiteLion] = DoLoadBitmap(hInst, "ln", squareSize, "s");
     pieceBitmap[1][WhiteLion] = DoLoadBitmap(hInst, "ln", squareSize, "o");
     pieceBitmap[2][WhiteLion] = DoLoadBitmap(hInst, "ln", squareSize, "w");
+    pieceBitmap[0][WhiteCub] = DoLoadBitmap(hInst, "ln", squareSize, "s");
+    pieceBitmap[1][WhiteCub] = DoLoadBitmap(hInst, "ln", squareSize, "o");
+    pieceBitmap[2][WhiteCub] = DoLoadBitmap(hInst, "ln", squareSize, "w");
+    pieceBitmap[0][WhiteWolf] = DoLoadBitmap(hInst, "wolf", squareSize, "s");
+    pieceBitmap[1][WhiteWolf] = DoLoadBitmap(hInst, "wolf", squareSize, "o");
+    pieceBitmap[2][WhiteWolf] = DoLoadBitmap(hInst, "wolf", squareSize, "w");
+    pieceBitmap[0][WhiteCamel] = DoLoadBitmap(hInst, "camel", squareSize, "s");
+    pieceBitmap[1][WhiteCamel] = DoLoadBitmap(hInst, "camel", squareSize, "o");
+    pieceBitmap[2][WhiteCamel] = DoLoadBitmap(hInst, "camel", squareSize, "w");
+    pieceBitmap[0][WhiteZebra] = DoLoadBitmap(hInst, "zebra", squareSize, "s");
+    pieceBitmap[1][WhiteZebra] = DoLoadBitmap(hInst, "zebra", squareSize, "o");
+    pieceBitmap[2][WhiteZebra] = DoLoadBitmap(hInst, "n", squareSize, "w");
 
     if(gameInfo.variant == VariantShogi && BOARD_HEIGHT != 7) { /* promoted Gold representations (but not in Tori!)*/
       pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "wp", squareSize, "s");
