@@ -298,7 +298,7 @@ char *pngPieceNames[] = // must be in same order as internal piece encoding
 };
 
 char *backupPiece[] = { "Princess", NULL, NULL, NULL, NULL, NULL, NULL,
-                        NULL, NULL, NULL, NULL, NULL,
+                        NULL, NULL, NULL, NULL, NULL, NULL,
 			NULL, NULL, NULL, NULL, NULL, NULL, "King", "Queen", "Lion" }; // pieces that map on other when not kanji
 
 RsvgHandle *
@@ -373,7 +373,7 @@ ScaleOnePiece (int color, int piece)
     if(!(svgPieces[color][piece] = LoadSVG(svgDir, color, piece, 0)) // try to fall back on installed svg 
        && !warned && strcmp(pngPieceNames[piece], "Tile")) {         // but do not complain about missing 'Tile'
       char *msg = _("No default pieces installed!\nSelect your own using '-pieceImageDirectory'.");
-      printf("%s\n", msg); // give up
+      printf("%s (%s)\n", msg, pngPieceNames[piece]); // give up
       DisplayError(msg, 0);
       warned = 1; // prevent error message being repeated for each piece type
     }
