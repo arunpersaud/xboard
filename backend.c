@@ -17894,7 +17894,7 @@ char *
 PositionToFEN (int move, char *overrideCastling, int moveCounts)
 {
     int i, j, fromX, fromY, toX, toY;
-    int whiteToPlay;
+    int whiteToPlay, haveRights = nrCastlingRights;
     char buf[MSG_SIZ];
     char *p, *q;
     int emptycount;
@@ -17968,10 +17968,28 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
     *p++ = whiteToPlay ? 'w' : 'b';
     *p++ = ' ';
 
+  if(pieceDesc[WhiteKing] && strchr(pieceDesc[WhiteKing], 'i') && !strchr(pieceDesc[WhiteKing], 'O')) { // redefined without castling
+    haveRights = 0; q = p;
+    for(i=BOARD_RGHT-1; i>=BOARD_LEFT; i--) {
+      piece = boards[move][0][i];
+      if(piece >= WhitePawn && piece <= WhiteKing && pieceDesc[piece] && strchr(pieceDesc[piece], 'i')) { // piece with initial move
+        if(!(boards[move][TOUCHED_W] & 1<<i)) *p++ = 'A' + i; // print file ID if it has not moved
+      }
+    }
+    for(i=BOARD_RGHT-1; i>=BOARD_LEFT; i--) {
+      piece = boards[move][BOARD_HEIGHT-1][i];
+      if(piece >= BlackPawn && piece <= BlackKing && pieceDesc[piece] && strchr(pieceDesc[piece], 'i')) { // piece with initial move
+        if(!(boards[move][TOUCHED_B] & 1<<i)) *p++ = 'a' + i; // print file ID if it has not moved
+      }
+    }
+    if(p == q) *p++ = '-';
+    *p++ = ' ';
+  }
+
   if(q = overrideCastling) { // [HGM] FRC: override castling & e.p fields for non-compliant engines
     while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' '; else --p;
   } else {
-  if(nrCastlingRights) {
+  if(haveRights) {
      int handW=0, handB=0;
      if(gameInfo.variant == VariantSChess) { // for S-Chess, all virgin backrank pieces must be listed
 	for(i=0; i<BOARD_HEIGHT; i++) handW += boards[move][i][BOARD_RGHT]; // count white held pieces
@@ -18290,6 +18308,21 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
     if(initialRights[5]!=NoRights && board[castlingRank[5]][initialRights[5]] != BlackUnicorn
 				  && board[castlingRank[5]][initialRights[5]] != BlackKing) board[CASTLING][5] = NoRights;
     FENrulePlies = 0;
+
+    if(pieceDesc[WhiteKing] && strchr(pieceDesc[WhiteKing], 'i') && !strchr(pieceDesc[WhiteKing], 'O')) { // redefined without castling
+      char *q = p;
+      int w=0, b=0;
+      while(isalpha(*p)) {
+        if(isupper(*p)) w |= 1 << (*p++ - 'A');
+        if(islower(*p)) b |= 1 << (*p++ - 'a');
+      }
+      if(*p == '-') p++;
+      if(p != q) {
+        board[TOUCHED_W] = ~w;
+        board[TOUCHED_B] = ~b;
+        while(*p == ' ') p++;
+      }
+    } else
 
     if(nrCastlingRights) {
       int fischer = 0;
