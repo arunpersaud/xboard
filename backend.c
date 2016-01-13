@@ -2127,7 +2127,7 @@ StringToVariant (char *e)
     } else
     for (i=0; i<sizeof(variantNames)/sizeof(char*); i++) {
       if (p = StrCaseStr(e, variantNames[i])) {
-	if(p && i >= VariantShogi && (p != e || isalpha(p[strlen(variantNames[i])]))) continue;
+	if(p && i >= VariantShogi && (p != e && !appData.icsActive || isalpha(p[strlen(variantNames[i])]))) continue;
 	v = (VariantClass) i;
 	found = TRUE;
 	break;
