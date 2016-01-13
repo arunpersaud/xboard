@@ -12020,7 +12020,7 @@ LoadGameOneMove (ChessMove readAhead)
       case BlackASideCastleFR:
       /* POP Fabien */
 	if (appData.debugMode)
-	  fprintf(debugFP, "Parsed %s into %s\n", yy_text, currentMoveString);
+	  fprintf(debugFP, "Parsed %s into %s virgin=%x,%x\n", yy_text, currentMoveString, boards[forwardMostMove][TOUCHED_W], boards[forwardMostMove][TOUCHED_B]);
         fromX = currentMoveString[0] - AAA;
         fromY = currentMoveString[1] - ONE;
         toX = currentMoveString[2] - AAA;
@@ -18276,6 +18276,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 
     /* set defaults in case FEN is incomplete */
     board[EP_STATUS] = EP_UNKNOWN;
+    board[TOUCHED_W] = board[TOUCHED_B] = 0;
     for(i=0; i<nrCastlingRights; i++ ) {
         board[CASTLING][i] =
             appData.fischerCastling ? NoRights : initialRights[i];
