@@ -287,7 +287,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
     while(*p) {                  // more moves to go
 	int expo = 1, dx, dy, x, y, mode, dirSet, ds2=0, retry=0, initial=0, jump=1, skip = 0, all = 0;
 	char *cont = NULL;
-	if(*p == 'i') initial = 1, desc = ++p;
+	while(*p == 'i') initial++, desc = ++p;
 	while(islower(*p)) p++;  // skip prefixes
 	if(!isupper(*p)) return; // syntax error: no atom
 	dx = xStep[*p-'A'] - '0';// step vector of atom
@@ -372,6 +372,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
 	if(expo > 9) p++;                             // allow double-digit
 	desc = p;                                     // this is start of next move
+	if(initial == 2) { if(board[r][f] != initialPosition[r-2*his+3][f]) continue; } else
 	if(initial && (board[r][f] != initialPosition[r][f] ||
 		       r == 0              && board[TOUCHED_W] & 1<<f ||
 		       r == BOARD_HEIGHT-1 && board[TOUCHED_B] & 1<<f   ) ) continue;
