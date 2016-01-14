@@ -8551,7 +8551,7 @@ DeferredBookMove (void)
 
 static int savedWhitePlayer, savedBlackPlayer, pairingReceived;
 static ChessProgramState *stalledEngine;
-static char stashedInputMove[MSG_SIZ];
+static char stashedInputMove[MSG_SIZ], abortEngineThink;
 
 void
 HandleMachineMove (char *message, ChessProgramState *cps)
@@ -8634,23 +8634,26 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    return;
 	}
 
+      if(cps->usePing) {
+
         /* This method is only useful on engines that support ping */
+        if(abortEngineThink) {
+	    if (appData.debugMode) {
+		fprintf(debugFP, "Undoing move from aborted think of %s\n", cps->which);
+	    }
+            SendToProgram("undo\n", cps);
+	    return;
+	}
+
         if (cps->lastPing != cps->lastPong) {
-	  if (gameMode == BeginningOfGame) {
 	    /* Extra move from before last new; ignore */
 	    if (appData.debugMode) {
 		fprintf(debugFP, "Ignoring extra move from %s\n", cps->which);
 	    }
-	  } else {
-	    if (appData.debugMode) {
-		fprintf(debugFP, "Undoing extra move from %s, gameMode %d\n",
-			cps->which, gameMode);
-	    }
-
-            SendToProgram("undo\n", cps);
-	  }
 	  return;
 	}
+
+      } else {
 
 	switch (gameMode) {
 	  case BeginningOfGame:
@@ -8697,6 +8700,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    }
 	    return;
 	}
+      }
 
         if(cps->alphaRank) AlphaRank(machineMove, 4);
 
@@ -9115,6 +9119,11 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    }
 	    initPing = -1;
         }
+	if(cps->lastPing == cps->lastPong && abortEngineThink) {
+	    abortEngineThink = FALSE;
+	    DisplayMessage("", "");
+	    ThawUI();
+	}
 	return;
     }
     if(!strncmp(message, "highlight ", 10)) {
@@ -14974,10 +14983,15 @@ EditGameEvent ()
       case MachinePlaysBlack:
       case BeginningOfGame:
 	SendToProgram("force\n", &first);
-	if (first.usePing) { // [HGM] always send ping when we might interrupt machine thinking
-	  char buf[MSG_SIZ];
-	  snprintf(buf, MSG_SIZ, "ping %d\n", initPing = ++first.lastPing);
-	  SendToProgram(buf, &first);
+	if(gameMode == (forwardMostMove & 1 ? MachinePlaysBlack : MachinePlaysWhite)) { // engine is thinking
+	    if (first.usePing) { // [HGM] always send ping when we might interrupt machine thinking
+		char buf[MSG_SIZ];
+		abortEngineThink = TRUE;
+		snprintf(buf, MSG_SIZ, "ping %d\n", initPing = ++first.lastPing);
+		SendToProgram(buf, &first);
+		DisplayMessage("Aborting engine think", "");
+		FreezeUI();
+	    }
 	}
 	SetUserThinkingEnables();
 	break;
