@@ -14974,6 +14974,11 @@ EditGameEvent ()
       case MachinePlaysBlack:
       case BeginningOfGame:
 	SendToProgram("force\n", &first);
+	if (first.usePing) { // [HGM] always send ping when we might interrupt machine thinking
+	  char buf[MSG_SIZ];
+	  snprintf(buf, MSG_SIZ, "ping %d\n", initPing = ++first.lastPing);
+	  SendToProgram(buf, &first);
+	}
 	SetUserThinkingEnables();
 	break;
       case PlayFromGameFile:
