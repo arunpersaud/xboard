@@ -189,7 +189,7 @@ dist_pixmaps_DATA = pixmaps/cross32.png pixmaps/cross48.png pixmaps/board32.png 
 ### directory and files for pngs
 
 pngdir = $(gamedatadir)/themes/textures
-dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png png/xqboard.png
+dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png png/xqboard-9x10.png
 
 ### directory and files for sound files
 
@@ -306,7 +306,7 @@ macportsprefix = $(shell which port | sed s/[/]bin[/]port//)
 	cp $(macportsprefix)/share/gtk-engines/murrine.xml $(datadir)/gtk-engines/murrine.xml
 	$(INSTALL) ./png/marble_d.png $(gamedatadir)/themes/textures
 	$(INSTALL) ./png/marble_l.png $(gamedatadir)/themes/textures
-	$(INSTALL) ./png/xqwood.png $(gamedatadir)/themes/textures
+	$(INSTALL) ./png/xqwood-9x10.png $(gamedatadir)/themes/textures
 	cp -R ./osxapp/logos $(gamedatadir)/
 	cp -R $(macportsprefix)/share/strings/. $(datarootdir)/
 	for i in po/*gmo; do lang=`basename $$i .gmo`; $(INSTALL) $(macportsprefix)/share/locale/$$lang/LC_MESSAGES/gtk20.mo $(localedir)/$$lang/LC_MESSAGES/; done
