@@ -1671,6 +1671,10 @@ SetTcType (int n)
 void
 TimeControlProc ()
 {
+   if(gameMode != BeginningOfGame) {
+	DisplayError(_("Changing time control during a game is not implemented"), 0);
+	return;
+   }
    tmpMoves = appData.movesPerSession;
    tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;
    tmpOdds1 = tmpOdds2 = 1; tcType = 0;
