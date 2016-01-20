@@ -18148,7 +18148,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                 while (emptycount--)
                         board[i][(j++)+gameInfo.holdingsWidth] = EmptySquare;
                 if (*p == '/') p++;
-		else if(autoSize) { // we stumbled unexpectedly into end of board
+		else if(autoSize && i != BOARD_HEIGHT-1) { // we stumbled unexpectedly into end of board
                     for(k=i; k<BOARD_HEIGHT; k++) { // too few ranks; shift towards bottom
 		        for(j=0; j<BOARD_WIDTH; j++) board[k-i][j] = board[k][j];
                     }
@@ -18212,7 +18212,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
     }
     while (*p == '/' || *p == ' ') p++;
 
-    if(autoSize) appData.NrFiles = w, InitPosition(TRUE);
+    if(autoSize && w != 0) appData.NrFiles = w, InitPosition(TRUE);
 
     /* [HGM] by default clear Crazyhouse holdings, if present */
     if(gameInfo.holdingsWidth) {
