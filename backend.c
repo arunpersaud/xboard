@@ -7540,7 +7540,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    return;
 	}
     }
-printf("to click %d,%d\n",x,y);
+
     /* fromX != -1 */
     if (clickType == Press && gameMode != EditPosition) {
 	ChessSquare fromP;
@@ -7603,10 +7603,10 @@ printf("to click %d,%d\n",x,y);
 	// ignore clicks on holdings
 	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;
     }
-printf("A type=%d\n",clickType);
 
-    if(x == fromX && y == fromY && gameMode == EditPosition && SubtractTimeMarks(&lastClickTime, &prevClickTime) < 200) {
+    if(x == fromX && y == fromY && clickType == Press && gameMode == EditPosition && SubtractTimeMarks(&lastClickTime, &prevClickTime) < 200) {
 	gatingPiece = boards[currentMove][fromY][fromX]; // prepare to copy rather than move
+	DragPieceBegin(xPix, yPix, FALSE); dragging = 1;
 	return;
     }
 
@@ -7641,7 +7641,7 @@ printf("A type=%d\n",clickType);
     }
 
     clearFlag = 0;
-printf("B\n");
+
     if(gameMode != EditPosition && !appData.testLegality && !legal[y][x] &&
        fromX >= BOARD_LEFT && fromX < BOARD_RGHT && (x != killX || y != killY) && !sweepSelecting) {
 	if(dragging) DragPieceEnd(xPix, yPix), dragging = 0;
@@ -7649,7 +7649,7 @@ printf("B\n");
 	DrawPosition(TRUE, NULL);
 	return; // ignore to-click
     }
-printf("(%d,%d)-(%d,%d) %d %d\n",fromX,fromY,toX,toY,x,y);
+
     /* we now have a different from- and (possibly off-board) to-square */
     /* Completed move */
     if(!sweepSelecting) {
