@@ -700,6 +700,7 @@ MenuItem engineMenu[100] = {
   {"----",                         NULL,      NULL,              NothingProc},
   {N_("Engine #1 Settings..."),    NULL,     "Engine#1Settings", FirstSettingsProc},
   {N_("Engine #2 Settings..."),    NULL,     "Engine#2Settings", SecondSettingsProc},
+  {N_("Common Settings..."), "<Alt><Shift>u","CommonEngine",     UciMenuProc},
   {"----",                         NULL,      NULL,              NothingProc},
   {N_("Hint"),                     NULL,     "Hint",             HintEvent},
   {N_("Book"),                     NULL,     "Book",             BookEvent},
@@ -714,7 +715,6 @@ MenuItem optionsMenu[] = {
   {N_("General..."),              NULL,             "General",             OptionsProc},
 #endif
   {N_("Time Control..."),        "<Alt><Shift>t",   "TimeControl",         TimeControlProc},
-  {N_("Common Engine..."),       "<Alt><Shift>u",   "CommonEngine",        UciMenuProc},
   {N_("Adjudications..."),       "<Alt><Shift>j",   "Adjudications",       EngineMenuProc},
   {N_("ICS..."),                  NULL,             "ICS",                 IcsOptionsProc},
   {N_("Tournament..."),           NULL,             "Match",               MatchOptionsProc},
