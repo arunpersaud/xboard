@@ -1740,6 +1740,7 @@ InitBackEnd3 P((void))
             if(!blackPlaysFirst) {
                 startedFromPositionFile = TRUE;
                 CopyBoard(filePosition, boards[0]);
+                CopyBoard(initialPosition, boards[0]);
             }
 	}
 	if (initialMode == AnalyzeMode) {
@@ -12989,7 +12990,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 	gameInfo.event = StrSave(yy_text);
     }
 
-    startedFromSetupPosition = FALSE;
+    startedFromSetupPosition = startedFromPositionFile; // [HGM]
     while (cm == PGNTag) {
 	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed PGNTag: %s\n", yy_text);
