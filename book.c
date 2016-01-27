@@ -315,7 +315,7 @@ hash (int moveNr)
             if(p != EmptySquare){
 		    int j = (int)p, promoted = 0;
 		    j -= (j >= (int)BlackPawn) ? (int)BlackPawn :(int)WhitePawn;
-		    if(j >= CHUPROMOTED WhitePawn) promoted++, j -= CHUPROMOTED WhitePawn;
+		    if(j >= WhiteTokin && j != WhiteKing) promoted++, j -= WhiteTokin;
 		    if(j > (int)WhiteQueen) j++;  // make space for King
 		    if(j > (int) WhiteKing) j = (int)WhiteQueen + 1;
 		    p_enc = 2*j + ((int)p < (int)BlackPawn);
