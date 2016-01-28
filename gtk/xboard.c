@@ -833,19 +833,21 @@ LoadIconFile (gchar *svgFilename)
 
 #ifdef OSXAPP
 static char clickedFile[MSG_SIZ];
-static int suppress;
+TimeMark started;
 
 static gboolean
 StartNewXBoard(GtkosxApplication *app, gchar *path, gpointer user_data)
 { // handler of OSX OpenFile signal, which sends us the filename of clicked file or first argument
-  if(suppress) { // we just started XBoard without arguments
-    strncpy(clickedFile, path, MSG_SIZ); // remember file name, but otherwise ignore
-  } else {       // we are running something presumably useful
-    char buf[MSG_SIZ];
-    snprintf(buf, MSG_SIZ, "open -n -a \"xboard\" --args \"%s\"", path);
-    system(buf); // start new instance on this file
-  }
-  return TRUE;
+    TimeMark now;
+    GetTimeMark(&now);
+    if(1000*now.sec + now.ms - 1000*started.sec - started.ms < 1000) { // received during first second
+        strncpy(clickedFile, path, MSG_SIZ); // remember file name, but otherwise ignore
+    } else {       // we are running something presumably useful
+        char buf[MSG_SIZ];
+        snprintf(buf, MSG_SIZ, "open -n -a \"xboard\" --args \"%s\"", path);
+        system(buf); // start new instance on this file
+    }
+    return TRUE;
 }
 
 GtkosxApplication *theApp;
@@ -879,33 +881,32 @@ main (int argc, char **argv)
     gtk_init (&argc, &argv);
 #ifdef OSXAPP
     {   // prepare to catch OX OpenFile signal, which will tell us the clicked file
-	char *path = gtkosx_application_get_bundle_path();
+        char *path = gtkosx_application_get_bundle_path();
 #ifdef ENABLE_NLS
-	char *res_path = gtkosx_application_get_resource_path();
-	snprintf(localeDir, MSG_SIZ, "%s/share/locale", res_path); // redefine locale dir for OSX bundle
+        char *res_path = gtkosx_application_get_resource_path();
+        snprintf(localeDir, MSG_SIZ, "%s/share/locale", res_path); // redefine locale dir for OSX bundle
 #endif
-	theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
-	snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
-	snprintf(dataDir, MSG_SIZ, "%s/Contents/Resources/share/xboard", path);
-	snprintf(svgDir, MSG_SIZ, "%s/themes/default", dataDir);
-	suppress = (argc == 1 || argc > 1 && argv[1][00] != '-'); // OSX sends signal even if name was already argv[1]!
-	g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
-	g_signal_connect(theApp, "NSApplicationWillTerminate", G_CALLBACK(ExitEvent), NULL);
-	// we must call application ready before we can get the signal,
-	// and supply a (dummy) menu bar before that, to avoid problems with dual apples in it
-	gtkosx_application_set_menu_bar(theApp, GTK_MENU_SHELL(gtk_menu_bar_new()));
-	gtkosx_application_ready(theApp);
-	if(argc == 1) {                  // called without args: OSX open-file signal might follow
-	    static char *fakeArgv[3] = {NULL, clickedFile, NULL};
-	    usleep(10000);               // wait 10 msec (and hope this is long enough).
-	    while(gtk_events_pending())
-		gtk_main_iteration();    // process all events that came in upto now
-	    suppress = 0;                // future open-file signals should start new instance
-	    if(clickedFile[0]) {         // we were sent an open-file signal with filename!
-	      fakeArgv[0] = argv[0];
-	      argc = 2; argv = fakeArgv; // fake that we were called as "xboard filename"
-	    }
-	}
+        GetTimeMark(&started); // remember start time
+        theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
+        snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
+        snprintf(dataDir, MSG_SIZ, "%s/Contents/Resources/share/xboard", path);
+        snprintf(svgDir, MSG_SIZ, "%s/themes/default", dataDir);
+        g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
+        g_signal_connect(theApp, "NSApplicationWillTerminate", G_CALLBACK(ExitEvent), NULL);
+        // we must call application ready before we can get the signal,
+        // and supply a (dummy) menu bar before that, to avoid problems with dual apples in it
+        gtkosx_application_set_menu_bar(theApp, GTK_MENU_SHELL(gtk_menu_bar_new()));
+        gtkosx_application_ready(theApp);
+        if(argc == 1) {                  // called without args: OSX open-file signal might follow
+            static char *fakeArgv[3] = {NULL, clickedFile, NULL};
+            usleep(10000);               // wait 10 msec (and hope this is long enough).
+            while(gtk_events_pending())
+            gtk_main_iteration();    // process all events that came in upto now
+            if(clickedFile[0]) {         // we were sent an open-file signal with filename!
+                fakeArgv[0] = argv[0];
+                argc = 2; argv = fakeArgv; // fake that we were called as "xboard filename"
+            }
+        }
     }
 #endif
 
