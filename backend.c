@@ -5661,21 +5661,26 @@ ParsePV (char *pv, Boolean storeComments, Boolean atEnd)
 }
 
 int
-MultiPV (ChessProgramState *cps)
+MultiPV (ChessProgramState *cps, int kind)
 {	// check if engine supports MultiPV, and if so, return the number of the option that sets it
 	int i;
-	for(i=0; i<cps->nrOptions; i++)
-	    if(!strcmp(cps->option[i].name, "MultiPV") && cps->option[i].type == Spin)
-		return i;
+	for(i=0; i<cps->nrOptions; i++) {
+	    char *s = cps->option[i].name;
+	    if((kind & 1) && !StrCaseCmp(s, "MultiPV") && cps->option[i].type == Spin) return i;
+	    if((kind & 2) && StrCaseStr(s, "multi") && StrCaseStr(s, "PV")
+			  && StrCaseStr(s, "margin") && cps->option[i].type == Spin) return -i-2;
+	}
 	return -1;
 }
 
 Boolean extendGame; // signals to UnLoadPV() if walked part of PV has to be appended to game
+static int multi, pv_margin;
+static ChessProgramState *activeCps;
 
 Boolean
 LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end, int pane)
 {
-	int startPV, multi, lineStart, origIndex = index;
+	int startPV, lineStart, origIndex = index;
 	char *p, buf2[MSG_SIZ];
 	ChessProgramState *cps = (pane ? &second : &first);
 
@@ -5689,14 +5694,22 @@ LoadMultiPV (int x, int y, char *buf, int index, int *start, int *end, int pane)
 	do{ while(buf[index] && buf[index] != '\n') index++;
 	} while(buf[index] == '\n' && buf[index+1] == '\\' && buf[index+2] == ' ' && index++); // join kibitzed PV continuation line
 	buf[index] = 0;
-	if(lineStart == 0 && gameMode == AnalyzeMode && (multi = MultiPV(cps)) >= 0) {
-		int n = cps->option[multi].value;
-		if(origIndex > 17 && origIndex < 24) { if(n>1) n--; } else if(origIndex > index - 6) n++;
+	if(lineStart == 0 && gameMode == AnalyzeMode) {
+	    int n = 0;
+	    if(origIndex > 17 && origIndex < 24) n--; else if(origIndex > index - 6) n++;
+	    if(n == 0) { // click not on "fewer" or "more"
+		if((multi = -2 - MultiPV(cps, 2)) >= 0) {
+		    pv_margin = cps->option[multi].value;
+		    activeCps = cps; // non-null signals margin adjustment
+		}
+	    } else if((multi = MultiPV(cps, 1)) >= 0) {
+		n += cps->option[multi].value; if(n < 1) n = 1;
 		snprintf(buf2, MSG_SIZ, "option MultiPV=%d\n", n);
 		if(cps->option[multi].value != n) SendToProgram(buf2, cps);
 		cps->option[multi].value = n;
 		*start = *end = 0;
 		return FALSE;
+	    }
 	} else if(strstr(buf+lineStart, "exclude:") == buf+lineStart) { // exclude moves clicked
 		ExcludeClick(origIndex - lineStart);
 		return FALSE;
@@ -5744,6 +5757,16 @@ void
 UnLoadPV ()
 {
   int oldFMM = forwardMostMove; // N.B.: this was currentMove before PV was loaded!
+  if(activeCps) {
+    if(pv_margin != activeCps->option[multi].value) {
+      char buf[MSG_SIZ];
+      snprintf(buf, MSG_SIZ, "option %s=%d\n", "Multi-PV Margin", pv_margin);
+      SendToProgram(buf, activeCps);
+      activeCps->option[multi].value = pv_margin;
+    }
+    activeCps = NULL;
+    return;
+  }
   if(endPV < 0) return;
   if(appData.autoCopyPV) CopyFENToClipboard();
   endPV = -1;
@@ -5772,6 +5795,17 @@ MovePV (int x, int y, int h)
 { // step through PV based on mouse coordinates (called on mouse move)
   int margin = h>>3, step = 0, threshold = (pieceSweep == EmptySquare ? 10 : 15);
 
+  if(activeCps) { // adjusting engine's multi-pv margin
+    if(x > lastX) pv_margin++; else
+    if(x < lastX) pv_margin -= (pv_margin > 0);
+    if(x != lastX) {
+      char buf[MSG_SIZ];
+      snprintf(buf, MSG_SIZ, "margin = %d", pv_margin);
+      DisplayMessage(buf, "");
+    }
+    lastX = x;
+    return;
+  }
   // we must somehow check if right button is still down (might be released off board!)
   if(endPV < 0 && pieceSweep == EmptySquare) return; // needed in XBoard because lastX/Y is shared :-(
   if(abs(x - lastX) < threshold && abs(y - lastY) < threshold) return;

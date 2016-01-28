@@ -417,7 +417,7 @@ char *EngineDefinedVariant P((ChessProgramState *cps, int n));
 void SettingsPopUp P((ChessProgramState *cps)); // [HGM] really in front-end, but CPS not known in frontend.h
 int WaitForEngine P((ChessProgramState *cps, DelayedEventCallback x));
 void Load P((ChessProgramState *cps, int n));
-int MultiPV P((ChessProgramState *cps));
+int MultiPV P((ChessProgramState *cps, int kind));
 void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 void MakeEngineOutputTitle P((void));
 void LoadTheme P((void));
