@@ -10147,6 +10147,11 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	board[toY][toX + (killX < fromX ? 1 : -1)] = killed;
         board[EP_STATUS] = EP_NONE; // capture was fake!
     } else
+    if(nrCastlingRights == 0 && board[toY][toX] < EmptySquare && (piece < BlackPawn) == (board[toY][toX] < BlackPawn)) {
+        board[fromY][fromX] = board[toY][toX]; // capture own will lead to swapping
+        board[toY][toX] = piece;
+        board[EP_STATUS] = EP_NONE; // capture was fake!
+    } else
     /* Code added by Tord: */
     /* FRC castling assumed when king captures friendly rook. [HGM] or RxK for S-Chess */
     if (board[fromY][fromX] == WhiteKing && board[toY][toX] == WhiteRook ||
