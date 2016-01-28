@@ -52,7 +52,7 @@ extern char *getenv();
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #ifdef OSXAPP
-#  include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#  include <gtkmacintegration/gtkosxapplication.h>
 #endif
 
 #include "common.h"
