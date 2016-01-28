@@ -443,6 +443,7 @@ char *currentDebugFile; // [HGM] debug split: to remember name
 char cmailMove[CMAIL_MAX_GAMES][MOVE_LEN], cmailMsg[MSG_SIZ];
 char bookOutput[MSG_SIZ*10], thinkOutput[MSG_SIZ*10], lastHint[MSG_SIZ];
 char thinkOutput1[MSG_SIZ*10];
+char promoRestrict[MSG_SIZ];
 
 ChessProgramState first, second, pairing;
 
@@ -5408,8 +5409,10 @@ Sweep (int step)
 	else if(promoSweep == BlackPawn && step < 0 && !toggleFlag) promoSweep = WhitePawn;
 	else if(promoSweep == WhiteKing && step > 0 && !toggleFlag) promoSweep = BlackKing;
 	if(!step) step = -1;
-    } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
+    } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' ||
 	    !toggleFlag && PieceToChar(promoSweep) == '+' || // skip promoted versions of other
+	    promoRestrict[0] ? !strchr(promoRestrict, ToUpper(PieceToChar(promoSweep))) : // if choice set available, use it 
+	    promoSweep == pawn ||
 	    appData.testLegality && (promoSweep == king || gameInfo.variant != VariantChuChess &&
             (promoSweep == WhiteLion || promoSweep == BlackLion)));
     if(toX >= 0) {
@@ -7564,7 +7567,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 		DragPieceBegin(xPix, yPix, FALSE); dragging = 1;
 		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][fromY][fromX], fromY)) {
 		    promoSweep = defaultPromoChoice;
-		    selectFlag = 0; lastX = xPix; lastY = yPix;
+		    selectFlag = 0; lastX = xPix; lastY = yPix; *promoRestrict = 0;
 		    Sweep(0); // Pawn that is going to promote: preview promotion piece
 		    DisplayMessage("", _("Pull pawn backwards to under-promote"));
 		}
@@ -7629,7 +7632,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 		DragPieceBegin(xPix, yPix, FALSE);
 		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][y][x], y)) {
 		    promoSweep = defaultPromoChoice;
-		    selectFlag = 0; lastX = xPix; lastY = yPix;
+		    selectFlag = 0; lastX = xPix; lastY = yPix; *promoRestrict = 0;
 		    Sweep(0); // Pawn that is going to promote: preview promotion piece
 		}
 	    }
@@ -7717,6 +7720,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    promoSweep = defaultPromoChoice;
 	    if(gameInfo.variant != VariantChuChess && PieceToChar(CHUPROMOTED piece) == '+') promoSweep = CHUPROMOTED piece;
 	    selectFlag = 0; lastX = xPix; lastY = yPix;
+	    ReportClick("put", x, y); // extra put to prompt engine for 'choice' command
 	    Sweep(0); // Pawn that is going to promote: preview promotion piece
 	    sweepSelecting = 1;
 	    DisplayMessage("", _("Pull pawn backwards to under-promote"));
@@ -7732,6 +7736,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	}
     } else if(sweepSelecting) { // this must be the up-click corresponding to the down-click that started the sweep
 	sweepSelecting = 0; appData.animate = FALSE; // do not animate, a selected piece already on to-square
+        *promoRestrict = 0;
 	if (appData.animate || appData.highlightLastMove) {
 	    SetHighlights(fromX, fromY, toX, toY);
 	} else {
@@ -9038,6 +9043,11 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         ASSIGN(pieceDesc[piece], buf1);
         if((ID & 32) == 0 && p[1] == '&') { ASSIGN(pieceDesc[WHITE_TO_BLACK piece], buf1); }
       }
+      return;
+    }
+    if(sscanf(message, "choice %s", promoRestrict) == 1 && promoSweep != EmptySquare) {
+      promoSweep = PieceToChar(forwardMostMove&1 ? ToLower(*promoRestrict) : ToUpper(*promoRestrict));
+      Sweep(0);
       return;
     }
     /* [HGM] Allow engine to set up a position. Don't ask me why one would
