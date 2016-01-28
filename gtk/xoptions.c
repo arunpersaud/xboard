@@ -444,9 +444,19 @@ CreateMenuPopup (Option *opt, int n, int def)
 
 	    gtk_accelerator_parse(mb[i].accel, &accelerator_key, &accelerator_mods);
 #ifdef OSXAPP
-   	    if(accelerator_mods & GDK_CONTROL_MASK) {  // in OSX use Meta where Linux uses Ctrl
-		accelerator_mods &= ~GDK_CONTROL_MASK; // clear Ctrl flag
-		accelerator_mods |= GDK_META_MASK;     // set Meta flag
+          if(accelerator_mods & GDK_CONTROL_MASK &&
+             accelerator_key != 'v' &&          // don't use Cmd+V
+             accelerator_key != 'c' &&           // and Cmd+C
+             accelerator_key != 'x' &&          // and CMD+X
+             accelerator_key != 'a' &&          // and CMD+A
+             accelerator_key != 'w' &&          // and evreything else in mode menu for umiformity's sake
+             accelerator_key != 'b' &&
+             accelerator_key != 't' &&
+             accelerator_key != 'g' &&
+             accelerator_key != 'e'
+             ) {  // in OSX use Meta (Cmd) where Linux uses Ctrl
+              accelerator_mods &= ~GDK_CONTROL_MASK; // clear Ctrl flag
+              accelerator_mods |= GDK_META_MASK;     // set Meta flag
 	    }
 #endif
 	    gtk_widget_add_accelerator (GTK_WIDGET(entry), "activate",GtkAccelerators,
