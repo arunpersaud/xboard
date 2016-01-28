@@ -248,7 +248,6 @@ macportsprefix = $(shell which port | sed s/[/]bin[/]port//)
 	$(MKDIR_P) $(datarootdir)/bin
 	$(MKDIR_P) $(datarootdir)/lib
 	$(MKDIR_P) $(sysconfdir)/gtk-2.0
-	$(MKDIR_P) $(sysconfdir)/pango
 	$(MKDIR_P) $(datadir)/themes
 	$(MKDIR_P) $(datadir)/gtk-engines
 	$(MKDIR_P) $(gamedatadir)/themes
@@ -295,11 +294,8 @@ macportsprefix = $(shell which port | sed s/[/]bin[/]port//)
 	$(INSTALL) ./osxapp/launcher_rc $(datarootdir)/
 	$(INSTALL) $(macportsprefix)/etc/gtk-2.0/im-multipress.conf $(sysconfdir)/gtk-2.0
 	$(INSTALL) ./osxapp/gtkrc $(sysconfdir)/gtk-2.0/gtkrc
-	sed -e '/ModuleFiles = .*\/etc\/pango\/pango.modules/d' <$(macportsprefix)/etc/pango/pangorc >$(sysconfdir)/pango/pangorc
-	sed -e 's?$(macportsprefix)/lib/pango/1.8.0/modules/??' <$(macportsprefix)/etc/pango/pango.modules >$(sysconfdir)/pango/pango.modules
 	cp -R $(macportsprefix)/lib/gtk-2.0 $(datarootdir)/lib
 	cp -R $(macportsprefix)/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
-	cp -R $(macportsprefix)/lib/pango $(datarootdir)/lib
 	cp -R $(macportsprefix)/share/themes/Mac $(datadir)/themes
 	cp -R ./osxapp/gtk2-themes/Mac/gtk-2.0 $(datadir)/themes/Mac
 	cp -R ./osxapp/themes/default/. $(gamedatadir)/themes/default
@@ -317,12 +313,7 @@ endif
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/immodules/im-quartz.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libpixmap.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libmurrine.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-arabic-lang.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-basic-coretext.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-basic-fc.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-indic-lang.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	find ./XBoard.app -name '*.a' -print0 | xargs -0 rm
-	find ./XBoard.app -name '*.la' -print0 | xargs -0 rm
 	rm -r $(datarootdir)/lib/gtk-2.0/include
 	rm -r $(datarootdir)/share/applications
 	rm $(datarootdir)/share/info/dir

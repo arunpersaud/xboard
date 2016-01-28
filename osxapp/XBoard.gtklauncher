@@ -37,11 +37,6 @@ export GTK_PATH="$bundle_lib/gtk-2.0/2.10.0"
 # GTK path no longer required
  export GTK_IM_MODULE_FILE="$bundle_etc/gtk-2.0/gtk.immodules"
 
-# Pango path no longer required
-export PANGO_RC_FILE="$bundle_etc/pango/pangorc"
-export PANGO_SYSCONFDIR="$bundle_etc"
-export PANGO_LIBDIR="$bundle_lib"
-
 # Fix the gegl path issue
 export GEGL_PATH="$bundle_lib/gegl-0.2"
 
