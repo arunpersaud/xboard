@@ -530,11 +530,11 @@ HighlightText (Option *opt, int from, int to, Boolean highlight)
     if(!(opt->min & INIT)) {
 	opt->min |= INIT; // each memo its own init flag!
 	gtk_text_buffer_create_tag(opt->handle, "highlight", "background", "yellow", NULL);
-	gtk_text_buffer_create_tag(opt->handle, "normal", "background", "white", NULL);
     }
     gtk_text_buffer_get_iter_at_offset(opt->handle, &start, from);
     gtk_text_buffer_get_iter_at_offset(opt->handle, &end, to);
-    gtk_text_buffer_apply_tag_by_name(opt->handle, highlight ? "highlight" : "normal", &start, &end);
+    if(highlight) gtk_text_buffer_apply_tag_by_name(opt->handle, "highlight", &start, &end);
+    else gtk_text_buffer_remove_tag_by_name(opt->handle, "highlight", &start, &end);
 }
 
 static char **names;
