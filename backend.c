@@ -7080,6 +7080,8 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 
     if(fromY == DROP_RANK && fromX == EmptySquare && (gameMode == AnalyzeMode || gameMode == EditGame || PosFlags(0) & F_NULL_MOVE)) moveType = NormalMove;
 
+    if(moveType == IllegalMove && legal[toY][toX] > 1) moveType = NormalMove; // someone explicitly told us this move is legal
+
     /* [HGM] but possibly ignore an IllegalMove result */
     if (appData.testLegality) {
 	if (moveType == IllegalMove || moveType == ImpossibleMove) {
@@ -7315,7 +7317,7 @@ MarkByFEN(char *fen)
 	    int s = 0;
 	    marker[r][f] = 0;
 	    if(*fen == 'M') legal[r][f] = 2; else // request promotion choice
-	    if(*fen >= 'A' && *fen <= 'Z') legal[r][f] = 1; else
+	    if(*fen >= 'A' && *fen <= 'Z') legal[r][f] = 3; else
 	    if(*fen >= 'a' && *fen <= 'z') *fen += 'A' - 'a';
 	    if(*fen == '/' && f > BOARD_LEFT) f = BOARD_LEFT, r--; else
 	    if(*fen == 'T') marker[r][f++] = 0; else
@@ -7347,8 +7349,8 @@ Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VO
     if(rf == fromY && ff == fromX && (killX < 0 ? !(rt == rf && ft == ff) && legNr & 1 : rt == killY && ft == killX || legNr & 2))
 	(*m)[rt][ft] = 1 + (board[rt][ft] != EmptySquare
 			 || kind == WhiteCapturesEnPassant
-			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && killX < 0), legal[rt][ft] = 1;
-    else if(flags & F_MANDATORY_CAPTURE && board[rt][ft] != EmptySquare) (*m)[rt][ft] = 3, legal[rt][ft] = 1;
+			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && killX < 0), legal[rt][ft] = 3;
+    else if(flags & F_MANDATORY_CAPTURE && board[rt][ft] != EmptySquare) (*m)[rt][ft] = 3, legal[rt][ft] = 3;
 }
 
 static int hoverSavedValid;
