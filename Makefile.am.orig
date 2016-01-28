@@ -308,10 +308,8 @@ macportsprefix = $(shell which port | sed s/[/]bin[/]port//)
 	$(INSTALL) ./png/marble_l.png $(gamedatadir)/themes/textures
 	$(INSTALL) ./png/xqwood-9x10.png $(gamedatadir)/themes/textures
 	cp -R ./osxapp/logos $(gamedatadir)/
-if NLS_ENABLED
 	cp -R $(macportsprefix)/share/strings/. $(datarootdir)/
 	for i in po/*gmo; do lang=`basename $$i .gmo`; $(INSTALL) $(macportsprefix)/share/locale/$$lang/LC_MESSAGES/gtk20.mo $(localedir)/$$lang/LC_MESSAGES/; done
-endif
 	dylibbundler -of -b -x $(bindir)/xboard-bin -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/immodules/im-quartz.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib

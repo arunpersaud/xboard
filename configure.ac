@@ -206,6 +206,8 @@ AS_IF([test x"$enable_OSXAPP" = x"yes"], [
 
 AM_CONDITIONAL(OSX_APP, test x"$enable_OSXAPP" = x"yes")
 
+AM_CONDITIONAL(NLS_ENABLED, test x"$USE_NLS" = x"yes")
+
 AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x"$enable_mimedb" = x"yes")
 if test x"$enable_mimedb" = x"yes"; then
    AC_PATH_PROG([XDG_MIME],[xdg-mime])
