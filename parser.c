@@ -495,7 +495,7 @@ NextUnit (char **p)
 	    if(piece) {
 		cl.pieceIn = CharToPiece(wom ? piece : piece + 'a' - 'A');
 		if(cl.pieceIn == EmptySquare) return ImpossibleMove; // non-existent piece
-		if(promoted) cl.pieceIn = (ChessSquare) (CHUPROMOTED cl.pieceIn);
+		if(promoted) cl.pieceIn = (ChessSquare) (CHUPROMOTED(cl.pieceIn));
 	    } else cl.pieceIn = EmptySquare;
 	    if(separator == '@' || separator == '*') { // drop move. We only get here without from-square or promoted piece
 		fromY = DROP_RANK; fromX = cl.pieceIn;
@@ -527,11 +527,11 @@ NextUnit (char **p)
 		    ChessSquare realPiece = boards[yyboardindex][fromY][fromX];
 		    // Note that Disambiguate does not work for illegal moves, but flags them as impossible
 		    if(piece) { // check if correct piece indicated
-			if(PieceToChar(realPiece) == '~') realPiece = (ChessSquare) (DEMOTED realPiece);
+			if(PieceToChar(realPiece) == '~') realPiece = (ChessSquare) (DEMOTED(realPiece));
 			if(!(appData.icsActive && PieceToChar(realPiece) == '+') && // trust ICS if it moves promoted pieces
 			   piece && realPiece != cl.pieceIn) return ImpossibleMove;
 		    } else if(!separator && **p == '+') { // could be a protocol move, where bare '+' suffix means shogi-style promotion
-			if(realPiece < (wom ?  WhiteCannon : BlackCannon) && PieceToChar(PROMOTED realPiece) == '+') // seems to be that
+			if(realPiece < (wom ?  WhiteCannon : BlackCannon) && PieceToChar(PROMOTED(realPiece)) == '+') // seems to be that
 			   currentMoveString[4] = cl.promoCharIn = *(*p)++; // append promochar after all
 		    }
 		    result = LegalityTest(boards[yyboardindex], PosFlags(yyboardindex), fromY, fromX, toY, toX, cl.promoCharIn);

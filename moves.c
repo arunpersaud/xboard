@@ -214,9 +214,9 @@ CollectPieceDescriptors ()
     if(gameInfo.variant == VariantXiangqi) pieceName = xqName;
     for(p=WhitePawn; p<EmptySquare; p++) {
 	if((c = pieceToChar[p]) == '.' || c == '~') continue;  // does not participate
-	m = pieceDesc[p]; d = (c == '+' ? pieceToChar[DEMOTED p] : c);
+	m = pieceDesc[p]; d = (c == '+' ? pieceToChar[DEMOTED(p)] : c);
 	if(p >= BlackPawn && pieceToChar[BLACK_TO_WHITE p] == toupper(c)
-             && (c != '+' || pieceToChar[DEMOTED BLACK_TO_WHITE p] == d)) { // black member of normal pair
+             && (c != '+' || pieceToChar[DEMOTED(BLACK_TO_WHITE p)] == d)) {// black member of normal pair
 	    char *wm = pieceDesc[BLACK_TO_WHITE p];
 	    if(!m && !wm || m && wm && !strcmp(wm, m)) continue;            // moves as a white piece
 	} else                                                              // white or unpaired black
@@ -709,7 +709,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 	  if ((flags & F_WHITE_ON_MOVE) != (board[rf][ff] < BlackPawn)) continue; // [HGM] speed: wrong color
           m = 0; piece = board[rf][ff];
           if(PieceToChar(piece) == '~')
-                 piece = (ChessSquare) ( DEMOTED piece );
+                 piece = (ChessSquare) ( DEMOTED(piece) );
           if(filter != EmptySquare && piece != filter) continue;
           if(pieceDefs && pieceDesc[piece]) { // [HGM] gen: use engine-defined moves
               MovesFromString(board, flags, ff, rf, -1, -1, 0, pieceDesc[piece], callback, closure);
@@ -885,14 +885,14 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 
             /* Gold General (and all its promoted versions) . First do the */
             /* diagonal forward steps, then proceed as normal Wazir        */
-            case SHOGI (PROMOTED WhitePawn):
+            case SHOGI (PROMO WhitePawn):
 		if(gameInfo.variant == VariantShogi) goto WhiteGold;
-            case SHOGI (PROMOTED BlackPawn):
+            case SHOGI (PROMO BlackPawn):
 		if(gameInfo.variant == VariantShogi) goto BlackGold;
 		SlideVertical(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI (PROMOTED WhiteKnight):
+            case SHOGI (PROMO WhiteKnight):
 		if(gameInfo.variant == VariantShogi) goto WhiteGold;
             case SHOGI BlackDrunk:
             case SHOGI BlackAlfil:
@@ -901,7 +901,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		StepBackward(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI (PROMOTED BlackKnight):
+            case SHOGI (PROMO BlackKnight):
 		if(gameInfo.variant == VariantShogi) goto BlackGold;
             case SHOGI WhiteDrunk:
             case SHOGI WhiteAlfil:
@@ -919,7 +919,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		StepSideways(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI (PROMOTED WhiteQueen):
+            case SHOGI (PROMO WhiteQueen):
             case SHOGI WhiteTokin:
             case SHOGI WhiteWazir:
 	    WhiteGold:
@@ -927,7 +927,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		Wazir(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI (PROMOTED BlackQueen):
+            case SHOGI (PROMO BlackQueen):
             case SHOGI BlackTokin:
             case SHOGI BlackWazir:
             BlackGold:
@@ -1238,9 +1238,9 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		StepVertical(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI (PROMOTED WhiteFerz):
+            case SHOGI (PROMO WhiteFerz):
 		if(gameInfo.variant == VariantShogi) goto WhiteGold;
-            case SHOGI (PROMOTED BlackFerz):
+            case SHOGI (PROMO BlackFerz):
 		if(gameInfo.variant == VariantShogi) goto BlackGold;
             case SHOGI WhitePSword:
             case SHOGI BlackPSword:
@@ -1791,7 +1791,7 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
     if(quickFlag) flags = flags & ~1 | quickFlag & 1; // [HGM] speed: in quick mode quickFlag specifies side-to-move.
     if(rf == DROP_RANK) return LegalDrop(board, flags, ff, rt, ft);
     piece = filterPiece = board[rf][ff];
-    if(PieceToChar(piece) == '~') filterPiece = DEMOTED piece;
+    if(PieceToChar(piece) == '~') filterPiece = DEMOTED(piece);
 
     /* [HGM] Cobra and Falcon are wildcard pieces; consider all their moves legal */
     /* (perhaps we should disallow moves that obviously leave us in check?)              */
@@ -1831,7 +1831,7 @@ LegalityTest (Board board, int flags, int rf, int ff, int rt, int ft, int promoC
         if(cl.kind != NormalMove || promoChar == NULLCHAR || promoChar == '=') return cl.kind;
         if(promoChar != '+')
             return CharToPiece(promoChar) == EmptySquare ? ImpossibleMove : IllegalMove;
-        if(PieceToChar(CHUPROMOTED board[rf][ff]) != '+') {
+        if(PieceToChar(CHUPROMOTED(board[rf][ff])) != '+') {
 	    if(PieceToChar(CHUPROMOTED (board[rf][ff] < BlackPawn ? WhitePawn : BlackPawn)) != '.')
 	    return ImpossibleMove;
 	}
@@ -1878,7 +1878,7 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
             // should test if in zone, really
             if(gameInfo.variant == VariantChuChess && (piece == WhiteKnight || piece == BlackKnight) && HasLion(board, flags))
                 return IllegalMove;
-            if(PieceToChar(PROMOTED piece) == '+') return flags & F_WHITE_ON_MOVE ? WhitePromotion : BlackPromotion;
+            if(PieceToChar(PROMOTED(piece)) == '+') return flags & F_WHITE_ON_MOVE ? WhitePromotion : BlackPromotion;
         } else
 	if(promoChar == '=') cl.kind = IllegalMove; else // [HGM] shogi: no deferred promotion outside Shogi
 	if (cl.kind == WhitePromotion || cl.kind == BlackPromotion) {
@@ -2000,7 +2000,7 @@ DisambiguateCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
 
     if ((cl->pieceIn == EmptySquare || cl->pieceIn == board[rf][ff]
          || PieceToChar(board[rf][ff]) == '~'
-              && cl->pieceIn == (ChessSquare)(DEMOTED board[rf][ff])
+              && cl->pieceIn == (ChessSquare)(DEMOTED(board[rf][ff]))
                                                                       ) &&
 	(cl->rfIn == -1 || cl->rfIn == rf) &&
 	(cl->ffIn == -1 || cl->ffIn == ff) &&
@@ -2156,7 +2156,7 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
         else if(c == 'l' && gameInfo.variant == VariantChuChess && HasLion(board, flags)) closure->kind = IllegalMove;
     } else if (c == '+') { // '+' outside shogi, check if pieceToCharTable enabled it
         ChessSquare p = closure->piece;
-        if(p > WhiteMan && p < BlackPawn || p > BlackMan || PieceToChar(PROMOTED p) != '+')
+        if(p > WhiteMan && p < BlackPawn || p > BlackMan || PieceToChar(PROMOTED(p)) != '+')
             closure->kind = ImpossibleMove; // used on non-promotable piece
         else if(gameInfo.variant == VariantChuChess && HasLion(board, flags)) closure->kind = IllegalMove;
     } else if (c != NULLCHAR) closure->kind = IllegalMove;
@@ -2201,7 +2201,7 @@ CoordsToAlgebraicCallback (Board board, int flags, ChessMove kind, int rf, int f
     if ((rt == cl->rt && ft == cl->ft || rt == rf && ft == ff) && // [HGM] null move matches any toSquare
         (board[rf][ff] == cl->piece
          || PieceToChar(board[rf][ff]) == '~' &&
-            (ChessSquare) (DEMOTED board[rf][ff]) == cl->piece)
+            (ChessSquare) (DEMOTED(board[rf][ff])) == cl->piece)
                                      ) {
 	if (rf == cl->rf) {
 	    if (ff == cl->ff) {
@@ -2245,7 +2245,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 
     if (promoChar == 'x') promoChar = NULLCHAR;
     piece = board[rf][ff];
-    if(PieceToChar(piece)=='~') piece = (ChessSquare)(DEMOTED piece);
+    if(PieceToChar(piece)=='~') piece = (ChessSquare)(DEMOTED(piece));
 
     switch (piece) {
       case WhitePawn:
@@ -2337,13 +2337,13 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 	cl.kind = IllegalMove;
 	cl.rank = cl.file = cl.either = 0;
         c = PieceToChar(piece) ;
-        GenLegal(board, flags, CoordsToAlgebraicCallback, (VOIDSTAR) &cl, c!='~' ? piece : (DEMOTED piece)); // [HGM] speed
+        GenLegal(board, flags, CoordsToAlgebraicCallback, (VOIDSTAR) &cl, c!='~' ? piece : (DEMOTED(piece))); // [HGM] speed
 
 	if (cl.kind == IllegalMove && !(flags&F_IGNORE_CHECK)) {
 	    /* Generate pretty moves for moving into check, but
 	       still return IllegalMove.
 	    */
-            GenLegal(board, flags|F_IGNORE_CHECK, CoordsToAlgebraicCallback, (VOIDSTAR) &cl, c!='~' ? piece : (DEMOTED piece));
+            GenLegal(board, flags|F_IGNORE_CHECK, CoordsToAlgebraicCallback, (VOIDSTAR) &cl, c!='~' ? piece : (DEMOTED(piece)));
 	    if (cl.kind == IllegalMove) break;
 	    cl.kind = IllegalMove;
 	}
@@ -2355,7 +2355,7 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 	*/
         if( c == '~' || c == '+') {
            /* [HGM] print nonexistent piece as its demoted version */
-           piece = (ChessSquare) (DEMOTED piece - 11*(gameInfo.variant == VariantChu));
+           piece = (ChessSquare) (CHUDEMOTED(piece));
         }
         if(c=='+') *outp++ = c;
         *outp++ = ToUpper(PieceToChar(piece));

@@ -4890,13 +4890,13 @@ ParseBoard12 (char *string)
                   if(fromY == DROP_RANK && k==toY && j==toX) continue; // dropped pieces always stand for themselves
                   old = (k==toY && j==toX) ? boards[moveNum-1][fromY][fromX] : boards[moveNum-1][k][j]; // trace back mover
                   if(old == new) continue;
-                  if(old == PROMOTED new) boards[moveNum][k][j] = old; // prevent promoted pieces to revert to primordial ones
+                  if(old == PROMOTED(new)) boards[moveNum][k][j] = old;// prevent promoted pieces to revert to primordial ones
                   else if(new == WhiteWazir || new == BlackWazir) {
                       if(old < WhiteCannon || old >= BlackPawn && old < BlackCannon)
-                           boards[moveNum][k][j] = PROMOTED old; // choose correct type of Gold in promotion
+                           boards[moveNum][k][j] = PROMOTED(old); // choose correct type of Gold in promotion
                       else boards[moveNum][k][j] = old; // preserve type of Gold
                   } else if((old == WhitePawn || old == BlackPawn) && new != EmptySquare) // Pawn promotions (but not e.p.capture!)
-                      boards[moveNum][k][j] = PROMOTED new; // use non-primordial representation of chosen piece
+                      boards[moveNum][k][j] = PROMOTED(new); // use non-primordial representation of chosen piece
               }
 	  } else {
 	    /* Move from ICS was illegal!?  Punt. */
@@ -6440,7 +6440,7 @@ SendBoard (ChessProgramState *cps, int moveNum)
 	    else snprintf(message, MSG_SIZ, "%c%c%d\n", PieceToChar(*bp), AAA + j, ONE + i - '0');
             if(message[0] == '+' || message[0] == '~') {
 	      snprintf(message, MSG_SIZ,"%c%c%d+\n",
-                        PieceToChar((ChessSquare)(DEMOTED *bp)),
+                        PieceToChar((ChessSquare)(DEMOTED(*bp))),
                         AAA + j, ONE + i - '0');
             }
             if(cps->alphaRank) { /* [HGM] shogi: translate coords */
@@ -6465,7 +6465,7 @@ SendBoard (ChessProgramState *cps, int moveNum)
                     AAA + j, ONE + i - '0');
             if(message[0] == '+' || message[0] == '~') {
 	      snprintf(message, MSG_SIZ,"%c%c%d+\n",
-                        PieceToChar((ChessSquare)(DEMOTED *bp)),
+                        PieceToChar((ChessSquare)(DEMOTED(*bp))),
                         AAA + j, ONE + i - '0');
             }
             if(cps->alphaRank) { /* [HGM] shogi: translate coords */
@@ -7037,7 +7037,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 	    if(!appData.pieceMenu && toX == fromX && toY == fromY && boards[0][rf][ff] != EmptySquare) {
 		ChessSquare q, p = boards[0][rf][ff];
 		if(p >= BlackPawn) p = BLACK_TO_WHITE p;
-		if(CHUPROMOTED p < BlackPawn) p = q = CHUPROMOTED boards[0][rf][ff];
+		if(CHUPROMOTED(p) < BlackPawn) p = q = CHUPROMOTED(boards[0][rf][ff]);
 		else p = CHUDEMOTED (q = boards[0][rf][ff]);
 		if(PieceToChar(q) == '+') gatingPiece = p;
 	    }
@@ -7718,7 +7718,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	if(legal[y][x] == 2 || HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
 	  if(appData.sweepSelect) {
 	    promoSweep = defaultPromoChoice;
-	    if(gameInfo.variant != VariantChuChess && PieceToChar(CHUPROMOTED piece) == '+') promoSweep = CHUPROMOTED piece;
+	    if(gameInfo.variant != VariantChuChess && PieceToChar(CHUPROMOTED(piece)) == '+') promoSweep = CHUPROMOTED(piece);
 	    selectFlag = 0; lastX = xPix; lastY = yPix;
 	    ReportClick("put", x, y); // extra put to prompt engine for 'choice' command
 	    Sweep(0); // Pawn that is going to promote: preview promotion piece
@@ -9027,7 +9027,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     if(sscanf(message, "piece %s %s", buf2, buf1) == 2) {
       ChessSquare piece = WhitePawn;
       char *p=message+6, *q, *s = SUFFIXES, ID = *p;
-      if(*p == '+') piece = CHUPROMOTED WhitePawn, ID = *++p;
+      if(*p == '+') piece = CHUPROMOTED(WhitePawn), ID = *++p;
       if(q = strchr(s, p[1])) ID += 64*(q - s + 1), p++;
       piece += CharToPiece(ID & 255) - WhitePawn;
       if(cps != &first || appData.testLegality && *engineVariant == NULLCHAR
@@ -10201,8 +10201,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
                ) {
 	/* white pawn promotion */
         board[toY][toX] = CharToPiece(ToUpper(promoChar));
-        if(board[toY][toX] < WhiteCannon && PieceToChar(PROMOTED board[toY][toX]) == '~') /* [HGM] use shadow piece (if available) */
-            board[toY][toX] = (ChessSquare) (PROMOTED board[toY][toX]);
+        if(board[toY][toX] < WhiteCannon && PieceToChar(PROMOTED(board[toY][toX])) == '~') /* [HGM] use shadow piece (if available) */
+            board[toY][toX] = (ChessSquare) (PROMOTED(board[toY][toX]));
 	board[fromY][fromX] = EmptySquare;
     } else if ((fromY >= BOARD_HEIGHT>>1)
 	       && (oldEP == toX || oldEP == EP_UNKNOWN || appData.testLegality || abs(toX - fromX) > 4)
@@ -10266,8 +10266,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
                ) {
 	/* black pawn promotion */
 	board[toY][toX] = CharToPiece(ToLower(promoChar));
-        if(board[toY][toX] < BlackCannon && PieceToChar(PROMOTED board[toY][toX]) == '~') /* [HGM] use shadow piece (if available) */
-            board[toY][toX] = (ChessSquare) (PROMOTED board[toY][toX]);
+        if(board[toY][toX] < BlackCannon && PieceToChar(PROMOTED(board[toY][toX])) == '~') /* [HGM] use shadow piece (if available) */
+            board[toY][toX] = (ChessSquare) (PROMOTED(board[toY][toX]));
 	board[fromY][fromX] = EmptySquare;
     } else if ((fromY < BOARD_HEIGHT>>1)
 	       && (oldEP == toX || oldEP == EP_UNKNOWN || appData.testLegality || abs(toX - fromX) > 4)
@@ -10341,10 +10341,10 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
         p = (int) captured;
         if (p >= (int) BlackPawn) {
           p -= (int)BlackPawn;
-          if(DEMOTED p >= 0 && PieceToChar(p) == '+') {
+          if(DEMOTED(p) >= 0 && PieceToChar(p) == '+') {
                   /* Restore shogi-promoted piece to its original  first */
-                  captured = (ChessSquare) (DEMOTED captured);
-                  p = DEMOTED p;
+                  captured = (ChessSquare) (DEMOTED(captured));
+                  p = DEMOTED(p);
           }
           p = PieceToNumber((ChessSquare)p);
           if(p >= gameInfo.holdingsSize) { p = 0; captured = BlackPawn; }
@@ -10352,9 +10352,9 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
           board[p][BOARD_WIDTH-1] = BLACK_TO_WHITE captured;
 	} else {
           p -= (int)WhitePawn;
-          if(DEMOTED p >= 0 && PieceToChar(p) == '+') {
-                  captured = (ChessSquare) (DEMOTED captured);
-                  p = DEMOTED p;
+          if(DEMOTED(p) >= 0 && PieceToChar(p) == '+') {
+                  captured = (ChessSquare) (DEMOTED(captured));
+                  p = DEMOTED(p);
           }
           p = PieceToNumber((ChessSquare)p);
           if(p >= gameInfo.holdingsSize) { p = 0; captured = WhitePawn; }
@@ -10382,13 +10382,13 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     } else
     if(promoChar == '+') {
         /* [HGM] Shogi-style promotions, to piece implied by original (Might overwrite ordinary Pawn promotion) */
-        board[toY][toX] = (ChessSquare) (CHUPROMOTED piece);
+        board[toY][toX] = (ChessSquare) (CHUPROMOTED(piece));
         if(gameInfo.variant == VariantChuChess && (piece == WhiteKnight || piece == BlackKnight))
           board[toY][toX] = piece + WhiteLion - WhiteKnight; // adjust Knight promotions to Lion
     } else if(!appData.testLegality && promoChar != NULLCHAR && promoChar != '=') { // without legality testing, unconditionally believe promoChar
         ChessSquare newPiece = CharToPiece(piece < BlackPawn ? ToUpper(promoChar) : ToLower(promoChar));
-	if((newPiece <= WhiteMan || newPiece >= BlackPawn && newPiece <= BlackMan) // unpromoted piece specified
-	   && pieceToChar[PROMOTED newPiece] == '~') newPiece = PROMOTED newPiece; // but promoted version available
+	if((newPiece <= WhiteMan || newPiece >= BlackPawn && newPiece <= BlackMan)  // unpromoted piece specified
+	   && pieceToChar[PROMOTED(newPiece)] == '~') newPiece = PROMOTED(newPiece);// but promoted version available
         board[toY][toX] = newPiece;
     }
     if((gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat || gameInfo.variant == VariantGrand)
@@ -15378,7 +15378,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
       case PromotePiece:
         if(piece >= (int)WhitePawn && piece < (int)WhiteMan ||
            piece >= (int)BlackPawn && piece < (int)BlackMan   ) {
-            selection = (ChessSquare) (PROMOTED piece);
+            selection = (ChessSquare) (PROMOTED(piece));
         } else if(piece == EmptySquare) selection = WhiteSilver;
         else selection = (ChessSquare)((int)piece - 1);
         goto defaultlabel;
@@ -15386,7 +15386,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
       case DemotePiece:
         if(piece > (int)WhiteMan && piece <= (int)WhiteKing ||
            piece > (int)BlackMan && piece <= (int)BlackKing   ) {
-            selection = (ChessSquare) (DEMOTED piece);
+            selection = (ChessSquare) (DEMOTED(piece));
         } else if(piece == EmptySquare) selection = BlackSilver;
         else selection = (ChessSquare)((int)piece + 1);
         goto defaultlabel;
@@ -17992,13 +17992,13 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
                 if(PieceToChar(piece) == '+') {
                     /* [HGM] write promoted pieces as '+<unpromoted>' (Shogi) */
                     *p++ = '+';
-                    piece = (ChessSquare)(CHUDEMOTED piece);
+                    piece = (ChessSquare)(CHUDEMOTED(piece));
                 }
                 *p++ = (piece == DarkSquare ? '*' : PieceToChar(piece));
                 if(*p = PieceSuffix(piece)) p++;
                 if(p[-1] == '~') {
                     /* [HGM] flag promoted pieces as '<promoted>~' (Crazyhouse) */
-                    p[-1] = PieceToChar((ChessSquare)(CHUDEMOTED piece));
+                    p[-1] = PieceToChar((ChessSquare)(CHUDEMOTED(piece)));
                     *p++ = '~';
                 }
 	    }
@@ -18240,7 +18240,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
                     if(q = strchr(s, p[1])) p++;
                     piece = CharToPiece(c + (q ? 64*(q - s + 1) : 0));
                     if(piece == EmptySquare) return FALSE; /* unknown piece */
-                    piece = (ChessSquare) (CHUPROMOTED piece ); p++;
+                    piece = (ChessSquare) (CHUPROMOTED(piece)); p++;
                     if(PieceToChar(piece) != '+') return FALSE; /* unpromotable piece */
                 } else {
                     char c = *p++;
@@ -18250,7 +18250,7 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 
                 if(piece==EmptySquare) return FALSE; /* unknown piece */
                 if(*p == '~') { /* [HGM] make it a promoted piece for Crazyhouse */
-                    piece = (ChessSquare) (PROMOTED piece);
+                    piece = (ChessSquare) (PROMOTED(piece));
                     if(PieceToChar(piece) != '~') return FALSE; /* cannot be a promoted piece */
                     p++;
                 }
