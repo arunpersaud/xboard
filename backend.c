@@ -5383,7 +5383,7 @@ static ClickType lastClickType;
 int
 Partner (ChessSquare *p)
 { // change piece into promotion partner if one shogi-promotes to the other
-  int stride = gameInfo.variant == VariantChu ? 22 : 11;
+  int stride = gameInfo.variant == VariantChu ? WhiteTokin : 11;
   ChessSquare partner;
   partner = (*p/stride & 1 ? *p - stride : *p + stride);
   if(PieceToChar(*p) != '+' && PieceToChar(partner) != '+') return 0;
@@ -6632,7 +6632,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     if(gameInfo.variant == VariantChu) {
         int p = piece >= BlackPawn ? BLACK_TO_WHITE piece : piece;
         promotionZoneSize = BOARD_HEIGHT/3;
-        highestPromotingPiece = (p >= WhiteLion || PieceToChar(piece + 22) == '.') ? WhitePawn : WhiteLion;
+        highestPromotingPiece = (p >= WhiteTokin || PieceToChar(piece + WhiteTokin) != '+') ? WhitePawn : WhiteTokin-1;
     } else if(gameInfo.variant == VariantShogi) {
         promotionZoneSize = BOARD_HEIGHT/3 +(BOARD_HEIGHT == 8);
         highestPromotingPiece = (int)WhiteAlfil;
