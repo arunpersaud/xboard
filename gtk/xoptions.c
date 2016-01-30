@@ -462,12 +462,6 @@ CreateMenuPopup (Option *opt, int n, int def)
 			  accelerator_mods |= GDK_META_MASK;
 			  accelerator_mods |= GDK_MOD1_MASK;
 		  } 
-		  if (accelerator_mods & GDK_SHIFT_MASK &&
-			  GDK_META_MASK &&
-			  GDK_MOD1_MASK
-			  ) { // If there is a shift, we  can get rid of alt as it is awfully cumbersome to press
-			  accelerator_mods &= ~GDK_MOD1_MASK; // clear ALT flag
-		  }
 #endif
 	    gtk_widget_add_accelerator (GTK_WIDGET(entry), "activate",GtkAccelerators,
 					accelerator_key, accelerator_mods, GTK_ACCEL_VISIBLE);
