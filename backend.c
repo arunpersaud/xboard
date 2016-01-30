@@ -5383,9 +5383,7 @@ static ClickType lastClickType;
 int
 Partner (ChessSquare *p)
 { // change piece into promotion partner if one shogi-promotes to the other
-  int stride = gameInfo.variant == VariantChu ? WhiteTokin : 11;
-  ChessSquare partner;
-  partner = (*p/stride & 1 ? *p - stride : *p + stride);
+  ChessSquare partner = promoPartner[*p];
   if(PieceToChar(*p) != '+' && PieceToChar(partner) != '+') return 0;
   *p = partner;
   return 1;
@@ -5994,7 +5992,7 @@ ptclen (const char *s, char *escapes)
 {
     int n = 0;
     if(!*escapes) return strlen(s);
-    while(*s) n += (*s != '/' && !strchr(escapes, *s)), s++;
+    while(*s) n += (*s != '/' && *s != '-' && *s != '^' && *s != '*' && !strchr(escapes, *s)), s++;
     return n;
 }
 
@@ -6004,6 +6002,7 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
 /*       Basically a safe strcpy that uses the last character as King */
 {
     int result = FALSE; int NrPieces, offs;
+    unsigned char partner[EmptySquare];
 
     if( map != NULL && (NrPieces=ptclen(map, escapes)) <= (int) EmptySquare
                     && NrPieces >= 12 && !(NrPieces&1)) {
@@ -6011,19 +6010,38 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
 
         for( i=0; i<(int) EmptySquare; i++ ) table[i] = '.';
         for( i=offs=0; i<NrPieces/2-1; i++ ) {
-            char *p;
+            char *p, c=0;
             if(map[j] == '/' && *escapes) offs = WhiteTokin - i, j++;
+            if(*escapes && (map[j] == '*' || map[j] == '-' || map[j] == '^')) c = map[j++];
             table[i + offs] = map[j++];
             if(p = strchr(escapes, map[j])) j++, table[i + offs] += 64*(p - escapes + 1);
+            if(c) partner[i + offs] = table[i + offs], table[i + offs] = c;
         }
         table[(int) WhiteKing]  = map[j++];
         for( i=offs=0; i<NrPieces/2-1; i++ ) {
-            char *p;
+            char *p, c=0;
             if(map[j] == '/' && *escapes) offs = WhiteTokin - i, j++;
+            if(*escapes && (map[j] == '*' || map[j] == '-' || map[j] == '^')) c = map[j++];
             table[WHITE_TO_BLACK i + offs] = map[j++];
             if(p = strchr(escapes, map[j])) j++, table[WHITE_TO_BLACK i + offs] += 64*(p - escapes + 1);
+            if(c) partner[WHITE_TO_BLACK i + offs] = table[WHITE_TO_BLACK i + offs], table[WHITE_TO_BLACK i + offs] = c;
         }
         table[(int) BlackKing]  = map[j++];
+
+
+        if(*escapes) { // set up promotion pairing
+            for( i=0; i<(int) EmptySquare; i++ ) promoPartner[i] = (i%BlackPawn < 11 ? i + 11 : i%BlackPawn < 22 ? i - 11 : i); // default
+            // pieceToChar entirely filled, so we can look up specified partners
+            for(i=0; i<EmptySquare; i++) { // adjust promotion pairing
+                int c = table[i];
+                if(c == '^' || c == '-') { // has specified partner
+                    int p;
+                    for(p=0; p<EmptySquare; p++) if(table[p] == partner[i]) break;
+                    if(c == '^') table[i] = '+';
+                    if(p < EmptySquare) promoPartner[p] = i, promoPartner[i] = p; // marry them
+                } else if(c == '*') promoPartner[i] = (i < BlackPawn ? WhiteTokin : BlackTokin); // promotes to Tokin
+            }
+        }
 
         result = TRUE;
     }
@@ -6117,7 +6135,7 @@ InitPosition (int redraw)
       initialPosition[CASTLING][i] = initialRights[i] = NoRights; /* but no rights yet */
     initialPosition[EP_STATUS] = EP_NONE;
     initialPosition[TOUCHED_W] = initialPosition[TOUCHED_B] = 0;
-    SetCharTable(pieceToChar, "PNBRQ...........Kpnbrq...........k");
+    SetCharTableEsc(pieceToChar, "PNBRQ...........Kpnbrq...........k", SUFFIXES);
     if(startVariant == gameInfo.variant) // [HGM] nicks: enable nicknames in original variant
          SetCharTable(pieceNickName, appData.pieceNickNames);
     else SetCharTable(pieceNickName, "............");
@@ -6210,8 +6228,8 @@ InitPosition (int redraw)
       gameInfo.boardWidth  = 12;
       gameInfo.boardHeight = 12;
       nrCastlingRights = 0;
-      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN/+.++.++++++++++.+++++K"
-                                   "p.brqsexogcathd.vmlifn/+.++.++++++++++.+++++k", SUFFIXES);
+      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN/^P.^B^R.^S^E^X^O^G^C^A^T^H^D.^V^M^L^I^FK"
+                                   "p.brqsexogcathd.vmlifn/^p.^b^r.^s^e^x^o^g^c^a^t^h^d.^v^m^l^i^fk", SUFFIXES);
       break;
     case VariantCourier:
       pieces = CourierArray;
@@ -6630,9 +6648,8 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
 
     piece = boards[currentMove][fromY][fromX];
     if(gameInfo.variant == VariantChu) {
-        int p = piece >= BlackPawn ? BLACK_TO_WHITE piece : piece;
         promotionZoneSize = BOARD_HEIGHT/3;
-        highestPromotingPiece = (p >= WhiteTokin || PieceToChar(piece + WhiteTokin) != '+') ? WhitePawn : WhiteTokin-1;
+        highestPromotingPiece = (PieceToChar(piece) == '+' || PieceToChar(CHUPROMOTED(piece)) != '+') ? WhitePawn : WhiteKing;
     } else if(gameInfo.variant == VariantShogi) {
         promotionZoneSize = BOARD_HEIGHT/3 +(BOARD_HEIGHT == 8);
         highestPromotingPiece = (int)WhiteAlfil;

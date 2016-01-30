@@ -320,11 +320,12 @@ typedef enum {
 /* [HGM] some macros that can be used as prefixes to convert piece types */
 #define WHITE_TO_BLACK (int)BlackPawn - (int)WhitePawn + (int)
 #define BLACK_TO_WHITE (int)WhitePawn - (int)BlackPawn + (int)
-#define PROMOTED       (int)WhiteDragon - (int)WhiteRook + (int)
-#define DEMOTED        (int)WhiteRook - (int)WhiteDragon + (int)
+#define PROMO          (int)WhiteDragon - (int)WhiteRook + (int)
+#define PROMOTED(X)    (promoPartner[X])
+#define DEMOTED(X)     (promoPartner[X])
 #define SHOGI          (int)EmptySquare + (int)
-#define CHUPROMOTED    ((int)WhitePDragon - (int)WhiteDragon)*(gameInfo.variant == VariantChu) + PROMOTED
-#define CHUDEMOTED     ((int)WhiteDragon - (int)WhitePDragon)*(gameInfo.variant == VariantChu) + DEMOTED
+#define CHUPROMOTED(X) (promoPartner[X])
+#define CHUDEMOTED(X)  (promoPartner[X])
 #define IS_SHOGI(V)    ((V) == VariantShogi || (V) == VariantChu)
 #define IS_LION(V)     ((V) == WhiteLion || (V) == BlackLion)
 

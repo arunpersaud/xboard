@@ -121,6 +121,7 @@ unsigned char pieceToChar[EmptySquare+1] = {
                         'o', 'h', 'i', 'j', 'g', 'd', 'v', 'l', 's', 'u', 'k',
                         'x' };
 unsigned char pieceNickName[EmptySquare];
+int promoPartner[EmptySquare];
 
 char
 PieceToChar (ChessSquare p)
