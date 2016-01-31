@@ -189,6 +189,12 @@ SetWidgetLabel (Option *opt, char *buf)
 }
 
 void
+SetComboChoice (Option *opt, char *n)
+{
+    SetWidgetText(opt, opt->choice[n]);
+}
+
+void
 SetDialogTitle (DialogClass dlg, char *title)
 {
     Arg args[16];

@@ -154,6 +154,7 @@ void SetWidgetText  P((Option *opt, char *buf, int n));
 void GetWidgetState  P((Option *opt, int *state));
 void SetWidgetState  P((Option *opt, int state));
 void SetWidgetLabel P((Option *opt, char *buf));
+void SetComboChoice  P((Option *opt, int choice));
 void SetDialogTitle  P((DialogClass dlg, char *title));
 void LoadListBox P((Option *opt, char *emptyText, int n1, int n2));
 void HighlightListBoxItem P((Option *opt, int nr));

@@ -16981,6 +16981,7 @@ ParseOption (Option *opt, ChessProgramState *cps)
 	char *p, *q, buf[MSG_SIZ];
 	int n, min = (-1)<<31, max = 1<<31, def;
 
+	opt->target = &opt->value;   // OK for spin/slider and checkbox
 	if(p = strstr(opt->name, " -spin ")) {
 	    if((n = sscanf(p, " -spin %d %d %d", &def, &min, &max)) < 3 ) return FALSE;
 	    if(max < min) max = min; // enforce consistency
@@ -17003,14 +17004,17 @@ ParseOption (Option *opt, ChessProgramState *cps)
 	} else if((p = strstr(opt->name, " -string "))) {
 	    opt->textValue = p+9;
 	    opt->type = TextBox;
+	    opt->target = &opt->textValue;
 	} else if((p = strstr(opt->name, " -file "))) {
 	    // for now -file is a synonym for -string, to already provide compatibility with future polyglots
-	    opt->textValue = p+7;
+	    opt->target = opt->textValue = p+7;
 	    opt->type = FileName; // FileName;
+	    opt->target = &opt->textValue;
 	} else if((p = strstr(opt->name, " -path "))) {
 	    // for now -file is a synonym for -string, to already provide compatibility with future polyglots
-	    opt->textValue = p+7;
+	    opt->target = opt->textValue = p+7;
 	    opt->type = PathName; // PathName;
+	    opt->target = &opt->textValue;
 	} else if(p = strstr(opt->name, " -check ")) {
 	    if(sscanf(p, " -check %d", &def) < 1) return FALSE;
 	    opt->value = (def != 0);
@@ -17074,9 +17078,9 @@ FeatureDone (ChessProgramState *cps, int val)
       (cb == TwoMachinesEventIfReady)) {
     CancelDelayedEvent();
     ScheduleDelayedEvent(cb, val ? 1 : 3600000);
-  }
+  } else if(!val && !cps->reload) ClearOptions(cps); // let 'spurious' done=0 clear engine's option list
   cps->initDone = val;
-  if(val) cps->reload = FALSE;
+  if(val) cps->reload = FALSE,  RefreshSettingsDialog(cps, val);
 }
 
 /* Parse feature command from engine */

@@ -244,6 +244,12 @@ SetWidgetLabel (Option *opt, char *buf)
 }
 
 void
+SetComboChoice (Option *opt, int n)
+{
+    gtk_combo_box_set_active(opt->handle, n);
+}
+
+void
 SetDialogTitle (DialogClass dlg, char *title)
 {
     gtk_window_set_title(GTK_WINDOW(shells[dlg]), title);

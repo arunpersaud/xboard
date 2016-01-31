@@ -93,11 +93,13 @@ int
 SetCurrentComboSelection (Option *opt)
 {
     int j;
+    if(currentCps) ; else
     if(!opt->textValue) opt->value = *(int*)opt->target; /* numeric */else {
 	for(j=0; opt->choice[j]; j++) // look up actual value in list of possible values, to get selection nr
 	    if(*(char**)opt->target && !strcmp(*(char**)opt->target, ((char**)opt->textValue)[j])) break;
 	opt->value = j + (opt->choice[j] == NULL);
     }
+    SetComboChoice(opt, opt->value);
     return opt->value;
 }
 
@@ -1458,6 +1460,22 @@ SecondSettingsProc ()
 {
    if(WaitForEngine(&second, SettingsMenuIfReady)) return;
    SettingsPopUp(&second);
+}
+
+void
+RefreshSettingsDialog (ChessProgramState *cps, int val)
+{
+   if(val == 1) { // option values changed
+      if(shellUp[TransientDlg] && cps == currentCps) {
+         GenericUpdate(cps->option, -1); // normally update values when dialog is up
+      }
+      return; // and be done
+   }
+   if(val == 2) { // option list changed
+      if(!shellUp[TransientDlg] || cps != currentCps) return; // our dialog is not up, so nothing to do
+   }
+   PopDown(TransientDlg); // make sure any other dialog closes first
+   SettingsPopUp(cps);    // and popup new one
 }
 
 //----------------------------------------------- Load Engine --------------------------------------

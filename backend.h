@@ -424,6 +424,7 @@ void LoadTheme P((void));
 void CreateBookEvent P((void));
 char *SupportedVariant P((char *list, VariantClass v, int w, int h, int s, int proto, char *engine));
 char *CollectPieceDescriptors P((void));
+void RefreshSettingsDialog P((ChessProgramState *cps, int val));
 
 
 /* A point in time */
