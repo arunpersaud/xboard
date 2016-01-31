@@ -5992,39 +5992,48 @@ ptclen (const char *s, char *escapes)
 {
     int n = 0;
     if(!*escapes) return strlen(s);
-    while(*s) n += (*s != '/' && *s != '-' && *s != '^' && *s != '*' && !strchr(escapes, *s)), s++;
+    while(*s) n += (*s != '-' && *s != '^' && *s != '*' && !strchr(escapes, *s)), s++;
     return n;
 }
+
+static int pieceOrder[] = {
+  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, // P N B R Q F E A C W M
+ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, // O H I J G D V L S U Lion
+ 45, 23, 24, 25, 26, 27, 28, 29, 46, 31, 32, // Sword Zebra Camel Tower Wolf Dragon Duck Axe Leopard Gnu Cub
+ 44, 51, 56, 57, 58, 59, 60, 61, 62, 63, 34, // Whale Pegasus Wizard Copper Iron Viking Flag Amazon Wheel Shield Claw
+ 33, 55, 53, 42, 37, 48, 39, 40, 41, 22, 30, // +P +N =B =R +L +S +E +Ph +Kn Butterfly Hat
+ 38, 43, 35, 36, 49, 47, 52, 50, 54, 64, 65 // +V +M =H =D Princess HSword +GB HCrown Wheer Shierd King
+};
 
 int
 SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
 /* [HGM] moved here from winboard.c because of its general usefulness */
 /*       Basically a safe strcpy that uses the last character as King */
 {
-    int result = FALSE; int NrPieces, offs;
+    int result = FALSE; int NrPieces;
     unsigned char partner[EmptySquare];
 
     if( map != NULL && (NrPieces=ptclen(map, escapes)) <= (int) EmptySquare
                     && NrPieces >= 12 && !(NrPieces&1)) {
-        int i, j = 0; /* [HGM] Accept even length from 12 to 88 */
+        int i, ii, j = 0; /* [HGM] Accept even length from 12 to 88 */
 
         for( i=0; i<(int) EmptySquare; i++ ) table[i] = '.';
-        for( i=offs=0; i<NrPieces/2-1; i++ ) {
+        for( ii=0; ii<NrPieces/2-1; ii++ ) {
             char *p, c=0;
-            if(map[j] == '/' && *escapes) offs = WhiteTokin - i, j++;
+            i = pieceOrder[ii];
             if(*escapes && (map[j] == '*' || map[j] == '-' || map[j] == '^')) c = map[j++];
-            table[i + offs] = map[j++];
-            if(p = strchr(escapes, map[j])) j++, table[i + offs] += 64*(p - escapes + 1);
-            if(c) partner[i + offs] = table[i + offs], table[i + offs] = c;
+            table[i] = map[j++];
+            if(p = strchr(escapes, map[j])) j++, table[i] += 64*(p - escapes + 1);
+            if(c) partner[i] = table[i], table[i] = c;
         }
         table[(int) WhiteKing]  = map[j++];
-        for( i=offs=0; i<NrPieces/2-1; i++ ) {
+        for( ii=0; ii<NrPieces/2-1; ii++ ) {
             char *p, c=0;
-            if(map[j] == '/' && *escapes) offs = WhiteTokin - i, j++;
+            i = WHITE_TO_BLACK pieceOrder[ii];
             if(*escapes && (map[j] == '*' || map[j] == '-' || map[j] == '^')) c = map[j++];
-            table[WHITE_TO_BLACK i + offs] = map[j++];
-            if(p = strchr(escapes, map[j])) j++, table[WHITE_TO_BLACK i + offs] += 64*(p - escapes + 1);
-            if(c) partner[WHITE_TO_BLACK i + offs] = table[WHITE_TO_BLACK i + offs], table[WHITE_TO_BLACK i + offs] = c;
+            table[i] = map[j++];
+            if(p = strchr(escapes, map[j])) j++, table[i] += 64*(p - escapes + 1);
+            if(c) partner[i] = table[i], table[i] = c;
         }
         table[(int) BlackKing]  = map[j++];
 
