@@ -156,6 +156,16 @@ dist_svg_DATA = svg/icon_white.svg         svg/icon_black.svg      \
            svg/BlackTower.svg	    svg/WhiteTower.svg        \
            svg/BlackDragon.svg	    svg/WhiteDragon.svg       \
            svg/BlackCub.svg	    svg/WhiteCub.svg          \
+           svg/BlackButterfly.svg   svg/WhiteButterfly.svg    \
+           svg/BlackLeft.svg	    svg/WhiteLeft.svg         \
+           svg/BlackRight.svg	    svg/WhiteRight.svg        \
+           svg/BlackHat.svg	    svg/WhiteHat.svg          \
+           svg/BlackRShield.svg	    svg/WhiteRShield.svg      \
+           svg/BlackLShield.svg	    svg/WhiteLShield.svg      \
+           svg/BlackAxe.svg	    svg/WhiteAxe.svg          \
+           svg/BlackFlag.svg	    svg/WhiteFlag.svg         \
+           svg/BlackDuck.svg	    svg/WhiteDuck.svg         \
+           svg/BlackPegasus.svg	    svg/WhitePegasus.svg      \
            svg/eo_Analyzing.svg     svg/eo_Black.svg          \
            svg/eo_Clear.svg         svg/eo_Ponder.svg         \
            svg/eo_Thinking.svg      svg/eo_Unknown.svg        \

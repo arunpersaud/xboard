@@ -173,6 +173,8 @@ SelectPieces(VariantClass v)
 	   pngPieceBitmaps[i][(int)WhiteEagle]   = pngPieceBitmaps2[i][(int)WhiteFalcon];
 	   pngPieceBitmaps[i][(int)WhiteMan]     = pngPieceBitmaps2[i][(int)WhiteCopper];
 	   pngPieceBitmaps[i][(int)WhiteCopper]  = pngPieceBitmaps2[i][(int)WhiteMan];
+	   pngPieceBitmaps[i][(int)WhiteAxe]     = pngPieceBitmaps2[i][(int)WhiteCannon];
+	   pngPieceBitmaps[i][(int)WhiteCannon]  = pngPieceBitmaps2[i][(int)WhiteAxe];
 	}
     }
 }
@@ -290,15 +292,15 @@ CreatePNGBoard (char *s, int kind)
 char *pngPieceNames[] = // must be in same order as internal piece encoding
 { "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Crown", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
-  "Wolf", "Camel", "Zebra", "Wizard", "Lance", "Cub",
+  "Butterfly", "Zebra", "Camel", "Tower", "Wolf", "Dragon", "Duck", "Axe", "Hat", "Gnu", "Cub",
   "GoldPawn", "Claw", "PromoHorse", "PromoDragon", "GoldLance", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
-  "Dolphin", "Sword", "Leopard", "HSword", "GoldSilver", "Princess", "HCrown", "Knight", "Elephant", "PromoBishop",
-  "Gnu", "Viking", "Iron", "Copper", "Tower", "Dragon", "King",
+  "Dolphin", "Sword", "Leopard", "HSword", "GoldSilver", "Princess", "HCrown", "Pegasus", "Elephant", "PromoBishop",
+  "Left", "GoldKnight", "Wizard", "Copper", "Iron", "Viking", "Flag", "Lance", "Right", "LShield", "RShield", "King",
   "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
 };
 
 char *backupPiece[] = { "Princess", NULL, NULL, NULL, NULL, NULL, NULL,
-                        NULL, NULL, NULL, NULL, NULL, NULL,
+                        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 			NULL, NULL, NULL, NULL, NULL, NULL, "King", "Queen", "Lion" }; // pieces that map on other when not kanji
 
 RsvgHandle *
