@@ -71,7 +71,6 @@ int BlackPiece P((ChessSquare));
 int SameColor P((ChessSquare, ChessSquare));
 int PosFlags(int index);
 
-extern signed char initialRights[BOARD_FILES]; /* [HGM] all rights enabled, set in InitPosition */
 int quickFlag;
 char *pieceDesc[EmptySquare];
 char *defaultDesc[EmptySquare] = {

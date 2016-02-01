@@ -516,7 +516,7 @@ AppData appData;
 Board boards[MAX_MOVES];
 /* [HGM] Following 7 needed for accurate legality tests: */
 signed char  castlingRank[BOARD_FILES]; // and corresponding ranks
-signed char  initialRights[BOARD_FILES];
+unsigned char initialRights[BOARD_FILES];
 int   nrCastlingRights; // For TwoKings, or to implement castling-unknown status
 int   initialRulePlies, FENrulePlies;
 FILE  *serverMoves = NULL; // next two for broadcasting (/serverMoves option)
