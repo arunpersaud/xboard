@@ -286,7 +286,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
     if(pc == WhitePawn || pc == WhiteLance) promo = WhitePromotion, promoRank = BOARD_HEIGHT-1; else
     if(pc == BlackPawn || pc == BlackLance) promo = BlackPromotion, promoRank = 0;
     while(*p) {                  // more moves to go
-	int expo = 1, dx, dy, x, y, mode, dirSet, ds2=0, retry=0, initial=0, jump=1, skip = 0, all = 0;
+	int expo = -1, dx, dy, x, y, mode, dirSet, ds2=0, retry=0, initial=0, jump=1, skip = 0, all = 0;
 	char *cont = NULL;
 	while(*p == 'i') initial++, desc = ++p;
 	while(islower(*p)) p++;  // skip prefixes
@@ -377,9 +377,10 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	if(initial && (board[r][f] != initialPosition[r][f] ||
 		       r == 0              && board[TOUCHED_W] & 1<<f ||
 		       r == BOARD_HEIGHT-1 && board[TOUCHED_B] & 1<<f   ) ) continue;
-	if(expo > 1 && dx == 0 && dy == 0) {          // castling indicated by O + number
+	if(expo > 0 && dx == 0 && dy == 0) {          // castling indicated by O + number
 	    mode |= 1024; dy = 1;
 	}
+	if(expo < 0) expo = 1;                        // use 1 for default
         if(!cont) {
 	    if(!(mode & 15)) mode |= his + 4;         // no mode spec, use default = mc
 	} else {
@@ -450,7 +451,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		    if(occup == 4) continue; // skip empty squares
 		    if((x == BOARD_LEFT + skip || x > BOARD_LEFT + skip && vx < 0 && board[y][x-1-skip] == DarkSquare)
 								    && board[y][x] == initialPosition[y][x]) { // reached initial corner piece
-		      if(pc != WhiteKing && pc != BlackKing) { // non-royal castling (to be entered as two-leg move via 'Rook')
+		      if(pc != WhiteKing && pc != BlackKing || expo == 1) { // non-royal castling (to be entered as two-leg move via 'Rook')
 			if(killX < 0) cb(board, flags, FirstLeg,   r, f, y, x, cl); if(killX < f)
 			legNr <<= 1,  cb(board, flags, NormalMove, r, f, y, f - expo, cl), legNr >>= 1;
 		      } else
@@ -458,7 +459,7 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		    }
 		    if((x == BOARD_RGHT-1-skip || x < BOARD_RGHT-1-skip && vx > 0 && board[y][x+1+skip] == DarkSquare)
 								    && board[y][x] == initialPosition[y][x]) {
-		      if(pc != WhiteKing && pc != BlackKing) {
+		      if(pc != WhiteKing && pc != BlackKing || expo == 1) {
 			if(killX < 0) cb(board, flags, FirstLeg,   r, f, y, x, cl); if(killX > f)
 			legNr <<= 1,  cb(board, flags, NormalMove, r, f, y, f + expo, cl), legNr >>= 1;
 		      } else
