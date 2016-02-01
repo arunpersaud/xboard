@@ -455,6 +455,7 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 }
 
 char *defaultExt[] = { NULL, "pgn", "fen", "exe", "trn", "bin", "log", "ini" };
+HWND settingsDlg;
 
 LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -467,7 +468,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 
 //        CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
 	SetOptionValues(hDlg, activeCps, activeList);
-
+	settingsDlg = hDlg;
         SetFocus(GetDlgItem(hDlg, IDCANCEL));
 
         break;
@@ -477,12 +478,12 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
         case IDOK:
 	    if(!GetOptionValues(hDlg, activeCps, activeList)) return FALSE;
             EndDialog( hDlg, 0 );
-	    comboCallback = NULL; activeCps = NULL;
+	    comboCallback = NULL; activeCps = NULL; settingsDlg = NULL;
             return TRUE;
 
         case IDCANCEL:
             EndDialog( hDlg, 1 );
-	    comboCallback = NULL; activeCps = NULL;
+	    comboCallback = NULL; activeCps = NULL; settingsDlg = NULL;
             return TRUE;
 
 	default:
@@ -689,6 +690,19 @@ EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
     FreeProcInstance(lpProc);
 
     return;
+}
+
+void
+RefreshSettingsDialog (ChessProgramState *cps, int val)
+{
+    int isUp = (settingsDlg != NULL);
+    if(val == 1) {
+	if(activeCps == cps && isUp) SetOptionValues(settingsDlg, cps, activeList);
+	return;
+    }
+    if(settingsDlg) EndDialog(settingsDlg, 1);
+    comboCallback = NULL; activeCps = NULL; settingsDlg = NULL;
+    if(val == 3 || isUp) EngineOptionsPopup(hwndMain, cps);
 }
 
 int EnterGroup P((HWND hDlg));
