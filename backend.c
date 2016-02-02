@@ -5395,6 +5395,7 @@ Partner (ChessSquare *p)
 { // change piece into promotion partner if one shogi-promotes to the other
   ChessSquare partner = promoPartner[*p];
   if(PieceToChar(*p) != '+' && PieceToChar(partner) != '+') return 0;
+  if(PieceToChar(*p) == '+') partner = boards[currentMove][fromY][fromX];
   *p = partner;
   return 1;
 }
@@ -6058,7 +6059,10 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
                     for(p=0; p<EmptySquare; p++) if(table[p] == partner[i]) break;
                     if(c == '^') table[i] = '+';
                     if(p < EmptySquare) promoPartner[p] = i, promoPartner[i] = p; // marry them
-                } else if(c == '*') promoPartner[i] = (i < BlackPawn ? WhiteTokin : BlackTokin); // promotes to Tokin
+                } else if(c == '*') {
+                    table[i] = partner[i];
+                    promoPartner[i] = (i < BlackPawn ? WhiteTokin : BlackTokin); // promotes to Tokin
+                }
             }
         }
 
