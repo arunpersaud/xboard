@@ -670,6 +670,7 @@ ChangeDragPiece (ChessSquare piece)
 {
   anims[Player].dragPiece = piece;
   SetDragPiece(Player, piece);
+  damage[0][fromY][fromX] = True;
 }
 
 void
