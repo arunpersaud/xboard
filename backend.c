@@ -5381,6 +5381,17 @@ int dragging;
 static ClickType lastClickType;
 
 int
+PieceInString (char *s, ChessSquare piece)
+{
+  char *p, ID = ToUpper(PieceToChar(piece)), suffix = PieceSuffix(piece);
+  while((p = strchr(s, ID))) {
+    if(!suffix || p[1] == suffix) return TRUE;
+    s = p;
+  }
+  return FALSE;
+}
+
+int
 Partner (ChessSquare *p)
 { // change piece into promotion partner if one shogi-promotes to the other
   ChessSquare partner = promoPartner[*p];
@@ -5409,7 +5420,7 @@ Sweep (int step)
 	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' ||
 	    !toggleFlag && PieceToChar(promoSweep) == '+' || // skip promoted versions of other
-	    promoRestrict[0] ? !strchr(promoRestrict, ToUpper(PieceToChar(promoSweep))) : // if choice set available, use it 
+	    promoRestrict[0] ? !PieceInString(promoRestrict, promoSweep) : // if choice set available, use it 
 	    promoSweep == pawn ||
 	    appData.testLegality && (promoSweep == king || gameInfo.variant != VariantChuChess &&
             (promoSweep == WhiteLion || promoSweep == BlackLion)));
