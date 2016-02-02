@@ -9084,7 +9084,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       return;
     }
     if(sscanf(message, "choice %s", promoRestrict) == 1 && promoSweep != EmptySquare) {
-      promoSweep = PieceToChar(forwardMostMove&1 ? ToLower(*promoRestrict) : ToUpper(*promoRestrict));
+      promoSweep = CharToPiece(currentMove&1 ? ToLower(*promoRestrict) : ToUpper(*promoRestrict));
       Sweep(0);
       return;
     }
