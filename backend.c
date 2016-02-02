@@ -7792,6 +7792,8 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    ClearHighlights();
 	}
 #endif
+	if(PieceToChar(CHUPROMOTED(boards[currentMove][fromY][fromX])) == '+')
+	  defaultPromoChoice = CHUPROMOTED(boards[currentMove][fromY][fromX]);
 	if(gameInfo.variant == VariantChuChess && piece != WhitePawn && piece != BlackPawn) defaultPromoChoice = piece;
 	if(marker[y][x] == 5) { // [HGM] lion: this was the release of a to-click or drag on a cyan square
 	  dragging *= 2;            // flag button-less dragging if we are dragging
