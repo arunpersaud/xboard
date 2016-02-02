@@ -192,7 +192,6 @@ void GameEnds P((ChessMove result, char *resultDetails, int whosays));
 void EditPositionDone P((Boolean fakeRights));
 void PrintOpponents P((FILE *fp));
 void PrintPosition P((FILE *fp, int move));
-void StartChessProgram P((ChessProgramState *cps));
 void SendToProgram P((char *message, ChessProgramState *cps));
 void SendMoveToProgram P((int moveNum, ChessProgramState *cps));
 void ReceiveFromProgram P((InputSourceRef isr, VOIDSTAR closure,
@@ -8642,7 +8641,7 @@ HandleMachineMove (char *message, ChessProgramState *cps)
     ChessMove moveType;
     char promoChar, roar;
     char *p, *pv=buf1;
-    int machineWhite, oldError;
+    int oldError;
     char *bookHit;
 
     if(cps == &pairing && sscanf(message, "%d-%d", &savedWhitePlayer, &savedBlackPlayer) == 2) {
@@ -8734,6 +8733,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 
       } else {
 
+	int machineWhite = FALSE;
+
 	switch (gameMode) {
 	  case BeginningOfGame:
 	    /* Extra move from before last reset; ignore */
@@ -8815,7 +8816,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
             snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c via %c%c, %c%c) res=%d",
                     machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, killX+AAA, killY+ONE, kill2X+AAA, kill2Y+ONE, moveType);
 	    if (gameMode == TwoMachinesPlay) {
-	      GameEnds(machineWhite ? BlackWins : WhiteWins,
+	      GameEnds(cps->twoMachinesColor[0] == 'w' ? BlackWins : WhiteWins,
                        buf1, GE_XBOARD);
 	    }
 	    return;
@@ -8833,7 +8834,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
             if(moveType == IllegalMove) {
 	      snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to illegal move: %s (%c%c%c%c)%c",
                         machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, 0);
-                GameEnds(machineWhite ? BlackWins : WhiteWins,
+                GameEnds(cps->twoMachinesColor[0] == 'w' ? BlackWins : WhiteWins,
                            buf1, GE_XBOARD);
 		return;
            } else if(!appData.fischerCastling)

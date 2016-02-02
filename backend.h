@@ -425,6 +425,7 @@ void CreateBookEvent P((void));
 char *SupportedVariant P((char *list, VariantClass v, int w, int h, int s, int proto, char *engine));
 char *CollectPieceDescriptors P((void));
 void RefreshSettingsDialog P((ChessProgramState *cps, int val));
+void StartChessProgram P((ChessProgramState *cps));
 
 
 /* A point in time */
