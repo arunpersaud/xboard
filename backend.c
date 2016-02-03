@@ -7095,6 +7095,7 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 		}
 	    } else
 	    boards[0][fromY][fromX] = gatingPiece;
+	    ClearHighlights();
 	    DrawPosition(FALSE, boards[currentMove]);
 	    return;
 	}
