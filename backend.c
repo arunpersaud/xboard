@@ -6251,8 +6251,8 @@ InitPosition (int redraw)
       gameInfo.boardWidth  = 12;
       gameInfo.boardHeight = 12;
       nrCastlingRights = 0;
-      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN/^P.^B^R.^S^E^X^O^G^C^A^T^H^D.^V^M^L^I^FK"
-                                   "p.brqsexogcathd.vmlifn/^p.^b^r.^s^e^x^o^g^c^a^t^h^d.^v^m^l^i^fk", SUFFIXES);
+      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN^T.......^H..^A^L.........^P.^F^G..^E^X^O..^S^C^B^R^V^D^I^MK"
+                                   "p.brqsexogcathd.vmlifn^t.......^h..^a^l.........^p.^f^g..^e^x^o..^s^c^b^r^v^d^i^mk", SUFFIXES);
       break;
     case VariantCourier:
       pieces = CourierArray;
