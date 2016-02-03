@@ -7075,11 +7075,9 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
 	    return;
 	} else if (toX >= 0 && toY >= 0) {
 	    if(!appData.pieceMenu && toX == fromX && toY == fromY && boards[0][rf][ff] != EmptySquare) {
-		ChessSquare q, p = boards[0][rf][ff];
-		if(p >= BlackPawn) p = BLACK_TO_WHITE p;
-		if(CHUPROMOTED(p) < BlackPawn) p = q = CHUPROMOTED(boards[0][rf][ff]);
-		else p = CHUDEMOTED (q = boards[0][rf][ff]);
-		if(PieceToChar(q) == '+') gatingPiece = p;
+		ChessSquare p = boards[0][rf][ff];
+		if(PieceToChar(p) == '+') gatingPiece = CHUDEMOTED(p); else
+		if(PieceToChar(CHUPROMOTED(p)) =='+') gatingPiece = CHUPROMOTED(p); 
 	    }
 	    boards[0][toY][toX] = boards[0][fromY][fromX];
 	    if(fromX == BOARD_LEFT-2) { // handle 'moves' out of holdings
