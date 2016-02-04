@@ -106,9 +106,9 @@ extern char *getenv();
 Boolean cairoAnimate;
 Option *currBoard;
 cairo_surface_t *csBoardWindow;
-static cairo_surface_t *pngPieceImages[2][(int)BlackPawn+4];   // png 256 x 256 images
-static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];    // scaled pieces as used
-static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn+4]; // scaled pieces in store
+static cairo_surface_t *pngPieceImages[2][(int)BlackPawn];   // png 256 x 256 images
+static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];  // scaled pieces as used
+static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn]; // scaled pieces in store
 static RsvgHandle *svgPieces[2][(int)BlackPawn+4]; // vector pieces in store
 static cairo_surface_t *pngBoardBitmap[2], *pngOriginalBoardBitmap[2];
 int useTexture, textureW[2], textureH[2];
@@ -144,9 +144,9 @@ SelectPieces(VariantClass v)
 	   pngPieceBitmaps[i][p] = pngPieceBitmaps2[i][p]; // defaults
 	if(v == VariantShogi && BOARD_HEIGHT != 7) { // no exceptions in Tori Shogi
 	   pngPieceBitmaps[i][(int)WhiteCannon] = pngPieceBitmaps2[i][(int)WhiteTokin];
-	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteKing+2];
-	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhiteKing+3];
-	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhiteKing+4];
+	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhitePKnight];
+	   pngPieceBitmaps[i][(int)WhiteGrasshopper] = pngPieceBitmaps2[i][(int)WhitePLance];
+	   pngPieceBitmaps[i][(int)WhiteSilver] = pngPieceBitmaps2[i][(int)WhitePSilver];
 	   pngPieceBitmaps[i][(int)WhiteQueen] = pngPieceBitmaps2[i][(int)WhiteLance];
 	   pngPieceBitmaps[i][(int)WhiteFalcon] = pngPieceBitmaps2[i][(int)WhiteMonarch]; // for Sho Shogi
 	}
@@ -165,12 +165,12 @@ SelectPieces(VariantClass v)
 	if(v == VariantChu) {
 	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteClaw];
 	   pngPieceBitmaps[i][(int)WhiteClaw]    = pngPieceBitmaps2[i][(int)WhiteNightrider];
-	   pngPieceBitmaps[i][(int)WhiteUnicorn] = pngPieceBitmaps2[i][(int)WhiteHorned];
-	   pngPieceBitmaps[i][(int)WhiteSilver]  = pngPieceBitmaps2[i][(int)WhiteStag];
-	   pngPieceBitmaps[i][(int)WhiteFalcon]  = pngPieceBitmaps2[i][(int)WhiteEagle];
-	   pngPieceBitmaps[i][(int)WhiteHorned]  = pngPieceBitmaps2[i][(int)WhiteUnicorn];
-	   pngPieceBitmaps[i][(int)WhiteStag]    = pngPieceBitmaps2[i][(int)WhiteSilver];
-	   pngPieceBitmaps[i][(int)WhiteEagle]   = pngPieceBitmaps2[i][(int)WhiteFalcon];
+	   pngPieceBitmaps[i][(int)WhiteUnicorn] = pngPieceBitmaps2[i][(int)WhiteCat];
+	   pngPieceBitmaps[i][(int)WhiteSilver]  = pngPieceBitmaps2[i][(int)WhiteSword];
+	   pngPieceBitmaps[i][(int)WhiteFalcon]  = pngPieceBitmaps2[i][(int)WhiteDagger];
+	   pngPieceBitmaps[i][(int)WhiteCat]     = pngPieceBitmaps2[i][(int)WhiteUnicorn];
+	   pngPieceBitmaps[i][(int)WhiteSword]   = pngPieceBitmaps2[i][(int)WhiteSilver];
+	   pngPieceBitmaps[i][(int)WhiteDagger]  = pngPieceBitmaps2[i][(int)WhiteFalcon];
 	   pngPieceBitmaps[i][(int)WhiteMan]     = pngPieceBitmaps2[i][(int)WhiteCopper];
 	   pngPieceBitmaps[i][(int)WhiteCopper]  = pngPieceBitmaps2[i][(int)WhiteMan];
 	   pngPieceBitmaps[i][(int)WhiteAxe]     = pngPieceBitmaps2[i][(int)WhiteCannon];
@@ -292,16 +292,19 @@ CreatePNGBoard (char *s, int kind)
 char *pngPieceNames[] = // must be in same order as internal piece encoding
 { "Pawn", "Knight", "Bishop", "Rook", "Queen", "Advisor", "Elephant", "Archbishop", "Marshall", "Gold", "Commoner",
   "Canon", "Nightrider", "CrownedBishop", "CrownedRook", "Crown", "Chancellor", "Hawk", "Lance", "Cobra", "Unicorn", "Lion",
-  "Butterfly", "Zebra", "Camel", "Tower", "Wolf", "Dragon", "Duck", "Axe", "Hat", "Gnu", "Cub",
-  "GoldPawn", "Claw", "PromoHorse", "PromoDragon", "GoldLance", "PromoSword", "Prince", "Phoenix", "Kylin", "PromoRook", "PromoHSword",
-  "Dolphin", "Sword", "Leopard", "HSword", "GoldSilver", "Princess", "HCrown", "Pegasus", "Elephant", "PromoBishop",
-  "Left", "GoldKnight", "Wizard", "Copper", "Iron", "Viking", "Flag", "Lance", "Right", "LShield", "RShield", "King",
-  "Claw", "GoldKnight", "GoldLance", "GoldSilver", NULL
+  "Sword", "Zebra", "Camel", "Tower", "Wolf", "Hat", "Duck", "Lance", "Dragon", "Gnu", "Cub",
+  "LShield", "Pegasus", "Wizard", "Copper", "Iron", "Viking", "Flag", "Axe", "Dolphin", "Leopard", "Claw",
+  "Left", "Butterfly", "PromoBishop", "PromoRook", "HCrown", "RShield", "Prince", "Phoenix", "Kylin", "Drunk", "Right",
+  "GoldPawn", "GoldKnight", "PromoHorse", "PromoDragon", "GoldLance", "GoldSilver", "HSword", "PromoSword", "PromoHSword", "Princess", "King",
+  NULL
 };
 
-char *backupPiece[] = { "Princess", NULL, NULL, NULL, NULL, NULL, NULL,
-                        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-			NULL, NULL, NULL, NULL, NULL, NULL, "King", "Queen", "Lion" }; // pieces that map on other when not kanji
+char *backupPiece[] = { // pieces that map on other in default theme ("Crown" - "Drunk")
+  "Princess", NULL, NULL, NULL, NULL, NULL, NULL,
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "Chancellor", NULL,
+  NULL, "Knight", NULL, "Commoner", NULL, NULL, NULL, "Canon", NULL, NULL, NULL,
+  NULL, NULL, NULL, NULL, NULL, NULL, "King", "Queen", "Lion", "Elephant"
+};
 
 RsvgHandle *
 LoadSVG (char *dir, int color, int piece, int retry)
@@ -341,7 +344,7 @@ LoadSVG (char *dir, int color, int piece, int retry)
 
       return svg;
     }
-    if(!retry && piece >= WhiteGrasshopper && piece <= WhiteNothing) // pieces that are only different in kanji sets
+    if(!retry && piece >= WhiteGrasshopper && piece <= WhiteDrunk) // pieces that are only different in kanji sets
         return LoadSVG(dir, color, piece, 1);
     if(svgerror)
 	g_error_free(svgerror);

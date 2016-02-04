@@ -912,8 +912,8 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		break;
 
 
-            case SHOGI WhiteStag:
-            case SHOGI BlackStag:
+            case SHOGI WhiteGnu:
+            case SHOGI BlackGnu:
 		if(gameInfo.variant == VariantShogi) goto BlackGold;
 		SlideVertical(board, flags, rf, ff, callback, closure);
 		Ferz(board, flags, rf, ff, callback, closure);
@@ -1277,7 +1277,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		SlideVertical(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI WhiteHorned:
+            case SHOGI WhiteCat:
 		Sting(board, flags, rf, ff, 1, 0, callback, closure);
 		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
 		if(killX >= 0) break;
@@ -1286,7 +1286,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		SlideBackward(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI BlackHorned:
+            case SHOGI BlackCat:
 		Sting(board, flags, rf, ff, -1, 0, callback, closure);
 		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
 		if(killX >= 0) break;
@@ -1295,7 +1295,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		SlideForward(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI WhiteEagle:
+            case SHOGI WhiteDagger:
 		Sting(board, flags, rf, ff, 1,  1, callback, closure);
 		Sting(board, flags, rf, ff, 1, -1, callback, closure);
 		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
@@ -1304,7 +1304,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		SlideDiagBackward(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI BlackEagle:
+            case SHOGI BlackDagger:
 		Sting(board, flags, rf, ff, -1,  1, callback, closure);
 		Sting(board, flags, rf, ff, -1, -1, callback, closure);
 		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
