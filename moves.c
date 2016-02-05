@@ -2414,7 +2414,10 @@ CoordsToAlgebraic (Board board, int flags, int rf, int ff, int rt, int ft, int p
 	int r, f;
       for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<=BOARD_RGHT; f++)
  		c += (board[r][f] == piece); // count on-board pieces of given type
-	*outp++ = ToUpper(PieceToChar(piece));
+        *outp = PieceToChar(piece);
+        if(*outp == '+') outp++, piece = CHUDEMOTED(piece);
+        *outp++ = ToUpper(PieceToChar(piece));
+        if(*outp = PieceSuffix(piece)) outp++;
     }
   if(c != 1) { // [HGM] but if there is only one piece of the mentioned type, no from-square, thank you!
     *outp++ = ff + AAA;
