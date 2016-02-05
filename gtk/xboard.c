@@ -1020,8 +1020,6 @@ main (int argc, char **argv)
 		    programName, appData.boardSize);
 	    exit(2);
 	}
-	if(BOARD_WIDTH > 8)
-	    squareSize = (squareSize*8 + BOARD_WIDTH/2)/BOARD_WIDTH; // scale height
 	if (i < 7) {
 	    /* Find some defaults; use the nearest known size */
 	    SizeDefaults *szd, *nearest;
@@ -1072,6 +1070,11 @@ main (int argc, char **argv)
 	smallLayout = szd->smallLayout;
 	tinyLayout = szd->tinyLayout;
 	// [HGM] font: use defaults from settings file if available and not overruled
+    }
+    if(BOARD_WIDTH != 8) {
+	squareSize = (squareSize*8 + BOARD_WIDTH/2)/BOARD_WIDTH; // keep width the same
+	lineGap = (squareSize < 37 ? 1 : squareSize < 59 ? 2 : squareSize < 116 ? 3 : 4);
+printf("squareSize=%d lineGap=%d\n",squareSize,lineGap);
     }
 
     defaultLineGap = lineGap;
