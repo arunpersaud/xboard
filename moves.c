@@ -256,7 +256,7 @@ LoadPieceDesc (char *s)
 	    if(pieceToChar[piece] != '+') { ok = FALSE; continue; } // promoted form does not exist
 	}
 	ASSIGN(pieceDesc[piece], p);
-	if(piece < BlackPawn && (pieceToChar[WHITE_TO_BLACK piece] == pieceToChar[piece] || promoted)) {
+	if(piece < BlackPawn && (pieceToChar[WHITE_TO_BLACK piece] == pieceToChar[piece] + 32 || promoted)) {
 	    ASSIGN(pieceDesc[WHITE_TO_BLACK piece], p);
 	}
 	pieceDefs = TRUE;
