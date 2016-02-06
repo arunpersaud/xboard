@@ -118,9 +118,7 @@ ParsePGNTag (char *tag, GameInfo *gameInfo)
         if(*value && strcmp(value, engineVariant)) // keep current engine-defined variant if it matches
             gameInfo->variant = StringToVariant(value);
     } else if (StrCaseCmp(name, "VariantMen") == 0) {
-        /* for now ignore this tag, as we have no method yet */
-        /* for assigning the pieces to XBoard pictograms     */
-        success = TRUE;
+        success = LoadPieceDesc(value);
     } else if (StrCaseCmp(name, PGN_OUT_OF_BOOK) == 0) {
         /* [AS] Out of book annotation */
         success = StrSavePtr(value, &gameInfo->outOfBook) != NULL;

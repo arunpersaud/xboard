@@ -218,6 +218,7 @@ int GetEngineLine P((char *nick, int engine));
 void AddGameToBook P((int always));
 void FlushBook P((void));
 char PieceToChar P((ChessSquare p));
+int LoadPieceDesc P((char *s));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));

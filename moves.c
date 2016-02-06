@@ -232,6 +232,38 @@ CollectPieceDescriptors ()
     return buf;
 }
 
+int
+LoadPieceDesc (char *s)
+{
+    ChessSquare piece;
+    static char suf[] = SUFFIXES;
+    char *r, *p, *q = s;
+    int ok = TRUE, promoted, c;
+    while(q && *s) {
+	p = s;
+	q = strchr(s, ';');
+	if(q) *q = 0, s = q+1;
+	if(*p == '+') promoted = 1, p++; else promoted = 0;
+	c = *p++;
+	if(!c) { ok = FALSE; continue; } // bad syntax
+	if(*p && (r = strchr(suf, *p))) c += 64*(r - suf + 1), p++;
+	if(*p++ != ':') { ok = FALSE; continue; } // bad syntax
+	if(!strcmp(p, "(null)")) continue; // handle bug in writing of XBoard 4.8.0
+        piece = CharToPiece(c);
+	if(piece >= EmptySquare) { ok = FALSE; continue; } // non-existent piece
+	if(promoted) {
+	    piece = promoPartner[piece];
+	    if(pieceToChar[piece] != '+') { ok = FALSE; continue; } // promoted form does not exist
+	}
+	ASSIGN(pieceDesc[piece], p);
+	if(piece < BlackPawn && (pieceToChar[WHITE_TO_BLACK piece] == pieceToChar[piece] || promoted)) {
+	    ASSIGN(pieceDesc[WHITE_TO_BLACK piece], p);
+	}
+	pieceDefs = TRUE;
+    }
+    return ok;
+}
+
 // [HGM] gen: configurable move generation from Betza notation sent by engine.
 // Some notes about two-leg moves: GenPseudoLegal() works in two modes, depending on whether a 'kill-
 // square has been set: without one is generates all moves, and a global int legNr flags in bits 0 and 1
