@@ -6050,7 +6050,11 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
                     int p;
                     for(p=0; p<EmptySquare; p++) if(table[p] == partner[i]) break;
                     if(c == '^') table[i] = '+';
-                    if(p < EmptySquare) promoPartner[p] = i, promoPartner[i] = p; // marry them
+                    if(p < EmptySquare) {
+                        if(promoPartner[promoPartner[p]] == p) promoPartner[promoPartner[p]] = promoPartner[p]; // divorce old partners
+                        if(promoPartner[promoPartner[i]] == i) promoPartner[promoPartner[i]] = promoPartner[i];
+                        promoPartner[p] = i, promoPartner[i] = p; // and marry this couple
+                    }
                 } else if(c == '*') {
                     table[i] = partner[i];
                     promoPartner[i] = (i < BlackPawn ? WhiteTokin : BlackTokin); // promotes to Tokin
