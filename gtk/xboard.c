@@ -1074,7 +1074,6 @@ main (int argc, char **argv)
     if(BOARD_WIDTH != 8) {
 	squareSize = (squareSize*8 + BOARD_WIDTH/2)/BOARD_WIDTH; // keep width the same
 	lineGap = (squareSize < 37 ? 1 : squareSize < 59 ? 2 : squareSize < 116 ? 3 : 4);
-printf("squareSize=%d lineGap=%d\n",squareSize,lineGap);
     }
 
     defaultLineGap = lineGap;
