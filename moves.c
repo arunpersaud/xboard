@@ -204,7 +204,7 @@ CollectPieceDescriptors ()
     // dump all engine defined pieces, and pieces with non-standard names,
     // but suppress black pieces that are the same as their white counterpart
     ChessSquare p;
-    static char buf[MSG_SIZ];
+    static char buf[MSG_SIZ], s[2];
     char *m, c, d, *pieceName = defaultName;
     int len;
     *buf = NULLCHAR;
@@ -215,17 +215,19 @@ CollectPieceDescriptors ()
     for(p=WhitePawn; p<EmptySquare; p++) {
 	if((c = pieceToChar[p]) == '.' || c == '~') continue;  // does not participate
 	m = pieceDesc[p]; d = (c == '+' ? pieceToChar[DEMOTED(p)] : c);
-	if(p >= BlackPawn && pieceToChar[BLACK_TO_WHITE p] == toupper(c)
+	if(p >= BlackPawn && pieceToChar[BLACK_TO_WHITE p] == (c & ~32)
              && (c != '+' || pieceToChar[DEMOTED(BLACK_TO_WHITE p)] == d)) {// black member of normal pair
 	    char *wm = pieceDesc[BLACK_TO_WHITE p];
 	    if(!m && !wm || m && wm && !strcmp(wm, m)) continue;            // moves as a white piece
 	} else                                                              // white or unpaired black
-	if((p < BlackPawn || CharToPiece(toupper(d)) != EmptySquare) &&     // white or lone black
+	if((p < BlackPawn || CharToPiece(d & ~32) != EmptySquare) &&        // white or lone black
 	   !pieceDesc[p] /*&& pieceName[p] == c*/) continue; // orthodox piece known by its usual name
 // TODO: listing pieces because of unusual name can only be done if we have accurate Betza of all defaults
 	if(!m) m = defaultDesc[p];
+	if(!m) continue;
 	len = strlen(buf);
-	snprintf(buf+len, MSG_SIZ-len, "%s%s%c:%s", len ? ";" : "", c == '+' ? "+" : "", d, m);
+	*s = (d > 128 ? SUFFIXES[d-128>>6] : 0); d = 64 + (d & 63);
+	snprintf(buf+len, MSG_SIZ-len, "%s%s%c%s:%s", len ? ";" : "", c == '+' ? "+" : "", d, s, m);
     }
     return buf;
 }
