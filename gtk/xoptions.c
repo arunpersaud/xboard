@@ -1457,10 +1457,12 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             /* set button color on new variant dialog */
             if(option[i].textValue) {
                 static char *b = "Bold";
+                char *v, *p = NULL, n = option[i].value;
+                if(n >= 0) v = VariantName(n), p = strstr(first.variants, v);
                 gdk_color_parse( option[i].textValue, &color );
                 gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
                 gtk_widget_set_sensitive(button, option[i].value >= 0 && (appData.noChessProgram
-					 || strstr(first.variants, VariantName(option[i].value))));
+					 || p && (!*v || strlen(p) == strlen(v) || p[strlen(v)] == ',')));
                 if(engineVariant[100] ? !strcmp(engineVariant+100, option[i].name) : 
                    gameInfo.variant ? option[i].value == gameInfo.variant : !strcmp(option[i].name, "Normal"))
                     SetWidgetFont(gtk_bin_get_child(GTK_BIN(button)), &b);
