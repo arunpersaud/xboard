@@ -16277,7 +16277,7 @@ PrintPosition (FILE *fp, int move)
     for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
         for (j = BOARD_LEFT; j < BOARD_RGHT; j++) {
 	    char c = PieceToChar(boards[move][i][j]);
-	    fputc(c == 'x' ? '.' : c, fp);
+	    fputc(c == '?' ? '.' : c, fp);
             fputc(j == BOARD_RGHT - 1 ? '\n' : ' ', fp);
 	}
     }

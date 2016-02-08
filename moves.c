@@ -126,7 +126,7 @@ char
 PieceToChar (ChessSquare p)
 {
     int c;
-    if((int)p < 0 || (int)p >= (int)EmptySquare) return('x'); /* [HGM] for safety */
+    if((int)p < 0 || (int)p >= (int)EmptySquare) return('?'); /* [HGM] for safety */
     c = pieceToChar[(int) p];
     if(c & 128) c = c & 63 | 64;
     return c;
