@@ -5556,6 +5556,7 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
         *toX = currentMoveString[2] - AAA;
         *toY = currentMoveString[3] - ONE;
 	*promoChar = currentMoveString[4];
+	if(*promoChar == ';') *promoChar = NULLCHAR;
         if (*fromX < BOARD_LEFT || *fromX >= BOARD_RGHT || *fromY < 0 || *fromY >= BOARD_HEIGHT ||
             *toX < BOARD_LEFT || *toX >= BOARD_RGHT || *toY < 0 || *toY >= BOARD_HEIGHT) {
     if (appData.debugMode) {
