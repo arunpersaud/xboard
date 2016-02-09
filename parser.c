@@ -381,6 +381,7 @@ char
 PromoSuffix (char **p)
 {
     char *start = *p;
+    if(**p == ' ') return NULLCHAR; // common case, test explicitly for speed
     if(**p == 'e' && (Match("ep", p) || Match("e.p.", p))) { *p = start; return NULLCHAR; } // non-compliant e.p. suffix is no promoChar!
     if(**p == '+' && IS_SHOGI(gameInfo.variant)) { (*p)++; return '+'; }
     if(**p == '=' || (gameInfo.variant == VariantSChess) && **p == '/') (*p)++; // optional = (or / for Seirawan gating)
