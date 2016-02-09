@@ -5145,16 +5145,18 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
       } else
       if(moveList[moveNum][4] == ';') { // [HGM] lion: move is double-step over intermediate square
 	char *m = moveList[moveNum];
+	static char c[2];
+	*c = m[7]; // promoChar
 	if((boards[moveNum][m[6]-ONE][m[5]-AAA] < BlackPawn) == (boards[moveNum][m[1]-ONE][m[0]-AAA] < BlackPawn)) // move is kludge to indicate castling
 	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", m[0], m[1] - '0', // convert to two moves
 					       m[2], m[3] - '0',
 					       m[5], m[6] - '0',
 					       m[2] + (m[0] > m[5] ? 1 : -1), m[3] - '0');
 	else
-	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", m[0], m[1] - '0', // convert to two moves
+	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d%s\n", m[0], m[1] - '0', // convert to two moves
 					       m[5], m[6] - '0',
 					       m[5], m[6] - '0',
-					       m[2], m[3] - '0');
+					       m[2], m[3] - '0', c);
 	  SendToProgram(buf, cps);
       } else
       if(BOARD_HEIGHT > 10) { // [HGM] big: convert ranks to double-digit where needed
@@ -5358,6 +5360,10 @@ CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char 
 	} else {
 	    sprintf(move, "%c%c%c%c%c\n",
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt, promoChar);
+	  if(killX >= 0 && killY >= 0) {
+	    sprintf(move+4, ";%c%c\n", AAA + killX, ONE + killY);
+	    if(kill2X >= 0 && kill2Y >= 0) sprintf(move+7, "%c%c%c\n", AAA + killX, ONE + killY, promoChar);
+	  }
 	}
     }
 }
@@ -5556,7 +5562,7 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
         *toX = currentMoveString[2] - AAA;
         *toY = currentMoveString[3] - ONE;
 	*promoChar = currentMoveString[4];
-	if(*promoChar == ';') *promoChar = NULLCHAR;
+	if(*promoChar == ';') *promoChar = currentMoveString[7];
         if (*fromX < BOARD_LEFT || *fromX >= BOARD_RGHT || *fromY < 0 || *fromY >= BOARD_HEIGHT ||
             *toX < BOARD_LEFT || *toX >= BOARD_RGHT || *toY < 0 || *toY >= BOARD_HEIGHT) {
     if (appData.debugMode) {
@@ -7141,7 +7147,8 @@ UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
     if(addToBookFlag) { // adding moves to book
 	char buf[MSG_SIZ], move[MSG_SIZ];
         CoordsToAlgebraic(boards[currentMove], PosFlags(currentMove), fromY, fromX, toY, toX, promoChar, move);
-	if(killX >= 0) snprintf(move, MSG_SIZ, "%c%dx%c%d-%c%d", fromX + AAA, fromY + ONE - '0', killX + AAA, killY + ONE - '0', toX + AAA, toY + ONE - '0');
+	if(killX >= 0) snprintf(move, MSG_SIZ, "%c%dx%c%d-%c%d%c", fromX + AAA, fromY + ONE - '0',
+								   killX + AAA, killY + ONE - '0', toX + AAA, toY + ONE - '0', promoChar);
 	snprintf(buf, MSG_SIZ, "  0.0%%     1  %s\n", move);
 	AddBookMove(buf);
 	addToBookFlag = FALSE;
@@ -10459,10 +10466,10 @@ MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
     if(killX >= 0 && killY >= 0) x = killX, y = killY; // [HGM] lion: make SAN move to intermediate square, if there is one
     (void) CoordsToAlgebraic(boards[forwardMostMove],
 			     PosFlags(forwardMostMove),
-			     fromY, fromX, y, x, promoChar,
+			     fromY, fromX, y, x, (killX < 0)*promoChar,
 			     s);
     if(killX >= 0 && killY >= 0)
-        sprintf(s + strlen(s), "%c%c%d", p == EmptySquare || toX == fromX && toY == fromY ? '-' : 'x', toX + AAA, toY + ONE - '0');
+        sprintf(s + strlen(s), "%c%c%d%c", p == EmptySquare || toX == fromX && toY == fromY ? '-' : 'x', toX + AAA, toY + ONE - '0', promoChar);
 
     if(serverMoves != NULL) { /* [HGM] write moves on file for broadcasting (should be separate routine, really) */
         int timeLeft; static int lastLoadFlag=0; int king, piece;
@@ -12129,7 +12136,7 @@ LoadGameOneMove (ChessMove readAhead)
         toX = currentMoveString[2] - AAA;
         toY = currentMoveString[3] - ONE;
 	promoChar = currentMoveString[4];
-	if(promoChar == ';') promoChar = NULLCHAR;
+	if(promoChar == ';') promoChar = currentMoveString[7];
 	break;
 
       case WhiteDrop:
