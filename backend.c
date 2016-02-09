@@ -6003,7 +6003,7 @@ ptclen (const char *s, char *escapes)
 {
     int n = 0;
     if(!*escapes) return strlen(s);
-    while(*s) n += (*s != '/' && *s != '-' && *s != '^' && *s != '*' && !strchr(escapes, *s)), s++;
+    while(*s) n += (*s != '/' && *s != '-' && *s != '^' && *s != '*' && !strchr(escapes, *s)) - 2*(*s == '='), s++;
     return n;
 }
 
@@ -6027,6 +6027,7 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
             table[i+offs] = map[j++];
             if(p = strchr(escapes, map[j])) j++, table[i+offs] += 64*(p - escapes + 1);
             if(c) partner[i+offs] = table[i+offs], table[i+offs] = c;
+            if(*escapes && map[j] == '=') pieceNickName[i+offs] = map[++j], j++;
         }
         table[(int) WhiteKing]  = map[j++];
         for( ii=offs=0; ii<NrPieces/2-1; ii++ ) {
@@ -6037,6 +6038,7 @@ SetCharTableEsc (unsigned char *table, const char * map, char * escapes)
             table[i+offs] = map[j++];
             if(p = strchr(escapes, map[j])) j++, table[i+offs] += 64*(p - escapes + 1);
             if(c) partner[i+offs] = table[i+offs], table[i+offs] = c;
+            if(*escapes && map[j] == '=') pieceNickName[i+offs] = map[++j], j++;
         }
         table[(int) BlackKing]  = map[j++];
 
