@@ -1190,10 +1190,10 @@ ArrowDamage (int s_col, int s_row, int d_col, int d_row)
     int hor, vert, i, n = partnerUp * twoBoards;
     hor = 64*s_col + 32; vert = 64*s_row + 32;
     for(i=0; i<= 64; i++) {
-            damage[n][vert+6>>6][hor+6>>6] |= 2;
-            damage[n][vert-6>>6][hor+6>>6] |= 2;
-            damage[n][vert+6>>6][hor-6>>6] |= 2;
-            damage[n][vert-6>>6][hor-6>>6] |= 2;
+            damage[n][vert+8>>6][hor+8>>6] |= 2;
+            damage[n][vert-8>>6][hor+8>>6] |= 2;
+            damage[n][vert+8>>6][hor-8>>6] |= 2;
+            damage[n][vert-8>>6][hor-8>>6] |= 2;
             hor += d_col - s_col; vert += d_row - s_row;
     }
 }
@@ -1212,20 +1212,20 @@ DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
     SquareToPos( s_row, s_col, &s_x, &s_y);
     SquareToPos( d_row, d_col, &d_x, &d_y);
 
-    if( d_y > s_y ) {
+    if( d_y > s_y && d_y - s_y > abs(d_x - s_x)/2) {
         d_y += squareSize / 2 - squareSize / 4; // [HGM] round towards same centers on all sides!
     }
-    else if( d_y < s_y ) {
+    else if( d_y < s_y && s_y - d_y > abs(d_x - d_y)/2) {
         d_y += squareSize / 2 + squareSize / 4;
     }
     else {
         d_y += squareSize / 2;
     }
 
-    if( d_x > s_x ) {
+    if( d_x > s_x && d_x - s_x > abs(d_y - s_y)/2) {
         d_x += squareSize / 2 - squareSize / 4;
     }
-    else if( d_x < s_x ) {
+    else if( d_x < s_x && s_x - d_x > abs(d_y - s_y)/2) {
         d_x += squareSize / 2 + squareSize / 4;
     }
     else {
