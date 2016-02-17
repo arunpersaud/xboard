@@ -6742,7 +6742,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
 	    *promoChoice = PieceToChar(p++);
 	    if(*promoChoice != '.') break;
 	}
-	return FALSE;
+	if(!*engineVariant) return FALSE; // if used as parent variant there might be promotion choice
     }
     // no sense asking what we must promote to if it is going to explode...
     if(gameInfo.variant == VariantAtomic && boards[currentMove][toY][toX] != EmptySquare) {
@@ -7449,8 +7449,8 @@ CanPromote (ChessSquare piece, int y)
 	// some variants have fixed promotion piece, no promotion at all, or another selection mechanism
 	if(IS_SHOGI(gameInfo.variant)          || gameInfo.variant == VariantXiangqi ||
 	   gameInfo.variant == VariantSuper    || gameInfo.variant == VariantGreat   ||
-	   gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
-         gameInfo.variant == VariantMakruk) return FALSE;
+	  (gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier ||
+           gameInfo.variant == VariantMakruk) && !*engineVariant) return FALSE;
 	return (piece == BlackPawn && y <= zone ||
 		piece == WhitePawn && y >= BOARD_HEIGHT-1-zone ||
 		piece == BlackLance && y <= zone ||
