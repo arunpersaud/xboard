@@ -2579,7 +2579,7 @@ MenuCallback (int n)
 static Option *
 Exp (int n, int x, int y)
 {
-    static int but1, but3, oldW, oldH;
+    static int but1, but3, oldW, oldH, oldX, oldY;
     int menuNr = -3, sizing, f, r;
     TimeMark now;
     extern Boolean right;
@@ -2590,6 +2590,7 @@ Exp (int n, int x, int y)
     }
 
     if(n == 0) { // motion
+	oldX = x; oldY = y;
 	if(SeekGraphClick(Press, x, y, 1)) return NULL;
 	if((but1 || dragging == 2) && !PromoScroll(x, y)) DragPieceMove(x, y);
 	if(but3) MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
@@ -2612,8 +2613,8 @@ Exp (int n, int x, int y)
 	case  3: menuNr = RightClick(Press,   x, y, &pmFromX, &pmFromY), but3 = 1; break;
 	case -2: shiftKey = !shiftKey;
 	case -3: menuNr = RightClick(Release, x, y, &pmFromX, &pmFromY), but3 = 0; break;
-	case  4: BackwardEvent(); break;
-	case  5: ForwardEvent(); break;
+	case  4: Wheel(-1, oldX, oldY); break;
+	case  5: Wheel(1, oldX, oldY); break;
 	case 10:
 	    sizing = (oldW != x || oldH != y);
 	    oldW = x; oldH = y;

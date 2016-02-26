@@ -136,6 +136,7 @@ void DragPieceEnd P((int x, int y));
 void DragPieceMove P((int x, int y));
 void LeftClick P((ClickType c, int x, int y));
 int  RightClick P((ClickType c, int x, int y, int *col, int *row));
+void Wheel P((int dir, int x, int y));
 
 int StartChildProcess P((char *cmdLine, char *dir, ProcRef *pr));
 void DestroyChildProcess P((ProcRef pr, int/*boolean*/ signal));

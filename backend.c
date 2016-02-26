@@ -7981,6 +7981,23 @@ RightClick (ClickType action, int x, int y, int *fromX, int *fromY)
 }
 
 void
+Wheel (int dir, int x, int y)
+{
+    if(gameMode == EditPosition) {
+	int xSqr = EventToSquare(x, BOARD_WIDTH);
+	int ySqr = EventToSquare(y, BOARD_HEIGHT);
+	if(ySqr < 0 || xSqr < BOARD_LEFT || xSqr >= BOARD_RGHT) return;
+	if(flipView) xSqr = BOARD_WIDTH - 1 - xSqr; else ySqr = BOARD_HEIGHT - 1 - ySqr;
+	do {
+	    boards[currentMove][ySqr][xSqr] += dir;
+	    if((int) boards[currentMove][ySqr][xSqr] < WhitePawn) boards[currentMove][ySqr][xSqr] = BlackKing;
+	    if((int) boards[currentMove][ySqr][xSqr] > BlackKing) boards[currentMove][ySqr][xSqr] = WhitePawn;
+	} while(PieceToChar(boards[currentMove][ySqr][xSqr]) == '.');
+	DrawPosition(FALSE, boards[currentMove]);
+    } else if(dir > 0) ForwardEvent(); else BackwardEvent();
+}
+
+void
 SendProgramStatsToFrontend (ChessProgramState * cps, ChessProgramStats * cpstats)
 {
 //    char * hint = lastHint;
