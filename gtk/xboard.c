@@ -62,7 +62,6 @@
 #include <pwd.h>
 #include <math.h>
 #include <cairo/cairo.h>
-#include <cairo/cairo-xlib.h>
 #include <gtk/gtk.h>
 
 #if !OMIT_SOCKETS

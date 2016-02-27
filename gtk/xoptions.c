@@ -48,7 +48,6 @@ extern char *getenv();
 #include <stdint.h>
 
 #include <cairo/cairo.h>
-#include <cairo/cairo-xlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #ifdef OSXAPP
