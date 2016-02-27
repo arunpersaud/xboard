@@ -253,7 +253,7 @@ CreatePNGBoard (char *s, int kind)
     textureW[kind] = 0; // prevents bitmap from being used if not succesfully loaded
     if(strstr(s, ".png")) {
 	cairo_surface_t *img = cairo_image_surface_create_from_png (s);
-	if(img) {
+	if(cairo_surface_status(img) == CAIRO_STATUS_SUCCESS) {
 	    char c, *p = s, *q;
 	    int r, f;
 	    if(pngOriginalBoardBitmap[kind]) cairo_surface_destroy(pngOriginalBoardBitmap[kind]);
