@@ -774,6 +774,7 @@ BEGIN
     CONTROL         "",OPT_EngineVariant+4,"Button",BS_AUTORADIOBUTTON,80,144,70,10
     CONTROL         "",OPT_EngineVariant+5,"Button",BS_AUTORADIOBUTTON,154,144,70,10
     CONTROL         "",OPT_EngineVariant+6,"Button",BS_AUTORADIOBUTTON,9,154,70,10
+
     CONTROL         "",OPT_EngineVariant+7,"Button",BS_AUTORADIOBUTTON,80,154,70,10
     CONTROL         "",OPT_EngineVariant+8,"Button",BS_AUTORADIOBUTTON,154,154,70,10
     CONTROL         "",OPT_EngineVariant+9,"Button",BS_AUTORADIOBUTTON,9,164,70,10
@@ -1291,10 +1292,11 @@ BEGIN
     END
     POPUP "E&ngine"
     BEGIN
-        MENUITEM "Edit Engine List...",         IDM_EditProgs1
+        MENUITEM "&Edit Engine List...",        IDM_EditProgs1
         MENUITEM "Load &First Engine...",       IDM_LoadProg1
         MENUITEM "Load &Second Engine...",      IDM_LoadProg2
         MENUITEM SEPARATOR
+        MENUITEM "&Common Settings...\tAlt+Shift+U",IDM_OptionsUCI
         MENUITEM "Engine #&1 Settings...",      IDM_Engine1Options
         MENUITEM "Engine #&2 Settings...",      IDM_Engine2Options
         MENUITEM SEPARATOR
@@ -1310,7 +1312,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Time Control...\tAlt+Shift+T",IDM_TimeControl
-        MENUITEM "Common &Engine...\tAlt+Shift+U",IDM_OptionsUCI
         MENUITEM "Ad&judications...\tAlt+Shift+J",IDM_EnginePlayOptions
         MENUITEM "Tournament...",               IDM_Tourney
         MENUITEM SEPARATOR
@@ -2016,6 +2017,7 @@ AA49S                   BITMAP  MOVEABLE PURE   "bitmaps/as49s.bmp"
 C49S                    BITMAP  MOVEABLE PURE   "bitmaps/c49s.bmp"
 CV49S                   BITMAP  MOVEABLE PURE   "bitmaps/cv49s.bmp"
 F49S                    BITMAP  MOVEABLE PURE   "bitmaps/f49s.bmp"
+
 M49S                    BITMAP  MOVEABLE PURE   "bitmaps/m49s.bmp"
 W49S                    BITMAP  MOVEABLE PURE   "bitmaps/w49s.bmp"
 O49S                    BITMAP  MOVEABLE PURE   "bitmaps/o49s.bmp"
