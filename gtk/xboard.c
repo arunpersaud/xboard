@@ -212,10 +212,12 @@ RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
 char *InsertPxlSize P((char *pattern, int targetPxlSize));
+#ifdef TODO_GTK
 #if ENABLE_NLS
 XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
+#endif
 #endif
 void DelayedDrag P((void));
 void ICSInputBoxPopUp P((void));
