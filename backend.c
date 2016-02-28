@@ -7051,6 +7051,7 @@ UserMoveEvent (int fromX, int fromY, int toX, int toY, int promoChar)
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
 	    }
+            DrawPosition(TRUE, boards[currentMove]); // [HGM] repair animation damage done by premove (in particular emptying from-square)
             return;
 	}
 	break;
@@ -7072,6 +7073,7 @@ UserMoveEvent (int fromX, int fromY, int toX, int toY, int promoChar)
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
 	    }
+            DrawPosition(TRUE, boards[currentMove]);
             return;
 	}
 	break;
