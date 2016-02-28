@@ -4162,6 +4162,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 			  fprintf(debugFP, "Sending premove:\n");
 			SendToICS(str);
 		      } else if (gotPremove) {
+			int oldFMM = forwardMostMove;
 			gotPremove = 0;
 			ClearPremoveHighlights();
 			if (appData.debugMode)
@@ -4169,6 +4170,13 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
                           UserMoveEvent(premoveFromX, premoveFromY,
 				        premoveToX, premoveToY,
                                         premovePromoChar);
+			if(forwardMostMove == oldFMM) { // premove was rejected, highlight last opponent move
+			  if(moveList[oldFMM-1][1] != '@')
+			    SetHighlights(moveList[oldFMM-1][0]-AAA, moveList[oldFMM-1][1]-ONE,
+					  moveList[oldFMM-1][2]-AAA, moveList[oldFMM-1][3]-ONE);
+			  else // (drop)
+			    SetHighlights(-1, -1, moveList[oldFMM-1][2]-AAA, moveList[oldFMM-1][3]-ONE);
+			}
 		      }
 		    }
 
@@ -6959,7 +6967,7 @@ int doubleClick;
 Boolean addToBookFlag;
 
 void
-UserMoveEvent(int fromX, int fromY, int toX, int toY, int promoChar)
+UserMoveEvent (int fromX, int fromY, int toX, int toY, int promoChar)
 {
     ChessMove moveType;
     ChessSquare pup;
