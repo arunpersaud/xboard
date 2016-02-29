@@ -9766,6 +9766,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                     [AS] Protect the thinkOutput buffer from overflow... this
                     is only useful if buf1 hasn't overflowed first!
                 */
+		if((gameMode == AnalyzeMode && appData.whitePOV || appData.scoreWhite) && !WhiteOnMove(forwardMostMove)) curscore *= -1;
 		if(curscore >= MATE_SCORE) 
 		    snprintf(score_buf, MSG_SIZ, "#%d", curscore - MATE_SCORE);
 		else if(curscore <= -MATE_SCORE) 
