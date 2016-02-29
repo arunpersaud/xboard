@@ -2249,7 +2249,7 @@ Remains in force until a new variant is selected.
 @cindex sUCI, option
 @cindex firstIsUCI, option
 @cindex secondIsUCI, option
-Indicates if the mentioned engine executable file is an UCI engine, 
+Indicates if the mentioned engine executable file is a UCI engine, 
 and should be run with the aid of the Polyglot adapter rather than directly. 
 Xboard will then pass the other UCI options and engine name to Polyglot 
 on its command line, according to the option @code{adapterCommand}.
@@ -2264,11 +2264,11 @@ on its command line, according to the option @code{adapterCommand}.
 Options similar to @code{fUCI} and @code{sUCI}, except that they
 use the indicated engine with the protocol adapter specified in
 the @samp{uxiAdapter} option.
-This can then be configured for running an UCCI or USI adapter,
+This can then be configured for running a UCCI or USI adapter,
 as the need arises.
 @item -adapterCommand string
 @cindex adapterCommand, option
-The string conatins the command that should be issued by XBoard
+The string contains the command that should be issued by XBoard
 to start an engine that is accompanied by the @code{fUCI} option.
 Any identifier following a percent sign in the command (e.g. %fcp)
 will be considered the name of an XBoard option, and be replaced
@@ -2376,18 +2376,19 @@ One egtpath command for each matching format will be sent.
 Popular formats are "nalimov" DTM tablebases and "scorpio" bitbases.
 Default: "".
 @item -firstChessProgramNames=@{names@}
-This option lets you customize the drop-down list of chess engine names 
-that appears in the @samp{Load Engine} and @samp{Match Options} dialog. 
+This option lets you customize the listbox with chess-engine names 
+that appears in the @samp{Load Engine} and @samp{Tournament Options} dialog. 
 It consists of a list of strings, one per line. 
 When an engine is loaded, the corresponding line is prefixed with "-fcp ",
 and processed like it appeared on the command line.
 That means that apart from the engine command,
-it can contain any list of XBoard options you want to use with this engine.
+it can contain any number of XBoard options you want to use with this engine.
 (Commonly used options here are -fd, -firstXBook, -fUCI, -variant.)
 
 The value of this option is gradually built as you load new engines
 through the @samp{Load Engine} menu dialog, with @samp{Add to list} ticked. 
-To change it, edit your settings file with a plain text editor.
+To change it in other ways, (e.g. deleting engines),
+use the menu item @samp{Edit Engine List} in the @samp{Engine} menu.
 @end table
 
 @node Tournament options
@@ -3046,8 +3047,8 @@ When it finds an engine that was installed after it last saved
 its settings, a line to launch that engine (as per specs in
 the plugin file) is appended to the -firstChessProgramNames
 list of installed engines.
-In the future it will be possible to use the list to limit
-this automatic adding of engines to a certain types of variants.
+In the future it will be possible to use the autoInstall list to limit
+this automatic adding of engines based on the chess variant they play.
 @item -oneClickMove true/false
 @cindex oneClickMove, option
 When set, this option allows you to enter moves by only clicking the to-
@@ -3553,6 +3554,64 @@ is repeated the given number of times. Engines draw claims are always accepted a
 (on the 3rd occurrence, actually), irrespective of the value of n. 
 Beware that positions that have different castling or en-passant rights do not count 
 as repeats, XBoard is fully e.p. and castling aware!
+@end table
+
+@node Install options
+@section Install options
+@cindex Options, install
+@table @asis
+@item --show-config parameter
+@cindex show-config, option
+When called with this option, XBoard will close immediately after printing the
+value of the indicated configuration parameter, or, when no parameter was given,
+after printing a list of all such parameters.
+Currently the only valid values for parameter are Datadir and Sysconfdir.
+This option can be used by install scripts for board themes
+to figure out where the currently active XBoard stores its data.
+@item -date timestamp
+@xitem -saveDate timestamp
+@cindex date, option
+@cindex saveDate, option
+These options specify an epoch as an integer number.
+The @code{saveDate} option is written by XBoard in the settings file every time the
+settings are saved, with the current time, so that later runs of XBoard can know this.
+The @code{date} option can be included in settings files to indicate when lines
+following it were added to those files.
+Some options will be ignored if the epoch specified by the latest @code{date} option
+predates the -saveDate setting (implying they must have been seen before).
+@item -addMasterOption string
+@cindex addMasterOption, option
+Adds the mentioned string as an additional line of XBoard's master settings file,
+after adding a line with a @code{date} option to timestamp it.
+Intended to add options of the 'install' type (see below) to the master file,
+which will then be processed by any XBoard that has not seen them since
+it last saved its settings.
+@item -autoClose
+@cindex autoClose, option
+The presence of this option cause XBoard to close immediately after processing
+all its options (from settings file and command line).
+Typically used from install scripts together with options that change XBoard's
+settings files, so that XBoard can be run in batch mode rather than interactively.
+@item -installEngine string
+@cindex installEngine, option
+Adds the given string as an additional line to the value of the
+@code{firstChessProgramNames} option when the -saveDate setting preceeds the -date setting.
+Intended for adding to the master settings file with the aid of -addMasterOption
+in the install script of engines, as a method for broadcasting the presence
+of a new engine to all users,
+which would then see it automatically registered with XBoard.
+Made obsolete by the advent of the plugin standard (see the @code{autoInstall} option),
+which broadcasts such presence in a non-XBoard-specific way
+by dropping *.eng files in a certain system directory.
+@item -installTheme string
+@cindex installTheme, option
+Adds the given string as an additional line to the value of the
+-themeNames option when the -saveDate setting preceeds the -date setting.
+Intended for adding to the master settings file with the aid of -addMasterOption
+in the install script of board graphics themes,
+as a method for broadcasting the availability of a new theme to all users,
+who would then see the theme appear automatically in the listbox in the
+View Board menu dialog next time they run XBoard.
 @end table
 
 @node Other options
