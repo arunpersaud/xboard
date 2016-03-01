@@ -1998,6 +1998,7 @@ PasteGameCB (Widget w, XtPointer client_data, Atom *selection,
 	     Atom *type, XtPointer value, unsigned long *len, int *format)
 {
   FILE* f;
+  int flip = appData.flipView;
   if (value == NULL || *len == 0) {
     return; /* nothing had been selected to copy */
   }
@@ -2009,7 +2010,9 @@ PasteGameCB (Widget w, XtPointer client_data, Atom *selection,
   fwrite(value, 1, *len, f);
   fclose(f);
   XtFree(value);
+  if(!appData.autoFlipView) appData.flipView = flipView;
   LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
+  appData.flipView = flip;
 }
 
 /* called when Paste Game button is pressed,

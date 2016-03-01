@@ -260,6 +260,7 @@ VOID PasteGameFromString( char * buf )
 {
   FILE *f;
   size_t len;
+  int flip = appData.flipView;
   if (!pasteTemp) {
     pasteTemp = tempnam(NULL, "wbpt");
   }
@@ -276,7 +277,10 @@ VOID PasteGameFromString( char * buf )
     free(buf); /* [AS] */
     return;
   }
+  if(!appData.auto
+  if(!appData.autoFlipView) appData.flipView = flipView;
   LoadGameFromFile(pasteTemp, 0, "Clipboard", TRUE);
+  appData.flipView = flip;
   free( buf ); /* [AS] */
 }
 

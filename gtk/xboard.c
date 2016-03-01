@@ -1887,7 +1887,7 @@ PasteGameProc ()
 {
     gchar *text=NULL;
     GtkClipboard *cb;
-    guint len=0;
+    guint len=0; int flip = appData.flipView;
     FILE* f;
 
     // get game from clipboard
@@ -1911,7 +1911,9 @@ PasteGameProc ()
     fclose(f);
 
     // load from file
+    if(!appData.autoFlipView) appData.flipView = flipView;
     LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
+    appData.flipView = flip;
     return;
 }
 
