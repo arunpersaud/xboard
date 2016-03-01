@@ -1611,7 +1611,7 @@ ShuffleMenuProc ()
 //------------------------------------------------------ Time Control -----------------------------------
 
 static int TcOK P((int n));
-int tmpMoves, tmpTc, tmpInc, tmpOdds1, tmpOdds2, tcType;
+int tmpMoves, tmpTc, tmpInc, tmpOdds1, tmpOdds2, tcType, by60;
 
 static void SetTcType P((int n));
 
@@ -1627,6 +1627,7 @@ static Option tcOptions[] = {
 {   0,  0,    0, NULL, (void*) &SetTcType, NULL, NULL, Button, N_("classical") },
 {   0,SAME_ROW,0,NULL, (void*) &SetTcType, NULL, NULL, Button, N_("incremental") },
 {   0,SAME_ROW,0,NULL, (void*) &SetTcType, NULL, NULL, Button, N_("fixed max") },
+{   0,  0,    0, NULL, (void*) &by60,     "",  NULL, CheckBox, N_("Divide entered times by 60") },
 {   0,  0,  200, NULL, (void*) &tmpMoves, NULL, NULL, Spin, N_("Moves per session:") },
 {   0,  0,10000, NULL, (void*) &tmpTc,    NULL, NULL, Spin, N_("Initial time (min):") },
 {   0, 0, 10000, NULL, (void*) &tmpInc,   NULL, NULL, Spin, N_("Increment or max (sec/move):") },
@@ -1639,10 +1640,11 @@ static Option tcOptions[] = {
 static int
 TcOK (int n)
 {
-    char *tc;
+    char *tc, buf[MSG_SIZ];
     if(tcType == 0 && tmpMoves <= 0) return 0;
     if(tcType == 2 && tmpInc <= 0) return 0;
-    GetWidgetText(&tcOptions[4], &tc); // get original text, in case it is min:sec
+    GetWidgetText(&tcOptions[5], &tc); // get original text, in case it is min:sec
+    if(by60) snprintf(buf, MSG_SIZ, "%d:%02d", tmpTc/60, tmpTc%60), tc=buf;
     searchTime = 0;
     switch(tcType) {
       case 0:
@@ -1654,10 +1656,10 @@ TcOK (int n)
       case 1:
 	if(!ParseTimeControl(tc, tmpInc, 0)) return 0;
 	ASSIGN(appData.timeControl, tc);
-	appData.timeIncrement = tmpInc;
+	appData.timeIncrement = (by60 ? tmpInc/60. : tmpInc);
 	break;
       case 2:
-	searchTime = tmpInc;
+	searchTime = (by60 ? tmpInc/60 : tmpInc);
     }
     appData.firstTimeOdds = first.timeOdds = tmpOdds1;
     appData.secondTimeOdds = second.timeOdds = tmpOdds2;
@@ -1670,19 +1672,19 @@ SetTcType (int n)
 {
     switch(tcType = n) {
       case 0:
-	SetWidgetText(&tcOptions[3], Value(tmpMoves), TransientDlg);
-	SetWidgetText(&tcOptions[4], Value(tmpTc), TransientDlg);
-	SetWidgetText(&tcOptions[5], _("Unused"), TransientDlg);
+	SetWidgetText(&tcOptions[4], Value(tmpMoves), TransientDlg);
+	SetWidgetText(&tcOptions[5], Value(tmpTc), TransientDlg);
+	SetWidgetText(&tcOptions[6], _("Unused"), TransientDlg);
 	break;
       case 1:
-	SetWidgetText(&tcOptions[3], _("Unused"), TransientDlg);
-	SetWidgetText(&tcOptions[4], Value(tmpTc), TransientDlg);
-	SetWidgetText(&tcOptions[5], Value(tmpInc), TransientDlg);
+	SetWidgetText(&tcOptions[4], _("Unused"), TransientDlg);
+	SetWidgetText(&tcOptions[5], Value(tmpTc), TransientDlg);
+	SetWidgetText(&tcOptions[6], Value(tmpInc), TransientDlg);
 	break;
       case 2:
-	SetWidgetText(&tcOptions[3], _("Unused"), TransientDlg);
 	SetWidgetText(&tcOptions[4], _("Unused"), TransientDlg);
-	SetWidgetText(&tcOptions[5], Value(tmpInc), TransientDlg);
+	SetWidgetText(&tcOptions[5], _("Unused"), TransientDlg);
+	SetWidgetText(&tcOptions[6], Value(tmpInc), TransientDlg);
     }
 }
 
@@ -1697,6 +1699,7 @@ TimeControlProc ()
    tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;
    tmpOdds1 = tmpOdds2 = 1; tcType = 0;
    tmpTc = atoi(appData.timeControl);
+   by60 = 0;
    GenericPopUp(tcOptions, _("Time Control"), TransientDlg, BoardWindow, MODAL, 0);
    SetTcType(searchTime ? 2 : appData.timeIncrement < 0 ? 0 : 1);
 }
