@@ -1028,6 +1028,17 @@ when you would select them from the @samp{Load Engine} dialogs.
 You can then edit this list, e.g. for re-ordering the engines,
 or adding uncommon options needed by this engine
 (e.g. to cure non-compliant behavior).
+
+By editing you can also organize the engines into collapsible groups.
+By sandwiching a number of engine lines between lines "# NAME" and "# end",
+the thus enclosed engines will not initially appear in engine listboxes
+of other dialogs, but only the single line "# NAME"
+(where NAME can be an arbitrary text) will appear in their place.
+Selecting that line will then show the enclosed engines in the listbox,
+which recursively can contain other groups.
+The line with the group name will still present as a header,
+and selecting that line will collapse the group again,
+and makes the listbox go back to displaying the surrounding group.
 @item Load New 1st Engine
 @itemx Load New 2nd Engine
 @cindex Load Engine, Menu Item
@@ -1056,7 +1067,13 @@ or (for variant engines) automatically switch to the current variant when loaded
 will also be included in the list. 
 For obsolete XBoard engines, which would normally take a long delay to load 
 because XBoard is waiting for a response they will not give, 
-you can tick ‘WB protocol v1’ to speed up the loading process. 
+you can tick ‘WB protocol v1’ to speed up the loading process.
+
+New engines are always added at the end of the existing list,
+but can be re-ordered with the aid of the @samp{Edit Engine List} menu item.
+They can even be organized in groups that can be opened or collapsed at will,
+which can be very useful if the list is very long.
+
 @item Engine #N Settings
 @cindex Engine #N Settings, Menu Item
 Pop up a menu dialog to alter the settings specific to the applicable engine.
