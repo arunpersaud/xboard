@@ -109,7 +109,7 @@ cairo_surface_t *csBoardWindow;
 static cairo_surface_t *pngPieceImages[2][(int)BlackPawn];   // png 256 x 256 images
 static cairo_surface_t *pngPieceBitmaps[2][(int)BlackPawn];  // scaled pieces as used
 static cairo_surface_t *pngPieceBitmaps2[2][(int)BlackPawn]; // scaled pieces in store
-static RsvgHandle *svgPieces[2][(int)BlackPawn+4]; // vector pieces in store
+static RsvgHandle *svgPieces[2][(int)BlackPawn]; // vector pieces in store
 static cairo_surface_t *pngBoardBitmap[2], *pngOriginalBoardBitmap[2];
 int useTexture, textureW[2], textureH[2];
 
@@ -451,7 +451,7 @@ InitDrawingParams (int reloadPieces)
 {
     int i, p;
     if(reloadPieces)
-    for(i=0; i<2; i++) for(p=0; p<BlackPawn+4; p++) {
+    for(i=0; i<2; i++) for(p=0; p<BlackPawn; p++) {
 	if(pngPieceImages[i][p]) cairo_surface_destroy(pngPieceImages[i][p]);
 	pngPieceImages[i][p] = NULL;
 	if(svgPieces[i][p]) rsvg_handle_close(svgPieces[i][p], NULL);
