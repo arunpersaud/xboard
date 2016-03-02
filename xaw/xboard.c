@@ -1234,7 +1234,7 @@ main (int argc, char **argv)
     boardWidget      = optList[W_BOARD].handle;
     menuBarWidget    = optList[W_MENU].handle;
     dropMenu         = optList[W_DROP].handle;
-    titleWidget = optList[optList[W_TITLE].type != -1 ? W_TITLE : W_SMALL].handle;
+    titleWidget = optList[optList[W_TITLE].type != Skip ? W_TITLE : W_SMALL].handle;
     formWidget  = XtParent(boardWidget);
     XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
     XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
