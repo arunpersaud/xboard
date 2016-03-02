@@ -4106,7 +4106,12 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   if(saveDiagFlag) { 
     BITMAP b; int i, j=0, m, w, wb, fac=0; char *pData; 
     BITMAPINFOHEADER bih; int color[16], nrColors=0;
+    HBITMAP src = bufferBitmap, obmp; HDC tmp = CreateCompatibleDC(hdc);
 
+    bufferBitmap = CreateCompatibleBitmap(hdc, boardRect.right-boardRect.left, Rect.bottom-Rect.top-2*OUTER_MARGIN);
+    obmp = SelectObject(tmp, bufferBitmap);
+    BitBlt(tmp, 0, 0, boardRect.right - boardRect.left, Rect.bottom - Rect.top - 2*OUTER_MARGIN,
+           tmphdc, boardRect.left, OUTER_MARGIN, SRCCOPY);
     GetObject(bufferBitmap, sizeof(b), &b);
     if(pData = malloc(b.bmWidthBytes*b.bmHeight + 10000)) {
 	bih.biSize = sizeof(BITMAPINFOHEADER);
@@ -4174,6 +4179,9 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 		fputc(pData[i], diagFile);
 	free(pData);
      }
+     DeleteObject(bufferBitmap); bufferBitmap = src;
+     SelectObject(tmp, obmp);
+     DeleteDC(tmp);
   }
 
   SelectObject(tmphdc, oldBitmap);
