@@ -1225,6 +1225,11 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 				   0 /* w */, 0 /* h */, 1 /* chain (always on same row) */);
 	    forelast = lastrow;
 	    msg = _(option[i].name); // write name on the menu button
+	    if(msg) { if(*msg == '_') msg++; else if(msg[1] == '_') { // kludge to remove GTK shortkut-key indicators
+		static char buf[MSG_SIZ];
+		strncpy(buf, msg, MSG_SIZ); msg = buf + 1;
+		*msg = *buf;
+	    }}
 	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
 	    XtSetArg(args[j], XtNlabel, msg);  j++;
 	    option[i].handle = (void*)
