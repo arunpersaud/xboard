@@ -191,7 +191,7 @@ SetWidgetLabel (Option *opt, char *buf)
 void
 SetComboChoice (Option *opt, int n)
 {
-    SetWidgetText(opt, opt->choice[n]);
+    SetWidgetText(opt, opt->choice[n], MasterDlg);
 }
 
 void
