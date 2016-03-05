@@ -896,13 +896,14 @@ VariantWhichRadio(HWND hDlg)
 void
 VariantShowRadio(HWND hDlg)
 {
-  char c = *engineVariant;
+  char c = *engineVariant, *v, *p;
   int i=0, j;
   CheckDlgButton(hDlg, radioButton[gameInfo.variant], TRUE);
   *engineVariant = NULLCHAR; // [HGM] kludge to prevent VariantName will always return engineVariant
   while((j = radioButton[i++]) != -2) {
 	if(j == -1) continue; // no menu button
-	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || strstr(first.variants, VariantName(i-1)));
+	v = VariantName(i-1); p = strstr(first.variants, v);
+	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || p && (!*v || strlen(v) == strlen[p] || p[strlen[v]] == ','));
   }
   *engineVariant = c;
   for(i=0; i<15; i++) { // initialize engine-defined variants
