@@ -2289,8 +2289,10 @@ ErrorPopUp (char *title, char *label, int modal)
 {
     errorUp = True;
     errorOptions[1].name = label;
-    if(dialogError = shellUp[MasterDlg])
-	GenericPopUp(errorOptions+1, title, FatalDlg, MasterDlg, MODAL, 0); // pop up as daughter of the transient dialog
+    if(dialogError = shellUp[TransientDlg])
+	GenericPopUp(errorOptions+1, title, FatalDlg, TransientDlg, MODAL, 0); // pop up as daughter of the transient dialog
+    else if(dialogError = shellUp[MasterDlg])
+	GenericPopUp(errorOptions+1, title, FatalDlg, MasterDlg, MODAL, 0); // pop up as daughter of the master dialog
     else
 	GenericPopUp(errorOptions+modal, title, modal ? FatalDlg: ErrorDlg, BoardWindow, modal, 0); // kludge: option start address indicates modality
 }
