@@ -210,7 +210,7 @@ dist_pixmaps_DATA = pixmaps/cross32.png pixmaps/cross48.png pixmaps/board32.png 
 ### directory and files for pngs
 
 pngdir = $(gamedatadir)/themes/textures
-dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png png/xqboard.png
+dist_png_DATA = png/hatch.png png/wood_d.png png/wood_l.png png/xqboard-9x10.png
 
 ### directory and files for sound files
 
@@ -269,7 +269,6 @@ macportsprefix = $(shell which port | sed s/[/]bin[/]port//)
 	$(MKDIR_P) $(datarootdir)/bin
 	$(MKDIR_P) $(datarootdir)/lib
 	$(MKDIR_P) $(sysconfdir)/gtk-2.0
-	$(MKDIR_P) $(sysconfdir)/pango
 	$(MKDIR_P) $(datadir)/themes
 	$(MKDIR_P) $(datadir)/gtk-engines
 	$(MKDIR_P) $(gamedatadir)/themes
@@ -316,32 +315,26 @@ macportsprefix = $(shell which port | sed s/[/]bin[/]port//)
 	$(INSTALL) ./osxapp/launcher_rc $(datarootdir)/
 	$(INSTALL) $(macportsprefix)/etc/gtk-2.0/im-multipress.conf $(sysconfdir)/gtk-2.0
 	$(INSTALL) ./osxapp/gtkrc $(sysconfdir)/gtk-2.0/gtkrc
-	sed -e '/ModuleFiles = .*\/etc\/pango\/pango.modules/d' <$(macportsprefix)/etc/pango/pangorc >$(sysconfdir)/pango/pangorc
-	sed -e 's?$(macportsprefix)/lib/pango/1.8.0/modules/??' <$(macportsprefix)/etc/pango/pango.modules >$(sysconfdir)/pango/pango.modules
 	cp -R $(macportsprefix)/lib/gtk-2.0 $(datarootdir)/lib
 	cp -R $(macportsprefix)/lib/gdk-pixbuf-2.0 $(datarootdir)/lib
-	cp -R $(macportsprefix)/lib/pango $(datarootdir)/lib
 	cp -R $(macportsprefix)/share/themes/Mac $(datadir)/themes
 	cp -R ./osxapp/gtk2-themes/Mac/gtk-2.0 $(datadir)/themes/Mac
 	cp -R ./osxapp/themes/default/. $(gamedatadir)/themes/default
 	cp $(macportsprefix)/share/gtk-engines/murrine.xml $(datadir)/gtk-engines/murrine.xml
 	$(INSTALL) ./png/marble_d.png $(gamedatadir)/themes/textures
 	$(INSTALL) ./png/marble_l.png $(gamedatadir)/themes/textures
-	$(INSTALL) ./png/xqwood.png $(gamedatadir)/themes/textures
+	$(INSTALL) ./png/xqwood-9x10.png $(gamedatadir)/themes/textures
 	cp -R ./osxapp/logos $(gamedatadir)/
+if NLS_ENABLED
 	cp -R $(macportsprefix)/share/strings/. $(datarootdir)/
 	for i in po/*gmo; do lang=`basename $$i .gmo`; $(INSTALL) $(macportsprefix)/share/locale/$$lang/LC_MESSAGES/gtk20.mo $(localedir)/$$lang/LC_MESSAGES/; done
+endif
 	dylibbundler -of -b -x $(bindir)/xboard-bin -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/immodules/im-quartz.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libpixmap.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	dylibbundler -of -b -x $(datarootdir)/lib/gtk-2.0/2.10.0/engines/libmurrine.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-arabic-lang.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-basic-coretext.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-basic-fc.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
-	dylibbundler -of -b -x $(datarootdir)/lib/pango/1.8.0/modules/pango-indic-lang.so -d $(datarootdir)/lib -p @executable_path/../Resources/lib
 	find ./XBoard.app -name '*.a' -print0 | xargs -0 rm
-	find ./XBoard.app -name '*.la' -print0 | xargs -0 rm
 	rm -r $(datarootdir)/lib/gtk-2.0/include
 	rm -r $(datarootdir)/share/applications
 	rm $(datarootdir)/share/info/dir

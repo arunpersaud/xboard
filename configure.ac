@@ -144,11 +144,15 @@ AC_ARG_WITH([Xaw3d],
             [AS_HELP_STRING([--with-Xaw3d],[use Xaw3d front-end (not fully supported anymore)])],
             [with_Xaw3d="$withval"],
             [with_Xaw3d="no"])
+dnl | overwrite default gtk
+AS_IF([test "x$with_Xaw3d" = xyes], [with_GTK="no"])
 
 AC_ARG_WITH([Xaw],
             [AS_HELP_STRING([--with-Xaw],[use Xaw front-end])],
             [with_Xaw="$withval"],
             [with_Xaw="no"])
+dnl | overwrite default gtk
+AS_IF([test "x$with_Xaw" = xyes], [with_GTK="no"])
 
 AC_ARG_WITH([iconsdir],
             [AS_HELP_STRING([--with-iconsdir=DIR],
@@ -205,6 +209,8 @@ AS_IF([test x"$enable_OSXAPP" = x"yes"], [
      GAMEDATADIR='$(datadir)/xboard'],[])
 
 AM_CONDITIONAL(OSX_APP, test x"$enable_OSXAPP" = x"yes")
+
+AM_CONDITIONAL(NLS_ENABLED, test x"$USE_NLS" = x"yes")
 
 AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x"$enable_mimedb" = x"yes")
 if test x"$enable_mimedb" = x"yes"; then

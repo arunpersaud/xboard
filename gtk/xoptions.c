@@ -51,7 +51,7 @@ extern char *getenv();
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #ifdef OSXAPP
-#  include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#  include <gtkmacintegration/gtkosxapplication.h>
 #endif
 
 #include "common.h"
@@ -449,10 +449,24 @@ CreateMenuPopup (Option *opt, int n, int def)
 
 	    gtk_accelerator_parse(mb[i].accel, &accelerator_key, &accelerator_mods);
 #ifdef OSXAPP
-   	    if(accelerator_mods & GDK_CONTROL_MASK) {  // in OSX use Meta where Linux uses Ctrl
-		accelerator_mods &= ~GDK_CONTROL_MASK; // clear Ctrl flag
-		accelerator_mods |= GDK_META_MASK;     // set Meta flag
-	    }
+          if(accelerator_mods & GDK_CONTROL_MASK &&
+             accelerator_key != 'v' &&          // don't use Cmd+V as this is a OS text edit command
+             accelerator_key != 'c' &&           // and Cmd+C
+             accelerator_key != 'x' &&          // and CMD+X
+             accelerator_key != 'a'           // and CMD+A
+             ) {  // in OSX use Meta (Cmd) where Linux uses Ctrl
+              accelerator_mods &= ~GDK_CONTROL_MASK; // clear Ctrl flag
+              accelerator_mods |= GDK_META_MASK;     // set Meta flag
+		  } else if (accelerator_mods & GDK_CONTROL_MASK &&
+					 accelerator_key == 'v' ||
+					 accelerator_key == 'c' ||
+					 accelerator_key == 'x' ||
+					 accelerator_key == 'a'
+					 ) { // For these conflicting commands, lets make them alt-cmd
+			  accelerator_mods &= ~GDK_CONTROL_MASK; // clear Ctrl flag
+			  accelerator_mods |= GDK_META_MASK;
+			  accelerator_mods |= GDK_MOD1_MASK;
+		  } 
 #endif
 	    gtk_widget_add_accelerator (GTK_WIDGET(entry), "activate",GtkAccelerators,
 					accelerator_key, accelerator_mods, GTK_ACCEL_VISIBLE);
