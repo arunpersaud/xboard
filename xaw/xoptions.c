@@ -1136,8 +1136,8 @@ GenericPopUp (Option *option, char *title, DialogClass dlgNr, DialogClass parent
 				   option[i].max /* w */, shrink ? textHeight : 0 /* h */, option[i].min & 0xE | chain /* chain */);
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
 	    if(option[i].textValue && *option[i].textValue == '#') { // special for buttons of New Variant dialog
-		char *p, *v, n = option[i].value;
-		if(n) v = VariantName(n), p = strstr(first.variants, v);
+		char *p = NULL, *v, n = option[i].value;
+		if(n >= 0) v = VariantName(n), p = strstr(first.variants, v);
 		XtSetArg(args[j], XtNsensitive, option[i].value >= 0 && (appData.noChessProgram
 					 || p && (!*v || strlen(p) == strlen(v) || p[strlen(v)] == ','))); j++;
 		XtSetArg(args[j], XtNborderWidth, (gameInfo.variant == option[i].value)+1); j++;
