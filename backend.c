@@ -6850,6 +6850,7 @@ OKToStartUserMove (int x, int y)
       case PlayFromGameFile:
 	    if(!shiftKey || !appData.variations) return FALSE; // [HGM] allow starting variation in this mode
       case EditGame:
+      case AnalyzeMode:
 	if (!white_piece && WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is White's turn"));
 	    return FALSE;
