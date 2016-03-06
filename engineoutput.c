@@ -222,7 +222,7 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
         clearMemo = TRUE;
     }
 
-    if( lastForwardMostMove[which] != forwardMostMove ) {
+    if( lastForwardMostMove[which] != forwardMostMove && endPV < 0) {
         clearMemo = TRUE;
     }
 
@@ -257,7 +257,7 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
 
     /* Update */
     lastDepth[which] = depth == 1 && ed.nodes == 0 ? 0 : depth; // [HGM] info-line kudge
-    lastForwardMostMove[which] = forwardMostMove;
+    if(endPV < 0) lastForwardMostMove[which] = forwardMostMove; // not during PV walk!
 
     UpdateControls( &ed );
 }
