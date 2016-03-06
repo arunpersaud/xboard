@@ -1,7 +1,7 @@
 /*
  * xboard2.h -- Move list window, part of X front end for XBoard
  *
- * Copyright 2012, 2013, 2014, 2015 Free Software Foundation, Inc.
+ * Copyright 2012, 2013, 2014, 2015, 2016 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
