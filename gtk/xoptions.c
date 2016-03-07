@@ -845,6 +845,16 @@ gboolean GenericPopDown(w, resptype, gdata)
     return TRUE;
 }
 
+gboolean PopDownProxy(w, gdata)
+     GtkWidget *w;
+     gpointer  gdata;
+{
+    GtkResponseType resp = GTK_RESPONSE_ACCEPT;
+    int dlg = (intptr_t) gdata;
+    if(dlg >= 3000) dlg -= 3000, resp = GTK_RESPONSE_REJECT;
+    return GenericPopDown(gtk_widget_get_toplevel(w), resp, (gpointer)(intptr_t)dlg);
+}
+
 int AppendText(Option *opt, char *s)
 {
     char *v;
@@ -1312,7 +1322,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             top = breakType = 0; expandable = FALSE;
         }
         if(!SameRow(&option[i])) {
-	    if(SameRow(&option[i+1])) {
+	    if(SameRow(&option[i+1]) || topLevel && option[i].type == Button && option[i+1].type == EndMark && option[i+1].min & SAME_ROW) {
 		GtkAttachOptions x = GTK_FILL;
 		// make sure hbox is always available when we have more options on same row
                 hbox = gtk_hbox_new (option[i].type == Button && option[i].textValue || option[i].type == Graph, 0);
@@ -1654,6 +1664,21 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    printf("GenericPopUp: unexpected case in switch. i=%d type=%d name=%s.\n", i, option[i].type, option[i].name);
 	    break;
 	}
+    }
+
+    if(topLevel && !(option[i].min & NO_OK)) { // buttons requested in top-level window
+        button = gtk_button_new_with_label (_("OK"));
+        g_signal_connect (button, "clicked", G_CALLBACK (PopDownProxy), (gpointer)(intptr_t) dlgNr);
+        if(!(option[i].min & NO_CANCEL)) {
+            GtkWidget *button2 = gtk_button_new_with_label (_("Cancel"));
+            g_signal_connect (button2, "clicked", G_CALLBACK (PopDownProxy), (gpointer)(intptr_t) dlgNr + 3000);
+            if(!hbox) {
+                hbox = gtk_hbox_new (False, 0);
+                gtk_table_attach(GTK_TABLE(table), hbox, left, left+r, top+1, top+2, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
+            }
+            Pack(hbox, table, button, left, left+1, top+1, 0);
+            Pack(hbox, table, button2, left, left+1, top+1, 0);
+        } else Pack(hbox, table, button, left, left+1, ++top, 0);
     }
 
     gtk_table_resize(GTK_TABLE(table), top+1, r);
