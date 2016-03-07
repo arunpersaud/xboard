@@ -1225,7 +1225,7 @@ static Option tagsOptions[] = {
 {   0,   0,   0, NULL, NULL, NULL, NULL, Label,  NULL },
 { 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 200, NULL, (void*) &tagsText, NULL, (char **) &TagsClick, TextBox, "", &appData.tagsFont },
 {   0,   0, 100, NULL, (void*) &NewMove,    NULL, NULL, Button, N_("add next move") },
-{ 0,SAME_ROW,100,NULL, (void*) &changeTags, NULL, NULL, Button, N_("save changes") },
+{ 0,SAME_ROW,100,NULL, (void*) &changeTags, NULL, NULL, Button, N_("commit changes") },
 { 0,SAME_ROW, 0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }
 };
 
@@ -1246,9 +1246,9 @@ changeTags (int n)
 }
 
 void
-NewTagsPopup (char *text, char *msg)
+NewTagsPopup (char *text, char *msg, char *ttl)
 {
-    char *title = bookUp ? _("Edit book") : _("Tags");
+    char *title = bookUp ? _("Edit book") : ttl;
 
     tagsOptions[2].type = bookUp ? Button : Skip;
     tagsOptions[3].min = bookUp ? SAME_ROW : 0;
@@ -1265,14 +1265,22 @@ NewTagsPopup (char *text, char *msg)
 void
 TagsPopUp (char *tags, char *msg)
 {
-    NewTagsPopup(tags, cmailMsgLoaded ? msg : NULL);
+    NewTagsPopup(tags, cmailMsgLoaded ? msg : NULL, _("Tags"));
 }
 
 void
 EditTagsPopUp (char *tags, char **dest)
 {   // wrapper to preserve old name used in back-end
     resPtr = dest; 
-    NewTagsPopup(tags, NULL);
+    NewTagsPopup(tags, NULL, _("Tags"));
+}
+
+void
+EditEnginePopUp (char *tags, char **dest)
+{   // wrapper to preserve old name used in back-end
+    TagsPopDown();
+    resPtr = dest; 
+    NewTagsPopup(tags, NULL, _("Registered Engines"));
 }
 
 void

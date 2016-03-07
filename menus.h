@@ -185,6 +185,8 @@ void EnableButtonBar P((int state));
 char *ModeToWidgetName P((GameMode mode));
 void CreateAnimVars P((void));
 void CopySomething P((char *s));
+void EditEnginePopUp P((char *tags, char **dest));
+
 
 
 extern char  *gameCopyFilename, *gamePasteFilename;

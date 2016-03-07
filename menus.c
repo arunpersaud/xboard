@@ -387,7 +387,7 @@ DebugProc ()
 void
 EditEngineProc ()
 {
-    EditTagsPopUp(firstChessProgramNames, &firstChessProgramNames);
+    EditEnginePopUp(firstChessProgramNames, &firstChessProgramNames);
 }
 
 void
