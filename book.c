@@ -742,6 +742,9 @@ MovesToText(int count, entry_t *entries)
 	    move_to_string(algMove, entries[i].move);
 	    if(sscanf(algMove, "%c%d%*c%*d,%c%d%c%d", &c1, &i1, &c2, &i2, &c3, &i3) == 6)
 		snprintf(algMove, 12, "%c%dx%c%d-%c%d", c1, i1, c2, i2, c3, i3); // cast double-moves in format SAN parser will understand
+	    else if(sscanf(algMove, "%c%d%c%d%c", &c1, &i1, &c2, &i2, &c3) >= 4) {
+		CoordsToAlgebraic(boards[currentMove], PosFlags(currentMove), i1-ONE+'0', c1-AAA, i2-ONE+'0', c2-AAA, c3, algMove);
+	    }
 	    buf[0] = NULLCHAR;
 	    if(entries[i].learnCount || entries[i].learnPoints)
 		snprintf(buf, MSG_SIZ, " {%d/%d}", entries[i].learnPoints, entries[i].learnCount);
