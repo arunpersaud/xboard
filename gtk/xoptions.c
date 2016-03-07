@@ -683,10 +683,10 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	    }
 	    if(memo->value == 250 // kludge to recognize ICS Console and Chat panes
 	     && gtk_text_buffer_get_selection_bounds(memo->handle, NULL, NULL) ) {
-printf("*** selected\n");
 	        gtk_text_buffer_get_selection_bounds(memo->handle, &start, &end); // only return selected text
-		index = -1; // kludge to indicate omething was selected
+		index = -1; // kludge to indicate something was selected
 	    } else {
+		if(abs(button) == 3 && gtk_text_buffer_get_selection_bounds(memo->handle, NULL, NULL)) return FALSE; // normal context menu
 // GTK_TODO: is this really the most efficient way to get the character at the mouse cursor???
 		gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(widget), GTK_TEXT_WINDOW_WIDGET, w, h, &x, &y);
 		gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(widget), &start, x, y);
@@ -699,7 +699,7 @@ printf("*** selected\n");
 	    }
 	    /* get text from textbuffer */
 	    val = gtk_text_buffer_get_text (memo->handle, &start, &end, FALSE);
-	    break;
+	    if(strlen(val) != index) break; // if we clicked behind all text, fall through to do default action
 	default:
 	    return FALSE; // should not happen
     }
