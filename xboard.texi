@@ -1595,7 +1595,7 @@ An example of a text menu as it might occur in your settings file
 (where you could edit it):
 
 @example
--icsMenu {copy;$copy;
+-icsMenu @{copy;$copy;
 list players;who;
 list games;games;
 finger (player);finger $name;
@@ -1610,7 +1610,7 @@ N;$add Knight $input;
 B;$add Bishop $input;
 R;$add Rook $input;
 Q;$add Queen $input;
-}
+@}
 @end example
 @end table
 
