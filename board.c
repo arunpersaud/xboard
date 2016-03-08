@@ -1190,13 +1190,20 @@ DrawArrowBetweenPoints (int s_x, int s_y, int d_x, int d_y)
 static void
 ArrowDamage (int s_col, int s_row, int d_col, int d_row)
 {
-    int hor, vert, i, n = partnerUp * twoBoards;
-    hor = 64*s_col + 32; vert = 64*s_row + 32;
+    int hor, vert, i, n = partnerUp * twoBoards, delta = abs(d_row - s_row);
+
+    if( 2*(d_row - s_row) > abs(d_col - s_col) ) d_row = 4*d_row + 1; else 
+    if( 2*(s_row - d_row) > abs(d_col - s_col) ) d_row = 4*d_row + 3; else d_row = 4*d_row + 2;
+    if( 2*(d_col - s_col) > delta ) d_col = 4*d_col + 1; else 
+    if( 2*(s_col - d_col) > delta ) d_col = 4*d_col + 3; else d_col = 4*d_col + 2;
+    s_row = 4*s_row + 2; s_col = 4*s_col + 2;
+
+    hor = 64*s_col; vert = 64*s_row;
     for(i=0; i<= 64; i++) {
-            damage[n][vert+8>>6][hor+8>>6] |= 2;
-            damage[n][vert-8>>6][hor+8>>6] |= 2;
-            damage[n][vert+8>>6][hor-8>>6] |= 2;
-            damage[n][vert-8>>6][hor-8>>6] |= 2;
+            damage[n][vert+30>>8][hor+30>>8] |= 2;
+            damage[n][vert-30>>8][hor+30>>8] |= 2;
+            damage[n][vert+30>>8][hor-30>>8] |= 2;
+            damage[n][vert-30>>8][hor-30>>8] |= 2;
             hor += d_col - s_col; vert += d_row - s_row;
     }
 }
@@ -1205,7 +1212,7 @@ ArrowDamage (int s_col, int s_row, int d_col, int d_row)
 static void
 DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
 {
-    int s_x, s_y, d_x, d_y;
+    int s_x, s_y, d_x, d_y, delta_y;
 
     if( s_col == d_col && s_row == d_row ) {
         return;
@@ -1214,21 +1221,22 @@ DrawArrowBetweenSquares (int s_col, int s_row, int d_col, int d_row)
     /* Get source and destination points */
     SquareToPos( s_row, s_col, &s_x, &s_y);
     SquareToPos( d_row, d_col, &d_x, &d_y);
+    delta_y = abs(d_y - s_y);
 
-    if( d_y > s_y && d_y - s_y > abs(d_x - s_x)/2) {
+    if( d_y > s_y && 2*(d_y - s_y) > abs(d_x - s_x)) {
         d_y += squareSize / 2 - squareSize / 4; // [HGM] round towards same centers on all sides!
     }
-    else if( d_y < s_y && s_y - d_y > abs(d_x - d_y)/2) {
+    else if( d_y < s_y && 2*(s_y - d_y) > abs(d_x - s_x)) {
         d_y += squareSize / 2 + squareSize / 4;
     }
     else {
         d_y += squareSize / 2;
     }
 
-    if( d_x > s_x && d_x - s_x > abs(d_y - s_y)/2) {
+    if( d_x > s_x && 2*(d_x - s_x) > delta_y) {
         d_x += squareSize / 2 - squareSize / 4;
     }
-    else if( d_x < s_x && s_x - d_x > abs(d_y - s_y)/2) {
+    else if( d_x < s_x && 2*(s_x - d_x) > delta_y) {
         d_x += squareSize / 2 + squareSize / 4;
     }
     else {
