@@ -510,19 +510,32 @@ NextUnit (char **p)
 	    }
 	    if(  type[1] != type[2] && // means fromY is of opposite type as ToX, or NOTHING
 		(type[0] == NOTHING || type[0] == type[2]) ) { // well formed
-
+		int suffix = 7;
 		fromX = (currentMoveString[0] = coord[0] + 'a') - AAA;
 		fromY = (currentMoveString[1] = coord[1] + '0') - ONE;
 		currentMoveString[4] = cl.promoCharIn = PromoSuffix(p);
 		currentMoveString[5] = NULLCHAR;
+		if(**p == 'x' && !cl.promoCharIn) { // other leg follows
+		    char *q = *p;
+		    int x = *++*p, y;
+		    ++*p; y = Number(p);
+		    if(**p == '-' || **p == 'x') {  // 3-leg move!
+			currentMoveString[7] = (kill2X = toX) + AAA; // what we thought was to-square is in fact 1st kill-square of two
+			currentMoveString[8] = (kill2Y = toY) + ONE; // append it after 2nd kill-square
+			toX = x - AAA;       // kludge alert: this will become 2nd kill square
+			toY = y + '0' - ONE;
+			suffix += 2;
+		    } else *p = q; // 2-leg move, rewind to leave reading of 2nd leg to code below
+		}
 		if(!cl.promoCharIn && (**p == '-' || **p == 'x')) { // Lion-type multi-leg move
 		    currentMoveString[5] = (killX = toX) + AAA; // what we thought was to-square is in fact kill-square
 		    currentMoveString[6] = (killY = toY) + ONE; // append it as suffix behind long algebraic move
 		    currentMoveString[4] = ';';
-		    currentMoveString[7] = NULLCHAR;
+		    currentMoveString[suffix+1] = NULLCHAR;
 		    // read new to-square (VERY non-robust! Assumes correct (non-alpha-rank) syntax, and messes up on errors)
 		    toX = cl.ftIn = (currentMoveString[2] = *++*p) - AAA; ++*p;
 		    toY = cl.rtIn = (currentMoveString[3] = Number(p) + '0') - ONE;
+		    currentMoveString[suffix] = cl.promoCharIn = PromoSuffix(p);
 		}
 		if(type[0] != NOTHING && type[1] != NOTHING && type[3] != NOTHING) { // fully specified.
 		    ChessSquare realPiece = boards[yyboardindex][fromY][fromX];

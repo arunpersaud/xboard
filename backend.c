@@ -5161,7 +5161,15 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
 					       m[2], m[3] - '0',
 					       m[5], m[6] - '0',
 					       m[2] + (m[0] > m[5] ? 1 : -1), m[3] - '0');
-	else
+	else if(*c && m[8]) { // kill square followed by 2 characters: 2nd kill square rather than promo suffix
+	  *c = m[9];
+	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d,%c%d%c%d%s\n", m[0], m[1] - '0', // convert to three moves
+					       m[7], m[8] - '0',
+					       m[7], m[8] - '0',
+					       m[5], m[6] - '0',
+					       m[5], m[6] - '0',
+					       m[2], m[3] - '0', c);
+	} else
 	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d%s\n", m[0], m[1] - '0', // convert to two moves
 					       m[5], m[6] - '0',
 					       m[5], m[6] - '0',
@@ -5364,14 +5372,14 @@ CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char 
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt);
 	  if(killX >= 0 && killY >= 0) {
 	    sprintf(move+4, ";%c%c\n", AAA + killX, ONE + killY);
-	    if(kill2X >= 0 && kill2Y >= 0) sprintf(move+7, "%c%c\n", AAA + killX, ONE + killY);
+	    if(kill2X >= 0 && kill2Y >= 0) sprintf(move+7, "%c%c\n", AAA + kill2X, ONE + kill2Y);
 	  }
 	} else {
 	    sprintf(move, "%c%c%c%c%c\n",
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt, promoChar);
 	  if(killX >= 0 && killY >= 0) {
 	    sprintf(move+4, ";%c%c\n", AAA + killX, ONE + killY);
-	    if(kill2X >= 0 && kill2Y >= 0) sprintf(move+7, "%c%c%c\n", AAA + killX, ONE + killY, promoChar);
+	    if(kill2X >= 0 && kill2Y >= 0) sprintf(move+7, "%c%c%c\n", AAA + kill2X, ONE + kill2Y, promoChar);
 	  }
 	}
     }
@@ -5571,7 +5579,7 @@ ParseOneMove (char *move, int moveNum, ChessMove *moveType, int *fromX, int *fro
         *toX = currentMoveString[2] - AAA;
         *toY = currentMoveString[3] - ONE;
 	*promoChar = currentMoveString[4];
-	if(*promoChar == ';') *promoChar = currentMoveString[7];
+	if(*promoChar == ';') *promoChar = currentMoveString[7 + 2*(currentMoveString[8] != 0)];
         if (*fromX < BOARD_LEFT || *fromX >= BOARD_RGHT || *fromY < 0 || *fromY >= BOARD_HEIGHT ||
             *toX < BOARD_LEFT || *toX >= BOARD_RGHT || *toY < 0 || *toY >= BOARD_HEIGHT) {
     if (appData.debugMode) {
@@ -7406,10 +7414,11 @@ Mark (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VO
 {
     typedef char Markers[BOARD_RANKS][BOARD_FILES];
     Markers *m = (Markers *) closure;
-    if(rf == fromY && ff == fromX && (killX < 0 ? !(rt == rf && ft == ff) && legNr & 1 : rt == killY && ft == killX || legNr & 2))
+    if(rf == fromY && ff == fromX && (killX < 0 ? !(rt == rf && ft == ff) && legNr & 1 :
+				      kill2X < 0 ? rt == killY && ft == killX || legNr & 2 : rt == killY && ft == killX || legNr & 4))
 	(*m)[rt][ft] = 1 + (board[rt][ft] != EmptySquare
 			 || kind == WhiteCapturesEnPassant
-			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && killX < 0), legal[rt][ft] = 3;
+			 || kind == BlackCapturesEnPassant) + 3*(kind == FirstLeg && (killX < 0 & legNr || legNr & 2 && kill2X < 0)), legal[rt][ft] = 3;
     else if(flags & F_MANDATORY_CAPTURE && board[rt][ft] != EmptySquare) (*m)[rt][ft] = 3, legal[rt][ft] = 3;
 }
 
@@ -7611,7 +7620,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
       if(gameMode == AnalyzeMode && (pausing || controlKey) && first.excludeMoves) { // use pause state to exclude moves
 	doubleClick = TRUE; gatingPiece = boards[currentMove][y][x];
       }
-      fromX = x; fromY = y; toX = toY = killX = killY = -1;
+      fromX = x; fromY = y; toX = toY = killX = killY = kill2X = kill2Y = -1;
       if(!appData.oneClick || !OnlyMove(&x, &y, FALSE) ||
 	 // even if only move, we treat as normal when this would trigger a promotion popup, to allow sweep selection
 	 appData.sweepSelect && CanPromote(boards[currentMove][fromY][fromX], fromY) && originalY != y) {
@@ -7663,7 +7672,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	     !(fromP == BlackKing && toP == BlackRook && frc)))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
-	    killX = killY = -1;
+	    killX = killY = kill2X = kill2Y = -1;
 	    if(second && gameMode == AnalyzeMode && SubtractTimeMarks(&lastClickTime, &prevClickTime) < 200) {
 		second = FALSE; // first double-click rather than scond click
 		doubleClick = first.excludeMoves; // used by UserMoveEvent to recognize exclude moves
@@ -7769,7 +7778,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    return;
 	}
 	if(x == killX && y == killY) {              // second click on this square, which was selected as first-leg target
-	    killX = killY = -1;                     // this informs us no second leg is coming, so treat as to-click without intermediate
+	    killX = kill2X; killY = kill2Y; kill2X = kill2Y = -1;   // this informs us no second leg is coming, so treat as to-click without intermediate
 	} else
 	if(marker[y][x] == 5) return; // [HGM] lion: to-click on cyan square; defer action to release
 	if(legal[y][x] == 2 || HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
@@ -7818,7 +7827,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	  if(x == killX && y == killY) killX = kill2X, killY = kill2Y, kill2X = kill2Y = -1; // cancel last kill
 	  else {
 	    kill2X = killX; kill2Y = killY;
-	    killX = x; killY = y;     //remeber this square as intermediate
+	    killX = x; killY = y;     // remember this square as intermediate
 	    ReportClick("put", x, y); // and inform engine
 	    ReportClick("lift", x, y);
 	    MarkTargetSquares(0);
@@ -8674,7 +8683,7 @@ static char stashedInputMove[MSG_SIZ], abortEngineThink;
 void
 HandleMachineMove (char *message, ChessProgramState *cps)
 {
-    static char firstLeg[20];
+    static char firstLeg[20], legs;
     char machineMove[MSG_SIZ], buf1[MSG_SIZ*10], buf2[MSG_SIZ];
     char realname[MSG_SIZ];
     int fromX, fromY, toX, toY;
@@ -8827,11 +8836,14 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	// [HGM] lion: (some very limited) support for Alien protocol
 	killX = killY = kill2X = kill2Y = -1;
 	if(machineMove[strlen(machineMove)-1] == ',') { // move ends in coma: non-final leg of composite move
+	    if(legs++) return;                     // middle leg contains only redundant info, ignore (but count it)
 	    safeStrCpy(firstLeg, machineMove, 20); // just remember it for processing when second leg arrives
 	    return;
 	}
 	if(p = strchr(machineMove, ',')) {         // we got both legs in one (happens on book move)
+	    char *q = strchr(p+1, ',');            // second comma?
 	    safeStrCpy(firstLeg, machineMove, 20); // kludge: fake we received the first leg earlier, and clip it off
+	    if(q) legs = 2, p = q; else legs = 1;  // with 3-leg move we clipof first two legs!
 	    safeStrCpy(machineMove, firstLeg + (p - machineMove) + 1, 20);
 	}
 	if(firstLeg[0]) { // there was a previous leg;
@@ -8841,10 +8853,11 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    while(isdigit(*q)) q++; // find start of to-square
 	    safeStrCpy(machineMove, firstLeg, 20);
 	    while(isdigit(*p)) p++; // to-square of first leg (which is now copied to machineMove)
-	    if(*p == *buf)          // if first-leg to not equal to second-leg from first leg says unmodified (assume it ia King move of castling)
+	    if(legs == 2) sscanf(p, "%c%d", &f, &kill2Y), kill2X = f - AAA, kill2Y -= ONE - '0'; // in 3-leg move 2nd kill is to-sqr of 1st leg
+	    else if(*p == *buf)   // if first-leg to not equal to second-leg from first leg says unmodified (assume it is King move of castling)
 	    safeStrCpy(p, q, 20); // glue to-square of second leg to from-square of first, to process over-all move
 	    sscanf(buf, "%c%d", &f, &killY); killX = f - AAA; killY -= ONE - '0'; // pass intermediate square to MakeMove in global
-	    firstLeg[0] = NULLCHAR;
+	    firstLeg[0] = NULLCHAR; legs = 0;
 	}
 
         if (!ParseOneMove(machineMove, forwardMostMove, &moveType,
@@ -10213,7 +10226,7 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
 	   if(toY == BOARD_HEIGHT-1)   board[VIRGIN][toX]   &= ~VIRGIN_B;
        }
 
-     if (fromX == toX && fromY == toY) return;
+     if (fromX == toX && fromY == toY && killX < 0) return;
 
      piece = board[fromY][fromX]; /* [HGM] remember, for Shogi promotion */
      king = piece < (int) BlackPawn ? WhiteKing : BlackKing; /* [HGM] Knightmate simplify testing for castling */
@@ -10493,13 +10506,17 @@ MakeMove (int fromX, int fromY, int toX, int toY, int promoChar)
     ChessSquare p = boards[forwardMostMove][toY][toX];
 //    forwardMostMove++; // [HGM] bare: moved downstream
 
+    if(kill2X >= 0) x = kill2X, y = kill2Y; else
     if(killX >= 0 && killY >= 0) x = killX, y = killY; // [HGM] lion: make SAN move to intermediate square, if there is one
     (void) CoordsToAlgebraic(boards[forwardMostMove],
 			     PosFlags(forwardMostMove),
 			     fromY, fromX, y, x, (killX < 0)*promoChar,
 			     s);
+    if(kill2X >= 0 && kill2Y >= 0)
+        sprintf(s + strlen(s), "x%c%d", killX + AAA, killY + ONE - '0'); // 2nd leg of 3-leg move is always capture
     if(killX >= 0 && killY >= 0)
-        sprintf(s + strlen(s), "%c%c%d%c", p == EmptySquare || toX == fromX && toY == fromY ? '-' : 'x', toX + AAA, toY + ONE - '0', promoChar);
+        sprintf(s + strlen(s), "%c%c%d%c", p == EmptySquare || toX == fromX && toY == fromY || toX== kill2X && toY == kill2Y ? '-' : 'x',
+                                           toX + AAA, toY + ONE - '0', promoChar);
 
     if(serverMoves != NULL) { /* [HGM] write moves on file for broadcasting (should be separate routine, really) */
         int timeLeft; static int lastLoadFlag=0; int king, piece;
@@ -10613,7 +10630,7 @@ ShowMove (int fromX, int fromY, int toX, int toY)
 	currentMove = forwardMostMove;
     }
 
-    killX = killY = -1; // [HGM] lion: used up
+    killX = killY = kill2X = kill2Y = -1; // [HGM] lion: used up
 
     if (instant) return;
 
@@ -11456,7 +11473,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	      result, resultDetails ? resultDetails : "(null)", whosays);
     }
 
-    fromX = fromY = killX = killY = -1; // [HGM] abort any move the user is entering. // [HGM] lion
+    fromX = fromY = killX = killY = kill2X = kill2Y = -1; // [HGM] abort any move the user is entering. // [HGM] lion
 
     if(pausing) PauseEvent(); // can happen when we abort a paused game (New Game or Quit)
 
@@ -11954,7 +11971,7 @@ Reset (int redraw, int init)
     ClearPremoveHighlights();
     gotPremove = FALSE;
     alarmSounded = FALSE;
-    killX = killY = -1; // [HGM] lion
+    killX = killY = kill2X = kill2Y = -1; // [HGM] lion
 
     GameEnds(EndOfFile, NULL, GE_PLAYER);
     if(appData.serverMovesName != NULL) {
@@ -12338,7 +12355,7 @@ LoadGameOneMove (ChessMove readAhead)
 
 	thinkOutput[0] = NULLCHAR;
 	MakeMove(fromX, fromY, toX, toY, promoChar);
-	killX = killY = -1; // [HGM] lion: used up
+	killX = killY = kill2X = kill2Y = -1; // [HGM] lion: used up
 	currentMove = forwardMostMove;
 	return TRUE;
     }
@@ -12925,7 +12942,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
     if (gameMode != BeginningOfGame) {
       Reset(FALSE, TRUE);
     }
-    killX = killY = -1; // [HGM] lion: in case we did not Reset
+    killX = killY = kill2X = kill2Y = -1; // [HGM] lion: in case we did not Reset
 
     gameFileFP = f;
     if (lastLoadGameFP != NULL && lastLoadGameFP != f) {
@@ -15369,7 +15386,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 
     switch (selection) {
       case ClearBoard:
-	fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
+	fromX = fromY = killX = killY = kill2X = kill2Y = -1; // [HGM] abort any move entry in progress
 	MarkTargetSquares(1);
 	CopyBoard(currentBoard, boards[0]);
 	CopyBoard(menuBoard, initialPosition);
@@ -15822,7 +15839,7 @@ ForwardInner (int target)
 
     seekGraphUp = FALSE;
     MarkTargetSquares(1);
-    fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
+    fromX = fromY = killX = killY = kill2X = kill2Y = -1; // [HGM] abort any move entry in progress
 
     if (gameMode == PlayFromGameFile && !pausing)
       PauseEvent();
@@ -15941,7 +15958,7 @@ BackwardInner (int target)
     if (gameMode == EditPosition) return;
     seekGraphUp = FALSE;
     MarkTargetSquares(1);
-    fromX = fromY = killX = killY = -1; // [HGM] abort any move entry in progress
+    fromX = fromY = killX = killY = kill2X = kill2Y = -1; // [HGM] abort any move entry in progress
     if (currentMove <= backwardMostMove) {
 	ClearHighlights();
 	DrawPosition(full_redraw, boards[currentMove]);

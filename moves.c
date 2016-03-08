@@ -460,11 +460,14 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		    if(!(bit & all)) *atom = rotate[*atom - 'A']; // orth-diag interconversion to make direction valid
 		    if(occup & mode & 0x104)          // no side effects, merge legs to one move
 			MovesFromString(board, flags, f, r, x, y, dir, cont, cb, cl);
-		    if(occup & mode & 3 && (killX < 0 || killX == x && killY == y)) {     // destructive first leg
+		    if(occup & mode & 3 && (killX < 0 || kill2X < 0 && (legNr > 1 || killX == x && killY == y) ||
+					    (legNr == 1 ? kill2X == x && kill2Y == y : killX == x && killY == y))) {     // destructive first leg
 			int cnt = 0;
+			legNr <<= 1;
 			MovesFromString(board, flags, f, r, x, y, dir, cont, &OK, &cnt);  // count possible continuations
+			legNr >>= 1;
 			if(cnt) {                                                         // and if there are
-			    if(killX < 0) cb(board, flags, FirstLeg, r, f, y, x, cl);     // then generate their first leg
+			    if(legNr & 1 ? killX < 0 : kill2X < 0) cb(board, flags, FirstLeg, r, f, y, x, cl);     // then generate their first leg
 			    legNr <<= 1;
 			    MovesFromString(board, flags, f, r, x, y, dir, cont, cb, cl);
 			    legNr >>= 1;
@@ -1677,7 +1680,7 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 {
     CheckTestClosure cl;
     ChessSquare king = flags & F_WHITE_ON_MOVE ? WhiteKing : BlackKing;
-    ChessSquare captured = EmptySquare, ep=0, trampled=0;
+    ChessSquare captured = EmptySquare, ep=0, trampled=0, trampled2 = 0;
     int saveKill = killX;
     /*  Suppress warnings on uninitialized variables    */
 
@@ -1702,7 +1705,10 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    board[rf][ft] = EmptySquare;
 	} else {
  	    captured = board[rt][ft];
-	    if(killX >= 0) { trampled = board[killY][killX]; board[killY][killX] = EmptySquare; killX = -1; }
+	    if(killX >= 0) {
+		trampled = board[killY][killX]; board[killY][killX] = EmptySquare; killX = -1; saveKill += (kill2X << 16) + (1 << 30);
+		if(kill2X >= 0) { trampled2 = board[kill2Y][kill2X]; board[kill2Y][kill2X] = EmptySquare; kill2X = -1; }
+	    }
 	}
 	if(rf == DROP_RANK) board[rt][ft] = ff; else { // [HGM] drop
 	    board[rt][ft] = board[rf][ff];
@@ -1751,7 +1757,10 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	    board[rf][ft] = captured;
 	    board[rt][ft] = EmptySquare;
 	} else {
-	    if(saveKill >= 0) board[killY][killX = saveKill] = trampled;
+	    if(saveKill >= 0) {
+		if(saveKill & 1<<30) board[kill2Y][kill2X = saveKill >> 16 & 0xFFF] = trampled2;
+		board[killY][killX = saveKill & 0xFFF] = trampled;
+	    }
 	    board[rt][ft] = captured;
 	}
 	board[EP_STATUS] = ep;
