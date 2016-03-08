@@ -903,7 +903,7 @@ VariantShowRadio(HWND hDlg)
   while((j = radioButton[i++]) != -2) {
 	if(j == -1) continue; // no menu button
 	v = VariantName(i-1); p = strstr(first.variants, v);
-	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || p && (!*v || strlen(v) == strlen[p] || p[strlen[v]] == ','));
+	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || p && (!*v || strlen(v) == strlen(p) || p[strlen(v)] == ','));
   }
   *engineVariant = c;
   for(i=0; i<15; i++) { // initialize engine-defined variants

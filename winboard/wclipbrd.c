@@ -277,7 +277,6 @@ VOID PasteGameFromString( char * buf )
     free(buf); /* [AS] */
     return;
   }
-  if(!appData.auto
   if(!appData.autoFlipView) appData.flipView = flipView;
   LoadGameFromFile(pasteTemp, 0, "Clipboard", TRUE);
   appData.flipView = flip;
@@ -305,6 +304,7 @@ VOID PasteGameOrFENFromClipboard()
   Board dummyBoard; int dummy; // [HGM] paste any
 
   if (!PasteTextFromClipboard(&buf)) {
+
     return;
   }
 
