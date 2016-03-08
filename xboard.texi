@@ -762,6 +762,18 @@ of the chat window.
 giving priority to those with content you have not seen yet.
 (The buttons for selecting such chats turn orange.)
 Up and down arrow keys can be used to recall previous input lines.
+@item ICS text menu
+@cindex ICS text menu, Menu Item
+Brings up a menu that is user-configurable through the @code{icsMenu} option.
+Buttons in this menu can sent pre-configured commands directly to the ICS,
+or can put partial commands in the input field of the @samp{ICS Chat/Console}
+window, so that you can complete those with some text of your own before
+sending them to the ICS by pressing Enter.
+This menu item can also be popped up by right-clicking in the text memos
+of the ICS Chat/Console window.
+In that case the word that was clicked can be incorporated in the message
+sent to the ICS. E.g. to challenge a player whose name you click for a game,
+or prepare for sending him a message through a 'tell' commands.
 @item Board
 @cindex Board, Menu Item
 Summons a dialog where you can customize the look of the chess board.
@@ -1557,6 +1569,49 @@ Ticking this options causes various types of ICS messages do be
 displayed with different foreground or background colors in the console.
 The colors can be individually selected for each type,
 through the accompanying text edits.
+@item -icsMenu string
+@cindex icsMenu, option
+The string defines buttons for the @samp{ICS text menu}.
+Each button definition consists of two semi-colon-terminated pieces of text,
+the first giving the label to be written on the button,
+the second the text that should be sent to the ICS when that button is pressed.
+This second part (the 'message') can contain linefeeds, so that you can send
+multiple ICS commands with one button.
+Some message in the text, all starting with a $-sign, are treated special.
+When the message contains '$input', it will not be sent directly to the ICS,
+but will be put in the input field of the @samp{ICS Chat/Console},
+with the text cursor at the indicated place, so you can addsome text to
+the message before sending it off.
+If such a message starts with '$add' it will be placed behind any text
+that is already present in the input field, otherwise this field will
+be cleared first.
+The word '$name' occurring in the message will be replaced by the word
+that was clicked (through button 3) in the ICS Chat/Console.
+There are two special messages: '$chat' will open a new chat with
+the clicked word in the chat-partner field,
+while '$copy' will copy the text that is currently-selected
+in the ICS Console to the clipboard.
+An example of a text menu as it might occur in your settings file
+(where you could edit it):
+
+@example
+-icsMenu {copy;$copy;
+list players;who;
+list games;games;
+finger (player);finger $name;
+bullet (player);match $name 1 1 r;
+blitz (player);match $name 5 1 r;
+rapid (player);match $name 30 0 r;
+open chat (player);$chat;
+tell (player);tell $name $input;
+ask pieces;ptell Please give me a $input;
+P;$add Pawn $input;
+N;$add Knight $input;
+B;$add Bishop $input;
+R;$add Rook $input;
+Q;$add Queen $input;
+}
+@end example
 @end table
 
 @section Tournament Options
