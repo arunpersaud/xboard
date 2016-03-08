@@ -206,8 +206,8 @@ CollectPieceDescriptors ()
     // but suppress black pieces that are the same as their white counterpart
     ChessSquare p;
     static char buf[MSG_SIZ], s[2];
-    char *m, c, d, *pieceName = defaultName;
-    int len;
+    char *m, *pieceName = defaultName;
+    int len, c, d;
     *buf = NULLCHAR;
     if(!pieceDefs) return "";
     if(gameInfo.variant == VariantChu) return ""; // for now don't do this for Chu Shogi
