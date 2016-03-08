@@ -1156,7 +1156,8 @@ The maximum number of displayed engine names is set by the
 @section Options Menu
 @cindex Menu, Options
 @cindex Options Menu
-@subsection General Options
+@heading General Options
+@section General Options
 @cindex General Options, Menu Item
 The following items to set option values appear in the dialog
 summoned by the general Options menu item.
@@ -1378,7 +1379,7 @@ Sets the value of the @code{evalZoom} option,
 indicating the factor by which the score interval (-1,1) should be
 blown up on the vertical axis of the Evaluation Graph.
 @end table
-@subsection Time Control
+@section Time Control
 @cindex Time Control, Menu Item
 Pops up a sub-menu where you can set the time-control parameters interactively.
 The shifted @kbd{Alt+T} key is a keyboard equivalent.
@@ -1389,7 +1390,7 @@ If an engine is given a time-odds factor N, all time quota it gets,
 be it at the beginning of a session or through the time increment or
 fixed time per move, will be divided by N.
 
-@subsection Adjudications
+@section Adjudications
 @cindex Adjudications, Menu Item
 Pops up a sub-menu where you can enable or disable various adjudications
 that XBoard can perform in engine-engine games.
@@ -1412,7 +1413,7 @@ For the latter adjudication to work, XBoard should be able to properly understan
 the engine's scores. To facilitate the latter, you can inform xboard here if
 the engines report scores from the viewpoint of white, or from that of their own color.
 
-@subsection ICS Options
+@section ICS Options
 @cindex ICS Options, Menu Item
 The following options occur in a dialog summoned by the 
 ICS Options menu item.
@@ -1558,7 +1559,7 @@ The colors can be individually selected for each type,
 through the accompanying text edits.
 @end table
 
-@subsection Tournament Options
+@section Tournament Options
 @cindex Tournament Options, Menu Item
 Summons a dialog where you can set options important for playing automatic 
 matches between two or more chess programs 
@@ -1701,7 +1702,7 @@ dialogs can be accessed without closing the @samp{Tournament Options} dialog
 through the respective buttons at the bottom of the latter.)
 @end table
 
-@subsection Load Game Options
+@section Load Game Options
 @cindex Load Game Options, Menu Item
 Summons a dialog where you can set the @code{autoDisplayComment} and 
 @code{autoDisplayTags} options, (which control popups when viewing loaded games),
@@ -1765,7 +1766,7 @@ The left-right flipping is only useful after all castling rights
 have expired (or in Xiangqi).
 @end table
 
-@subsection Save Game Options
+@section Save Game Options
 @cindex Save Game Options, Menu Item
 Summons a dialog where you can specify the files on which XBoard should
 automatically save any played or entered games, 
@@ -1783,12 +1784,12 @@ and if a tag with info about the score with which the engine came out of book
 should be included.
 For Chess, always set the format to PGN, rather than "old save stye"!
 
-@subsection Game List
+@section Game List
 @cindex Game List Tags, Menu Item
 Pops up a dialog where you can select the PGN tags that should appear
 on the lines in the game list, and their order.
 
-@subsection Sound Options
+@section Sound Options
 @cindex Sound Options, Menu Item
 Summons a dialog where you can specify the sounds that should accompany
 various events that can occur in XBoard.
@@ -1811,7 +1812,7 @@ move if you are observing a game on the Internet Chess Server).
 The sound is not played after moves you make or moves read from a
 saved game file.
 
-@subsection Save Settings Now
+@section Save Settings Now
 @cindex Save Settings Now, Menu Item
 Selecting this menu item causes the current XBoard settings to be
 written to the settings file, so they will also apply in future sessions.
@@ -1848,7 +1849,7 @@ in ~/.xboardrc, you will essentially turn them into volatile options
 with the specified value as default, because that value will overrule
 the value loaded from the settings file (being read later).
 
-@subsection Save Settings on Exit
+@section Save Settings on Exit
 @cindex Save Settings on Exit, Menu Item
 Setting this option has no immediate effect, but causes the settings
 to be saved when you quit XBoard. What happens then is otherwise 
