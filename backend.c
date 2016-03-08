@@ -1982,7 +1982,7 @@ read_from_player (InputSourceRef isr, VOIDSTAR closure, char *message, int count
 	DisplayFatalError(_("Error reading from keyboard"), error, 1);
     } else if (gotEof++ > 0) {
 	RemoveInputSource(isr);
-	DisplayFatalError(_("Got end of file from keyboard"), 0, 0);
+	DisplayFatalError(_("Got end of file from keyboard"), 0, 666); // [HGM] 666 is kludge to alert front end
     }
 }
 

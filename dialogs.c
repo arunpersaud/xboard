@@ -2348,6 +2348,11 @@ DisplayFatalError (String message, int error, int status)
 {
     char buf[MSG_SIZ];
 
+    if(status == 666) { // ignore this error when ICS Console window is up
+	if(shellUp[ChatDlg]) return;
+	status = 0;
+    }
+
     errorExitStatus = status;
     if (error == 0) {
 	fprintf(stderr, "%s: %s\n", programName, message);
