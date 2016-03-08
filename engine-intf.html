@@ -1139,6 +1139,9 @@ The "lift" command is sent by the GUI when the user 'picks up' (or selects) a pi
 so that the engine can reply with a "highlight" command to mark the squares where that piece can move to.
 The "put" command similarly indicates where the user releases that piece;
 as the GUI clears the highlights on that event by itself, usually no engine response would be required.
+For promotion moves you can get a double "put" command, the first one sent when the piece lands on the square,
+without being decided yet what it promotes to, so the engine can send a "choice" command to
+specify the promotion choice the GUI should offer when promotion wasn't already implied by the "lift" location.
 The "hover" command is sent whenever the mouse pointer enters a square that is currently marked in red,
 (reserved for captures)
 so that the engine can (optionally) reply with a "highlight" command to mark victims of non-standard capture
@@ -1864,6 +1867,16 @@ When it would be necessary to mark squares where no legal moves go to
 the corresponding lower-case character can be used for the color.
 For indicating a legal destination square without visibly marking it, T (transparent) can be used.
 </dd>
+
+<dt class="version48">choice PIECESTRING</dt>
+<dd class="version48">
+This command can be sent to the GUI in response to a 'lift' or 'put' command that implies a promotion move,
+to alter the choice offered to the user for the promotion piece from what the GUI would naturally assume,
+to the piece IDs mentioned in the PIECESTRING.
+The IDs in that string should be given as capitals irrespective of color.
+The first piece mentioned will be the default choice.
+</dd>
+</dl>
 
 <dt class="version48">click SQUARE</dt>
 <dd class="version48">
