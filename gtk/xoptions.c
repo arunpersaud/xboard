@@ -375,10 +375,8 @@ HelpEvent(GtkWidget *widget, GdkEventButton *event, gpointer gdata)
 {   // intercept button3 clicks to pop up help
 //    Option *opt = (Option *) gdata;
     char *msg = (char *) gdata;
-    char buf[MSG_SIZ];
     if(event->button != 3) return FALSE;
-    snprintf(buf, MSG_SIZ, "Help on:\n%s", msg);
-    DisplayNote(buf);
+    DisplayHelp(msg);
     return TRUE;
 }
 

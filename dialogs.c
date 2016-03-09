@@ -2426,6 +2426,59 @@ DisplayTitle (char *text)
     SetWindowTitle(text, title, icon);
 }
 
+static char *
+ReadLine (FILE *f)
+{
+    static char buf[MSG_SIZ];
+    int i = 0, c;
+    while((c = fgetc(f)) != '\n') { if(c == EOF) return NULL; buf[i++] = c; }
+    buf[i] = NULLCHAR;
+    return buf;
+}
+
+void
+GetHelpText (FILE *f, char *name)
+{
+    char *line, buf[MSG_SIZ], text[10000], *p = text, *q = text;
+    int len, cnt = 0;
+    snprintf(buf, MSG_SIZ, ".B %s", name);
+    len = strlen(buf);
+    for(len=1; buf[len] == ' ' || isalpha(buf[len]) || isdigit(buf[len]); len++);
+    buf[len] = NULLCHAR;
+    while(buf[--len] == ' ') buf[len] = NULLCHAR;
+    while((line = ReadLine(f))) {
+	if(!strncmp(line, buf, len) && (strncmp(line, ".SS ", 4) || strncmp(line+4, buf+3, len-3))) {
+	    while((line = ReadLine(f)) && (cnt == 0 || strncmp(line, ".B ", 3))) {
+		if(!*line) { *p++ = '\n'; *p++ = '\n'; q = p; continue; }
+		if(*line == '.') continue;
+		*p++ = ' '; cnt++;
+		while(*line) {
+		    if(*line < ' ') { line++; continue;}
+		    if(*line == ' ' && p - q > 80) *line = '\n', q = p;
+		    *p++ = *line++;
+		}
+		if(p - text > 9900) break;
+	    }
+	    *p = NULLCHAR;
+	    DisplayNote(text);
+	    return;
+	}
+    }
+    snprintf(text, MSG_SIZ, "No help on '%s'\n", buf+3);
+    DisplayNote(text);
+}
+
+void
+DisplayHelp (char *name)
+{
+    char *manFile = DATADIR "/../../man/man6/xboard.6";
+    FILE *f = fopen(manFile, "r");
+    if(f) {
+	GetHelpText(f, name);
+	fclose(f);
+    }
+}
+
 #define PAUSE_BUTTON "P"
 #define PIECE_MENU_SIZE 18
 static String pieceMenuStrings[2][PIECE_MENU_SIZE+1] = {
