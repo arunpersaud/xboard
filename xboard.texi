@@ -1111,6 +1111,9 @@ that SMP engines can use.
 The shifted @kbd{Alt+U} key is a keyboard equivalent.
 Older XBoard/WinBoard engines might not respond to these settings,
 but UCI engines always should.
+The @samp{EGT path} field corresponds to the setting of the
+@code{egtFormats} option to specify where to find tablebases
+of various flavors. See the description of this option for the required syntax.
 
 It is also possible to specify a GUI opening book here, i.e. an opening
 book that XBoard consults for any position a playing engine gets in.

@@ -1463,6 +1463,11 @@ InitAppData(char *lpCmdLine)
     } else appData.timeIncrement = -1;
   }
   if(appData.movesPerSession <= 0) appData.movesPerSession = MOVES_PER_SESSION; // mps <= 0 is invalid in any case
+  if(*appData.defaultPathEGTB) { // append value of deprecated -defaultPathEGTB to -egtFormats
+    snprintf(buf, MAX_ARG_LEN, "%s%snalimov:%s", appData.egtFormats, (*appData.egtFormats ?"," : ""), appData.defaultPathEGTB);
+    ASSIGN(appData.egtFormats, buf);
+    ASSIGN(appData.defaultPathEGTB, "");
+  }
 
   /* Open startup dialog if needed */
   if ((!appData.noChessProgram && !chessProgram && !appData.icsActive) ||
