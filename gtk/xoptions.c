@@ -370,6 +370,18 @@ SetIconName (DialogClass dlg, char *name)
 #endif
 }
 
+static gboolean
+HelpEvent(GtkWidget *widget, GdkEventButton *event, gpointer gdata)
+{   // intercept button3 clicks to pop up help
+//    Option *opt = (Option *) gdata;
+    char *msg = (char *) gdata;
+    char buf[MSG_SIZ];
+    if(event->button != 3) return FALSE;
+    snprintf(buf, MSG_SIZ, "Help on:\n%s", msg);
+    DisplayNote(buf);
+    return TRUE;
+}
+
 void ComboSelect(GtkWidget *widget, gpointer addr)
 {
     Option *opt = dialogOptions[((intptr_t)addr)>>8]; // applicable option list
@@ -443,6 +455,7 @@ CreateMenuPopup (Option *opt, int n, int def)
 	  } else
 	    entry = gtk_menu_item_new_with_label(msg);
 	  gtk_signal_connect_object (GTK_OBJECT (entry), "activate", GTK_SIGNAL_FUNC(MenuSelect), (gpointer) (intptr_t) ((n<<16)+i));
+	  g_signal_connect(entry, "button-release-event", G_CALLBACK (HelpEvent), (gpointer) mb[i].string );
 	  if(mb[i].accel) {
 	    guint accelerator_key;
 	    GdkModifierType accelerator_mods;
@@ -1412,8 +1425,15 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             gtk_entry_set_max_length (GTK_ENTRY (entry), w);
 
             // left, right, top, bottom
-            if (strcmp(option[i].name, "") != 0)
+            if (strcmp(option[i].name, "") != 0) {
+		button = gtk_event_box_new();
+                gtk_container_add(GTK_CONTAINER(button), label);
+		label = button;
+		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
+		g_signal_connect(label, "button-press-event", G_CALLBACK(HelpEvent), (gpointer) option[i].name);
+		gtk_widget_set_sensitive(label, TRUE);
                 gtk_table_attach(GTK_TABLE(table), label, left, left+1, top, top+1, GTK_FILL, GTK_FILL, 2, 1); // leading names do not expand
+            }
 
             if (option[i].type == Spin) {
                 spinner_adj = (GtkAdjustment *) gtk_adjustment_new (option[i].value, option[i].min, option[i].max, 1.0, 0.0, 0.0);
@@ -1435,6 +1455,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             break;
           case CheckBox:
             checkbutton = gtk_check_button_new_with_label(option[i].name);
+	    g_signal_connect(checkbutton, "button-press-event", G_CALLBACK (HelpEvent), (gpointer) option[i].name );
             if(!currentCps) option[i].value = *(Boolean*)option[i].target;
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);
             gtk_table_attach(GTK_TABLE(table), checkbutton, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 0);
@@ -1493,6 +1514,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 
             Pack(hbox, table, button, left, left+1, top, 0);
             g_signal_connect (button, "clicked", G_CALLBACK (GenericCallback), (gpointer)(intptr_t) i + (dlgNr<<16));
+	    g_signal_connect(button, "button-press-event", G_CALLBACK (HelpEvent), (gpointer) option[i].name );
             option[i].handle = (void*)button;
             break;
 	  case ComboBox:
