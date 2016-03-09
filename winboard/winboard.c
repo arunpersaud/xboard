@@ -3753,6 +3753,7 @@ void DrawSeekClose()
 {
 }
 
+
 VOID
 HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 {
@@ -8513,6 +8514,7 @@ DisplayFatalError(char *str, int error, int exitStatus)
     fprintf(debugFP, "%s: %s\n", label, str);
   }
   if (appData.popupExitMessage) {
+    if(appData.icsActive) SendToICS("logout\n"); // [HGM] make sure no new games will be started!
     (void) MessageBox(hwndMain, str, label, MB_OK|
 		      (exitStatus ? MB_ICONSTOP : MB_ICONINFORMATION));
   }

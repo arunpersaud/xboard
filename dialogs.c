@@ -2364,6 +2364,7 @@ DisplayFatalError (String message, int error, int status)
     }
     if(mainOptions[W_BOARD].handle) {
 	if (appData.popupExitMessage) {
+	    if(appData.icsActive) SendToICS("logout\n"); // [HGM] make sure no new games will be started
 	    ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
 	} else {
 	    ExitEvent(status);
