@@ -2462,7 +2462,7 @@ GetHelpText (FILE *f, char *name)
     int len, cnt = 0;
     snprintf(buf, MSG_SIZ, ".B %s", name);
     len = strlen(buf);
-    for(len=1; buf[len] == ' ' || isalpha(buf[len]) || isdigit(buf[len]); len++);
+    for(len=1; buf[len] == ' ' || buf[len] == '-' || isalpha(buf[len]) || isdigit(buf[len]); len++);
     buf[len] = NULLCHAR;
     while(buf[--len] == ' ') buf[len] = NULLCHAR;
     while((line = ReadLine(f))) {
