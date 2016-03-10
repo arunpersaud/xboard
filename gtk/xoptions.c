@@ -370,14 +370,18 @@ SetIconName (DialogClass dlg, char *name)
 #endif
 }
 
+int menuBlock = FALSE;
+
 static gboolean
 HelpEvent(GtkWidget *widget, GdkEventButton *event, gpointer gdata)
 {   // intercept button3 clicks to pop up help
 //    Option *opt = (Option *) gdata;
     char *msg = (char *) gdata;
+    int menu = (event->type == GDK_BUTTON_RELEASE); // only menu items trigger help on release
     if(event->button != 3) return FALSE;
     DisplayHelp(msg);
-    return TRUE;
+    menuBlock = menu; // flag menu execution should be suppressed
+    return !menu;
 }
 
 void ComboSelect(GtkWidget *widget, gpointer addr)
@@ -423,6 +427,7 @@ MenuSelect (gpointer addr) // callback for all combo items
     int i = ((intptr_t)addr)>>16 & 255; // option number
     int j = 0xFFFF & (intptr_t) addr;
 
+    if(menuBlock) { menuBlock = FALSE; return; } // was help click only
     values[i] = j; // store selected value in Option struct, for retrieval at OK
     ((ButtonCallback*) opt[i].target)(i);
 }

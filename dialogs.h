@@ -199,6 +199,7 @@ void LoadOptionsPopUp P((DialogClass parent));
 void GameListOptionsPopUp P((DialogClass parent));
 void RefreshColor P((int source, int n));
 void SendString P((char *p));
+void DisplayHelp P((char *name));
 
 // in ngamelist.c
 int GameListClicks P((int direction));
