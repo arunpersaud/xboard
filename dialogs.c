@@ -2156,6 +2156,25 @@ ConsoleAutoPopUp (char *buf)
 	} else PopUpMoveDialog(*buf);
 }
 
+static Boolean noEcho;
+
+void
+EchoOn ()
+{
+    if(!noEcho) return;
+    system("stty echo");
+    WidgetEcho(&chatOptions[CHAT_IN], 1);
+    noEcho = False;
+}
+
+void
+EchoOff ()
+{
+    system("stty -echo");
+    WidgetEcho(&chatOptions[CHAT_IN], 0);
+    noEcho = True;
+}
+
 //--------------------------------- Game-List options dialog ------------------------------------------
 
 char *strings[LPUSERGLT_SIZE];

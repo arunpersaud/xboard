@@ -181,6 +181,11 @@ SetWidgetState (Option *opt, int state)
 }
 
 void
+WidgetEcho (Option *opt, int state)
+{
+}
+
+void
 SetWidgetLabel (Option *opt, char *buf)
 {
     Arg arg;

@@ -255,6 +255,12 @@ SetDialogTitle (DialogClass dlg, char *title)
 }
 
 void
+WidgetEcho (Option *opt, int n)
+{
+    gtk_entry_set_visibility(opt->handle, n);
+}
+
+void
 SetWidgetFont (GtkWidget *w, char **s)
 {
     PangoFontDescription *pfd;

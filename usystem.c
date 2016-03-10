@@ -267,22 +267,6 @@ ParseIcsTextColors ()
     SetTextColor(cnames, textColors[ColorNormal].fg - 30, textColors[ColorNormal].bg - 40, -2); // kludge to announce background color to front-end 
 }
 
-static Boolean noEcho;
-
-void
-EchoOn ()
-{
-    system("stty echo");
-    noEcho = False;
-}
-
-void
-EchoOff ()
-{
-    system("stty -echo");
-    noEcho = True;
-}
-
 char *oldICSInteractionTitle;
 
 void
@@ -294,7 +278,7 @@ ShutDownFrontEnd ()
     if (saveSettingsOnExit) SaveSettings(settingsFileName);
     unlink(gameCopyFilename);
     unlink(gamePasteFilename);
-    if(noEcho) EchoOn();
+    EchoOn();
 }
 
 void
