@@ -376,18 +376,18 @@ SetIconName (DialogClass dlg, char *name)
 #endif
 }
 
-int menuBlock = FALSE;
+static int menuBlock;
 
 static gboolean
 HelpEvent(GtkWidget *widget, GdkEventButton *event, gpointer gdata)
 {   // intercept button3 clicks to pop up help
-//    Option *opt = (Option *) gdata;
     char *msg = (char *) gdata;
     int menu = (event->type == GDK_BUTTON_RELEASE); // only menu items trigger help on release
     if(event->button != 3) return FALSE;
+    menuBlock = 2*menu; // prevent menu action is really excuted by default action
+    if(menu) gtk_menu_item_activate(GTK_MENU_ITEM(widget)); // hideous kludge: activate (blocked) menu item twice to prevent check-marking
     DisplayHelp(msg);
-    menuBlock = menu; // flag menu execution should be suppressed
-    return !menu;
+    return !menu; // in case of menu we have to execute default action to popdown and unfocus
 }
 
 void ComboSelect(GtkWidget *widget, gpointer addr)
@@ -433,7 +433,7 @@ MenuSelect (gpointer addr) // callback for all combo items
     int i = ((intptr_t)addr)>>16 & 255; // option number
     int j = 0xFFFF & (intptr_t) addr;
 
-    if(menuBlock) { menuBlock = FALSE; return; } // was help click only
+    if(menuBlock) { menuBlock--; return; } // was help click only
     values[i] = j; // store selected value in Option struct, for retrieval at OK
     ((ButtonCallback*) opt[i].target)(i);
 }
@@ -1486,12 +1486,14 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		label = frame;
 	    }
             gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
-	    if(option[i].target) { // allow user to specify event handler for button presses
+	    if(option[i].target || !strchr(option[i].name, '\n')) { // allow user to specify event handler for button presses
 		button = gtk_event_box_new();
                 gtk_container_add(GTK_CONTAINER(button), label);
 		label = button;
 		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
-		g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
+		if(option[i].target)
+		     g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
+		else g_signal_connect(label, "button-press-event", G_CALLBACK(HelpEvent), (gpointer) option[i].name);
 		gtk_widget_set_sensitive(label, TRUE);
 	    }
             Pack(hbox, table, label, left, left+r, top, 0);
@@ -1530,6 +1532,12 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             label = gtk_label_new(option[i].name);
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+	    button = gtk_event_box_new();
+            gtk_container_add(GTK_CONTAINER(button), label);
+	    label = button;
+	    gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
+	    g_signal_connect(label, "button-press-event", G_CALLBACK(HelpEvent), (gpointer) option[i].name);
+	    gtk_widget_set_sensitive(label, TRUE);
             gtk_table_attach(GTK_TABLE(table), label, left, left+1, top, top+1, GTK_FILL, GTK_FILL, 2, 1);
 
             combobox = gtk_combo_box_new_text();
@@ -1644,7 +1652,6 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    option[i].textValue = (char*) (menu = CreateMenuPopup(option + i, i + 256*dlgNr, -1));
 	    gtk_menu_item_set_submenu(GTK_MENU_ITEM (menuButton), menu);
 	    gtk_menu_bar_append (GTK_MENU_BAR (menuBar), menuButton);
-
 	    break;
 	  case BarBegin:
 	    menuBar = gtk_menu_bar_new ();
@@ -1740,6 +1747,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  button = gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_REJECT);
 	  gtk_widget_hide(button);
 	}
+	gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
         g_signal_connect (dialog, "response",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
