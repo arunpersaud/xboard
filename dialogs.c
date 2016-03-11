@@ -2491,7 +2491,7 @@ GetHelpText (FILE *f, char *name)
 void
 DisplayHelp (char *name)
 {
-    char *manFile = DATADIR "/../../man/man6/xboard.6";
+    char *manFile = MANDIR "/man6/xboard.6";
     FILE *f = fopen(manFile, "r");
     if(f) {
 	GetHelpText(f, name);
