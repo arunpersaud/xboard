@@ -1486,7 +1486,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		label = frame;
 	    }
             gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
-	    if(option[i].target || !strchr(option[i].name, '\n')) { // allow user to specify event handler for button presses
+	    if(option[i].target || dlgNr != ErrorDlg &&!strchr(option[i].name, '\n')) { // allow user to specify event handler for button presses
 		button = gtk_event_box_new();
                 gtk_container_add(GTK_CONTAINER(button), label);
 		label = button;
