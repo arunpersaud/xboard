@@ -2458,13 +2458,14 @@ ReadLine (FILE *f)
 void
 GetHelpText (FILE *f, char *name)
 {
-    char *line, buf[MSG_SIZ], text[10000], *p = text, *q = text;
+    char *line, buf[MSG_SIZ], title[MSG_SIZ], text[10000], *p = text, *q = text;
     int len, cnt = 0;
     snprintf(buf, MSG_SIZ, ".B %s", name);
     len = strlen(buf);
     for(len=1; buf[len] == ' ' || buf[len] == '-' || isalpha(buf[len]) || isdigit(buf[len]); len++);
     buf[len] = NULLCHAR;
     while(buf[--len] == ' ') buf[len] = NULLCHAR;
+    snprintf(title, MSG_SIZ, "Help on '%s'", buf+3);
     while((line = ReadLine(f))) {
 	if(!strncmp(line, buf, len) && (strncmp(line, ".SS ", 4) || strncmp(line+4, buf+3, len-3))) {
 	    while((line = ReadLine(f)) && (cnt == 0 || strncmp(line, ".B ", 3))) {
@@ -2479,7 +2480,7 @@ GetHelpText (FILE *f, char *name)
 		if(p - text > 9900) break;
 	    }
 	    *p = NULLCHAR;
-	    ErrorPopUp("Help", text, FALSE);
+	    ErrorPopUp(title, text, FALSE);
 	    return;
 	}
     }
