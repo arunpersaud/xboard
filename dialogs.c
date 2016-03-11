@@ -2467,8 +2467,8 @@ GetHelpText (FILE *f, char *name)
     while(buf[--len] == ' ') buf[len] = NULLCHAR;
     snprintf(title, MSG_SIZ, "Help on '%s'", buf+3);
     while((line = ReadLine(f))) {
-	if(!strncmp(line, buf, len) && (strncmp(line, ".SS ", 4) || strncmp(line+4, buf+3, len-3))) {
-	    while((line = ReadLine(f)) && (cnt == 0 || strncmp(line, ".B ", 3))) {
+	if(!strncmp(line, buf, len) || !strncmp(line, ".SS ", 4) && !strncmp(line+4, buf+3, len-3)) {
+	    while((line = ReadLine(f)) && (cnt == 0 || strncmp(line, ".B ", 3) && strncmp(line, ".SS ", 4))) {
 		if(!*line) { *p++ = '\n'; *p++ = '\n'; q = p; continue; }
 		if(*line == '.') continue;
 		*p++ = ' '; cnt++;
