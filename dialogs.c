@@ -2491,8 +2491,14 @@ GetHelpText (FILE *f, char *name)
 void
 DisplayHelp (char *name)
 {
-    char *manFile = MANDIR "/man6/xboard.6";
-    FILE *f = fopen(manFile, "r");
+    char buf[MSG_SIZ], *manFile = MANDIR "/man6/xboard.6";
+    FILE *f;
+    if(currentCps) snprintf(manFile = buf, MSG_SIZ, "/usr/share/man/man6/%s.6", currentCps->program);
+    f = fopen(manFile, "r");
+    if(!f && currentCps) { // engine manual could be in two places
+	snprintf(buf, MSG_SIZ, "/usr/man/man6/%s.6", currentCps->program);
+	f= fopen(buf, "r");
+    }
     if(f) {
 	GetHelpText(f, name);
 	fclose(f);
