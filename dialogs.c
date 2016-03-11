@@ -1310,10 +1310,12 @@ char *icsText;
 #define HISTORY_SIZE 64
 static char *history[HISTORY_SIZE];
 static int histIn = 0, histP = 0;
+static Boolean noEcho;
 
 static void
 SaveInHistory (char *cmd)
 {
+  if(noEcho) return; // do not save password!
   if (history[histIn] != NULL) {
     free(history[histIn]);
     history[histIn] = NULL;
@@ -2155,8 +2157,6 @@ ConsoleAutoPopUp (char *buf)
 	    ChatPopUp();
 	} else PopUpMoveDialog(*buf);
 }
-
-static Boolean noEcho;
 
 void
 EchoOn ()
