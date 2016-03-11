@@ -2479,7 +2479,7 @@ GetHelpText (FILE *f, char *name)
 		if(p - text > 9900) break;
 	    }
 	    *p = NULLCHAR;
-	    DisplayNote(text);
+	    ErrorPopUp("Help", text, FALSE);
 	    return;
 	}
     }
@@ -2892,6 +2892,7 @@ static char *Extensions[] = {
 ".trn",
 ".bin",
 ".wav",
+".png",
 ".ini",
 ".log",
 "",
