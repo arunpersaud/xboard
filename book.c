@@ -647,7 +647,7 @@ InitMemBook ()
 }
 
 char *
-MCprobe (moveNr)
+MCprobe (int moveNr)
 {
     int count, count2, games, i, choice=0;
     entry_t entries[MOVE_BUF];

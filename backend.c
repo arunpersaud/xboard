@@ -387,7 +387,7 @@ u64ToDouble (u64 value)
    by this function.
  */
 int
-PosFlags (index)
+PosFlags (int index)
 {
   int flags = F_ALL_CASTLE_OK;
   if ((index % 2) == 0) flags |= F_WHITE_ON_MOVE;
