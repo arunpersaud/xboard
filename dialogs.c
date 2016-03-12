@@ -1259,7 +1259,7 @@ NewTagsPopup (char *text, char *msg, char *ttl)
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].name = msg;
     MarkMenu("View.Tags", TagsDlg);
-    GenericPopUp(tagsOptions, title, TagsDlg, BoardWindow, NONMODAL, appData.topLevel);
+    GenericPopUp(tagsOptions + (msg == NULL), title, TagsDlg, BoardWindow, NONMODAL, appData.topLevel);
 }
 
 void
