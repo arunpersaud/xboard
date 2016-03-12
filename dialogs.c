@@ -2491,14 +2491,16 @@ GetHelpText (FILE *f, char *name)
 void
 DisplayHelp (char *name)
 {
-    char buf[MSG_SIZ];
+    char buf[MSG_SIZ], tidy[MSG_SIZ];
     FILE *f;
-    if(currentCps) snprintf(buf, MSG_SIZ, "/usr/local/share/man/man6/%s.6", currentCps->program);
-    else           snprintf(buf, MSG_SIZ, "%s/man6/xboard.6", MANDIR);
+    if(currentCps) {
+	TidyProgramName(currentCps == &first ? appData.firstChessProgram : appData.secondChessProgram, "localhost", tidy);
+	snprintf(buf, MSG_SIZ, "/usr/local/share/man/man6/%s.6", tidy);
+    } else snprintf(buf, MSG_SIZ, "%s/man6/xboard.6", MANDIR);
     f = fopen(buf, "r");
     if(!f && currentCps) { // engine manual could be in two places
-	snprintf(buf, MSG_SIZ, "/usr/share/man/man6/%s.6", currentCps->program);
-	f= fopen(buf, "r");
+	snprintf(buf, MSG_SIZ, "/usr/share/man/man6/%s.6", tidy);
+	f = fopen(buf, "r");
     }
     if(f) {
 	GetHelpText(f, name);
