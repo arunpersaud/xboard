@@ -1486,14 +1486,14 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		label = frame;
 	    }
             gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
-	    if(option[i].target || dlgNr != ErrorDlg &&!strchr(option[i].name, '\n')) { // allow user to specify event handler for button presses
+	    if(option[i].target || dlgNr != ErrorDlg && option[i].name && !strchr(option[i].name, '\n')) { // allow user to specify event handler for button presses
 		button = gtk_event_box_new();
                 gtk_container_add(GTK_CONTAINER(button), label);
 		label = button;
 		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
 		if(option[i].target)
 		     g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
-		else g_signal_connect(label, "button-press-event", G_CALLBACK(HelpEvent), (gpointer) option[i].name);
+//		else g_signal_connect(label, "button-press-event", G_CALLBACK(HelpEvent), (gpointer) option[i].name);
 		gtk_widget_set_sensitive(label, TRUE);
 	    }
             Pack(hbox, table, label, left, left+r, top, 0);
