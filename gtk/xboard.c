@@ -176,14 +176,17 @@ extern char *getenv();
    // redefine some defaults
 #  undef ICS_LOGON
 #  undef DATADIR
+#  undef MANDIR
 #  undef LOCALEDIR
 #  undef SETTINGS_FILE
 #  define ICS_LOGON "Library/Preferences/XboardICS.conf"
 #  define DATADIR dataDir
+#  define MANDIR manDir
 #  define LOCALEDIR localeDir
 #  define SETTINGS_FILE masterSettings
 #  define SYNC_MENUBAR gtkosx_application_sync_menubar(theApp)
    char dataDir[MSG_SIZ]; // for expanding ~~
+   char manDir[MSG_SIZ];
    char localeDir[MSG_SIZ];
    char masterSettings[MSG_SIZ];
 #else
@@ -892,6 +895,7 @@ main (int argc, char **argv)
         theApp = g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
         snprintf(masterSettings, MSG_SIZ, "%s/Contents/Resources/etc/xboard.conf", path);
         snprintf(dataDir, MSG_SIZ, "%s/Contents/Resources/share/xboard", path);
+        snprintf(manDir, MSG_SIZ, "%s/Contents/Resources/share/man", path);
         snprintf(svgDir, MSG_SIZ, "%s/themes/default", dataDir);
         g_signal_connect(theApp, "NSApplicationOpenFile", G_CALLBACK(StartNewXBoard), NULL);
         g_signal_connect(theApp, "NSApplicationWillTerminate", G_CALLBACK(ExitEvent), NULL);

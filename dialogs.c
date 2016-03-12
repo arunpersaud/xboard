@@ -2491,12 +2491,13 @@ GetHelpText (FILE *f, char *name)
 void
 DisplayHelp (char *name)
 {
-    char buf[MSG_SIZ], *manFile = MANDIR "/man6/xboard.6";
+    char buf[MSG_SIZ];
     FILE *f;
-    if(currentCps) snprintf(manFile = buf, MSG_SIZ, "/usr/share/man/man6/%s.6", currentCps->program);
-    f = fopen(manFile, "r");
+    if(currentCps) snprintf(buf, MSG_SIZ, "/usr/local/share/man/man6/%s.6", currentCps->program);
+    else           snprintf(buf, MSG_SIZ, "%s/man6/xboard.6", MANDIR);
+    f = fopen(buf, "r");
     if(!f && currentCps) { // engine manual could be in two places
-	snprintf(buf, MSG_SIZ, "/usr/man/man6/%s.6", currentCps->program);
+	snprintf(buf, MSG_SIZ, "/usr/share/man/man6/%s.6", currentCps->program);
 	f= fopen(buf, "r");
     }
     if(f) {
