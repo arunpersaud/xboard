@@ -27,8 +27,12 @@ dnl| it portable to sites and systems other than your own), and run autoconf
 dnl| to regenerate configure.  Then submit your changes to be folded into
 dnl| the standard version of xboard.
 
-dnl| define second argument as VERSION.PATCHLEVEL. e.g. 4.4.0j
-AC_INIT([xboard],[4.8.0],[bug-xboard@gnu.org])
+dnl| define second argument as MAJOR.MINOR.PATCHLEVEL. e.g. 4.4.0
+dnl| MAJOR means large changes
+dnl| MINOR can includes new features and bug fixes
+dnl| PATCHLEVEL is used for bugfixes only
+dnl| pre-release version have a -YYYYMMDD attached, e.g 4.9.0-20160313
+AC_INIT([xboard],[4.9.0-20160313],[bug-xboard@gnu.org])
 
 dnl| need this to be able to compile some files in a subdir (filebrowser)
 AM_INIT_AUTOMAKE([subdir-objects])
