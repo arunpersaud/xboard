@@ -1493,7 +1493,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		gtk_widget_add_events(GTK_WIDGET(label), GDK_BUTTON_PRESS_MASK);
 		if(option[i].target)
 		     g_signal_connect(label, "button-press-event", G_CALLBACK(MemoEvent), (gpointer) &option[i]);
-//		else g_signal_connect(label, "button-press-event", G_CALLBACK(HelpEvent), (gpointer) option[i].name);
+		else g_signal_connect(label, "button-press-event", G_CALLBACK(HelpEvent), (gpointer) option[i].name);
 		gtk_widget_set_sensitive(label, TRUE);
 	    }
             Pack(hbox, table, label, left, left+r, top, 0);
