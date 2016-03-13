@@ -175,18 +175,12 @@ extern char *getenv();
 #  define IMG ".png"
    // redefine some defaults
 #  undef ICS_LOGON
-#  undef DATADIR
-#  undef MANDIR
 #  undef LOCALEDIR
 #  undef SETTINGS_FILE
 #  define ICS_LOGON "Library/Preferences/XboardICS.conf"
-#  define DATADIR dataDir
-#  define MANDIR manDir
 #  define LOCALEDIR localeDir
 #  define SETTINGS_FILE masterSettings
 #  define SYNC_MENUBAR gtkosx_application_sync_menubar(theApp)
-   char dataDir[MSG_SIZ]; // for expanding ~~
-   char manDir[MSG_SIZ];
    char localeDir[MSG_SIZ];
    char masterSettings[MSG_SIZ];
 #else
@@ -920,6 +914,7 @@ main (int argc, char **argv)
 	typedef struct {char *name, *value; } Config;
 	static Config configList[] = {
 	  { "Datadir", DATADIR },
+	  { "Mandir", MANDIR },
 	  { "Sysconfdir", SYSCONFDIR },
 	  { NULL }
 	};
@@ -964,7 +959,7 @@ main (int argc, char **argv)
 
     { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
 	static char buf[MSG_SIZ];
-	snprintf(buf, MSG_SIZ, appData.sysOpen, DATADIR);
+	snprintf(buf, MSG_SIZ, appData.sysOpen, dataDir);
 	ASSIGN(appData.sysOpen, buf); // expand %s in -openCommand to DATADIR (usefull for OS X configuring)
 	EscapeExpand(buf, appData.firstInitString);
 	appData.firstInitString = strdup(buf);

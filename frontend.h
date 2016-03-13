@@ -167,6 +167,7 @@ void CmailSigHandlerCallBack P((InputSourceRef isr, VOIDSTAR closure,
 
 extern ProcRef cmailPR;
 extern int shiftKey, controlKey;
+extern char dataDir[], manDir[];
 
 /* in xgamelist.c or winboard.c */
 void GLT_ClearList();

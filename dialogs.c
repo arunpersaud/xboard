@@ -66,6 +66,7 @@ extern char *getenv();
 
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
+char dataDir[MSG_SIZ] = DATADIR, manDir[MSG_SIZ] = MANDIR;
 
 //----------------------------Generic dialog --------------------------------------------
 
@@ -2496,7 +2497,7 @@ DisplayHelp (char *name)
     if(currentCps) {
 	TidyProgramName(currentCps == &first ? appData.firstChessProgram : appData.secondChessProgram, "localhost", tidy);
 	snprintf(buf, MSG_SIZ, "/usr/local/share/man/man6/%s.6", tidy);
-    } else snprintf(buf, MSG_SIZ, "%s/man6/xboard.6", MANDIR);
+    } else snprintf(buf, MSG_SIZ, "%s/man6/xboard.6", manDir);
     f = fopen(buf, "r");
     if(!f && currentCps) { // engine manual could be in two places
 	snprintf(buf, MSG_SIZ, "/usr/share/man/man6/%s.6", tidy);

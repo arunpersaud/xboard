@@ -347,7 +347,7 @@ ExpandPathName (char *path)
 
     if (*s == '~') {
 	if(s[1] == '~') { // use ~~ for XBoard's private data directory
-	  snprintf(d, 4*MSG_SIZ, DATADIR "%s", s+2);
+	  snprintf(d, 4*MSG_SIZ, "%s%s", dataDir, s+2);
 	} else
 	if (*(s+1) == '/') {
 	  safeStrCpy(d, getpwuid(getuid())->pw_dir, 4*MSG_SIZ );
