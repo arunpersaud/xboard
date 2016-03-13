@@ -2296,7 +2296,7 @@ ErrorPopDown ()
     if (errorExitStatus != -1) ExitEvent(errorExitStatus);
 }
 
-static int
+int
 ErrorOK (int n)
 {
     dialogError = errorUp = False;

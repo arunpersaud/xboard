@@ -861,7 +861,7 @@ gboolean GenericPopDown(w, resptype, gdata)
     /* cancel pressed */
     {
 	if(dlg == BoardWindow) ExitEvent(0);
-	PopDown(dlg);
+	if(dlg == FatalDlg) ErrorOK(1); else PopDown(dlg);
     }
     shells[dlg] = sh; // restore
     return TRUE;

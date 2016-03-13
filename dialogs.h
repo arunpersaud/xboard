@@ -201,6 +201,8 @@ void RefreshColor P((int source, int n));
 void SendString P((char *p));
 void DisplayHelp P((char *name));
 void WidgetEcho P((Option *opt, int n));
+int  ErrorOK P((int n));
+
 
 // in ngamelist.c
 int GameListClicks P((int direction));
