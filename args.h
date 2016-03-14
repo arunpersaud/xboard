@@ -929,7 +929,7 @@ ParseSettingsFile(char *name, char **addr)
 	MySearchPath(installDir, buf, fullname); // first look in user's own files
 	f = fopen(fullname, "r");
 	if(f == NULL) {
-	    snprintf(buf, MSG_SIZ, "%s/themes/conf", DATADIR);
+	    snprintf(buf, MSG_SIZ, "%s/themes/conf", dataDir);
 	    MySearchPath(buf, name, fullname); // also look in standard place
 	    f = fopen(fullname, "r");
 	}
@@ -1169,7 +1169,7 @@ ParseArgs(GetFunc get, void *cl)
     case ArgFilename:
       if(argValue[0] == '~' && argValue[1] == '~') {
         char buf[4*MSG_SIZ]; // expand ~~
-        snprintf(buf, 4*MSG_SIZ, "%s%s", DATADIR, argValue+2);
+        snprintf(buf, 4*MSG_SIZ, "%s%s", dataDir, argValue+2);
         ASSIGN(*(char **) ad->argLoc, buf);
         break;
       }
@@ -1626,8 +1626,8 @@ SaveSettings(char* name)
       { char buf[MSG_SIZ];
         snprintf(buf, MSG_SIZ, "%s", *(char**)ad->argLoc);
 #ifdef OSXAPP
-        if(strstr(buf, DATADIR) == buf)
-          snprintf(buf, MSG_SIZ, "~~%s", *(char**)ad->argLoc + strlen(DATADIR));
+        if(strstr(buf, dataDir) == buf)
+          snprintf(buf, MSG_SIZ, "~~%s", *(char**)ad->argLoc + strlen(dataDir));
 #endif
         if (strchr(buf, '\"')) {
           fprintf(f, OPTCHAR "%s" SEPCHAR "'%s'\n", ad->argName, buf);
