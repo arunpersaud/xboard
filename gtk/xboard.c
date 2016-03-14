@@ -913,8 +913,8 @@ main (int argc, char **argv)
     if(argc > 1 && !strcmp(argv[1], "--show-config")) { // [HGM] install: called to print config info
 	typedef struct {char *name, *value; } Config;
 	static Config configList[] = {
-	  { "Datadir", DATADIR },
-	  { "Mandir", MANDIR },
+	  { "Datadir", dataDir },
+	  { "Mandir", manDir },
 	  { "Sysconfdir", SYSCONFDIR },
 	  { NULL }
 	};
