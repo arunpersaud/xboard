@@ -68,6 +68,7 @@ void CreateGrid P((void));
 void DrawSegment P((int x, int y, int *lastX, int *lastY, int p));
 void DrawRectangle P((int left, int top, int right, int bottom, int side, int style));
 void DrawEvalText P((char *buf, int cbBuf, int y));
+void DrawText P((char *string, int x, int y, int align));
 extern Option *disp;
 extern char svgDir[];
 

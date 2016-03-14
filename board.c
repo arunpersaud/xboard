@@ -919,9 +919,11 @@ DrawPosition (int repaint, Board board)
     static int lastFlipView = 0;
     static int lastBoardValid[2] = {0, 0};
     static Board lastBoard[2];
-    static char lastMarker[BOARD_RANKS][BOARD_FILES];
+    static char lastMarker[BOARD_RANKS][BOARD_FILES], messedUp;
     int rrow, rcol;
     int nr = twoBoards*partnerUp;
+
+    repaint |= messedUp;
 
     if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
 
@@ -1050,6 +1052,17 @@ DrawPosition (int repaint, Board board)
 
     FlashDelay(0); // this flushes drawing queue;
     if(nr) SwitchWindow(1);
+    else {
+	TimeMark now;
+	GetTimeMark(&now);
+	if(SubtractTimeMarks(&now, &programStartTime) < 1000) {
+	    DrawSeekBackground(2*squareSize, 3*squareSize, 6*squareSize, 5*squareSize);
+	    DrawText("Right-clicking dialog texts", 2*squareSize + 5, 3*squareSize + 5, 2);
+	    DrawText("pops up help on them", 2*squareSize + 5, (int) (3.3*squareSize) + 5, 2);
+	    GraphExpose(currBoard, 2*squareSize, 3*squareSize, 4*squareSize, 2*squareSize);
+	    messedUp = TRUE;
+	} else messedUp = FALSE;
+    }
 }
 
 /* [AS] Arrow highlighting support */

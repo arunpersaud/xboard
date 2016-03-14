@@ -791,7 +791,7 @@ DrawUnicode (cairo_surface_t *canvas, char *string, int x, int y, char id, int f
 	cairo_destroy(cr);
 }
 
-static void
+void
 DrawText (char *string, int x, int y, int align)
 {
 	int xx = x, yy = y;
