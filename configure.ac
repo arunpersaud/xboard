@@ -128,7 +128,7 @@ AS_IF( [test "x$PKGCONFIG" = xpkgconfig_not_found],
        AC_MSG_ERROR([cannot find pkg-config! Please install it.]))
 
 dnl | check for cairo and librsvg
-PKG_CHECK_MODULES([CAIRO], [ cairo >= 1.2.0 librsvg-2.0 >= 2.14.0 ])
+PKG_CHECK_MODULES([CAIRO], [ cairo >= 1.2.0 pangocairo librsvg-2.0 >= 2.14.0 ])
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
 
