@@ -2446,12 +2446,21 @@ DisplayTitle (char *text)
     SetWindowTitle(text, title, icon);
 }
 
+char *textPtr;
+
+int
+GetNext(FILE *f)
+{
+    if(textPtr) return *textPtr ? *textPtr++ : EOF;
+    return fgetc(f);
+}
+
 static char *
 ReadLine (FILE *f)
 {
     static char buf[MSG_SIZ];
     int i = 0, c;
-    while((c = fgetc(f)) != '\n') { if(c == EOF) return NULL; buf[i++] = c; }
+    while((c = GetNext(f)) != '\n') { if(c == EOF) return NULL; buf[i++] = c; }
     buf[i] = NULLCHAR;
     return buf;
 }
@@ -2492,25 +2501,34 @@ GetHelpText (FILE *f, char *name)
 void
 DisplayHelp (char *name)
 {
-    static char *xboardMan;
-    char buf[MSG_SIZ], tidy[MSG_SIZ];
+    static char *xboardMan, *manText[2];
+    char buf[MSG_SIZ], tidy[MSG_SIZ], *eng;
+    int n = 0;
     FILE *f;
     if(!xboardMan) {
 	xboardMan = BufferCommandOutput("man -w xboard", MSG_SIZ); // obtain path to XBoard's man file
 	if(xboardMan) xboardMan[strlen(xboardMan)-1] = NULLCHAR;   // strip off traling linefeed
     }
-    if(currentCps) {
-	TidyProgramName(currentCps == &first ? appData.firstChessProgram : appData.secondChessProgram, "localhost", tidy);
-	snprintf(buf, MSG_SIZ, "/usr/local/share/man/man6/%s.6", tidy);
+    if(currentCps) { // for engine options we have to look in engine manual
+	snprintf(tidy, MSG_SIZ, "man -w ");
+	TidyProgramName(currentCps == &first ? appData.firstChessProgram : appData.secondChessProgram, "localhost", tidy+7);
+	eng = BufferCommandOutput(tidy, MSG_SIZ);
+	safeStrCpy(buf, eng, strlen(eng));
+	FREE(eng);
+	n = 1;
     } else snprintf(buf, MSG_SIZ, "%s", xboardMan);
     f = fopen(buf, "r");
-    if(!f && currentCps) { // engine manual could be in two places
-	snprintf(buf, MSG_SIZ, "/usr/share/man/man6/%s.6", tidy);
-	f = fopen(buf, "r");
-    }
     if(f) {
+	if(strstr(buf, ".gz")) { // man file is gzipped
+	    if(!manText[n]) {    // unzipped text not buffered yet
+		snprintf(tidy, MSG_SIZ, "gunzip -c %s", buf);
+		manText[n] = BufferCommandOutput(tidy, 250000); // store unzipped in buffer
+	    }
+	    textPtr = manText[n];
+	} else textPtr = NULL;
 	GetHelpText(f, name);
 	fclose(f);
+	if(currentCps) free(manText[1]), manText[1] = NULL; // never reuse engine text 
     }
 }
 
