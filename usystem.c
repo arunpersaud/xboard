@@ -516,6 +516,22 @@ DestroyChildProcess (ProcRef pr, int signalType)
     close(cp->fdTo);
 }
 
+char *
+BufferCommandOutput (char *command, int size)
+{
+    ChildProc *pr;
+    char *res = (char *) calloc(1, size);
+    if(res) {
+	int count;
+	StartChildProcess(command, ".", (ProcRef) &pr);    // run command in daughter process
+	count = read(pr->fdFrom, res, size-1);  // read its output
+	res[count > 0 ? count : 0] = NULLCHAR;  
+	DestroyChildProcess((ProcRef) pr, 9);
+	free(pr);
+    }
+    return res; // return buffer with output
+}
+
 void
 InterruptChildProcess (ProcRef pr)
 {

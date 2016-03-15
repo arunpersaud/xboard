@@ -142,6 +142,7 @@ void Wheel P((int dir, int x, int y));
 int StartChildProcess P((char *cmdLine, char *dir, ProcRef *pr));
 void DestroyChildProcess P((ProcRef pr, int/*boolean*/ signal));
 void InterruptChildProcess P((ProcRef pr));
+char *BufferCommandOutput P((char *command, int size));
 void RunCommand P((char *buf));
 
 int OpenTelnet P((char *host, char *port, ProcRef *pr));
