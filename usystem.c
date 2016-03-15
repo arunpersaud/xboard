@@ -523,8 +523,11 @@ BufferCommandOutput (char *command, int size)
     char *res = (char *) calloc(1, size);
     if(res) {
 	int count;
+	FILE *f;
 	StartChildProcess(command, ".", (ProcRef) &pr);    // run command in daughter process
-	count = read(pr->fdFrom, res, size-1);  // read its output
+	f = fdopen(pr->fdFrom, "r");
+	count = fread(res, 1, size-1, f);  // read its output
+	fclose(f);
 	res[count > 0 ? count : 0] = NULLCHAR;  
 	DestroyChildProcess((ProcRef) pr, 9);
 	free(pr);
