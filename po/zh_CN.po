@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.8.0\n"
+"Project-Id-Version: GNU xboard 4.9.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-03-13 10:33-0700\n"
-"PO-Revision-Date: 2016-01-07 21:50+0800\n"
+"PO-Revision-Date: 2016-03-15 21:01+0800\n"
 "Last-Translator: Tianze Wang <zwpwjwtz@126.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.7\n"
 
 #: args.h:845
 #, c-format
@@ -1887,7 +1887,6 @@ msgid "add next move"
 msgstr "添加下一步"
 
 #: dialogs.c:1228
-#, fuzzy
 msgid "commit changes"
 msgstr "保存更改"
 
@@ -1900,9 +1899,8 @@ msgid "Tags"
 msgstr "标签"
 
 #: dialogs.c:1283
-#, fuzzy
 msgid "Registered Engines"
-msgstr "更换引擎"
+msgstr "已知的引擎"
 
 #: dialogs.c:1399
 msgid "ICS input box"
@@ -2018,7 +2016,7 @@ msgstr "固定最大值"
 
 #: dialogs.c:1640
 msgid "Divide entered times by 60"
-msgstr ""
+msgstr "输入的时间除以 60"
 
 #: dialogs.c:1641
 msgid "Moves per session:"
@@ -2034,7 +2032,7 @@ msgstr "自增或最大值（秒/每步）："
 
 #: dialogs.c:1644
 msgid "Time-Odds factors:"
-msgstr ""
+msgstr "时间比例因子："
 
 #: dialogs.c:1645
 msgid "Engine #1"
@@ -2051,11 +2049,11 @@ msgstr "不使用"
 
 #: dialogs.c:1705
 msgid "Changing time control during a game is not implemented"
-msgstr ""
+msgstr "尚未实现在棋局中改变时间控制的功能"
 
 #: dialogs.c:1742
 msgid "Error writing to chess program"
-msgstr "写象棋程序时出错"
+msgstr "写入到象棋程序时出错"
 
 #: dialogs.c:1810 gtk/xoptions.c:1711 xaw/xoptions.c:1336
 msgid "Cancel"
@@ -2215,44 +2213,36 @@ msgid "Black"
 msgstr "黑"
 
 #: dialogs.c:2618
-#, fuzzy
 msgid "_File"
-msgstr "文件"
+msgstr "文件(_F)"
 
 #: dialogs.c:2619
-#, fuzzy
 msgid "_Edit"
-msgstr "编辑"
+msgstr "编辑(_E)"
 
 #: dialogs.c:2620
-#, fuzzy
 msgid "_View"
-msgstr "查看"
+msgstr "查看(_V)"
 
 #: dialogs.c:2621
-#, fuzzy
 msgid "_Mode"
-msgstr "模式"
+msgstr "模式(_M)"
 
 #: dialogs.c:2622
-#, fuzzy
 msgid "_Action"
-msgstr "动作"
+msgstr "动作(_A)"
 
 #: dialogs.c:2623
-#, fuzzy
 msgid "E_ngine"
-msgstr "引擎"
+msgstr "引擎(_N)"
 
 #: dialogs.c:2624
-#, fuzzy
 msgid "_Options"
-msgstr "选项"
+msgstr "选项(_O)"
 
 #: dialogs.c:2625
-#, fuzzy
 msgid "_Help"
-msgstr "帮助"
+msgstr "帮助(_H)"
 
 #: dialogs.c:2635
 msgid "<<"
@@ -2331,7 +2321,7 @@ msgstr "引擎输出"
 #, c-format
 msgid "%s (%d reversible ply)"
 msgid_plural "%s (%d reversible plies)"
-msgstr[0] ""
+msgstr[0] "%s（可撤销 %d 步）"
 
 #: engineoutput.c:563 engineoutput.c:566 nengineoutput.c:83 nengineoutput.c:91
 msgid "NPS"
@@ -2414,7 +2404,7 @@ msgid " (with Zippy code)"
 msgstr ""
 
 #: menus.c:360
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -2422,12 +2412,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2435,7 +2423,7 @@ msgstr ""
 "%s%s\n"
 "\n"
 "版权所有 1991 Digital Equipment Corporation\n"
-"改进版版权所有 1992-2014 Free Software Foundation\n"
+"改进版版权所有 1992-2016 Free Software Foundation\n"
 "改进版版权所有 2005 Alessandro Scotti\n"
 "%s 是自由软件，并且没有任何担保；请参见 COPYING 文件来获取更多信息。\n"
 "当前版本使用的 GTK 构建是实验性的，可能不稳定\n"
@@ -2723,9 +2711,8 @@ msgid "Engine #2 Settings..."
 msgstr "#2 引擎设置..."
 
 #: menus.c:703
-#, fuzzy
 msgid "Common Settings..."
-msgstr "通用引擎设置"
+msgstr "通用设置..."
 
 #: menus.c:705
 msgid "Hint"
