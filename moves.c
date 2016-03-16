@@ -310,7 +310,7 @@ OK (Board board, int flags, ChessMove kind, int rf, int ff, int rt, int ft, VOID
 }
 
 void
-MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle, char *desc, MoveCallback cb, VOIDSTAR cl)
+MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle, int range, char *desc, MoveCallback cb, VOIDSTAR cl)
 {
     char buf[80], *p = desc, *atom = NULL;
     int mine, his, dir, bit, occup, i, ep, promoRank = -1;
@@ -407,10 +407,13 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 	if(isdigit(*++p)) expo = atoi(p++);           // read exponent
 	if(expo > 9) p++;                             // allow double-digit
 	desc = p;                                     // this is start of next move
-	if(initial == 2) { if(board[r][f] != initialPosition[r-2*his+3][f]) continue; } else
-	if(initial && (board[r][f] != initialPosition[r][f] ||
+	if(initial == 2) { if(board[r][f] != initialPosition[r-2*his+3][f]) continue; initial = 0; } else
+	if(initial && !range) {
+		if(   (board[r][f] != initialPosition[r][f] ||
 		       r == 0              && board[TOUCHED_W] & 1<<f ||
-		       r == BOARD_HEIGHT-1 && board[TOUCHED_B] & 1<<f   ) ) continue;
+		       r == BOARD_HEIGHT-1 && board[TOUCHED_B] & 1<<f   )) continue;
+		initial = 0;
+	}
 	if(expo > 0 && dx == 0 && dy == 0) {          // castling indicated by O + number
 	    mode |= 1024; dy = 1;
 	}
@@ -453,23 +456,25 @@ MovesFromString (Board board, int flags, int f, int r, int tx, int ty, int angle
 		if(board[y][x] < BlackPawn)   occup = 0x101; else
 		if(board[y][x] < EmptySquare) occup = 0x102; else
 					      occup = 4;
+		if(initial && expo - i + 1 != range) { if(occup == 4) continue; else break; }
 		if(cont) {                            // non-final leg
 		  if(mode&16 && his&occup) occup &= 3;// suppress hopping foe in t-mode
 		  if(occup & mode) {                  // valid intermediate square, do continuation
 		    char origAtom = *atom;
+		    int rg = (expo != 1 ? expo - i + 1 : range);   // pass length of last *slider* leg
 		    if(!(bit & all)) *atom = rotate[*atom - 'A']; // orth-diag interconversion to make direction valid
 		    if(occup & mode & 0x104)          // no side effects, merge legs to one move
-			MovesFromString(board, flags, f, r, x, y, dir, cont, cb, cl);
+			MovesFromString(board, flags, f, r, x, y, dir, rg, cont, cb, cl);
 		    if(occup & mode & 3 && (killX < 0 || kill2X < 0 && (legNr > 1 || killX == x && killY == y) ||
 					    (legNr == 1 ? kill2X == x && kill2Y == y : killX == x && killY == y))) {     // destructive first leg
 			int cnt = 0;
 			legNr <<= 1;
-			MovesFromString(board, flags, f, r, x, y, dir, cont, &OK, &cnt);  // count possible continuations
+			MovesFromString(board, flags, f, r, x, y, dir, rg, cont, &OK, &cnt); // count possible continuations
 			legNr >>= 1;
-			if(cnt) {                                                         // and if there are
+			if(cnt) {                                                            // and if there are
 			    if(legNr & 1 ? killX < 0 : kill2X < 0) cb(board, flags, FirstLeg, r, f, y, x, cl);     // then generate their first leg
 			    legNr <<= 1;
-			    MovesFromString(board, flags, f, r, x, y, dir, cont, cb, cl);
+			    MovesFromString(board, flags, f, r, x, y, dir, rg, cont, cb, cl);
 			    legNr >>= 1;
 			}
 		    }
@@ -751,7 +756,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
                  piece = (ChessSquare) ( DEMOTED(piece) );
           if(filter != EmptySquare && piece != filter) continue;
           if(pieceDefs && pieceDesc[piece]) { // [HGM] gen: use engine-defined moves
-              MovesFromString(board, flags, ff, rf, -1, -1, 0, pieceDesc[piece], callback, closure);
+              MovesFromString(board, flags, ff, rf, -1, -1, 0, 0, pieceDesc[piece], callback, closure);
               continue;
           }
           if(IS_SHOGI(gameInfo.variant))
