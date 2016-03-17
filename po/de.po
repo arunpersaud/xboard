@@ -2,14 +2,14 @@
 # Copyright (C) 2012 Free Software Foundation, Inc.
 # This file is distributed under the same license as the XBoard package.
 # Arun Persaud <arun@nubati.net>, 2009,2012,2013
-# Roland Illig <roland.illig@gmx.de>, 2015
+# Roland Illig <roland.illig@gmx.de>, 2015-2016
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xboard 4.8.0\n"
+"Project-Id-Version: xboard 4.9.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-03-13 10:33-0700\n"
-"PO-Revision-Date: 2015-04-28 19:26+0100\n"
+"PO-Revision-Date: 2016-03-16 23:46+0100\n"
 "Last-Translator: Roland Illig <roland.illig@gmx.de>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.7.5\n"
+"X-Generator: Poedit 1.8.5\n"
 
 #: args.h:845
 #, c-format
@@ -109,7 +109,7 @@ msgstr "Fehler in Positionsdatei"
 
 #: backend.c:1499
 msgid "Pick new game"
-msgstr "Wähle neues Spiel"
+msgstr "Neues Spiel wählen"
 
 #: backend.c:1568
 msgid ""
@@ -119,7 +119,7 @@ msgid ""
 msgstr ""
 "Sie haben ein Turnier neu gestartet, das schon beendet war.\n"
 "Eine neue Runde wird hinzugefügt.\n"
-"Die Spiele werden in 10 Sekunden starten."
+"Die Spiele beginnen in 10 Sekunden."
 
 #: backend.c:1575
 #, c-format
@@ -133,13 +133,12 @@ msgstr "Partie ohne Schachprogram ist nicht möglich"
 #: backend.c:1636
 #, c-format
 msgid "Could not open comm port %s"
-msgstr "Konnte Kommunikationsport %s nicht öffnen"
+msgstr "Kommunikationsport %s konnte nicht geöffnet werden"
 
 #: backend.c:1639
 #, c-format
 msgid "Could not connect to host %s, port %s"
-msgstr ""
-"Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
+msgstr "Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
 
 #: backend.c:1695
 #, c-format
@@ -201,7 +200,7 @@ msgstr "Ende-der-Datei von der Tastatur erhalten"
 #: backend.c:2293
 #, c-format
 msgid "Unknown wild type %d"
-msgstr "Unbekannter wild-Variante %d"
+msgstr "Unbekannte wild-Variante %d"
 
 #: backend.c:2364 usystem.c:317
 msgid "Error writing to display"
@@ -211,7 +210,7 @@ msgstr "Fehler beim Schreiben auf dem Display"
 #: backend.c:3132
 #, c-format
 msgid "your opponent kibitzes: %s"
-msgstr "Dein Gegner kibitzt: %s"
+msgstr "Ihr Gegner kibitzt: %s"
 
 #: backend.c:3671
 msgid "Error gathering move list: two headers"
@@ -250,7 +249,7 @@ msgstr ""
 
 #: backend.c:4384 backend.c:10578
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr "Partie zu lang; erhöhe MAX_MOVES und kompiliere neu"
+msgstr "Partie zu lang; erhöhen Sie MAX_MOVES und kompilieren Sie das Programm neu"
 
 #: backend.c:4503
 msgid "Error gathering move list: extra board"
@@ -259,7 +258,7 @@ msgstr "Fehler beim Erstellen der Zugliste: extra Schachbrett"
 #: backend.c:4935 backend.c:4957
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
-msgstr "Konnte Zug »%s« vom ICS nicht parsen"
+msgstr "Zug »%s« vom ICS konnte nicht geparst werden"
 
 #: backend.c:5222
 #, c-format
@@ -268,11 +267,11 @@ msgstr "Interner Fehler; falscher moveType %d (%d,%d-%d,%d)"
 
 #: backend.c:5293
 msgid "You cannot do this while you are playing or observing"
-msgstr "Dies ist nicht möglich während oder beim Zuschauen eines Spieles"
+msgstr "Solange Sie spielen oder einem Spiel zuschauen, ist das nicht möglich"
 
 #: backend.c:6353
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr "Kompiliere erneut mit Unterstützung von BOARD_RANKS oder BOARD_FILES!"
+msgstr "Kompilieren Sie das Programm erneut mit Unterstützung von BOARD_RANKS oder BOARD_FILES!"
 
 #: backend.c:6844
 msgid "You are playing Black"
@@ -310,7 +309,7 @@ msgstr "Ungültiger Zug"
 
 #: backend.c:7638 backend.c:7792
 msgid "Pull pawn backwards to under-promote"
-msgstr "Bewege Bauern rückwärts zum Unterverwandeln"
+msgstr "Bauern zum Unterverwandeln rückwärts bewegen"
 
 #: backend.c:7754
 msgid "only marked squares are legal"
@@ -343,7 +342,7 @@ msgstr "Schlechte FEN vom Schachprogramm erhalten"
 
 #: backend.c:9254
 msgid "Engine did not send setup for non-standard variant"
-msgstr "Engine hat die Startaufstellung für die Spielvariante nicht gesendet"
+msgstr "Schachprogramm hat die Startaufstellung für die Spielvariante nicht gesendet"
 
 #: backend.c:9332 backend.c:14597 backend.c:14665
 #, c-format
@@ -376,7 +375,7 @@ msgstr ""
 
 #: backend.c:9630
 msgid "Machine accepts your draw offer"
-msgstr "Das Schachprogramm akzeptiert dein Remisangebot"
+msgstr "Das Schachprogramm akzeptiert Ihr Remisangebot"
 
 #: backend.c:9633
 msgid ""
@@ -384,12 +383,12 @@ msgid ""
 "Select Action / Draw to accept."
 msgstr ""
 "Das Schachprogramm bietet Remis an.\n"
-"Wähle Aktion/Remis, um anzunehmen."
+"Wählen Sie Aktion/Remis, um anzunehmen."
 
 #. TRANSLATORS: PV = principal variation, the variation the chess engine thinks is the best for everyone
 #: backend.c:9727
 msgid "failed writing PV"
-msgstr "schreiben des PV fehlgeschlagen"
+msgstr "Schreiben des PV fehlgeschlagen"
 
 #: backend.c:10033
 #, c-format
@@ -399,7 +398,7 @@ msgstr "Nicht eindeutiger Zug in der ICS-Ausgabe: »%s«"
 #: backend.c:10043
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
-msgstr "Illegaler Zug in der ICS-Ausgabe: \"%s\""
+msgstr "Ungültiger Zug in der ICS-Ausgabe: »%s«"
 
 #: backend.c:10054
 msgid "Gap in move list"
@@ -449,7 +448,7 @@ msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
-"Ändern Sie ein Schachprogramm indem Sie die Liste der Teilnehmner\n"
+"Ändern Sie ein Schachprogramm, indem Sie die Liste der Teilnehmner\n"
 "im Turnieroptionendialog editieren"
 
 #: backend.c:11070
@@ -503,11 +502,11 @@ msgstr "Mehrdeutiger Zug: %d.%s%s"
 #: backend.c:12377 backend.c:13428 backend.c:13625 backend.c:13995
 #, c-format
 msgid "Can't open \"%s\""
-msgstr "Kann »%s« nicht öffnen"
+msgstr "»%s« konnte nicht geöffnet werden"
 
 #: backend.c:12389 menus.c:118
 msgid "Cannot build game list"
-msgstr "Kann Zugliste nicht erstellen"
+msgstr "Zugliste konnte nicht erstellt werden"
 
 #: backend.c:12474
 msgid "No more games in this message"
@@ -527,7 +526,7 @@ msgstr "Partienummer außerhalb des Bereichs"
 
 #: backend.c:12976
 msgid "Can't seek on game file"
-msgstr "Kann nicht in der Partiedatei suchen"
+msgstr "Fehler beim Springen in der Partiedatei"
 
 #: backend.c:13034
 msgid "Game not found in file"
@@ -535,7 +534,7 @@ msgstr "Spiel in Datei nicht gefunden"
 
 #: backend.c:13163 backend.c:13506
 msgid "Bad FEN position in file"
-msgstr "Schlechte FEN-Stellung in Datei"
+msgstr "Ungültige FEN-Stellung in Datei"
 
 #: backend.c:13321
 msgid "No moves in game"
@@ -547,7 +546,7 @@ msgstr "Noch keine Stellung geladen"
 
 #: backend.c:13466 backend.c:13477
 msgid "Can't seek on position file"
-msgstr "Kann nicht in Stellungsdatei suchen"
+msgstr "Fehler beim Springen in der Stellungsdatei"
 
 #: backend.c:13484 backend.c:13496
 msgid "Position not found in file"
@@ -567,11 +566,11 @@ msgstr "Warte auf Zugriff zur Datei zum Speichern"
 
 #: backend.c:13632
 msgid "Saving game"
-msgstr "Speichere Spiel"
+msgstr "Spiel wird gespeichert"
 
 #: backend.c:13633
 msgid "Bad Seek"
-msgstr "Fehlerhafte Suche"
+msgstr "Fehler beim Springen in der Datei"
 
 #: backend.c:14002
 msgid "Saving position"
@@ -598,7 +597,7 @@ msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
 msgstr ""
-"Die angezeigt Stellung ist nicht die aktuelle.\n"
+"Die angezeigte Stellung ist nicht die aktuelle.\n"
 "Gehen Sie vorwärts zur richtigen Stellung und versuchen Sie es erneut."
 
 #: backend.c:14185
@@ -611,8 +610,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Die CMail-Nachricht wurde noch nicht geladen.\n"
-"Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut "
-"aus."
+"Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut aus."
 
 #: backend.c:14211
 msgid "No unfinished games"
@@ -679,12 +677,12 @@ msgstr "Sie müssen noch Züge für Partie %s machen\n"
 
 #: backend.c:14547
 msgid "Edit comment"
-msgstr "Editiere Kommentar"
+msgstr "Kommentar bearbeiten"
 
 #: backend.c:14549
 #, c-format
 msgid "Edit comment on %d.%s%s"
-msgstr "Editiere Kommentar für %d.%s%s"
+msgstr "Kommentar für %d.%s%s bearbeiten"
 
 #: backend.c:14604
 #, c-format
@@ -786,7 +784,7 @@ msgstr "Noch keine Partie geladen"
 
 #: backend.c:16267
 msgid "Book file exists! Try again for overwrite."
-msgstr "Buchdatei existiert! Versuche erneut zum Überschreiben."
+msgstr "Buchdatei existiert bereits! Versuchen Sie es erneut zum Überschreiben."
 
 #: backend.c:16748
 #, c-format
@@ -899,7 +897,7 @@ msgstr "Pause zwischen Tournierspielen (msek):"
 
 #: dialogs.c:302
 msgid "Save Tourney Games on:"
-msgstr "Speichere Turnierspiele:"
+msgstr "Turnierspiele speichern auf:"
 
 #: dialogs.c:303
 msgid "Game File with Opening Lines:"
@@ -955,9 +953,7 @@ msgstr "Turnier klonen"
 
 #: dialogs.c:355
 msgid "First you must specify an existing tourney file to clone"
-msgstr ""
-"Bitte geben Sie zuerst eine existierende Turnierdatei an, die geklont werden "
-"soll"
+msgstr "Bitte geben Sie zuerst eine existierende Turnierdatei an, die geklont werden soll"
 
 #: dialogs.c:371 dialogs.c:1547
 msgid "# no engines are installed"
@@ -1837,9 +1833,7 @@ msgstr "Farbe zum Hervorheben vorzeitiger Züge:"
 
 #: dialogs.c:936
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr ""
-"Figuren im Shogi-Stil umdrehen (Farbige Schaltflächen setzen die Einstellung "
-"zurück)"
+msgstr "Figuren im Shogi-Stil umdrehen (Farbige Schaltflächen setzen die Einstellung zurück)"
 
 #: dialogs.c:938
 msgid "Mono Mode"
@@ -1898,7 +1892,6 @@ msgid "add next move"
 msgstr "Nächsten Zug hinzufügen"
 
 #: dialogs.c:1228
-#, fuzzy
 msgid "commit changes"
 msgstr "Änderungen speichern"
 
@@ -1911,9 +1904,8 @@ msgid "Tags"
 msgstr "Markierungen"
 
 #: dialogs.c:1283
-#, fuzzy
 msgid "Registered Engines"
-msgstr "Schachprogramm ersetzen"
+msgstr "Registrierte Schachprogramme"
 
 #: dialogs.c:1399
 msgid "ICS input box"
@@ -1945,9 +1937,7 @@ msgstr "Spitzname (optional):"
 
 #: dialogs.c:1505
 msgid "Use nickname in PGN player tags of engine-engine games"
-msgstr ""
-"Spitzname in PGN-Spieler-Kennzeichen bei Spielen zwischen Schachprogrammen "
-"benutzen"
+msgstr "Spitzname in PGN-Spieler-Kennzeichen bei Spielen zwischen Schachprogrammen benutzen"
 
 #: dialogs.c:1506
 msgid "Engine Directory:"
@@ -1967,7 +1957,7 @@ msgstr "UCI"
 
 #: dialogs.c:1510
 msgid "USI/UCCI (uses specified -uxiAdapter)"
-msgstr ""
+msgstr "USI/UCCI (benutzt den angegebenen -uxiAdapter)"
 
 #: dialogs.c:1511
 msgid "WB protocol v1 (do not wait for engine features)"
@@ -2031,7 +2021,7 @@ msgstr "Feste Maximalbedenkzeit"
 
 #: dialogs.c:1640
 msgid "Divide entered times by 60"
-msgstr ""
+msgstr "Eingegebene Zeiten durch 60 teilen"
 
 #: dialogs.c:1641
 msgid "Moves per session:"
@@ -2064,7 +2054,7 @@ msgstr "Nicht benutzt"
 
 #: dialogs.c:1705
 msgid "Changing time control during a game is not implemented"
-msgstr ""
+msgstr "Das Ändern der Bedenkzeit während eines Spiels ist nicht implementiert"
 
 #: dialogs.c:1742
 msgid "Error writing to chess program"
@@ -2228,44 +2218,36 @@ msgid "Black"
 msgstr "Schwarz"
 
 #: dialogs.c:2618
-#, fuzzy
 msgid "_File"
-msgstr "Datei"
+msgstr "_Datei"
 
 #: dialogs.c:2619
-#, fuzzy
 msgid "_Edit"
-msgstr "Bearbeiten"
+msgstr "_Bearbeiten"
 
 #: dialogs.c:2620
-#, fuzzy
 msgid "_View"
-msgstr "Anzeigen"
+msgstr "_Ansicht"
 
 #: dialogs.c:2621
-#, fuzzy
 msgid "_Mode"
-msgstr "Modus"
+msgstr "_Modus"
 
 #: dialogs.c:2622
-#, fuzzy
 msgid "_Action"
-msgstr "Aktion"
+msgstr "A_ktion"
 
 #: dialogs.c:2623
-#, fuzzy
 msgid "E_ngine"
-msgstr "Schachprogramm"
+msgstr "Schach_programm"
 
 #: dialogs.c:2624
-#, fuzzy
 msgid "_Options"
-msgstr "Optionen"
+msgstr "_Optionen"
 
 #: dialogs.c:2625
-#, fuzzy
 msgid "_Help"
-msgstr "Hilfe"
+msgstr "_Hilfe"
 
 #: dialogs.c:2635
 msgid "<<"
@@ -2368,9 +2350,7 @@ msgstr "Fehler beim Öffnen der Datei '%s'\n"
 
 #: gtk/xboard.c:1007 xaw/xboard.c:1092
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe "
-"zu unterstützen"
+msgstr "Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe zu unterstützen"
 
 #: gtk/xboard.c:1026 xaw/xboard.c:1124
 #, c-format
@@ -2430,7 +2410,7 @@ msgid " (with Zippy code)"
 msgstr " (mit Zippy)"
 
 #: menus.c:360
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -2438,12 +2418,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2454,13 +2432,11 @@ msgstr ""
 "Verbesserungen Copyright 1992-2014 Free Software Foundation\n"
 "Verbesserungen Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s ist freie Software und gewährt keinerlei Garantie; weitere Details\n"
-"finden Sie in der Datei COPYING.\n"
-"Die GTK-Ausgabe dieser Version ist experimentell und instabil\n"
+"%s ist freie Software und gewährt keinerlei Garantie;\n"
+"weitere Details finden Sie in der Datei COPYING.\n"
 "\n"
 "Besuchen Sie XBoard im Web unter: http://www.gnu.org/software/xboard/\n"
-"Die neuesten Features finden Sie unter: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Die neuesten Features finden Sie unter: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Fehler melden Sie bitte (auf Englisch) per E-Mail an: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2742,9 +2718,8 @@ msgid "Engine #2 Settings..."
 msgstr "Einstellungen für Schachprogramm #2…"
 
 #: menus.c:703
-#, fuzzy
 msgid "Common Settings..."
-msgstr "Allgemeine Schachprogramm-Einstellungen"
+msgstr "Allgemeine Einstellungen…"
 
 #: menus.c:705
 msgid "Hint"
@@ -3046,6 +3021,3 @@ msgstr "Alt"
 #: xaw/xoptions.c:451 xaw/xoptions.c:452
 msgid "Shift"
 msgstr "Umschalt"
-
-#~ msgid "Common Engine..."
-#~ msgstr "Allgemeine Schachprogramm-Einstellungen"
