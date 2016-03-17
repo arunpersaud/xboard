@@ -2447,6 +2447,7 @@ DisplayTitle (char *text)
 }
 
 char *textPtr;
+char *texEscapes[] = { "s-1", "s0", "&", "*(L", "*(R", NULL };
 
 int
 GetNext(FILE *f)
@@ -2485,6 +2486,18 @@ GetHelpText (FILE *f, char *name)
 		*p++ = ' '; cnt++;
 		while(*line) {
 		    if(*line < ' ') { line++; continue;}
+		    if(*line == '\\') {
+			char **esc;
+			line++;
+			for(esc = texEscapes; *esc; esc++) {
+			    len = strlen(*esc);
+			    if(!strncmp(*esc, line, len)) {
+				line += len;
+				break;
+			    }
+			}
+			continue;
+		    }
 		    if(*line == ' ' && p - q > 80) *line = '\n', q = p;
 		    *p++ = *line++;
 		}
