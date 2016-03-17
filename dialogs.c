@@ -2503,7 +2503,7 @@ void
 DisplayHelp (char *name)
 {
     static char *xboardMan, *manText[2], tidy[MSG_SIZ], engMan[MSG_SIZ];
-    char buf[MSG_SIZ], *eng;
+    char buf[MSG_SIZ], adapter[MSG_SIZ], *eng;
     int n = 0;
     FILE *f;
     if(!xboardMan) {
@@ -2512,7 +2512,13 @@ DisplayHelp (char *name)
     }
     if(currentCps) { // for engine options we have to look in engine manual
 	snprintf(buf, MSG_SIZ, "man -w ");            // get (tidied) engine name in buf
+	TidyProgramName(currentCps->program, "localhost", adapter);       // name of binary we are actually running
 	TidyProgramName(currentCps == &first ? appData.firstChessProgram : appData.secondChessProgram, "localhost", buf+7);
+	if(strcmp(buf+7, adapter) && StrCaseStr(name, adapter) == name) { // option starts with name of apparent proxy for engine
+	    safeStrCpy(buf+7, adapter, MSG_SIZ-7);    // use adapter manual
+	    name += strlen(adapter);                  // strip adapter name of option
+	    while(*name == ' ') name++;
+	}
 	if(strcmp(buf, tidy)) {                       // is different engine from last time
 	    FREE(manText[1]); manText[1] = NULL;      // so any currently held text is worthless
 	    safeStrCpy(tidy, buf, MSG_SIZ);           // remember current engine
