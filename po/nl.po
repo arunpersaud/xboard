@@ -1,16 +1,16 @@
 # Dutch translations for GNU XBoard.
-# Copyright (C) 2015 Free Software Foundation, Inc.
+# Copyright (C) 2016 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
 #
 # "She makes her living brewing coffee for strangers..."
 #
-# Benno Schulenberg <benno@vertaalt.nl>, 2013, 2014, 2015.
+# Benno Schulenberg <benno@vertaalt.nl>, 2013, 2014, 2015, 2016.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.8.0\n"
+"Project-Id-Version: GNU xboard 4.9.0-pre1\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-03-13 10:33-0700\n"
-"PO-Revision-Date: 2015-04-27 20:38+0200\n"
+"PO-Revision-Date: 2016-03-18 11:18+0100\n"
 "Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "Language: nl\n"
@@ -813,7 +813,7 @@ msgstr "Fout bij lezen van %s schaakprogramma (%s)"
 #: backend.c:17227
 #, c-format
 msgid "%s engine has too many options\n"
-msgstr "%s automaat heeft te veel instellingen\n"
+msgstr "%s-automaat heeft te veel instellingen\n"
 
 #: backend.c:17383
 msgid "Displayed move is not current"
@@ -1323,7 +1323,7 @@ msgstr "Gevarieerdheid (0) tot Sterkte (100):"
 msgid "Engine #1 Has Own Book"
 msgstr "Automaat #1 heeft eigen boek"
 
-# XXX why the spaces?
+# XXX why the trailing spaces?
 #: dialogs.c:635
 msgid "Engine #2 Has Own Book          "
 msgstr "Automaat #2 heeft eigen boek"
@@ -1842,8 +1842,7 @@ msgstr "Voorzet-markeringskleur:"
 
 #: dialogs.c:936
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr ""
-"Stukken op Shogi-manier omdraaien  (gekleurde knoppen herstellen standaard)"
+msgstr "Stukken op Shogi-manier omdraaien  (gekleurde knoppen herstellen standaard)"
 
 #: dialogs.c:938
 msgid "Mono Mode"
@@ -1899,12 +1898,11 @@ msgstr "wijzigingen opslaan"
 
 #: dialogs.c:1227
 msgid "add next move"
-msgstr "Volgende zet toevoegen"
+msgstr "volgende zet toevoegen"
 
 #: dialogs.c:1228
-#, fuzzy
 msgid "commit changes"
-msgstr "wijzigingen opslaan"
+msgstr "wijzigingen doorvoeren"
 
 #: dialogs.c:1251
 msgid "Edit book"
@@ -1915,9 +1913,8 @@ msgid "Tags"
 msgstr "Labels"
 
 #: dialogs.c:1283
-#, fuzzy
 msgid "Registered Engines"
-msgstr "Automaat vervangen"
+msgstr "Geregistreerde automaten"
 
 #: dialogs.c:1399
 msgid "ICS input box"
@@ -1969,7 +1966,7 @@ msgstr "UCI"
 
 #: dialogs.c:1510
 msgid "USI/UCCI (uses specified -uxiAdapter)"
-msgstr ""
+msgstr "USI/UCCI (gebruikt de opgegeven -uxiAdapter)"
 
 #: dialogs.c:1511
 msgid "WB protocol v1 (do not wait for engine features)"
@@ -2034,7 +2031,7 @@ msgstr "Vast maximum"
 
 #: dialogs.c:1640
 msgid "Divide entered times by 60"
-msgstr ""
+msgstr "Ingevoerde tijden door 60 delen"
 
 #: dialogs.c:1641
 msgid "Moves per session:"
@@ -2068,7 +2065,7 @@ msgstr "(loos)"
 
 #: dialogs.c:1705
 msgid "Changing time control during a game is not implemented"
-msgstr ""
+msgstr "Het wijzigen van de tijdsinstellingen tijdens een partij is niet geïmplementeerd."
 
 #: dialogs.c:1742
 msgid "Error writing to chess program"
@@ -2232,45 +2229,36 @@ msgid "Black"
 msgstr "Zwart"
 
 #: dialogs.c:2618
-#, fuzzy
 msgid "_File"
-msgstr "Bestand"
+msgstr "_Bestand"
 
 #: dialogs.c:2619
-#, fuzzy
 msgid "_Edit"
-msgstr "Bewerken"
+msgstr "B_ewerken"
 
 #: dialogs.c:2620
-#, fuzzy
 msgid "_View"
-msgstr "Weergave"
+msgstr "_Weergave"
 
 #: dialogs.c:2621
-#, fuzzy
 msgid "_Mode"
-msgstr "Modus"
+msgstr "_Modus"
 
 #: dialogs.c:2622
-#, fuzzy
 msgid "_Action"
-msgstr "Acties"
+msgstr "_Acties"
 
 #: dialogs.c:2623
-#, fuzzy
 msgid "E_ngine"
-msgstr "Automaat"
+msgstr "A_utomaat"
 
-# XXX "Instellingen" is te lang, wordt afgeknabbeld.
 #: dialogs.c:2624
-#, fuzzy
 msgid "_Options"
-msgstr "Opties"
+msgstr "_Opties"
 
 #: dialogs.c:2625
-#, fuzzy
 msgid "_Help"
-msgstr "Hulp"
+msgstr "_Hulp"
 
 #: dialogs.c:2635
 msgid "<<"
@@ -2373,9 +2361,7 @@ msgstr "Kan bestand '%s' niet openen\n"
 
 #: gtk/xboard.c:1007 xaw/xboard.c:1092
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"*** Hercompileer met grotere BOARD_RANKS of BOARD_FILES om deze grootte te "
-"ondersteunen"
+msgstr "*** Hercompileer met grotere BOARD_RANKS of BOARD_FILES om deze grootte te ondersteunen"
 
 #: gtk/xboard.c:1026 xaw/xboard.c:1124
 #, c-format
@@ -2435,7 +2421,7 @@ msgid " (with Zippy code)"
 msgstr " (met Zippy-code)"
 
 #: menus.c:360
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -2443,12 +2429,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2456,15 +2440,14 @@ msgstr ""
 "%s%s\n"
 "\n"
 "Copyright 1991 Digital Equipment Corporation\n"
-"Uitbreidingen Copyright 1992-2014 Free Software Foundation\n"
+"Uitbreidingen Copyright 1992-2016 Free Software Foundation\n"
 "Uitbreidingen Copyright 2005 Alessandro Scotti\n"
 "\n"
 "%s is vrije software en kent GEEN GARANTIE;\n"
 "zie het bestand COPYING voor meer informatie.\n"
-"De GTK-versie is experimenteel en nog niet stabiel.\n"
 "\n"
 "Bezoek XBoard op het web: http://www.gnu.org/software/xboard/\n"
-"Voor nieuwe functies zie: http://www.gnu.org/software/xboard/whats_new.html\n"
+"Voor nieuwe functies zie: http://www.gnu.org/software/xboard/whats_new/\n"
 "\n"
 "Rapporteer gebreken in het programma aan <bug-xboard@gnu.org>;\n"
 "meld vertaalfouten aan <vertaling@vrijschrift.org>.\n"
@@ -2748,9 +2731,8 @@ msgid "Engine #2 Settings..."
 msgstr "Instellingen van automaat 2..."
 
 #: menus.c:703
-#, fuzzy
 msgid "Common Settings..."
-msgstr "Algemene automaatinstellingen"
+msgstr "Algemene instellingen..."
 
 #: menus.c:705
 msgid "Hint"
@@ -3083,3 +3065,4 @@ msgstr "Shift"
 
 #~ msgid "cancel"
 #~ msgstr "Annuleren"
+
