@@ -1452,7 +1452,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             }
             else if (option[i].type == FileName || option[i].type == PathName) {
                 gtk_table_attach(GTK_TABLE(table), entry, left+1, left+2, top, top+1, GTK_FILL | GTK_EXPAND, GTK_FILL, 2, 1);
-                button = gtk_button_new_with_label ("Browse");
+                button = gtk_button_new_with_label (_("Browse"));
                 gtk_table_attach(GTK_TABLE(table), button, left+2, left+r, top, top+1, GTK_FILL, GTK_FILL, 2, 1); // Browse button does not expand
                 g_signal_connect (button, "clicked", G_CALLBACK (BrowseGTK), (gpointer)(intptr_t) i);
                 option[i].handle = (void*)entry;
