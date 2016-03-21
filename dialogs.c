@@ -66,7 +66,6 @@ extern char *getenv();
 
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
-char dataDir[MSG_SIZ] = DATADIR, manDir[MSG_SIZ] = MANDIR;
 
 //----------------------------Generic dialog --------------------------------------------
 
@@ -2473,7 +2472,7 @@ GetHelpText (FILE *f, char *name)
     int len, cnt = 0;
     snprintf(buf, MSG_SIZ, ".B %s", name);
     len = strlen(buf);
-    for(len=1; buf[len] == ' ' || buf[len] == '-' || isalpha(buf[len]) || isdigit(buf[len]); len++);
+    for(len=3; buf[len] && buf[len] != '(' && buf[len] != ':' && buf[len] != '.' && buf[len] != '?'; len++);
     buf[len] = NULLCHAR;
     while(buf[--len] == ' ') buf[len] = NULLCHAR;
     snprintf(title, MSG_SIZ, "Help on '%s'", buf+3);
