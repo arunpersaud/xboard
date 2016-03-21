@@ -3754,6 +3754,7 @@ void DrawSeekClose()
 }
 
 
+
 VOID
 HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 {
@@ -3974,6 +3975,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	 explodes.  The old and new positions both had an empty square
 	 at the destination, but animation has drawn a piece there and
 	 we have to remember to erase it. [HGM] moved until after setting lastDrawn */
+
       lastDrawn[0][animInfo.to.y][animInfo.to.x] = animInfo.piece;
     }
   }
@@ -9137,6 +9139,7 @@ IDLE_PRIORITY_CLASS         0x00000040
 */
         if (nice < -15) return 0x00000080;
         if (nice < 0)   return 0x00008000;
+
         if (nice == 0)  return 0x00000020;
         if (nice < 15)  return 0x00004000;
         return 0x00000040;
@@ -10047,8 +10050,8 @@ AnimateMove(board, fromX, fromY, toX, toY)
      int toX;
      int toY;
 {
-  ChessSquare piece;
-  int x = toX, y = toY;
+  ChessSquare piece, victim = EmptySquare, victim2 = EmptySquare;
+  int x = toX, y = toY, x2 = kill2X;
   POINT start, finish, mid;
   POINT frames[kFactor * 2 + 1];
   int nFrames, n;
@@ -10061,7 +10064,11 @@ AnimateMove(board, fromX, fromY, toX, toY)
   piece = board[fromY][fromX];
   if (piece >= EmptySquare) return;
 
-  if(killX >= 0) toX = killX, toY = killY; // [HGM] lion: first to kill square
+  if(x2 >= 0) toX = kill2X, toY = kill2Y,  victim = board[killY][killX], victim2 = board[kill2Y][kill2X]; else
+  if(killX >= 0) toX = killX, toY = killY, victim = board[killY][killX]; // [HGM] lion: first to kill square
+
+  animInfo.from.x = fromX;
+  animInfo.from.y = fromY;
 
 again:
 
@@ -10089,8 +10096,6 @@ again:
   else
     Tween(&start, &mid, &finish, kFactor, frames, &nFrames);
 
-  animInfo.from.x = fromX;
-  animInfo.from.y = fromY;
   animInfo.to.x = toX;
   animInfo.to.y = toY;
   animInfo.lastpos = start;
@@ -10104,7 +10109,17 @@ again:
   animInfo.pos = finish;
   DrawPosition(FALSE, NULL);
 
-  if(toX != x || toY != y) { fromX = toX; fromY = toY; toX = x; toY = y; goto again; } // second leg
+  if(toX == x2 && toY == kill2Y) {
+    fromX = toX; fromY = toY; toX = killX; toY = killY; x2 = -1;
+    board[kill2Y][kill2X] = EmptySquare; goto again;
+  } // second leg
+  if(toX != x || toY != y) {
+    fromX = toX; fromY = toY; toX = x; toY = y;
+    board[killY][killX] = EmptySquare; goto again;
+  } // second leg
+
+if(victim2 != EmptySquare) board[kill2Y][kill2X] = victim2;
+if(victim  != EmptySquare) board[killY][killX] = victim;
 
   animInfo.piece = EmptySquare;
   Explode(board, fromX, fromY, toX, toY);
