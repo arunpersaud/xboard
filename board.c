@@ -821,9 +821,11 @@ DrawSquare (int row, int column, ChessSquare piece, int do_flash)
 	for (i=0; i<appData.flashCount; ++i) {
 	    DrawOneSquare(x, y, piece, square_color, 0, tString, bString, 0);
 	    GraphExpose(currBoard, x, y, squareSize, squareSize);
+	    DoEvents(); // requires event processing to actually update screen :-(
 	    FlashDelay(flash_delay);
 	    DrawOneSquare(x, y, EmptySquare, square_color, 0, tString, bString, 0);
 	    GraphExpose(currBoard, x, y, squareSize, squareSize);
+	    DoEvents();
 	    FlashDelay(flash_delay);
 	}
     }
@@ -950,8 +952,10 @@ DrawPosition (int repaint, Board board)
 	/* Special check for castling so we don't flash both the king
 	   and the rook (just flash the king). */
 	if (do_flash) {
-	    /* Mark rook for drawing with NO flashing. */
-	    check_castle_draw(board, lastBoard[nr], &rrow, &rcol);
+	    if(check_castle_draw(board, lastBoard[nr], &rrow, &rcol)) {
+		/* Mark rook for drawing with NO flashing. */
+		damage[nr][rrow][rcol] |= 1;
+	    }
 	}
 
 	/* First pass -- Erase arrow and grid highlights, but keep square content unchanged. Except for new markers. */

@@ -7525,10 +7525,12 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 {
     int x, y;
     Boolean saveAnimate;
-    static int second = 0, promotionChoice = 0, clearFlag = 0, sweepSelecting = 0;
+    static int second = 0, promotionChoice = 0, clearFlag = 0, sweepSelecting = 0, flashing = 0, saveFlash;
     char promoChoice = NULLCHAR;
     ChessSquare piece;
     static TimeMark lastClickTime, prevClickTime;
+
+    if(flashing) return;
 
     x = EventToSquare(xPix, BOARD_WIDTH);
     y = EventToSquare(yPix, BOARD_HEIGHT);
@@ -7788,6 +7790,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    if(gameInfo.variant != VariantChuChess && PieceToChar(CHUPROMOTED(piece)) == '+') promoSweep = CHUPROMOTED(piece);
 	    selectFlag = 0; lastX = xPix; lastY = yPix;
 	    ReportClick("put", x, y); // extra put to prompt engine for 'choice' command
+	    saveFlash = appData.flashCount; appData.flashCount = 0;
 	    Sweep(0); // Pawn that is going to promote: preview promotion piece
 	    sweepSelecting = 1;
 	    DisplayMessage("", _("Pull pawn backwards to under-promote"));
@@ -7804,7 +7807,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	MarkTargetSquares(1);
     } else if(sweepSelecting) { // this must be the up-click corresponding to the down-click that started the sweep
 	sweepSelecting = 0; appData.animate = FALSE; // do not animate, a selected piece already on to-square
-        *promoRestrict = 0;
+        *promoRestrict = 0; appData.flashCount = saveFlash;
 	if (appData.animate || appData.highlightLastMove) {
 	    SetHighlights(fromX, fromY, toX, toY);
 	} else {
@@ -7898,6 +7901,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	PromotionPopUp(promoChoice);
     } else {
 	int oldMove = currentMove;
+	flashing = 1; // prevent recursive calling (by release of to-click) while flashing piece
 	UserMoveEvent(fromX, fromY, toX, toY, promoChoice);
 	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
 	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
@@ -7905,6 +7909,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	   Explode(boards[currentMove-1], fromX, fromY, toX, toY))
 	    DrawPosition(TRUE, boards[currentMove]);
 	fromX = fromY = -1;
+	flashing = 0;
     }
     appData.animate = saveAnimate;
     if (appData.animate || appData.animateDragging) {
