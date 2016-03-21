@@ -428,6 +428,7 @@ char *SupportedVariant P((char *list, VariantClass v, int w, int h, int s, int p
 char *CollectPieceDescriptors P((void));
 void RefreshSettingsDialog P((ChessProgramState *cps, int val));
 void StartChessProgram P((ChessProgramState *cps));
+void SendToICS P((char *s));
 int PosFlags P((int n));
 
 
