@@ -150,42 +150,31 @@ int pm1X = -1, pm1Y = -1, pm2X = -1, pm2Y = -1;
 
 void
 SetHighlights (int fromX, int fromY, int toX, int toY)
-{
-    int arrow = hi2X >= 0 && hi1Y >= 0 && IsDrawArrowEnabled();
+{   // [HGM] schedule old for erasure, and leave drawing new to DrawPosition
+    int change = 0;
 
-    if (hi1X != fromX || hi1Y != fromY) {
-	if (hi1X >= 0 && hi1Y >= 0) {
-	    drawHighlight(hi1X, hi1Y, 0);
+    if (hi1X >= 0 && hi1Y >= 0) {
+	if (hi1X != fromX || hi1Y != fromY) {
+	    damage[0][hi1Y][hi1X] |= 2;
+	    change |= 1;
 	}
-    } // [HGM] first erase both, then draw new!
-
-    if (hi2X != toX || hi2Y != toY) {
-	if (hi2X >= 0 && hi2Y >= 0) {
-	    drawHighlight(hi2X, hi2Y, 0);
-	}
+	change |= 4;
     }
 
-    if(arrow) // there currently is an arrow displayed
-	ArrowDamage(hi1X, hi1Y, hi2X, hi2Y); // mark which squares it damaged
+    if (hi2X >= 0 && hi2Y >= 0) {
+	if (hi2X != toX || hi2Y != toY) {
+	    damage[0][hi2Y][hi2X] |= 2;
+	    change |= 2;
+	}
+	change |= 8;
+    }
 
-    if (hi1X != fromX || hi1Y != fromY) {
-	if (fromX >= 0 && fromY >= 0) {
-	    drawHighlight(fromX, fromY, 1);
-	}
-    }
-    if (hi2X != toX || hi2Y != toY) {
-	if (toX >= 0 && toY >= 0) {
-	    drawHighlight(toX, toY, 1);
-	}
-    }
+    if(change > 12 && IsDrawArrowEnabled()) ArrowDamage(hi1X, hi1Y, hi2X, hi2Y);
 
     hi1X = fromX;
     hi1Y = fromY;
     hi2X = toX;
     hi2Y = toY;
-
-    if(arrow || toX >= 0 && fromY >= 0 && IsDrawArrowEnabled())
-	DrawPosition(FALSE, NULL); // repair any arrow damage, or draw a new one
 }
 
 void
@@ -200,18 +189,12 @@ SetPremoveHighlights (int fromX, int fromY, int toX, int toY)
 {
     if (pm1X != fromX || pm1Y != fromY) {
 	if (pm1X >= 0 && pm1Y >= 0) {
-	    drawHighlight(pm1X, pm1Y, 0);
-	}
-	if (fromX >= 0 && fromY >= 0) {
-	    drawHighlight(fromX, fromY, 2);
+	    damage[0][pm1Y][pm1X] |= 2;
 	}
     }
     if (pm2X != toX || pm2Y != toY) {
 	if (pm2X >= 0 && pm2Y >= 0) {
-	    drawHighlight(pm2X, pm2Y, 0);
-	}
-	if (toX >= 0 && toY >= 0) {
-	    drawHighlight(toX, toY, 2);
+	    damage[0][pm1Y][pm1X] |= 2;
 	}
     }
     pm1X = fromX;
@@ -661,8 +644,8 @@ again:
       if((i-toX)*(i-toX) + (j-toY)*(j-toY) < 6) damage[0][j][i] |=  1 + ((i-toX ^ j-toY) & 1);
   }
 
-  /* Be sure end square is redrawn */
-  damage[0][toY][toX] |= True;
+  /* Be sure end square is redrawn, with piece in it */
+  damage[0][toY][toX] |= 4;
 
   if(toX == x2 && toY == kill2Y) { fromX = toX; fromY = toY; toX = killX; toY = killY; x2 = -1; goto again; } // second leg
   if(toX != x || toY != y) { fromX = toX; fromY = toY; toX = x; toY = y; goto again; } // second leg
@@ -913,6 +896,22 @@ check_castle_draw (Board newb, Board oldb, int *rrow, int *rcol)
 }
 
 void
+SquareExpose(int i, int j, int d)
+{
+    int x, y;
+    if (flipView) {
+	x = lineGap + ((BOARD_WIDTH-1)-j) *
+	  (squareSize + lineGap);
+	y = lineGap + i * (squareSize + lineGap);
+    } else {
+	x = lineGap + j * (squareSize + lineGap);
+	y = lineGap + ((BOARD_HEIGHT-1)-i) *
+	  (squareSize + lineGap);
+    }
+    GraphExpose(currBoard, x-d, y-d, squareSize+2*d, squareSize+2*d);
+}
+
+void
 DrawPosition (int repaint, Board board)
 {
     int i, j, do_flash, exposeAll = False;
@@ -920,7 +919,7 @@ DrawPosition (int repaint, Board board)
     static int lastBoardValid[2] = {0, 0};
     static Board lastBoard[2];
     static char lastMarker[BOARD_RANKS][BOARD_FILES], messedUp;
-    int rrow, rcol;
+    int rrow = -1, rcol = -1;
     int nr = twoBoards*partnerUp;
 
     repaint |= messedUp;
@@ -944,9 +943,6 @@ DrawPosition (int repaint, Board board)
 
     if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
 
-//	if ( lineGap && IsDrawArrowEnabled())
-//	    DrawGrid();
-
 	/* If too much changes (begin observing new game, etc.), don't
 	   do flashing */
 	do_flash = too_many_diffs(board, lastBoard[nr]) ? 0 : 1;
@@ -954,33 +950,40 @@ DrawPosition (int repaint, Board board)
 	/* Special check for castling so we don't flash both the king
 	   and the rook (just flash the king). */
 	if (do_flash) {
-	    if (check_castle_draw(board, lastBoard[nr], &rrow, &rcol)) {
-		/* Mark rook for drawing with NO flashing. */
-		damage[nr][rrow][rcol] |= 1;
-	    }
+	    /* Mark rook for drawing with NO flashing. */
+	    check_castle_draw(board, lastBoard[nr], &rrow, &rcol);
 	}
 
-	/* First pass -- Draw (newly) empty squares and repair damage.
+	/* First pass -- Erase arrow and grid highlights, but keep square content unchanged. Except for new markers. */
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++)
+	    if (damage[nr][i][j] ||  !nr && marker[i][j] != lastMarker[i][j]) {
+		DrawSquare(i, j, board[i][j], 0);
+		if(lineGap && damage[nr][i][j] & 2) {
+		    drawHighlight(j, i, 0);
+		    SquareExpose(i, j, 1);
+		} else SquareExpose(i, j, 0);
+		damage[nr][i][j] = 0;
+	    }
+
+	/* Second pass -- Draw (newly) empty squares
 	   This prevents you from having a piece show up twice while it
 	   is flashing on its new square */
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if (((board[i][j] != lastBoard[nr][i][j] || !nr && marker[i][j] != lastMarker[i][j]) && board[i][j] == EmptySquare)
-		|| damage[nr][i][j]) {
+	    if (board[i][j] != lastBoard[nr][i][j] && board[i][j] == EmptySquare) {
 		DrawSquare(i, j, board[i][j], 0);
-		if(damage[nr][i][j] & 2) {
-		    drawHighlight(j, i, 0);   // repair arrow damage
-		    if(lineGap) damage[nr][i][j] = False; // this flushed the square as well
-		} else damage[nr][i][j] = 1;  // mark for expose
+		SquareExpose(i, j, 0);
 	    }
 
-	/* Second pass -- Draw piece(s) in new position and flash them */
+	/* Third pass -- Draw piece(s) in new position and flash them */
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if (board[i][j] != lastBoard[nr][i][j] || !nr && marker[i][j] != lastMarker[i][j]) {
-		DrawSquare(i, j, board[i][j], do_flash);
+	    if (board[i][j] != lastBoard[nr][i][j]) {
+		DrawSquare(i, j, board[i][j], do_flash && (i != rrow || j != rcol));
 		damage[nr][i][j] = 1; // mark for expose
 	    }
+
     } else {
 	if (lineGap > 0)
 	  DrawGrid();
@@ -1005,19 +1008,19 @@ DrawPosition (int repaint, Board board)
     /* Draw highlights */
     if (pm1X >= 0 && pm1Y >= 0) {
       drawHighlight(pm1X, pm1Y, 2);
-      if(lineGap) damage[nr][pm1Y][pm1X] = False;
+      if(lineGap) damage[nr][pm1Y][pm1X] |= 2;
     }
     if (pm2X >= 0 && pm2Y >= 0) {
       drawHighlight(pm2X, pm2Y, 2);
-      if(lineGap) damage[nr][pm2Y][pm2X] = False;
+      if(lineGap) damage[nr][pm2Y][pm2X] |= 2;
     }
     if (hi1X >= 0 && hi1Y >= 0) {
       drawHighlight(hi1X, hi1Y, 1);
-      if(lineGap) damage[nr][hi1Y][hi1X] = False;
+      if(lineGap) damage[nr][hi1Y][hi1X] |= 2;
     }
     if (hi2X >= 0 && hi2Y >= 0) {
       drawHighlight(hi2X, hi2Y, 1);
-      if(lineGap) damage[nr][hi2Y][hi2X] = False;
+      if(lineGap) damage[nr][hi2Y][hi2X] |= 2;
     }
     DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y);
   }
@@ -1032,21 +1035,11 @@ DrawPosition (int repaint, Board board)
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	    for (j = 0; j < BOARD_WIDTH; j++)
 		if(damage[nr][i][j]) {
-		    int x, y;
-		    if (flipView) {
-			x = lineGap + ((BOARD_WIDTH-1)-j) *
-			  (squareSize + lineGap);
-			y = lineGap + i * (squareSize + lineGap);
-		    } else {
-			x = lineGap + j * (squareSize + lineGap);
-			y = lineGap + ((BOARD_HEIGHT-1)-i) *
-			  (squareSize + lineGap);
-		    }
 		    if(damage[nr][i][j] & 2) // damage by old or new arrow
-			GraphExpose(currBoard, x - lineGap, y - lineGap, squareSize + 2*lineGap, squareSize  + 2*lineGap);
+			SquareExpose(i, j, lineGap);
 		    else
-			GraphExpose(currBoard, x, y, squareSize, squareSize);
-		    damage[nr][i][j] &= 2; // remember damage by newly drawn error in '2' bit, to schedule it for erasure next draw
+			SquareExpose(i, j, 0);
+		    damage[nr][i][j] = 0;
 		}
     }
 

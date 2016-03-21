@@ -636,7 +636,7 @@ DrawBorder (int x, int y, int type, int odd)
     SetPen(cr, lineGap, col, 0);
     cairo_stroke(cr);
     cairo_destroy(cr);
-    GraphExpose(currBoard, x - lineGap/2, y - lineGap/2, squareSize+2*lineGap+odd, squareSize+2*lineGap+odd);
+//    GraphExpose(currBoard, x - lineGap/2, y - lineGap/2, squareSize+2*lineGap+odd, squareSize+2*lineGap+odd);
 }
 
 static int
