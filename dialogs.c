@@ -66,6 +66,7 @@ extern char *getenv();
 
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
+char manDir[MSG_SIZ] = MANDIR;
 
 //----------------------------Generic dialog --------------------------------------------
 

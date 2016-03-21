@@ -100,7 +100,7 @@ typedef struct {
 } IcsTextMenuEntry;
 
 IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
-char dataDir[MSG_SIZ] = DATADIR, manDir[MSG_SIZ] = MANDIR;
+char dataDir[MSG_SIZ] = DATADIR;
 
 int junk;
 int saveDate;
