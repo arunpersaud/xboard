@@ -618,12 +618,12 @@ Bishop (Board board, int flags, int rf, int ff, MoveCallback callback, VOIDSTAR 
 
 void
 Sting (Board board, int flags, int rf, int ff, int dy, int dx, MoveCallback callback, VOIDSTAR closure)
-{ // Lion-like move of Horned Falcon and Souring Eagle
+{ // Lion-like move of Horned Falcon and Soaring Eagle
   int ft = ff + dx, rt = rf + dy;
   if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) return;
   legNr += 2;
   if (!SameColor(board[rf][ff], board[rt][ft]))
-    callback(board, flags, board[rt][ft] != EmptySquare ? FirstLeg : NormalMove, rf, ff, rt, ft, closure);
+    callback(board, flags, killX < 0 && board[rt][ft] != EmptySquare ? FirstLeg : NormalMove, rf, ff, rt, ft, closure);
   legNr -= 2;
   ft += dx; rt += dy;
   if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) return;
@@ -1263,7 +1263,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
                 if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
                 if (!(ff == ft && rf == rt) && SameColor(board[rf][ff], board[rt][ft])) continue;
                 i = (killX >= 0 && (rt-killY)*(rt-killY) + (killX-ft)*(killX-ft) < 3); legNr += 2*i;
-                callback(board, flags, (rt-rf)*(rt-rf) + (ff-ft)*(ff-ft) < 3 && board[rt][ft] != EmptySquare ? FirstLeg : NormalMove,
+                callback(board, flags, (rt-rf)*(rt-rf) + (ff-ft)*(ff-ft) < 3 && board[rt][ft] != EmptySquare && !i ? FirstLeg : NormalMove,
                          rf, ff, rt, ft, closure);
                 legNr -= 2*i;
               }
