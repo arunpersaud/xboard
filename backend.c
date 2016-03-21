@@ -7431,7 +7431,7 @@ MarkTargetSquares (int clear)
   if(clear) { // no reason to ever suppress clearing
     for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) sum += marker[y][x], marker[y][x] = 0;
     hoverSavedValid = 0;
-    if(!sum) return; // nothing was cleared,no redraw needed
+    if(!sum || clear < 0) return; // nothing was cleared,no redraw needed
   } else {
     int capt = 0;
     if(!appData.markers || !appData.highlightDragging || appData.icsActive && gameInfo.variant < VariantShogi ||
@@ -7678,7 +7678,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 		doubleClick = first.excludeMoves; // used by UserMoveEvent to recognize exclude moves
 	    }
 	    promoDefaultAltered = FALSE;
-	    MarkTargetSquares(1);
+	   if(!second) MarkTargetSquares(1);
 	   if(!(second && appData.oneClick && OnlyMove(&x, &y, TRUE))) {
 	    if (appData.highlightDragging) {
 		SetHighlights(x, y, -1, -1);
@@ -7735,10 +7735,11 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    second = 0;
 	    fromX = fromY = -1;
 	    gatingPiece = EmptySquare;
-	    MarkTargetSquares(1);
 	    ClearHighlights();
 	    gotPremove = 0;
 	    ClearPremoveHighlights();
+	    MarkTargetSquares(-1);
+	    DrawPosition(FALSE, NULL); // make user highlights are drawn (and deferred marker clearing)
 	} else {
 	    /* First upclick in same square; start click-click mode */
 	    SetHighlights(x, y, -1, -1);
@@ -7800,6 +7801,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	} else {
 	    ClearHighlights();
 	}
+	MarkTargetSquares(1);
     } else if(sweepSelecting) { // this must be the up-click corresponding to the down-click that started the sweep
 	sweepSelecting = 0; appData.animate = FALSE; // do not animate, a selected piece already on to-square
         *promoRestrict = 0;
@@ -7808,6 +7810,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	} else {
 	    ClearHighlights();
 	}
+	MarkTargetSquares(1);
     } else {
 #if 0
 // [HGM] this must be done after the move is made, as with arrow it could lead to a board redraw with piece still on from square
@@ -7837,6 +7840,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	DragPieceEnd(xPix, yPix); dragging = 0;
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
+        MarkTargetSquares(-1); // -1 defers displaying marker change to prevent piece reappearing on from-square!
     }
 
     // moves into holding are invalid for now (except in EditPosition, adapting to-square)
@@ -7900,13 +7904,12 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	if(saveAnimate && !appData.animate && currentMove != oldMove && // drag-move was performed
 	   Explode(boards[currentMove-1], fromX, fromY, toX, toY))
 	    DrawPosition(TRUE, boards[currentMove]);
-        MarkTargetSquares(1);
 	fromX = fromY = -1;
     }
     appData.animate = saveAnimate;
     if (appData.animate || appData.animateDragging) {
 	/* Undo animation damage if needed */
-	DrawPosition(FALSE, NULL);
+//	DrawPosition(FALSE, NULL);
     }
 }
 
