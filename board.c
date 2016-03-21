@@ -749,7 +749,7 @@ DragPieceBegin (int x, int y, Boolean instantly)
 	/* Mark this square as needing to be redrawn. Note that
 	   we don't remove the piece though, since logically (ie
 	   as seen by opponent) the move hasn't been made yet. */
-	damage[0][boardY][boardX] = True;
+	damage[0][boardY][boardX] |= True;
     } else {
 	anims[Player].dragActive = False;
     }
@@ -770,7 +770,7 @@ DrawDragPiece ()
   DrawOneSquare(anims[Player].startSquare.x, anims[Player].startSquare.y,
 		EmptySquare, anims[Player].startColor, 0, NULL, NULL, 0);
   AnimationFrame(Player, &anims[Player].prevFrame, anims[Player].dragPiece);
-  damage[0][anims[Player].startBoardY][anims[Player].startBoardX] = TRUE;
+  damage[0][anims[Player].startBoardY][anims[Player].startBoardX] |= TRUE;
 }
 
 static void
@@ -965,7 +965,7 @@ DrawPosition (int repaint, Board board)
 		DrawSquare(i, j, board[i][j], 0);
 		if(lineGap && damage[nr][i][j] & 2) {
 		    drawHighlight(j, i, 0);
-		    SquareExpose(i, j, 1);
+		    SquareExpose(i, j, lineGap);
 		} else SquareExpose(i, j, 0);
 		damage[nr][i][j] = 0;
 	    }
