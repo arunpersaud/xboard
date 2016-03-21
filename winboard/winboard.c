@@ -10102,12 +10102,12 @@ again:
   animInfo.piece = piece;
   for (n = 0; n < nFrames; n++) {
     animInfo.pos = frames[n];
-    DrawPosition(FALSE, NULL);
+    DrawPosition(FALSE, board);
     animInfo.lastpos = animInfo.pos;
     Sleep(appData.animSpeed);
   }
   animInfo.pos = finish;
-  DrawPosition(FALSE, NULL);
+  DrawPosition(FALSE, board);
 
   if(toX == x2 && toY == kill2Y) {
     fromX = toX; fromY = toY; toX = killX; toY = killY; x2 = -1;
