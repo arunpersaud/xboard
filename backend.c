@@ -1743,6 +1743,11 @@ InitBackEnd3 P((void))
                 CopyBoard(filePosition, boards[0]);
                 CopyBoard(initialPosition, boards[0]);
             }
+	} else if(*appData.fen != NULLCHAR) {
+	    if(ParseFEN(filePosition, &blackPlaysFirst, appData.fen, TRUE) && !blackPlaysFirst) {
+                startedFromPositionFile = TRUE;
+		Reset(TRUE, TRUE);
+	    }
 	}
 	if (initialMode == AnalyzeMode) {
 	  if (appData.noChessProgram) {

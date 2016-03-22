@@ -714,6 +714,7 @@ ArgDescriptor argDescriptors[] = {
   { "memoHeaders", ArgBoolean, (void *) &appData.headers, TRUE, (ArgIniType) FALSE },
   { "startupMessage", ArgString, (void *) &appData.message, FALSE, (ArgIniType) "" },
   { "messageSuppress", ArgString, (void *) &appData.suppress, XBOARD, (ArgIniType) "" },
+  { "fen", ArgString, (void *) &appData.fen, FALSE, (ArgIniType) "" },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

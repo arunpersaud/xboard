@@ -800,6 +800,7 @@ typedef struct {
     char *recentEngineList;
     char *message;
     char *suppress;
+    char *fen;
     char *tourneyFile;
     char *defName;
     char *processes;
