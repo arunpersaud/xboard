@@ -1043,7 +1043,7 @@ DrawPosition (int repaint, Board board)
 			SquareExpose(i, j, lineGap);
 		    else
 			SquareExpose(i, j, 0);
-		    damage[nr][i][j] = 0;
+		    if(nr == 0) damage[nr][i][j] = 0; // on auxiliary board we retain arrow damage
 		}
     }
 
