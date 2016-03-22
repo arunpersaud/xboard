@@ -801,6 +801,7 @@ typedef struct {
     char *message;
     char *suppress;
     char *fen;
+    char *men;
     char *tourneyFile;
     char *defName;
     char *processes;

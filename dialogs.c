@@ -557,6 +557,7 @@ Pick (int n)
 	appData.pieceToCharTable = NULL;
 	appData.pieceNickNames = "";
 	appData.colorNickNames = "";
+	appData.men = "";
         PopDown(TransientDlg);
 	Reset(True, True);
         return;

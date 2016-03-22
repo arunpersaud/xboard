@@ -6459,6 +6459,7 @@ InitPosition (int redraw)
           initialRights[i] = filePosition[CASTLING][i];
       startedFromSetupPosition = TRUE;
     }
+    if(*appData.men) LoadPieceDesc(appData.men);
 
     CopyBoard(boards[0], initialPosition);
 

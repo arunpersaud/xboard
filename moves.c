@@ -241,6 +241,7 @@ LoadPieceDesc (char *s)
     char *r, *p, *q = s;
     int ok = TRUE, promoted, c;
     while(q && *s) {
+printf("pstring = %s\n", s);
 	p = s;
 	q = strchr(s, ';');
 	if(q) *q = 0, s = q+1;
@@ -261,6 +262,7 @@ LoadPieceDesc (char *s)
 	    ASSIGN(pieceDesc[WHITE_TO_BLACK piece], p);
 	}
 	pieceDefs = TRUE;
+	if(q) *q = ';';
     }
     return ok;
 }
