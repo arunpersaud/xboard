@@ -12928,7 +12928,7 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
     char buf[MSG_SIZ];
     int gn = gameNumber;
     ListGame *lg = NULL;
-    int numPGNTags = 0;
+    int numPGNTags = 0, i;
     int err, pos = -1;
     GameMode oldGameMode;
     VariantClass v, oldVariant = gameInfo.variant; /* [HGM] PGNvariant */
@@ -13116,6 +13116,8 @@ LoadGame (FILE *f, int gameNumber, char *title, int useList)
 
     if (appData.debugMode)
       fprintf(debugFP, "Parsed game start '%s' (%d)\n", yy_text, (int) cm);
+
+    for(i=0; i<EmptySquare; i++) { FREE(pieceDesc[i]); pieceDesc[i] = NULL; } // reset VariantMen
 
     if (cm == XBoardGame) {
 	/* Skip any header junk before position diagram and/or move 1 */
