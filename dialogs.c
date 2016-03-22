@@ -2120,6 +2120,10 @@ void
 ConsoleWrite(char *message, int count)
 {
     if(shellUp[ChatDlg] && chatOptions[CHAT_ICS].type != Skip) { // in Xaw this is a no-op
+	if(*message == 7) {
+	    message++; // remove bell
+	    if(strcmp(message, "\n")) return;
+	}
 	AppendColorized(&chatOptions[CHAT_ICS], message, count);
 	SetInsertPos(&chatOptions[CHAT_ICS], 999999);
     }
