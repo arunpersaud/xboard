@@ -1052,10 +1052,19 @@ DrawPosition (int repaint, Board board)
     else {
 	TimeMark now;
 	GetTimeMark(&now);
-	if(SubtractTimeMarks(&now, &programStartTime) < 1000) {
-	    DrawSeekBackground(2*squareSize, 3*squareSize, 6*squareSize, 5*squareSize);
-	    DrawText("Right-clicking dialog texts", 2*squareSize + 5, 3*squareSize + 5, 2);
-	    DrawText("pops up help on them", 2*squareSize + 5, (int) (3.3*squareSize) + 5, 2);
+	if(repaint && SubtractTimeMarks(&now, &programStartTime) < 1000) {
+	    char *p = appData.message, *q;
+	    i = 0;
+	    while(*p) {
+		q = strchr(p, '\n');
+		if(q) *q = NULLCHAR;
+		if(!strstr(appData.suppress, p)) {
+		    if(i == 0) DrawSeekBackground(2*squareSize, 3*squareSize, 6*squareSize, 5*squareSize);
+		    DrawText(p, 2*squareSize + 5, (int) ((3 + 0.3*i++)*squareSize) + 5, 2);
+		}
+		if(q) *q++ = '\n'; else q = "";
+		p = q;
+	    }
 	    GraphExpose(currBoard, 2*squareSize, 3*squareSize, 4*squareSize, 2*squareSize);
 	    messedUp = TRUE;
 	} else messedUp = FALSE;

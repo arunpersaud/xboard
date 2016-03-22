@@ -712,6 +712,8 @@ ArgDescriptor argDescriptors[] = {
   { "firstDrawDepth", ArgInt, (void *) &appData.drawDepth[0], FALSE, (ArgIniType) 0 },
   { "secondDrawDepth", ArgInt, (void *) &appData.drawDepth[1], FALSE, (ArgIniType) 0 },
   { "memoHeaders", ArgBoolean, (void *) &appData.headers, TRUE, (ArgIniType) FALSE },
+  { "startupMessage", ArgString, (void *) &appData.message, FALSE, (ArgIniType) "" },
+  { "messageSuppress", ArgString, (void *) &appData.suppress, XBOARD, (ArgIniType) "" },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

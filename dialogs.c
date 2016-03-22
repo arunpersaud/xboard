@@ -2543,6 +2543,8 @@ DisplayHelp (char *name)
     } else snprintf(buf, MSG_SIZ, "%s", xboardMan);   // use xboard man
     f = fopen(buf, "r");
     if(f) {
+	char *msg = "Right-clicking menu item or dialog text pops up help on it";
+	ASSIGN(appData.suppress, msg);
 	if(strstr(buf, ".gz")) { // man file is gzipped
 	    if(!manText[n]) {    // unzipped text not buffered yet
 		snprintf(tidy, MSG_SIZ, "gunzip -c %s", buf);

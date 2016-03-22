@@ -798,6 +798,8 @@ typedef struct {
 
     int recentEngines;
     char *recentEngineList;
+    char *message;
+    char *suppress;
     char *tourneyFile;
     char *defName;
     char *processes;
