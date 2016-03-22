@@ -404,7 +404,7 @@ NextUnit (char **p)
 
 	if(**p == NULLCHAR) { // make sure there is something to parse
 	    if(fromString) return 0; // we are parsing string, so the end is really the end
-	    *p = inPtr = inputBuf;
+	    *p = inPtr = parseStart = inputBuf;
 	    if(!ReadLine()) return 0; // EOF
 	} else if(inPtr > inputBuf + PARSEBUFSIZE/2) { // buffer fills up with already parsed stuff
 	    char *q = *p, *r = inputBuf;
