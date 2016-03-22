@@ -2555,7 +2555,7 @@ DisplayHelp (char *name)
 	} else textPtr = NULL;   // use plaintext man file directly
 	GetHelpText(f, name);
 	fclose(f);
-    }
+    } else if(currentCps) DisplayNote("No manual is installed for this engine");
 }
 
 #define PAUSE_BUTTON "P"
