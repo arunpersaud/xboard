@@ -2476,9 +2476,10 @@ GetHelpText (FILE *f, char *name)
 {
     char *line, buf[MSG_SIZ], title[MSG_SIZ], text[10000], *p = text, *q = text;
     int len, cnt = 0;
+    while(*name == '\n') name++;
     snprintf(buf, MSG_SIZ, ".B %s", name);
     len = strlen(buf);
-    for(len=3; buf[len] && buf[len] != '(' && buf[len] != ':' && buf[len] != '.' && buf[len] != '?'; len++);
+    for(len=3; buf[len] && buf[len] != '(' && buf[len] != ':' && buf[len] != '.' && buf[len] != '?' && buf[len] != '\n'; len++);
     buf[len] = NULLCHAR;
     while(buf[--len] == ' ') buf[len] = NULLCHAR;
     snprintf(title, MSG_SIZ, "Help on '%s'", buf+3);
