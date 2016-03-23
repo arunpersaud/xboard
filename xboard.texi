@@ -1053,40 +1053,105 @@ and selecting that line will collapse the group again,
 and makes the listbox go back to displaying the surrounding group.
 @item Load New 1st Engine
 @itemx Load New 2nd Engine
-@cindex Load Engine, Menu Item
+@cindex Load New Engine, Menu Item
 Pops up a dialog where you can select or specify an engine to be loaded.
 You can even replace engines during a game, without disturbing that game.
 (Beware that after loading an engine, XBoard will always be in Edit Game mode, 
 so you will have to tell the new engine what to do before it does anything!)
-When you select an already installed engine from the ‘Select Engine from List’ 
-listbox, 
-all other fields of the dialog will be ignored. 
-In other cases, you have to specify the engine executable, 
-possible arguments on the engine command line 
-(if the engine docs say the engine needs any), 
-and the directory where the engine should look for its files
-(if this cannot be deduced automatically from the specification of the engine executable). 
-You will also have to specify (with the aid of checkboxes) if the engine is UCI. 
-If ‘Add this engine to the list’ is ticked (which it is by default), 
-the engine will be added to the list of installed engines in your settings file, 
-(provided you save the settings!),
-so that next time you can select it from the listbox. 
-You can also specify a ‘nickname’, 
-under which the engine will then appear in that drop-down list, 
-and even choose to use that nickname for it in PGN files for engine-engine games. 
-The info you supply with the checkboxes whether the engine should use GUI book, 
-or (for variant engines) automatically switch to the current variant when loaded, 
-will also be included in the list. 
-For obsolete XBoard engines, which would normally take a long delay to load 
-because XBoard is waiting for a response they will not give, 
-you can tick ‘WB protocol v1’ to speed up the loading process.
-
+@table @asis
+@item Select engine from list
+@cindex Select engine, Menu Item
+The listbox shows the engines registered for use with XBoard before.
+(This means XBoard has information on the engine type, whether it plays book etc.
+in the engine list stored in its settings file.)
+Double-clicking an engine here will load it and close the dialog.
+The list can also contain groups, indicated by a starting '#' sign.
+Double-clicking such a group will 'open' it,
+and show the group contents in the listbox instead of the total list,
+with the group name as header.
+Double-clicking the header will 'close' the group again.
+@item Nickname
+@itemx Use nickname in PGN player tags of engine-engine games
+@cindex Nickname, Menu Item
+When a @samp{Nickname} is specified, the engine will appear under this name
+in the @samp{Select Engine} listbox.
+Otherwise the name there will be a tidied version of the engine command.
+The user can specify if the nickname is also to be used in PGN tags;
+normally the name engines report theselves would be used there.
+@item Engine Command
+@cindex Engine Command, Menu Item
+The command needed to start the engine from the command line.
+For compliantly installed engine this is usually just a single word,
+the name of the engine package (e.g. 'crafty' or 'stockfish').
+Some engines need additional parameters on the command line.
+For engines that are not in a place where the system would expect them
+a full pathname can be specified, and usually the browse button
+for this oprion is the easiest way to obtain that.
+@item Engine Directory
+@cindex Engine Directory, Menu Item
+Compliant engines could run from any directory,
+and by default this option is proposed as '.', the current directory.
+If a (path)name is specified here, XBoard will start the engine
+in that directory.
+If you make the field empty, it will try to derive the directory
+from the engine command (if that was a path name).
+@item UCI
+@cindex UCI, Menu Item
+When the @samp{UCI} checkbox is ticked XBoard will assume
+the engine is of UCI type, and will invoke the corresponding adapter
+(as specified in the @code{adapterCommand} option stored in its
+settings file)to use it.
+By default this adapter is Polyglot,
+which must be installed from a separate package!
+@item USI/UCCI
+@cindex USI/UCCI, Menu Item
+Ticking this checkbox informs XBoard that the engine is of USI or UCCI type
+(as Shogi or Xiangqi engines often are).
+This makes XBoard invoke an adapter to run the engines,
+as specified by the @code{uxiAdapter} option stored in its settings file.
+The UCI2WB program is an adapter that can handle both these engine types,
+as well as UCI.
+@item WB protocol v1
+@cindex WB protocol v1, Menu Item
+Ticking this checkbox informs XBoard the engine is using an old version (1)
+of the communication protocol, so that it won't respond to a request
+to interrogate its properties.
+XBoard then won't even try that, saving you a wait of several seconds
+each time the engine is started.
+Do not use this on state-of-the-art engines,
+as it would prevent XBoard from interrogating its capabilities,
+so that many of its features might not work!
+@item Must not use GUI book
+@cindex Use GUI book, Menu Item
+By default XBoard assumes engines are responsible for their own opening book,
+but unticking this option makes XBoard consult its own book
+(as per @samp{Opening-Book Filename}) on behalf of the engine.
+@item Add this engine to the list
+@cindex Add engine, Menu Item
+By default XBoard would add the engine you specified,
+with all the given options to its list of registered engines
+(kept in its settings file), when you press 'OK'.
+Next time you could then simply select it from the listbox,
+or use the command "xboard -fe NICKNAME" to start XBoard with the
+engine and accompanying options.
 New engines are always added at the end of the existing list,
-but can be re-ordered with the aid of the @samp{Edit Engine List} menu item.
-They can even be organized in groups that can be opened or collapsed at will,
-which can be very useful if the list is very long.
+or, when you have opened a group in the @samp{Select Engine} listbox,
+at the end of that group.
+But can be re-ordered later with the aid
+of the @samp{Edit Engine List} menu item.
+When you untick this checkbox before pressing 'OK'
+the engine will be loaded, but will not be added to the engine list.
+@item Force current variant with this engine
+@cindex Force variant with engine, Menu Item
+Ticking this option will make XBoard automatically start the engine
+in the current variant, even when XBoard was set for a different
+variant when you loaded the engine.
+Useful when the engine plays multiple variants,
+and you specifically want to play one different from its primary one.
+@end table
 
-@item Engine #N Settings
+@item Engine #1 Settings
+@itemx Engine #2 Settings
 @cindex Engine #N Settings, Menu Item
 Pop up a menu dialog to alter the settings specific to the applicable engine.
 For each parameter the engine allows to be set,
@@ -1171,7 +1236,6 @@ The maximum number of displayed engine names is set by the
 @section Options Menu
 @cindex Menu, Options
 @cindex Options Menu
-@heading General Options
 @section General Options
 @cindex General Options, Menu Item
 The following items to set option values appear in the dialog
@@ -1398,43 +1462,127 @@ blown up on the vertical axis of the Evaluation Graph.
 @cindex Time Control, Menu Item
 Pops up a sub-menu where you can set the time-control parameters interactively.
 The shifted @kbd{Alt+T} key is a keyboard equivalent.
-Allows you to select classical or incremental time controls,
-set the moves per session, session duration, and time increment.
-Also allows specification of time-odds factors for one or both engines.
-If an engine is given a time-odds factor N, all time quota it gets, 
-be it at the beginning of a session or through the time increment or
-fixed time per move, will be divided by N.
+@table @asis
+@item classical
+@cindex classical, Menu Item
+Selects classical TC,
+where the game is devided into sessions of a certain number of moves,
+and after each session the start time is again added to the clocks.
+@item incremental
+@cindex incremental, Menu Item
+Selects a TC mode where the game will start with a base time on the clocks,
+and after every move an 'increment' will be added to it.
+@item fixed max
+@cindex fixed max, Menu Item
+Selects a TC mode where you have to make each move within a given time,
+and any left-over time is not carried over to the next move.
+@item Moves per session
+@cindex Moves per session, Menu Item
+Sets the duration of a session for classical time control.
+@item Initial time
+@cindex Initial time, Menu Item
+Time initially on the clock in classical or incremental time controls.
+In classical time controls this time will also be added to the clock
+at the start of ach new session.
+@item Increment or max
+@cindex Increment or max, Menu Item
+Time to be added to the clock after every move in incremental TC mode.
+Fore 'fixed maximum' TC mode, the clock will be set to this time
+before every move, irrespective of how much was left on that clock.
+@item Time-Odds factors
+@cindex Time-Odds factors, Menu Item
+When these options are set to 1 the clocks of the players will be set
+according to the other specified TC parameters.
+Players can be given unequal times by specifying a time-odds factor
+for one of them (or a different factor for both of them).
+Any time received by that player will then be divided by that factor.
+@end table
 
 @section Adjudications
 @cindex Adjudications, Menu Item
 Pops up a sub-menu where you can enable or disable various adjudications
 that XBoard can perform in engine-engine games.
 The shifted @kbd{Alt+J} key is a keyboard equivalent.
-You can instruct XBoard to detect and terminate the game on checkmate
-or stalemate, even if the engines would not do so, to verify engine
-result claims (forfeiting engines that make false claims), rather than
-naively following the engine, to declare draw on positions
-which can never be won for lack of mating material, (e.g. KBK),
-or which are impossible to win unless the opponent seeks its own demise 
-(e.g. KBKN).
-For these adjudications to work, @samp{Test Legality} should be switched on.
-It is also possible to instruct XBoard to enforce a 50-move or 3-fold-repeat
-rule and automatically declare draw (after a user-adjustable number of moves
-or repeats) even if the engines are prepared to go on.
-It is also possible to have XBoard declare draw on games that seem to drag on 
-forever, or adjudicate a loss if both engines agree (for 3 consecutive moves) that one
-of them is behind more than a user-adjustable score threshold.
-For the latter adjudication to work, XBoard should be able to properly understand
-the engine's scores. To facilitate the latter, you can inform xboard here if
-the engines report scores from the viewpoint of white, or from that of their own color.
+@table @asis
+@item Detect all Mates
+@cindex Detect all Mates, Menu Item
+When this option is set
+XBoard will terminate the game on checkmate or stalemate,
+even if the engines would not do so.
+Only works when @samp{Test Legality} is on.
+@item Verify Engine Result Claims
+@cindex Verify Engine Result Claims, Menu Item
+When this option is set
+XBoard will verify engine result claims,
+(forfeiting engines that make false claims),
+rather than naively beleiving the engine.
+Only works when @samp{Test Legality} is on.
+@item Draw if Insufficient Mating Material
+@cindex Draw if Insufficient Mating Material, Menu Item
+When this option is set
+XBoard will terminate games with a draw result
+when so little material is left
+that checkmate is not longer possible.
+In normal Chess this applies to KK, KNK, KBK
+and some positions with multiple Bishops all on the same
+square shade.
+Only works when @samp{Test Legality} is on.
+@item Adjudicate Trivial Draws
+@cindex Adjudicate Trivial Draws, Menu Item
+When this option is set
+XBoard will terminate games with a draw result
+in positions that could only be won against an idiot.
+In normal Chess this applies to KNNK, KRKR, KBKN, KNKN,
+and KBKB with Bishops on different square shades.
+KQKQ will also be adjudicated a draw (possibly unjustly so).
+Only works when @samp{Test Legality} is on.
+@item N-Move Rule
+@cindex N-Move Rule, Menu Item
+When this option is set to a value differnt from zero
+XBoard will terminate games with a draw result
+after the specified number of reversible moves
+(i.e. without captures or pawn pushes) is made.
+@item N-fold Repeats
+@cindex N-fold Repeats, Menu Item
+When this option is set to a value larger than 1,
+XBoard will terminate games with a draw result when
+the same position has occurred the specified number of times.
+@item Draw after N Moves Total
+@cindex Draw after N Moves Total, Menu Item
+When this option is set to a value different from zero,
+XBoard will terminate games with a draw result
+after that many moves have been played.
+Useful in automated engine-engine matches,
+to prevent one game between stubborn engines will soak up
+all your computer time.
+@item Win / Loss Threshold
+@cindex Win / Loss Threshold, Menu Item
+When this option is set to a value different from zero,
+XBoard will terminate games as a win when both engines
+agree the score is above the specified value
+(interpreted as centi-Pawn)
+for three successive moves.
+@item Negate Score of Engine #1
+@itemx Negate Score of Engine #2
+@cindex Negate Score of Engine, Menu Item
+These options should be used with engines
+that report scores from the white point of view,
+rather than the side-to-move POV as XBoard would otherwise
+assume when adjudicating games based on the engine score.
+When the engine is installed with the extra option
+@code{firstScoreIsAbs} true in the engine list
+the option would be automatically set when the engine is
+loaded throuhgh the Engine menu,
+or with the @code{fe} or @code{se} command-line option.
+@end table
 
 @section ICS Options
 @cindex ICS Options, Menu Item
-The following options occur in a dialog summoned by the 
-ICS Options menu item.
+Pops up a menu dialog where options can be set that affect
+playing against an Internet Chess Server.
 @table @asis
-@item Auto Kibitz
-@cindex Auto Kibitz, Menu Item
+@item Auto-Kibitz
+@cindex Auto-Kibitz, Menu Item
 Setting this option when playing with or aginst a chess program on an ICS
 will cause the last line of thinking output of the engine before its move
 to be sent to the ICS in a kibitz command.
@@ -1442,16 +1590,16 @@ In addition, any kibitz message received through the ICS from
 an opponent chess program will be diverted to the engine-output window,
 (and suppressed in the console),
 where you can play through its PV by right-clicking it.
-@item Auto Comment
-@cindex Auto Comment, Menu Item
+@item Auto-Comment
+@cindex Auto-Comment, Menu Item
 If this option is on, any remarks made on ICS while you are observing or
 playing a game are recorded as a comment on the current move.  This includes
 remarks made with the ICS commands @kbd{say}, @kbd{tell}, @kbd{whisper},
 and @kbd{kibitz}.
 Limitation: remarks that you type yourself are not recognized;
 XBoard scans only the output from ICS, not the input you type to it.
-@item Auto Observe
-@cindex Auto Observe, Menu Item
+@item Auto-Observe
+@cindex Auto-Observe, Menu Item
 If this option is on and you add a player to your @code{gnotify}
 list on ICS, XBoard will automatically observe all of that
 player's games, unless you are doing something else (such as
@@ -1465,7 +1613,7 @@ your ICS
 variable is set to 0, or if the ICS you are using does not 
 properly support observing from Black's point of view,
 you will see the game from White's point of view.
-@item Auto Raise Board
+@item Auto-Raise Board
 @cindex Auto Raise Board, Menu Item
 If this option is on, whenever a new game begins, the chessboard window
 is deiconized (if necessary) and raised to the top of the stack of windows.
@@ -1477,16 +1625,16 @@ you specify.
 Disabled if the @code{saveGameFile} command-line
 option is set, as in that case all games are saved to the specified file.
 @xref{Load and Save options}.
-@item Background Observe
-@cindex Background Observe, Menu Item
+@item Background Observe while Playing
+@cindex Background Observe while Playing, Menu Item
 Setting this option will make XBoard suppress display of any boards
 from observed games while you are playing.
 Instead the last such board will be remembered,
 and shown to you when you right-click the board.
 This allows you to peek at your bughouse partner's game when you want,
 without disturbing your own game too much.
-@item Dual Board
-@cindex Dual Board, Menu Item
+@item Dual Board for Background-Observed Game
+@cindex Dual Board for Background-Observed Game, Menu Item
 Setting this option in combination with @samp{Background Observe}
 will display boards of observed games while you are playing
 on a second board next to that of your own game.
@@ -1532,17 +1680,18 @@ you type a printable character to the board window in ICS mode.
 Controls whether XBoard will automatically disconnect from the ICS
 and close when the game currently in progress finishes.
 @item Premove
-@itemx Premove White
-@itemx Premove Black
+@itemx Premove for White
+@itemx Premove for Black
 @itemx First White Move
 @itemx First Black Move
 @cindex Premove, Menu Item
-@cindex Premove White, Menu Item
-@cindex Premove Black, Menu Item
+@cindex Premove for White, Menu Item
+@cindex Premove for Black, Menu Item
 @cindex First White Move, Menu Item
 @cindex First Black Move, Menu Item
-If this option is on while playing a game on an ICS, you can register
-your next planned move before it is your turn.  Move the piece with
+If the @samp{Premove} option is on while playing a game on an ICS,
+you can register your next planned move before it is your turn.
+Move the piece with
 the mouse in the ordinary way, and the starting and ending squares
 will be highlighted with a special color (red by default).  When it is
 your turn, if your registered move is legal, XBoard will send it to
@@ -1553,12 +1702,12 @@ entirely.
 
 You can also enter premoves for the first white and black moves
 of the game.
-@item ICS Alarm
-@itemx ICS Alarm Time
-@cindex ICS Alarm, Menu Item
-@cindex ICS Alarm Time, Menu Item
+@item Alarm
+@itemx Alarm Time
+@cindex Alarm, Menu Item
+@cindex Alarm Time, Menu Item
 When this option is on, an alarm sound is played when your clock
-counts down to the icsAlarmTime in an ICS game.
+counts down to the @samp{Alarm Time} in an ICS game.
 (By default, the time is 5 seconds, but you can specify other values
 with the Alarm Time spin control.) 
 For games with time controls that include an increment, the
@@ -1762,35 +1911,74 @@ through the respective buttons at the bottom of the latter.)
 
 @section Load Game Options
 @cindex Load Game Options, Menu Item
-Summons a dialog where you can set the @code{autoDisplayComment} and 
-@code{autoDisplayTags} options, (which control popups when viewing loaded games),
-and specify the rate at which loaded games are auto-played,
-in seconds per move (which can be a fractional number, like 1.6).
-This rate is also used with the @code{Analyze Game} menu item.
-You can also set search criteria for determining which games
-will be displayed in the Game List for a multi-game file, 
-and thus be eligible for loading:
+Summons a dialog where you can set options that control loading of games.
 @table @asis
-@item Elo of strongest player
-@itemx Elo of weakest player
-@itemx No games before year
-@cindex Elo of strongest player, Menu Item
-@cindex Elo of weakest player, Menu Item
-@cindex No games before year, Menu Item
-These numeric fields set thresholds (lower limits) on the Elo rating of the mentioned player,
-or the date the game was played.
-Defaults: 0
+@item Auto-Display Tags
+@cindex Auto-Display Tags, Menu Item
+Setting this option causes a window to pop up on loading a game,
+displaying the PGN Tags for that game.
+@item Auto-Display Comment
+@cindex Auto-Display Comment, Menu Item
+Setting this option causes a window to pop up whenever there
+is a comment to (or variation on) the currently displayed move.
+@item Auto-Play speed of loaded games
+@cindex Auto-Play speed, Menu Item
+This option sets the number of seconds between moves
+when a newly loaded game is auto-playing.
+A decimal fraction on the number is understood.
+Setting it to -1 disables auto-play, staying in the start position
+of the game after the loading completes.
+Setting it to 0 will instantly move to the final position of the game.
+The @samp{Auto-Play speed} is also used to determine the
+analysis time for each move during @samp{Analyze Game}.
+Note that auto-playing (including game analysis) can be stopped at any
+time through the @samp{P} button above the board.
+@item options to use in game-viewer mode
+@cindex Game-Viewer options, Menu Item
+Specifies the options automatically set when XBoard is invoked
+with the option @code{-viewer} on its command line,
+as will happen when it is started in response to clicking a PGN game file.
+The default setting would start XBoard without engine
+(due to the @code{-ncp} option),
+but if you want it to automatically start with your favorite engine,
+and automatically start analyzing, you could include the necessary
+options for that here (e.g. @code{-fe <engine> -initialMode analysis}).
+@item Thresholds for position filtering in game list
+@cindex Thresholds for game selection, Menu Item
+The following options can be set to limit the display of games
+in the @samp{Game List} window to a sub-set,
+meeting the specified criteria.
+@item Elo of strongest player at least
+@item Elo of weakest player at least
+@cindex Elo limits, Menu Item
+Games with an Elo tag specifying a lower rating for the mentioned player
+will not be diplayed in the @samp{Game List}. 
+@item No games before year
+@cindex Date limit, Menu item
+Games with a Date tag before the specified year
+will not be diplayed in the @samp{Game List}. 
 @item Final nr of pieces
-@cindex Final nr of pieces, Menu Item
-Here you can enter a range (e.g. 8-10), and only games will be selected that
-has a number of men in this range on the board in their final position.
+@cindex Final number of pieces, Menu Item
+A single number or a range (like 8-10) can be entered here,
+and will cause only games where the number of men in the final
+position is in the given range
+will be diplayed in the @samp{Game List}. 
+@item Minimum nr consecutive positions
+@cindex Consecutive positions, Menu Item
+Specifies for how many consecutive positions the more fuzzy
+position-matching criteria have to be satisfied
+in order to count as a match.
 @item Search mode
+@itemx find position
 @cindex Search mode, Menu Item
 @cindex find position, Menu Item
-@cindex narrow, Menu Item
-This setting determines which positions in a game will be considered a match
-to the position currently displayed in the board window
-when you press the @samp{find position} button in the Game List.
+XBoard can select games for display in the @samp{Game List}
+based on whether (in addition to the conditions on the PGN tags)
+they contain a position that matches the
+position currently displayed on the board,
+by pressing the @samp{find position}
+or @samp{narrow} buttons in the @samp{Game List} window.
+The @samp{Search mode} setting determines what counts as match.
 You can search for an exact match, 
 a position that has all shown material in the same place, 
 but might contain additional material,
@@ -1798,24 +1986,21 @@ a position that has all Pawns in the same place,
 but can have the shown material anywhere,
 a position that	can have all shown material anywhere,
 or a position that has material between certain limits anywhere.
-For the latter you have to place the material that must be present
+For the latter you have to place the material that must minimally be present
 in the four lowest ranks of the board,
 and optional additional material in the four highest ranks of the board.
-You can request the optional material to be balanced.
+You can request the optional material to be balanced,
+i.e. equal for white and black.
+@item narrow
+@cindex narrow, Menu Item
 The @samp{narrow} button is similar in fuction to the @samp{find position} button,
 but only searches in the already selected games,
 rather than the complete game file,
 and can thus be used to refine a search based on multiple criteria.
-@item number of consecutive positions
-@cindex number of consecutive positions, Menu Item
-When you are searching by material, rather than for an exact match,
-this parameter indicates for how many consecutive game positions
-the same amount of material must be on the board before it is
-considered a match.
 @item Also match reversed colors
 @itemx Also match left-right flipped position
-@cindex Also match reversed colors, Menu Item
-@cindex Also match left-right flipped position, Menu Item
+@cindex Match reversed colors, Menu Item
+@cindex Match left-right flipped position, Menu Item
 When looking for matching positions rather than by material,
 these settings determine whether mirror images 
 (in case of a vertical flip in combination with color reversal)
@@ -1826,26 +2011,62 @@ have expired (or in Xiangqi).
 
 @section Save Game Options
 @cindex Save Game Options, Menu Item
-Summons a dialog where you can specify the files on which XBoard should
-automatically save any played or entered games, 
-(the @code{saveGameFile} option), 
-or the final position of such games (the @code{savePositionfile} option).
-You can also select 'auto-save' without a file name,
-in which case XBoard will prompt the user for a file name after each game.
-In ICS mode you can limit the auto-saving to your own games
-(i.e. suppress saving of observed games).
-You can also set the default value for the PGN Event tag that will
-be used for each new game you start.
-Various options for the format of the game can be specified as well,
-such as whether scores and depths of engine games should be saved as comments,
-and if a tag with info about the score with which the engine came out of book
-should be included.
-For Chess, always set the format to PGN, rather than "old save stye"!
+Summons a dialog where you can specify whether XBoard should
+automatically save files of games when they finish,
+and where and how to do that.
+@table @asis
+@item Auto-Save Games
+@cindex Auto-Save Games, Menu Item
+When set XBoard will automatically save games on a file as they finish.
+(Not when you abort them by pressing @samp{New Game}, though!)
+It will either prompt you for a filename,
+or use the file specified  by the @code{saveGameFile} option.
+@item Own Games Only
+@cindex Own Games Only, Menu Item
+Setting this option will exclude games by others observed on an
+Internet Chess Server from automatic saving.
+@item Save Games on File
+@cindex Save Games on File, Menu Item
+Name of the file on which games should be saved automatically.
+Games are always appended to the file,
+and will never overwrite anything.
+@item Save Final Position on File
+@cindex Save Final Position on File, Menu Item
+When a name is defined, the final position of each game
+is appended to the mentioned file.
+@item PGN Event Header
+@cindex PGN Event Header, Menu Item
+Specifies the name of the event used in the PGN event tag
+of new games that you create.
+@item Old Save Style
+@cindex Old Save Style, Menu Item
+Saves games in an obsolete and now long forgotten format,
+rather than as PGN. Never use this for orthodox Chess!
+@item Include Number Tag in tourney PGN
+@cindex Include Number Tag in tourney PGN, Menu Item
+When on this option will cause the non-standard 'Number' tag
+to be written in any game saved in PGN format.
+It will contain the unique number of the game in the tourney.
+(As opposed to the 'Round' tag, which can be shared by many games.)
+@item Save Score/Depth Info in PGN
+@cindex Save Score/Depth in PGN, Menu Item
+When on this option will cause the score and depth at which it was
+calculated by an engine, and (when available) thinking time
+to be saved with the move as a comment to the move,
+in the format @{score/depth time@}.
+Here 'score'is in pawn units from the point of view of the player
+that made the move, with two digits behind the decimal Pawn.
+'Time' is in seconds, or min:sec.
+@item Save Out-of-Book Info in PGN
+@cindex Save Out-of-Book Info in PGN, Menu Item
+When on this option causes the score of the first move
+the engine made after coming out of book in an 'Annotator' PGN tag.
+@end table
 
 @section Game List
 @cindex Game List Tags, Menu Item
 Pops up a dialog where you can select the PGN tags that should appear
-on the lines in the game list, and their order.
+on the lines in the @samp{Game List}, and their order.
 
 @section Sound Options
 @cindex Sound Options, Menu Item
@@ -1855,20 +2076,27 @@ Most events are only relevant to ICS play,
 but the move sound is an important exception.
 For each event listed in the dialog, 
 you can select a standard sound from a menu.
-You can also select a user-supplied sound file,
-by typing its name into the designated text-edit field first,
-and then selecting "Above WAV File" from the menu for the event.
-A dummy event has been provided for trying out the sounds with the
-"play" button next to it.
-The directory with standard sounds, and the external program for playing
-the sounds can be specified too, but normally you would not touch these
-once XBoard is properly installed.
-When a move sound other than 'None' is selected, 
-XBoard alerts you by playing that sound
-after each of your opponent's moves (or after every
-move if you are observing a game on the Internet Chess Server).
-The sound is not played after moves you make or moves read from a
-saved game file.
+@table @asis
+@item Sound Program
+@cindex Sound Program, Menu Item
+Specifies the command XBoard should invoke to play sounds.
+The specified text will be suffixed by the name of the sound file,
+and then run as a command.
+@item Sounds Directory
+@cindex Sounds Directory, Menu Item
+Specifies the directory where XBoard will look for files with
+the names of the standard sounds.
+@item User WAV File
+@cindex User WAV File, Menu Item
+When we type a filename here, it can be assigned to the events
+by selecting @samp{Above WAV File} from the drop downs.
+@item Try-Out Sound
+@itemx Play
+@cindex Try-Out Sound, Menu Item
+The 'event' triggering the Try-Out sound is pressing
+of the @samp{Play} button behind it.
+This allows you to judge the sounds.
+@end table
 
 @section Save Settings Now
 @cindex Save Settings Now, Menu Item
