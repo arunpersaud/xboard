@@ -131,8 +131,33 @@ void
 SwitchWindow (int main)
 {
     currBoard = (main ? &mainOptions[W_BOARD] : &dualOptions[3]);
-    csBoardWindow = DRAWABLE(currBoard);
+//    CsBoardWindow = DRAWABLE(currBoard);
 }
+
+
+static void
+NewCanvas (Option *graph)
+{
+	cairo_t *cr;
+	int w = graph->max, h = graph->value;
+	if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
+	graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
+	// paint white, to prevent weirdness when people maximize window and drag pieces over space next to board
+	cr = cairo_create ((cairo_surface_t *) graph->choice);
+	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
+	cairo_fill(cr);
+	cairo_destroy (cr);
+	graph->min &= ~REPLACE;
+}
+
+static cairo_surface_t *
+CsBoardWindow (Option *opt)
+{   // test before every draw event if we need to resize the canvas
+    if(opt->min & REPLACE) NewCanvas(opt);
+    return DRAWABLE(opt);
+}
+
 
 void
 SelectPieces(VariantClass v)
@@ -486,7 +511,7 @@ void DrawSeekAxis( int x, int y, int xTo, int yTo )
     cairo_t *cr;
 
     /* get a cairo_t */
-    cr = cairo_create (csBoardWindow);
+    cr = cairo_create (CsBoardWindow(currBoard));
 
     cairo_move_to (cr, x, y);
     cairo_line_to(cr, xTo, yTo );
@@ -501,7 +526,7 @@ void DrawSeekAxis( int x, int y, int xTo, int yTo )
 
 void DrawSeekBackground( int left, int top, int right, int bottom )
 {
-    cairo_t *cr = cairo_create (csBoardWindow);
+    cairo_t *cr = cairo_create (CsBoardWindow(currBoard));
 
     cairo_rectangle (cr, left, top, right-left, bottom-top);
 
@@ -515,7 +540,7 @@ void DrawSeekBackground( int left, int top, int right, int bottom )
 
 void DrawSeekText(char *buf, int x, int y)
 {
-    cairo_t *cr = cairo_create (csBoardWindow);
+    cairo_t *cr = cairo_create (CsBoardWindow(currBoard));
 
     cairo_select_font_face (cr, "Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
@@ -534,7 +559,7 @@ void DrawSeekText(char *buf, int x, int y)
 
 void DrawSeekDot(int x, int y, int colorNr)
 {
-    cairo_t *cr = cairo_create (csBoardWindow);
+    cairo_t *cr = cairo_create (CsBoardWindow(currBoard));
     int square = colorNr & 0x80;
     colorNr &= 0x7F;
 
@@ -560,7 +585,8 @@ void DrawSeekDot(int x, int y, int colorNr)
 void
 InitDrawingHandle (Option *opt)
 {
-    csBoardWindow = DRAWABLE(opt);
+//    CsBoardWindow = DRAWABLE(opt);
+    currBoard = opt;
 }
 
 void
@@ -598,7 +624,7 @@ DrawGrid()
   cairo_t *cr;
 
   /* get a cairo_t */
-  cr = cairo_create (csBoardWindow);
+  cr = cairo_create (CsBoardWindow(currBoard));
 
   cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
   SetPen(cr, lineGap, "#000000", 0);
@@ -630,7 +656,7 @@ DrawBorder (int x, int y, int type, int odd)
 	case 2: col = appData.premoveHighlightColor; break;
 	default: col = "#808080"; break; // cannot happen
     }
-    cr = cairo_create(csBoardWindow);
+    cr = cairo_create(CsBoardWindow(currBoard));
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
     cairo_rectangle(cr, x+odd/2., y+odd/2., squareSize+lineGap, squareSize+lineGap);
     SetPen(cr, lineGap, col, 0);
@@ -665,7 +691,7 @@ DrawLogo (Option *opt, void *logo)
     int w, h;
 
     if(!opt) return;
-    cr = cairo_create(DRAWABLE(opt));
+    cr = cairo_create(CsBoardWindow(opt));
     cairo_rectangle (cr, 0, 0, opt->max, opt->value);
     cairo_set_source_rgba(cr, 0.5, 0.5, 0.5, 1.0);
     cairo_fill(cr); // paint background in case logo does not exist
@@ -759,7 +785,7 @@ DoDrawDot (cairo_surface_t *cs, int marker, int x, int y, int r)
 void
 DrawDot (int marker, int x, int y, int r)
 { // used for atomic captures; no need to draw on backup
-  DoDrawDot(csBoardWindow, marker, x, y, r);
+  DoDrawDot(CsBoardWindow(currBoard), marker, x, y, r);
   GraphExpose(currBoard, x-r, y-r, 2*r, 2*r);
 }
 
@@ -798,7 +824,7 @@ DrawText (char *string, int x, int y, int align)
 	cairo_text_extents_t te;
 	cairo_t *cr;
 
-	cr = cairo_create (csBoardWindow);
+	cr = cairo_create (CsBoardWindow(currBoard));
 	cairo_select_font_face (cr, "Sans",
 		    CAIRO_FONT_SLANT_NORMAL,
 		    CAIRO_FONT_WEIGHT_BOLD);
@@ -857,10 +883,10 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
     // piece, background, coordinate/count, marker dot
 
     if (piece == EmptySquare) {
-	BlankSquare(csBoardWindow, x, y, square_color, piece, 1);
+	BlankSquare(CsBoardWindow(currBoard), x, y, square_color, piece, 1);
     } else {
-	pngDrawPiece(csBoardWindow, piece, square_color, x, y);
-        if(appData.inscriptions[0]) InscribeKanji(csBoardWindow, piece, x, y);
+	pngDrawPiece(CsBoardWindow(currBoard), piece, square_color, x, y);
+        if(appData.inscriptions[0]) InscribeKanji(CsBoardWindow(currBoard), piece, x, y);
     }
 
     if(align) { // square carries inscription (coord or piece count)
@@ -869,7 +895,7 @@ DrawOneSquare (int x, int y, ChessSquare piece, int square_color, int marker, ch
     }
 
     if(marker) { // print fat marker dot, if requested
-	DoDrawDot(csBoardWindow, marker, x + squareSize/4, y+squareSize/4, squareSize/2);
+	DoDrawDot(CsBoardWindow(currBoard), marker, x + squareSize/4, y+squareSize/4, squareSize/2);
     }
 }
 
@@ -888,7 +914,7 @@ InitAnimState (AnimNr anr)
 {
     if(c_animBufs[anr]) cairo_surface_destroy (c_animBufs[anr]);
     if(c_animBufs[anr+2]) cairo_surface_destroy (c_animBufs[anr+2]);
-    c_animBufs[anr+4] = csBoardWindow;
+    c_animBufs[anr+4] = CsBoardWindow(currBoard);
     c_animBufs[anr+2] = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
     c_animBufs[anr] = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, squareSize, squareSize);
 }
@@ -928,13 +954,13 @@ void CopyRectangle (AnimNr anr, int srcBuf, int destBuf,
 		 int srcX, int srcY, int width, int height, int destX, int destY)
 {
 	cairo_t *cr;
-	c_animBufs[anr+4] = csBoardWindow;
+	c_animBufs[anr+4] = CsBoardWindow(currBoard);
 	cr = cairo_create (c_animBufs[anr+destBuf]);
 	cairo_set_source_surface (cr, c_animBufs[anr+srcBuf], destX - srcX, destY - srcY);
 	cairo_rectangle (cr, destX, destY, width, height);
 	cairo_fill (cr);
 	cairo_destroy (cr);
-	if(c_animBufs[anr+destBuf] == csBoardWindow) // suspect that GTK needs this!
+	if(c_animBufs[anr+destBuf] == CsBoardWindow(currBoard)) // suspect that GTK needs this!
 	    GraphExpose(currBoard, destX, destY, width, height);
 }
 
@@ -970,7 +996,7 @@ DoDrawPolygon (cairo_surface_t *cs, Pnt arrow[], int nr)
 void
 DrawPolygon (Pnt arrow[], int nr)
 {
-    DoDrawPolygon(csBoardWindow, arrow, nr);
+    DoDrawPolygon(CsBoardWindow(currBoard), arrow, nr);
 //    if(!dual) DoDrawPolygon(csBoardBackup, arrow, nr);
 }
 
@@ -1008,7 +1034,7 @@ DrawSegment (int x, int y, int *lastX, int *lastY, int penType)
   static int curX, curY;
 
   if(penType != PEN_NONE) {
-    cairo_t *cr = cairo_create(DRAWABLE(disp));
+    cairo_t *cr = cairo_create(CsBoardWindow(disp));
     cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
     cairo_move_to (cr, curX, curY);
     cairo_line_to (cr, x,y);
@@ -1027,7 +1053,7 @@ DrawRectangle (int left, int top, int right, int bottom, int side, int style)
 {
   cairo_t *cr;
 
-  cr = cairo_create (DRAWABLE(disp));
+  cr = cairo_create (CsBoardWindow(disp));
   cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
   cairo_rectangle (cr, left, top, right-left, bottom-top);
   switch(side)
@@ -1054,7 +1080,7 @@ DrawEvalText (char *buf, int cbBuf, int y)
 {
     // the magic constants 8 and 5 should really be derived from the font size somehow
   cairo_text_extents_t extents;
-  cairo_t *cr = cairo_create(DRAWABLE(disp));
+  cairo_t *cr = cairo_create(CsBoardWindow(disp));
 
   /* GTK-TODO this has to go into the font-selection */
   cairo_select_font_face (cr, "Sans",

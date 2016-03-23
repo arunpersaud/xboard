@@ -77,6 +77,8 @@
 #define NO_OK		(1 << 1)
 #define NO_CANCEL	(1 << 2)
 
+#define REPLACE		(1 << 16)
+
 #define MODAL 1
 #define NONMODAL 0
 

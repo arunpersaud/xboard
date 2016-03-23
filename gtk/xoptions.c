@@ -913,6 +913,21 @@ ColorChanged (Widget w, XtPointer data, XEvent *event, Boolean *b)
 #endif
 
 static void
+ExposeDraw (Option *graph, GdkEventExpose *eevent)
+{
+    int w = eevent->area.width;
+    cairo_t *cr;
+    if(eevent->area.x + w > graph->max) w--; // cut off fudge pixel
+    cr = gdk_cairo_create(((GtkWidget *) (graph->handle))->window);
+    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
+//cairo_set_source_rgb(cr, 1, 0, 0);
+    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+    cairo_rectangle(cr, eevent->area.x, eevent->area.y, w, eevent->area.height);
+    cairo_fill(cr);
+    cairo_destroy(cr);
+}
+
+static void
 GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 {   // handle expose and mouse events on Graph widget
     int w, h;
@@ -924,7 +939,6 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
     GdkEventMotion *mevent = (GdkEventMotion *) event;
     GdkEventScroll *sevent = (GdkEventScroll *) event;
     GtkAllocation a;
-    cairo_t *cr;
 
 //    if (!XtIsRealized(widget)) return;
 
@@ -957,26 +971,11 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 			 // to give drawing routines opportunity to use it before first expose event
 			 // (which are only processed when main gets to the event loop, so after all init!)
 			 // so only change when size is no longer good
-		cairo_t *cr;
-		if(graph->choice) cairo_surface_destroy((cairo_surface_t *) graph->choice);
-		graph->choice = (char**) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
-		// paint white, to prevent weirdness when people maximize window and drag pieces over space next to board
-		cr = cairo_create ((cairo_surface_t *) graph->choice);
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
-		cairo_fill(cr);
-		cairo_destroy (cr);
+//		NewCanvas(graph);
+		graph->min |= REPLACE; // defer making new canvas
 		break;
 	    }
-	    w = eevent->area.width;
-	    if(eevent->area.x + w > graph->max) w--; // cut off fudge pixel
-	    cr = gdk_cairo_create(((GtkWidget *) (graph->handle))->window);
-	    cairo_set_source_surface(cr, (cairo_surface_t *) graph->choice, 0, 0);
-//cairo_set_source_rgb(cr, 1, 0, 0);
-	    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
-	    cairo_rectangle(cr, eevent->area.x, eevent->area.y, w, eevent->area.height);
-	    cairo_fill(cr);
-	    cairo_destroy(cr);
+	    ExposeDraw(graph, eevent);
 	default:
 	    return;
 	case GDK_SCROLL:
@@ -1019,7 +1018,7 @@ GraphExpose (Option *opt, int x, int y, int w, int h)
   GdkEventExpose e;
   if(!opt->handle) return;
   e.area.x = x; e.area.y = y; e.area.width = w; e.area.height = h; e.count = -1; e.type = GDK_EXPOSE; // count = -1: kludge to suppress sizing
-  GraphEventProc(opt->handle, (GdkEvent *) &e, (gpointer) opt); // fake expose event
+  ExposeDraw(opt, &e); // fake expose event
 }
 
 void GenericCallback(GtkWidget *widget, gpointer gdata)
@@ -1486,7 +1485,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		label = frame;
 	    }
             gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
-	    if(option[i].target || dlgNr != ErrorDlg && option[i].name && !strchr(option[i].name, '\n')) { // allow user to specify event handler for button presses
+	    if(option[i].target || dlgNr != ErrorDlg && option[i].name) { // allow user to specify event handler for button presses
 		button = gtk_event_box_new();
                 gtk_container_add(GTK_CONTAINER(button), label);
 		label = button;
