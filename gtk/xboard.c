@@ -1697,6 +1697,12 @@ ReSize (WindowPlacement *wp)
 	if(optList[W_BOARD].max   > w) optList[W_BOARD].max = w;
 	if(optList[W_BOARD].value > h) optList[W_BOARD].value = h;
 	first = appData.fixedSize;
+	if(twoBoards && shellUp[DummyDlg]) {
+	    SlavePopUp(); dualOptions[3].max = 0; DoEvents(); // calls SlaveResize, kludge to force assigning new canvas
+	    partnerUp = !partnerUp; flipView = !flipView;
+	    DrawPosition(True, NULL);
+	    partnerUp = !partnerUp; flipView = !flipView;
+	}
 }
 
 static guint delayedDragTag = 0;
