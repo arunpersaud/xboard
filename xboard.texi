@@ -777,6 +777,95 @@ or prepare for sending him a message through a 'tell' commands.
 @item Board
 @cindex Board, Menu Item
 Summons a dialog where you can customize the look of the chess board.
+@item White Piece Color
+@itemx Black Piece Color
+@itemx Light Square Color
+@itemx Dark Square Color
+@itemx Highlight Color
+@itemx Premove Highlight Color
+@cindex Piece Color, Menu Item
+@cindex Square Color, Menu Item
+@cindex Highlight Color, Menu Item
+These items set the color of pieces, board squares and move highlights
+(borders or arrow).
+Square colors are only used when the @samp{Use Board Textures} option is off,
+the piece colors only when @samp{Use piece bitmaps with their own colors} is off.
+You can type the color as hexadecimally encoded RGB value preceded by '#',
+or adjust it through the R, G, B and D buttons to make it redder, greener, bluer
+or darker.
+A sample of the adjusted color will be displayed behind its text description;
+pressing this colored button restores the default value for the color.
+@item Flip Pieces Shogi Style
+@cindex Flip Pieces Shogi Style, Menu Item
+With this option on XBoard will swap white and black pieces,
+when you flip the view of the board to make white play downward.
+This should be used with piece themes that do not distinguish sides by color,
+but by orientation.
+@item Mono Mode
+@cindex Mono Mode, Menu Item
+This option sets XBoard to pure black-and-white display
+(no grey scales, and thus no anti-aliasing).
+@item Logo Size
+@cindex Logo Size, Menu Item
+Specifies the width of the engine logos displayed next to the clocks, in pixels.
+Setting it to 0 suppresses the display of such logos.
+The height of the logo will be half its width.
+In the GTK build of XBoard any non-zero value is equivalent,
+and the logos are always sized to 1/4 of the board width.
+@item Line Gap
+@cindex Line Gap, Menu Item
+This option specifies the width of the grid lines that separate the squares,
+which change color on highlighting the move.
+Setting it to 0 suppresses these lines, which in general looks better,
+but hides the square-border highlights,
+so that you would have to rely on other forms of highlighting.
+Setting the value to -1 makes XBoard choose a width by itself,
+depending on the square size.
+@item Use Board Textures
+@itemx Light-Squares Texture File
+@itemx Dark-Squares Texture File
+@cindex Use Board Texture, Menu Item
+@cindex Texture Files, Menu Item
+When the option @samp{Use Board Textures} is set,
+the squares will not be drawn as evenly colored surfaces,
+but will be cut from a texture image, as specified by the
+@samp{Texture Files}.
+Separate images can be used for light and dark squares.
+XBoard will try to cut the squares out of the texture image
+with as little overlap as possible, so they all look different.
+The name of the texture file can contain a size hint,
+e.g. @code{xqboard-9x10.png}, alerting XBoard to the fact that
+it contains a whole-board image, out of which squares have to
+be cut in register with the nominal sub-division.
+@item Use external piece bitmaps with their own color
+@cindex Draw pieces with their own colors, Menu Item
+When this option is on XBoard will ignore the piece-color settings,
+and draw the piece images in their original colors.
+The piece-color settings would only work well for evenly colored
+pieces, such as the default theme.
+@item Directory with Pieces Images
+@cindex Piece-Image Directory, Menu Item
+When a directory is specified here, XBoard will first look for
+piece images (SVG or PNG files) in that directory,
+and fall back on the image from the default theme only for
+images it cannot find there.
+An image file called White/BlackTile in the directory will be prefered
+as fall-back for missing pieces over the default image, however.
+@item Selectable themes
+@itemx New name for current theme
+@cindex Board Themes, Menu Item
+@cindex Theme name, Menu Item
+When a theme name is specified while pressing 'OK',
+the combination of settings specified in the dialog
+will be stored in XBoard's list of themes,
+which will be saved with the other options in the settings file
+(as the @code{themeNames} option).
+This name will then appear in the selection listbox next time
+you open the dialog,
+so that you can recall the entire combination of settings
+by double-clicking it.
+
+
 Here you can specify the directory from which piece images should be taken,
 when you don't want to use the built-in piece images
 (see @code{pieceImageDirectory} option),
@@ -2101,11 +2190,12 @@ This allows you to judge the sounds.
 @section Save Settings Now
 @cindex Save Settings Now, Menu Item
 Selecting this menu item causes the current XBoard settings to be
-written to the settings file, so they will also apply in future sessions.
+written to the settings file, (.xboardrc in your home directory),
+so they will also apply in future sessions.
 Note that some settings are 'volatile', and are not saved,
 because XBoard considers it too unlikely that you want those to apply
 next time.
-In particular this applies to the Chess program names, and all options
+In particular this applies to the Chess program, and all options
 giving information on those Chess programs (such as their directory,
 if they have their own opening book, if they are UCI or native XBoard),
 or the variant you are playing.
@@ -2131,7 +2221,7 @@ so that ~/.xboardrc is no longer overwritten.
 You can then safely specify volatile options in ~/.xboardrc, either
 before or after the settingsFile options.
 Note that when you specify persistent options after the settingsFile options
-in ~/.xboardrc, you will essentially turn them into volatile options
+in this ~/.xboardrc, you will essentially turn them into volatile options
 with the specified value as default, because that value will overrule
 the value loaded from the settings file (being read later).
 
