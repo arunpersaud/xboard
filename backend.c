@@ -996,6 +996,7 @@ Load (ChessProgramState *cps, int i)
 	SwapEngines(i);
 	ReplaceEngine(cps, i);
 	FloatToFront(&appData.recentEngineList, engineLine);
+	if(gameMode == BeginningOfGame) Reset(TRUE, TRUE);
 	return;
     }
     p = engineName;
@@ -10789,6 +10790,7 @@ InitChessProgram (ChessProgramState *cps, int setup)
 
       b = SupportedVariant(cps->variants, gameInfo.variant, gameInfo.boardWidth,
                            gameInfo.boardHeight, gameInfo.holdingsSize, cps->protocolVersion, cps->tidy);
+
       if (b == NULL) {
 	VariantClass v;
 	char c, *q = cps->variants, *p = strchr(q, ',');
@@ -11971,7 +11973,10 @@ Reset (int redraw, int init)
     lastHint[0] = NULLCHAR;
     ClearGameInfo(&gameInfo);
     gameInfo.variant = StringToVariant(appData.variant);
-    if(gameInfo.variant == VariantNormal && strcmp(appData.variant, "normal")) gameInfo.variant = VariantUnknown;
+    if(gameInfo.variant == VariantNormal && strcmp(appData.variant, "normal")) {
+	gameInfo.variant = VariantUnknown;
+	strncpy(engineVariant, appData.variant, MSG_SIZ);
+    }
     ics_user_moved = ics_clock_paused = FALSE;
     ics_getting_history = H_FALSE;
     ics_gamenum = -1;
