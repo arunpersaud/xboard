@@ -546,7 +546,7 @@ Pick (int n)
 	}
 
 	gameInfo.variant = v;
-	appData.variant = VariantName(v);
+	ASSIGN(appData.variant, VariantName(v));
 
 	shuffleOpenings = FALSE; /* [HGM] shuffle: possible shuffle reset when we switch */
 	startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
@@ -555,9 +555,9 @@ Pick (int n)
 	appData.NrFiles = filesTmp;
 	appData.holdingsSize = sizeTmp;
 	appData.pieceToCharTable = NULL;
-	appData.pieceNickNames = "";
-	appData.colorNickNames = "";
-	appData.men = "";
+	ASSIGN(appData.pieceNickNames, "");
+	ASSIGN(appData.colorNickNames, "");
+	ASSIGN(appData.men, "");
         PopDown(TransientDlg);
 	Reset(True, True);
         return;

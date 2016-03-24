@@ -969,7 +969,7 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       }
 
       gameInfo.variant = v;
-      appData.variant = VariantName(v);
+      ASSIGN(appData.variant, VariantName(v));
 
       appData.NrFiles = (int) GetDlgItemInt(hDlg, IDC_Files, NULL, FALSE );
       appData.NrRanks = (int) GetDlgItemInt(hDlg, IDC_Ranks, NULL, FALSE );
@@ -982,7 +982,9 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       shuffleOpenings = FALSE; /* [HGM] shuffle: possible shuffle reset when we switch */
       startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
       appData.pieceToCharTable = NULL;
-      appData.men = "";
+      ASSIGN(appData.pieceNickNames, "");
+      ASSIGN(appData.colorNickNames, "");
+      ASSIGN(appData.men, "");
       Reset(TRUE, TRUE);
 
       return TRUE;
