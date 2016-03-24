@@ -716,6 +716,7 @@ ArgDescriptor argDescriptors[] = {
   { "messageSuppress", ArgString, (void *) &appData.suppress, XBOARD, (ArgIniType) "" },
   { "fen", ArgString, (void *) &appData.fen, FALSE, (ArgIniType) "" },
   { "men", ArgString, (void *) &appData.men, FALSE, (ArgIniType) "" },
+  { "analysisBell", ArgInt, (void *) &appData.analysisBell, TRUE, (ArgIniType) 0 },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

@@ -553,6 +553,7 @@ typedef struct {
     char *historyFont;
     char *gameListFont;
     char *icsFont;
+    int analysisBell;
     Boolean ringBellAfterMoves;
     Boolean autoCallFlag;
     Boolean flipView;

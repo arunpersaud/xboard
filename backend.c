@@ -8057,6 +8057,9 @@ SendProgramStatsToFrontend (ChessProgramState * cps, ChessProgramStats * cpstats
 
     if(stats.pv && stats.pv[0]) safeStrCpy(lastPV[stats.which], stats.pv, sizeof(lastPV[stats.which])/sizeof(lastPV[stats.which][0])); // [HGM] pv: remember last PV of each
 
+    if( gameMode == AnalyzeMode && stats.pv && stats.pv[0]
+        && appData.analysisBell && stats.time >= 100*appData.analysisBell ) RingBell();
+
     SetProgramStats( &stats );
 }
 

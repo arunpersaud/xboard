@@ -3459,6 +3459,11 @@ Default: false.
 Sets the Move Sound menu option.  @xref{Options Menu}.  Default: false.
 For compatibility with old XBoard versions, -bell/-xbell are also 
 accepted as abbreviations for this option.
+@item -analysisBell N
+@cindex analysisBell, option
+When N is non-zero, the Move Sound will be played whenever a new
+PV arrives in analysis mode after more than N seconds of analysis.
+Default: 0.
 @item -exit/-xexit or -popupExitMessage true/false
 @cindex exit, option
 @cindex popupExitMessage, option
