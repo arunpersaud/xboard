@@ -8952,7 +8952,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         }
         if(appData.epd) {
            if(solvingTime >= 0) {
-              snprintf(buf1, MSG_SIZ, "%d. %4.2fs\n", matchGame, solvingTime/100.);
+              snprintf(buf1, MSG_SIZ, "%d. solved %4.2fs\n", matchGame, solvingTime/100.);
               totalTime += solvingTime; first.matchWins++;
            } else {
               snprintf(buf1, MSG_SIZ, "%d. wrong (%s)\n", matchGame, parseList[backwardMostMove]);
@@ -11429,6 +11429,11 @@ NextMatchGame ()
     res = LoadGameOrPosition(matchGame); // setup game
     appData.noChessProgram = FALSE; // LoadGameOrPosition might call Reset too!
     if(!res) return; // abort when bad game/pos file
+    if(appData.epd) {// in EPD mode we make sure first engine is to move
+	firstWhite = !(forwardMostMove & 1);
+	first.twoMachinesColor =  firstWhite ? "white\n" : "black\n";   // perform actual color assignement
+	second.twoMachinesColor = firstWhite ? "black\n" : "white\n";
+    }
     TwoMachinesEvent();
 }
 
@@ -13526,8 +13531,8 @@ LoadPosition (FILE *f, int positionNumber, char *title)
 	    DisplayError(_("Bad FEN position in file"), 0);
 	    return FALSE;
 	}
-	if((p = strstr(line, ";")) && (p = strstr(p+1, "bm "))) { // EPD with best move
-	    sscanf(p+3, "%s", bestMove);
+	if((strchr(line, ';')) && (p = strstr(line, " bm "))) { // EPD with best move
+	    sscanf(p+4, "%s", bestMove);
 	} else *bestMove = NULLCHAR;
     } else {
 	(void) fgets(line, MSG_SIZ, f);

@@ -187,6 +187,8 @@ SetProgramStats (FrontEndProgramStats * stats) // now directly called by back-en
         return;
     }
 
+    if(appData.epd && which) return; // do not write second pane in -epd mode
+
     if( !EngineOutputDialogExists() ) {
         return;
     }
@@ -697,7 +699,7 @@ OutputKibitz (int window, char *text)
 	static int currentLineEnd[2];
 	int where = 0;
 	if(!EngineOutputIsUp()) return;
-	if(!opponentKibitzes) { // on first kibitz of game, clear memos
+	if(!opponentKibitzes && !appData.epd) { // on first kibitz of game, clear memos
 	    DoClearMemo(1); currentLineEnd[1] = 0;
 	    if(gameMode == IcsObserving) { DoClearMemo(0); currentLineEnd[0] = 0; }
 	}
