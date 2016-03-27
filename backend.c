@@ -1586,7 +1586,7 @@ MatchEvent (int mode)
 	}
 	matchMode = mode;
 	matchGame = roundNr = 1;
-	first.matchWins = second.matchWins = 0; // [HGM] match: needed in later matches
+	first.matchWins = second.matchWins = totalTime = 0; // [HGM] match: needed in later matches
 	NextMatchGame();
 }
 
