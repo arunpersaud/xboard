@@ -9723,10 +9723,18 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 
 		if(*bestMove) { // rememer time best EPD move was first found
 		    int ff1, tf1, fr1, tr1, ff2, tf2, fr2, tr2; char pp1, pp2;
-		    ChessMove mt;
-		    int ok = ParseOneMove(bestMove, forwardMostMove, &mt, &ff1, &fr1, &tf1, &tr1, &pp1);
-		    ok    &= ParseOneMove(pv, forwardMostMove, &mt, &ff2, &fr2, &tf2, &tr2, &pp2);
-		    solvingTime = (ok && ff1==ff2 && fr1==fr2 && tf1==tf2 && tr1==tr2 && pp1==pp2 ? (solvingTime < 0 ? time : solvingTime) : -1);
+		    ChessMove mt; char *p = bestMove, solved = 0;
+		    int ok = ParseOneMove(pv, forwardMostMove, &mt, &ff2, &fr2, &tf2, &tr2, &pp2);
+		    while(ok && *p && ParseOneMove(p, forwardMostMove, &mt, &ff1, &fr1, &tf1, &tr1, &pp1)) {
+			if(ff1==ff2 && fr1==fr2 && tf1==tf2 && tr1==tr2 && pp1==pp2) {
+			    solvingTime = (solvingTime < 0 ? time : solvingTime);
+			    solved = 1;
+			    break;
+			}
+			while(*p && *p != ' ') p++;
+			while(*p == ' ') p++;
+		    }
+		    if(!solved) solvingTime = -1;
 		}
 
 		if(serverMoves && (time > 100 || time == 0 && plylev > 7)) {
@@ -13540,7 +13548,7 @@ LoadPosition (FILE *f, int positionNumber, char *title)
 	    return FALSE;
 	}
 	if((strchr(line, ';')) && (p = strstr(line, " bm "))) { // EPD with best move
-	    sscanf(p+4, "%s", bestMove);
+	    sscanf(p+4, "%[^;]", bestMove);
 	} else *bestMove = NULLCHAR;
     } else {
 	(void) fgets(line, MSG_SIZ, f);
