@@ -9726,7 +9726,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 		    ChessMove mt;
 		    int ok = ParseOneMove(bestMove, forwardMostMove, &mt, &ff1, &fr1, &tf1, &tr1, &pp1);
 		    ok    &= ParseOneMove(pv, forwardMostMove, &mt, &ff2, &fr2, &tf2, &tr2, &pp2);
-		    solvingTime = (ok && ff1==ff2 && fr1==fr2 && tf1==tf2 && tr1==tr2 && pp1==pp2 ? time : -1);
+		    solvingTime = (ok && ff1==ff2 && fr1==fr2 && tf1==tf2 && tr1==tr2 && pp1==pp2 ? (solvingTime < 0 ? time : solvingTime) : -1);
 		}
 
 		if(serverMoves && (time > 100 || time == 0 && plylev > 7)) {
