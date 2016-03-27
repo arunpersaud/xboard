@@ -8953,7 +8953,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         if(appData.epd) {
            if(solvingTime >= 0) {
               snprintf(buf1, MSG_SIZ, "%d. solved %4.2fs\n", matchGame, solvingTime/100.);
-              totalTime += solvingTime; first.matchWins++;
+              totalTime += solvingTime; first.matchWins++; solvingTime = -1;
            } else {
               snprintf(buf1, MSG_SIZ, "%d. wrong (%s)\n", matchGame, parseList[backwardMostMove]);
               second.matchWins++;
@@ -11841,6 +11841,14 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	    return;
 	} else {
 	    gameMode = nextGameMode;
+	    if(appData.epd) {
+		snprintf(buf, MSG_SIZ, "-------------------------------- ");
+		OutputKibitz(2, buf);
+		snprintf(buf, MSG_SIZ, "Average solving time %4.2f sec ", totalTime/(100.*first.matchWins));
+		OutputKibitz(2, buf);
+		snprintf(buf, MSG_SIZ, "Solved %d of %d (%3.1f%%) ", first.matchWins, nextGame, first.matchWins*100./nextGame);
+		OutputKibitz(2, buf);
+	    }
 	    snprintf(buf, MSG_SIZ, _("Match %s vs. %s: final score %d-%d-%d"),
 		     first.tidy, second.tidy,
 		     first.matchWins, second.matchWins,
