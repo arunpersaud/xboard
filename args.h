@@ -1416,7 +1416,10 @@ InitAppData(char *lpCmdLine)
      appData.NrRanks > BOARD_RANKS   )
       DisplayFatalError("Recompile with BOARD_RANKS or BOARD_FILES, to support this size", 0, 2);
 
-  if(!*appData.secondChessProgram) { ASSIGN(appData.secondChessProgram, appData.firstChessProgram); } // [HGM] scp defaults to fcp
+  if(!*appData.secondChessProgram) { // [HGM] scp defaults to fcp
+    ASSIGN(appData.secondChessProgram, appData.firstChessProgram);
+    appData.secondIsUCI = appData.firstIsUCI; // copy type too!
+  }
 
   /* [HGM] After parsing the options from the .ini file, and overruling them
    * with options from the command line, we now make an even higher priority
