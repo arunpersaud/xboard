@@ -296,7 +296,7 @@ int promoDefaultAltered;
 int keepInfo = 0; /* [HGM] to protect PGN tags in auto-step game analysis */
 static int initPing = -1;
 int border;       /* [HGM] width of board rim, needed to size seek graph  */
-char bestMove[MSG_SIZ];
+char bestMove[MSG_SIZ], avoidMove[MSG_SIZ];
 int solvingTime, totalTime;
 
 /* States for ics_getting_history */
@@ -8952,11 +8952,11 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         }
         if(appData.epd) {
            if(solvingTime >= 0) {
-              snprintf(buf1, MSG_SIZ, _("%d. solved %4.2fs\n"), matchGame, solvingTime/100.);
+              snprintf(buf1, MSG_SIZ, "%d. %4.2fs: %s ", matchGame, solvingTime/100., parseList[backwardMostMove]);
               totalTime += solvingTime; first.matchWins++; solvingTime = -1;
            } else {
-              snprintf(buf1, MSG_SIZ, _("%d. wrong (%s)\n"), matchGame, parseList[backwardMostMove]);
-              second.matchWins++;
+              snprintf(buf1, MSG_SIZ, "%d. %s?%s ", matchGame, parseList[backwardMostMove], solvingTime == -2 ? " ???" : "");
+              if(solvingTime == -2) second.matchWins++;
            }
            OutputKibitz(2, buf1);
            GameEnds(GameUnfinished, NULL, GE_XBOARD);
@@ -9695,6 +9695,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 
 	if (!ignore) {
 	    ChessProgramStats tempStats = programStats; // [HGM] info: filter out info lines
+	    int solved = 0;
 	    buf1[0] = NULLCHAR;
 	    if (sscanf(message, "%d%c %d %d " u64Display " %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5) {
@@ -9723,8 +9724,9 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 
 		if(*bestMove) { // rememer time best EPD move was first found
 		    int ff1, tf1, fr1, tr1, ff2, tf2, fr2, tr2; char pp1, pp2;
-		    ChessMove mt; char *p = bestMove, solved = 0;
+		    ChessMove mt; char *p = bestMove;
 		    int ok = ParseOneMove(pv, forwardMostMove, &mt, &ff2, &fr2, &tf2, &tr2, &pp2);
+		    solved = 0;
 		    while(ok && *p && ParseOneMove(p, forwardMostMove, &mt, &ff1, &fr1, &tf1, &tr1, &pp1)) {
 			if(ff1==ff2 && fr1==fr2 && tf1==tf2 && tr1==tr2 && pp1==pp2) {
 			    solvingTime = (solvingTime < 0 ? time : solvingTime);
@@ -9735,6 +9737,20 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 			while(*p == ' ') p++;
 		    }
 		    if(!solved) solvingTime = -1;
+		}
+		if(*avoidMove && !solved) {
+		    int ff1, tf1, fr1, tr1, ff2, tf2, fr2, tr2; char pp1, pp2;
+		    ChessMove mt; char *p = avoidMove, solved = 1;
+		    int ok = ParseOneMove(pv, forwardMostMove, &mt, &ff2, &fr2, &tf2, &tr2, &pp2);
+		    while(ok && *p && ParseOneMove(p, forwardMostMove, &mt, &ff1, &fr1, &tf1, &tr1, &pp1)) {
+			if(ff1==ff2 && fr1==fr2 && tf1==tf2 && tr1==tr2 && pp1==pp2) {
+			    solved = 0; solvingTime = -2;
+			    break;
+			}
+			while(*p && *p != ' ') p++;
+			while(*p == ' ') p++;
+		    }
+		    if(solved && !*bestMove) solvingTime = (solvingTime < 0 ? time : solvingTime);
 		}
 
 		if(serverMoves && (time > 100 || time == 0 && plylev > 7)) {
@@ -11852,9 +11868,11 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	    if(appData.epd) {
 		snprintf(buf, MSG_SIZ, "-------------------------------------- ");
 		OutputKibitz(2, buf);
-		snprintf(buf, MSG_SIZ, _("Average solving time %4.2f sec "), totalTime/(100.*first.matchWins));
+		snprintf(buf, MSG_SIZ, _("Average solving time %4.2f sec (total time %4.2f sec) "), totalTime/(100.*first.matchWins), totalTime/100.);
 		OutputKibitz(2, buf);
-		snprintf(buf, MSG_SIZ, _("Solved %d of %d (%3.1f%%) "), first.matchWins, nextGame, first.matchWins*100./nextGame);
+		snprintf(buf, MSG_SIZ, _("%d avoid-moves played "), second.matchWins);
+		if(second.matchWins) OutputKibitz(2, buf);
+		snprintf(buf, MSG_SIZ, _("Solved %d out of %d (%3.1f%%) "), first.matchWins, nextGame-1, first.matchWins*100./(nextGame-1));
 		OutputKibitz(2, buf);
 	    }
 	    snprintf(buf, MSG_SIZ, _("Match %s vs. %s: final score %d-%d-%d"),
@@ -13550,6 +13568,9 @@ LoadPosition (FILE *f, int positionNumber, char *title)
 	if((strchr(line, ';')) && (p = strstr(line, " bm "))) { // EPD with best move
 	    sscanf(p+4, "%[^;]", bestMove);
 	} else *bestMove = NULLCHAR;
+	if((strchr(line, ';')) && (p = strstr(line, " am "))) { // EPD with avoid move
+	    sscanf(p+4, "%[^;]", avoidMove);
+	} else *avoidMove = NULLCHAR;
     } else {
 	(void) fgets(line, MSG_SIZ, f);
 	(void) fgets(line, MSG_SIZ, f);
