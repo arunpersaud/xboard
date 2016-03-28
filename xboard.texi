@@ -2478,6 +2478,22 @@ without alternating colors.
 Otherwise the same applies as for the @samp{-matchGames} option,
 over which it takes precedence if both are specified. (See there.)
 Default: 0 (do not run a match).
+@item -epd
+@cindex epd, option
+This option puts XBoard in a special mode for solving EPD test-suites,
+for the entire duration of the session.
+In this mode games are aborted after a single move,
+and that move will be compared with the best-move or avoid-move
+from the EPD position description from which the 'game' was started.
+Playing a best move counts as a win, playing an avoid move as a loss,
+and playing any other move counts as a draw.
+This option should be used in combination with match mode,
+and an EPD file of starting positions with an auto-incrementing index.
+Color assignment will be such that the first engine plays all moves,
+and the second engine will be never involved.
+The results for individual positions,
+as well as the time used for solving them,
+will be reported in the lower pane of the Engine Output window.
 @item -fcp or -firstChessProgram program
 @itemx -scp or -secondChessProgram program
 @cindex fcp, option
