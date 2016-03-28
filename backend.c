@@ -15024,6 +15024,7 @@ TwoMachinesEvent P((void))
       ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
       return;
     }
+  if(!appData.epd) {
     if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
 
     if(!SupportedVariant(second.variants, gameInfo.variant, gameInfo.boardWidth,
@@ -15042,6 +15043,7 @@ TwoMachinesEvent P((void))
       ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
       return;
     }
+  }
     GetTimeMark(&now); // [HGM] matchpause: implement match pause after engine load
     if(appData.matchPause>10000 || appData.matchPause<10)
                 appData.matchPause = 10000; /* [HGM] make pause adjustable */
@@ -15053,6 +15055,7 @@ TwoMachinesEvent P((void))
     // we are now committed to starting the game
     stalling = 0;
     DisplayMessage("", "");
+  if(!appData.epd) {
     if (startedFromSetupPosition) {
 	SendBoard(&second, backwardMostMove);
     if (appData.debugMode) {
@@ -15062,6 +15065,7 @@ TwoMachinesEvent P((void))
     for (i = backwardMostMove; i < forwardMostMove; i++) {
 	SendMoveToProgram(i, &second);
     }
+  }
 
     gameMode = TwoMachinesPlay;
     pausing = startingEngine = FALSE;
@@ -15080,11 +15084,13 @@ TwoMachinesEvent P((void))
       snprintf(buf, MSG_SIZ, "name %s\n", second.tidy);
       SendToProgram(buf, &first);
     }
+  if(!appData.epd) {
     SendToProgram(second.computerString, &second);
     if (second.sendName) {
       snprintf(buf, MSG_SIZ, "name %s\n", first.tidy);
       SendToProgram(buf, &second);
     }
+  }
 
     ResetClocks();
     if (!first.sendTime || !second.sendTime) {
