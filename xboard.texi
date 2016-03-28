@@ -1565,6 +1565,12 @@ and after every move an 'increment' will be added to it.
 @cindex fixed max, Menu Item
 Selects a TC mode where you have to make each move within a given time,
 and any left-over time is not carried over to the next move.
+@item Divide entered times by 60
+@cindex Divide entered times by 60, Menu Item
+To allow entering of sub-minute initial time or sub-second increment,
+you can tick this checkbox.
+The initial time can then be entered in seconds,
+and the increment in units of 1/60 second.
 @item Moves per session
 @cindex Moves per session, Menu Item
 Sets the duration of a session for classical time control.
