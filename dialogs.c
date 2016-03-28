@@ -1607,10 +1607,10 @@ static Option shuffleOptions[] = {
 static void
 SetRandom (int n)
 {
-    int r = n==2 ? -1 : random() & (1<<30)-1;
+    int r = n==3 ? -1 : random() & (1<<30)-1;
     char buf[MSG_SIZ];
     snprintf(buf, MSG_SIZ,  "%d", r);
-    SetWidgetText(&shuffleOptions[1], buf, TransientDlg);
+    SetWidgetText(&shuffleOptions[2], buf, TransientDlg);
     SetWidgetState(&shuffleOptions[0], True);
 }
 
