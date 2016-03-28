@@ -243,16 +243,27 @@ appropriate command from the Action menu, not @samp{New Game}.
 Similar to @samp{New Game}, but allows you to specify a particular initial position 
 (according to a standardized numbering system)
 in chess variants which use randomized opening positions (e.g. Chess960).
-You can also press the @samp{Pick Fixed} button to let XBoard generate
-a random number for you.
-The thus selected opening position will then persistently be chosen on any following
-New Game command until you use this menu to select another. 
-Selecting position number -1 (or pushing the @samp{Randomize} button)
-will produce a newly randomized position on any new game.
-Using this menu item in variants that normally do not shuffle their opening position
-does cause these variants to become shuffle variants until you use the
-@samp{New Shuffle Game} menu to explicitly switch the randomization off,
-or select a new variant.
+@itemx shuffle
+@cindex shuffle, Menu Item
+Ticking @samp{shuffle} will cause the current variant to be played
+with shuffled initial position.
+Shuffling will preserve the possibility to castle in the way allowed by the variant.
+@itemx Fischer castling
+@cindex Fischer castling, menu item
+Ticking @samp{Fischer castling} will allow castling with Kings and Rooks
+that did not start in their normal place, as in Chess960.
+@itemx Start-position number
+@itemx randomize
+@itemx pick fixed
+@cindex randomize, Menu Item
+@cindex pick fixed, Menu Item
+@cindex Start-position number, Menu Item
+The @samp{Start-position number} selects a particular start position
+from all allowed shufflings, which will then be used for every new game.
+Setting this to -1 (which can be done by pressing the @samp{randomize} button)
+will cause a fresh random position to be picked for every new game.
+Pressing the @samp{pick fixed} button causes @samp{Start-position number}
+to be set to a random value, to be used for all subsequent games. 
 @item New Variant
 @cindex New variant, Menu Item
 Allows you to select a new chess variant in non-ICS mode. 
