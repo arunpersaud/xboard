@@ -1418,6 +1418,7 @@ InitAppData(char *lpCmdLine)
 
   if(!*appData.secondChessProgram) { // [HGM] scp defaults to fcp
     ASSIGN(appData.secondChessProgram, appData.firstChessProgram);
+    ASSIGN(appData.secondDirectory, appData.firstDirectory);
     appData.secondIsUCI = appData.firstIsUCI; // copy type too!
   }
 
