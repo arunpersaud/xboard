@@ -2058,7 +2058,7 @@ DisambiguateCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
 	(cl->rtIn == -1 || cl->rtIn == rt || wildCard) &&
 	(cl->ftIn == -1 || cl->ftIn == ft || wildCard)) {
 
-	if(cl->count && rf == cl->rf && ff == cl->ff) return; // duplicate move
+	if(cl->count && rf == cl->rf && ff == cl->ff && rt == cl->rt && ft == cl->ft) return; // duplicate move
 
 	if(cl->count == 1 && kifu & 0x7E && cl->rfIn == -1 && cl->ffIn == -1) { // traditional Shogi disambiguation required
 	    int this = 1, other = 1;
