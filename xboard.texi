@@ -569,6 +569,7 @@ position. Puts XBoard into @samp{Edit Game} mode if it was not there
 already.
 The @kbd{End} key is a keyboard equivalent.
 @item Backward
+@itemx <
 @cindex Backward, Menu Item
 @cindex <, Button
 Steps backward through a series of remembered moves.
@@ -591,6 +592,7 @@ everyone's view of the game and allows you to make a different
 move. If Pause mode is on, @samp{Backward} only backs up your local
 view.
 @item Forward
+@itemx >
 @cindex Forward, Menu Item
 @cindex >, Button
 Steps forward through a series of remembered moves (undoing the
@@ -606,6 +608,7 @@ Pause mode is on, @samp{Forward} only moves your local view forward,
 and it will not go past the position that the game was in when
 you paused.
 @item Back to Start
+@itemx <<
 @cindex Back to Start, Menu Item
 @cindex <<, Button
 Jumps backward to the first remembered position in the game.
@@ -626,6 +629,7 @@ command, which backs up everyone's view of the game to the start and
 allows you to make different moves. If Pause mode is on, @samp{Back
 to Start} only backs up your local view.
 @item Forward to End
+@itemx >>
 @cindex Forward to End, Menu Item
 @cindex >>, Button
 Jumps forward to the last remembered position in the game. The
