@@ -7168,6 +7168,7 @@ UserMoveEvent (int fromX, int fromY, int toX, int toY, int promoChar)
         if(ExcludeOneMove(fromY, fromX, toY, toX, promoChar, '*')) // toggle
 	     ClearPremoveHighlights(); // was included
 	else ClearHighlights(), SetPremoveHighlights(ff, rf, ft, rt); // exclusion indicated  by premove highlights
+	DrawPosition(FALSE, NULL);
 	return;
     }
 
@@ -7911,7 +7912,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	flashing = 1; // prevent recursive calling (by release of to-click) while flashing piece
 	UserMoveEvent(fromX, fromY, toX, toY, promoChoice);
 	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
-	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
+	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY), DrawPosition(FALSE, NULL);
 	if(saveAnimate && !appData.animate && currentMove != oldMove && // drag-move was performed
 	   Explode(boards[currentMove-1], fromX, fromY, toX, toY))
 	    DrawPosition(TRUE, boards[currentMove]);
