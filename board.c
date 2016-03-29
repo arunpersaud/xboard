@@ -194,7 +194,7 @@ SetPremoveHighlights (int fromX, int fromY, int toX, int toY)
     }
     if (pm2X != toX || pm2Y != toY) {
 	if (pm2X >= 0 && pm2Y >= 0) {
-	    damage[0][pm1Y][pm1X] |= 2;
+	    damage[0][pm2Y][pm2X] |= 2;
 	}
     }
     pm1X = fromX;
