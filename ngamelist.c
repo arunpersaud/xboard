@@ -81,7 +81,7 @@ static int GameListPrepare P((int byPos, int narrow));
 static void GameListReplace P((int page));
 static void GL_Button P((int n));
 
-static Option gamesOptions[] = {
+Option gamesOptions[] = {
 { 200,  LR|TB,     400, NULL, (void*) list,       NULL, NULL, ListBox, "", &appData.gameListFont },
 {   0,  0,         100, NULL, (void*) &filterPtr, "", NULL, TextBox, "" },
 {   4,  SAME_ROW,    0, NULL, (void*) &GL_Button, NULL, NULL, Button, N_("find position") },

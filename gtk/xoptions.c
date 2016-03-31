@@ -270,6 +270,23 @@ SetWidgetFont (GtkWidget *w, char **s)
 }
 
 void
+ApplyFont (Option *opt, char *font)
+{
+    GtkWidget *w = NULL;
+    if(!font && opt->font) font = *opt->font;
+    if(!font) return;
+    switch(opt->type) {
+      case ListBox:
+      case Label:   w = opt->handle; break;
+      case Button:  if(opt->handle) w = gtk_bin_get_child(GTK_BIN(opt->handle)); break;
+      case TextBox: w = opt->textValue; break;
+      default: ;
+    }
+printf("set font %s\n", font);
+    if(w && font) SetWidgetFont(w, &font);
+}
+
+void
 SetListBoxItem (GtkListStore *store, int n, char *msg)
 {
     GtkTreeIter iter;

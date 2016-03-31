@@ -162,6 +162,7 @@ void SaveOptionsProc P((void));
 void SaveSettings P((char *));
 void EditBookProc P((void));
 void InitMenuMarkers P((void));
+void FontsProc P((void));
 void ShowGameListProc P((void)); // in ngamelist.c
 void HistoryShowProc P((void));  // in nhistory.c
 

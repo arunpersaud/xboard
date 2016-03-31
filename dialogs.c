@@ -1620,6 +1620,118 @@ ShuffleMenuProc ()
     GenericPopUp(shuffleOptions, _("New Shuffle Game"), TransientDlg, BoardWindow, MODAL, 0);
 }
 
+//--------------------------------------------------- Fonts ------------------------------
+
+static void AdjustFont P((int n));
+
+static int
+FontsOK (int n)
+{
+    extern Option historyOptions[], engoutOptions[], gamesOptions[];
+    int i;
+    ApplyFont(&mainOptions[W_WHITE], appData.clockFont);
+    ApplyFont(&mainOptions[W_BLACK], appData.clockFont);
+    ApplyFont(&mainOptions[W_MESSG], NULL);
+    for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
+    ApplyFont(&tagsOptions[1], NULL);
+    ApplyFont(&historyOptions[0], NULL);
+    ApplyFont(&engoutOptions[5], NULL);
+    ApplyFont(&engoutOptions[12], NULL);
+    ApplyFont(&gamesOptions[0], NULL);
+    DrawPosition(TRUE, NULL); // for coord font
+    return 1;
+}
+
+static Option fontOptions[] = {
+  { 0,          0, 70, NULL, (void*) &appData.clockFont, "", NULL, TextBox, N_("Clocks:") },
+  {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
+  {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
+  {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
+  {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  { 0,          0, 70, NULL, (void*) &appData.font, "", NULL, TextBox, N_("Message (above board):") },
+  {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
+  {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
+  {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
+  {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  { 0,          0, 70, NULL, (void*) &appData.coordFont, "", NULL, TextBox, N_("Board coordinates:") },
+  {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
+  {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
+  {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
+  {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  { 0,          0, 70, NULL, (void*) &appData.tagsFont, "", NULL, TextBox, N_("Edit tags / book / engine list:") },
+  {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
+  {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
+  {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
+  {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  { 0,          0, 70, NULL, (void*) &appData.commentFont, "", NULL, TextBox, N_("Edit comments:") },
+  {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
+  {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
+  {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
+  {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  { 0,          0, 70, NULL, (void*) &appData.historyFont, "", NULL, TextBox, N_("Move history / Engine Output:") },
+  {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
+  {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
+  {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
+  {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  { 0,          0, 70, NULL, (void*) &appData.gameListFont, "", NULL, TextBox, N_("Game list:") },
+  {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
+  {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
+  {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
+  {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("Generic type-face names are Sans, Monospace and Serif") },
+  { 0, 0, 0, NULL, (void*) &FontsOK, "", NULL, EndMark , "" }
+};
+
+static char name[MSG_SIZ], *bold, *ital, points;
+
+static void
+BreakUp (char *font)
+{
+    char *p = name;
+    safeStrCpy(name, font, MSG_SIZ);
+    bold = StrCaseStr(name, "bold");
+    ital = StrCaseStr(name, "ital");
+    points = 0;
+    while(p && *p && !(points = atoi(p))) p = strchr(p+1, ' ');
+    if(points) p[*p == ' '] = 0;
+    if(bold) *bold = 0;
+    if(ital) *ital = 0;
+}
+
+static void
+Collect ()
+{
+    if(bold) strcat(name, "Bold ");
+    if(ital) strcat(name, "Italic ");
+    if(points) sprintf(name + strlen(name), " %d", points); else strcat(name, "%d");
+}
+
+static void
+AdjustFont (int n)
+{
+    int button = fontOptions[n].value, base = n - button;
+    char *oldFont;
+    GetWidgetText(&fontOptions[base], &oldFont);
+    BreakUp(oldFont); // take apart old font name
+    switch(button) {
+      case 1: points++; break;
+      case 2: points--; break;
+      case 3: if(bold) bold = NULL; else bold = name; break;
+      case 4: if(ital) ital = NULL; else ital = name; break;
+    }
+    Collect();
+    SetWidgetText(&fontOptions[base], name, TransientDlg);
+//    ApplyFont(&fontOptions[base], name);
+}
+
+void
+FontsProc ()
+{
+    int i;
+    GenericPopUp(fontOptions, _("Fonts"), TransientDlg, BoardWindow, MODAL, 0);
+//    for(i=0; i<6; i++) ApplyFont(&fontOptions[5*i], *(char**)fontOptions[5*i].target);
+}
+
 //------------------------------------------------------ Time Control -----------------------------------
 
 static int TcOK P((int n));

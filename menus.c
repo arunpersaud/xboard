@@ -651,6 +651,7 @@ MenuItem viewMenu[] = {
   {N_("ICS/Chat Console"),   NULL,           "OpenChatWindow",  ChatProc,               CHECK},
   {"----",                   NULL,            NULL,             NothingProc},
   {N_("Board..."),           NULL,           "Board",           BoardOptionsProc},
+  {N_("Fonts..."),           NULL,           "Fonts",           FontsProc},
   {N_("Game List Tags..."),  NULL,           "GameListTags",    GameListOptionsProc},
   {NULL,                     NULL,            NULL,             NULL}
 };
