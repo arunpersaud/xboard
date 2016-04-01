@@ -1627,7 +1627,7 @@ static void AdjustFont P((int n));
 static int
 FontsOK (int n)
 {
-    extern Option historyOptions[], engoutOptions[], gamesOptions[];
+    extern Option historyOptions[], engoutOptions[], gamesOptions[], chatOptions[];
     int i;
     DisplayBothClocks();
     ApplyFont(&mainOptions[W_MESSG], NULL);
@@ -1637,6 +1637,8 @@ FontsOK (int n)
     ApplyFont(&engoutOptions[5], NULL);
     ApplyFont(&engoutOptions[12], NULL);
     ApplyFont(&gamesOptions[0], NULL);
+    ApplyFont(&chatOptions[11], appData.icsFont);
+    AppendColorized(&chatOptions[6], NULL, 0); // kludge to replace font tag
     DrawPosition(TRUE, NULL); // for coord font
     return 1;
 }
@@ -1652,7 +1654,7 @@ static Option fontOptions[] = {
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
-  { 0,         60, 70, NULL, (void*) &appData.coordFont, NULL, NULL, TextBox, N_("Board coordinates:") },
+  { 0,         60, 70, NULL, (void*) &appData.icsFont, NULL, NULL, TextBox, N_("ICS Chat/Console:") },
   {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },

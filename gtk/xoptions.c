@@ -615,6 +615,11 @@ AppendColorized (Option *opt, char *s, int count)
     static GtkTextIter end;
     static GtkTextTag *fgTags[8], *bgTags[8], *font, *bold, *normal, *attr = NULL;
 
+    if(!s) {
+	font = NULL;
+	return;
+    }
+
     if(!font) {
 	font = gtk_text_buffer_create_tag(opt->handle, NULL, "font", appData.icsFont, NULL);
 	gtk_widget_modify_base(GTK_WIDGET(opt->textValue), GTK_STATE_NORMAL, &backgroundColor);
