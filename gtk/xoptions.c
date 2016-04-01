@@ -279,10 +279,9 @@ ApplyFont (Option *opt, char *font)
       case ListBox:
       case Label:   w = opt->handle; break;
       case Button:  if(opt->handle) w = gtk_bin_get_child(GTK_BIN(opt->handle)); break;
-      case TextBox: w = opt->textValue; break;
+      case TextBox: w = opt->textValue; if(!w) w = opt->handle; break;
       default: ;
     }
-printf("set font %s\n", font);
     if(w && font) SetWidgetFont(w, &font);
 }
 
