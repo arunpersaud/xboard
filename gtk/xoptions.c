@@ -285,6 +285,17 @@ ApplyFont (Option *opt, char *font)
     if(w && font) SetWidgetFont(w, &font);
 }
 
+GtkWidget *fbutton;
+
+void
+FontCallback (GtkWidget *widget, gpointer gdata)
+{
+    Option *opt = (Option *) gdata;
+    gchar *p = (char *) gtk_font_button_get_font_name(GTK_FONT_BUTTON(fbutton));
+    SetWidgetText(opt, p, TransientDlg);
+    ApplyFont(opt, p);
+}
+
 void
 SetListBoxItem (GtkListStore *store, int n, char *msg)
 {
@@ -1520,6 +1531,11 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    break;
           case SaveButton:
           case Button:
+            if(!strcmp(option[i].name, "fontsel")) {
+                option[i].handle = (void *) (fbutton = gtk_font_button_new());
+                Pack(hbox, table, fbutton, left, left+r, top, 0);
+                break;
+            }
             button = gtk_button_new_with_label (_(option[i].name));
             SetWidgetFont(gtk_bin_get_child(GTK_BIN(button)), option[i].font);
 
@@ -1544,6 +1560,9 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             }
 
             Pack(hbox, table, button, left, left+1, top, 0);
+            if(option[i].value == 666 && !strcmp(option[i].name, "*")) // font-assignment buttons
+            g_signal_connect (button, "clicked", G_CALLBACK (FontCallback), (gpointer) &option[i-5]);
+            else
             g_signal_connect (button, "clicked", G_CALLBACK (GenericCallback), (gpointer)(intptr_t) i + (dlgNr<<16));
 	    g_signal_connect(button, "button-press-event", G_CALLBACK (HelpEvent), (gpointer) option[i].name );
             option[i].handle = (void*)button;

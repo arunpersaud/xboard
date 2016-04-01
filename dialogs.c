@@ -1649,37 +1649,45 @@ static Option fontOptions[] = {
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  {  666, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("*") },
   { 0,         60, 70, NULL, (void*) &appData.font, NULL, NULL, TextBox, N_("Message (above board):") },
   {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  {  666, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("*") },
   { 0,         60, 70, NULL, (void*) &appData.icsFont, NULL, NULL, TextBox, N_("ICS Chat/Console:") },
   {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  {  666, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("*") },
   { 0,         60, 70, NULL, (void*) &appData.tagsFont, NULL, NULL, TextBox, N_("Edit tags / book / engine list:") },
   {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  {  666, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("*") },
   { 0,         60, 70, NULL, (void*) &appData.commentFont, NULL, NULL, TextBox, N_("Edit comments:") },
   {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  {  666, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("*") },
   { 0,         60, 70, NULL, (void*) &appData.historyFont, NULL, NULL, TextBox, N_("Move history / Engine Output:") },
   {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
+  {  666, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("*") },
   { 0,         60, 70, NULL, (void*) &appData.gameListFont, NULL, NULL, TextBox, N_("Game list:") },
   {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
-  {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("\nGeneric type-face names are Sans, Monospace and Serif") },
+  {  666, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("*") },
+  {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("\nThe * buttons will set the font to the one selected below:") },
+  {   0,  0,    0, NULL, NULL, NULL, NULL, Button, "fontsel" },
   { 0, 0, 0, NULL, (void*) &FontsOK, "", NULL, EndMark , "" }
 };
 
@@ -1734,7 +1742,7 @@ FontsProc ()
     int i;
     if(strstr(appData.font, "-*-")) { DisplayNote(_("This only works in the GTK build")); return; }
     GenericPopUp(fontOptions, _("Fonts"), TransientDlg, BoardWindow, MODAL, 0);
-    for(i=0; i<6; i++) ApplyFont(&fontOptions[5*i], *(char**)fontOptions[5*i].target);
+    for(i=0; i<6; i++) ApplyFont(&fontOptions[6*i], *(char**)fontOptions[6*i].target);
 }
 
 //------------------------------------------------------ Time Control -----------------------------------
