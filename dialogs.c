@@ -1644,7 +1644,7 @@ FontsOK (int n)
 }
 
 static Option fontOptions[] = {
-  { 0,        60, 200, NULL, (void*) &appData.clockFont, NULL, NULL, TextBox, N_("Clocks:") },
+  { 0,        60, 200, NULL, (void*) &appData.clockFont, NULL, NULL, TextBox, N_("Clocks (requires restart):") },
   {    1, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("+") },
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
@@ -1679,7 +1679,7 @@ static Option fontOptions[] = {
   {    2, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("-") },
   {    3, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("B") },
   {    4, SAME_ROW, 0, NULL, (void*) &AdjustFont, NULL, NULL, Button, N_("I") },
-  {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("Generic type-face names are Sans, Monospace and Serif") },
+  {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("\nGeneric type-face names are Sans, Monospace and Serif") },
   { 0, 0, 0, NULL, (void*) &FontsOK, "", NULL, EndMark , "" }
 };
 
@@ -1732,6 +1732,7 @@ void
 FontsProc ()
 {
     int i;
+    if(strstr(appData.font, "-*-")) { DisplayNote(_("This only works in the GTK build")); return; }
     GenericPopUp(fontOptions, _("Fonts"), TransientDlg, BoardWindow, MODAL, 0);
     for(i=0; i<6; i++) ApplyFont(&fontOptions[5*i], *(char**)fontOptions[5*i].target);
 }

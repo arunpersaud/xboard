@@ -289,6 +289,11 @@ AppendColorized (Option *opt, char *message, int count)
 }
 
 void
+ApplyFont (Option *opt, char *font)
+{ // dummy
+}
+
+void
 Show (Option *opt, int hide)
 {
     static Dimension h;
