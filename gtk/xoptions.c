@@ -1388,7 +1388,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  case FileName:
      	  case PathName:
           tBox:
-            label = gtk_label_new(option[i].name);
+            label = gtk_label_new(_(option[i].name));
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 
@@ -1483,7 +1483,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             }
             break;
           case CheckBox:
-            checkbutton = gtk_check_button_new_with_label(option[i].name);
+            checkbutton = gtk_check_button_new_with_label(_(option[i].name));
 	    g_signal_connect(checkbutton, "button-press-event", G_CALLBACK (HelpEvent), (gpointer) option[i].name );
             if(!currentCps) option[i].value = *(Boolean*)option[i].target;
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);
@@ -1496,7 +1496,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             Pack(hbox, table, label, left, left+2, top, 0);
             break;
 	  case Label:
-            option[i].handle = (void *) (label = gtk_label_new(option[i].name));
+            option[i].handle = (void *) (label = gtk_label_new(_(option[i].name)));
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
             SetWidgetFont(label, option[i].font);
@@ -1520,7 +1520,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	    break;
           case SaveButton:
           case Button:
-            button = gtk_button_new_with_label (option[i].name);
+            button = gtk_button_new_with_label (_(option[i].name));
             SetWidgetFont(gtk_bin_get_child(GTK_BIN(button)), option[i].font);
 
             /* set button color on view board dialog */
@@ -1549,7 +1549,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             option[i].handle = (void*)button;
             break;
 	  case ComboBox:
-            label = gtk_label_new(option[i].name);
+            label = gtk_label_new(_(option[i].name));
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	    button = gtk_event_box_new();
