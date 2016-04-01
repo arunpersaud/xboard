@@ -892,6 +892,12 @@ by typing one in the text entry in the lower-left of the dialog,
 and closing the latter with OK.
 It will then appear in the themes listbox next time you open the dialog,
 where you can recall the complete settings combination with a double-click.
+@item Fonts
+@cindex Fonts, Menu Item
+Pops up a dialog where you can set the fonts used in the main elements of various windows.
+Pango font names can be typed for each window type,
+and behind each text entry there are buttons to adjust the point size,
+and toggle the 'bold' or 'italic' attributes of the font.
 @item Game List Tags
 @cindex Game List Tags, Menu Item
 a duplicate of the Game List dialog in the Options menu.
