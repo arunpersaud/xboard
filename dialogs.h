@@ -204,6 +204,7 @@ void SendString P((char *p));
 void DisplayHelp P((char *name));
 void WidgetEcho P((Option *opt, int n));
 int  ErrorOK P((int n));
+void ApplyFont P((Option *opt, char *font));
 
 
 // in ngamelist.c
