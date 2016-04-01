@@ -297,6 +297,18 @@ FontCallback (GtkWidget *widget, gpointer gdata)
 }
 
 void
+ColorCallback (GtkWidget *widget, gpointer gdata)
+{
+    Option *opt = (Option *) gdata;
+    GdkColor rgba;
+    char buf[MSG_SIZ]; 
+    gtk_color_button_get_color(GTK_COLOR_BUTTON(widget), &rgba);
+    snprintf(buf, MSG_SIZ, "#%02x%02x%02x", rgba.red>>8, rgba.green>>8, rgba.blue>>8);
+    gtk_widget_modify_bg ( GTK_WIDGET(opt[1].handle), GTK_STATE_NORMAL, &rgba );
+    SetWidgetText(opt, buf, TransientDlg);
+}
+
+void
 SetListBoxItem (GtkListStore *store, int n, char *msg)
 {
     GtkTreeIter iter;
@@ -1536,6 +1548,12 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
                 Pack(hbox, table, fbutton, left, left+r, top, 0);
                 break;
             }
+            if(!strcmp(option[i].name, "R") || !strcmp(option[i].name, "G") || !strcmp(option[i].name, "B")) {
+                break;
+            } else
+            if(!strcmp(option[i].name, "D")) {
+                option[i].handle = (void *) (button = gtk_color_button_new());
+            } else
             button = gtk_button_new_with_label (_(option[i].name));
             SetWidgetFont(gtk_bin_get_child(GTK_BIN(button)), option[i].font);
 
@@ -1560,6 +1578,9 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             }
 
             Pack(hbox, table, button, left, left+1, top, 0);
+            if(!strcmp(option[i].name, "D")) // color button
+            g_signal_connect (button, "color-set", G_CALLBACK (ColorCallback), (gpointer) &option[i-5]);
+            else
             if(option[i].value == 666 && !strcmp(option[i].name, "*")) // font-assignment buttons
             g_signal_connect (button, "clicked", G_CALLBACK (FontCallback), (gpointer) &option[i-5]);
             else
