@@ -1552,7 +1552,11 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
                 break;
             } else
             if(!strcmp(option[i].name, "D")) {
-                option[i].handle = (void *) (button = gtk_color_button_new());
+                GdkColor color;
+                char *name;
+		GetWidgetText(&option[i-5], &name);
+                gdk_color_parse(name, &color);
+                option[i].handle = (void *) (button = gtk_color_button_new_with_color(&color));
             } else
             button = gtk_button_new_with_label (_(option[i].name));
             SetWidgetFont(gtk_bin_get_child(GTK_BIN(button)), option[i].font);
