@@ -256,6 +256,7 @@ GtkAccelGroup *GtkAccelerators;
 typedef unsigned int BoardSize;
 BoardSize boardSize;
 Boolean chessProgram;
+static int initialSquareSize;
 
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int smallLayout = 0, tinyLayout = 0,
@@ -516,9 +517,9 @@ SaveFontArg (FILE *f, ArgDescriptor *ad)
       return;
   }
   for(i=0; i<NUM_SIZES; i++) // [HGM] font: current font becomes standard for current size
-    if(sizeDefaults[i].squareSize == squareSize) { // only for standard sizes!
-	fontTable[n][squareSize] = strdup(name);
-	fontValid[n][squareSize] = True;
+    if(sizeDefaults[i].squareSize == initialSquareSize) { // only for standard sizes!
+	fontTable[n][initialSquareSize] = strdup(name);
+	fontValid[n][initialSquareSize] = True;
 	break;
   }
   for(i=0; i<MAX_SIZE; i++) if(fontValid[n][i]) // [HGM] font: store all standard fonts
@@ -1073,6 +1074,7 @@ main (int argc, char **argv)
 	tinyLayout = szd->tinyLayout;
 	// [HGM] font: use defaults from settings file if available and not overruled
     }
+    initialSquareSize = squareSize; // [HGM] remember for saving font info
     if(BOARD_WIDTH != 8) {
 	squareSize = (squareSize*8 + BOARD_WIDTH/2)/BOARD_WIDTH; // keep width the same
 	lineGap = (squareSize < 37 ? 1 : squareSize < 59 ? 2 : squareSize < 116 ? 3 : 4);
