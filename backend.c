@@ -6982,6 +6982,7 @@ char lastLoadGameTitle[MSG_SIZ], lastLoadPositionTitle[MSG_SIZ];
 ChessMove lastLoadGameStart = EndOfFile;
 int doubleClick;
 Boolean addToBookFlag;
+static Board rightsBoard, nullBoard;
 
 void
 UserMoveEvent (int fromX, int fromY, int toX, int toY, int promoChar)
@@ -7109,9 +7110,15 @@ UserMoveEvent (int fromX, int fromY, int toX, int toY, int promoChar)
 	    if(!appData.pieceMenu && toX == fromX && toY == fromY && boards[0][rf][ff] != EmptySquare) {
 		ChessSquare p = boards[0][rf][ff];
 		if(PieceToChar(p) == '+') gatingPiece = CHUDEMOTED(p); else
-		if(PieceToChar(CHUPROMOTED(p)) =='+') gatingPiece = CHUPROMOTED(p); 
+		if(PieceToChar(CHUPROMOTED(p)) =='+') gatingPiece = CHUPROMOTED(p); else
+		if(p == WhiteKing || p == BlackKing || p == WhiteRook || p == BlackRook) {
+		    int n = rightsBoard[toY][toX] ^= 1; // toggle virginity of K or R
+		    DisplayMessage("", n ? _("rights granted") : _("rights revoked"));
+		    gatingPiece = p;
+		}
 	    }
 	    boards[0][toY][toX] = boards[0][fromY][fromX];
+	    rightsBoard[toY][toX] = 0;  // revoke rights on moving
 	    if(fromX == BOARD_LEFT-2) { // handle 'moves' out of holdings
 		if(boards[0][fromY][0] != EmptySquare) {
 		    if(boards[0][fromY][1]) boards[0][fromY][1]--;
@@ -15286,10 +15293,10 @@ EditGameEvent ()
     SetGameInfo();
 }
 
-
 void
 EditPositionEvent ()
 {
+    int i;
     if (gameMode == EditPosition) {
 	EditGameEvent();
 	return;
@@ -15301,8 +15308,11 @@ EditPositionEvent ()
     gameMode = EditPosition;
     ModeHighlight();
     SetGameInfo();
+    CopyBoard(rightsBoard, nullBoard);
     if (currentMove > 0)
       CopyBoard(boards[0], boards[currentMove]);
+    for(i=0; i<nrCastlingRights; i++) if(boards[0][CASTLING][i] != NoRights)
+      rightsBoard[castlingRank[i]][boards[0][CASTLING][i]] = 1; // copy remaining rights
 
     blackPlaysFirst = !WhiteOnMove(currentMove);
     ResetClocks();
@@ -15450,6 +15460,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
     ChessSquare piece = boards[0][y][x];
     static Board erasedBoard, currentBoard, menuBoard, nullBoard;
     static int lastVariant;
+    int baseRank = BOARD_HEIGHT-1, hasRights = 0;
 
     if (gameMode != EditPosition && gameMode != IcsExamining) return;
 
@@ -15566,12 +15577,20 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
             selection = (ChessSquare)((int)selection - (int)WhiteQueen + (int)WhiteFerz);
         goto defaultlabel;
 
+      case WhiteRook:
+        baseRank = 0;
+      case BlackRook:
+        if(y == baseRank && (x == BOARD_LEFT || x == BOARD_RGHT-1 || appData.fischerCastling)) hasRights = 1;
+        goto defaultlabel;
+
       case WhiteKing:
+        baseRank = 0;
       case BlackKing:
         if(gameInfo.variant == VariantXiangqi)
             selection = (ChessSquare)((int)selection - (int)WhiteKing + (int)WhiteWazir);
         if(gameInfo.variant == VariantKnightmate)
             selection = (ChessSquare)((int)selection - (int)WhiteKing + (int)WhiteUnicorn);
+        if(y == baseRank && (x == BOARD_WIDTH>>1 || appData.fischerCastling)) hasRights = 1;
       default:
         defaultlabel:
 	if (gameMode == IcsExamining) {
@@ -15580,6 +15599,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 		     PieceToChar(selection), AAA + x, ONE + y);
 	    SendToICS(buf);
 	} else {
+            rightsBoard[y][x] = hasRights;
             if(x < BOARD_LEFT || x >= BOARD_RGHT) {
                 int n;
                 if(x == BOARD_LEFT-2 && selection >= BlackPawn) {
