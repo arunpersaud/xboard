@@ -243,16 +243,16 @@ appropriate command from the Action menu, not @samp{New Game}.
 Similar to @samp{New Game}, but allows you to specify a particular initial position 
 (according to a standardized numbering system)
 in chess variants which use randomized opening positions (e.g. Chess960).
-@itemx shuffle
+@item shuffle
 @cindex shuffle, Menu Item
 Ticking @samp{shuffle} will cause the current variant to be played
 with shuffled initial position.
 Shuffling will preserve the possibility to castle in the way allowed by the variant.
-@itemx Fischer castling
+@item Fischer castling
 @cindex Fischer castling, menu item
 Ticking @samp{Fischer castling} will allow castling with Kings and Rooks
 that did not start in their normal place, as in Chess960.
-@itemx Start-position number
+@item Start-position number
 @itemx randomize
 @itemx pick fixed
 @cindex randomize, Menu Item
