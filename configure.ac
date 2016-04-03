@@ -32,7 +32,7 @@ dnl| MAJOR means large changes
 dnl| MINOR can includes new features and bug fixes
 dnl| PATCHLEVEL is used for bugfixes only
 dnl| pre-release version have a -YYYYMMDD attached, e.g 4.9.0-20160313
-AC_INIT([xboard],[4.9.0-20160313],[bug-xboard@gnu.org])
+AC_INIT([xboard],[4.9.0-20160402],[bug-xboard@gnu.org])
 
 dnl| need this to be able to compile some files in a subdir (filebrowser)
 AM_INIT_AUTOMAKE([subdir-objects])
