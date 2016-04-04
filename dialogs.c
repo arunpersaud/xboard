@@ -2606,10 +2606,10 @@ GetHelpText (FILE *f, char *name)
     len = strlen(buf);
     for(len=3; buf[len] && buf[len] != '(' && buf[len] != ':' && buf[len] != '.' && buf[len] != '?' && buf[len] != '\n'; len++);
     buf[len] = NULLCHAR;
-    while(buf[--len] == ' ') buf[len] = NULLCHAR;
+    while(buf[--len] == ' ') buf[len] = NULLCHAR; len++;
     snprintf(title, MSG_SIZ, "Help on '%s'", buf+3);
     while((line = ReadLine(f))) {
-	if(!strncmp(line, buf, ++len) || !strncmp(line, ".SS ", 4) && !strncmp(line+4, buf+3, len-3)
+	if(!strncmp(line, buf, len) || !strncmp(line, ".SS ", 4) && !strncmp(line+4, buf+3, len-3)
 			      || !strncmp(line, ".IX Item \"", 10) && !strncmp(line+10, buf+3, len-3)) {
 	    while((line = ReadLine(f)) && (cnt == 0 || strncmp(line, ".B ", 3) && strncmp(line, ".SS ", 4) && strncmp(line, ".IX ", 4))) {
 		if(!*line) { *p++ = '\n'; *p++ = '\n'; q = p; continue; }
@@ -2639,7 +2639,7 @@ GetHelpText (FILE *f, char *name)
 	    return;
 	}
     }
-    snprintf(text, MSG_SIZ, "No help on '%s'\n", buf+3);
+    snprintf(text, MSG_SIZ, "No help available on '%s'\n", buf+3);
     DisplayNote(text);
 }
 
