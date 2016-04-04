@@ -1029,7 +1029,8 @@ PlayBookMove(char *text, int index)
 {
     char *start = text+index, *end = start;
     while(start > text && start[-1] != ' ' && start[-1] != '\t') start--;
-    while(*end && *++end != ' ' && *end != '\n'); *end = NULLCHAR; // find clicked word
+    while(*end && *++end != ' ' && *end != '\n')
+                                                ; *end = NULLCHAR; // find clicked word
     if(start != end) TypeInDoneEvent(start); // fake it was typed in move type-in
 }
 

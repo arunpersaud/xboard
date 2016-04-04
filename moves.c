@@ -1408,7 +1408,7 @@ GenLegalCallback (Board board, int flags, ChessMove kind, int rf, int ff, int rt
 
     if(rFilter >= 0 && rFilter != rt || fFilter >= 0 && fFilter != ft) return; // [HGM] speed: ignore moves with wrong to-square
 
-    if (board[EP_STATUS] == EP_IRON_LION && (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion)) return; //[HGM] lion
+    if ((int)board[EP_STATUS] == EP_IRON_LION && (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion)) return; //[HGM] lion
 
     if (!(flags & F_IGNORE_CHECK) ) {
       int check, promo = (gameInfo.variant == VariantSpartan && kind == BlackPromotion);
@@ -1664,11 +1664,11 @@ CheckTestCallback (Board board, int flags, ChessMove kind, int rf, int ff, int r
     register CheckTestClosure *cl = (CheckTestClosure *) closure;
 
     if (rt == cl->rking && ft == cl->fking) {
-	if(xqCheckers[EP_STATUS] >= 2 && xqCheckers[rf][ff]) return; // checker is piece with suspended checking power
+	if((int)xqCheckers[EP_STATUS] >= 2 && xqCheckers[rf][ff]) return; // checker is piece with suspended checking power
 	cl->check++;
 	xqCheckers[rf][ff] = xqCheckers[EP_STATUS] & 1; // remember who is checking (if status == 1)
     }
-    if( board[EP_STATUS] == EP_ROYAL_LION && (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion)
+    if( (int)board[EP_STATUS] == EP_ROYAL_LION && (board[rt][ft] == WhiteLion || board[rt][ft] == BlackLion)
 	&& (gameInfo.variant != VariantLion || board[rf][ff] != WhiteKing && board[rf][ff] != BlackKing) )
 	cl->check++; // [HGM] lion: forbidden counterstrike against Lion equated to putting yourself in check
 }

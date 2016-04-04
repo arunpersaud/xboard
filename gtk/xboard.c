@@ -2329,15 +2329,15 @@ UpdateLogos (int displ)
     return;
 }
 
-void FileNamePopUpWrapper(label, def, filter, proc, pathFlag, openMode, name, fp)
-     char *label;
-     char *def;
-     char *filter;
-     FileProc proc;
-     char *openMode;
-     Boolean pathFlag;
-     char **name;
-     FILE **fp;
+void FileNamePopUpWrapper(
+     char *label,
+     char *def,
+     char *filter,
+     FileProc proc,
+     Boolean pathFlag,
+     char *openMode,
+     char **name,
+     FILE **fp)
 {
   GtkWidget     *dialog;
   GtkFileFilter *gtkfilter;

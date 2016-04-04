@@ -3395,7 +3395,8 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 #if ZIPPY
                if (loggedOn == TRUE)
                        if (ZippyControl(buf, &backup) || ZippyConverse(buf, &backup) ||
-                          (appData.zippyPlay && ZippyMatch(buf, &backup)));
+                          (appData.zippyPlay && ZippyMatch(buf, &backup)))
+                       ;
 #endif
 	    } // [DM] 'else { ' deleted
 	 	if (
@@ -9278,7 +9279,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	if(initPing == cps->lastPong) {
 	    if(gameInfo.variant == VariantUnknown) {
 		DisplayError(_("Engine did not send setup for non-standard variant"), 0);
-		*engineVariant = NULLCHAR; appData.variant = VariantNormal; // back to normal as error recovery?
+		*engineVariant = NULLCHAR; ASSIGN(appData.variant, "normal"); // back to normal as error recovery?
 		GameEnds(GameUnfinished, NULL, GE_XBOARD);
 	    }
 	    initPing = -1;
@@ -10324,7 +10325,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
         && toY == fromY && toX > fromX+1) {
-	for(rookX=fromX+1; board[toY][rookX] == EmptySquare && rookX < BOARD_RGHT-1; rookX++); // castle with nearest piece
+	for(rookX=fromX+1; board[toY][rookX] == EmptySquare && rookX < BOARD_RGHT-1; rookX++)
+											     ; // castle with nearest piece
         board[fromY][toX-1] = board[fromY][rookX];
         board[fromY][rookX] = EmptySquare;
 	board[fromY][fromX] = EmptySquare;
@@ -10332,7 +10334,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
                && toY == fromY && toX < fromX-1) {
-	for(rookX=fromX-1; board[toY][rookX] == EmptySquare && rookX > 0; rookX--); // castle with nearest piece
+	for(rookX=fromX-1; board[toY][rookX] == EmptySquare && rookX > 0; rookX--)
+										  ; // castle with nearest piece
         board[fromY][toX+1] = board[fromY][rookX];
         board[fromY][rookX] = EmptySquare;
 	board[fromY][fromX] = EmptySquare;
@@ -10375,7 +10378,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
                && toY == fromY && toX > fromX+1) {
-	for(rookX=toX+1; board[toY][rookX] == EmptySquare && rookX < BOARD_RGHT - 1; rookX++);
+	for(rookX=toX+1; board[toY][rookX] == EmptySquare && rookX < BOARD_RGHT - 1; rookX++)
+											     ;
         board[fromY][toX-1] = board[fromY][rookX];
         board[fromY][rookX] = EmptySquare;
 	board[fromY][fromX] = EmptySquare;
@@ -10383,7 +10387,8 @@ ApplyMove (int fromX, int fromY, int toX, int toY, int promoChar, Board board)
     } else if (board[fromY][fromX] == king
         && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1 // [HGM] cylinder */
                && toY == fromY && toX < fromX-1) {
-	for(rookX=toX-1; board[toY][rookX] == EmptySquare && rookX > 0; rookX--);
+	for(rookX=toX-1; board[toY][rookX] == EmptySquare && rookX > 0; rookX--)
+										;
         board[fromY][toX+1] = board[fromY][rookX];
         board[fromY][rookX] = EmptySquare;
 	board[fromY][fromX] = EmptySquare;
@@ -11078,8 +11083,10 @@ Substitute (char *participants, int expunge)
 	p++; q++;
     }
     if(*p) { // difference
-	while(*p && *p++ != '\n');
-	while(*q && *q++ != '\n');
+	while(*p && *p++ != '\n')
+				 ;
+	while(*q && *q++ != '\n')
+				 ;
       changed = nPlayers;
 	changes = 1 + (strcmp(p, q) != 0);
     }
@@ -16799,7 +16806,11 @@ GetInfoFromComment (int index, char * text)
         pvInfoList[index-1].score = score;
         pvInfoList[index-1].time  = 10*time; // centi-sec
         if(*sep == '}') *sep = 0; else *--sep = '{';
-        if(p != text) { while(*p++ = *sep++); sep = text; } // squeeze out space between PV and comment, and return both
+        if(p != text) {
+            while(*p++ = *sep++)
+                                ;
+            sep = text;
+        } // squeeze out space between PV and comment, and return both
     }
     return sep;
 }
@@ -18243,7 +18254,9 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
   }
 
   if(q = overrideCastling) { // [HGM] FRC: override castling & e.p fields for non-compliant engines
-    while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' '; else --p;
+    while(*p++ = *q++)
+                      ;
+    if(q != overrideCastling+1) p[-1] = ' '; else --p;
   } else {
   if(haveRights) {
      int handW=0, handB=0;

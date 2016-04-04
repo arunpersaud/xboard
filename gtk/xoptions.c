@@ -1025,6 +1025,7 @@ GraphEventProc(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 	case GDK_SCROLL:
 	    if(sevent->direction == GDK_SCROLL_UP) button = 4;
 	    if(sevent->direction == GDK_SCROLL_DOWN) button = 5;
+	    w = h = 0; // to keep Clang happy
 	    break;
 	case GDK_MOTION_NOTIFY:
 	    f = 0;

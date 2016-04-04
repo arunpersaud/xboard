@@ -585,7 +585,7 @@ NextUnit (char **p)
 		if(killX < 0) // [HGM] lion: do not overwrite kill-square suffix
 		currentMoveString[4] = cl.promoChar;
 
-		if((cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) && (Match("ep", p) || Match("e.p.", p)));
+		if((cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) && !Match("ep", p)) Match("e.p.", p);
 
 		return (int) cl.kind;
 	    }
