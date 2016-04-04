@@ -519,18 +519,25 @@ DestroyChildProcess (ProcRef pr, int signalType)
 char *
 BufferCommandOutput (char *command, int size)
 {
-    ChildProc *pr;
     char *res = (char *) calloc(1, size);
     if(res) {
 	int count;
 	FILE *f;
+#if 0
+	ChildProc *pr;
 	StartChildProcess(command, ".", (ProcRef) &pr);    // run command in daughter process
 	f = fdopen(pr->fdFrom, "r");
 	count = fread(res, 1, size-1, f);  // read its output
 	fclose(f);
-	res[count > 0 ? count : 0] = NULLCHAR;  
 	DestroyChildProcess((ProcRef) pr, 9);
 	free(pr);
+#else
+	f = popen(command, "r");
+	if(!f) return res;
+	count = fread(res, 1, size-1, f);  // read its output
+	pclose(f);
+#endif
+	res[count > 0 ? count : 0] = NULLCHAR;  
     }
     return res; // return buffer with output
 }
