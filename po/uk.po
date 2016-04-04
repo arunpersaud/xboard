@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2016.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard-4.9.0-pre1\n"
+"Project-Id-Version: GNU xboard-4.9.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-04-03 13:44-0700\n"
-"PO-Revision-Date: 2016-03-15 18:55+0200\n"
+"PO-Revision-Date: 2016-04-04 19:49+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -16,8 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 1.5\n"
-"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
-"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: args.h:851
 #, c-format
@@ -175,9 +174,7 @@ msgstr "Робота режиму гри комп’ютером білими р
 
 #: backend.c:1794
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
-"Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено "
-"шаховий рушій"
+msgstr "Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено шаховий рушій"
 
 #: backend.c:1799
 msgid "TwoMachines mode does not work with ICS mode"
@@ -251,8 +248,7 @@ msgstr ""
 
 #: backend.c:4390 backend.c:10628
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
+msgstr "Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
 
 #: backend.c:4509
 msgid "Error gathering move list: extra board"
@@ -274,8 +270,7 @@ msgstr "Ця дія неможлива у режимі гри або спост�
 
 #: backend.c:6359
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
-"Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
+msgstr "Повторно зберіть програму з підтримкою цих значень BOARD_RANKS і BOARD_FILES!"
 
 #: backend.c:6851
 msgid "You are playing Black"
@@ -301,11 +296,11 @@ msgstr "Показана позиція не є поточною"
 
 #: backend.c:7116
 msgid "rights granted"
-msgstr ""
+msgstr "права надано"
 
 #: backend.c:7116
 msgid "rights revoked"
-msgstr ""
+msgstr "права відкликано"
 
 #: backend.c:7169
 msgid "Illegal move"
@@ -364,8 +359,7 @@ msgstr "У %s не передбачено аналізу"
 #: backend.c:9424
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
-"Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
+msgstr "Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
 
 #: backend.c:9455
 #, c-format
@@ -500,17 +494,17 @@ msgstr "Не вказано рушія визначення пар"
 #: backend.c:11879
 #, c-format
 msgid "Average solving time %4.2f sec (total time %4.2f sec) "
-msgstr ""
+msgstr "Середній час розв’язування — %4.2f сек. (загальний час — %4.2f сек.) "
 
 #: backend.c:11881
 #, c-format
 msgid "%d avoid-moves played "
-msgstr ""
+msgstr "зіграно %d небажаних ходів "
 
 #: backend.c:11883
 #, c-format
 msgid "Solved %d out of %d (%3.1f%%) "
-msgstr ""
+msgstr "Розв’язано %d з %d (%3.1f%%) "
 
 #: backend.c:11886
 #, c-format
@@ -638,8 +632,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Повідомлення cmail не завантажено.\n"
-"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш "
-"хід."
+"Скористайтеся пунктом «Перезавантажити повідомлення CMail» і повторіть ваш хід."
 
 #: backend.c:14281
 msgid "No unfinished games"
@@ -946,8 +939,7 @@ msgstr "Номер позиції (-1 або -2 = автоматичне збі�
 
 #: dialogs.c:308
 msgid "Rewind Index after this many Games (0 = never):"
-msgstr ""
-"Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
+msgstr "Відновлювати початковий номер після вказаної кількості ігор (0=ніколи):"
 
 #: dialogs.c:309
 msgid "Disable own engine books by default"
@@ -1980,8 +1972,7 @@ msgstr "Команда рушія:"
 
 #: dialogs.c:1510
 msgid "(Directory will be derived from engine path when empty)"
-msgstr ""
-"(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
+msgstr "(Каталог буде визначено на основі шляху до рушія, якщо каталог не вказано)"
 
 #: dialogs.c:1511
 msgid "UCI"
@@ -2040,71 +2031,68 @@ msgid "New Shuffle Game"
 msgstr "Нова випадкова гра"
 
 #: dialogs.c:1647
-#, fuzzy
 msgid "Clocks (requires restart):"
-msgstr "Розмір логотипу (0=вимкнути, потребує перезапуску):"
+msgstr "Годинник (потребує перезапуску):"
 
 #: dialogs.c:1648 dialogs.c:1654 dialogs.c:1660 dialogs.c:1666 dialogs.c:1672
 #: dialogs.c:1678 dialogs.c:1684
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #: dialogs.c:1649 dialogs.c:1655 dialogs.c:1661 dialogs.c:1667 dialogs.c:1673
 #: dialogs.c:1679 dialogs.c:1685
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: dialogs.c:1651 dialogs.c:1657 dialogs.c:1663 dialogs.c:1669 dialogs.c:1675
 #: dialogs.c:1681 dialogs.c:1687
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: dialogs.c:1652 dialogs.c:1658 dialogs.c:1664 dialogs.c:1670 dialogs.c:1676
 #: dialogs.c:1682 dialogs.c:1688
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: dialogs.c:1653
 msgid "Message (above board):"
-msgstr ""
+msgstr "Повідомлення (над дошкою):"
 
 #: dialogs.c:1659
-#, fuzzy
 msgid "ICS Chat/Console:"
-msgstr "Консоль ICS/розмов"
+msgstr "Розмова ICS/Консоль:"
 
 #: dialogs.c:1665
 msgid "Edit tags / book / engine list:"
-msgstr ""
+msgstr "Редагування міток / книги / списку рушіїв:"
 
 #: dialogs.c:1671
-#, fuzzy
 msgid "Edit comments:"
-msgstr "Редагувати коментар"
+msgstr "Редагування коментарів:"
 
 #: dialogs.c:1677
-#, fuzzy
 msgid "Move history / Engine Output:"
-msgstr "Вивід рушія"
+msgstr "Журнал ходів / Виведення рушія:"
 
 #: dialogs.c:1683
-#, fuzzy
 msgid "Game list:"
-msgstr "Список ігор"
+msgstr "Список ігор:"
 
 #: dialogs.c:1689
 msgid ""
 "\n"
 "The * buttons will set the font to the one selected below:"
 msgstr ""
+"\n"
+"Кнопки * встановлюватимуть шрифт, вказаний нижче:"
 
 #: dialogs.c:1743
 msgid "This only works in the GTK build"
-msgstr ""
+msgstr "Працює лише у збірці з GTK"
 
 #: dialogs.c:1744
 msgid "Fonts"
-msgstr ""
+msgstr "Шрифти"
 
 #: dialogs.c:1764
 msgid "classical"
@@ -2451,9 +2439,7 @@ msgstr "Не вдалося відкрити файл «%s»\n"
 
 #: gtk/xboard.c:1003 xaw/xboard.c:1092
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з "
-"більшими значеннями BOARD_RANKS або BOARD_FILES"
+msgstr "Для того, щоб скористатися підтримкою цього розміру, слід зібрати програму з більшими значеннями BOARD_RANKS або BOARD_FILES"
 
 #: gtk/xboard.c:1022 xaw/xboard.c:1124
 #, c-format
@@ -2525,12 +2511,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2541,13 +2525,10 @@ msgstr ""
 "© Free Software Foundation, 1992–2016\n"
 "© Alessandro Scotti, 2005\n"
 "\n"
-"%s є вільним програмним забезпеченням, його працездатність не гарантується. "
-"Докладніше про це у файлі COPYING.\n"
+"%s є вільним програмним забезпеченням, його працездатність не гарантується. Докладніше про це у файлі COPYING.\n"
 "\n"
-"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/"
-"xboard/\n"
-"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/"
-"software/xboard/whats_new.html\n"
+"Відвідайте сторінку XBoard у мережі за адресою: http://www.gnu.org/software/xboard/\n"
+"Ознайомтеся з найсвіжішими можливостями програми: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Надішліть повідомлення про ваду на адресу: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2713,9 +2694,8 @@ msgid "Board..."
 msgstr "Дошка…"
 
 #: menus.c:654
-#, fuzzy
 msgid "Fonts..."
-msgstr "Звуки…"
+msgstr "Шрифти…"
 
 #: menus.c:655
 msgid "Game List Tags..."
@@ -3333,8 +3313,7 @@ msgstr "Shift"
 #~ msgstr "XsraSelFile: не вдалося отримати назву поточного каталогу"
 
 #~ msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
-#~ msgstr ""
-#~ "%s: помилка у геометричних параметрах titleWidget — %d %d %d %d %d\n"
+#~ msgstr "%s: помилка у геометричних параметрах titleWidget — %d %d %d %d %d\n"
 
 #~ msgid "Error expanding path name \"%s\"\n"
 #~ msgstr "Помилка під час спроби розгортання адреси каталогу «%s»\n"
@@ -3350,8 +3329,7 @@ msgstr "Shift"
 #~ msgstr "Найближчий розмір %s: %d\n"
 
 #~ msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
-#~ msgstr ""
-#~ "%s: помилка у геометричних параметрах messageWidget — %d %d %d %d %d\n"
+#~ msgstr "%s: помилка у геометричних параметрах messageWidget — %d %d %d %d %d\n"
 
 #~ msgid "%s: error loading XIM!\n"
 #~ msgstr "%s: помилка завантаження XIM!\n"
@@ -3407,8 +3385,7 @@ msgstr "Shift"
 #~ msgstr "Некоректне растрове зображення у файлі %s"
 
 #~ msgid "Ran out of memory reading bitmap file %s"
-#~ msgstr ""
-#~ "Під час читання растрового зображення %s було вичерпано обсяг пам’яті"
+#~ msgstr "Під час читання растрового зображення %s було вичерпано обсяг пам’яті"
 
 #~ msgid "Unknown XReadBitmapFile error %d on file %s"
 #~ msgstr "Невідома помилка XReadBitmapFile %d під час обробки файла %s"
@@ -3417,9 +3394,7 @@ msgstr "Shift"
 #~ msgstr "%s: %s… використовуємо вбудоване\n"
 
 #~ msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
-#~ msgstr ""
-#~ "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… "
-#~ "використовуємо вбудоване\n"
+#~ msgstr "%s: розміри растрового зображення %s дорівнюють %dx%d, а не %dx%d… використовуємо вбудоване\n"
 
 #~ msgid "----"
 #~ msgstr "----"
@@ -3527,3 +3502,4 @@ msgstr "Shift"
 
 #~ msgid "moves     "
 #~ msgstr "ходів     "
+
