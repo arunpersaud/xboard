@@ -1446,3 +1446,8 @@ FileNamePopUpWrapper (char *label, char *def, char *filter, FileProc proc, Boole
 {
     Browse(BoardWindow, label, (def[0] ? def : NULL), filter, False, openMode, openName, openFP);
 }
+
+void
+LockBoardSize (int after)
+{
+}

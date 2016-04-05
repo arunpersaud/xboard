@@ -2057,6 +2057,25 @@ DisplayIcsInteractionTitle (String message)
 #endif
 }
 
+void
+LockBoardSize (int after)
+{
+    static char *oldClockFont, *oldMessgFont;
+    int w, h;
+    if(oldMessgFont && !strcmp(oldMessgFont, appData.font) &&
+       oldClockFont && !strcmp(oldClockFont, appData.clockFont) ) return; // only do something when font changed
+    w = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
+    h = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
+    if(after) {
+	ASSIGN(oldClockFont, appData.clockFont);
+	ASSIGN(oldMessgFont, appData.font);
+	gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
+	DoEvents();
+	gtk_widget_set_size_request(optList[W_BOARD].handle, -1, -1); // liberate board
+    } else { // before
+	gtk_widget_set_size_request(optList[W_BOARD].handle, w, h);   // protect board widget
+    }
+}
 
 void
 DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)

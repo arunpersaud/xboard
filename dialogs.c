@@ -1629,9 +1629,12 @@ FontsOK (int n)
 {
     extern Option historyOptions[], engoutOptions[], gamesOptions[], chatOptions[];
     int i;
+    PopDown(TransientDlg); // Early popdown to prevent expose events frommasking each other
+    LockBoardSize(0);
     DisplayBothClocks();
     ApplyFont(&mainOptions[W_MESSG], NULL);
     for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
+    LockBoardSize(1);
     ApplyFont(&tagsOptions[1], NULL);
     ApplyFont(&historyOptions[0], NULL);
     ApplyFont(&engoutOptions[5], NULL);
@@ -1640,7 +1643,7 @@ FontsOK (int n)
     ApplyFont(&chatOptions[11], appData.icsFont);
     AppendColorized(&chatOptions[6], NULL, 0); // kludge to replace font tag
     DrawPosition(TRUE, NULL); // for coord font
-    return 1;
+    return 0; // suppress normal popdown because already done
 }
 
 static Option fontOptions[] = {

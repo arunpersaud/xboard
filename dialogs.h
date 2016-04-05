@@ -205,6 +205,7 @@ void DisplayHelp P((char *name));
 void WidgetEcho P((Option *opt, int n));
 int  ErrorOK P((int n));
 void ApplyFont P((Option *opt, char *font));
+void LockBoardSize P((int after));
 
 
 // in ngamelist.c
