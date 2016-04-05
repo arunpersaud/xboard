@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.9.0-pre1\n"
+"Project-Id-Version: GNU xboard 4.9.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-04-03 13:44-0700\n"
-"PO-Revision-Date: 2016-03-15 21:01+0800\n"
+"PO-Revision-Date: 2016-04-05 20:23+0800\n"
 "Last-Translator: Tianze Wang <zwpwjwtz@126.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -296,11 +296,11 @@ msgstr "显示的位置非当前位置"
 
 #: backend.c:7116
 msgid "rights granted"
-msgstr ""
+msgstr "已授予权限"
 
 #: backend.c:7116
 msgid "rights revoked"
-msgstr ""
+msgstr "已撤销权限"
 
 #: backend.c:7169
 msgid "Illegal move"
@@ -492,17 +492,17 @@ msgstr "未指定配对引擎"
 #: backend.c:11879
 #, c-format
 msgid "Average solving time %4.2f sec (total time %4.2f sec) "
-msgstr ""
+msgstr "平均运算时间 %4.2f 秒（总计 %4.2f 秒）"
 
 #: backend.c:11881
 #, c-format
 msgid "%d avoid-moves played "
-msgstr ""
+msgstr "避免了 %d 个可能导致输棋的棋步"
 
 #: backend.c:11883
 #, c-format
 msgid "Solved %d out of %d (%3.1f%%) "
-msgstr ""
+msgstr "解出了 %2$d 中的 %1$d 个（%3$3.1f%%）"
 
 #: backend.c:11886
 #, c-format
@@ -1575,11 +1575,11 @@ msgstr ""
 
 #: dialogs.c:750
 msgid "Elo of strongest player at least:"
-msgstr ""
+msgstr "最强对手的最低 ELO 积分"
 
 #: dialogs.c:751
 msgid "Elo of weakest player at least:"
-msgstr ""
+msgstr "最弱对手的最低 ELO 积分"
 
 #: dialogs.c:752
 msgid "No games before year:"
@@ -1976,7 +1976,7 @@ msgstr "UCI"
 
 #: dialogs.c:1512
 msgid "USI/UCCI (uses specified -uxiAdapter)"
-msgstr ""
+msgstr "USI/UCCI（使用指定的 -uxiAdapter）"
 
 #: dialogs.c:1513
 msgid "WB protocol v1 (do not wait for engine features)"
@@ -2027,71 +2027,68 @@ msgid "New Shuffle Game"
 msgstr "新任意制游戏"
 
 #: dialogs.c:1647
-#, fuzzy
 msgid "Clocks (requires restart):"
-msgstr "徽标大小（0=off，需要重启）："
+msgstr "计时（需要重启）："
 
 #: dialogs.c:1648 dialogs.c:1654 dialogs.c:1660 dialogs.c:1666 dialogs.c:1672
 #: dialogs.c:1678 dialogs.c:1684
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #: dialogs.c:1649 dialogs.c:1655 dialogs.c:1661 dialogs.c:1667 dialogs.c:1673
 #: dialogs.c:1679 dialogs.c:1685
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: dialogs.c:1651 dialogs.c:1657 dialogs.c:1663 dialogs.c:1669 dialogs.c:1675
 #: dialogs.c:1681 dialogs.c:1687
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: dialogs.c:1652 dialogs.c:1658 dialogs.c:1664 dialogs.c:1670 dialogs.c:1676
 #: dialogs.c:1682 dialogs.c:1688
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: dialogs.c:1653
 msgid "Message (above board):"
-msgstr ""
+msgstr "消息（位于棋盘上）"
 
 #: dialogs.c:1659
-#, fuzzy
 msgid "ICS Chat/Console:"
-msgstr "ICS/聊天终端"
+msgstr "ICS 聊天/聊天终端"
 
 #: dialogs.c:1665
 msgid "Edit tags / book / engine list:"
-msgstr ""
+msgstr "编辑标记/棋谱/引擎列表："
 
 #: dialogs.c:1671
-#, fuzzy
 msgid "Edit comments:"
-msgstr "编辑评论"
+msgstr "编辑评论："
 
 #: dialogs.c:1677
-#, fuzzy
 msgid "Move history / Engine Output:"
-msgstr "引擎输出"
+msgstr "棋步历史/引擎输出："
 
 #: dialogs.c:1683
-#, fuzzy
 msgid "Game list:"
-msgstr "棋局列表"
+msgstr "棋局列表："
 
 #: dialogs.c:1689
 msgid ""
 "\n"
 "The * buttons will set the font to the one selected below:"
 msgstr ""
+"\n"
+"按钮 * 用于设定字体："
 
 #: dialogs.c:1743
 msgid "This only works in the GTK build"
-msgstr ""
+msgstr "此功能仅用于 GTK 前端"
 
 #: dialogs.c:1744
 msgid "Fonts"
-msgstr ""
+msgstr "字体"
 
 #: dialogs.c:1764
 msgid "classical"
@@ -2471,7 +2468,6 @@ msgid "Failed to open file"
 msgstr "打开文件失败"
 
 #: gtk/xoptions.c:1498
-#, fuzzy
 msgid "Browse"
 msgstr "浏览"
 
@@ -2508,12 +2504,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2693,9 +2687,8 @@ msgid "Board..."
 msgstr "棋盘"
 
 #: menus.c:654
-#, fuzzy
 msgid "Fonts..."
-msgstr "声音..."
+msgstr "字体..."
 
 #: menus.c:655
 msgid "Game List Tags..."
@@ -3268,3 +3261,4 @@ msgstr "Shift"
 
 #~ msgid "cancel"
 #~ msgstr "取消"
+
