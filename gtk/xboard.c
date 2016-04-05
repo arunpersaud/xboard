@@ -1690,6 +1690,20 @@ ReSize (WindowPlacement *wp)
 	    lg = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
 	    if(sqx == oldSqx + 1 && lg == lineGap + 1) sqx = oldSqx, squareSize = 0; // prevent oscillations, force resize by kludge
 	}
+	for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize > sqx; h++) {}
+	if(!strchr(appData.boardSize, ',')) {
+	    ASSIGN(appData.boardSize, sizeDefaults[h].name);
+	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
+	}
+	if(sizeDefaults[h].tinyLayout != tinyLayout) { // alter clipping of menu names to conform to board width
+	    int clip = (tinyLayout = sizeDefaults[h].tinyLayout) + 1;
+	    char text[MSG_SIZ];
+	    for(h=1; mainOptions[h].type == DropDown; h++) {
+		strncpy(text, _(mainOptions[h].name), MSG_SIZ);
+		text[clip + (text[clip-1] == '_')] = NULLCHAR;
+		gtk_menu_item_set_label((GtkMenuItem *) mainOptions[h].handle, text);
+	    }
+	}
 	if(sqx != squareSize && !first) {
 	    squareSize = sqx; // adopt new square size
 	    CreatePNGPieces(); // make newly scaled pieces
@@ -1705,11 +1719,6 @@ ReSize (WindowPlacement *wp)
 	    partnerUp = !partnerUp; flipView = !flipView;
 	    DrawPosition(True, NULL);
 	    partnerUp = !partnerUp; flipView = !flipView;
-	}
-	if(!strchr(appData.boardSize, ',')) {
-	    for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize > squareSize; h++) {}
-	    ASSIGN(appData.boardSize, sizeDefaults[h].name);
-	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
 	}
 }
 
