@@ -1662,7 +1662,7 @@ void
 ReSize (WindowPlacement *wp)
 {
 	GtkAllocation a;
-	int sqx, sqy, w, h, lg = lineGap;
+	int sqx, sqy, i, w, h, lg = lineGap;
 	static int first = 1;
 //	DisplayBothClocks();
 	if(wp->width == wpMain.width && wp->height == wpMain.height && !first) return; // not sized
@@ -1691,9 +1691,18 @@ ReSize (WindowPlacement *wp)
 	    if(sqx == oldSqx + 1 && lg == lineGap + 1) sqx = oldSqx, squareSize = 0; // prevent oscillations, force resize by kludge
 	}
 	for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize*8 > sqx*BOARD_WIDTH; h++) {}
+	if(initialSquareSize != sizeDefaults[h].squareSize) { // boardSize changed
+	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
+	    if(!fontValid[CLOCK_FONT][initialSquareSize]) fontTable[CLOCK_FONT][initialSquareSize] = CLOCK_FONT_NAME;
+	    appData.clockFont = InsertPxlSize(fontTable[CLOCK_FONT][initialSquareSize], 2*(sizeDefaults[h].clockFontPxlSize+1)/3);
+	    if(!fontValid[MESSAGE_FONT][initialSquareSize]) fontTable[MESSAGE_FONT][initialSquareSize] = DEFAULT_FONT_NAME;
+	    appData.font = InsertPxlSize(fontTable[MESSAGE_FONT][initialSquareSize], sizeDefaults[h].coordFontPxlSize);
+	    DisplayBothClocks();
+	    ApplyFont(&mainOptions[W_MESSG], NULL);
+	    for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
+	}
 	if(!strchr(appData.boardSize, ',')) {
 	    ASSIGN(appData.boardSize, sizeDefaults[h].name);
-	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
 	}
 	if(sizeDefaults[h].tinyLayout != tinyLayout) { // alter clipping of menu names to conform to board width
 	    int clip = (tinyLayout = sizeDefaults[h].tinyLayout) + 1;
