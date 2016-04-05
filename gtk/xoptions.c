@@ -1524,12 +1524,12 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
             SetWidgetFont(label, option[i].font);
+            gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
 	    if(option[i].min & BORDER) {
 		GtkWidget *frame = gtk_frame_new(NULL);
                 gtk_container_add(GTK_CONTAINER(frame), label);
 		label = frame;
 	    }
-            gtk_widget_set_size_request(label, option[i].max ? option[i].max : -1, -1);
 	    if(option[i].target || dlgNr != ErrorDlg && option[i].name) { // allow user to specify event handler for button presses
 		button = gtk_event_box_new();
                 gtk_container_add(GTK_CONTAINER(button), label);
@@ -1670,10 +1670,6 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	  case Graph:
 	    option[i].handle = (void*) (graph = gtk_drawing_area_new());
             gtk_widget_set_size_request(graph, option[i].max, option[i].value);
-	    if(0){ GtkAllocation a;
-		a.x = 0; a.y = 0; a.width = option[i].max, a.height = option[i].value;
-		gtk_widget_set_allocation(graph, &a);
-	    }
             g_signal_connect (graph, "expose-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
 	    gtk_widget_add_events(GTK_WIDGET(graph), GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
             g_signal_connect (graph, "button-press-event", G_CALLBACK (GraphEventProc), (gpointer) &option[i]);
@@ -1830,7 +1826,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	gtk_window_resize(GTK_WINDOW(dialog), wp[dlgNr]->width, wp[dlgNr]->height);
     }
 
-    for(i=0; option[i].type != EndMark; i++) if(option[i].type == Graph)
+    for(i=0; option[i].type != EndMark; i++) if(option[i].type == Graph || dlgNr == BoardWindow && option[i].handle)
 	gtk_widget_set_size_request(option[i].handle, -1, -1); // remove size requests after realization, so user can shrink
 
     return 1; // tells caller he must do initialization (e.g. add specific event handlers)
