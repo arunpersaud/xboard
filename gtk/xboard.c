@@ -1709,7 +1709,7 @@ ReSize (WindowPlacement *wp)
 	    char text[MSG_SIZ];
 	    for(h=1; mainOptions[h].type == DropDown; h++) {
 		strncpy(text, _(mainOptions[h].name), MSG_SIZ);
-		text[clip + (text[clip-1] == '_')] = NULLCHAR;
+		if(clip != 1) text[clip + (text[clip-1] == '_')] = NULLCHAR;
 		gtk_menu_item_set_label((GtkMenuItem *) mainOptions[h].handle, text);
 	    }
 	}
