@@ -1690,7 +1690,7 @@ ReSize (WindowPlacement *wp)
 	    lg = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
 	    if(sqx == oldSqx + 1 && lg == lineGap + 1) sqx = oldSqx, squareSize = 0; // prevent oscillations, force resize by kludge
 	}
-	for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize > sqx; h++) {}
+	for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize*8 > sqx*BOARD_WIDTH; h++) {}
 	if(!strchr(appData.boardSize, ',')) {
 	    ASSIGN(appData.boardSize, sizeDefaults[h].name);
 	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
