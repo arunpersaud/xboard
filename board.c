@@ -1059,7 +1059,7 @@ DrawPosition (int repaint, Board board)
 		q = strchr(p, '\n');
 		if(q) *q = NULLCHAR;
 		if(!strstr(appData.suppress, p)) {
-		    if(i == 0) DrawSeekBackground(2*squareSize, 3*squareSize, 6*squareSize, 5*squareSize);
+		    if(i == 0) DrawSeekBackground(2*squareSize, 3*squareSize, 6.5*squareSize, 5*squareSize);
 		    DrawText(p, 2*squareSize + 5, (int) ((3 + 0.3*i++)*squareSize) + 5, 2);
 		}
 		if(q) *q++ = '\n'; else q = "";
