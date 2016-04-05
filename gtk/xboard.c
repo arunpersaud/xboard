@@ -1704,6 +1704,7 @@ ReSize (WindowPlacement *wp)
 	if(!strchr(appData.boardSize, ',')) {
 	    ASSIGN(appData.boardSize, sizeDefaults[h].name);
 	}
+#ifndef OSXAPP
 	if(sizeDefaults[h].tinyLayout != tinyLayout) { // alter clipping of menu names to conform to board width
 	    int clip = (tinyLayout = sizeDefaults[h].tinyLayout) + 1;
 	    char text[MSG_SIZ];
@@ -1713,6 +1714,7 @@ ReSize (WindowPlacement *wp)
 		gtk_menu_item_set_label((GtkMenuItem *) mainOptions[h].handle, text);
 	    }
 	}
+#endif
 	if(sqx != squareSize && !first) {
 	    squareSize = sqx; // adopt new square size
 	    CreatePNGPieces(); // make newly scaled pieces
