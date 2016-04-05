@@ -653,7 +653,7 @@ ResizeBoardWindow (int w, int h, int inhibit)
     gtk_widget_set_size_request(optList[W_BOARD].handle, w, h);   // protect board widget
 //    w += marginW + 1; // [HGM] not sure why the +1 is (sometimes) needed...
 //    h += marginH + a.height + 1;
-    gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
+    gtk_window_resize(GTK_WINDOW(shellWidget), w, 10);
     DoEvents();
     gtk_widget_set_size_request(optList[W_BOARD].handle, -1, -1); // liberate board again
 }
@@ -1664,6 +1664,7 @@ ReSize (WindowPlacement *wp)
 	GtkAllocation a;
 	int sqx, sqy, w, h, lg = lineGap;
 	static int first = 1;
+//	DisplayBothClocks();
 	if(wp->width == wpMain.width && wp->height == wpMain.height && !first) return; // not sized
 	gtk_widget_get_allocation(optList[W_DROP+1].handle, &a); // table that should contain everything
 	w = a.width; h = a.height;
@@ -1705,6 +1706,11 @@ ReSize (WindowPlacement *wp)
 	    DrawPosition(True, NULL);
 	    partnerUp = !partnerUp; flipView = !flipView;
 	}
+	if(!strchr(appData.boardSize, ',')) {
+	    for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize > squareSize; h++) {}
+	    ASSIGN(appData.boardSize, sizeDefaults[h].name);
+	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
+	}
 }
 
 static guint delayedDragTag = 0;
@@ -1713,8 +1719,10 @@ void
 DragProc ()
 {
 	static int busy;
-	if(busy) return;
-
+	if(busy) { // prevent recursive calling, but postpone interrupting call rather than lose it
+	    if(!delayedDragTag) delayedDragTag = g_timeout_add( 200, (GSourceFunc) DragProc, NULL);
+	    return;
+	}
 	busy = 1;
 	GetActualPlacement(shellWidget, &wpNew);
 	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
@@ -1754,6 +1762,7 @@ EventProc (GtkWidget *widget, GdkEvent *event, gpointer g)
     wpNew.y = event->configure.y;
     wpNew.width  = event->configure.width;
     wpNew.height = event->configure.height;
+//    SetWidgetLabel(&mainOptions[W_WHITE], ""); SetWidgetLabel(&mainOptions[W_BLACK], "");
     DelayedDrag(); // as long as events keep coming in faster than 50 msec, they destroy each other
     return FALSE;
 }
