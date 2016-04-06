@@ -1392,7 +1392,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 		GtkAttachOptions x = GTK_FILL;
 		// make sure hbox is always available when we have more options on same row
                 hbox = gtk_hbox_new (option[i].type == Button && option[i].textValue || option[i].type == Graph, 0);
-		if(!currentCps && option[i].value > 80) x |= GTK_EXPAND; // only vertically extended widgets should size vertically
+		if(!currentCps && option[i].value > 80 && option[i].type == TextBox) x |= GTK_EXPAND; // only vertically extended widgets should size vertically
                 if (strcmp(option[i].name, "") == 0 || option[i].type == Label || option[i].type == Button)
                     // for Label and Button name is contained inside option
                     gtk_table_attach(GTK_TABLE(table), hbox, left, left+r, top, top+1, GTK_FILL | GTK_EXPAND, x, 2, 1);
