@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xboard 4.9.0-pre1\n"
+"Project-Id-Version: xboard 4.9.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-04-03 13:44-0700\n"
-"PO-Revision-Date: 2016-03-16 23:46+0100\n"
+"PO-Revision-Date: 2016-04-06 22:35+0200\n"
 "Last-Translator: Roland Illig <roland.illig@gmx.de>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -17,7 +17,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.5\n"
+"X-Generator: Poedit 1.8.7\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
 
 #: args.h:851
 #, c-format
@@ -138,8 +140,7 @@ msgstr "Kommunikationsport %s konnte nicht geöffnet werden"
 #: backend.c:1640
 #, c-format
 msgid "Could not connect to host %s, port %s"
-msgstr ""
-"Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
+msgstr "Verbindung zu Hostrechner %s, Portnummer %s konnte nicht hergestellt werden"
 
 #: backend.c:1696
 #, c-format
@@ -250,8 +251,7 @@ msgstr ""
 
 #: backend.c:4390 backend.c:10628
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Partie zu lang; erhöhen Sie MAX_MOVES und kompilieren Sie das Programm neu"
+msgstr "Partie zu lang; erhöhen Sie MAX_MOVES und kompilieren Sie das Programm neu"
 
 #: backend.c:4509
 msgid "Error gathering move list: extra board"
@@ -273,9 +273,7 @@ msgstr "Solange Sie spielen oder einem Spiel zuschauen, ist das nicht möglich"
 
 #: backend.c:6359
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
-"Kompilieren Sie das Programm erneut mit Unterstützung von BOARD_RANKS oder "
-"BOARD_FILES!"
+msgstr "Kompilieren Sie das Programm erneut mit Unterstützung von BOARD_RANKS oder BOARD_FILES!"
 
 #: backend.c:6851
 msgid "You are playing Black"
@@ -301,11 +299,11 @@ msgstr "Angezeigte Position ist nicht die aktuelle"
 
 #: backend.c:7116
 msgid "rights granted"
-msgstr ""
+msgstr "Rechte gewährt"
 
 #: backend.c:7116
 msgid "rights revoked"
-msgstr ""
+msgstr "Rechte verwährt"
 
 #: backend.c:7169
 msgid "Illegal move"
@@ -354,8 +352,7 @@ msgstr "Schlechte FEN vom Schachprogramm erhalten"
 
 #: backend.c:9280
 msgid "Engine did not send setup for non-standard variant"
-msgstr ""
-"Schachprogramm hat die Startaufstellung für die Spielvariante nicht gesendet"
+msgstr "Schachprogramm hat die Startaufstellung für die Spielvariante nicht gesendet"
 
 #: backend.c:9358 backend.c:14667 backend.c:14735
 #, c-format
@@ -500,22 +497,22 @@ msgstr "Kein Paarungsprogram angegeben"
 #: backend.c:11879
 #, c-format
 msgid "Average solving time %4.2f sec (total time %4.2f sec) "
-msgstr ""
+msgstr "Durchschnittliche Lösungszeit %4.2f Sek (Gesamtzeit %4.2f Sek) "
 
 #: backend.c:11881
 #, c-format
 msgid "%d avoid-moves played "
-msgstr ""
+msgstr "%d Verhinderungszüge gespielt "
 
 #: backend.c:11883
 #, c-format
 msgid "Solved %d out of %d (%3.1f%%) "
-msgstr ""
+msgstr "%d von %d gelöst (%3.1f%%) "
 
 #: backend.c:11886
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
-msgstr "Partie %s gegen %s: Endergebnis %d-%d-%d"
+msgstr "Match %s gegen %s: Endergebnis %d-%d-%d"
 
 #: backend.c:12363 backend.c:12399
 #, c-format
@@ -638,8 +635,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Die CMail-Nachricht wurde noch nicht geladen.\n"
-"Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut "
-"aus."
+"Benutzen sie »CMail Nachricht erneut laden« und führen Sie ihren Zug erneut aus."
 
 #: backend.c:14281
 msgid "No unfinished games"
@@ -813,8 +809,7 @@ msgstr "Noch keine Partie geladen"
 
 #: backend.c:16352
 msgid "Book file exists! Try again for overwrite."
-msgstr ""
-"Buchdatei existiert bereits! Versuchen Sie es erneut zum Überschreiben."
+msgstr "Buchdatei existiert bereits! Versuchen Sie es erneut zum Überschreiben."
 
 #: backend.c:16833
 #, c-format
@@ -983,9 +978,7 @@ msgstr "Turnier klonen"
 
 #: dialogs.c:356
 msgid "First you must specify an existing tourney file to clone"
-msgstr ""
-"Bitte geben Sie zuerst eine existierende Turnierdatei an, die geklont werden "
-"soll"
+msgstr "Bitte geben Sie zuerst eine existierende Turnierdatei an, die geklont werden soll"
 
 #: dialogs.c:372 dialogs.c:1549
 msgid "# no engines are installed"
@@ -1866,9 +1859,7 @@ msgstr "Farbe zum Hervorheben vorzeitiger Züge:"
 
 #: dialogs.c:938
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr ""
-"Figuren im Shogi-Stil umdrehen (Farbige Schaltflächen setzen die Einstellung "
-"zurück)"
+msgstr "Figuren im Shogi-Stil umdrehen (Farbige Schaltflächen setzen die Einstellung zurück)"
 
 #: dialogs.c:940
 msgid "Mono Mode"
@@ -1972,9 +1963,7 @@ msgstr "Spitzname (optional):"
 
 #: dialogs.c:1507
 msgid "Use nickname in PGN player tags of engine-engine games"
-msgstr ""
-"Spitzname in PGN-Spieler-Kennzeichen bei Spielen zwischen Schachprogrammen "
-"benutzen"
+msgstr "Spitzname in PGN-Spieler-Kennzeichen bei Spielen zwischen Schachprogrammen benutzen"
 
 #: dialogs.c:1508
 msgid "Engine Directory:"
@@ -2045,71 +2034,68 @@ msgid "New Shuffle Game"
 msgstr "Neue Shuffle-Partie"
 
 #: dialogs.c:1647
-#, fuzzy
 msgid "Clocks (requires restart):"
-msgstr "Logo-Größe (0=aus, benötigt Neustart):"
+msgstr "Uhren (benötigt Neustart):"
 
 #: dialogs.c:1648 dialogs.c:1654 dialogs.c:1660 dialogs.c:1666 dialogs.c:1672
 #: dialogs.c:1678 dialogs.c:1684
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #: dialogs.c:1649 dialogs.c:1655 dialogs.c:1661 dialogs.c:1667 dialogs.c:1673
 #: dialogs.c:1679 dialogs.c:1685
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: dialogs.c:1651 dialogs.c:1657 dialogs.c:1663 dialogs.c:1669 dialogs.c:1675
 #: dialogs.c:1681 dialogs.c:1687
 msgid "I"
-msgstr ""
+msgstr "K"
 
 #: dialogs.c:1652 dialogs.c:1658 dialogs.c:1664 dialogs.c:1670 dialogs.c:1676
 #: dialogs.c:1682 dialogs.c:1688
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: dialogs.c:1653
 msgid "Message (above board):"
-msgstr ""
+msgstr "Nachricht (über dem Brett):"
 
 #: dialogs.c:1659
-#, fuzzy
 msgid "ICS Chat/Console:"
-msgstr "ICS/Chat-Konsole"
+msgstr "ICS-Chat/Konsole:"
 
 #: dialogs.c:1665
 msgid "Edit tags / book / engine list:"
-msgstr ""
+msgstr "Tags / Buch / Schachprogramme bearbeiten:"
 
 #: dialogs.c:1671
-#, fuzzy
 msgid "Edit comments:"
-msgstr "Kommentar bearbeiten"
+msgstr "Kommentare bearbeiten:"
 
 #: dialogs.c:1677
-#, fuzzy
 msgid "Move history / Engine Output:"
-msgstr "Schachprogrammausgabe"
+msgstr "Zughistorie / Schachprogrammausgabe:"
 
 #: dialogs.c:1683
-#, fuzzy
 msgid "Game list:"
-msgstr "Partieliste"
+msgstr "Partieliste:"
 
 #: dialogs.c:1689
 msgid ""
 "\n"
 "The * buttons will set the font to the one selected below:"
 msgstr ""
+"\n"
+"Die *-Schaltflächen ändern die Schrift zu der unten ausgewählten:"
 
 #: dialogs.c:1743
 msgid "This only works in the GTK build"
-msgstr ""
+msgstr "Das funktioniert nur der GTK-Variante des Programms"
 
 #: dialogs.c:1744
 msgid "Fonts"
-msgstr ""
+msgstr "Schriftarten"
 
 #: dialogs.c:1764
 msgid "classical"
@@ -2454,9 +2440,7 @@ msgstr "Fehler beim Öffnen der Datei '%s'\n"
 
 #: gtk/xboard.c:1003 xaw/xboard.c:1092
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe "
-"zu unterstützen"
+msgstr "Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe zu unterstützen"
 
 #: gtk/xboard.c:1022 xaw/xboard.c:1124
 #, c-format
@@ -2492,9 +2476,8 @@ msgid "Failed to open file"
 msgstr "Fehler beim Öffnen der Datei"
 
 #: gtk/xoptions.c:1498
-#, fuzzy
 msgid "Browse"
-msgstr "durchsuche"
+msgstr "Durchsuchen"
 
 #: gtk/xoptions.c:1772 xaw/xoptions.c:1337
 msgid "OK"
@@ -2529,12 +2512,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2549,8 +2530,7 @@ msgstr ""
 "weitere Details finden Sie in der Datei COPYING.\n"
 "\n"
 "Besuchen Sie XBoard im Web unter: http://www.gnu.org/software/xboard/\n"
-"Die neuesten Features finden Sie unter: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Die neuesten Features finden Sie unter: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Fehler melden Sie bitte (auf Englisch) per E-Mail an: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2716,13 +2696,12 @@ msgid "Board..."
 msgstr "Brett…"
 
 #: menus.c:654
-#, fuzzy
 msgid "Fonts..."
-msgstr "Klang…"
+msgstr "Schriftarten…"
 
 #: menus.c:655
 msgid "Game List Tags..."
-msgstr "Partie Markierungen…"
+msgstr "Partie-Markierungen…"
 
 #: menus.c:660
 msgid "Machine White"
