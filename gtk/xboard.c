@@ -527,9 +527,10 @@ SaveFontArg (FILE *f, ArgDescriptor *ad)
     default:
       return;
   }
+  if(fontIsSet[n])           // only save fonts that were not defaults
   for(i=0; i<NUM_SIZES; i++) // [HGM] font: current font becomes standard for current size
     if(sizeDefaults[i].squareSize == initialSquareSize) { // only for standard sizes!
-	fontTable[n][initialSquareSize] = strdup(name);
+	ASSIGN(fontTable[n][initialSquareSize], name);
 	fontValid[n][initialSquareSize] = True;
 	break;
   }
