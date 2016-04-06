@@ -7,10 +7,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xboard 4.9.0-pre1\n"
+"Project-Id-Version: xboard 4.9.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-04-03 13:44-0700\n"
-"PO-Revision-Date: 2016-03-16 23:50+0100\n"
+"PO-Revision-Date: 2016-04-06 00:21+0200\n"
 "Last-Translator: Stéphane Aulery <lkppo@free.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -215,13 +215,11 @@ msgstr "Votre adversaire vous conseille : %s"
 
 #: backend.c:3677
 msgid "Error gathering move list: two headers"
-msgstr ""
-"Erreur lors du rassemblement de la liste des mouvements : deux en-têtes"
+msgstr "Erreur lors du rassemblement de la liste des mouvements : deux en-têtes"
 
 #: backend.c:3724
 msgid "Error gathering move list: nested"
-msgstr ""
-"Erreur lors du rassemblement de la liste des mouvements : enchevêtrement "
+msgstr "Erreur lors du rassemblement de la liste des mouvements : enchevêtrement "
 
 #: backend.c:3828 backend.c:4254 backend.c:4458 backend.c:5017 backend.c:5021
 #: backend.c:7292 backend.c:13054 backend.c:14805 backend.c:14882
@@ -256,8 +254,7 @@ msgstr "Jeu trop long; augmentez MAX_MOVES et recompilez"
 
 #: backend.c:4509
 msgid "Error gathering move list: extra board"
-msgstr ""
-"Erreur lors du rassemblement de la liste des mouvements : plateau superflu"
+msgstr "Erreur lors du rassemblement de la liste des mouvements : plateau superflu"
 
 #: backend.c:4941 backend.c:4963
 #, c-format
@@ -271,8 +268,7 @@ msgstr "Une erreur interne est survenue; moveType %d (%d,%d-%d,%d) incorrect"
 
 #: backend.c:5299
 msgid "You cannot do this while you are playing or observing"
-msgstr ""
-"Vous ne pouvez pas exécuter cette action en tant que joueur ou observateur"
+msgstr "Vous ne pouvez pas exécuter cette action en tant que joueur ou observateur"
 
 #: backend.c:6359
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
@@ -302,11 +298,11 @@ msgstr "La position affichée n'est pas la position courante"
 
 #: backend.c:7116
 msgid "rights granted"
-msgstr ""
+msgstr "droits accordés"
 
 #: backend.c:7116
 msgid "rights revoked"
-msgstr ""
+msgstr "droits révoqués"
 
 #: backend.c:7169
 msgid "Illegal move"
@@ -355,8 +351,7 @@ msgstr "FEN reçue du moteur incorrecte "
 
 #: backend.c:9280
 msgid "Engine did not send setup for non-standard variant"
-msgstr ""
-"Le moteur n'a pas fourni de d'installation pour une variante non-standard "
+msgstr "Le moteur n'a pas fourni de d'installation pour une variante non-standard "
 
 #: backend.c:9358 backend.c:14667 backend.c:14735
 #, c-format
@@ -462,8 +457,7 @@ msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
-"Tout d'abord, changez le moteur d'échecs en éditant la liste des "
-"participants\n"
+"Tout d'abord, changez le moteur d'échecs en éditant la liste des participants\n"
 "de la boîte de dialogue Options du Tournoi"
 
 #: backend.c:11121
@@ -502,17 +496,17 @@ msgstr "Aucun moteur de jumelage n'est spécifié"
 #: backend.c:11879
 #, c-format
 msgid "Average solving time %4.2f sec (total time %4.2f sec) "
-msgstr ""
+msgstr "Temps de résolution moyen %4.2f s (durée totale %4.2f s) "
 
 #: backend.c:11881
 #, c-format
 msgid "%d avoid-moves played "
-msgstr ""
+msgstr "%d mouvements d’évitement joués"
 
 #: backend.c:11883
 #, c-format
 msgid "Solved %d out of %d (%3.1f%%) "
-msgstr ""
+msgstr "%d résolus sur %d (%3.1f%%) "
 
 #: backend.c:11886
 #, c-format
@@ -673,22 +667,17 @@ msgstr "En attente de la réponse de votre adversaire\n"
 #: backend.c:14386
 #, c-format
 msgid "Still need to make move for game\n"
-msgstr ""
-"Il est encore nécessaire de faire un mouvement pour la partie restante\n"
+msgstr "Il est encore nécessaire de faire un mouvement pour la partie restante\n"
 
 #: backend.c:14390
 #, c-format
 msgid "Still need to make moves for both games\n"
-msgstr ""
-"Il est encore nécessaire de faire des mouvements pour les deux parties "
-"restantes\n"
+msgstr "Il est encore nécessaire de faire des mouvements pour les deux parties restantes\n"
 
 #: backend.c:14394
 #, c-format
 msgid "Still need to make moves for all %d games\n"
-msgstr ""
-"Il est encore nécessaire de faire des mouvements pour les %d parties "
-"restantes\n"
+msgstr "Il est encore nécessaire de faire des mouvements pour les %d parties restantes\n"
 
 #: backend.c:14401
 #, c-format
@@ -868,8 +857,7 @@ msgstr "Le drapeau des Noirs a chuté"
 
 #: backend.c:17757
 msgid "Clock adjustment not allowed in auto-flag mode"
-msgstr ""
-"Le réajustement d'horloge n'est pas autorisé dans le mode drapeau automatique"
+msgstr "Le réajustement d'horloge n'est pas autorisé dans le mode drapeau automatique"
 
 #: backend.c:18719
 msgid "Bad FEN position in clipboard"
@@ -989,8 +977,7 @@ msgstr "Fermer le tournoi"
 
 #: dialogs.c:356
 msgid "First you must specify an existing tourney file to clone"
-msgstr ""
-"Tout d'abord, vous devez spécifier un fichier de tournoi existant à cloner "
+msgstr "Tout d'abord, vous devez spécifier un fichier de tournoi existant à cloner "
 
 #: dialogs.c:372 dialogs.c:1549
 msgid "# no engines are installed"
@@ -1179,8 +1166,7 @@ msgstr "Spartan"
 
 #: dialogs.c:471
 msgid "Board size ( -1 = default for selected variant):"
-msgstr ""
-"Taille de l'échiquier (-1 = par défaut pour la variante sélectionnée) :"
+msgstr "Taille de l'échiquier (-1 = par défaut pour la variante sélectionnée) :"
 
 #: dialogs.c:472
 msgid "Number of Board Ranks:"
@@ -1872,9 +1858,7 @@ msgstr "Couleur de surbrillance de pré-coup :"
 
 #: dialogs.c:938
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr ""
-"Retourner les pièces style Shogi  (Les boutons colorés restaurent la valeur "
-"par défaut)"
+msgstr "Retourner les pièces style Shogi  (Les boutons colorés restaurent la valeur par défaut)"
 
 #: dialogs.c:940
 msgid "Mono Mode"
@@ -1978,9 +1962,7 @@ msgstr "Pseudonyme (optionnel) :"
 
 #: dialogs.c:1507
 msgid "Use nickname in PGN player tags of engine-engine games"
-msgstr ""
-"Utiliser le pseudonyme dans les étiquettes du joueur en PGN des jeux moteur-"
-"moteur"
+msgstr "Utiliser le pseudonyme dans les étiquettes du joueur en PGN des jeux moteur-moteur"
 
 #: dialogs.c:1508
 msgid "Engine Directory:"
@@ -2051,71 +2033,68 @@ msgid "New Shuffle Game"
 msgstr "Nouveau Jeu Aléatoire"
 
 #: dialogs.c:1647
-#, fuzzy
 msgid "Clocks (requires restart):"
-msgstr "Taille du logo (0 = pas de logo, redémarrage requis) :"
+msgstr "Horloges (nécessite de redémarrer) :"
 
 #: dialogs.c:1648 dialogs.c:1654 dialogs.c:1660 dialogs.c:1666 dialogs.c:1672
 #: dialogs.c:1678 dialogs.c:1684
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #: dialogs.c:1649 dialogs.c:1655 dialogs.c:1661 dialogs.c:1667 dialogs.c:1673
 #: dialogs.c:1679 dialogs.c:1685
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: dialogs.c:1651 dialogs.c:1657 dialogs.c:1663 dialogs.c:1669 dialogs.c:1675
 #: dialogs.c:1681 dialogs.c:1687
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: dialogs.c:1652 dialogs.c:1658 dialogs.c:1664 dialogs.c:1670 dialogs.c:1676
 #: dialogs.c:1682 dialogs.c:1688
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: dialogs.c:1653
 msgid "Message (above board):"
-msgstr ""
+msgstr "Message (plateau ci-dessus) :"
 
 #: dialogs.c:1659
-#, fuzzy
 msgid "ICS Chat/Console:"
-msgstr "ICS / Console de tchat"
+msgstr "ICS / Console de tchat :"
 
 #: dialogs.c:1665
 msgid "Edit tags / book / engine list:"
-msgstr ""
+msgstr "Modifier les tags / livre / liste de moteurs :"
 
 #: dialogs.c:1671
-#, fuzzy
 msgid "Edit comments:"
-msgstr "Édit un commentaire"
+msgstr "Modifier des commentaires :"
 
 #: dialogs.c:1677
-#, fuzzy
 msgid "Move history / Engine Output:"
-msgstr "Sortie du moteur "
+msgstr "Historique des coups / Sortie du moteur :"
 
 #: dialogs.c:1683
-#, fuzzy
 msgid "Game list:"
-msgstr "Liste des parties"
+msgstr "Liste des parties :"
 
 #: dialogs.c:1689
 msgid ""
 "\n"
 "The * buttons will set the font to the one selected below:"
 msgstr ""
+"\n"
+"Les bouttons * sélectionneront la police choisie ci-dessous :"
 
 #: dialogs.c:1743
 msgid "This only works in the GTK build"
-msgstr ""
+msgstr "Fonctionne seulement avec la version GTK"
 
 #: dialogs.c:1744
 msgid "Fonts"
-msgstr ""
+msgstr "Polices de caractères"
 
 #: dialogs.c:1764
 msgid "classical"
@@ -2460,9 +2439,7 @@ msgstr "Échec dans l'ouverture du fichier '%s'\n"
 
 #: gtk/xboard.c:1003 xaw/xboard.c:1092
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Recompilez avec BOARD_RANKS ou BOARD_FILES plus grand pour supporter cette "
-"taille"
+msgstr "Recompilez avec BOARD_RANKS ou BOARD_FILES plus grand pour supporter cette taille"
 
 #: gtk/xboard.c:1022 xaw/xboard.c:1124
 #, c-format
@@ -2477,8 +2454,7 @@ msgstr "%s : Nom %s de la boardSize non reconnu\n"
 #: gtk/xboard.c:1107 xaw/xboard.c:1200
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
-msgstr ""
-"%s: Trop peu de couleurs sont disponibles; tentative du mode monochrome\n"
+msgstr "%s: Trop peu de couleurs sont disponibles; tentative du mode monochrome\n"
 
 #: gtk/xboard.c:1421 xaw/xboard.c:1492
 #, c-format
@@ -2499,7 +2475,6 @@ msgid "Failed to open file"
 msgstr "Échec lors de l'ouverture du fichier"
 
 #: gtk/xoptions.c:1498
-#, fuzzy
 msgid "Browse"
 msgstr "Naviguer"
 
@@ -2536,12 +2511,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2552,13 +2525,11 @@ msgstr ""
 "Copyright d'améliorations 1992-2016 Free Software Foundation\n"
 "Copyright d'améliorations 2005 Alessandro Scotti\n"
 "\n"
-"%s est un logiciel gratuit et ne transporte AUCUNE GARANTIE; veuillez vous "
-"référer au fichier COPYING pour plus d'informations.\n"
+"%s est un logiciel gratuit et ne transporte AUCUNE GARANTIE; veuillez vous référer au fichier COPYING pour plus d'informations.\n"
 "La version GTK de cette version est expérimentale et instable\n"
 "\n"
 "Visitez XBoard à l'adresse : http://www.gnu.org/software/xboard/\n"
-"Regardez les dernières fonctionnalités à l'adresse : http://www.gnu.org/"
-"software/xboard/whats_new.html\n"
+"Regardez les dernières fonctionnalités à l'adresse : http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Reportez les bogues par mail à l'adresse : <bug-xboard@gnu.org>\n"
 "\n"
@@ -2724,9 +2695,8 @@ msgid "Board..."
 msgstr "Échiquier..."
 
 #: menus.c:654
-#, fuzzy
 msgid "Fonts..."
-msgstr "Sons..."
+msgstr "Polices..."
 
 #: menus.c:655
 msgid "Game List Tags..."
@@ -3112,9 +3082,7 @@ msgstr "%s : impossible d'analyser la couleur de premier plan dans '%s'\n"
 #: usystem.c:260
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
-msgstr ""
-"%s : impossible d'analyser les noms de couleurs; désactivation de la "
-"colorisation\n"
+msgstr "%s : impossible d'analyser les noms de couleurs; désactivation de la colorisation\n"
 
 #: usystem.c:362
 #, c-format
