@@ -133,6 +133,7 @@ extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain, wpDualBoard, wp
 extern char *marked[];
 extern Boolean shellUp[];
 extern Option textOptions[], typeOptions[], dualOptions[], mainOptions[];
+extern Option historyOptions[], engoutOptions[], gamesOptions[], chatOptions[], tagsOptions[], commentOptions[];
 #define MAX_SIZE 130
 extern Boolean fontIsSet[], fontValid[][MAX_SIZE];
 extern int initialSquareSize;

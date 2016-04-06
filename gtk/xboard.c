@@ -256,7 +256,7 @@ GtkAccelGroup *GtkAccelerators;
 typedef unsigned int BoardSize;
 BoardSize boardSize;
 Boolean chessProgram;
-static int initialSquareSize;
+int initialSquareSize;
 
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int smallLayout = 0, tinyLayout = 0,
@@ -381,7 +381,6 @@ colorVariable[] = {
 
 // [HGM] font: keep a font for each square size, even non-stndard ones
 #define NUM_SIZES 18
-#define MAX_SIZE 130
 Boolean fontIsSet[NUM_FONTS], fontValid[NUM_FONTS][MAX_SIZE];
 char *fontTable[NUM_FONTS][MAX_SIZE];
 
@@ -1715,6 +1714,13 @@ ReSize (WindowPlacement *wp)
 	    DisplayBothClocks();
 	    ApplyFont(&mainOptions[W_MESSG], NULL);
 	    for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
+	    ApplyFont(&tagsOptions[1], NULL);
+	    ApplyFont(&commentOptions[0], NULL);
+	    ApplyFont(&historyOptions[0], NULL);
+	    ApplyFont(&engoutOptions[5], NULL);
+	    ApplyFont(&engoutOptions[12], NULL);
+	    ApplyFont(&chatOptions[11], appData.icsFont);
+	    AppendColorized(&chatOptions[6], NULL, 0); // kludge to replace font tag
 	}
 	if(!strchr(appData.boardSize, ',')) {
 	    ASSIGN(appData.boardSize, sizeDefaults[h].name);

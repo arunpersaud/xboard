@@ -1223,7 +1223,7 @@ NewMove ()
     addToBookFlag = !addToBookFlag;
 }
 
-static Option tagsOptions[] = {
+Option tagsOptions[] = {
 {   0,   0,   0, NULL, NULL, NULL, NULL, Label,  NULL },
 { 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 200, NULL, (void*) &tagsText, NULL, (char **) &TagsClick, TextBox, "", &appData.tagsFont },
 {   0,   0, 100, NULL, (void*) &NewMove,    NULL, NULL, Button, N_("add next move") },
@@ -1638,7 +1638,6 @@ NewFont (int n, int fnr, char *font)
 static int
 FontsOK (int n)
 {
-    extern Option historyOptions[], engoutOptions[], gamesOptions[], chatOptions[];
     int i;
     PopDown(TransientDlg); // Early popdown to prevent expose events frommasking each other
     LockBoardSize(0);
