@@ -1625,7 +1625,6 @@ ShuffleMenuProc ()
 static void AdjustFont P((int n));
 
 static char *oldFont[7];
-char fontChanged[8];
 
 static int
 FontsOK (int n)
@@ -1634,24 +1633,24 @@ FontsOK (int n)
     int i;
     PopDown(TransientDlg); // Early popdown to prevent expose events frommasking each other
     LockBoardSize(0);
-    if(strcmp(oldFont[0], appData.clockFont)) fontChanged[CLOCK_FONT] = 1, DisplayBothClocks();
+    if(strcmp(oldFont[0], appData.clockFont)) fontIsSet[CLOCK_FONT] = 1, DisplayBothClocks();
     if(strcmp(oldFont[1], appData.font)) {
-	fontChanged[MESSAGE_FONT] = 1;
+	fontIsSet[MESSAGE_FONT] = 1;
 	ApplyFont(&mainOptions[W_MESSG], NULL);
 	for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
     }
     LockBoardSize(1); // unlock
-    if(strcmp(oldFont[3], appData.tagsFont)) fontChanged[EDITTAGS_FONT] = 1, ApplyFont(&tagsOptions[1], NULL);
-    if(strcmp(oldFont[4], appData.commentFont)) fontChanged[COMMENT_FONT] = 1, ApplyFont(&commentOptions[0], NULL);
+    if(strcmp(oldFont[3], appData.tagsFont)) fontIsSet[EDITTAGS_FONT] = 1, ApplyFont(&tagsOptions[1], NULL);
+    if(strcmp(oldFont[4], appData.commentFont)) fontIsSet[COMMENT_FONT] = 1, ApplyFont(&commentOptions[0], NULL);
     if(strcmp(oldFont[5], appData.historyFont)) {
-	fontChanged[MOVEHISTORY_FONT] = 1;
+	fontIsSet[MOVEHISTORY_FONT] = 1;
 	ApplyFont(&historyOptions[0], NULL);
 	ApplyFont(&engoutOptions[5], NULL);
 	ApplyFont(&engoutOptions[12], NULL);
     }
-    if(strcmp(oldFont[6], appData.gameListFont)) fontChanged[GAMELIST_FONT] = 1, ApplyFont(&gamesOptions[0], NULL);
+    if(strcmp(oldFont[6], appData.gameListFont)) fontIsSet[GAMELIST_FONT] = 1, ApplyFont(&gamesOptions[0], NULL);
     if(strcmp(oldFont[2], appData.icsFont)) {
-	fontChanged[CONSOLE_FONT] = 1;
+	fontIsSet[CONSOLE_FONT] = 1;
 	ApplyFont(&chatOptions[11], appData.icsFont);
 	AppendColorized(&chatOptions[6], NULL, 0); // kludge to replace font tag
     }

@@ -133,6 +133,7 @@ extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain, wpDualBoard, wp
 extern char *marked[];
 extern Boolean shellUp[];
 extern Option textOptions[], typeOptions[], dualOptions[], mainOptions[];
+extern Boolean fontIsSet[];
 
 
 void GetPlacement P((DialogClass dlg, WindowPlacement *wp));

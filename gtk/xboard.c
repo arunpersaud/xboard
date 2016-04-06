@@ -444,6 +444,13 @@ SetFontDefaults ()
 }
 
 void
+ChangeFont (char **font, int fnr, int size, char *def, int pix)
+{
+    if(!fontValid[fnr][size]) { ASSIGN(fontTable[fnr][size], def); fontIsSet[fnr] = False; } // use default
+    FREE(*font); *font = InsertPxlSize(fontTable[fnr][size], pix);
+}
+
+void
 CreateFonts ()
 { // no-op, until we identify the code for this already in XBoard and move it here
 }
@@ -669,21 +676,21 @@ InitializeFonts (int clockFontPxlSize, int coordFontPxlSize, int fontPxlSize)
 {   // determine what fonts to use, and create them
 
     if(!fontIsSet[CLOCK_FONT] && fontValid[CLOCK_FONT][squareSize])
-	appData.clockFont = fontTable[CLOCK_FONT][squareSize];
+	appData.clockFont = fontTable[CLOCK_FONT][squareSize], fontIsSet[CLOCK_FONT] = True;
     if(!fontIsSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
-	appData.font = fontTable[MESSAGE_FONT][squareSize];
+	appData.font = fontTable[MESSAGE_FONT][squareSize], fontIsSet[MESSAGE_FONT] = True;
     if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
-	appData.coordFont = fontTable[COORD_FONT][squareSize];
+	appData.coordFont = fontTable[COORD_FONT][squareSize], fontIsSet[COORD_FONT] = True;
     if(!fontIsSet[CONSOLE_FONT] && fontValid[CONSOLE_FONT][squareSize])
-	appData.icsFont = fontTable[CONSOLE_FONT][squareSize];
+	appData.icsFont = fontTable[CONSOLE_FONT][squareSize], fontIsSet[CONSOLE_FONT] = True;
     if(!fontIsSet[EDITTAGS_FONT] && fontValid[EDITTAGS_FONT][squareSize])
-	appData.tagsFont = fontTable[EDITTAGS_FONT][squareSize];
+	appData.tagsFont = fontTable[EDITTAGS_FONT][squareSize], fontIsSet[EDITTAGS_FONT] = True;
     if(!fontIsSet[COMMENT_FONT] && fontValid[COMMENT_FONT][squareSize])
-	appData.commentFont = fontTable[COMMENT_FONT][squareSize];
+	appData.commentFont = fontTable[COMMENT_FONT][squareSize], fontIsSet[COMMENT_FONT] = True;
     if(!fontIsSet[MOVEHISTORY_FONT] && fontValid[MOVEHISTORY_FONT][squareSize])
-	appData.historyFont = fontTable[MOVEHISTORY_FONT][squareSize];
+	appData.historyFont = fontTable[MOVEHISTORY_FONT][squareSize], fontIsSet[MOVEHISTORY_FONT] = True;
     if(!fontIsSet[GAMELIST_FONT] && fontValid[GAMELIST_FONT][squareSize])
-	appData.gameListFont = fontTable[GAMELIST_FONT][squareSize];
+	appData.gameListFont = fontTable[GAMELIST_FONT][squareSize], fontIsSet[GAMELIST_FONT] = True;
 
     appData.font = InsertPxlSize(appData.font, coordFontPxlSize);
     appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
@@ -1693,10 +1700,8 @@ ReSize (WindowPlacement *wp)
 	for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize*8 > sqx*BOARD_WIDTH; h++) {}
 	if(initialSquareSize != sizeDefaults[h].squareSize) { // boardSize changed
 	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
-	    if(!fontValid[CLOCK_FONT][initialSquareSize]) { ASSIGN(fontTable[CLOCK_FONT][initialSquareSize], CLOCK_FONT_NAME); }
-	    appData.clockFont = InsertPxlSize(fontTable[CLOCK_FONT][initialSquareSize], 2*(sizeDefaults[h].clockFontPxlSize+1)/3);
-	    if(!fontValid[MESSAGE_FONT][initialSquareSize]) { ASSIGN(fontTable[MESSAGE_FONT][initialSquareSize], DEFAULT_FONT_NAME); }
-	    appData.font = InsertPxlSize(fontTable[MESSAGE_FONT][initialSquareSize], sizeDefaults[h].coordFontPxlSize);
+	    ChangeFont(&appData.clockFont, CLOCK_FONT, initialSquareSize, CLOCK_FONT_NAME, 2*(sizeDefaults[h].clockFontPxlSize+1)/3);
+	    ChangeFont(&appData.font, MESSAGE_FONT, initialSquareSize, DEFAULT_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
 	    DisplayBothClocks();
 	    ApplyFont(&mainOptions[W_MESSG], NULL);
 	    for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
