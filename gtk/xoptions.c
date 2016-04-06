@@ -1549,7 +1549,8 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
                 Pack(hbox, table, fbutton, left, left+r, top, 0);
                 break;
             }
-            if(!strcmp(option[i].name, "R") || !strcmp(option[i].name, "G") || !strcmp(option[i].name, "B")) {
+            if(!strcmp(option[i].name, "R") || !strcmp(option[i].name, "G") ||
+               !strcmp(option[i].name, "B") && !strcmp(option[i+1].name, "D")) {
                 break;
             } else
             if(!strcmp(option[i].name, "D")) {
