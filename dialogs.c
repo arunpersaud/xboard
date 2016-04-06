@@ -1627,30 +1627,36 @@ static void AdjustFont P((int n));
 static char *oldFont[7];
 
 static int
+NewFont (int n, int fnr, char *font)
+{   // figure out if font changed, and if so, store it in the fonts table as a side effect
+    if(!strcmp(oldFont[n], font)) return 0; // not changed
+    ASSIGN(fontTable[fnr][initialSquareSize], font);
+    fontIsSet[fnr] = fontValid[fnr][initialSquareSize] = True;
+    return 1; // changed
+}
+
+static int
 FontsOK (int n)
 {
     extern Option historyOptions[], engoutOptions[], gamesOptions[], chatOptions[];
     int i;
     PopDown(TransientDlg); // Early popdown to prevent expose events frommasking each other
     LockBoardSize(0);
-    if(strcmp(oldFont[0], appData.clockFont)) fontIsSet[CLOCK_FONT] = 1, DisplayBothClocks();
-    if(strcmp(oldFont[1], appData.font)) {
-	fontIsSet[MESSAGE_FONT] = 1;
+    if(NewFont(0, CLOCK_FONT,   appData.clockFont)) DisplayBothClocks();
+    if(NewFont(1, MESSAGE_FONT, appData.font)) {
 	ApplyFont(&mainOptions[W_MESSG], NULL);
 	for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
     }
     LockBoardSize(1); // unlock
-    if(strcmp(oldFont[3], appData.tagsFont)) fontIsSet[EDITTAGS_FONT] = 1, ApplyFont(&tagsOptions[1], NULL);
-    if(strcmp(oldFont[4], appData.commentFont)) fontIsSet[COMMENT_FONT] = 1, ApplyFont(&commentOptions[0], NULL);
-    if(strcmp(oldFont[5], appData.historyFont)) {
-	fontIsSet[MOVEHISTORY_FONT] = 1;
+    if(NewFont(3, EDITTAGS_FONT,    appData.tagsFont))    ApplyFont(&tagsOptions[1], NULL);
+    if(NewFont(4, COMMENT_FONT,     appData.commentFont)) ApplyFont(&commentOptions[0], NULL);
+    if(NewFont(5, MOVEHISTORY_FONT, appData.historyFont)) {
 	ApplyFont(&historyOptions[0], NULL);
 	ApplyFont(&engoutOptions[5], NULL);
 	ApplyFont(&engoutOptions[12], NULL);
     }
-    if(strcmp(oldFont[6], appData.gameListFont)) fontIsSet[GAMELIST_FONT] = 1, ApplyFont(&gamesOptions[0], NULL);
-    if(strcmp(oldFont[2], appData.icsFont)) {
-	fontIsSet[CONSOLE_FONT] = 1;
+    if(NewFont(6, GAMELIST_FONT, appData.gameListFont)) ApplyFont(&gamesOptions[0], NULL);
+    if(NewFont(2, CONSOLE_FONT,  appData.icsFont)) {
 	ApplyFont(&chatOptions[11], appData.icsFont);
 	AppendColorized(&chatOptions[6], NULL, 0); // kludge to replace font tag
     }

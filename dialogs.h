@@ -133,7 +133,10 @@ extern WindowPlacement wpComment, wpTags, wpMoveHistory, wpMain, wpDualBoard, wp
 extern char *marked[];
 extern Boolean shellUp[];
 extern Option textOptions[], typeOptions[], dualOptions[], mainOptions[];
-extern Boolean fontIsSet[];
+#define MAX_SIZE 130
+extern Boolean fontIsSet[], fontValid[][MAX_SIZE];
+extern int initialSquareSize;
+extern char *fontTable[][MAX_SIZE];
 
 
 void GetPlacement P((DialogClass dlg, WindowPlacement *wp));
