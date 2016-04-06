@@ -444,9 +444,13 @@ SetFontDefaults ()
 }
 
 void
-ChangeFont (char **font, int fnr, int size, char *def, int pix)
+ChangeFont (int force, char **font, int fnr, int size, char *def, int pix)
 {
-    if(!fontValid[fnr][size]) { ASSIGN(fontTable[fnr][size], def); fontIsSet[fnr] = False; } // use default
+    if(!fontValid[fnr][size]) {
+	if(fontIsSet[fnr] && !force) return; // unless forced we do not replace an explicitly specified font by a default
+	ASSIGN(fontTable[fnr][size], def);   // use default
+	fontIsSet[fnr] = False;
+    }
     FREE(*font); *font = InsertPxlSize(fontTable[fnr][size], pix);
 }
 
@@ -1700,8 +1704,13 @@ ReSize (WindowPlacement *wp)
 	for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize*8 > sqx*BOARD_WIDTH; h++) {}
 	if(initialSquareSize != sizeDefaults[h].squareSize) { // boardSize changed
 	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
-	    ChangeFont(&appData.clockFont, CLOCK_FONT, initialSquareSize, CLOCK_FONT_NAME, 2*(sizeDefaults[h].clockFontPxlSize+1)/3);
-	    ChangeFont(&appData.font, MESSAGE_FONT, initialSquareSize, DEFAULT_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
+	    ChangeFont(1, &appData.clockFont, CLOCK_FONT, initialSquareSize, CLOCK_FONT_NAME, 2*(sizeDefaults[h].clockFontPxlSize+1)/3);
+	    ChangeFont(1, &appData.font, MESSAGE_FONT, initialSquareSize, DEFAULT_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
+	    ChangeFont(0, &appData.icsFont, CONSOLE_FONT, initialSquareSize, CONSOLE_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
+	    ChangeFont(0, &appData.tagsFont, EDITTAGS_FONT, initialSquareSize, TAGS_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
+	    ChangeFont(0, &appData.commentFont, COMMENT_FONT, initialSquareSize, COMMENT_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
+	    ChangeFont(0, &appData.gameListFont, GAMELIST_FONT, initialSquareSize, GAMELIST_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
+	    ChangeFont(0, &appData.coordFont, MOVEHISTORY_FONT, initialSquareSize, HISTORY_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
 	    DisplayBothClocks();
 	    ApplyFont(&mainOptions[W_MESSG], NULL);
 	    for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
