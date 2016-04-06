@@ -1642,7 +1642,7 @@ FontsOK (int n)
     }
     LockBoardSize(1); // unlock
     if(strcmp(oldFont[3], appData.tagsFont)) fontChanged[EDITTAGS_FONT] = 1, ApplyFont(&tagsOptions[1], NULL);
-    if(strcmp(oldFont[4], appData.commentFont)) fontChanged[COMMENT_FONT] = 1, ApplyFont(&commentOptions[1], NULL);
+    if(strcmp(oldFont[4], appData.commentFont)) fontChanged[COMMENT_FONT] = 1, ApplyFont(&commentOptions[0], NULL);
     if(strcmp(oldFont[5], appData.historyFont)) {
 	fontChanged[MOVEHISTORY_FONT] = 1;
 	ApplyFont(&historyOptions[0], NULL);
