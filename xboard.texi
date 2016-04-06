@@ -1286,25 +1286,72 @@ that SMP engines can use.
 The shifted @kbd{Alt+U} key is a keyboard equivalent.
 Older XBoard/WinBoard engines might not respond to these settings,
 but UCI engines always should.
-The @samp{EGT path} field corresponds to the setting of the
-@code{egtFormats} option to specify where to find tablebases
-of various flavors. See the description of this option for the required syntax.
-
-It is also possible to specify a GUI opening book here, i.e. an opening
-book that XBoard consults for any position a playing engine gets in.
-It then forces the engine to play the book move, rather than to think up its own,
-if that position is found in the book.
-The book can switched on and off independently for either engine.
-The way book moves are chosen can be influenced through the settings of
-book depth and variety.
-After both sides have played more moves than the specified depth,
-the book will no longer be consulted.
+@item Maximum Number of CPUs per Engine
+@cindex Max. Number of CPUs, Menu Item
+Specifies the number of search threads any engine can maximally use.
+Do not set it to a number larger than the number of cores your computer has.
+(Or half of it when you want two engines to run simultaneously,
+as in a Two-Machines game with @samp{Ponder Next Move} on.)
+@item Polyglot Directory
+@item Hash-Table Size
+@cindex Hash-Table Size
+Specifies the maximum amount of memory (RAM) each engine is allowed to use
+for storing info on positions it already searched,
+so it would not have to search them again.
+Do not set it so that it is more than half
+(or if you use two engines, more than a quarter)
+of the memory your computer has,
+or it would slow the engines down by an extreme amount.
+@item EGTB Path
+@cindex EGTB Path, Menu Item
+Sets the value of the @code{egtFormats} option, which specifies
+where on your computer the files for End-Game Tables are stored.
+It must be a comma-separated list of path names,
+the path for each EGT flavor prefixed with the name of the latter
+and a colon. E.g. "nalimov:/home/egt/dtm,syzygy:/home/egt/dtz50".
+The path names after the colon will be sent to the engines
+that say they can use the corresponding EGT flavor.
+@item EGTB Cache Size
+@cindex EGTB Cache Size, Menu Item
+Specifies the amount of memory the engine should use to
+buffer end-game information.
+Together with the @samp{Hash-Table Size} this determines how
+much memory the engine is allowed to use in total.
+@item Use GUI Book
+@itemx Opening-Book Filename
+@cindex Use GUI Book, Menu Item
+@cindex Opening-Book Filename, Menu Item
+The @samp{Opening-Book Filename} specifies an opening book
+in Polyglot format (usually a .bin file),
+from which XBoard can play moves on behalf of the engine.
+This is also the book file on which the @samp{Edit Book}
+and @samp{Save Games as Book} menu items operate.
+A checkbox @samp{Use GUI Book} can be used to temporarily
+disable the book without losing the setting.
+(This does not prevent editing or saving games on it!)
+@item Book Depth
+@itemx Book Variety
+@cindex Book Depth, Menu Item
+@cindex Book Variety, Menu Item
+The way moves are selected from the book can be controlled by two options.
+@samp{Book Depth} controls for how deep into the game the book
+will be consulted (measured in full moves).
+@samp{Book Variety} controls the likelihood of playing weaker moves.
 When the variety is set to 50, moves will be played with the probability
 specified in the book.
 When set to 0, only the move(s) with the highest probability will be played.
 When set to 100, all listed moves will be played with equal pobability.
 Other settings interpolate between that.
-
+@item Engine #1 Has Own Book
+@itemx Engine #2 Has Own Book
+@cindex Engine Has Own Book
+These checkboxes control on a per-engine basis
+whether XBoard will consult the opening book for them.
+If ticked, XBoard will never play moves from its GUI book,
+giving the engine the opportunity to use its own.
+These options are automatically set whenever you load an engine,
+based on the setting of @samp{Must not use GUI book}
+when you installed that through the @samp{Load Engine} menu dialog.
 @item Hint
 @cindex Hint, Menu Item
 Displays a move hint from the chess engine.
