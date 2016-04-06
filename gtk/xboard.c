@@ -449,7 +449,7 @@ ChangeFont (int force, char **font, int fnr, int size, char *def, int pix)
 	if(fontIsSet[fnr] && !force) return; // unless forced we do not replace an explicitly specified font by a default
 	ASSIGN(fontTable[fnr][size], def);   // use default
 	fontIsSet[fnr] = False;
-    }
+    } else fontIsSet[fnr] = True;
     FREE(*font); *font = InsertPxlSize(fontTable[fnr][size], pix);
 }
 
@@ -1710,7 +1710,7 @@ ReSize (WindowPlacement *wp)
 	    ChangeFont(0, &appData.tagsFont, EDITTAGS_FONT, initialSquareSize, TAGS_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
 	    ChangeFont(0, &appData.commentFont, COMMENT_FONT, initialSquareSize, COMMENT_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
 	    ChangeFont(0, &appData.gameListFont, GAMELIST_FONT, initialSquareSize, GAMELIST_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
-	    ChangeFont(0, &appData.coordFont, MOVEHISTORY_FONT, initialSquareSize, HISTORY_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
+	    ChangeFont(0, &appData.historyFont, MOVEHISTORY_FONT, initialSquareSize, HISTORY_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
 	    DisplayBothClocks();
 	    ApplyFont(&mainOptions[W_MESSG], NULL);
 	    for(i=1; i<6; i++) ApplyFont(&mainOptions[W_BUTTON+i], NULL);
