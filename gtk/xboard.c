@@ -2092,10 +2092,10 @@ LockBoardSize (int after)
     static char *oldClockFont, *oldMessgFont;
     int w, h;
     if(oldMessgFont && !strcmp(oldMessgFont, appData.font) &&
-       oldClockFont && !strcmp(oldClockFont, appData.clockFont) ) return; // only do something when font changed
+       oldClockFont && !strcmp(oldClockFont, appData.clockFont) && after < 2) return; // only do something when font changed
     w = BOARD_WIDTH*(squareSize + lineGap) + lineGap;
     h = BOARD_HEIGHT*(squareSize + lineGap) + lineGap;
-    if(after) {
+    if(after & 1) {
 	ASSIGN(oldClockFont, appData.clockFont);
 	ASSIGN(oldMessgFont, appData.font);
 	gtk_window_resize(GTK_WINDOW(shellWidget), w, h);
@@ -2109,9 +2109,10 @@ LockBoardSize (int after)
 void
 DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
 {
+    static int twoLines = -1;
     GtkWidget *w = (GtkWidget *) opt->handle;
     GdkColor col;
-    char *markup;
+    char *markup, two = (appData.logoSize != 0);
     char bgcolor[10];
     char fgcolor[10];
 
@@ -2128,12 +2129,14 @@ DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
         strcpy(fgcolor, appData.lowTimeWarningColor);
     }
 
+    if(! partnerUp && two != twoLines) LockBoardSize(2); // lock board size if clock height changes
+
     gdk_color_parse( bgcolor, &col );
     gtk_widget_modify_bg(gtk_widget_get_parent(opt->handle), GTK_STATE_NORMAL, &col);
 
     if (appData.clockMode) {
         markup = g_markup_printf_escaped("<span font=\"%s\" background=\"%s\" foreground=\"%s\">%s:%s%s</span>", appData.clockFont,
-					 bgcolor, fgcolor, color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
+					 bgcolor, fgcolor, color, two ? "\n" : " ", TimeString(timer));
 //        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s:%s%s</span>",
 //					 bgcolor, fgcolor, color, appData.logoSize && !partnerUp ? "\n" : " ", TimeString(timer));
     } else {
@@ -2144,6 +2147,8 @@ DisplayTimerLabel (Option *opt, char *color, long timer, int highlight)
     }
     gtk_label_set_markup(GTK_LABEL(w), markup);
     g_free(markup);
+
+    if(!partnerUp && two != twoLines) LockBoardSize(3), twoLines = two;
 }
 
 static GdkPixbuf **clockIcons[] = { &WhiteIcon, &BlackIcon };
