@@ -1693,9 +1693,9 @@ ReSize (WindowPlacement *wp)
 	for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize*8 > sqx*BOARD_WIDTH; h++) {}
 	if(initialSquareSize != sizeDefaults[h].squareSize) { // boardSize changed
 	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
-	    if(!fontValid[CLOCK_FONT][initialSquareSize]) fontTable[CLOCK_FONT][initialSquareSize] = CLOCK_FONT_NAME;
+	    if(!fontValid[CLOCK_FONT][initialSquareSize]) { ASSIGN(fontTable[CLOCK_FONT][initialSquareSize], CLOCK_FONT_NAME); }
 	    appData.clockFont = InsertPxlSize(fontTable[CLOCK_FONT][initialSquareSize], 2*(sizeDefaults[h].clockFontPxlSize+1)/3);
-	    if(!fontValid[MESSAGE_FONT][initialSquareSize]) fontTable[MESSAGE_FONT][initialSquareSize] = DEFAULT_FONT_NAME;
+	    if(!fontValid[MESSAGE_FONT][initialSquareSize]) { ASSIGN(fontTable[MESSAGE_FONT][initialSquareSize], DEFAULT_FONT_NAME); }
 	    appData.font = InsertPxlSize(fontTable[MESSAGE_FONT][initialSquareSize], sizeDefaults[h].coordFontPxlSize);
 	    DisplayBothClocks();
 	    ApplyFont(&mainOptions[W_MESSG], NULL);
