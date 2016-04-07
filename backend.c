@@ -7112,14 +7112,13 @@ UserMoveEvent (int fromX, int fromY, int toX, int toY, int promoChar)
 		ChessSquare p = boards[0][rf][ff];
 		if(PieceToChar(p) == '+') gatingPiece = CHUDEMOTED(p); else
 		if(PieceToChar(CHUPROMOTED(p)) =='+') gatingPiece = CHUPROMOTED(p); else
-		if(p == WhiteKing || p == BlackKing || p == WhiteRook || p == BlackRook) {
+		if(p == WhiteKing || p == BlackKing || p == WhiteRook || p == BlackRook || p == WhitePawn || p == BlackPawn) {
 		    int n = rightsBoard[toY][toX] ^= 1; // toggle virginity of K or R
 		    DisplayMessage("", n ? _("rights granted") : _("rights revoked"));
 		    gatingPiece = p;
 		}
-	    }
+	    } else  rightsBoard[toY][toX] = 0;  // revoke rights on moving
 	    boards[0][toY][toX] = boards[0][fromY][fromX];
-	    rightsBoard[toY][toX] = 0;  // revoke rights on moving
 	    if(fromX == BOARD_LEFT-2) { // handle 'moves' out of holdings
 		if(boards[0][fromY][0] != EmptySquare) {
 		    if(boards[0][fromY][1]) boards[0][fromY][1]--;
@@ -15353,22 +15352,23 @@ EditPositionDone (Boolean fakeRights)
     startedFromSetupPosition = TRUE;
     InitChessProgram(&first, FALSE);
     if(fakeRights) { // [HGM] suppress this if we just pasted a FEN.
+      int r, f;
       boards[0][EP_STATUS] = EP_NONE;
-      boards[0][CASTLING][2] = boards[0][CASTLING][5] = BOARD_WIDTH>>1;
-      if(boards[0][0][BOARD_WIDTH>>1] == king) {
-	boards[0][CASTLING][1] = boards[0][0][BOARD_LEFT] == WhiteRook ? BOARD_LEFT : NoRights;
-	boards[0][CASTLING][0] = boards[0][0][BOARD_RGHT-1] == WhiteRook ? BOARD_RGHT-1 : NoRights;
-      } else boards[0][CASTLING][2] = NoRights;
-      if(boards[0][BOARD_HEIGHT-1][BOARD_WIDTH>>1] == WHITE_TO_BLACK king) {
-	boards[0][CASTLING][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? BOARD_LEFT : NoRights;
-	boards[0][CASTLING][3] = boards[0][BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook ? BOARD_RGHT-1 : NoRights;
-      } else boards[0][CASTLING][5] = NoRights;
-      if(gameInfo.variant == VariantSChess) {
-	int i;
-	for(i=BOARD_LEFT; i<BOARD_RGHT; i++) { // pieces in their original position are assumed virgin
-	  boards[0][VIRGIN][i] = 0;
-	  if(boards[0][0][i]              == FIDEArray[0][i-BOARD_LEFT]) boards[0][VIRGIN][i] |= VIRGIN_W;
-	  if(boards[0][BOARD_HEIGHT-1][i] == FIDEArray[1][i-BOARD_LEFT]) boards[0][VIRGIN][i] |= VIRGIN_B;
+      for(f=0; f<=nrCastlingRights; f++) boards[0][CASTLING][f] = NoRights;
+      for(r=BOARD_HEIGHT-1; r>=0; r--) for(f=BOARD_RGHT-1; f>=BOARD_LEFT; f--) { // first pass: Kings & e.p.
+	if(rightsBoard[r][f]) {
+	  ChessSquare p = boards[0][r][f];
+	  if(p == (blackPlaysFirst ? WhitePawn : BlackPawn)) boards[0][EP_STATUS] = f;
+	  else if(p == king) boards[0][CASTLING][2] = f;
+	  else if(p == WHITE_TO_BLACK king) boards[0][CASTLING][5] = f;
+	  else rightsBoard[r][f] = 2; // mark for second pass
+	}
+      }
+      for(r=BOARD_HEIGHT-1; r>=0; r--) for(f=BOARD_RGHT-1; f>=BOARD_LEFT; f--) { // second pass: Rooks
+	if(rightsBoard[r][f] == 2) {
+	  ChessSquare p = boards[0][r][f];
+	  if(p == WhiteRook) boards[0][CASTLING][(f < boards[0][CASTLING][2])] = f; else
+	  if(p == BlackRook) boards[0][CASTLING][(f < boards[0][CASTLING][5])+3] = f;
 	}
       }
     }
@@ -15500,14 +15500,16 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 		    }
 		}
 	    }
+	    CopyBoard(rightsBoard, nullBoard);
 	    if(gameMode != IcsExamining) { // [HGM] editpos: cycle trough boards
-		int r;
+		int r, i;
 		for(r = 0; r < BOARD_HEIGHT; r++) {
 		  for(x = BOARD_LEFT; x < BOARD_RGHT; x++) { // create 'menu board' by removing duplicates 
 		    ChessSquare p = menuBoard[r][x];
 		    for(y = x + 1; y < BOARD_RGHT; y++) if(menuBoard[r][y] == p) menuBoard[r][y] = EmptySquare;
 		  }
 		}
+		menuBoard[CASTLING][0] = menuBoard[CASTLING][3] = NoRights; // h-side Rook was deleted
 		DisplayMessage("Clicking clock again restores position", "");
 		if(gameInfo.variant != lastVariant) lastVariant = gameInfo.variant, CopyBoard(erasedBoard, boards[0]);
 		if(!nonEmpty) { // asked to clear an empty board
@@ -15522,6 +15524,8 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
 		} else
 		    CopyBoard(erasedBoard, currentBoard);
 
+		for(i=0; i<nrCastlingRights; i++) if(boards[0][CASTLING][i] != NoRights)
+		    rightsBoard[castlingRank[i]][boards[0][CASTLING][i]] = 1; // copy remaining rights
 	    }
 	}
 	if (gameMode == EditPosition) {
@@ -15588,6 +15592,7 @@ EditPositionMenuEvent (ChessSquare selection, int x, int y)
         baseRank = 0;
       case BlackRook:
         if(y == baseRank && (x == BOARD_LEFT || x == BOARD_RGHT-1 || appData.fischerCastling)) hasRights = 1;
+        if(y == baseRank && (x == BOARD_WIDTH>>1 || appData.fischerCastling)) hasRights = 1;
         goto defaultlabel;
 
       case WhiteKing:
