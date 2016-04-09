@@ -1109,6 +1109,7 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     GtkFileFilter *gtkfilter_all;
     int opt_i = (intptr_t) gdata;
     GtkFileChooserAction fc_action;
+    char buf[MSG_SIZ];
 
     gtkfilter     = gtk_file_filter_new();
     gtkfilter_all = gtk_file_filter_new();
@@ -1133,6 +1134,10 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
                       NULL);
 
     gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(dialog), dataDir, NULL);
+    snprintf(buf, MSG_SIZ, "%s/themes", dataDir);
+    gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(dialog), buf, NULL);
+    snprintf(buf, MSG_SIZ, "%s/themes/textures", dataDir);
+    gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(dialog), buf, NULL);
 
     /* one filter to show everything */
     gtk_file_filter_add_pattern(gtkfilter_all, "*");
