@@ -1113,11 +1113,11 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     gtkfilter     = gtk_file_filter_new();
     gtkfilter_all = gtk_file_filter_new();
 
-    char fileext[MSG_SIZ], *filter = currentOption[opt_i].textValue, *old;
+    char fileext[MSG_SIZ], *filter = currentOption[opt_i].textValue, *old = NULL;
 
+    if(currentCps) filter = NULL; else if(currentOption[opt_i].type == PathName && filter) filter = "dir";
     GetWidgetText(&currentOption[opt_i], &old); // start in same directory as current widget contents
     StartDir(filter, old); // change to start directory for this file type
-    g_free(old);
 
     /* select file or folder depending on option_type */
     if (currentOption[opt_i].type == PathName)
@@ -1138,7 +1138,7 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),gtkfilter_all);
 
     /* filter for specific filetypes e.g. pgn or fen */
-    if (currentOption[opt_i].textValue != NULL)
+    if (currentOption[opt_i].textValue != NULL && !currentCps) // no filters for engine options!
       {
         char *q, *p = currentOption[opt_i].textValue;
         gtk_file_filter_set_name (gtkfilter, p);

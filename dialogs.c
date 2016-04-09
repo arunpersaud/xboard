@@ -625,9 +625,9 @@ CommonOptionsOK (int n)
 static Option commonEngineOptions[] = {
 { 0,  0,    0, NULL, (void*) &appData.ponderNextMove, "", NULL, CheckBox, N_("Ponder Next Move") },
 { 0,  0, 1000, NULL, (void*) &appData.smpCores, "", NULL, Spin, N_("Maximum Number of CPUs per Engine:") },
-{ 0,  0,    0, NULL, (void*) &appData.polyglotDir, "", NULL, PathName, N_("Polygot Directory:") },
+{ 0,  0,    0, NULL, (void*) &appData.polyglotDir, NULL, NULL, PathName, N_("Polygot Directory:") },
 { 0,  0,16000, NULL, (void*) &appData.defaultHashSize, "", NULL, Spin, N_("Hash-Table Size (MB):") },
-{ 0,  0,    0, NULL, (void*) &egtPath, "", NULL, PathName, N_("EGTB Path:") },
+{ 0,  0,    0, NULL, (void*) &egtPath, NULL, NULL, PathName, N_("EGTB Path:") },
 { 0,  0, 1000, NULL, (void*) &appData.defaultCacheSizeEGTB, "", NULL, Spin, N_("EGTB Cache Size (MB):") },
 { 0,  0,    0, NULL, (void*) &appData.usePolyglotBook, "", NULL, CheckBox, N_("Use GUI Book") },
 { 0,  0,    0, NULL, (void*) &appData.polyglotBook, ".bin", NULL, FileName, N_("Opening-Book Filename:") },
@@ -3313,10 +3313,14 @@ DirSelProc (int n, int sel)
 void
 StartDir (char *filter, char *newName)
 {
-    static char *gamesDir, *trnDir, *imgDir, *bookDir;
+    static char *gamesDir, *trnDir, *imgDir, *bookDir, *dirDir;
     static char curDir[MSG_SIZ];
     char **res = NULL;
     if(!filter || !*filter) return;
+    if(strstr(filter, "dir")) {
+	res = &dirDir;
+	if(!dirDir) dirDir= strdup(dataDir);
+    } else
     if(strstr(filter, "pgn")) res = &gamesDir; else
     if(strstr(filter, "bin")) res = &bookDir; else
     if(strstr(filter, "png")) res = &imgDir; else
