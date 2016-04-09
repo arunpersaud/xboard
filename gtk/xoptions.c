@@ -1132,6 +1132,8 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
                       GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
                       NULL);
 
+    gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(dialog), dataDir, NULL);
+
     /* one filter to show everything */
     gtk_file_filter_add_pattern(gtkfilter_all, "*");
     gtk_file_filter_set_name   (gtkfilter_all, "All Files");

@@ -29,3 +29,4 @@ extern int squareSize, lineGap, defaultLineGap;
 extern int startedFromPositionFile;
 extern char *icsTextMenuString;
 extern int hi2X, hi2Y;
+extern char dataDir[];
