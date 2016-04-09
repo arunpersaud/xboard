@@ -269,6 +269,8 @@ ExposeRedraw (Option *graph, int x, int y, int w, int h)
     cairo_destroy(cr);
 }
 
+static int modV[2], modH[2];
+
 static void
 CreatePNGBoard (char *s, int kind)
 {
@@ -286,13 +288,14 @@ CreatePNGBoard (char *s, int kind)
 	    useTexture |= kind + 1; pngOriginalBoardBitmap[kind] = img;
 	    w = textureW[kind] = cairo_image_surface_get_width (img);
 	    h = textureH[kind] = cairo_image_surface_get_height (img);
-	    n[kind] = 1.;
+	    n[kind] = 1.; modV[kind] = modH[kind] = -1;
 	    while((q = strchr(p+1, '-'))) p = q; // find last '-'
 	    if(strlen(p) < 11 && sscanf(p, "-%dx%d.pn%c", &f, &r, &c) == 3 && c == 'g') {
 		if(f == 0 || r == 0) f = BOARD_WIDTH, r = BOARD_HEIGHT; // 0x0 means 'fits any', so make it fit
 		textureW[kind] = (w*BOARD_WIDTH)/f; // sync cutting locations with square pattern
 		textureH[kind] = (h*BOARD_HEIGHT)/r;
 		n[kind] = r*squareSize/h; // scale to make it fit exactly vertically
+		modV[kind] = r; modH[kind] = f;
 	    } else
 	    if((p = strstr(s, "xq")) && (p == s || p[-1] == '/')) { // assume full-board image for Xiangqi
 		while(0.8*squareSize*BOARD_WIDTH > n[kind]*w || 0.8*squareSize*BOARD_HEIGHT > n[kind]*h) n[kind]++;
@@ -672,6 +675,7 @@ CutOutSquare (int x, int y, int *x0, int *y0, int  kind)
     int nx = x/(squareSize + lineGap), ny = y/(squareSize + lineGap);
     *x0 = 0; *y0 = 0;
     if(textureW[kind] < squareSize || textureH[kind] < squareSize) return 0;
+    if(modV[kind] > 0) nx %= modH[kind], ny %= modV[kind]; // tile fixed-format board periodically to extend it
     if(textureW[kind] < W*squareSize)
 	*x0 = (textureW[kind] - squareSize) * nx/(W-1);
     else
