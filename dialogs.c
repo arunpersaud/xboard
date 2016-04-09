@@ -3329,7 +3329,9 @@ StartDir (char *filter, char *newName)
 		ASSIGN(*res, newName);
 		for(p=*res; q=strchr(p, '/');) p = q + 1; *p = NULLCHAR;
 	    }
-	    if(*curDir) chdir(curDir);
+	}
+	if(*curDir) {
+	    chdir(curDir);
 	    *curDir = NULLCHAR;
 	} else {
 	    getcwd(curDir, MSG_SIZ);

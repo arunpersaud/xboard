@@ -1113,9 +1113,11 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     gtkfilter     = gtk_file_filter_new();
     gtkfilter_all = gtk_file_filter_new();
 
-    char fileext[MSG_SIZ], *filter = currentOption[opt_i].textValue;
+    char fileext[MSG_SIZ], *filter = currentOption[opt_i].textValue, *old;
 
-    StartDir(filter, NULL); // change to start directory for this file type
+    GetWidgetText(&currentOption[opt_i], &old); // start in same directory as current widget contents
+    StartDir(filter, old); // change to start directory for this file type
+    g_free(old);
 
     /* select file or folder depending on option_type */
     if (currentOption[opt_i].type == PathName)
