@@ -666,7 +666,7 @@ ResizeBoardWindow (int w, int h, int inhibit)
 //    h += marginH + a.height + 1;
     gtk_window_resize(GTK_WINDOW(shellWidget), w, 10);
     DoEvents();
-    gtk_widget_set_size_request(optList[W_BOARD].handle, -1, -1); // liberate board again
+    gtk_widget_set_size_request(optList[W_BOARD].handle, 100, 100); // liberate board again
 }
 
 int
@@ -1701,7 +1701,7 @@ ReSize (WindowPlacement *wp)
 	    lg = sqx < 37 ? 1 : sqx < 59 ? 2 : sqx < 116 ? 3 : 4;
 	    if(sqx == oldSqx + 1 && lg == lineGap + 1) sqx = oldSqx, squareSize = 0; // prevent oscillations, force resize by kludge
 	}
-	for(h=0; sizeDefaults[h].name && sizeDefaults[h].squareSize*8 > sqx*BOARD_WIDTH; h++) {}
+	for(h=0; sizeDefaults[h+1].name && sizeDefaults[h].squareSize*8 > sqx*BOARD_WIDTH; h++) {}
 	if(initialSquareSize != sizeDefaults[h].squareSize) { // boardSize changed
 	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
 	    ChangeFont(1, &appData.clockFont, CLOCK_FONT, initialSquareSize, CLOCK_FONT_NAME, 2*(sizeDefaults[h].clockFontPxlSize+1)/3);
