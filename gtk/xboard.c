@@ -1759,18 +1759,19 @@ static guint delayedDragTag = 0;
 void
 DragProc ()
 {
-	static int busy;
-	if(busy) { // prevent recursive calling, but postpone interrupting call rather than lose it
-	    if(!delayedDragTag) delayedDragTag = g_timeout_add( 200, (GSourceFunc) DragProc, NULL);
-	    return;
-	}
-	busy = 1;
+    static int busy;
+    if(busy++) return; // prevent recursive calling, but remember we missed an event in 'busy'
+
+    if(delayedDragTag) g_source_remove(delayedDragTag); // no more timer interrupts from same event!
+    delayedDragTag = 0;
+
+    do {
 	GetActualPlacement(shellWidget, &wpNew);
 	if(wpNew.x == wpMain.x && wpNew.y == wpMain.y && // not moved
 	   wpNew.width == wpMain.width && wpNew.height == wpMain.height) { // not sized
-	    busy = 0; return; // false alarm
+	    busy = 0; break; // false alarm
 	}
-	ReSize(&wpNew);
+	ReSize(&wpNew); // this can be interrupted by other events
 	if(appData.useStickyWindows) {
 	    if(shellUp[EngOutDlg]) CoDrag(shells[EngOutDlg], &wpEngineOutput);
 	    if(shellUp[HistoryDlg]) CoDrag(shells[HistoryDlg], &wpMoveHistory);
@@ -1780,9 +1781,8 @@ DragProc ()
         }
 	wpMain = wpNew;
 	DrawPosition(True, NULL);
-	if(delayedDragTag) g_source_remove(delayedDragTag);
-	delayedDragTag = 0; // now drag executed, make sure next DelayedDrag will not cancel timer event (which could now be used by other)
-	busy = 0;
+	if(busy > 2) busy = 2; // if multiple events were backlogged, only do one more
+    } while(--busy);
 }
 
 void
