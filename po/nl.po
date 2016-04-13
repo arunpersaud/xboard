@@ -2,15 +2,15 @@
 # Copyright (C) 2016 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
 #
-# "She makes her living brewing coffee for strangers..."
+# "Hip hip hooray for Jan Böhmermann!"
 #
 # Benno Schulenberg <benno@vertaalt.nl>, 2013, 2014, 2015, 2016.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.9.0-pre1\n"
+"Project-Id-Version: GNU xboard 4.9.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-04-03 13:44-0700\n"
-"PO-Revision-Date: 2016-03-18 11:18+0100\n"
+"PO-Revision-Date: 2016-04-13 19:42+0200\n"
 "Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "Language: nl\n"
@@ -298,11 +298,11 @@ msgstr "Getoonde positie is niet de huidige"
 
 #: backend.c:7116
 msgid "rights granted"
-msgstr ""
+msgstr "rechten verleend"
 
 #: backend.c:7116
 msgid "rights revoked"
-msgstr ""
+msgstr "rechten ingetrokken"
 
 #: backend.c:7169
 msgid "Illegal move"
@@ -497,17 +497,17 @@ msgstr "Geen koppelautomaat gegeven"
 #: backend.c:11879
 #, c-format
 msgid "Average solving time %4.2f sec (total time %4.2f sec) "
-msgstr ""
+msgstr "Gemiddelde oplostijd %4.2f sec (totale tijd %4.2f sec) "
 
 #: backend.c:11881
 #, c-format
 msgid "%d avoid-moves played "
-msgstr ""
+msgstr "%d ontwijkzetten gespeeld "
 
 #: backend.c:11883
 #, c-format
 msgid "Solved %d out of %d (%3.1f%%) "
-msgstr ""
+msgstr "Er werden %d van de %d opgelost (%3.1f%%) "
 
 #: backend.c:11886
 #, c-format
@@ -1866,8 +1866,7 @@ msgstr "Voorzet-markeringskleur:"
 
 #: dialogs.c:938
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
-msgstr ""
-"Stukken op Shogi-manier omdraaien  (gekleurde knoppen herstellen standaard)"
+msgstr "Stukken op Shogi-manier omdraaien  (gekleurde knoppen herstellen standaard)"
 
 #: dialogs.c:940
 msgid "Mono Mode"
@@ -2043,71 +2042,68 @@ msgid "New Shuffle Game"
 msgstr "Husselpartij"
 
 #: dialogs.c:1647
-#, fuzzy
 msgid "Clocks (requires restart):"
-msgstr "Logogrootte (0=uit, vereist een herstart):"
+msgstr "Klokken (vereist een herstart):"
 
 #: dialogs.c:1648 dialogs.c:1654 dialogs.c:1660 dialogs.c:1666 dialogs.c:1672
 #: dialogs.c:1678 dialogs.c:1684
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #: dialogs.c:1649 dialogs.c:1655 dialogs.c:1661 dialogs.c:1667 dialogs.c:1673
 #: dialogs.c:1679 dialogs.c:1685
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: dialogs.c:1651 dialogs.c:1657 dialogs.c:1663 dialogs.c:1669 dialogs.c:1675
 #: dialogs.c:1681 dialogs.c:1687
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: dialogs.c:1652 dialogs.c:1658 dialogs.c:1664 dialogs.c:1670 dialogs.c:1676
 #: dialogs.c:1682 dialogs.c:1688
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: dialogs.c:1653
 msgid "Message (above board):"
-msgstr ""
+msgstr "Bericht (boven tafel):"
 
 #: dialogs.c:1659
-#, fuzzy
 msgid "ICS Chat/Console:"
-msgstr "ICS/chat-console"
+msgstr "ICS-chat/Console:"
 
 #: dialogs.c:1665
 msgid "Edit tags / book / engine list:"
-msgstr ""
+msgstr "Labels-/Boeken-/Automatenlijst bewerken:"
 
 #: dialogs.c:1671
-#, fuzzy
 msgid "Edit comments:"
-msgstr "Opmerking bewerken"
+msgstr "Opmerkingen bewerken:"
 
 #: dialogs.c:1677
-#, fuzzy
 msgid "Move history / Engine Output:"
-msgstr "Automaatuitvoer"
+msgstr "Zettengeschiedenis / Automaatuitvoer:"
 
 #: dialogs.c:1683
-#, fuzzy
 msgid "Game list:"
-msgstr "Partijenlijst"
+msgstr "Partijenlijst:"
 
 #: dialogs.c:1689
 msgid ""
 "\n"
 "The * buttons will set the font to the one selected below:"
 msgstr ""
+"\n"
+"De * knoppen stellen het hieronder geselecteerde lettertype in:"
 
 #: dialogs.c:1743
 msgid "This only works in the GTK build"
-msgstr ""
+msgstr "Dit werkt alleen in de GTK-versie"
 
 #: dialogs.c:1744
 msgid "Fonts"
-msgstr ""
+msgstr "Lettertypen"
 
 #: dialogs.c:1764
 msgid "classical"
@@ -2157,9 +2153,7 @@ msgstr "(loos)"
 
 #: dialogs.c:1832
 msgid "Changing time control during a game is not implemented"
-msgstr ""
-"Het wijzigen van de tijdsinstellingen tijdens een partij is niet "
-"geïmplementeerd."
+msgstr "Het wijzigen van de tijdsinstellingen tijdens een partij is niet geïmplementeerd."
 
 #: dialogs.c:1869
 msgid "Error writing to chess program"
@@ -2455,9 +2449,7 @@ msgstr "Kan bestand '%s' niet openen\n"
 
 #: gtk/xboard.c:1003 xaw/xboard.c:1092
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"*** Hercompileer met grotere BOARD_RANKS of BOARD_FILES om deze grootte te "
-"ondersteunen"
+msgstr "*** Hercompileer met grotere BOARD_RANKS of BOARD_FILES om deze grootte te ondersteunen"
 
 #: gtk/xboard.c:1022 xaw/xboard.c:1124
 #, c-format
@@ -2493,7 +2485,6 @@ msgid "Failed to open file"
 msgstr "Kan bestand niet openen"
 
 #: gtk/xoptions.c:1498
-#, fuzzy
 msgid "Browse"
 msgstr "Bladeren"
 
@@ -2530,12 +2521,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2718,9 +2707,8 @@ msgid "Board..."
 msgstr "Bord..."
 
 #: menus.c:654
-#, fuzzy
 msgid "Fonts..."
-msgstr "Geluiden..."
+msgstr "Lettertypen..."
 
 #: menus.c:655
 msgid "Game List Tags..."
