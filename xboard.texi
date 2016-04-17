@@ -738,45 +738,67 @@ creates an extra window that you can use for typing in ICS commands.
 The input box is especially useful if you want to type in something long or do
 some editing on your input, because output from ICS doesn't get mixed
 in with your typing as it would in the main terminal window.
-@item ICS Chat/Console
+@item ICS/Chat Console
 @cindex ICS Chat/Console, Menu Item
 This menu item opens a window in which you can interact with the ICS,
-and conduct upto 5 chats with other ICS users (or channels),
 so you don't have to use the messy xterm from which you launched XBoard
 for that.
 The window has a text entry at the bottom where you can type your
 commands and messages unhindered by the stream of ICS output.
 The latter will be displayed in a large pane above the input field,
 the ICS Console.
-This pane can be vertically split into two, however, where half of it
-is then used to display selected ICS output, belonging to a chat with
-another user, or output from an ICS channel.
-Such output will then not appear in the Console pane.
-
-To use the window, write the name of your chat partner, the channel number,
-or the words 'shouts', 'whispers', 'cshouts' in the upper field
-(ending with <Enter>).
-Everything you type in the lowest field will then automatically be sent to
-the mentioned party, while everything that party sends to you will
-appear in the central text pane, rather than appear in the ICS console.
-The row of buttons allow you to choose between chat;
-to start a new chat, just select an empty button,
-and complete the @samp{Chat partner} field.
-There are several keyboard accelerators to control this window:
-Ctrl-H will hide the private chat, and dedicates the input field to
-giving ICS commands.
-Ctrl-E will erase the current chat and chat partner.
-Ctrl-N will open a new chat with a yet unspecified partner.
-Ctrl-O will open a new chat with the last person from which you received
-a tell in the ICS console pane.
-<Esc> will transfer keyboard focus to the board window,
-allowing you to invoke menu items through accelerator keys;
-typing a printable character there transfers focus back to the input field
-of the chat window.
-<Tab> will switch to another busy chat,
-giving priority to those with content you have not seen yet.
-(The buttons for selecting such chats turn orange.)
 Up and down arrow keys can be used to recall previous input lines.
+Typing an <Esc> character in the input field transfers focus back
+to the board window (so you could operate the menus there
+through accelerator keys).
+Typing a printable character in the board window transfers focus
+back to the input field of the @samp{ICS Chat/Console} window.
+@item Chats
+@cindex Chats
+There is a row of buttons at the top of the @samp{ICS Chat/Console} dialog,
+which can be used to navigate between upto 5 'chats'
+with other ICS users (or channels).
+These will switch the window to 'chat mode',
+where the ICS output pane is vertically split to divert messages from
+a specific user or ICS channel to the lower half.
+Lines typed in the input field will then be interpreted as messages
+to be sent to that user or channel,
+(automatically prefixed with the apporpriate ICS command and user name)
+rather than as commands to the ICS.
+Chats will keep collecting ICS output intended for them even when not displayed,
+and their buttons will turn orange to alert the user there has been activity.
+Typing <Tab> in the input field will switch to another active chat,
+giving priority to those with content you have not seen yet.
+@item New Chat
+@cindex New Chat, Menu Item
+Buttons for chats currently not assigned to a user or channel
+will carry the text @samp{New Chat}, and pressing them will
+switch to chat mode, enabling you to enter the user name or channel number
+you want to use it for.
+Typing Ctrl-N in the input field is a keyboard equivalent.
+@item Chat partner
+@cindex Chat partner, Menu Item
+To (re-)assign a chat, write the name of your chat partner, the channel number,
+or the words 'shouts', 'whispers', 'cshouts' in the @samp{Chat partner} text entry
+(ending with <Enter>!).
+Typing Ctrl-O in the input field at the bottom of the window will
+open a chat with the person that last sent you a 'tell' that was printed
+in the ICS Console output pane.
+The @samp{ICS text menu} can contain a button @samp{Open Chat (name)}
+that can be used to open a chat with as partner the word/number you
+right-clicked in the output pane to pop up this menu. 
+@item End Chat
+@cindex End Chat, Menu Item
+This button, only visible when the chat pane is open,
+will clear the @samp{Chat partner} field, so that the chat can be
+assigned to a new user or channel.
+Typing Ctrl-E in the input field is a keyboard equivalent.
+@item Hide
+@cindex Hide, Menu Item
+This button, only visible when the chat pane is open,
+will close the latter, so you can use the input field
+to give commands to the ICS again.
+Typing Ctrl-H in the input field is a keyboard equivalent.
 @item ICS text menu
 @cindex ICS text menu, Menu Item
 Brings up a menu that is user-configurable through the @code{icsMenu} option.
