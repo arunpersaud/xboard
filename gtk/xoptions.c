@@ -503,7 +503,7 @@ CreateMenuPopup (Option *opt, int n, int def)
 	  } else
 	    entry = gtk_menu_item_new_with_label(msg);
 	  gtk_signal_connect_object (GTK_OBJECT (entry), "activate", GTK_SIGNAL_FUNC(MenuSelect), (gpointer) (intptr_t) ((n<<16)+i));
-	  g_signal_connect(entry, "button-release-event", G_CALLBACK (HelpEvent), (gpointer) mb[i].string );
+	  g_signal_connect(entry, "button-release-event", G_CALLBACK (HelpEvent), (gpointer) (mb[i].proc ? mb[i].string : "Recently Used Engines"));
 	  if(mb[i].accel) {
 	    guint accelerator_key;
 	    GdkModifierType accelerator_mods;
