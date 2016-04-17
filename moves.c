@@ -2047,7 +2047,7 @@ DisambiguateCallback (Board board, int flags, ChessMove kind, int rf, int ff, in
     // [HGM] wild: for wild-card pieces rt and rf are dummies
     if(piece == WhiteFalcon || piece == BlackFalcon ||
        piece == WhiteCobra  || piece == BlackCobra)
-        wildCard = TRUE;
+        wildCard = !pieceDefs; // no wildcards when engine defined pieces
 
     if ((cl->pieceIn == EmptySquare || cl->pieceIn == board[rf][ff]
          || PieceToChar(board[rf][ff]) == '~'
@@ -2131,7 +2131,7 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
 	    return;
 	  }
 	}
-    } else if(pieceDefs && closure->count > 1) { // [HGM] gen: move is ambiguous under engine-defined rules
+    } else if(pieceDefs && closure->count > 1 && closure->rtIn >=0) { // [HGM] gen: move is ambiguous under engine-defined rules (and not one-click)
 	DisambiguateClosure spare = *closure;
 	pieceDefs = FALSE; spare.count = 0;     // See if the (erroneous) built-in rules would resolve that
         GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) &spare, closure->pieceIn);
