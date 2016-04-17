@@ -351,6 +351,15 @@ LoadSVG (char *dir, int color, int piece, int retry)
 
     if(!svg && *dir) {
       svg = rsvg_handle_new_from_file(buf, &svgerror);
+      if(!svg) { // failed! If -pid name starts with "sub_" we try to load the piece from the parent directory
+	char *p = buf, *q;
+	safeStrCpy(buf, dir, MSG_SIZ);
+	while((q = strchr(p, '/'))) p = q + 1;
+	if(!strncmp(p, "sub_", 4)) {
+	  if(p == buf) safeStrCpy(buf, ".", MSG_SIZ); else p[-1] = NULLCHAR; // strip last directory off path
+	  return LoadSVG(buf, color, piece, retry);
+	}
+      }
       if(!svg && *appData.inscriptions) { // if there is no piece-specific SVG, but we make inscriptions, try general background
 	snprintf(buf, MSG_SIZ, "%s/%sTile.svg", dir, color ? "Black" : "White");
 	svg = rsvg_handle_new_from_file(buf, &svgerror);
