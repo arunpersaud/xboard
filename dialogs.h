@@ -211,6 +211,8 @@ void WidgetEcho P((Option *opt, int n));
 int  ErrorOK P((int n));
 void ApplyFont P((Option *opt, char *font));
 void LockBoardSize P((int after));
+void Preview P((int n, char *s));
+void DrawPosition P((int fullRedraw, Board b));
 
 
 // in ngamelist.c

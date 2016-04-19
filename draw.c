@@ -220,7 +220,7 @@ InitDrawingSizes (BoardSize boardSize, int flags)
 	squareSize = ((squareSize + lineGap) * oldNrOfFiles + 0.5*BOARD_WIDTH) / BOARD_WIDTH; // keep total width fixed
 	if(appData.overrideLineGap < 0) lineGap = squareSize < 37 ? 1 : squareSize < 59 ? 2 : squareSize < 116 ? 3 : 4;
         squareSize -= lineGap;
-	CreatePNGPieces();
+	CreatePNGPieces(appData.pieceDirectory);
         CreateGrid();
     }
     oldNrOfFiles = BOARD_WIDTH;
@@ -389,7 +389,7 @@ LoadSVG (char *dir, int color, int piece, int retry)
 }
 
 static void
-ScaleOnePiece (int color, int piece)
+ScaleOnePiece (int color, int piece, char *pieceDir)
 {
   float w, h;
   char buf[MSG_SIZ];
@@ -401,11 +401,11 @@ ScaleOnePiece (int color, int piece)
   svgPieces[color][piece] = LoadSVG("", color, piece, 0); // this fills pngPieceImages if we had cached svg with bitmap of wanted size
 
   if(!pngPieceImages[color][piece]) { // we don't have cached bitmap (implying we did not have cached svg)
-    if(*appData.pieceDirectory) { // user specified piece directory
-      snprintf(buf, MSG_SIZ, "%s/%s%s.png", appData.pieceDirectory, color ? "Black" : "White", pngPieceNames[piece]);
+    if(*pieceDir) { // user specified piece directory
+      snprintf(buf, MSG_SIZ, "%s/%s%s.png", pieceDir, color ? "Black" : "White", pngPieceNames[piece]);
       img = cairo_image_surface_create_from_png (buf); // try if there are png pieces there
       if(cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) { // there were not
-	svgPieces[color][piece] = LoadSVG(appData.pieceDirectory, color, piece, 0); // so try if he has svg there
+	svgPieces[color][piece] = LoadSVG(pieceDir, color, piece, 0); // so try if he has svg there
       } else pngPieceImages[color][piece] = img;
     }
   }
@@ -438,7 +438,7 @@ ScaleOnePiece (int color, int piece)
   cairo_paint (cr);
   cairo_destroy (cr);
 
-  if(!appData.trueColors || !*appData.pieceDirectory) { // operate on bitmap to color it (king-size hack...)
+  if(!appData.trueColors || !*pieceDir) { // operate on bitmap to color it (king-size hack...)
     int stride = cairo_image_surface_get_stride(cs)/4;
     int *buf = (int *) cairo_image_surface_get_data(cs);
     int i, j, p;
@@ -464,13 +464,12 @@ ScaleOnePiece (int color, int piece)
 }
 
 void
-CreatePNGPieces ()
+CreatePNGPieces (char *pieceDir)
 {
   int p;
-
   for(p=0; pngPieceNames[p]; p++) {
-    ScaleOnePiece(0, p);
-    ScaleOnePiece(1, p);
+    ScaleOnePiece(0, p, pieceDir);
+    ScaleOnePiece(1, p, pieceDir);
   }
   SelectPieces(gameInfo.variant);
 }
@@ -478,23 +477,51 @@ CreatePNGPieces ()
 void
 CreateAnyPieces (int p)
 {   // [HGM] taken out of main
-    if(p) CreatePNGPieces();
+    if(p) CreatePNGPieces(appData.pieceDirectory);
     CreatePNGBoard(appData.liteBackTextureFile, 1);
     CreatePNGBoard(appData.darkBackTextureFile, 0);
 }
 
-void
-InitDrawingParams (int reloadPieces)
+static void
+ClearPieces ()
 {
     int i, p;
-    if(reloadPieces)
     for(i=0; i<2; i++) for(p=0; p<BlackPawn; p++) {
 	if(pngPieceImages[i][p]) cairo_surface_destroy(pngPieceImages[i][p]);
 	pngPieceImages[i][p] = NULL;
 	if(svgPieces[i][p]) rsvg_handle_close(svgPieces[i][p], NULL);
 	svgPieces[i][p] = NULL;
     }
+}
+
+void
+InitDrawingParams (int reloadPieces)
+{
+    if(reloadPieces) ClearPieces();
     CreateAnyPieces(1);
+}
+
+void
+Preview (int n, char *s)
+{
+    static Boolean changed[4];
+    changed[n] = TRUE;
+    switch(n) {
+      case 0: // restore true setting
+	if(changed[3]) ClearPieces();
+	CreateAnyPieces(changed[3]); // recomputes textures and (optionally) pieces
+	for(n=0; n<4; n++) changed[n] = FALSE;
+	break;
+      case 1: 
+      case 2:
+	CreatePNGBoard(s, n-1);
+	break;
+      case 3:
+	ClearPieces();
+	CreatePNGPieces(s);
+	break;
+    }
+    DrawPosition(TRUE, NULL);
 }
 
 // [HGM] seekgraph: some low-level drawing routines (by JC, mostly)

@@ -845,6 +845,8 @@ MemoEvent(GtkWidget *widget, GdkEvent *event, gpointer gdata)
 #endif
 }
 
+int messedUp;
+
 int
 PopDown (DialogClass n)
 {
@@ -874,6 +876,7 @@ PopDown (DialogClass n)
     RaiseWindow(parents[n]); // automatic in GTK?
     if(parents[n] == BoardWindow) XtSetKeyboardFocus(shellWidget, formWidget); // also automatic???
 #endif
+    if(messedUp) Preview(0, NULL); messedUp = FALSE; // Board Options dialog can need this to cancel preview
     return 1;
 }
 
@@ -1101,13 +1104,25 @@ void GenericCallback(GtkWidget *widget, gpointer gdata)
     shells[dlg] = oldSh; // in case of multiple instances, restore previous (as this one could be popped down now)
 }
 
+int
+BrowseCallback (GtkFileChooser *chooser, gpointer data)
+{
+    char *name = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
+    Option *opt = currentOption + (int)(intptr_t) data;
+    int n = (int) (intptr_t) opt->choice;
+    Preview(n, name);
+    messedUp = TRUE;
+    if(name) g_free(name);
+    return FALSE;
+}
+
 void BrowseGTK(GtkWidget *widget, gpointer gdata)
 {
     GtkWidget *entry;
     GtkWidget *dialog;
     GtkFileFilter *gtkfilter;
     GtkFileFilter *gtkfilter_all;
-    int opt_i = (intptr_t) gdata;
+    int n, opt_i = (intptr_t) gdata;
     GtkFileChooserAction fc_action;
     char buf[MSG_SIZ];
 
@@ -1162,6 +1177,11 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     else
       gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter_all);
 
+    messedUp = FALSE;
+    n = (int)(intptr_t) currentOption[opt_i].choice;
+    if (n && !currentCps)
+      g_signal_connect (GTK_DIALOG (dialog), "selection-changed", G_CALLBACK(BrowseCallback), (gpointer)(intptr_t) opt_i);
+
     if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
       {
         char *filename;
@@ -1171,7 +1191,10 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
 	StartDir(filter, filename); // back to original, and remember this one
         g_free (filename);
       }
-    else StartDir(filter, ""); // change back to original directory
+    else {
+	StartDir(filter, ""); // change back to original directory
+	if(n && messedUp) Preview(n, old); // undo any board preview of the parameter browsed for
+    }
     gtk_widget_destroy (dialog);
     dialog = NULL;
 }

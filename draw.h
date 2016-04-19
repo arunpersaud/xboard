@@ -63,7 +63,7 @@ extern int lineGap, squareSize;
 // defined in draw.c
 void CreateGCs P((int redo));
 void CreateAnyPieces P((int p));
-void CreatePNGPieces P((void));
+void CreatePNGPieces P((char *pieceDir));
 void CreateGrid P((void));
 void DrawSegment P((int x, int y, int *lastX, int *lastY, int p));
 void DrawRectangle P((int left, int top, int right, int bottom, int side, int style));

@@ -941,10 +941,10 @@ static Option boardOptions[] = {
 { 0, 0, 200, NULL, (void*) &appData.logoSize, "", NULL, Spin, N_("Logo Size (0=off, requires restart):") },
 { 0,-1, 5, NULL, (void*) &appData.overrideLineGap, "", NULL, Spin, N_("Line Gap (-1 = default for board size):") },
 { 0, 0, 0, NULL, (void*) &appData.useBitmaps, "", NULL, CheckBox, N_("Use Board Textures") },
-{ 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, ".png", NULL, FileName, N_("Light-Squares Texture File:") },
-{ 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, ".png", NULL, FileName, N_("Dark-Squares Texture File:") },
+{ 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, ".png", (char**)(intptr_t) 1, FileName, N_("Dark-Squares Texture File:") },
+{ 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, ".png", (char**)(intptr_t) 2, FileName, N_("Light-Squares Texture File:") },
 { 0, 0, 0, NULL, (void*) &appData.trueColors, "", NULL, CheckBox, N_("Use external piece bitmaps with their own colors") },
-{ 0, 0, 0, NULL, (void*) &appData.pieceDirectory, "", NULL, PathName, N_("Directory with Pieces Images:") },
+{ 0, 0, 0, NULL, (void*) &appData.pieceDirectory, "",  (char**)(intptr_t) 3, PathName, N_("Directory with Pieces Images:") },
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 
