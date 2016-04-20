@@ -577,6 +577,7 @@ typedef struct {
     Boolean localLineEditing; /* WinBoard only */
     Boolean zippyTalk;
     Boolean zippyPlay;
+    int jewelled;
     int flashCount; /* Number of times to flash (xboard only) */
     int flashRate; /* Flashes per second (xboard only)  */
     int msLoginDelay;  /* Delay per character (in msec) while sending

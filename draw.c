@@ -793,6 +793,7 @@ pngDrawPiece (cairo_surface_t *dest, ChessSquare piece, int square_color, int x,
 	kind = 1;
 	piece -= BlackPawn;
     }
+    if(piece == WhiteKing && kind == appData.jewelled) piece = WhiteZebra;
     if(appData.upsideDown && flipView) kind = 1 - kind; // swap white and black pieces
     BlankSquare(dest, x, y, square_color, piece, 1); // erase previous contents with background
     cr = cairo_create (dest);

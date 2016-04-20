@@ -224,6 +224,7 @@ ArgDescriptor argDescriptors[] = {
   { "pieceImageDirectory", ArgFilename, (void *) &appData.pieceDirectory, TRUE, (ArgIniType) "" },
   { "pid", ArgFilename, (void *) &appData.pieceDirectory, FALSE, INVALID },
   { "trueColors", ArgBoolean, (void *) &appData.trueColors, TRUE, (ArgIniType) FALSE },
+  { "jewelled", ArgInt, (void *) &appData.jewelled, FALSE, (ArgIniType) -1 },
   { "soundDirectory", ArgFilename, (void *) &appData.soundDirectory, XBOARD, (ArgIniType) "" },
   { "msLoginDelay", ArgInt, (void *) &appData.msLoginDelay, XBOARD, (ArgIniType) MS_LOGIN_DELAY },
   { "pasteSelection", ArgBoolean, (void *) &appData.pasteSelection, XBOARD, (ArgIniType) FALSE },
