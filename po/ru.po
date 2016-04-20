@@ -1,22 +1,23 @@
 # XBoard -- a graphical chessboard for X
-# Copyright (C) 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
+# Copyright (C) 2015 Free Software Foundation, Inc.
 # Enhancements Copyright (C) 1992-98 Free Software Foundation, Inc.
 # This file is distributed under the same license as the XBoard package.
 # Перевод: А.В.Сердюков (2003), Hr.Burunduk (2011), 2010
+# Evgeniy Yakushev <yen81@mail.ru>, 2015, 2016.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard master-20110507\n"
+"Project-Id-Version: GNU xboard 4.9.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-04-03 13:44-0700\n"
-"PO-Revision-Date: 2016-03-05 12:42-0800\n"
+"PO-Revision-Date: 2016-04-20 22:33+0300\n"
 "Last-Translator: Evgeniy Yakushev <yen81@mail.ru>\n"
 "Language-Team: Russian <gnu@d07.ru>\n"
-"Language: ru\n"
+"Language: Russian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "X-Generator: Gtranslator 2.91.6\n"
 
 #: args.h:851
@@ -249,9 +250,7 @@ msgstr ""
 
 #: backend.c:4390 backend.c:10628
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
-"Слишком длинная партия: увеличьте значение MAX_MOVES и перекомпилируйте "
-"программу"
+msgstr "Слишком длинная партия: увеличьте значение MAX_MOVES и перекомпилируйте программу"
 
 #: backend.c:4509
 msgid "Error gathering move list: extra board"
@@ -273,8 +272,7 @@ msgstr "Вы не можете сделать этого, пока играет�
 
 #: backend.c:6359
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
-msgstr ""
-"Скомпилируйте программу заново для поддержки BOARD_RANKS или BOARD_FILES!"
+msgstr "Скомпилируйте программу заново для поддержки BOARD_RANKS или BOARD_FILES!"
 
 #: backend.c:6851
 msgid "You are playing Black"
@@ -300,11 +298,11 @@ msgstr "Показанная позиция не соответствует по
 
 #: backend.c:7116
 msgid "rights granted"
-msgstr ""
+msgstr "права предоставлены"
 
 #: backend.c:7116
 msgid "rights revoked"
-msgstr ""
+msgstr "права аннулированы"
 
 #: backend.c:7169
 msgid "Illegal move"
@@ -498,7 +496,7 @@ msgstr "Не указана программа подбора сопернико
 #: backend.c:11879
 #, c-format
 msgid "Average solving time %4.2f sec (total time %4.2f sec) "
-msgstr ""
+msgstr "Среднее время решения %4.2f сек (общее время %4.2f сек) "
 
 #: backend.c:11881
 #, c-format
@@ -508,7 +506,7 @@ msgstr ""
 #: backend.c:11883
 #, c-format
 msgid "Solved %d out of %d (%3.1f%%) "
-msgstr ""
+msgstr "Решено %d из %d (%3.1f%%) "
 
 #: backend.c:11886
 #, c-format
@@ -636,8 +634,7 @@ msgid ""
 "Use Reload CMail Message and make your move again."
 msgstr ""
 "Список сообщений cmail не загружен.\n"
-"Воспользуйтесь командой \"Перезагрузить сообшения cmail\" и сделайте ход "
-"снова"
+"Воспользуйтесь командой \"Перезагрузить сообшения cmail\" и сделайте ход снова"
 
 #: backend.c:14281
 msgid "No unfinished games"
@@ -1536,7 +1533,7 @@ msgstr ""
 
 #: dialogs.c:728
 msgid "Same material"
-msgstr ""
+msgstr "Такой же материал"
 
 #: dialogs.c:728
 msgid "Material range (top board half optional)"
@@ -1916,7 +1913,6 @@ msgid "add next move"
 msgstr "добавить следующий ход"
 
 #: dialogs.c:1230
-#, fuzzy
 msgid "commit changes"
 msgstr "сохранить изменения"
 
@@ -1929,9 +1925,8 @@ msgid "Tags"
 msgstr "Описание"
 
 #: dialogs.c:1285
-#, fuzzy
 msgid "Registered Engines"
-msgstr "Заменить движок"
+msgstr "Зарегистрированные движки"
 
 #: dialogs.c:1401
 msgid "ICS input box"
@@ -2034,36 +2029,34 @@ msgid "New Shuffle Game"
 msgstr "Новая в смешанные шахматы..."
 
 #: dialogs.c:1647
-#, fuzzy
 msgid "Clocks (requires restart):"
-msgstr "Размер логотипа (0-отключить, требует перезапуска)"
+msgstr "Часы (требуется перезапуск):"
 
 #: dialogs.c:1648 dialogs.c:1654 dialogs.c:1660 dialogs.c:1666 dialogs.c:1672
 #: dialogs.c:1678 dialogs.c:1684
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #: dialogs.c:1649 dialogs.c:1655 dialogs.c:1661 dialogs.c:1667 dialogs.c:1673
 #: dialogs.c:1679 dialogs.c:1685
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: dialogs.c:1651 dialogs.c:1657 dialogs.c:1663 dialogs.c:1669 dialogs.c:1675
 #: dialogs.c:1681 dialogs.c:1687
 msgid "I"
-msgstr ""
+msgstr "|"
 
 #: dialogs.c:1652 dialogs.c:1658 dialogs.c:1664 dialogs.c:1670 dialogs.c:1676
 #: dialogs.c:1682 dialogs.c:1688
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: dialogs.c:1653
 msgid "Message (above board):"
-msgstr ""
+msgstr "Сообщение (над доской):"
 
 #: dialogs.c:1659
-#, fuzzy
 msgid "ICS Chat/Console:"
 msgstr "Консоль чата ICS"
 
@@ -2072,33 +2065,32 @@ msgid "Edit tags / book / engine list:"
 msgstr ""
 
 #: dialogs.c:1671
-#, fuzzy
 msgid "Edit comments:"
-msgstr "Правка комментария"
+msgstr "Правка комментариев:"
 
 #: dialogs.c:1677
-#, fuzzy
 msgid "Move history / Engine Output:"
-msgstr "Вывод движка"
+msgstr "История ходов / Вывод движка:"
 
 #: dialogs.c:1683
-#, fuzzy
 msgid "Game list:"
-msgstr "Список партий"
+msgstr "Список партий:"
 
 #: dialogs.c:1689
 msgid ""
 "\n"
 "The * buttons will set the font to the one selected below:"
 msgstr ""
+"\n"
+"Кнопками * устанавливается шрифт выделенного ниже:"
 
 #: dialogs.c:1743
 msgid "This only works in the GTK build"
-msgstr ""
+msgstr "Работает только в сборке GTK"
 
 #: dialogs.c:1744
 msgid "Fonts"
-msgstr ""
+msgstr "Шрифты"
 
 #: dialogs.c:1764
 msgid "classical"
@@ -2114,7 +2106,7 @@ msgstr "зафиксированный максимум"
 
 #: dialogs.c:1767
 msgid "Divide entered times by 60"
-msgstr ""
+msgstr "Разделить введенное время на 60"
 
 #: dialogs.c:1768
 msgid "Moves per session:"
@@ -2312,44 +2304,36 @@ msgid "Black"
 msgstr "Черные"
 
 #: dialogs.c:2798
-#, fuzzy
 msgid "_File"
-msgstr "Файл"
+msgstr "_Файл"
 
 #: dialogs.c:2799
-#, fuzzy
 msgid "_Edit"
-msgstr "Правка"
+msgstr "_Правка"
 
 #: dialogs.c:2800
-#, fuzzy
 msgid "_View"
-msgstr "Вид"
+msgstr "_Вид"
 
 #: dialogs.c:2801
-#, fuzzy
 msgid "_Mode"
-msgstr "Режим"
+msgstr "_Режим"
 
 #: dialogs.c:2802
-#, fuzzy
 msgid "_Action"
-msgstr "Игра"
+msgstr "_Игра"
 
 #: dialogs.c:2803
-#, fuzzy
 msgid "E_ngine"
 msgstr "Движок"
 
 #: dialogs.c:2804
-#, fuzzy
 msgid "_Options"
-msgstr "Настройки"
+msgstr "_Настройки"
 
 #: dialogs.c:2805
-#, fuzzy
 msgid "_Help"
-msgstr "Справка"
+msgstr "_Справка"
 
 #: dialogs.c:2815
 msgid "<<"
@@ -2453,9 +2437,7 @@ msgstr "Не удалось открыть файл '%s'\n"
 
 #: gtk/xboard.c:1003 xaw/xboard.c:1092
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Для поддержки этого размера перекомпилируйте программу с бОльшими значениями "
-"BOARD_RANKS или BOARD_FILES"
+msgstr "Для поддержки этого размера перекомпилируйте программу с бОльшими значениями BOARD_RANKS или BOARD_FILES"
 
 #: gtk/xboard.c:1022 xaw/xboard.c:1124
 #, c-format
@@ -2491,9 +2473,8 @@ msgid "Failed to open file"
 msgstr "Не удалось открыть файл"
 
 #: gtk/xoptions.c:1498
-#, fuzzy
 msgid "Browse"
-msgstr "просмотреть"
+msgstr "Просмотр"
 
 #: gtk/xoptions.c:1772 xaw/xoptions.c:1337
 msgid "OK"
@@ -2521,6 +2502,21 @@ msgstr ""
 
 #: menus.c:360
 #, fuzzy, c-format
+#| msgid ""
+#| "%s%s\n"
+#| "\n"
+#| "Copyright 1991 Digital Equipment Corporation\n"
+#| "Enhancements Copyright 1992-2014 Free Software Foundation\n"
+#| "Enhancements Copyright 2005 Alessandro Scotti\n"
+#| "\n"
+#| "%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
+#| "The GTK build of this version is experimental and unstable\n"
+#| "\n"
+#| "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
+#| "Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
+#| "\n"
+#| "Report bugs via email at: <bug-xboard@gnu.org>\n"
+#| "\n"
 msgid ""
 "%s%s\n"
 "\n"
@@ -2528,12 +2524,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2544,16 +2538,13 @@ msgstr ""
 "Изменения в авторских правах 1992-2014 Free Software Foundation\n"
 "Изменения в авторских правах 2005 Alessandro Scotti\n"
 "\n"
-"%s является свободным ПО и не предоставляет НИКАКИХ ГАРАНТИЙ;прочитайте файл "
-"COPYING чтобы получить больше информации.\n"
+"%s является свободным ПО и не предоставляет НИКАКИХ ГАРАНТИЙ;прочитайте файл COPYING чтобы получить больше информации.\n"
 "Сборка этой версии с GTK является экспериментальной и нестабильной\n"
 "\n"
 "Посетите сайт XBoard по адресу: http://www.gnu.org/software/xboard/\n"
-"Проверьте новые возможности по адресу: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Проверьте новые возможности по адресу: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
-"Адрес электронной почты для отправки отчетов об ошибках: <bug-xboard@gnu."
-"org>\n"
+"Адрес электронной почты для отправки отчетов об ошибках: <bug-xboard@gnu.org>\n"
 "\n"
 
 #: menus.c:371 menus.c:765
@@ -2717,9 +2708,8 @@ msgid "Board..."
 msgstr "Доска..."
 
 #: menus.c:654
-#, fuzzy
 msgid "Fonts..."
-msgstr "Звуки..."
+msgstr "Шрифты..."
 
 #: menus.c:655
 msgid "Game List Tags..."
@@ -2838,9 +2828,8 @@ msgid "Engine #2 Settings..."
 msgstr "Настройки движка 2..."
 
 #: menus.c:704
-#, fuzzy
 msgid "Common Settings..."
-msgstr "Общие настройки движков"
+msgstr "Общие настройки..."
 
 #: menus.c:706
 msgid "Hint"
@@ -3104,8 +3093,7 @@ msgstr "%s: не могу обработать цвет фона в '%s'\n"
 #: usystem.c:260
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
-msgstr ""
-"%s: не могу обработать названия цветов; отключение использования цветов\n"
+msgstr "%s: не могу обработать названия цветов; отключение использования цветов\n"
 
 #: usystem.c:362
 #, c-format
