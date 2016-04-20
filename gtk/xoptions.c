@@ -1859,7 +1859,7 @@ if(appData.debugMode) printf("n=%d, h=%d, w=%d\n",n,height,width);
 	gtk_window_resize(GTK_WINDOW(dialog), wp[dlgNr]->width, wp[dlgNr]->height);
     }
 
-    for(i=0; option[i].type != EndMark; i++) if(option[i].type == Graph || dlgNr == BoardWindow && option[i].handle) {
+    for(i=0; option[i].type != EndMark; i++) if(option[i].type == Graph || dlgNr == BoardWindow && option[i].handle && !appData.fixedSize) {
 	gtk_widget_set_size_request(option[i].handle, -1, -1); // remove size requests after realization, so user can shrink
 	if(option[i].type == Label) gtk_label_set_ellipsize(option[i].handle, PANGO_ELLIPSIZE_END);
     }

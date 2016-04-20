@@ -666,7 +666,7 @@ ResizeBoardWindow (int w, int h, int inhibit)
 //    h += marginH + a.height + 1;
     gtk_window_resize(GTK_WINDOW(shellWidget), w, 10);
     DoEvents();
-    gtk_widget_set_size_request(optList[W_BOARD].handle, 100, 100); // liberate board again
+    if(!appData.fixedSize) gtk_widget_set_size_request(optList[W_BOARD].handle, 100, 100); // liberate board again
 }
 
 int
@@ -1152,6 +1152,7 @@ main (int argc, char **argv)
     menuBarWidget    = optList[W_MENU].handle;
     dropMenu         = optList[W_DROP].handle;
     titleWidget = optList[optList[W_TITLE].type != Skip ? W_TITLE : W_SMALL].handle;
+    DelayedDrag(); // fake configure event (i3wm tiling window manager fails to send one after initial resize)
 #ifdef TODO_GTK
     formWidget  = XtParent(boardWidget);
     XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
@@ -1674,9 +1675,7 @@ ReSize (WindowPlacement *wp)
 {
 	GtkAllocation a;
 	int sqx, sqy, i, w, h, lg = lineGap;
-	static int first = 1;
-//	DisplayBothClocks();
-	if(wp->width == wpMain.width && wp->height == wpMain.height && !first) return; // not sized
+	if(wp->width == wpMain.width && wp->height == wpMain.height) return; // not sized
 	gtk_widget_get_allocation(optList[W_DROP+1].handle, &a); // table that should contain everything
 	w = a.width; h = a.height;
 	gtk_widget_get_allocation(shellWidget, &a);
@@ -1702,7 +1701,7 @@ ReSize (WindowPlacement *wp)
 	    if(sqx == oldSqx + 1 && lg == lineGap + 1) sqx = oldSqx, squareSize = 0; // prevent oscillations, force resize by kludge
 	}
 	for(h=0; sizeDefaults[h+1].name && sizeDefaults[h].squareSize*8 > sqx*BOARD_WIDTH; h++) {}
-	if(initialSquareSize != sizeDefaults[h].squareSize) { // boardSize changed
+	if(initialSquareSize != sizeDefaults[h].squareSize && !appData.fixedSize) { // boardSize changed
 	    initialSquareSize = sizeDefaults[h].squareSize; // used for saving font
 	    ChangeFont(1, &appData.clockFont, CLOCK_FONT, initialSquareSize, CLOCK_FONT_NAME, 2*(sizeDefaults[h].clockFontPxlSize+1)/3);
 	    ChangeFont(1, &appData.font, MESSAGE_FONT, initialSquareSize, DEFAULT_FONT_NAME, sizeDefaults[h].coordFontPxlSize);
@@ -1736,7 +1735,7 @@ ReSize (WindowPlacement *wp)
 	    }
 	}
 #endif
-	if(sqx != squareSize && !first) {
+	if(sqx != squareSize && !appData.fixedSize) {
 	    squareSize = sqx; // adopt new square size
 	    CreatePNGPieces(appData.pieceDirectory); // make newly scaled pieces
 	    InitDrawingSizes(0, 0); // creates grid etc.
@@ -1745,7 +1744,6 @@ ReSize (WindowPlacement *wp)
 	h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
 	if(optList[W_BOARD].max   > w) optList[W_BOARD].max = w;
 	if(optList[W_BOARD].value > h) optList[W_BOARD].value = h;
-	first = appData.fixedSize;
 	if(twoBoards && shellUp[DummyDlg]) {
 	    SlavePopUp(); dualOptions[3].max = 0; DoEvents(); // calls SlaveResize, kludge to force assigning new canvas
 	    partnerUp = !partnerUp; flipView = !flipView;
