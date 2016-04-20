@@ -1179,8 +1179,10 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
 
     messedUp = FALSE;
     n = (int)(intptr_t) currentOption[opt_i].choice;
-    if (n && !currentCps)
+    if (n && !currentCps) {
       g_signal_connect (GTK_DIALOG (dialog), "selection-changed", G_CALLBACK(BrowseCallback), (gpointer)(intptr_t) opt_i);
+      gtk_window_set_title(GTK_WINDOW(dialog), _("*** Preview of selection in board window ***"));
+    }
 
     if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
       {
