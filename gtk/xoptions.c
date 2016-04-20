@@ -1110,9 +1110,11 @@ BrowseCallback (GtkFileChooser *chooser, gpointer data)
     char *name = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
     Option *opt = currentOption + (int)(intptr_t) data;
     int n = (int) (intptr_t) opt->choice;
-    Preview(n, name);
-    messedUp = TRUE;
-    if(name) g_free(name);
+    if(name) {
+	Preview(n, name);
+	messedUp = TRUE;
+	g_free(name);
+    }
     return FALSE;
 }
 
