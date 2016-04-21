@@ -269,7 +269,7 @@ ExposeRedraw (Option *graph, int x, int y, int w, int h)
     cairo_destroy(cr);
 }
 
-static int modV[2], modH[2];
+static int modV[2], modH[2], transparency[2];
 
 static void
 CreatePNGBoard (char *s, int kind)
@@ -288,6 +288,7 @@ CreatePNGBoard (char *s, int kind)
 	    useTexture |= kind + 1; pngOriginalBoardBitmap[kind] = img;
 	    w = textureW[kind] = cairo_image_surface_get_width (img);
 	    h = textureH[kind] = cairo_image_surface_get_height (img);
+	    transparency[kind] = cairo_image_surface_get_format (img) == CAIRO_FORMAT_ARGB32;
 	    n[kind] = 1.; modV[kind] = modH[kind] = -1;
 	    while((q = strchr(p+1, '-'))) p = q; // find last '-'
 	    if(strlen(p) < 11 && sscanf(p, "-%dx%d.pn%c", &f, &r, &c) == 3 && c == 'g') {
@@ -754,11 +755,12 @@ DrawLogo (Option *opt, void *logo)
 static void
 BlankSquare (cairo_surface_t *dest, int x, int y, int color, ChessSquare piece, int fac)
 {   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
-    int x0, y0;
+    int x0, y0, texture = (useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color);
     cairo_t *cr;
 
     cr = cairo_create (dest);
 
+    if(!texture || transparency[color]) // draw color also (as background) when texture could be transparent
     { // evenly colored squares
 	char *col = NULL;
 	switch (color) {
@@ -772,7 +774,7 @@ BlankSquare (cairo_surface_t *dest, int x, int y, int color, ChessSquare piece, 
 	cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	cairo_fill (cr);
     }
-    if ((useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
+    if (texture) {
 	    cairo_set_source_surface (cr, pngBoardBitmap[color], x*fac - x0, y*fac - y0);
 	    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	    cairo_rectangle (cr, x*fac, y*fac, squareSize, squareSize);
