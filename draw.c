@@ -903,6 +903,7 @@ InscribeKanji (cairo_surface_t *canvas, ChessSquare piece, int x, int y)
     p = appData.inscriptions;
     n = piece;
     while(piece > WhitePawn) {
+      if(*p == '/') p++, piece = n - WhitePBishop; // secondary series
       if(*p++ == NULLCHAR) {
         if(n != WhiteKing) return;
         p = q;
