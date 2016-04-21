@@ -759,13 +759,7 @@ BlankSquare (cairo_surface_t *dest, int x, int y, int color, ChessSquare piece, 
 
     cr = cairo_create (dest);
 
-    if ((useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
-	    cairo_set_source_surface (cr, pngBoardBitmap[color], x*fac - x0, y*fac - y0);
-	    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-	    cairo_rectangle (cr, x*fac, y*fac, squareSize, squareSize);
-	    cairo_fill (cr);
-	    cairo_destroy (cr);
-    } else { // evenly colored squares
+    { // evenly colored squares
 	char *col = NULL;
 	switch (color) {
 	  case 0: col = appData.darkSquareColor; break;
@@ -777,8 +771,14 @@ BlankSquare (cairo_surface_t *dest, int x, int y, int color, ChessSquare piece, 
 	cairo_rectangle (cr, fac*x, fac*y, squareSize, squareSize);
 	cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 	cairo_fill (cr);
-	cairo_destroy (cr);
     }
+    if ((useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
+	    cairo_set_source_surface (cr, pngBoardBitmap[color], x*fac - x0, y*fac - y0);
+	    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+	    cairo_rectangle (cr, x*fac, y*fac, squareSize, squareSize);
+	    cairo_fill (cr);
+    }
+    cairo_destroy (cr);
 }
 
 static void
