@@ -1278,11 +1278,11 @@ EditTagsPopUp (char *tags, char **dest)
 }
 
 void
-EditEnginePopUp (char *tags, char **dest)
+EditAnyPopUp (char *tags, char **dest, char *title)
 {   // wrapper to preserve old name used in back-end
     TagsPopDown();
     resPtr = dest; 
-    NewTagsPopup(tags, NULL, _("Registered Engines"));
+    NewTagsPopup(tags, NULL, title);
 }
 
 void

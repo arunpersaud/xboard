@@ -186,7 +186,7 @@ void EnableButtonBar P((int state));
 char *ModeToWidgetName P((GameMode mode));
 void CreateAnimVars P((void));
 void CopySomething P((char *s));
-void EditEnginePopUp P((char *tags, char **dest));
+void EditAnyPopUp P((char *tags, char **dest, char *title));
 
 
 

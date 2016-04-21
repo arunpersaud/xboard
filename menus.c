@@ -387,7 +387,13 @@ DebugProc ()
 void
 EditEngineProc ()
 {
-    EditEnginePopUp(firstChessProgramNames, &firstChessProgramNames);
+    EditAnyPopUp(firstChessProgramNames, &firstChessProgramNames, _("Registered Engines"));
+}
+
+void
+EditThemesProc ()
+{
+    EditAnyPopUp(appData.themeNames, &appData.themeNames, _("Predefined Themes"));
 }
 
 void
@@ -650,6 +656,7 @@ MenuItem viewMenu[] = {
   {N_("ICS Input Box"),      NULL,           "ICSInputBox",     IcsInputBoxProc,        CHECK},
   {N_("ICS/Chat Console"),   NULL,           "OpenChatWindow",  ChatProc,               CHECK},
   {"----",                   NULL,            NULL,             NothingProc},
+  {N_("Edit Theme List..."), NULL,           "EditThemeList",   EditThemesProc},
   {N_("Board..."),           NULL,           "Board",           BoardOptionsProc},
   {N_("Fonts..."),           NULL,           "Fonts",           FontsProc},
   {N_("Game List Tags..."),  NULL,           "GameListTags",    GameListOptionsProc},
