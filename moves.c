@@ -1179,6 +1179,12 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 
             case WhiteFerz:
             case BlackFerz:
+		if(gameInfo.variant == VariantXiangqi && ff != BOARD_WIDTH>>1) {
+		    int rt = (piece == BlackFerz ? BOARD_HEIGHT-2 : 1);
+		    int ft = BOARD_WIDTH>>1;
+		    if(!SameColor(board[rf][ff], board[rt][ft]))
+			callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+		} else
                 /* [HGM] support Shatranj pieces */
 		Ferz(board, flags, rf, ff, callback, closure);
 		break;
