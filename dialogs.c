@@ -1041,6 +1041,7 @@ void
 SendString (char *p)
 {
     char buf[MSG_SIZ], buf2[MSG_SIZ], *q;
+
     if(q = strstr(p, "$name")) { // in Xaw this is already intercepted
 	if(!shellUp[TextMenuDlg] || !clickedWord[0]) return;
 	strncpy(buf2, p, MSG_SIZ);

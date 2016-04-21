@@ -397,6 +397,12 @@ EditThemesProc ()
 }
 
 void
+EditMenuProc ()
+{
+    EditAnyPopUp(icsTextMenuString, &icsTextMenuString, _("ICS Text-Menu Definition"));
+}
+
+void
 NothingProc ()
 {
     return;
@@ -649,12 +655,13 @@ MenuItem viewMenu[] = {
   {N_("Move History"),      "<Alt><Shift>h", "MoveHistory",     HistoryShowProc,        CHECK}, // [HGM] hist: activate 4.2.7 code
   {N_("Evaluation Graph"),  "<Alt><Shift>e", "EvaluationGraph", EvalGraphProc,          CHECK},
   {N_("Game List"),         "<Alt><Shift>g", "GameList",        ShowGameListProc,       CHECK},
-  {N_("ICS text menu"),      NULL,           "ICStextmenu",     IcsTextProc,            CHECK},
   {"----",                   NULL,            NULL,             NothingProc},
   {N_("Tags"),               NULL,           "Tags",            EditTagsProc,           CHECK},
   {N_("Comments"),           NULL,           "Comments",        EditCommentProc,        CHECK},
   {N_("ICS Input Box"),      NULL,           "ICSInputBox",     IcsInputBoxProc,        CHECK},
   {N_("ICS/Chat Console"),   NULL,           "OpenChatWindow",  ChatProc,               CHECK},
+  {N_("ICS text menu"),      NULL,           "ICStextmenu",     IcsTextProc,            CHECK},
+  {N_("Edit ICS menu..."),   NULL,           "EditTextMenu",    EditMenuProc},
   {"----",                   NULL,            NULL,             NothingProc},
   {N_("Edit Theme List..."), NULL,           "EditThemeList",   EditThemesProc},
   {N_("Board..."),           NULL,           "Board",           BoardOptionsProc},
