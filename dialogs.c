@@ -1226,7 +1226,7 @@ NewMove ()
 
 Option tagsOptions[] = {
 {   0,   0,   0, NULL, NULL, NULL, NULL, Label,  NULL },
-{ 200, T_VSCRL | T_FILL | T_WRAP | T_TOP, 200, NULL, (void*) &tagsText, NULL, (char **) &TagsClick, TextBox, "", &appData.tagsFont },
+{ 200, T_VSCRL | T_FILL | T_TOP, 200, NULL, (void*) &tagsText, NULL, (char **) &TagsClick, TextBox, "", &appData.tagsFont },
 {   0,   0, 100, NULL, (void*) &NewMove,    NULL, NULL, Button, N_("add next move") },
 { 0,SAME_ROW,100,NULL, (void*) &changeTags, NULL, NULL, Button, N_("commit changes") },
 { 0,SAME_ROW, 0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }
