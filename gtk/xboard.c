@@ -984,7 +984,9 @@ main (int argc, char **argv)
     }
 
     if ((chessDir = (char *) getenv("CHESSDIR")) == NULL) {
-	chessDir = ".";
+	static char dirName[MSG_SIZ];
+	getcwd(dirName, MSG_SIZ);
+	chessDir = dirName;
     } else {
 	if (chdir(chessDir) != 0) {
 	    fprintf(stderr, _("%s: can't cd to CHESSDIR: "), programName);

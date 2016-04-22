@@ -165,6 +165,7 @@ extern char *layoutName;
 extern int useImages, useImageSqs;
 extern char ICSInputTranslations[];
 extern char *selected_fen_position;
+extern char *chessDir;
 
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */

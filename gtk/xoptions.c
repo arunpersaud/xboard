@@ -1126,7 +1126,7 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
     GtkFileFilter *gtkfilter_all;
     int n, opt_i = (intptr_t) gdata;
     GtkFileChooserAction fc_action;
-    char buf[MSG_SIZ];
+    char buf[MSG_SIZ], *p;
 
     gtkfilter     = gtk_file_filter_new();
     gtkfilter_all = gtk_file_filter_new();
@@ -1150,6 +1150,8 @@ void BrowseGTK(GtkWidget *widget, gpointer gdata)
                       GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
                       NULL);
 
+    if(*chessDir && (!(p = strstr(chessDir, "/home/")) || strchr(p+6, '/')))
+    gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(dialog), chessDir, NULL);
     gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(dialog), dataDir, NULL);
     snprintf(buf, MSG_SIZ, "%s/themes", dataDir);
     gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(dialog), buf, NULL);
