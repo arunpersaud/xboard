@@ -295,7 +295,7 @@ CreatePNGBoard (char *s, int kind)
 		if(f == 0 || r == 0) f = BOARD_WIDTH, r = BOARD_HEIGHT; // 0x0 means 'fits any', so make it fit
 		textureW[kind] = (w*BOARD_WIDTH)/f; // sync cutting locations with square pattern
 		textureH[kind] = (h*BOARD_HEIGHT)/r;
-		n[kind] = r*squareSize/h; // scale to make it fit exactly vertically
+		n[kind] = (r*squareSize + 0.99)/h;  // scale to make it fit exactly vertically
 		modV[kind] = r; modH[kind] = f;
 	    } else
 	    if((p = strstr(s, "xq")) && (p == s || p[-1] == '/')) { // assume full-board image for Xiangqi
