@@ -285,7 +285,7 @@ KifuMove (char **p)
 int
 ReadLine ()
 {   // Read one line from the input file, and append to the buffer
-    char c, *start = inPtr;
+    int c; char *start = inPtr;
     if(fromString) return 0; // parsing string, so the end is a hard end
     if(!inputFile) return 0;
     while((c = fgetc(inputFile)) != EOF) {
