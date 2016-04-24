@@ -564,8 +564,8 @@ ChessSquare  KnightmateArray[2][BOARD_FILES] = {
 ChessSquare SpartanArray[2][BOARD_FILES] = {
     { WhiteRook, WhiteKnight, WhiteBishop, WhiteQueen,
         WhiteKing, WhiteBishop, WhiteKnight, WhiteRook },
-    { BlackAlfil, BlackMarshall, BlackKing, BlackDragon,
-        BlackDragon, BlackKing, BlackAngel, BlackAlfil }
+    { BlackAlfil, BlackDragon, BlackKing, BlackTower,
+        BlackTower, BlackKing, BlackAngel, BlackAlfil }
 };
 
 ChessSquare fairyArray[2][BOARD_FILES] = { /* [HGM] Queen side differs from King side */
@@ -6297,7 +6297,7 @@ InitPosition (int redraw)
       break;
     case VariantSpartan:
       pieces = SpartanArray;
-      SetCharTable(pieceToChar, "PNBRQ................K......lwg.....c...h..k");
+      SetCharTable(pieceToChar, "PNBRQ.....................K......lw......g...h......ck");
       break;
     case VariantLion:
       pieces = lionArray;

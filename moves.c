@@ -1105,19 +1105,16 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
             /* Make Dragon-King Dababba & Rook-like outside Shogi, for better disambiguation in variant Fairy */
 	    case WhiteDragon:
 	    case BlackDragon:
-              if(gameInfo.variant == VariantChuChess) goto DragonKing;
+              if(gameInfo.variant == VariantChuChess || gameInfo.variant == VariantSpartan) goto DragonKing;
               for (d = 0; d <= 1; d++) // Dababba moves that Rook cannot do
                 for (s = -2; s <= 2; s += 4) {
 		      rt = rf + s * d;
 		      ft = ff + s * (1 - d);
                       if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
-                      if (board[rf+rt>>1][ff+ft>>1] == EmptySquare && gameInfo.variant != VariantSpartan) continue;
+                      if (board[rf+rt>>1][ff+ft>>1] == EmptySquare) continue;
 		      if (SameColor(board[rf][ff], board[rt][ft])) continue;
 		      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
 		  }
-              if(gameInfo.variant == VariantSpartan) // in Spartan Chess restrict range to modern Dababba
-		Wazir(board, flags, rf, ff, callback, closure);
-	      else
 		Rook(board, flags, rf, ff, callback, closure);
               break;
 
@@ -1140,6 +1137,19 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		    Ferz(board, flags, rf, ff, callback, closure);
 		else
 		    Knight(board, flags, rf, ff, callback, closure);
+		break;
+
+            case WhiteTower:
+            case BlackTower:
+                for (d = 0; d <= 1; d++) // Dababba moves
+                  for (s = -2; s <= 2; s += 4) {
+		      rt = rf + s * d;
+		      ft = ff + s * (1 - d);
+                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
+		      if (SameColor(board[rf][ff], board[rt][ft])) continue;
+		      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+		  }
+		Wazir(board, flags, rf, ff, callback, closure);
 		break;
 
             /* Shogi Rooks are ordinary Rooks */
