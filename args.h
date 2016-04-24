@@ -1530,11 +1530,10 @@ SaveSettings(char* name)
   ArgDescriptor *ad;
   char dir[MSG_SIZ], buf[MSG_SIZ];
   int mps = appData.movesPerSession;
-  TimeMark now;
 
   if (!MainWindowUp() && !autoClose) return;
 
-  GetTimeMark(&now); saveDate = now.sec;
+  saveDate = programStartTime.sec;
 
   GetCurrentDirectory(MSG_SIZ, dir);
   if(MySearchPath(installDir, name, buf)) {
