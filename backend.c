@@ -691,18 +691,18 @@ ChessSquare CourierArray[2][BOARD_FILES] = {
         BlackFerz, BlackWazir, BlackBishop, BlackAlfil, BlackKnight, BlackRook }
 };
 ChessSquare ChuArray[6][BOARD_FILES] = {
-    { WhiteLance, WhiteUnicorn, WhiteMan, WhiteFerz, WhiteWazir, WhiteKing,
-      WhiteAlfil, WhiteWazir, WhiteFerz, WhiteMan, WhiteUnicorn, WhiteLance },
-    { BlackLance, BlackUnicorn, BlackMan, BlackFerz, BlackWazir, BlackAlfil,
-      BlackKing, BlackWazir, BlackFerz, BlackMan, BlackUnicorn, BlackLance },
-    { WhiteCannon, EmptySquare, WhiteBishop, EmptySquare, WhiteNightrider, WhiteMarshall,
-      WhiteAngel, WhiteNightrider, EmptySquare, WhiteBishop, EmptySquare, WhiteCannon },
-    { BlackCannon, EmptySquare, BlackBishop, EmptySquare, BlackNightrider, BlackAngel,
-      BlackMarshall, BlackNightrider, EmptySquare, BlackBishop, EmptySquare, BlackCannon },
-    { WhiteFalcon, WhiteSilver, WhiteRook, WhiteCardinal, WhiteDragon, WhiteLion,
-      WhiteQueen, WhiteDragon, WhiteCardinal, WhiteRook, WhiteSilver, WhiteFalcon },
-    { BlackFalcon, BlackSilver, BlackRook, BlackCardinal, BlackDragon, BlackQueen,
-      BlackLion, BlackDragon, BlackCardinal, BlackRook, BlackSilver, BlackFalcon }
+    { WhiteLance, WhiteCat, WhiteCopper, WhiteFerz, WhiteWazir, WhiteKing,
+      WhiteAlfil, WhiteWazir, WhiteFerz, WhiteCopper, WhiteCat, WhiteLance },
+    { BlackLance, BlackCat, BlackCopper, BlackFerz, BlackWazir, BlackAlfil,
+      BlackKing, BlackWazir, BlackFerz, BlackCopper, BlackCat, BlackLance },
+    { WhiteAxe, EmptySquare, WhiteBishop, EmptySquare, WhiteClaw, WhiteMarshall,
+      WhiteAngel, WhiteClaw, EmptySquare, WhiteBishop, EmptySquare, WhiteAxe },
+    { BlackAxe, EmptySquare, BlackBishop, EmptySquare, BlackClaw, BlackAngel,
+      BlackMarshall, BlackClaw, EmptySquare, BlackBishop, EmptySquare, BlackAxe },
+    { WhiteDagger, WhiteSword, WhiteRook, WhiteCardinal, WhiteDragon, WhiteLion,
+      WhiteQueen, WhiteDragon, WhiteCardinal, WhiteRook, WhiteSword, WhiteDagger },
+    { BlackDagger, BlackSword, BlackRook, BlackCardinal, BlackDragon, BlackQueen,
+      BlackLion, BlackDragon, BlackCardinal, BlackRook, BlackSword, BlackDagger }
 };
 #else // !(BOARD_FILES>=12)
 #define CourierArray CapablancaArray
@@ -6280,8 +6280,10 @@ InitPosition (int redraw)
       gameInfo.boardWidth  = 12;
       gameInfo.boardHeight = 12;
       nrCastlingRights = 0;
-      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN.........^T..^L......^A^H/^F^G^M.^E^X^O^I.^P.^B^R..^D^S^C^VK"
-                                   "p.brqsexogcathd.vmlifn.........^t..^l......^a^h/^f^g^m.^e^x^o^i.^p.^b^r..^d^s^c^vk", SUFFIXES);
+//      SetCharTableEsc(pieceToChar, "P.BRQSEXOGCATHD.VMLIFN.........^T..^L......^A^H/^F^G^M.^E^X^O^I.^P.^B^R..^D^S^C^VK"
+  //                                 "p.brqsexogcathd.vmlifn.........^t..^l......^a^h/^f^g^m.^e^x^o^i.^p.^b^r..^d^s^c^vk", SUFFIXES);
+      SetCharTableEsc(pieceToChar, "P.BRQSEXOG...HD..^DLI^HNV........^T..^L.C...A^AFT/^F^G^M.^E^X^O^I.^P.^B^R..M^S^C^VK"
+                                   "p.brqsexog...hd..^dli^hnv........^t..^l.c...a^aft/^f^g^m.^e^x^o^i.^p.^b^r..m^s^c^vk", SUFFIXES);
       break;
     case VariantCourier:
       pieces = CourierArray;

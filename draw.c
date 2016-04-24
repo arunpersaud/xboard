@@ -187,20 +187,6 @@ SelectPieces(VariantClass v)
 	if(v == VariantChuChess) {
 	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteLion];
 	}
-	if(v == VariantChu) {
-	   pngPieceBitmaps[i][(int)WhiteNightrider] = pngPieceBitmaps2[i][(int)WhiteClaw];
-	   pngPieceBitmaps[i][(int)WhiteClaw]    = pngPieceBitmaps2[i][(int)WhiteNightrider];
-	   pngPieceBitmaps[i][(int)WhiteUnicorn] = pngPieceBitmaps2[i][(int)WhiteCat];
-	   pngPieceBitmaps[i][(int)WhiteSilver]  = pngPieceBitmaps2[i][(int)WhiteSword];
-	   pngPieceBitmaps[i][(int)WhiteFalcon]  = pngPieceBitmaps2[i][(int)WhiteDagger];
-	   pngPieceBitmaps[i][(int)WhiteCat]     = pngPieceBitmaps2[i][(int)WhiteUnicorn];
-	   pngPieceBitmaps[i][(int)WhiteSword]   = pngPieceBitmaps2[i][(int)WhiteSilver];
-	   pngPieceBitmaps[i][(int)WhiteDagger]  = pngPieceBitmaps2[i][(int)WhiteFalcon];
-	   pngPieceBitmaps[i][(int)WhiteMan]     = pngPieceBitmaps2[i][(int)WhiteCopper];
-	   pngPieceBitmaps[i][(int)WhiteCopper]  = pngPieceBitmaps2[i][(int)WhiteMan];
-	   pngPieceBitmaps[i][(int)WhiteAxe]     = pngPieceBitmaps2[i][(int)WhiteCannon];
-	   pngPieceBitmaps[i][(int)WhiteCannon]  = pngPieceBitmaps2[i][(int)WhiteAxe];
-	}
     }
 }
 

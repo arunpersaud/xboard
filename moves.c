@@ -934,11 +934,14 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		if(gameInfo.variant == VariantShogi) goto WhiteGold;
             case SHOGI (PROMO BlackPawn):
 		if(gameInfo.variant == VariantShogi) goto BlackGold;
+            case SHOGI WhiteAxe:
+            case SHOGI BlackAxe:
 		SlideVertical(board, flags, rf, ff, callback, closure);
 		break;
 
             case SHOGI (PROMO WhiteKnight):
 		if(gameInfo.variant == VariantShogi) goto WhiteGold;
+            case SHOGI WhiteClaw:
             case SHOGI BlackDrunk:
             case SHOGI BlackAlfil:
 		Ferz(board, flags, rf, ff, callback, closure);
@@ -948,6 +951,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 
             case SHOGI (PROMO BlackKnight):
 		if(gameInfo.variant == VariantShogi) goto BlackGold;
+            case SHOGI BlackClaw:
             case SHOGI WhiteDrunk:
             case SHOGI WhiteAlfil:
 		Ferz(board, flags, rf, ff, callback, closure);
@@ -1276,8 +1280,8 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
               }
               break;
 
-            case SHOGI WhiteFalcon:
-            case SHOGI BlackFalcon:
+            case SHOGI WhiteDagger:
+            case SHOGI BlackDagger:
             case SHOGI WhitePDagger:
             case SHOGI BlackPDagger:
 		SlideSideways(board, flags, rf, ff, callback, closure);
@@ -1293,24 +1297,26 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		if(gameInfo.variant == VariantShogi) goto WhiteGold;
             case SHOGI (PROMO BlackFerz):
 		if(gameInfo.variant == VariantShogi) goto BlackGold;
+            case SHOGI WhiteSword:
+            case SHOGI BlackSword:
             case SHOGI WhitePSword:
             case SHOGI BlackPSword:
 		SlideVertical(board, flags, rf, ff, callback, closure);
 		StepSideways(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI WhiteUnicorn:
-            case SHOGI BlackUnicorn:
+            case SHOGI WhiteCat:
+            case SHOGI BlackCat:
 		Ferz(board, flags, rf, ff, callback, closure);
 		StepVertical(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI WhiteMan:
+            case SHOGI WhiteCopper:
 		StepDiagForward(board, flags, rf, ff, callback, closure);
 		StepVertical(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI BlackMan:
+            case SHOGI BlackCopper:
 		StepDiagBackward(board, flags, rf, ff, callback, closure);
 		StepVertical(board, flags, rf, ff, callback, closure);
 		break;
@@ -1327,7 +1333,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		SlideVertical(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI WhiteCat:
+            case SHOGI WhiteUnicorn:
 		Sting(board, flags, rf, ff, 1, 0, callback, closure);
 		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
 		if(killX >= 0) break;
@@ -1336,7 +1342,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		SlideBackward(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI BlackCat:
+            case SHOGI BlackUnicorn:
 		Sting(board, flags, rf, ff, -1, 0, callback, closure);
 		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
 		if(killX >= 0) break;
@@ -1345,7 +1351,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		SlideForward(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI WhiteDagger:
+            case SHOGI WhiteFalcon:
 		Sting(board, flags, rf, ff, 1,  1, callback, closure);
 		Sting(board, flags, rf, ff, 1, -1, callback, closure);
 		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
@@ -1354,7 +1360,7 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 		SlideDiagBackward(board, flags, rf, ff, callback, closure);
 		break;
 
-            case SHOGI BlackDagger:
+            case SHOGI BlackFalcon:
 		Sting(board, flags, rf, ff, -1,  1, callback, closure);
 		Sting(board, flags, rf, ff, -1, -1, callback, closure);
 		callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
