@@ -645,6 +645,7 @@ typedef struct {
     Boolean scoreIsAbsolute[ENGINES];  /* If true, engine score is always from white side */
     Boolean saveExtendedInfoInPGN; /* If true, saved PGN games contain extended info */
     Boolean hideThinkingFromHuman; /* If true, program thinking is generated but not displayed in human/computer matches */
+    Boolean cumulativeTimePGN;     /* If true, times saved in PGN extended info is time left on clock */
     Boolean useBitmaps;
     Boolean useFont;
     Boolean useBorder;

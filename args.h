@@ -535,6 +535,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondScoreAbs", ArgBoolean, (void *) &appData.secondScoreIsAbsolute, FALSE, (ArgIniType) FALSE },
   { "pgnExtendedInfo", ArgBoolean, (void *) &appData.saveExtendedInfoInPGN, TRUE, (ArgIniType) FALSE },
   { "hideThinkingFromHuman", ArgBoolean, (void *) &appData.hideThinkingFromHuman, TRUE, (ArgIniType) FALSE },
+  { "pgnTimeLeft", ArgBoolean, (void *) &appData.cumulativeTimePGN, TRUE, (ArgIniType) FALSE },
   { "liteBackTextureFile", ArgFilename, (void *) &appData.liteBackTextureFile, TRUE, (ArgIniType) "" },
   { "lbtf", ArgFilename, (void *) &appData.liteBackTextureFile, FALSE, INVALID },
   { "darkBackTextureFile", ArgFilename, (void *) &appData.darkBackTextureFile, TRUE, (ArgIniType) "" },
@@ -1251,10 +1252,10 @@ ParseArgs(GetFunc get, void *cl)
         if(r) { // must be put in group r
           char *p = strstr(q, r);
           if(p) { // group already exists
-            p += strlen(r); // determine insertion point (immediately after group header line)
+            p += strlen(r) - 1; // determine insertion point (immediately after group header line)
             *(char **) ad->argLoc = malloc(l+2);
             *p++ = NULLCHAR; // spit old value (q) at insertion point into q and p
-            snprintf(*(char **) ad->argLoc, l+2, "%s%s\n%s", q, s, p); // insert (with newline)
+            snprintf(*(char **) ad->argLoc, l+2, "%s\n%s\n%s", q, s, p); // insert (with newline)
           } else { // group did not exist, create at end
             l += strlen(r) + 8;
             *(char **) ad->argLoc = malloc(l);

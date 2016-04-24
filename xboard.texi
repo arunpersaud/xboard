@@ -3447,7 +3447,14 @@ the @samp{Load Position} menu item.
 If this option is set, XBoard saves depth, score and time used for each 
 move that the engine found as a comment in the PGN file.
 Default: false.
+@item -pgnTimeLeft true/false
+@cindex pgnTimeLeft, option
+If this option is set, XBoard will save the remaining clock time for
+the player that has just moved as part of the @samp{pgnExtendedInfo},
+rather than the time that player thought about his latest move.
+Default: false.
 @item -pgnEventHeader string
+Default: false.
 @cindex pgnEventHeader, option
 Sets the name used in the PGN event tag to string. 
 Default: "Computer Chess Game".

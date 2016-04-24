@@ -13925,6 +13925,10 @@ SaveGamePGN2 (FILE *f)
 		    snprintf(buf, MSG_SIZ, " %d:%02d%c", seconds/60, seconds%60, 0);
 		}
 
+	    if(appData.cumulativeTimePGN) {
+		snprintf(buf, MSG_SIZ, " %+ld", timeRemaining[i & 1][i+1]/1000);
+	    }
+
             snprintf( move_buffer, sizeof(move_buffer)/sizeof(move_buffer[0]),"{%s%.2f/%d%s}",
 		      pvInfoList[i].score >= 0 ? "+" : "",
 		      pvInfoList[i].score / 100.0,
