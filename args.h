@@ -961,7 +961,7 @@ ParseArgs(GetFunc get, void *cl)
   char argValue[MAX_ARG_LEN];
   ArgDescriptor *ad;
   char start;
-  char *q;
+  char *q, *r, *s;
   int i, octval;
   char ch;
   int posarg = 4; // default is game file
@@ -1241,10 +1241,29 @@ ParseArgs(GetFunc get, void *cl)
 
     case ArgInstall:
       q = *(char **) ad->argLoc;
-      if((saveDate == 0 || saveDate - dateStamp < 0) && !strstr(q, argValue) ) {
-        int l = strlen(q) + strlen(argValue);
-        *(char **) ad->argLoc = malloc(l+2);
-        snprintf(*(char **) ad->argLoc, l+2, "%s%s\n", q, argValue);
+      r = NULL; s = argValue;
+      if(argValue[0] == '#') { // group specification
+        r = strstr(argValue, "\\n");
+        if(r) *r++ = '\n', *r++ = NULLCHAR, s = r, r = argValue; // split s into line-to-add (s) and group (r)
+      }
+      if((saveDate == 0 || saveDate - dateStamp < 0) && !strstr(q, s) ) { // not seen before, and line does not occur yet
+        int l = strlen(q) + strlen(s);
+        if(r) { // must be put in group r
+          char *p = strstr(q, r);
+          if(p) { // group already exists
+            p += strlen(r); // determine insertion point (immediately after group header line)
+            *(char **) ad->argLoc = malloc(l+2);
+            *p++ = NULLCHAR; // spit old value (q) at insertion point into q and p
+            snprintf(*(char **) ad->argLoc, l+2, "%s%s\n%s", q, s, p); // insert (with newline)
+          } else { // group did not exist, create at end
+            l += strlen(r) + 8;
+            *(char **) ad->argLoc = malloc(l);
+            snprintf(*(char **) ad->argLoc, l, "%s%s%s\n# end\n", q, r, s);
+          }
+        } else { // no group, just add line at end
+          *(char **) ad->argLoc = malloc(l+2);
+          snprintf(*(char **) ad->argLoc, l+2, "%s%s\n", q, s);
+        }
         free(q);
       }
       break;
