@@ -7915,6 +7915,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	    DisplayMessage("Click in holdings to choose piece", "");
 	    return;
 	}
+	DrawPosition(FALSE, NULL); // shows piece on from-square during promo popup
 	PromotionPopUp(promoChoice);
     } else {
 	int oldMove = currentMove;
