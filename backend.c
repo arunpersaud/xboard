@@ -9146,10 +9146,10 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     }
     if(sscanf(message, "piece %s %s", buf2, buf1) == 2) {
       ChessSquare piece = WhitePawn;
-      char *p=message+6, *q, *s = SUFFIXES, ID = *p;
-      if(*p == '+') piece = CHUPROMOTED(WhitePawn), ID = *++p;
+      char *p=message+6, *q, *s = SUFFIXES, ID = *p, promoted = 0;
+      if(*p == '+') promoted++, ID = *++p;
       if(q = strchr(s, p[1])) ID += 64*(q - s + 1), p++;
-      piece += CharToPiece(ID & 255) - WhitePawn;
+      piece = CharToPiece(ID & 255); if(promoted) piece = CHUPROMOTED(piece);
       if(cps != &first || appData.testLegality && *engineVariant == NULLCHAR
       /* always accept definition of  */       && piece != WhiteFalcon && piece != BlackFalcon
       /* wild-card pieces.            */       && piece != WhiteCobra  && piece != BlackCobra
