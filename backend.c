@@ -5162,14 +5162,14 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
       if(moveList[moveNum][4] == ';') { // [HGM] lion: move is double-step over intermediate square
 	char *m = moveList[moveNum];
 	static char c[2];
-	*c = m[7]; // promoChar
+	*c = m[7]; if(*c == '\n') *c = NULLCHAR; // promoChar
 	if((boards[moveNum][m[6]-ONE][m[5]-AAA] < BlackPawn) == (boards[moveNum][m[1]-ONE][m[0]-AAA] < BlackPawn)) // move is kludge to indicate castling
 	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d\n", m[0], m[1] - '0', // convert to two moves
 					       m[2], m[3] - '0',
 					       m[5], m[6] - '0',
 					       m[2] + (m[0] > m[5] ? 1 : -1), m[3] - '0');
 	else if(*c && m[8]) { // kill square followed by 2 characters: 2nd kill square rather than promo suffix
-	  *c = m[9];
+	  *c = m[9]; if(*c == '\n') *c = NULLCHAR;
 	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d,%c%d%c%d%s\n", m[0], m[1] - '0', // convert to three moves
 					       m[7], m[8] - '0',
 					       m[7], m[8] - '0',
