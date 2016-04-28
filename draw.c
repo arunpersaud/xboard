@@ -819,7 +819,7 @@ DrawDot (int marker, int x, int y, int r)
 }
 
 static void
-DrawUnicode (cairo_surface_t *canvas, char *string, int x, int y, char id, int flip)
+DrawUnicode (cairo_surface_t *canvas, char *string, int x, int y, char id, int flip, int size, int vpos)
 {
 //	cairo_text_extents_t te;
 	cairo_t *cr;
@@ -832,12 +832,12 @@ DrawUnicode (cairo_surface_t *canvas, char *string, int x, int y, char id, int f
 	cr = cairo_create (canvas);
 	layout = pango_cairo_create_layout(cr);
 	pango_layout_set_text(layout, string, -1);
-	snprintf(fontName, MSG_SIZ, "Sans Normal %dpx", 5*squareSize/8);
+	snprintf(fontName, MSG_SIZ, "Sans Normal %dpx", size*squareSize/64);
 	desc = pango_font_description_from_string(fontName);
 	pango_layout_set_font_description(layout, desc);
 	pango_font_description_free(desc);
         pango_layout_get_pixel_extents(layout, NULL, &r);
-	cairo_translate(cr, x + squareSize/2 - s*r.width/2, y + (8+s)*squareSize/16 - s*r.height/2);
+	cairo_translate(cr, x + squareSize/2 - s*r.width/2, y + (32+vpos*s)*squareSize/64 - s*r.height/2);
 	if(s < 0) cairo_rotate(cr, G_PI);
 	cairo_set_source_rgb(cr, (id == '+' ? 1.0 : 0.0), 0.0, 0.0);
 	pango_cairo_update_layout(cr, layout);
@@ -884,12 +884,13 @@ DrawText (char *string, int x, int y, int align)
 void
 InscribeKanji (cairo_surface_t *canvas, ChessSquare piece, int x, int y)
 {
-    char *p, *q, buf[10];
-    int n, flip = appData.upsideDown && flipView == (piece < BlackPawn);
+    char *p, *q, buf[20], nr = 1;
+    int i, n, size = 40, flip = appData.upsideDown && flipView == (piece < BlackPawn);
     if(piece == EmptySquare) return;
     if(piece >= BlackPawn) piece = BLACK_TO_WHITE piece;
     p = appData.inscriptions;
-    n = piece;
+    if(*p > '0' && *p < '3') nr = *p++ - '0'; // nr of kanji per piece
+    n = piece; i = 0;
     while(piece > WhitePawn) {
       if(*p == '/') p++, piece = n - WhitePBishop; // secondary series
       if(*p++ == NULLCHAR) {
@@ -899,12 +900,19 @@ InscribeKanji (cairo_surface_t *canvas, ChessSquare piece, int x, int y)
       }
       q = p - 1;
       while((*p & 0xC0) == 0x80) p++; // skip UTF-8 continuation bytes
-      piece--;
+      if(*q != '.' && ++i < nr) continue; // yet more kanji for the current piece
+      piece--; i = 0;
     }
-    strncpy(buf, p, 10);
-    for(q=buf; (*++q & 0xC0) == 0x80;);
+    strncpy(buf, p, 20);
+    for(q=buf; (*++q & 0xC0) == 0x80;); // skip first unicode
+    if(nr > 1) {
+      p = q;
+      while((*++p & 0xC0) == 0x80) {} // skip second unicode
+      *p = NULLCHAR; size = 30; i = 16;
+      DrawUnicode(canvas, q, x, y, PieceToChar(n), flip, size, -10);
+    } else i = 4;
     *q = NULLCHAR;
-    DrawUnicode(canvas, buf, x, y, PieceToChar(n), flip);
+    DrawUnicode(canvas, buf, x, y, PieceToChar(n), flip, size, i);
 }
 
 void
