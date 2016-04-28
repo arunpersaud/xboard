@@ -261,6 +261,7 @@ void ics_update_width P((int new_width));
 extern char installDir[MSG_SIZ];
 VariantClass startVariant; /* [HGM] nicks: initial variant */
 Boolean abortMatch;
+int deadRanks;
 
 extern int tinyLayout, smallLayout;
 ChessProgramStats programStats;
@@ -7397,7 +7398,7 @@ MarkByFEN(char *fen)
 	int r, f;
 	if(!appData.markers || !appData.highlightDragging) return;
 	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = 0;
-	r=BOARD_HEIGHT-1; f=BOARD_LEFT;
+	r=BOARD_HEIGHT-1-deadRanks; f=BOARD_LEFT;
 	while(*fen) {
 	    int s = 0;
 	    marker[r][f] = 0;
@@ -9130,6 +9131,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         while(message[s] && message[s++] != ' ');
         if(BOARD_HEIGHT != h || BOARD_WIDTH != w + 4*(hand != 0) || gameInfo.holdingsSize != hand ||
            dummy == 4 && gameInfo.variant != StringToVariant(varName) ) { // engine wants to change board format or variant
+	    if(hand <= h) deadRanks = 0; else deadRanks = hand - h, h = hand; // adapt board to over-sized holdings
 	    appData.NrFiles = w; appData.NrRanks = h; appData.holdingsSize = hand;
 	    if(dummy == 4) gameInfo.variant = StringToVariant(varName);     // parent variant
           InitPosition(1); // calls InitDrawingSizes to let new parameters take effect
@@ -12015,6 +12017,7 @@ Reset (int redraw, int init)
 		redraw, init, gameMode);
     }
     pieceDefs = FALSE; // [HGM] gen: reset engine-defined piece moves
+    deadRanks = 0; // assume entire board is used
     for(i=0; i<EmptySquare; i++) { FREE(pieceDesc[i]); pieceDesc[i] = NULL; }
     CleanupTail(); // [HGM] vari: delete any stored variations
     CommentPopDown(); // [HGM] make sure no comments to the previous game keep hanging on
@@ -18184,7 +18187,7 @@ PositionToFEN (int move, char *overrideCastling, int moveCounts)
     p = buf;
 
     /* Piece placement data */
-    for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
+    for (i = BOARD_HEIGHT - 1 - deadRanks; i >= 0; i--) {
 	if(MSG_SIZ - (p - buf) < BOARD_RGHT - BOARD_LEFT + 20) { *p = 0; return StrSave(buf); }
 	emptycount = 0;
         for (j = BOARD_LEFT; j < BOARD_RGHT; j++) {
@@ -18400,8 +18403,10 @@ ParseFEN (Board board, int *blackPlaysFirst, char *fen, Boolean autoSize)
 
     p = fen;
 
+    for(i=1; i<=deadRanks; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++) board[BOARD_HEIGHT-i][j] = DarkSquare;
+
     /* Piece placement data */
-    for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
+    for (i = BOARD_HEIGHT - 1 - deadRanks; i >= 0; i--) {
 	j = 0;
 	for (;;) {
             if (*p == '/' || *p == ' ' || *p == '[' ) {
