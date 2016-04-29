@@ -2691,7 +2691,9 @@ DisplayHelp (char *name)
 	    FREE(manText[1]); manText[1] = NULL;      // so any currently held text is worthless
 	    safeStrCpy(tidy, buf, MSG_SIZ);           // remember current engine
 	    eng = BufferCommandOutput(tidy, MSG_SIZ); // obtain path to  its man file
+	    if(*eng)
 	    safeStrCpy(engMan, eng, strlen(eng));     // and remember that too
+	    else *engMan = NULLCHAR;
 	    FREE(eng);
 	}
 	safeStrCpy(buf, engMan, MSG_SIZ); n = 1;      // use engine man
