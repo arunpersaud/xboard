@@ -2475,6 +2475,11 @@ false, the clocks are not shown, but the side that is to play next
 is still highlighted. Also, unless @code{searchTime}
 is set, the chess engine still keeps track of the clock time and uses it to
 determine how fast to make its moves.
+@item -shoMoveTime true/false
+@cindex showMoveTime, option
+When this option is set the time that has been thought about the current move
+will be displayed behind the remaining time in parentheses (in seconds).
+Default: false.
 @item -st or -searchTime minutes[:seconds]
 @cindex st, option
 @cindex searchTime, option

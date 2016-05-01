@@ -17813,11 +17813,13 @@ ResetClocks ()
 
 #define FUDGE 25 /* 25ms = 1/40 sec; should be plenty even for 50 Hz clocks */
 
+static int timeSuffix; // [HGM] This should realy be a passed parameter, but it has to pass through too many levels for my laziness...
+
 /* Decrement running clock by amount of time that has passed */
 void
 DecrementClocks ()
 {
-    long timeRemaining;
+    long tRemaining;
     long lastTickLength, fudge;
     TimeMark now;
 
@@ -17834,28 +17836,32 @@ DecrementClocks ()
 
     if (WhiteOnMove(forwardMostMove)) {
 	if(whiteNPS >= 0) lastTickLength = 0;
-	timeRemaining = whiteTimeRemaining -= lastTickLength;
-        if(timeRemaining < 0 && !appData.icsActive) {
+	 tRemaining = whiteTimeRemaining -= lastTickLength;
+        if( tRemaining < 0 && !appData.icsActive) {
             GetTimeQuota((forwardMostMove-whiteStartMove-1)/2, 0, whiteTC); // sets suddenDeath & nextSession;
             if(suddenDeath) { // [HGM] if we run out of a non-last incremental session, go to the next
                 whiteStartMove = forwardMostMove; whiteTC = nextSession;
-                lastWhite= timeRemaining = whiteTimeRemaining += GetTimeQuota(-1, 0, whiteTC);
+                lastWhite=  tRemaining = whiteTimeRemaining += GetTimeQuota(-1, 0, whiteTC);
             }
         }
+	if(forwardMostMove && appData.moveTime) timeSuffix = timeRemaining[0][forwardMostMove-1] - tRemaining;
 	DisplayWhiteClock(whiteTimeRemaining - fudge,
 			  WhiteOnMove(currentMove < forwardMostMove ? currentMove : forwardMostMove));
+	timeSuffix = 0;
     } else {
 	if(blackNPS >= 0) lastTickLength = 0;
-	timeRemaining = blackTimeRemaining -= lastTickLength;
-        if(timeRemaining < 0 && !appData.icsActive) { // [HGM] if we run out of a non-last incremental session, go to the next
+	 tRemaining = blackTimeRemaining -= lastTickLength;
+        if( tRemaining < 0 && !appData.icsActive) { // [HGM] if we run out of a non-last incremental session, go to the next
             GetTimeQuota((forwardMostMove-blackStartMove-1)/2, 0, blackTC);
             if(suddenDeath) {
                 blackStartMove = forwardMostMove;
-                lastBlack = timeRemaining = blackTimeRemaining += GetTimeQuota(-1, 0, blackTC=nextSession);
+                lastBlack =  tRemaining = blackTimeRemaining += GetTimeQuota(-1, 0, blackTC=nextSession);
             }
         }
+	if(forwardMostMove && appData.moveTime) timeSuffix = timeRemaining[1][forwardMostMove-1] - tRemaining;
 	DisplayBlackClock(blackTimeRemaining - fudge,
 			  !WhiteOnMove(currentMove < forwardMostMove ? currentMove : forwardMostMove));
+	timeSuffix = 0;
     }
     if (CheckFlags()) return;
 
@@ -17870,7 +17876,7 @@ DecrementClocks ()
     }
 
     tickStartTM = now;
-    intendedTickLength = NextTickLength(timeRemaining - fudge) + fudge;
+    intendedTickLength = NextTickLength( tRemaining - fudge) + fudge;
     StartClockTimer(intendedTickLength);
 
     /* if the time remaining has fallen below the alarm threshold, sound the
@@ -17886,9 +17892,9 @@ DecrementClocks ()
 	       ((gameMode == IcsPlayingBlack) && !WhiteOnMove(currentMove))
 	   )) return;
 
-	if (alarmSounded && (timeRemaining > appData.icsAlarmTime)) {
+	if (alarmSounded && ( tRemaining > appData.icsAlarmTime)) {
 	    alarmSounded = FALSE;
-	} else if (!alarmSounded && (timeRemaining <= appData.icsAlarmTime)) {
+	} else if (!alarmSounded && ( tRemaining <= appData.icsAlarmTime)) {
 	    PlayAlarmSound();
 	    alarmSounded = TRUE;
 	}
@@ -18029,7 +18035,7 @@ TimeString (long ms)
 {
     long second, minute, hour, day;
     char *sign = "";
-    static char buf[32];
+    static char buf[40], moveTime[8];
 
     if (ms > 0 && ms <= 9900) {
       /* convert milliseconds to tenths, rounding up */
@@ -18056,13 +18062,16 @@ TimeString (long ms)
     minute = second / 60;
     second = second % 60;
 
+    if(timeSuffix) snprintf(moveTime, 8, " (%d)", timeSuffix/1000); // [HGM] kludge alert; fraction contains move time
+    else *moveTime = NULLCHAR;
+
     if (day > 0)
-      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%ld:%02ld:%02ld:%02ld ",
-	      sign, day, hour, minute, second);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%ld:%02ld:%02ld:%02ld%s ",
+	      sign, day, hour, minute, second, moveTime);
     else if (hour > 0)
-      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%ld:%02ld:%02ld ", sign, hour, minute, second);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%ld:%02ld:%02ld%s ", sign, hour, minute, second, moveTime);
     else
-      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%2ld:%02ld ", sign, minute, second);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%2ld:%02ld%s ", sign, minute, second, moveTime);
 
     return buf;
 }
