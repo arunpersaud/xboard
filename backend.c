@@ -7898,7 +7898,10 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 
     if(gatingPiece != EmptySquare && gameInfo.variant == VariantSChess) promoChoice = ToLower(PieceToChar(gatingPiece));
 
-    if(legal[toY][toX] == 2) promoChoice = ToLower(PieceToChar(defaultPromoChoice)); // highlight-induced promotion
+    if(legal[toY][toX] == 2) { // highlight-induced promotion
+	if(piece == defaultPromoChoice) promoChoice = NULLCHAR; // deferral
+	else promoChoice = ToLower(PieceToChar(defaultPromoChoice));
+    }
 
     if (legal[toY][toX] == 2 && !appData.sweepSelect || HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, appData.sweepSelect)) {
 	SetHighlights(fromX, fromY, toX, toY);
