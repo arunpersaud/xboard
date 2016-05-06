@@ -223,7 +223,7 @@ ArgDescriptor argDescriptors[] = {
   { "flashRate", ArgInt, (void *) &appData.flashRate, XBOARD, (ArgIniType) FLASH_RATE },
   { "pieceImageDirectory", ArgFilename, (void *) &appData.pieceDirectory, TRUE, (ArgIniType) "" },
   { "pid", ArgFilename, (void *) &appData.pieceDirectory, FALSE, INVALID },
-  { "trueColors", ArgBoolean, (void *) &appData.trueColors, TRUE, (ArgIniType) FALSE },
+  { "trueColors", ArgBoolean, (void *) &appData.trueColors, XBOARD, (ArgIniType) (2*!XBOARD) },
   { "jewelled", ArgInt, (void *) &appData.jewelled, FALSE, (ArgIniType) -1 },
   { "soundDirectory", ArgFilename, (void *) &appData.soundDirectory, XBOARD, (ArgIniType) "" },
   { "msLoginDelay", ArgInt, (void *) &appData.msLoginDelay, XBOARD, (ArgIniType) MS_LOGIN_DELAY },

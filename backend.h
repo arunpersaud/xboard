@@ -80,6 +80,7 @@ extern Boolean mcMode;
 extern int dragging;
 extern char variantError[];
 extern char lastTalker[];
+extern int transparency[];
 
 void MarkMenuItem P((char *menuRef, int state));
 char *CmailMsg P((void));

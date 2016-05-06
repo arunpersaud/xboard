@@ -19041,6 +19041,8 @@ LoadVariation (int index, char *text)
 	ToNrEvent(currentMove+1);
 }
 
+int transparency[2];
+
 void
 LoadTheme ()
 {
@@ -19063,9 +19065,13 @@ LoadTheme ()
 		appData.liteBackTextureMode,
 		appData.darkBackTextureMode );
       } else {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ubt false -lsc %s -dsc %s",
-		Col2Text(2),   // lightSquareColor
-		Col2Text(3) ); // darkSquareColor
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ubt false");
+      }
+      if(!appData.useBitmaps || transparency[0]) {
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -lsc %s", Col2Text(2) ); // lightSquareColor
+      }
+      if(!appData.useBitmaps || transparency[1]) {
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -dsc %s", Col2Text(3) ); // darkSquareColor
       }
       if(appData.useBorder) {
 	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ub true -border \"%s\"",
@@ -19080,9 +19086,13 @@ LoadTheme ()
 		Col2Text(9),    // appData.fontBackColorWhite
 		Col2Text(10) ); // appData.fontForeColorBlack
       } else {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -upf false -pid \"%s\"",
-		appData.pieceDirectory);
-	if(!appData.pieceDirectory[0])
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -upf false");
+	if(appData.pieceDirectory[0]) {
+	  snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -pid \"%s\"", appData.pieceDirectory);
+	  if(appData.trueColors != 2) // 2 is a kludge to suppress this in WinBoard
+	    snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -trueColors %s", appData.trueColors ? "true" : "false");
+	}
+	if(!appData.pieceDirectory[0] && !appData.trueColors)
 	  snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -wpc %s -bpc %s",
 		Col2Text(0),   // whitePieceColor
 		Col2Text(1) ); // blackPieceColor

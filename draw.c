@@ -255,7 +255,7 @@ ExposeRedraw (Option *graph, int x, int y, int w, int h)
     cairo_destroy(cr);
 }
 
-static int modV[2], modH[2], transparency[2];
+static int modV[2], modH[2];
 
 static void
 CreatePNGBoard (char *s, int kind)
