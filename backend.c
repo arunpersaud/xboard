@@ -7399,11 +7399,10 @@ MarkByFEN(char *fen)
 {
 	int r, f;
 	if(!appData.markers || !appData.highlightDragging) return;
-	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = 0;
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) legal[r][f] = marker[r][f] = 0;
 	r=BOARD_HEIGHT-1-deadRanks; f=BOARD_LEFT;
 	while(*fen) {
 	    int s = 0;
-	    marker[r][f] = 0;
 	    if(*fen == 'M') legal[r][f] = 2; else // request promotion choice
 	    if(*fen == 'B') legal[r][f] = 4; else // request auto-promotion to victim
 	    if(*fen >= 'A' && *fen <= 'Z') legal[r][f] = 3; else
