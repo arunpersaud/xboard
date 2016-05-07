@@ -6702,6 +6702,8 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
       !(fromX >=0 && fromY >= 0 && toX >= 0 && toY >= 0) ) // invalid move
 	return FALSE;
 
+    if(legal[toY][toX] == 4) return FALSE;
+
     piece = boards[currentMove][fromY][fromX];
     if(gameInfo.variant == VariantChu) {
         promotionZoneSize = BOARD_HEIGHT/3;
@@ -7403,6 +7405,7 @@ MarkByFEN(char *fen)
 	    int s = 0;
 	    marker[r][f] = 0;
 	    if(*fen == 'M') legal[r][f] = 2; else // request promotion choice
+	    if(*fen == 'B') legal[r][f] = 4; else // request auto-promotion to victim
 	    if(*fen >= 'A' && *fen <= 'Z') legal[r][f] = 3; else
 	    if(*fen >= 'a' && *fen <= 'z') *fen += 'A' - 'a';
 	    if(*fen == '/' && f > BOARD_LEFT) f = BOARD_LEFT, r--; else
@@ -7537,12 +7540,13 @@ void ReportClick(char *action, int x, int y)
 }
 
 Boolean right; // instructs front-end to use button-1 events as if they were button 3
+Boolean deferChoice;
 
 void
 LeftClick (ClickType clickType, int xPix, int yPix)
 {
     int x, y;
-    Boolean saveAnimate;
+    static Boolean saveAnimate;
     static int second = 0, promotionChoice = 0, clearFlag = 0, sweepSelecting = 0, flashing = 0, saveFlash;
     char promoChoice = NULLCHAR;
     ChessSquare piece;
@@ -7550,6 +7554,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 
     if(flashing) return;
 
+  if(!deferChoice) { // when called for a retry, skip everything to the point where we left off
     x = EventToSquare(xPix, BOARD_WIDTH);
     y = EventToSquare(yPix, BOARD_HEIGHT);
     if (!flipView && y >= 0) {
@@ -7897,10 +7902,18 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     else ReportClick("put", x, y);
 
     if(gatingPiece != EmptySquare && gameInfo.variant == VariantSChess) promoChoice = ToLower(PieceToChar(gatingPiece));
+ }
 
     if(legal[toY][toX] == 2) { // highlight-induced promotion
 	if(piece == defaultPromoChoice) promoChoice = NULLCHAR; // deferral
 	else promoChoice = ToLower(PieceToChar(defaultPromoChoice));
+    } else if(legal[toY][toX] == 4) { // blue target square: engine must supply promotion choice
+      if(!*promoRestrict) {           // but has not done that yet
+	deferChoice = TRUE;           // set up retry for when it does
+	return;                       // and wait for that
+      }
+      promoChoice = ToLower(*promoRestrict); // force engine's choice
+      deferChoice = FALSE;
     }
 
     if (legal[toY][toX] == 2 && !appData.sweepSelect || HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, appData.sweepSelect)) {
@@ -9170,9 +9183,13 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       }
       return;
     }
-    if(sscanf(message, "choice %s", promoRestrict) == 1 && promoSweep != EmptySquare) {
-      promoSweep = CharToPiece(currentMove&1 ? ToLower(*promoRestrict) : ToUpper(*promoRestrict));
-      Sweep(0);
+    if(sscanf(message, "choice %s", promoRestrict) == 1) {
+      if(deferChoice) {
+        LeftClick(Press, 0, 0); // finish the click that was interrupted
+      } else if(promoSweep != EmptySquare) {
+        promoSweep = CharToPiece(currentMove&1 ? ToLower(*promoRestrict) : ToUpper(*promoRestrict));
+        if(strlen(promoRestrict) > 1) Sweep(0);
+      }
       return;
     }
     /* [HGM] Allow engine to set up a position. Don't ask me why one would
