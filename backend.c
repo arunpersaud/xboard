@@ -19109,7 +19109,7 @@ LoadTheme ()
 	  if(appData.trueColors != 2) // 2 is a kludge to suppress this in WinBoard
 	    snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -trueColors %s", appData.trueColors ? "true" : "false");
 	}
-	if(!appData.pieceDirectory[0] && !appData.trueColors)
+	if(!appData.pieceDirectory[0] || !appData.trueColors)
 	  snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -wpc %s -bpc %s",
 		Col2Text(0),   // whitePieceColor
 		Col2Text(1) ); // blackPieceColor
