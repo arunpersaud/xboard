@@ -5169,7 +5169,7 @@ SendMoveToProgram (int moveNum, ChessProgramState *cps)
 					       m[2], m[3] - '0',
 					       m[5], m[6] - '0',
 					       m[2] + (m[0] > m[5] ? 1 : -1), m[3] - '0');
-	else if(*c && m[8]) { // kill square followed by 2 characters: 2nd kill square rather than promo suffix
+	else if(*c && m[8] != '\n') { // kill square followed by 2 characters: 2nd kill square rather than promo suffix
 	  *c = m[9]; if(*c == '\n') *c = NULLCHAR;
 	  snprintf(buf, MSG_SIZ, "%c%d%c%d,%c%d%c%d,%c%d%c%d%s\n", m[0], m[1] - '0', // convert to three moves
 					       m[7], m[8] - '0',
@@ -5386,7 +5386,7 @@ CoordsToComputerAlgebraic (int rf, int ff, int rt, int ft, char promoChar, char 
 	    sprintf(move, "%c%c%c%c%c\n",
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt, promoChar);
 	  if(killX >= 0 && killY >= 0) {
-	    sprintf(move+4, ";%c%c\n", AAA + killX, ONE + killY);
+	    sprintf(move+4, ";%c%c%c\n", AAA + killX, ONE + killY, promoChar);
 	    if(kill2X >= 0 && kill2Y >= 0) sprintf(move+7, "%c%c%c\n", AAA + kill2X, ONE + kill2Y, promoChar);
 	  }
 	}
@@ -6707,6 +6707,7 @@ HasPromotionChoice (int fromX, int fromY, int toX, int toY, char *promoChoice, i
     piece = boards[currentMove][fromY][fromX];
     if(gameInfo.variant == VariantChu) {
         promotionZoneSize = BOARD_HEIGHT/3;
+        if(legal[toY][toX] == 6) return FALSE; // no promotion if highlights deny it
         highestPromotingPiece = (PieceToChar(piece) == '+' || PieceToChar(CHUPROMOTED(piece)) != '+') ? WhitePawn : WhiteKing;
     } else if(gameInfo.variant == VariantShogi) {
         promotionZoneSize = BOARD_HEIGHT/3 +(BOARD_HEIGHT == 8);
@@ -7405,7 +7406,7 @@ MarkByFEN(char *fen)
 	    int s = 0;
 	    if(*fen == 'M') legal[r][f] = 2; else // request promotion choice
 	    if(*fen == 'B') legal[r][f] = 4; else // request auto-promotion to victim
-	    if(*fen >= 'A' && *fen <= 'Z') legal[r][f] = 3; else
+	    if(*fen >= 'A' && *fen <= 'Z') legal[r][f] = 6; else
 	    if(*fen >= 'a' && *fen <= 'z') *fen += 'A' - 'a';
 	    if(*fen == '/' && f > BOARD_LEFT) f = BOARD_LEFT, r--; else
 	    if(*fen == 'T') marker[r][f++] = 0; else
