@@ -1853,8 +1853,9 @@ Some colors have special meaning to the GUI:
 <table>
 <tr><th>color</th><th>used for</th><th>effect</th><tr>
 <tr><td>red</td><td>capture</td><td>hovering over the square makes the GUI send a "hover" command</td><tr>
-<tr><td>magenta</td><td>promotion</td><td>moving to the square will be treated by the GUI as a promotion</td><tr>
-<tr><td>cyan</td><td>multi-move</td><td>moving to the square will not complete the move entry</td><tr>
+<tr><td>magenta</td><td>promotion choice</td><td>moving to the square will be treated by the GUI as a promotion</td><tr>
+<tr><td>blue</td><td>forced promotion</td><td>moving to the square will automatically promote the piece as specified in a 'choice' command</td><tr>
+<tr><td>cyan</td><td>multi-leg moving</td><td>moving to the square will not complete the move entry</td><tr>
 <tr><td>green</td><td>victims</td><td>no real effect, but used by convention to indicate capture victims on "hover"</td><tr>
 </table>
 The GUI will use the markers for legality checking,
@@ -1875,6 +1876,11 @@ to alter the choice offered to the user for the promotion piece from what the GU
 to the piece IDs mentioned in the PIECESTRING.
 The IDs in that string should be given as capitals irrespective of color.
 The first piece mentioned will be the default choice.
+An engine <i>must</i> send this command on receiving a 'put' on a square that it highlighted in blue,
+or the move will not be completed;
+the GUI must wait for the 'choice' command in this case,
+to complete the move with the specified promotion suffix,
+which will then always be the first piece mentioned in the PIECESTRING.
 </dd>
 </dl>
 
