@@ -2011,9 +2011,9 @@ pairing engine must be specified through the @code{pairingEngine} option.
 Each Swiss round will be considered a tourney cycle in that case.
 Default:0
 @item Number of tourney cycles
-@itemx Default number of Games
+@itemx Default Number of Games in Match
 @cindex Number of tourney cycles, Menu Item
-@cindex Default number of Games, Menu Item
+@cindex Number of Games in Match, Menu Item
 You can specify tourneys where every two opponents play each other multiple times. 
 Such multiple games can be played in a row, 
 as specified by the ‘number of games per pairing’, 
@@ -2023,7 +2023,15 @@ The total number of times two engines meet will be the product of these two.
 Default is 1 cycle;
 the number of games per pairing is the same as the default number of match games, 
 stored in your settings file through the @code{defaultMatchGames} option.
-@item Save Tourney Games
+@item Pause between Match Games
+@cindex Pause between Match Games, Menu Item
+Time (in milliseconds) XBoard waits before starting a new game after
+a previous match or tournament game finishes.
+Such a waiting period is important for engines that do not support 'ping',
+as these sometimes still produce a move long after the game finished because
+of the opponent resigning, which would be mistaken for a move in the next
+game if that had already started.
+@item Save Tourney Games on
 @cindex Save Tourney Games, Menu Item
 File where the tournament games are saved
 (duplicate of the item in the @samp{Save Game Options}).
@@ -2031,7 +2039,7 @@ File where the tournament games are saved
 @itemx File with Start Positions
 @itemx Game Number
 @itemx Position Number
-@itemx Rewind Index after
+@itemx Rewind Index after this many Games
 @cindex Game File with Opening Lines, Menu Item
 @cindex File with Start Positions, Menu Item
 @cindex Game Number, Menu Item
@@ -2050,8 +2058,8 @@ In this case the first (odd) games will randomly select from the book,
 but the second (even) games will select the same moves from the book as the previous game.
 (Note this leads to the same opening only if both engines use the GUI book!)
 Default: No game or position file will be used. The default index if such a file is used is 1.
-@item Disable own engine books be default
-@cindex Disable own engine books be default, Menu Item
+@item Disable own engine books by default
+@cindex Disable own engine books by default, Menu Item
 Setting this option reverses the default situation for use of the GUI opening book
 in tournaments from what it normally is, namely not using it.
 So unless the engine is installed with an option to explicitly specify it should
