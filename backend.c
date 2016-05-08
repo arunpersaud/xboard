@@ -7645,7 +7645,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
       if(gameMode == AnalyzeMode && (pausing || controlKey) && first.excludeMoves) { // use pause state to exclude moves
 	doubleClick = TRUE; gatingPiece = boards[currentMove][y][x];
       }
-      fromX = x; fromY = y; toX = toY = killX = killY = kill2X = kill2Y = -1;
+      fromX = x; fromY = y; toX = toY = killX = killY = kill2X = kill2Y = -1; *promoRestrict = NULLCHAR;
       if(!appData.oneClick || !OnlyMove(&x, &y, FALSE) ||
 	 // even if only move, we treat as normal when this would trigger a promotion popup, to allow sweep selection
 	 appData.sweepSelect && CanPromote(boards[currentMove][fromY][fromX], fromY) && originalY != y) {
@@ -7697,7 +7697,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	     !(fromP == BlackKing && toP == BlackRook && frc)))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
-	    killX = killY = kill2X = kill2Y = -1;
+	    killX = killY = kill2X = kill2Y = -1; *promoRestrict = NULLCHAR;
 	    if(second && gameMode == AnalyzeMode && SubtractTimeMarks(&lastClickTime, &prevClickTime) < 200) {
 		second = FALSE; // first double-click rather than scond click
 		doubleClick = first.excludeMoves; // used by UserMoveEvent to recognize exclude moves
@@ -9183,7 +9183,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
       }
       return;
     }
-    if(sscanf(message, "choice %s", promoRestrict) == 1) {
+    if(!appData.testLegality && sscanf(message, "choice %s", promoRestrict) == 1) {
       if(deferChoice) {
         LeftClick(Press, 0, 0); // finish the click that was interrupted
       } else if(promoSweep != EmptySquare) {
