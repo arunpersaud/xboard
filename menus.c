@@ -403,6 +403,13 @@ EditMenuProc ()
 }
 
 void
+MuteProc ()
+{
+    mute = !mute;
+    MarkMenuItem("Options.Mute", mute);
+}
+
+void
 NothingProc ()
 {
     return;
@@ -726,6 +733,8 @@ MenuItem engineMenu[100] = {
 };
 
 MenuItem optionsMenu[] = {
+  {N_("Mute all Sounds"),         NULL,             "Mute",                MuteProc,         CHECK},
+  {"----",                        NULL,              NULL,                 NothingProc},
 #ifdef OPTIONSDIALOG
   {N_("General..."),              NULL,             "General",             OptionsProc},
 #endif

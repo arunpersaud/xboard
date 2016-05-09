@@ -76,10 +76,10 @@ extern char *getenv();
 #include "common.h"
 #include "frontend.h"
 
-
 int
 PlaySoundFile (char *name)
 {
+  if(mute == 1) return 1;
   if (*name == NULLCHAR) {
     return 0;
   } else if (strcmp(name, "$") == 0) {

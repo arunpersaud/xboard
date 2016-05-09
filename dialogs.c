@@ -866,7 +866,9 @@ static void
 Test (int n)
 {
     GenericReadout(soundOptions, 1);
+    mute <<= 1; // temporarily enable
     if(soundFiles[values[2]]) PlaySoundFile(soundFiles[values[2]]);
+    mute >>= 1;
 }
 
 void

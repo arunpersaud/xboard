@@ -216,6 +216,7 @@ extern char *programName;
 extern int commentUp;
 extern char *firstChessProgramNames;
 extern char *icsTextMenuString;
+extern int mute;
 
 void GreyRevert P((Boolean grey));
 void EnableNamedMenuItem P((char *menuRef, int state));

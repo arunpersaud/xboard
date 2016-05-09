@@ -1415,6 +1415,10 @@ The maximum number of displayed engine names is set by the
 @section Options Menu
 @cindex Menu, Options
 @cindex Options Menu
+@section Mute all Sounds
+@cindex Mute sounds, Menu Item
+Ticking this menu item toggles all sounds XBoard can make on or off,
+without losing their definitions.
 @section General Options
 @cindex General Options, Menu Item
 The following items to set option values appear in the dialog
