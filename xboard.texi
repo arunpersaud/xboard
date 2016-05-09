@@ -811,6 +811,23 @@ of the ICS Chat/Console window.
 In that case the word that was clicked can be incorporated in the message
 sent to the ICS. E.g. to challenge a player whose name you click for a game,
 or prepare for sending him a message through a 'tell' commands.
+@item Edit ICS menu
+@cindex Edit ICS menu, Menu Item
+Brings up an edit box with the definition of the @samp{ICS text menu},
+so you can adapt its appearance to your needs.
+The menu is defined by a semi-colon-separated list,
+each button through a pair of items in it.
+The first item of each pair is the text on the button,
+the second the text to be sent when the button is pressed.
+The word '$input' in the text will put that text in the input field
+of the @samp{ICS Chat/Console} with the cursor in that place,
+the word '$name' will be replaced by the word right-clicked
+to pop up the text menu.
+@item Edit Theme List
+@cindex Edit Theme List
+Brings up an edit box with the definitions of the themes
+shown in the listbox of the @samp{Board} dialog,
+so you can delete, re-order or alter themes defined previously.
 @item Board
 @cindex Board, Menu Item
 Summons a dialog where you can customize the look of the chess board.
