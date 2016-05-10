@@ -7945,6 +7945,7 @@ LeftClick (ClickType clickType, int xPix, int yPix)
 	if(saveAnimate && !appData.animate && currentMove != oldMove && // drag-move was performed
 	   Explode(boards[currentMove-1], fromX, fromY, toX, toY))
 	    DrawPosition(TRUE, boards[currentMove]);
+	else DrawPosition(FALSE, NULL);
 	fromX = fromY = -1;
 	flashing = 0;
     }
