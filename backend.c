@@ -11215,7 +11215,7 @@ CreateTourney (char *name)
 int
 NamesToList (char *names, char **engineList, char **engineMnemonic, char *group)
 {
-    char buf[MSG_SIZ], *p, *q;
+    char buf[2*MSG_SIZ], *p, *q;
     int i=1, header, skip, all = !strcmp(group, "all"), depth = 0;
     insert = names; // afterwards, this global will point just after last retrieved engine line or group end in the 'names'
     skip = !all && group[0]; // if group requested, we start in skip mode
@@ -19066,9 +19066,10 @@ int transparency[2];
 void
 LoadTheme ()
 {
-    char *p, *q, buf[MSG_SIZ];
+#define BUF_SIZ (2*MSG_SIZ)
+    char *p, *q, buf[BUF_SIZ];
     if(engineLine && engineLine[0]) { // a theme was selected from the listbox
-	snprintf(buf, MSG_SIZ, "-theme %s", engineLine);
+	snprintf(buf, BUF_SIZ, "-theme %s", engineLine);
 	ParseArgsFromString(buf);
 	ActivateTheme(TRUE); // also redo colors
 	return;
@@ -19078,46 +19079,46 @@ LoadTheme ()
     {
 	int len;
 	q = appData.themeNames;
-	snprintf(buf, MSG_SIZ, "\"%s\"", nickName);
+	snprintf(buf, BUF_SIZ, "\"%s\"", nickName);
       if(appData.useBitmaps) {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ubt true -lbtf \"%s\" -dbtf \"%s\" -lbtm %d -dbtm %d",
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -ubt true -lbtf \"%s\" -dbtf \"%s\" -lbtm %d -dbtm %d",
 		appData.liteBackTextureFile, appData.darkBackTextureFile,
 		appData.liteBackTextureMode,
 		appData.darkBackTextureMode );
       } else {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ubt false");
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -ubt false");
       }
       if(!appData.useBitmaps || transparency[0]) {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -lsc %s", Col2Text(2) ); // lightSquareColor
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -lsc %s", Col2Text(2) ); // lightSquareColor
       }
       if(!appData.useBitmaps || transparency[1]) {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -dsc %s", Col2Text(3) ); // darkSquareColor
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -dsc %s", Col2Text(3) ); // darkSquareColor
       }
       if(appData.useBorder) {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ub true -border \"%s\"",
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -ub true -border \"%s\"",
 		appData.border);
       } else {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -ub false");
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -ub false");
       }
       if(appData.useFont) {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -upf true -pf \"%s\" -fptc \"%s\" -fpfcw %s -fpbcb %s",
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -upf true -pf \"%s\" -fptc \"%s\" -fpfcw %s -fpbcb %s",
 		appData.renderPiecesWithFont,
 		appData.fontToPieceTable,
 		Col2Text(9),    // appData.fontBackColorWhite
 		Col2Text(10) ); // appData.fontForeColorBlack
       } else {
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -upf false");
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -upf false");
 	if(appData.pieceDirectory[0]) {
-	  snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -pid \"%s\"", appData.pieceDirectory);
+	  snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -pid \"%s\"", appData.pieceDirectory);
 	  if(appData.trueColors != 2) // 2 is a kludge to suppress this in WinBoard
-	    snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -trueColors %s", appData.trueColors ? "true" : "false");
+	    snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -trueColors %s", appData.trueColors ? "true" : "false");
 	}
 	if(!appData.pieceDirectory[0] || !appData.trueColors)
-	  snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -wpc %s -bpc %s",
+	  snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -wpc %s -bpc %s",
 		Col2Text(0),   // whitePieceColor
 		Col2Text(1) ); // blackPieceColor
       }
-      snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), " -hsc %s -phc %s\n",
+      snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -hsc %s -phc %s\n",
 		Col2Text(4),   // highlightSquareColor
 		Col2Text(5) ); // premoveHighlightColor
 	appData.themeNames = malloc(len = strlen(q) + strlen(buf) + 1);
