@@ -7898,8 +7898,10 @@ LeftClick (ClickType clickType, int xPix, int yPix)
     }
 
     // off-board moves should not be highlighted
-    if(x < 0 || y < 0) ClearHighlights();
-    else ReportClick("put", x, y);
+    if(x < 0 || y < 0) {
+	ClearHighlights();
+	DrawPosition(FALSE, NULL);
+    } else ReportClick("put", x, y);
 
     if(gatingPiece != EmptySquare && gameInfo.variant == VariantSChess) promoChoice = ToLower(PieceToChar(gatingPiece));
  }
