@@ -19081,8 +19081,10 @@ LoadTheme ()
 	q = appData.themeNames;
 	snprintf(buf, BUF_SIZ, "\"%s\"", nickName);
       if(appData.useBitmaps) {
-	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -ubt true -lbtf \"%s\" -dbtf \"%s\" -lbtm %d -dbtm %d",
-		appData.liteBackTextureFile, appData.darkBackTextureFile,
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -ubt true -lbtf \"%s\"",
+		Shorten(appData.liteBackTextureFile));
+	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -dbtf \"%s\" -lbtm %d -dbtm %d",
+		Shorten(appData.darkBackTextureFile),
 		appData.liteBackTextureMode,
 		appData.darkBackTextureMode );
       } else {
@@ -19109,7 +19111,7 @@ LoadTheme ()
       } else {
 	snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -upf false");
 	if(appData.pieceDirectory[0]) {
-	  snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -pid \"%s\"", appData.pieceDirectory);
+	  snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -pid \"%s\"", Shorten(appData.pieceDirectory));
 	  if(appData.trueColors != 2) // 2 is a kludge to suppress this in WinBoard
 	    snprintf(buf+strlen(buf), BUF_SIZ-strlen(buf), " -trueColors %s", appData.trueColors ? "true" : "false");
 	}

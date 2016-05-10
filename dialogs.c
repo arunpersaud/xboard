@@ -3395,3 +3395,11 @@ ActivateTheme (int col)
     DrawPosition(True, NULL);
 }
 
+char *
+Shorten (char *s)
+{
+    static char buf[MSG_SIZ];
+    if(strstr(s, dataDir) != s) return s;
+    snprintf(buf, MSG_SIZ, "~~%s", s + strlen(dataDir));
+    return buf;
+}

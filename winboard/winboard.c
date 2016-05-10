@@ -3755,6 +3755,7 @@ void DrawSeekClose()
 
 
 
+
 VOID
 HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 {
@@ -6272,6 +6273,7 @@ InitComboStringsFromOption(HANDLE hwndCombo, char *str)
     str = buf1;
   }
 
+
   SendMessage(hwndCombo, CB_RESETCONTENT, 0, 0);
 
   for (;;) {
@@ -8530,6 +8532,11 @@ DisplayInformation(char *str)
   (void) MessageBox(hwndMain, str, _("Information"), MB_OK|MB_ICONINFORMATION);
 }
 
+char *
+Shorten (char *s)
+{
+  return s;
+}
 
 VOID
 DisplayNote(char *str)
