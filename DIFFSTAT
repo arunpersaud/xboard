@@ -1,3 +1,367 @@
+** Version 4.9.0 **
+
+(git diff -b --stat --summary -M v4.8.0 HEAD)
+
+ COPYRIGHT                                          |    2 +-
+ Makefile.am                                        |   72 +-
+ args.h                                             |   73 +-
+ autogen.sh                                         |    3 +-
+ backend.c                                          | 1171 ++++++--
+ backend.h                                          |   12 +-
+ backendz.h                                         |    3 +-
+ board.c                                            |  195 +-
+ board.h                                            |    3 +-
+ book.c                                             |   75 +-
+ childio.c                                          |    3 +-
+ childio.h                                          |    3 +-
+ cmail.in                                           |    2 +-
+ common.h                                           |   51 +-
+ conf/chu                                           |    2 +-
+ conf/shogi                                         |    4 +
+ configure.ac                                       |   30 +-
+ copyright.texi                                     |    2 +-
+ dialogs.c                                          |  505 +++-
+ dialogs.h                                          |   19 +-
+ draw.c                                             |  301 +-
+ draw.h                                             |    6 +-
+ engine-intf.html                                   |   23 +-
+ engineoutput.c                                     |   37 +-
+ engineoutput.h                                     |    5 +-
+ evalgraph.c                                        |    3 +-
+ evalgraph.h                                        |    3 +-
+ frontend.h                                         |    9 +-
+ gamelist.c                                         |    5 +-
+ gtk/xboard.c                                       |  237 +-
+ gtk/xboard.h                                       |    5 +-
+ gtk/xengineoutput.c                                |    3 +-
+ gtk/xoptions.c                                     |  304 +-
+ gtk/xtimer.c                                       |    6 +-
+ history.c                                          |    3 +-
+ lists.c                                            |    3 +-
+ lists.h                                            |    3 +-
+ menus.c                                            |   58 +-
+ menus.h                                            |    6 +-
+ moves.c                                            |  301 +-
+ moves.h                                            |   14 +-
+ nengineoutput.c                                    |    3 +-
+ nevalgraph.c                                       |    3 +-
+ ngamelist.c                                        |    5 +-
+ nhistory.c                                         |    2 +-
+ osxapp/Info.plist.in                               |    2 +-
+ osxapp/OSX-theme/gtk-2.0/assets/handle.png         |  Bin 186 -> 0 bytes
+ .../gtk-2.0/assets/l-checkbox-checked-18.png       |  Bin 814 -> 0 bytes
+ .../assets/l-checkbox-checked-insensitive-18.png   |  Bin 639 -> 0 bytes
+ .../gtk-2.0/assets/l-checkbox-unchecked-18.png     |  Bin 413 -> 0 bytes
+ .../assets/l-checkbox-unchecked-insensitive-18.png |  Bin 356 -> 0 bytes
+ .../gtk-2.0/assets/l-radio-selected-18.png         |  Bin 890 -> 0 bytes
+ .../assets/l-radio-selected-insensitive-18.png     |  Bin 643 -> 0 bytes
+ .../gtk-2.0/assets/l-radio-unselected-18.png       |  Bin 606 -> 0 bytes
+ .../assets/l-radio-unselected-insensitive-18.png   |  Bin 546 -> 0 bytes
+ .../gtk-2.0/assets/notebook-gap-bottom.png         |  Bin 159 -> 0 bytes
+ .../OSX-theme/gtk-2.0/assets/notebook-gap-left.png |  Bin 85 -> 0 bytes
+ .../gtk-2.0/assets/notebook-gap-right.png          |  Bin 84 -> 0 bytes
+ .../OSX-theme/gtk-2.0/assets/notebook-gap-top.png  |  Bin 158 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/assets/notebook.png       |  Bin 227 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/assets/null.png           |  Bin 1164 -> 0 bytes
+ .../OSX-theme/gtk-2.0/assets/scroll-background.png |  Bin 155 -> 0 bytes
+ .../OSX-theme/gtk-2.0/assets/slider-horizontal.png |  Bin 828 -> 0 bytes
+ .../OSX-theme/gtk-2.0/assets/tab-bottom-active.png |  Bin 924 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/assets/tab-bottom.png     |  Bin 888 -> 0 bytes
+ .../OSX-theme/gtk-2.0/assets/tab-left-active.png   |  Bin 451 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/assets/tab-left.png       |  Bin 763 -> 0 bytes
+ .../OSX-theme/gtk-2.0/assets/tab-right-active.png  |  Bin 453 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/assets/tab-right.png      |  Bin 787 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/assets/tab-top-active.png |  Bin 920 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/assets/tab-top.png        |  Bin 897 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/assets/toolbar.png        |  Bin 214 -> 0 bytes
+ osxapp/OSX-theme/gtk-2.0/gtkrc                     |  798 -----
+ osxapp/XBoard.gtklauncher                          |    5 +-
+ osxapp/gtk2-themes/Mac/gtk-2.0/gtkrc               |  672 +++++
+ osxapp/gtkrc                                       |   11 +-
+ osxapp/info.command                                |    2 -
+ osxapp/logos/207.99.83.228.png                     |  Bin 16710 -> 19696 bytes
+ .../logos/{69.36.243.188.png => freechess.org.png} |  Bin
+ osxapp/man.command                                 |    2 -
+ osxapp/osx-localization/.DS_Store                  |  Bin 6148 -> 0 bytes
+ .../da.lproj/GtkosxApplication.strings             |  Bin 1056 -> 0 bytes
+ .../de.lproj/GtkosxApplication.strings             |  Bin 1104 -> 0 bytes
+ .../en.lproj/GtkosxApplication.strings             |  Bin 1066 -> 0 bytes
+ .../es.lproj/GtkosxApplication.strings             |  Bin 1078 -> 0 bytes
+ .../it.lproj/GtkosxApplication.strings             |  Bin 1116 -> 0 bytes
+ .../nl.lproj/GtkosxApplication.strings             |  Bin 1100 -> 0 bytes
+ .../pl.lproj/GtkosxApplication.strings             |  Bin 1084 -> 0 bytes
+ .../ru.lproj/GtkosxApplication.strings             |  Bin 1088 -> 0 bytes
+ .../tr.lproj/GtkosxApplication.strings             |  Bin 1038 -> 0 bytes
+ .../uk.lproj/GtkosxApplication.strings             |  Bin 610 -> 0 bytes
+ .../vi.lproj/GtkosxApplication.strings             |  Bin 1064 -> 0 bytes
+ .../zh_CN.lproj/GtkosxApplication.strings          |  Bin 944 -> 0 bytes
+ .../zh_HK.lproj/GtkosxApplication.strings          |  Bin 934 -> 0 bytes
+ .../zh_TW.lproj/GtkosxApplication.strings          |  Bin 944 -> 0 bytes
+ osxapp/pango.modules                               |    5 -
+ osxapp/{ => themes}/default/eo_Analyzing.png       |  Bin
+ osxapp/{ => themes}/default/eo_Black.png           |  Bin
+ osxapp/{ => themes}/default/eo_Clear.png           |  Bin
+ osxapp/{ => themes}/default/eo_Ponder.png          |  Bin
+ osxapp/{ => themes}/default/eo_Thinking.png        |  Bin
+ osxapp/{ => themes}/default/eo_Unknown.png         |  Bin
+ osxapp/{ => themes}/default/eo_White.png           |  Bin
+ osxapp/{ => themes}/default/icon_black.png         |  Bin
+ osxapp/{ => themes}/default/icon_white.png         |  Bin
+ parser.c                                           |  295 +-
+ parser.h                                           |    7 +-
+ pgntags.c                                          |    7 +-
+ png/{xqboard.png => xqboard-9x10.png}              |  Bin
+ png/{xqwood.png => xqwood-9x10.png}                |  Bin
+ po/LINGUAS                                         |    2 +-
+ po/da.po                                           | 1598 +++++-----
+ po/de.po                                           | 2568 ++++++++--------
+ po/es.po                                           | 1600 +++++-----
+ po/fr.po                                           | 3173 ++++++++++++++++++++
+ po/it.po                                           | 1586 +++++-----
+ po/lng2po.sh                                       |    2 +-
+ po/nl.po                                           | 1691 ++++++-----
+ po/pl.po                                           | 1591 +++++-----
+ po/ru.po                                           | 2596 ++++++++--------
+ po/sr.po                                           | 3170 +++++++++++++++++++
+ po/tr.po                                           | 1576 +++++-----
+ po/uk.po                                           | 1606 +++++-----
+ po/vi.po                                           | 1586 +++++-----
+ po/xboard.pot                                      | 1571 +++++-----
+ po/zh_CN.po                                        | 3136 ++++++++++---------
+ po/zh_HK.po                                        | 1587 +++++-----
+ po/zh_TW.po                                        | 1587 +++++-----
+ svg/BlackAxe.svg                                   |  107 +
+ svg/BlackButterfly.svg                             |  173 ++
+ svg/BlackCamel.svg                                 |  109 +
+ svg/BlackCopper.svg                                |  109 +
+ svg/BlackCub.svg                                   |  172 ++
+ svg/BlackDragon.svg                                |  119 +
+ svg/BlackDuck.svg                                  |  112 +
+ svg/BlackFlag.svg                                  |  139 +
+ svg/BlackGnu.svg                                   |  154 +
+ svg/BlackHat.svg                                   |  112 +
+ svg/BlackIron.svg                                  |  163 +
+ svg/BlackLShield.svg                               |  176 ++
+ svg/BlackLeft.svg                                  |  173 ++
+ svg/BlackPegasus.svg                               |  142 +
+ svg/BlackRShield.svg                               |  177 ++
+ svg/BlackRight.svg                                 |  172 ++
+ svg/BlackTower.svg                                 |  135 +
+ svg/BlackUnicorn.svg                               |   37 +-
+ svg/BlackViking.svg                                |  113 +
+ svg/BlackWizard.svg                                |  164 +
+ svg/BlackWolf.svg                                  |   86 +
+ svg/BlackZebra.svg                                 |  118 +
+ svg/WhiteAxe.svg                                   |   85 +
+ svg/WhiteButterfly.svg                             |  157 +
+ svg/WhiteCamel.svg                                 |  110 +
+ svg/WhiteClaw.svg                                  |   24 +-
+ svg/WhiteCopper.svg                                |  100 +
+ svg/WhiteCub.svg                                   |  171 ++
+ svg/WhiteDolphin.svg                               |   31 +-
+ svg/WhiteDragon.svg                                |  105 +
+ svg/WhiteDuck.svg                                  |  112 +
+ svg/WhiteFlag.svg                                  |  103 +
+ svg/WhiteGnu.svg                                   |  176 ++
+ svg/WhiteHSword.svg                                |   19 +-
+ svg/WhiteHat.svg                                   |  112 +
+ svg/WhiteIron.svg                                  |  171 ++
+ svg/WhiteLShield.svg                               |  170 ++
+ svg/WhiteLeft.svg                                  |  185 ++
+ svg/WhiteLeopard.svg                               |   91 +-
+ svg/WhiteLion.svg                                  |   85 +-
+ svg/WhitePegasus.svg                               |  112 +
+ svg/WhitePromoHSword.svg                           |   18 +-
+ svg/WhitePromoSword.svg                            |   18 +-
+ svg/WhiteRShield.svg                               |  171 ++
+ svg/WhiteRight.svg                                 |  186 ++
+ svg/WhiteSword.svg                                 |   29 +-
+ svg/WhiteTower.svg                                 |  138 +
+ svg/WhiteUnicorn.svg                               |   37 +-
+ svg/WhiteViking.svg                                |  109 +
+ svg/WhiteWizard.svg                                |  158 +
+ svg/WhiteWolf.svg                                  |   71 +
+ svg/WhiteZebra.svg                                 |  126 +
+ themes/shogi/{BlackJewled.svg => BlackZebra.svg}   |    0
+ themes/shogi/{WhiteJewled.svg => WhiteZebra.svg}   |    0
+ uci.c                                              |    3 +-
+ usounds.c                                          |    5 +-
+ usystem.c                                          |   49 +-
+ usystem.h                                          |    3 +-
+ winboard/bitmaps/camel49o.bmp                      |  Bin 0 -> 454 bytes
+ winboard/bitmaps/camel49s.bmp                      |  Bin 0 -> 454 bytes
+ winboard/bitmaps/camel49w.bmp                      |  Bin 0 -> 454 bytes
+ winboard/bitmaps/camel72o.bmp                      |  Bin 0 -> 926 bytes
+ winboard/bitmaps/camel72s.bmp                      |  Bin 0 -> 926 bytes
+ winboard/bitmaps/camel72w.bmp                      |  Bin 0 -> 926 bytes
+ winboard/bitmaps/wolf49o.bmp                       |  Bin 0 -> 454 bytes
+ winboard/bitmaps/wolf49s.bmp                       |  Bin 0 -> 454 bytes
+ winboard/bitmaps/wolf49w.bmp                       |  Bin 0 -> 454 bytes
+ winboard/bitmaps/wolf72o.bmp                       |  Bin 0 -> 926 bytes
+ winboard/bitmaps/wolf72s.bmp                       |  Bin 0 -> 926 bytes
+ winboard/bitmaps/wolf72w.bmp                       |  Bin 0 -> 926 bytes
+ winboard/bitmaps/zebra49o.bmp                      |  Bin 0 -> 454 bytes
+ winboard/bitmaps/zebra49s.bmp                      |  Bin 0 -> 454 bytes
+ winboard/bitmaps/zebra72o.bmp                      |  Bin 0 -> 926 bytes
+ winboard/bitmaps/zebra72s.bmp                      |  Bin 0 -> 926 bytes
+ winboard/config.h                                  |    6 +-
+ winboard/defaults.h                                |    7 +-
+ winboard/help.c                                    |    2 +-
+ winboard/help/html/24.htm                          |    2 +-
+ winboard/jaws.c                                    |    5 +-
+ winboard/language.txt                              |    2 +-
+ winboard/wchat.c                                   |    3 +-
+ winboard/wclipbrd.c                                |    7 +-
+ winboard/wclipbrd.h                                |    3 +-
+ winboard/wedittags.c                               |    3 +-
+ winboard/wengineoutput.c                           |    3 +-
+ winboard/wevalgraph.c                              |    3 +-
+ winboard/wgamelist.c                               |    3 +-
+ winboard/whistory.c                                |    3 +-
+ winboard/winboard.c                                |  136 +-
+ winboard/winboard.h                                |    3 +-
+ winboard/winboard.rc                               |   56 +-
+ winboard/wlayout.c                                 |    3 +-
+ winboard/woptions.c                                |   17 +-
+ winboard/woptions.h                                |    3 +-
+ winboard/wsettings.c                               |   31 +-
+ winboard/wsockerr.c                                |    2 +-
+ winboard/wsockerr.h                                |    2 +-
+ xaw/xboard.c                                       |   27 +-
+ xaw/xboard.h                                       |    3 +-
+ xaw/xengineoutput.c                                |    2 +-
+ xaw/xgamelist.c                                    |    2 +-
+ xaw/xgamelist.h                                    |    2 +-
+ xaw/xhistory.c                                     |    2 +-
+ xaw/xhistory.h                                     |    2 +-
+ xaw/xoptions.c                                     |   32 +-
+ xboard.conf                                        |   11 +-
+ xboard.texi                                        | 1495 ++++++---
+ xboard2.h                                          |    3 +-
+ zippy.c                                            |    2 +-
+ zippy.h                                            |    2 +-
+ 238 files changed, 31374 insertions(+), 14328 deletions(-)
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/handle.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/l-checkbox-checked-18.png
+ delete mode 100644 osxapp/OSX-theme/gtk-2.0/assets/l-checkbox-checked-insensitive-18.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/l-checkbox-unchecked-18.png
+ delete mode 100644 osxapp/OSX-theme/gtk-2.0/assets/l-checkbox-unchecked-insensitive-18.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/l-radio-selected-18.png
+ delete mode 100644 osxapp/OSX-theme/gtk-2.0/assets/l-radio-selected-insensitive-18.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/l-radio-unselected-18.png
+ delete mode 100644 osxapp/OSX-theme/gtk-2.0/assets/l-radio-unselected-insensitive-18.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/notebook-gap-bottom.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/notebook-gap-left.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/notebook-gap-right.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/notebook-gap-top.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/notebook.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/null.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/scroll-background.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/slider-horizontal.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/tab-bottom-active.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/tab-bottom.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/tab-left-active.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/tab-left.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/tab-right-active.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/tab-right.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/tab-top-active.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/tab-top.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/assets/toolbar.png
+ delete mode 100755 osxapp/OSX-theme/gtk-2.0/gtkrc
+ create mode 100644 osxapp/gtk2-themes/Mac/gtk-2.0/gtkrc
+ delete mode 100755 osxapp/info.command
+ rename osxapp/logos/{69.36.243.188.png => freechess.org.png} (100%)
+ delete mode 100755 osxapp/man.command
+ delete mode 100644 osxapp/osx-localization/.DS_Store
+ delete mode 100755 osxapp/osx-localization/da.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/de.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/en.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/es.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/it.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/nl.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/pl.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/ru.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/tr.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/uk.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/vi.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/zh_CN.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/zh_HK.lproj/GtkosxApplication.strings
+ delete mode 100755 osxapp/osx-localization/zh_TW.lproj/GtkosxApplication.strings
+ delete mode 100644 osxapp/pango.modules
+ rename osxapp/{ => themes}/default/eo_Analyzing.png (100%)
+ rename osxapp/{ => themes}/default/eo_Black.png (100%)
+ rename osxapp/{ => themes}/default/eo_Clear.png (100%)
+ rename osxapp/{ => themes}/default/eo_Ponder.png (100%)
+ rename osxapp/{ => themes}/default/eo_Thinking.png (100%)
+ rename osxapp/{ => themes}/default/eo_Unknown.png (100%)
+ rename osxapp/{ => themes}/default/eo_White.png (100%)
+ rename osxapp/{ => themes}/default/icon_black.png (100%)
+ rename osxapp/{ => themes}/default/icon_white.png (100%)
+ rename png/{xqboard.png => xqboard-9x10.png} (100%)
+ rename png/{xqwood.png => xqwood-9x10.png} (100%)
+ create mode 100644 po/fr.po
+ create mode 100644 po/sr.po
+ create mode 100644 svg/BlackAxe.svg
+ create mode 100644 svg/BlackButterfly.svg
+ create mode 100644 svg/BlackCamel.svg
+ create mode 100644 svg/BlackCopper.svg
+ create mode 100644 svg/BlackCub.svg
+ create mode 100644 svg/BlackDragon.svg
+ create mode 100644 svg/BlackDuck.svg
+ create mode 100644 svg/BlackFlag.svg
+ create mode 100644 svg/BlackGnu.svg
+ create mode 100644 svg/BlackHat.svg
+ create mode 100644 svg/BlackIron.svg
+ create mode 100644 svg/BlackLShield.svg
+ create mode 100644 svg/BlackLeft.svg
+ create mode 100644 svg/BlackPegasus.svg
+ create mode 100644 svg/BlackRShield.svg
+ create mode 100644 svg/BlackRight.svg
+ create mode 100644 svg/BlackTower.svg
+ create mode 100644 svg/BlackViking.svg
+ create mode 100644 svg/BlackWizard.svg
+ create mode 100644 svg/BlackWolf.svg
+ create mode 100644 svg/BlackZebra.svg
+ create mode 100644 svg/WhiteAxe.svg
+ create mode 100644 svg/WhiteButterfly.svg
+ create mode 100644 svg/WhiteCamel.svg
+ create mode 100644 svg/WhiteCopper.svg
+ create mode 100644 svg/WhiteCub.svg
+ create mode 100644 svg/WhiteDragon.svg
+ create mode 100644 svg/WhiteDuck.svg
+ create mode 100644 svg/WhiteFlag.svg
+ create mode 100644 svg/WhiteGnu.svg
+ create mode 100644 svg/WhiteHat.svg
+ create mode 100644 svg/WhiteIron.svg
+ create mode 100644 svg/WhiteLShield.svg
+ create mode 100644 svg/WhiteLeft.svg
+ create mode 100644 svg/WhitePegasus.svg
+ create mode 100644 svg/WhiteRShield.svg
+ create mode 100644 svg/WhiteRight.svg
+ create mode 100644 svg/WhiteTower.svg
+ create mode 100644 svg/WhiteViking.svg
+ create mode 100644 svg/WhiteWizard.svg
+ create mode 100644 svg/WhiteWolf.svg
+ create mode 100644 svg/WhiteZebra.svg
+ rename themes/shogi/{BlackJewled.svg => BlackZebra.svg} (100%)
+ rename themes/shogi/{WhiteJewled.svg => WhiteZebra.svg} (100%)
+ create mode 100644 winboard/bitmaps/camel49o.bmp
+ create mode 100644 winboard/bitmaps/camel49s.bmp
+ create mode 100644 winboard/bitmaps/camel49w.bmp
+ create mode 100644 winboard/bitmaps/camel72o.bmp
+ create mode 100644 winboard/bitmaps/camel72s.bmp
+ create mode 100644 winboard/bitmaps/camel72w.bmp
+ create mode 100644 winboard/bitmaps/wolf49o.bmp
+ create mode 100644 winboard/bitmaps/wolf49s.bmp
+ create mode 100644 winboard/bitmaps/wolf49w.bmp
+ create mode 100644 winboard/bitmaps/wolf72o.bmp
+ create mode 100644 winboard/bitmaps/wolf72s.bmp
+ create mode 100644 winboard/bitmaps/wolf72w.bmp
+ create mode 100644 winboard/bitmaps/zebra49o.bmp
+ create mode 100644 winboard/bitmaps/zebra49s.bmp
+ create mode 100644 winboard/bitmaps/zebra72o.bmp
+ create mode 100644 winboard/bitmaps/zebra72s.bmp
+
 ** Version 4.8.0 **
 
 (git diff -b --stat --summary -M v4.7.3 HEAD)

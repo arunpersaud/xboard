@@ -1,3 +1,495 @@
+** Version 4.9.0 **
+
+(git log --pretty=short --no-merges --cherry-pick --left-only v4.9.x...v4.8.0^ |git shortlog --no-merges)
+
+Arun Persaud (20):
+      updates NEWS, Changelog, DIFFSTAT and SHORTLOG
+      remove OS X theme folder
+      Added Serbian translation
+      updated German translation
+      added French translation
+      updated German translation
+      updated French translation
+      fix typo in configure
+      updated German translation
+      updated Dutch translation
+      make GTK the default version
+      Updated copyright notice to 2015
+      update Russian translation
+      fixed configure script: GTK default was enabled even with --with-Xaw
+      updated copyright for 2016
+      new developer release; updated po/pot
+      configure.ac: add pangocairo to list of needed libraries
+      new developer release; updated po/pot
+      new version number for release 4.9.0
+      updated po/pot files
+
+H.G.Muller (419):
+      Add USI/UCCI checkbox to Load Engine dialog
+      Connect OSX Quit menu to ExitEvent
+      Let Betza generator respect DarkSquares
+      Allow Betza castling with piece next to DarkSquare
+      Locate corner piece in presence of DarkSquares
+      Make the promotion zone always 3 deep in Elven Chess
+      Allow e.p. capture on triple-Push
+      Also set e.p. rights on move of Lance
+      Implement non-royal castling
+      Fix premature disappearence of Lion victims
+      Fix e.p. capture
+      Fix two-sided non-royal castling
+      Fix sweep promotions for Lance on deeper zones
+      Let Clear Board respect DarkSquares
+      Allow creation of DarkSquares in EditPosition mode
+      Fix -addMasterOption option
+      Fix crash on using Browse buttons in Tournament dialog Xaw
+      Implement -monoMouse option (XB)
+      Fix click-click moving with -monoMouse
+      stash
+      Implement -positionDir option GTK
+      Let file selecor remember last used directory (GTK)
+      Set position dir to handicap positions in shogi theme
+      Define mnemonics for main menu bar
+      Let <Esc> transfer focus from Board to ICS Input
+      Use Ctrl-H in ICS Chat to close chat pane
+      Use Ctl-E in ICS chat to end chat
+      Ignore Tab in ICS Interaction if no chats assigned
+      Fix sending of messages from kibitz or c-shout chat
+      Fix Tab in ICS command mode
+      Fix width of dual board GTK
+      Fix illegal drops
+      Print castlings as double move
+      Fix drops
+      Recognize castling double-moves from engine
+      Allow friend-trampling format also for royal castlings
+      Castle with nearest rather than corner piece
+      Let Betza jO mean castling with non-edge piece
+      Take heed of mnemonic indicator when clipping menu texts
+      Castling fix 1
+      Fix highlight-induced promotions
+      Fix deselection of piece
+      Fix promotion sweep of black Pawns in Shogi
+      Fix click-click sweep-select
+      Fix illegal drops
+      Suppress appearance of promotion popup when sweep-selecting
+      Suppress lift command on deselecting piece
+      Fix illegal-drop fix
+      Let promotion zone be 3 ranks on 8-rank shogi boards
+      Fix spurious promo-suffixes on drop moves
+      Fix parsing of illegal drops from PGN
+      Do not call illegal moves ambiguos
+      Make move parser understand kif-format Shogi moves
+      Implement kifu move disambiguation
+      Use PGN result in Game List build to supply tag
+      Implement -rankOffset option
+      Fix reading of startposition FEN starting with *
+      Extend book to 48 piece types and 256 squares
+      Improve reading of pieceToCharTable
+      Wrap kif comments in braces
+      Remove debug printf for kanji
+      Fix book encoding of Chu promotion moves
+      Change book Zobrist key for Chu promoted pieces
+      Fix shift-JIS codes for N, P, +B, +R
+      Fix crash XBoard on changing Game List Tags
+      Implement piece suffixes
+      Fix probing of GUI book for board with more than 10 ranks
+      Remove chu theme file from XBoard install
+      Fix display update during Edit Book
+      Fix printing of book moves for double-digit ranks
+      Fix reading of pieceToChar string and piece command
+      Allow Lion double-moves in opening book
+      Also allow Princess SVG piece to be diversify
+      Make Claws glyph available in non-Chu variants
+      Implement triple capture (not finished)
+      Allow promotion to piece with letter ID in Chu
+      Add USI/UCCI checkbox to Load Engine dialog
+      Connect OSX Quit menu to ExitEvent
+      Fix premature disappearence of Lion victims
+      Fix -addMasterOption option
+      Fix crash on using Browse buttons in Tournament dialog Xaw
+      Allow promotion choice in variant asean
+      Implement -positionDir option GTK
+      Fix disappearance of a1 on double capture
+      Fix Shogi promotion popup
+      Fix bridge capture of Lions
+      Correctly remember checkboxes on Continue Later (WB)
+      Remember tourney-file changes after Continue Later
+      Ignore Continue Later when match already in progress
+      Prevent printing in non-existing Chat dialog (XB)
+      Render inscriptions upside-down for black pieces (XB)
+      Let color of inscription depend on piece ID
+      Use pango to draw inscriptions
+      Also write inscription on dragged piece
+      Take account of glyph size when positioning inscriptions
+      Fall back on Tile SVG in pieceImageDirectory
+      Make inscriptions somewhat smaller and non-bold
+      Make -inscriptions a volatile option
+      Fix periodic updates GTK
+      Display exclusion header only for engines supporting exclusion
+      Use intermediate width menu bar in sizes 37 & 40 (WB)
+      Base tinyLayout decision on total board width
+      Grayout Machine Match menu when aborting match
+      Fix exclusion header fix
+      Fix grayout
+      Slip in 10 more piece types
+      Start implementing EPD test suites
+      Print mate scores as #N in message field
+      Fix sortng of mate scores
+      Try to load bitmaps for all pieces (WB)
+      Display new user logo when username is entered
+      Allow skipping over black squares
+      Fix piece commands for suffixed piece IDs
+      Fix DarkSquare bug in piece counting
+      Allow debug output to go to child process (WB)
+      Erase old logo before drawing new one (XB)
+      Fix bare-king adjudication in Atomic
+      Fix piece command after ID-suffix patch
+      Fix color of white SVG pieces
+      Fix parsing of pieceToChar strings
+      Add 2x9 new piece images
+      Assign new images to the new pieces
+      Skip in pieceToChar to Tokin always
+      Use hoplit helmet for Copper General in Chu Shogi
+      Also define Lance image for Amazon in WB
+      Replace Flying Dragon piece image by Gnu
+      Fix FEN castling rank for Knightmate
+      Let parsing of O-O castlings pay attention to castling rank
+      Fix typos in winboard.c
+      Add duplicat of Lion (and Flying Dragon)
+      Fix edit command for double-digit ranks
+      Never castle when King has other initial moves
+      Correct backup pieces for addition of minor Lion
+      Add white Zebra piece image
+      Flip Unicorn image
+      Fix white Iron General image
+      Add Wolf, Camel and Zebra bitmaps to WB
+      Fix Makefile for Dragon and minor Lion image
+      Fix reading FEN FRC castling rights when King not on last rank
+      Fix writing FEN castling rights for non-edge 'Rooks'
+      Fix parsing of OO castling when redefined
+      Increas number of engine-defined variants to 15 (WB)
+      Fix setting of initial virginity on PGN read
+      Let FENs handle Betza initial rights in castlingless variants
+      Fix variant recognition in ICS mode
+      Send ping in EditGameEvent
+      Fix spurious undo at game start
+      Use ii in Betza notation for 3rd-rank Pawn push
+      Fix Error popup in Tournament Options
+      Prevent changing time control during game (XB)
+      Fix crash on pasting garbage FEN
+      Fix book probing
+      Fix double-clicks for copying in Edit Position mode
+      Move Common Engine menu item to Engine menu
+      Fix pasting of moves after starting from position file
+      Fix highlighting in text memos (GTK)
+      Add support for Multi-PV Margin
+      Let target-square highlighting prevail over legality test
+      Implement 'choice' engine->GUI command
+      Make move to own piece a swap rather than capture
+      Fix Chu promotion with added pieces
+      Let PROMOTED and DEMOTED macros use argument
+      Use flexible promotion assignment
+      Expand numer of new piece types to 2 x 11
+      Change pieceToCharTable order of pieces beyond Lion
+      Allow engine to force popup of its settings dialog
+      Allow O1 as Betza castling descriptor
+      Implement engine-requested settings-popup WB
+      Fix castling rights
+      Allow pieces with dressed-letter ID as promotion choice
+      Fix two compiler warnings
+      Fix setting default piece from 'choice' command
+      Fix sweep promotions to Tokin
+      Fix default piece in Shogi promotions
+      Fix aborted detour under-promotion XB
+      Clear highlights after moving piece in Edit Position
+      Fix demoting in Edit Position mode
+      Adapt Chu-Shogi pieceToCharTable to new piece order
+      Change the piece order again
+      Fix clipping of GTK menu-bar labels for broad boards
+      Fix printing of piece ID in illegal SAN moves
+      Fix spurious promotion partners
+      Remove debug printf
+      Let VarianMen PGN tag work with dressed letters
+      Process VariantMen PGN tag
+      Always assume FEN in variant-fairy PGN game is initial position
+      Fix using VariantMen PGN tag for both colors
+      Improve variant recognition for enabling buttons (XB)
+      Fix printing of 'x' in position diagram
+      Slight speedup of parsing promotion suffix
+      Allow setting of piece nicknames from pieceToChar string
+      Fix type-in of hit-and-run captures
+      Allow promotion on two-leg move
+      Fix erasing of arrow highlight (XB)
+      Allow promotion choice in engine-defined variants
+      Use mouse wheel for selecting piece in Edit Position mode (XB)
+      Move Common Engine dialog to Engine menu (WB)
+      Fix bug #45774 (GTK compile bug with ENABLE_NLS)
+      Fix bug #45775 (Infinite loop on nonexistent texture file)
+      Fix bug #45773 (needless #inclusion of cairo-xlib.h)
+      Fix bug #45599 (inclusion of keysym.h in Xaw)
+      Fix bug #43792 (no highlights after rejection of premove)
+      Fix disappearance of premoved piece
+      Add -installTheme option
+      Update texi file
+      Add configure-options section to texi file
+      Fix bugs in previous 3 commits
+      Print score with same sign in message and engine output
+      Add 'divide by 60' checkbox in Time Control dialog XB
+      Describe engine grouping in texi file
+      Preserve flip on pasting game when auto-flipView is off
+      Fix black border around saved diagrams (WB)
+      Fix crash on changing piece directory
+      Fix compile error in SetComboChoice Xaw
+      Fix recognition of title in small layout
+      Silence warning
+      Fix another Xaw compile error
+      Suppress underscores in Xaw menus
+      Remove warning from About box against GTK build
+      Fix crash in New Variant dialog Xaw
+      Beef up variant detection in New Variant dialog WB
+      Fix parent dialog of Error Popup
+      Prevent out-of-turn grabbing of piece in analysis mode
+      Fix spurious clearing of Engine Output during PV walk
+      Make OK and Cancel buttons appear in top-level dialogs GTK
+      Cleanup Edit Tags/Book/EngineList a bit
+      Show moves in Edit Book window as SAN
+      Allow use of context menu in text memos GTK
+      Implement triple capture
+      Improve triple-leg-move animation
+      Improve highlight-arrow pointing and fix its erasure
+      Describe choice command in protocol specs
+      Make texi file sub-section free
+      Fix dressed-letter IDs in VariantMen PGN Tag
+      Fix WinBoard compile errors
+      Describe ICS Text Menu in texi file
+      Fix braces problem in texi file
+      Make EOF error conditionally non-fatal (XB)
+      Deprecate -defaultPathEGTB option
+      Logout from ICS after fatal error
+      Implement help clicks
+      Implement rough help popup
+      Fix popdown of menus on help click
+      Suppress echo of password in ICS Chat window (GTK)
+      Allow hyphen in name of help item
+      Fix file-type combobox of Xaw file-selector dialog
+      Do not save ICS password in command history
+      Make dialog labels and comboboxes also accept help clicks
+      Mention item in title bar of help dialog
+      Fix segfault on single-line help text
+      Let configure supply path to manual file
+      Fix recognition of .SS lines in manual
+      Also try to get help for engine options
+      Suppress empty label at top of Edit Tags dialog
+      Make location of man file dynamic for OSX
+      Make help clicks also work for UCI engines
+      Silence two warnings
+      Make help clicks resistent to NULL-pointer Label names
+      Fix popdown of Error/Help dialog through window-close button
+      Uncomment line commentized for debugging purposes
+      Use dataDir/manDir variables always
+      Print dynamic Datadir/Mandir on --show-config
+      Fix expansion of ~~ in OSX App
+      Display message on the board at startup
+      Add routine to run daughter process and collect its output
+      Obtain name of XBoard's man file from external command
+      Fix reading of long man files
+      Allow access to gzipped man files
+      Implement XBetza iso modifier
+      Also recognize .IX lines in man file for help clicks
+      Also buffer engine man page
+      Also provide help on adapter options
+      Cleanse help texts of some common TeX escape codes
+      Improve board drawing
+      Streamline XBoard board drawing
+      Repair flashing of moved piece (XB)
+      Fix built-in Lion move
+      Fix exposure of square highlights
+      Move dataDir definition to args.h so WB can also use it
+      Implement 3-leg animation in WinBoard
+      fix
+      fix2
+      Fix replay of multi-leg move
+      Silence warning WB
+      Prevent crash on loading empty game file
+      Forget piece redefinitions before loading game
+      Make startup announcement self-disappearing
+      Add -fen option
+      Add -men option for changing piece moves
+      Pop up warning when engine manual is not available
+      Remove debug printf
+      Fix erasing and exposing of arrow on secondary board
+      Prevent FICS bell character fro printing in ICS Console XB
+      Improve behavior of secondary board on sizing main window
+      Make sizing more robust (GTK)
+      Allow help-clicks on Label Options with linefeeds
+      Reorganize texi file
+      Describe Board Options dialog in texi file
+      Fix variant switch on engine load
+      Fix crash on loading variant engine after changing variant
+      Add -analysisBell option to use move sound in analysis mode
+      Add more EPD code
+      Fix determination of EPD solving time
+      Print average solving time of EPD suite
+      Internationalize EPD messages
+      Allow a list of best moves in EPD
+      Clear total solving time at start of match
+      Change EPD reporting
+      Only let second engine default to first when of same type
+      Also copy -sd from -fd when no second engine defined
+      Suppress participation of second engine in EPD mode
+      Describe divide-by-60 option of TC dialog in texi file
+      Describe -epd option in texi file
+      Fix New Shuffle Game dialog
+      Describe New Shuffle dialog item by item in texi file
+      Fix erasing of premove highlights XB
+      Fix exposing of premove highlight and move exclusion XB
+      Fix disambiguation for one-click moving
+      Fix help search
+      Add headers for <<, <, > and >> buttons in texi file
+      Add Fonts dialog
+      Let font entries show preview of their own setting
+      Replace coord font control for ICS font control
+      Silence warnings
+      Fix Xaw for font damage
+      Fix translation of dialog texts GTK
+      Silence warning due to missing prototype
+      Describe Fonts dialog in texi file
+      Use the official GTK font selector
+      Use GTK color picker instead of R, G, B and D buttons
+      Let color-pickers start at current color
+      Save font settings based on initial square size
+      Fix erroneous use of @itemx
+      Start implementing rights control in Edit Position mode
+      Silence Clang warnings
+      Ignore stderr when reading from man command
+      Fix help clicks in Engine Settings dialogs
+      Adjust window height after clock-font change
+      Unlock width requests in board window GTK
+      Make user-adjusted board size quasi-persistent (GTK)
+      Adjust menu-text clipping to square size
+      Pick -boardSize on window width rather than square size
+      Prevent message text widening window GTK
+      Adapt clock and message font after board-window sizing
+      Enlarge background of startup message
+      Fix clipping of menu texts after sizing
+      Suppress menubar text clipping on resize in OSX App
+      Fix explosion of clocks for large board size GTK
+      Put fonts in font table in allocated memory after sizing
+      Only adjust fonts that are actually changed
+      Fix Bold button and application of commentFont
+      Lock board size when clock changes to two lines
+      Fix bold button fix
+      Reset fontIsSet when sizing causes change to default font
+      Conditionally replace 'other-window' fonts on sizing
+      Only save fonts that are not defaults
+      Store fonts changed by font dialog in fonts table
+      Apply fonts in 'other windows' after sizing
+      Fix history/eng.out font setting on sizing and other bug
+      Describe Common Engine dialog item-by-item in texi file
+      Finish castling and e.p. rights for Edit Position
+      Mention support for Arena960 protocol with USI/UCCI checkbox WB
+      Extend full-board textures by periodic tiling (XB)
+      Start button-activated browse near old field contents GTK
+      Fix browsing for folders, and allow starting in DATADIR
+      Add DATADIR as shortcut folder to file chooser
+      Also put themes and textures in file chooser GTK
+      Fix size collapse to 0 after too-small sizing
+      Improve resize/co-dragging GTK
+      Fix one-click moving with engine-define and wild-card pieces
+      Use missing SVG from parent if -pid name starts with sub_
+      Provide help clicks on recently-used-engines menu items
+      Provide item-by-item description of ICS Chat in texi file
+      Let file chooser show preview of textures on board
+      Fix sizing problem in i3wm tiling window manager GTK
+      Point out preview in title of file chooser GTK
+      Add option -jewelled to decide which King is a Zebra XB
+      Make preview resistent to nothing being selected
+      Add Edit Themes List menu item XB
+      Add menu item for editing ICS text menu
+      Commit forgotten prototype
+      Allow skipping to secondary series in -inscriptions string
+      Make preview message in file-chooser title bar a bit clearer
+      Make EditTags dialog non-wrapping
+      Allow transparency in board textures
+      Fix confinement of Advisor in Xiangqi
+      Limit prefilling with color to textures with alpha channel
+      Fix rounding when sizing 1x1 textures
+      Also supply shortcut for start directory in GTK file chooser
+      Save programStartTime in settings file rather than save time
+      Allow group specification in ArgInstall options
+      Regularize Chu-Shogi piece assignment
+      Alter piece images in Spartan Chess
+      Fix EOF detection in PGN parser
+      Add option -pgnTimeLeft to print clocks in extended PGN info
+      Fix dragged piece during promotion popup
+      Fix piece commands for promoted pieces
+      Prevent sending empty line to engine after multi-leg move
+      Implement two-kanji -inscriptions
+      Allow engine to specify holdings larger than board height
+      Prevent crash on help-click for engine without manual
+      Implement -showMoveTime option
+      Fix deferral on sweep promotions
+      Fix saving theme
+      Allow engine to force user to make non-standard promotion
+      Fix saving of piece colors as part of theme
+      Erase markers before processing highlight FEN
+      Fix multi-leg promotions
+      Fix description of Tournament Options in texi file
+      Fix forgetting 'choice' command after promotion
+      Describe use of blue highlights in protocol specs
+      Add Mute all Sounds menu XB
+      Describe new Edit menu items in texi file
+      Fix redrawing of pieces dragged off board (bug #47888)
+      Fix highlights clearing when highlight last move off
+      Fix debris after click-click explosion near board edge
+      Fix crash on too-long theme definitions
+      Abbreviate DATADIR to ~~ while saving XB themes
+      Forgotten header for previous patch
+
+Joshua Pettus (42):
+      Man and Info Page Fix
+      Include Pango Modules
+      OSX master conf changes
+      gtkmacintegration name change
+      gtkmacintegration localization updates
+      GTK OSX theme reimplemented
+      Remove unused directory
+      A little reorganizing
+      moving part2
+      Logo Updates
+      renaming fics logo
+      Change Copyright year in info.plist.in
+      Make install from macports more robust
+      make install from macports part 2
+      Update zh_CN.po translation
+      Change name of xq board images to fit with handling code
+      Update makefile.am for renamed xq board images
+      Update xboard.conf with renamed xq board textures
+      Fix for launching on case-sensitive systems
+      back to the old header names for gtkosxapplication.h
+      Check for gettext before installing localization files
+      H.G.Muller's patch to fix argument related spurious instances
+      H.G.Muller's patch to avoid collisions with built-in OSX text
+      Remove added pango modules to coincide with macports package
+      Change accelerators again to be more mac like
+      oops, accidentally added a .orig file from a patch
+      Bit more accelerator stuff
+      Update uk.po translation
+      Update zh_CN.po translation
+      Update de.po translation
+      Update fr.po translation
+      Update nl.po translation
+      Mark the gtk browse button for translation
+      Update es.po translation
+      Update uk.po translation
+      Update zh_CN.po translation
+      Update fr.po translation
+      Update de.po translation
+      Update es.po translation
+      Update nl.po Translation
+      Update ru.po translation
+      Renamed shogi jewled pieces to zebra
+
+
 ** Version 4.8.0 **
 
 (git log --pretty=short --no-merges --cherry-pick --left-only v4.8.x...v4.7.3^ |git shortlog --no-merges)
