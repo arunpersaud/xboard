@@ -64,6 +64,7 @@ extern char *getenv();
 #endif
 
 
+int initialSquareSize;
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
 char manDir[MSG_SIZ] = MANDIR;

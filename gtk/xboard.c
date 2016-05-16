@@ -256,7 +256,6 @@ GtkAccelGroup *GtkAccelerators;
 typedef unsigned int BoardSize;
 BoardSize boardSize;
 Boolean chessProgram;
-int initialSquareSize;
 
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int smallLayout = 0, tinyLayout = 0,
