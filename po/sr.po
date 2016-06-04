@@ -1,21 +1,20 @@
 # Serbian translation for xboard.
 # Copyright (C) 2014 Free Software Foundation, Inc.
 # This file is distributed under the same license as the xboard package.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2014.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2014—2016.
 msgid ""
 msgstr ""
-"Project-Id-Version: xboard-4.8.0-pre1\n"
+"Project-Id-Version: xboard-4.9.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2016-04-03 13:44-0700\n"
-"PO-Revision-Date: 2014-11-11 20:37+0200\n"
+"PO-Revision-Date: 2016-06-02 06:03+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
 "Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: args.h:851
 #, c-format
@@ -86,7 +85,7 @@ msgstr "лоша опција времена претраге „%s“"
 #: backend.c:1183
 #, c-format
 msgid "Variant %s supported only in ICS mode"
-msgstr "Варијанта „%s“ је подржана само у ИЦС режиму"
+msgstr "Варијанта „%s“ је подржана само у ИШС режиму"
 
 #: backend.c:1201
 #, c-format
@@ -153,7 +152,7 @@ msgstr "Режим анализе захтева шаховски погон"
 
 #: backend.c:1759
 msgid "Analysis mode does not work with ICS mode"
-msgstr "Режим анализе не ради са ИЦС режимом"
+msgstr "Режим анализе не ради са ИШС режимом"
 
 #: backend.c:1770
 msgid "MachineWhite mode requires a chess engine"
@@ -161,7 +160,7 @@ msgstr "Режим машинског белог захтева шаховски
 
 #: backend.c:1775
 msgid "MachineWhite mode does not work with ICS mode"
-msgstr "Режим машинског белог не ради са ИЦС режимом"
+msgstr "Режим машинског белог не ради са ИШС режимом"
 
 #: backend.c:1782
 msgid "MachineBlack mode requires a chess engine"
@@ -169,7 +168,7 @@ msgstr "Режим машинског црног захтева шаховски
 
 #: backend.c:1787
 msgid "MachineBlack mode does not work with ICS mode"
-msgstr "Режим машинског црног не ради са ИЦС режимом"
+msgstr "Режим машинског црног не ради са ИШС режимом"
 
 #: backend.c:1794
 msgid "TwoMachines mode requires a chess engine"
@@ -177,7 +176,7 @@ msgstr "Режим две машине захтева шаховски пого�
 
 #: backend.c:1799
 msgid "TwoMachines mode does not work with ICS mode"
-msgstr "Режим две машине не ради са ИЦС режимом"
+msgstr "Режим две машине не ради са ИШС режимом"
 
 #: backend.c:1810
 msgid "Training mode requires a game file"
@@ -185,7 +184,7 @@ msgstr "Режим увежбавања захтева датотеку игре
 
 #: backend.c:1973 backend.c:2028 backend.c:2051 backend.c:2453
 msgid "Error writing to ICS"
-msgstr "Грешка писања у ИЦС"
+msgstr "Грешка писања у ИШС"
 
 #: backend.c:1988
 msgid "Error reading from keyboard"
@@ -226,15 +225,15 @@ msgstr "против"
 
 #: backend.c:3956
 msgid "Illegal move (rejected by ICS)"
-msgstr "Недозвољен потез (одбацио га је ИЦС)"
+msgstr "Недозвољен потез (одбацио га је ИШС)"
 
 #: backend.c:4302
 msgid "Connection closed by ICS"
-msgstr "Везу је затворио ИЦС"
+msgstr "Везу је затворио ИШС"
 
 #: backend.c:4304
 msgid "Error reading from ICS"
-msgstr "Грешка читања са ИЦС-а"
+msgstr "Грешка читања са ИШС-а"
 
 #: backend.c:4381
 #, c-format
@@ -256,7 +255,7 @@ msgstr "Грешка прикупљања списка потеза: додат�
 #: backend.c:4941 backend.c:4963
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
-msgstr "Не могу да обрадим потез „%s“ из ИЦС-а"
+msgstr "Не могу да обрадим потез „%s“ из ИШС-а"
 
 #: backend.c:5228
 #, c-format
@@ -295,11 +294,11 @@ msgstr "Приказани положај није тренутни"
 
 #: backend.c:7116
 msgid "rights granted"
-msgstr ""
+msgstr "права су остварена"
 
 #: backend.c:7116
 msgid "rights revoked"
-msgstr ""
+msgstr "права су повучена"
 
 #: backend.c:7169
 msgid "Illegal move"
@@ -399,12 +398,12 @@ msgstr "нисам успео да запишем ПВ"
 #: backend.c:10083
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
-msgstr "Нејасан потез у излазу ИЦС-а: %s"
+msgstr "Нејасан потез у излазу ИШС-а: %s"
 
 #: backend.c:10093
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
-msgstr "Недозвољени потез у излазу ИЦС-а: %s"
+msgstr "Недозвољени потез у излазу ИШС-а: %s"
 
 #: backend.c:10104
 msgid "Gap in move list"
@@ -493,17 +492,17 @@ msgstr "Није наведен погон упаривања"
 #: backend.c:11879
 #, c-format
 msgid "Average solving time %4.2f sec (total time %4.2f sec) "
-msgstr ""
+msgstr "Просечно време решавања %4.2f сек. (укупно време %4.2f сек.) "
 
 #: backend.c:11881
 #, c-format
 msgid "%d avoid-moves played "
-msgstr ""
+msgstr "%d потеза избегавања је одиграно"
 
 #: backend.c:11883
 #, c-format
 msgid "Solved %d out of %d (%3.1f%%) "
-msgstr ""
+msgstr "Решених %d од %d (%3.1f%%) "
 
 #: backend.c:11886
 #, c-format
@@ -761,7 +760,7 @@ msgstr "Притисните на сат да очистите таблу"
 
 #: backend.c:15332
 msgid "Close ICS engine analyze..."
-msgstr "Затвори анализу ИЦС погона..."
+msgstr "Затвори анализу ИШС погона..."
 
 #: backend.c:15662
 msgid "That square is occupied"
@@ -1386,7 +1385,7 @@ msgstr "Негирај резултат 2° погона"
 
 #: dialogs.c:670
 msgid "Adjudicate non-ICS Games"
-msgstr "Досуди не-ИЦС игре"
+msgstr "Досуди не-ИШС игре"
 
 #: dialogs.c:683
 msgid "Auto-Kibitz"
@@ -1514,7 +1513,7 @@ msgstr "Боје другог текста:"
 
 #: dialogs.c:722
 msgid "ICS Options"
-msgstr "ИЦС опције"
+msgstr "ИШС опције"
 
 #: dialogs.c:727
 msgid "Exact position match"
@@ -1899,7 +1898,7 @@ msgstr "Опције табле"
 
 #: dialogs.c:1101 menus.c:646
 msgid "ICS text menu"
-msgstr "Приручни изборник ИЦС-а"
+msgstr "Приручни изборник ИШС-а"
 
 #: dialogs.c:1130
 msgid "clear"
@@ -1914,9 +1913,8 @@ msgid "add next move"
 msgstr "додај нови потез"
 
 #: dialogs.c:1230
-#, fuzzy
 msgid "commit changes"
-msgstr "сачувај измене"
+msgstr "предај измене"
 
 #: dialogs.c:1253
 msgid "Edit book"
@@ -1927,13 +1925,12 @@ msgid "Tags"
 msgstr "Ознаке"
 
 #: dialogs.c:1285
-#, fuzzy
 msgid "Registered Engines"
-msgstr "Замени погон"
+msgstr "Забележени погони"
 
 #: dialogs.c:1401
 msgid "ICS input box"
-msgstr "Поље уноса ИЦС-а"
+msgstr "Поље уноса ИШС-а"
 
 #: dialogs.c:1433
 msgid "Type a move"
@@ -1981,7 +1978,7 @@ msgstr "УЦИ"
 
 #: dialogs.c:1512
 msgid "USI/UCCI (uses specified -uxiAdapter)"
-msgstr ""
+msgstr "УСИ/УЦЦИ (користи наведени „-uxiAdapter“)"
 
 #: dialogs.c:1513
 msgid "WB protocol v1 (do not wait for engine features)"
@@ -2032,71 +2029,68 @@ msgid "New Shuffle Game"
 msgstr "Нова насумична игра"
 
 #: dialogs.c:1647
-#, fuzzy
 msgid "Clocks (requires restart):"
-msgstr "Величина логотипа (0=искљ., захтева поновно покретање):"
+msgstr "Сатови (захтева поновно покретање):"
 
 #: dialogs.c:1648 dialogs.c:1654 dialogs.c:1660 dialogs.c:1666 dialogs.c:1672
 #: dialogs.c:1678 dialogs.c:1684
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #: dialogs.c:1649 dialogs.c:1655 dialogs.c:1661 dialogs.c:1667 dialogs.c:1673
 #: dialogs.c:1679 dialogs.c:1685
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: dialogs.c:1651 dialogs.c:1657 dialogs.c:1663 dialogs.c:1669 dialogs.c:1675
 #: dialogs.c:1681 dialogs.c:1687
 msgid "I"
-msgstr ""
+msgstr "И"
 
 #: dialogs.c:1652 dialogs.c:1658 dialogs.c:1664 dialogs.c:1670 dialogs.c:1676
 #: dialogs.c:1682 dialogs.c:1688
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: dialogs.c:1653
 msgid "Message (above board):"
-msgstr ""
+msgstr "Порука (изнад табле):"
 
 #: dialogs.c:1659
-#, fuzzy
 msgid "ICS Chat/Console:"
-msgstr "Конзола ИЦС-а/Ћаскања"
+msgstr "ИШС ћаскање/Конзола:"
 
 #: dialogs.c:1665
 msgid "Edit tags / book / engine list:"
-msgstr ""
+msgstr "Ознаке уређивања / књига / списак погона:"
 
 #: dialogs.c:1671
-#, fuzzy
 msgid "Edit comments:"
-msgstr "Уредите напомену"
+msgstr "Уреди напомене:"
 
 #: dialogs.c:1677
-#, fuzzy
 msgid "Move history / Engine Output:"
-msgstr "Излаз погона"
+msgstr "Историјат потеза / Излаз погона:"
 
 #: dialogs.c:1683
-#, fuzzy
 msgid "Game list:"
-msgstr "Списак игара"
+msgstr "Списак игара:"
 
 #: dialogs.c:1689
 msgid ""
 "\n"
 "The * buttons will set the font to the one selected below:"
 msgstr ""
+"\n"
+"Дугмад * ће поставити изглед слова на онај изабран испод:"
 
 #: dialogs.c:1743
 msgid "This only works in the GTK build"
-msgstr ""
+msgstr "Ово ради само у Гтк изградњи"
 
 #: dialogs.c:1744
 msgid "Fonts"
-msgstr ""
+msgstr "Изглед слова"
 
 #: dialogs.c:1764
 msgid "classical"
@@ -2112,7 +2106,7 @@ msgstr "стални максимум"
 
 #: dialogs.c:1767
 msgid "Divide entered times by 60"
-msgstr ""
+msgstr "Подели читава времена са 60"
 
 #: dialogs.c:1768
 msgid "Moves per session:"
@@ -2145,7 +2139,7 @@ msgstr "Некоришћено"
 
 #: dialogs.c:1832
 msgid "Changing time control during a game is not implemented"
-msgstr ""
+msgstr "Промена времена за време игре није могућа"
 
 #: dialogs.c:1869
 msgid "Error writing to chess program"
@@ -2234,7 +2228,7 @@ msgstr "Сакриј"
 
 #: dialogs.c:2260
 msgid "ICS Interaction"
-msgstr "ИЦС међудејство"
+msgstr "ИШС међудејство"
 
 #: dialogs.c:2345
 msgid "factory"
@@ -2310,44 +2304,36 @@ msgid "Black"
 msgstr "Црни"
 
 #: dialogs.c:2798
-#, fuzzy
 msgid "_File"
-msgstr "Датотека"
+msgstr "_Датотека"
 
 #: dialogs.c:2799
-#, fuzzy
 msgid "_Edit"
-msgstr "Уреди"
+msgstr "_Уређивање"
 
 #: dialogs.c:2800
-#, fuzzy
 msgid "_View"
-msgstr "Преглед"
+msgstr "_Преглед"
 
 #: dialogs.c:2801
-#, fuzzy
 msgid "_Mode"
-msgstr "Режим"
+msgstr "_Режим"
 
 #: dialogs.c:2802
-#, fuzzy
 msgid "_Action"
-msgstr "Радња"
+msgstr "_Радња"
 
 #: dialogs.c:2803
-#, fuzzy
 msgid "E_ngine"
-msgstr "Погон"
+msgstr "По_гон"
 
 #: dialogs.c:2804
-#, fuzzy
 msgid "_Options"
-msgstr "Опције"
+msgstr "_Опције"
 
 #: dialogs.c:2805
-#, fuzzy
 msgid "_Help"
-msgstr "Помоћ"
+msgstr "По_моћ"
 
 #: dialogs.c:2815
 msgid "<<"
@@ -2403,7 +2389,7 @@ msgstr "  следеће странице"
 
 #: dialogs.c:3233
 msgid "FIRST TYPE DIRECTORY NAME HERE"
-msgstr "ПРВО УКУЦАЈТЕ НАЗИВ ДИРЕКТОРИЈУМА ОВДЕ"
+msgstr "ПРВО ОВДЕ УКУЦАЈТЕ НАЗИВ ДИРЕКТОРИЈУМА"
 
 #: dialogs.c:3234
 msgid "TRY ANOTHER NAME"
@@ -2451,9 +2437,7 @@ msgstr "Нисам успео да отворим датотеку „%s“\n"
 
 #: gtk/xboard.c:1003 xaw/xboard.c:1092
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
-msgstr ""
-"Поново преведите са већим РЕДОВИМА_ТАБЛЕ или ЛИНИЈАМА_ТАБЛЕ да подржавају "
-"ову величину"
+msgstr "Поново преведите са већим РЕДОВИМА_ТАБЛЕ или ЛИНИЈАМА_ТАБЛЕ да подржавају ову величину"
 
 #: gtk/xboard.c:1022 xaw/xboard.c:1124
 #, c-format
@@ -2489,9 +2473,8 @@ msgid "Failed to open file"
 msgstr "Нисам успео да отворим датотеку"
 
 #: gtk/xoptions.c:1498
-#, fuzzy
 msgid "Browse"
-msgstr "разгледај"
+msgstr "Разгледај"
 
 #: gtk/xoptions.c:1772 xaw/xoptions.c:1337
 msgid "OK"
@@ -2518,7 +2501,7 @@ msgid " (with Zippy code)"
 msgstr " (са Зипи кодом)"
 
 #: menus.c:360
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s%s\n"
 "\n"
@@ -2526,12 +2509,10 @@ msgid ""
 "Enhancements Copyright 1992-2016 Free Software Foundation\n"
 "Enhancements Copyright 2005 Alessandro Scotti\n"
 "\n"
-"%s is free software and carries NO WARRANTY;see the file COPYING for more "
-"information.\n"
+"%s is free software and carries NO WARRANTY;see the file COPYING for more information.\n"
 "\n"
 "Visit XBoard on the web at: http://www.gnu.org/software/xboard/\n"
-"Check out the newest features at: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Check out the newest features at: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Report bugs via email at: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2539,16 +2520,14 @@ msgstr ""
 "%s%s\n"
 "\n"
 "Ауторска права 1991 Корпорација дигиталне опреме\n"
-"Ауторска права побољшања 1992-2014 Задужбина слободног софтвера\n"
+"Ауторска права побољшања 1992-2016 Задужбина слободног софтвера\n"
 "Ауторска права побољшања 2005 Алесандро Скоти\n"
 "\n"
-"„%s“ је слободан софтвер и нема НИКАКВЕ ГАРАНЦИЈЕ; видите датотеку „COPYING“ "
-"за више података.\n"
+"„%s“ је слободан софтвер и нема НИКАКВЕ ГАРАНЦИЈЕ; видите датотеку „COPYING“ за више података.\n"
 "Гтк изградња овог издања је пробна и нестабилна\n"
 "\n"
 "Посетите Х-таблу на вебу: http://www.gnu.org/software/xboard/\n"
-"Проверите најновије функције на: http://www.gnu.org/software/xboard/"
-"whats_new.html\n"
+"Проверите најновије функције на: http://www.gnu.org/software/xboard/whats_new.html\n"
 "\n"
 "Грешке пријавите ел. поштом на: <bug-xboard@gnu.org>\n"
 "\n"
@@ -2703,20 +2682,19 @@ msgstr "Напомене"
 
 #: menus.c:650
 msgid "ICS Input Box"
-msgstr "Поље уноса ИЦС-а"
+msgstr "Поље уноса ИШС-а"
 
 #: menus.c:651
 msgid "ICS/Chat Console"
-msgstr "Конзола ИЦС-а/Ћаскања"
+msgstr "Конзола ИШС-а/Ћаскања"
 
 #: menus.c:653
 msgid "Board..."
 msgstr "Табла..."
 
 #: menus.c:654
-#, fuzzy
 msgid "Fonts..."
-msgstr "Звуци..."
+msgstr "Слова..."
 
 #: menus.c:655
 msgid "Game List Tags..."
@@ -2748,7 +2726,7 @@ msgstr "Увежбавање"
 
 #: menus.c:668
 msgid "ICS Client"
-msgstr "ИЦС клијент"
+msgstr "ИШС клијент"
 
 #: menus.c:670
 msgid "Machine Match"
@@ -2835,9 +2813,8 @@ msgid "Engine #2 Settings..."
 msgstr "Подешавања 2° погона..."
 
 #: menus.c:704
-#, fuzzy
 msgid "Common Settings..."
-msgstr "Подешавања општег погона"
+msgstr "Општа подешавања..."
 
 #: menus.c:706
 msgid "Hint"
@@ -2869,7 +2846,7 @@ msgstr "Додељивања..."
 
 #: menus.c:720
 msgid "ICS..."
-msgstr "ИЦС..."
+msgstr "ИШС..."
 
 #: menus.c:721
 msgid "Tournament..."
@@ -2937,7 +2914,7 @@ msgstr "Сачувај подешавања на изласку"
 
 #: menus.c:757
 msgid "Info XBoard"
-msgstr "Подаци Х-табле"
+msgstr "Подаци о Х-табли"
 
 #: menus.c:758
 msgid "Man XBoard"
