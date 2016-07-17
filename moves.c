@@ -1735,6 +1735,8 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	}
     }
 
+    if(PieceToChar(king) == '.') return 0; // never in check if the royal piece does not participate
+
     if (rt >= 0) {
 	if (enPassant) {
 	    captured = board[rf][ft];
