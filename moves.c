@@ -986,6 +986,14 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 
             case WhiteWazir:
             case BlackWazir:
+		if(gameInfo.variant == VariantXiangqi) {
+		    int palace = (piece == WhiteWazir ? 1 : BOARD_HEIGHT-2); // Palace center
+		    if(ff <= BOARD_WIDTH/2 && !SameColor(board[rf][ff+1], piece)) callback(board, flags, NormalMove, rf, ff, rf, ff+1, closure);
+		    if(ff >= BOARD_WIDTH/2 && !SameColor(board[rf][ff-1], piece)) callback(board, flags, NormalMove, rf, ff, rf, ff-1, closure);
+		    if(rf >= palace && !SameColor(board[rf-1][ff], piece)) callback(board, flags, NormalMove, rf, ff, rf-1, ff, closure);
+		    if(rf <= palace && !SameColor(board[rf+1][ff], piece)) callback(board, flags, NormalMove, rf, ff, rf+1, ff, closure);
+		    break;
+		}
 		Wazir(board, flags, rf, ff, callback, closure);
 		break;
 
