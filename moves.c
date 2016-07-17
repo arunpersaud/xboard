@@ -2163,6 +2163,11 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
 	}
     } else if(pieceDefs && closure->count > 1 && closure->rtIn >=0) { // [HGM] gen: move is ambiguous under engine-defined rules (and not one-click)
 	DisambiguateClosure spare = *closure;
+        if(gameInfo.variant == VariantXiangqi && closure->pieceIn == EmptySquare && closure->ffIn < 0) {
+            closure->ffIn = closure->ftIn; //closure->pieceIn = (flags & 1 ? BlackPawn : WhitePawn); // forward Pawn push has priority
+            Disambiguate(board, flags, closure);
+            return;
+        }
 	pieceDefs = FALSE; spare.count = 0;     // See if the (erroneous) built-in rules would resolve that
         GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) &spare, closure->pieceIn);
 	if(spare.count == 1) *closure = spare;  // It does, so use those in stead (game from file saved before gen patch?)
