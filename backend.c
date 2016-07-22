@@ -11672,7 +11672,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	       && result != GameIsDrawn)
 	    {   int i, j, k=0, oppoKings = 0, color = (result==WhiteWins ? (int)WhitePawn : (int)BlackPawn);
 		for(j=BOARD_LEFT; j<BOARD_RGHT; j++) for(i=0; i<BOARD_HEIGHT; i++) {
-			int p = (signed char)boards[forwardMostMove][i][j] - color;
+			int p = (int)boards[forwardMostMove][i][j] - color;
 			if(p >= 0 && p <= (int)WhiteKing) k++;
 			oppoKings += (p + color == WhiteKing + BlackPawn - color);
 		}
