@@ -6498,7 +6498,7 @@ SendBoard (ChessProgramState *cps, int moveNum)
        * deprecated "black" command.
        */
       if (!WhiteOnMove(moveNum)) // [HGM] but better a deprecated command than an illegal move...
-        SendToProgram(boards[0][1][BOARD_LEFT] == WhitePawn ? "a2a3\n" : "black\n", cps);
+        SendToProgram(boards[0][1][BOARD_LEFT] == WhitePawn && !pieceDesc[WhitePawn] ? "a2a3\n" : "black\nforce\n", cps);
 
       if(!cps->extendedEdit) left = BOARD_LEFT, right = BOARD_RGHT; // only board proper
 
