@@ -4301,7 +4301,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 
     } else if (count == 0) {
 	RemoveInputSource(isr);
-        DisplayFatalError(_("Connection closed by ICS"), 0, 0);
+        DisplayFatalError(_("Connection closed by ICS"), 0, 6666);
     } else {
 	DisplayFatalError(_("Error reading from ICS"), error, 1);
     }

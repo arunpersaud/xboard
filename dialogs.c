@@ -2523,12 +2523,12 @@ DisplayMoveError (String message)
 void
 DisplayFatalError (String message, int error, int status)
 {
-    char buf[MSG_SIZ];
+    char buf[MSG_SIZ], logout = appData.icsActive;
 
     if(status == 666) { // ignore this error when ICS Console window is up
 	if(shellUp[ChatDlg]) return;
 	status = 0;
-    }
+    } else if(status == 6666) status = logout = 0; // 6666 = kludge that indicates ICS connection already closed
 
     errorExitStatus = status;
     if (error == 0) {
@@ -2541,7 +2541,7 @@ DisplayFatalError (String message, int error, int status)
     }
     if(mainOptions[W_BOARD].handle) {
 	if (appData.popupExitMessage) {
-	    if(appData.icsActive) SendToICS("logout\n"); // [HGM] make sure no new games will be started
+	    if(logout) SendToICS("logout\n"); // [HGM] make sure no new games will be started
 	    ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
 	} else {
 	    ExitEvent(status);
