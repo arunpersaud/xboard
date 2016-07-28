@@ -14877,7 +14877,9 @@ MachineWhiteEvent ()
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	savedMessage = bookMove; // args for deferred call
+	savedState = &first;
+	ScheduleDelayedEvent(DeferredBookMove, 1);
     }
 }
 
@@ -14952,7 +14954,9 @@ MachineBlackEvent ()
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	savedMessage = bookMove; // args for deferred call
+	savedState = &first;
+	ScheduleDelayedEvent(DeferredBookMove, 1);
     }
 }
 
