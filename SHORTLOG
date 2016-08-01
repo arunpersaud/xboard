@@ -1,3 +1,21 @@
+** Version 4.9.1 **
+
+(git shortlog --no-merges v4.9.0..HEAD)
+
+Arun Persaud (2):
+      new version number for release 4.9.1
+      updated po/pot files
+
+H.G.Muller (8):
+      Fix compile error Xaw build
+      Fix King leaving Palace in Xiangqi
+      Fix disambiguating Pawn moves in Xiangqi
+      Fix check testing in games without King
+      Fix bare King adjudication
+      Fix setting up btm positions with 'edit'
+      Defer book faking input move until ping balance
+      Fix crash when logging out from ICS
+
 ** Version 4.9.0 **
 
 (git log --pretty=short --no-merges --cherry-pick --left-only v4.9.x...v4.8.0^ |git shortlog --no-merges)

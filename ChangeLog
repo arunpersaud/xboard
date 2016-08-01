@@ -3,6 +3,73 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2016-07-31 20:46:54 -0700 Arun Persaud <arun@nubati.net>:
+updated po/pot files
+
+2016-07-31 20:45:22 -0700 Arun Persaud <arun@nubati.net>:
+new version number for release 4.9.1
+
+2016-07-28 19:49:02 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix crash when logging out from ICS
+
+The patch that sent "logout" to the ICS on a fatal error backfired when
+the 'fatal error' was a disconnect, and caused a crash on Mac. We now
+suppress sending of this "logout" command in the disconnect case,
+communicated in a kludgy way (by requesting exit status 6666).
+
+2016-07-28 14:24:27 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Defer book faking input move until ping balance
+
+The use of ping after editing a position had broken the book handling:
+'go' would be sent in the same batch of commands as this 'ping', so that
+in case of a book hit the book move selected on behalf of the engine
+would be fed back to XBoard before the engine had the opportunity to
+restore the ping balanceby sending 'pong'. Now the book move is fed
+through ScheduleDelayedEvent(DeferredBookMove) rather than instantly,
+when a MachineWhite/BlackEvent sets the engine playing.
+
+2016-07-26 22:04:14 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix setting up btm positions with 'edit'
+
+The kludge to put black on move through a2a3 only works when there is
+a (normally moving) Pawn on a2. Otherwise the 'black' command has to be
+used. But this did take the engine out of force mode. So now we send
+another 'force' command after this 'black'.
+
+2016-07-22 09:12:36 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix bare King adjudication
+
+The increase of the number of piece types to 66 gave the BlackKing code
+131, wich is > 127, so that using a signed char for it makes it < 0.
+This cause the black King in the adjudication code to be seen as a white
+piece. When black then checkmates with 2 pieces, only 1 piece is seen
+(Q), and then assumed to be a bare King! Now the piece value is passed
+through an (int) to prevent this.
+
+2016-07-17 23:53:17 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix check testing in games without King
+
+A position without King was always considered as in check (because of
+Atomic), which is rather illogical and undesirable in games where no
+King participates (as it makes every move illegal).
+
+2016-07-17 23:14:10 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix disambiguating Pawn moves in Xiangqi
+
+When multiple Pawns can go to the same square a move written as to-square
+only is interpreted as the forward push, rather than a sideway move.
+
+2016-07-17 23:06:19 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix King leaving Palace in Xiangqi
+
+The rewrite of the move generator had overlooked this.
+
+2016-05-16 22:21:36 +0200 H.G.Muller <hgm@hgm-xboard.(none)>:
+Fix compile error Xaw build
+
+The variable initialSquareSize was not defined in the Xaw build,
+and now has been moved to dialogs.h (which is part of both builds).
+
 2016-05-15 10:05:40 -0700 Arun Persaud <arun@nubati.net>:
 updated po/pot files
 

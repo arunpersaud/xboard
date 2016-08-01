@@ -1,3 +1,16 @@
+** Version 4.9.1 **
+
+   bugfix release for 4.9.0
+
+   * Fix crash when logging out from ICS
+   * Defer book faking input move until ping balance
+   * Fix setting up btm positions with 'edit'
+   * Fix bare King adjudication
+   * Fix check testing in games without King
+   * Fix disambiguating Pawn moves in Xiangqi
+   * Fix King leaving Palace in Xiangqi
+   * Fix compile error Xaw build
+
 ** Version 4.9.0 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.9.0/ )
