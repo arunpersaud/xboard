@@ -1,3 +1,47 @@
+** Version 4.9.1 **
+
+   bugfix release for 4.9.0
+
+   * Fix crash when logging out from ICS
+   * Defer book faking input move until ping balance
+   * Fix setting up btm positions with 'edit'
+   * Fix bare King adjudication
+   * Fix check testing in games without King
+   * Fix disambiguating Pawn moves in Xiangqi
+   * Fix King leaving Palace in Xiangqi
+   * Fix compile error Xaw build
+
+** Version 4.9.0 **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.9.0/ )
+
+  * New features in this release
+    * Running EPD test suites
+    * Getting instant help (XB)
+    * Editing castling rights in a position
+    * Use mouse wheel to set up position (XB)
+    * Allow engine to pop up its settings dialog
+    * Specifying ultra-fast games (XB)
+    * Installing board themes from packages (XB)
+    * Using a single-button mouse
+    * A special directory for start positions
+    * Allow terminal-less ICS play (XB)
+    * Sound warnings in analysis mode
+    * Changing fonts through the GUI (XB)
+    * Automatic adapting of fonts to board size (XB)
+
+  * New variant support
+    * New piece types
+    * Allowing more than 26 piece types
+    * More flexible piece promotion
+    * Restricting promotion choice
+    * New configurable move types
+    * Inscribing pieces with text
+    * Setting rules from the command line
+    * Allow inaccessible squares
+    * Load Shogi games in .kif format
+
+
 ** Version 4.8.0 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.8.0/ )

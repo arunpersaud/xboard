@@ -4301,7 +4301,7 @@ read_from_ics (InputSourceRef isr, VOIDSTAR closure, char *data, int count, int 
 
     } else if (count == 0) {
 	RemoveInputSource(isr);
-        DisplayFatalError(_("Connection closed by ICS"), 0, 0);
+        DisplayFatalError(_("Connection closed by ICS"), 0, 6666);
     } else {
 	DisplayFatalError(_("Error reading from ICS"), error, 1);
     }
@@ -6498,7 +6498,7 @@ SendBoard (ChessProgramState *cps, int moveNum)
        * deprecated "black" command.
        */
       if (!WhiteOnMove(moveNum)) // [HGM] but better a deprecated command than an illegal move...
-        SendToProgram(boards[0][1][BOARD_LEFT] == WhitePawn ? "a2a3\n" : "black\n", cps);
+        SendToProgram(boards[0][1][BOARD_LEFT] == WhitePawn && !pieceDesc[WhitePawn] ? "a2a3\n" : "black\nforce\n", cps);
 
       if(!cps->extendedEdit) left = BOARD_LEFT, right = BOARD_RGHT; // only board proper
 
@@ -11672,7 +11672,7 @@ GameEnds (ChessMove result, char *resultDetails, int whosays)
 	       && result != GameIsDrawn)
 	    {   int i, j, k=0, oppoKings = 0, color = (result==WhiteWins ? (int)WhitePawn : (int)BlackPawn);
 		for(j=BOARD_LEFT; j<BOARD_RGHT; j++) for(i=0; i<BOARD_HEIGHT; i++) {
-			int p = (signed char)boards[forwardMostMove][i][j] - color;
+			int p = (int)boards[forwardMostMove][i][j] - color;
 			if(p >= 0 && p <= (int)WhiteKing) k++;
 			oppoKings += (p + color == WhiteKing + BlackPawn - color);
 		}
@@ -14877,7 +14877,9 @@ MachineWhiteEvent ()
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	savedMessage = bookMove; // args for deferred call
+	savedState = &first;
+	ScheduleDelayedEvent(DeferredBookMove, 1);
     }
 }
 
@@ -14952,7 +14954,9 @@ MachineBlackEvent ()
 
 	safeStrCpy(bookMove, "move ", sizeof(bookMove)/sizeof(bookMove[0]));
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	savedMessage = bookMove; // args for deferred call
+	savedState = &first;
+	ScheduleDelayedEvent(DeferredBookMove, 1);
     }
 }
 

@@ -986,6 +986,14 @@ GenPseudoLegal (Board board, int flags, MoveCallback callback, VOIDSTAR closure,
 
             case WhiteWazir:
             case BlackWazir:
+		if(gameInfo.variant == VariantXiangqi) {
+		    int palace = (piece == WhiteWazir ? 1 : BOARD_HEIGHT-2); // Palace center
+		    if(ff <= BOARD_WIDTH/2 && !SameColor(board[rf][ff+1], piece)) callback(board, flags, NormalMove, rf, ff, rf, ff+1, closure);
+		    if(ff >= BOARD_WIDTH/2 && !SameColor(board[rf][ff-1], piece)) callback(board, flags, NormalMove, rf, ff, rf, ff-1, closure);
+		    if(rf >= palace && !SameColor(board[rf-1][ff], piece)) callback(board, flags, NormalMove, rf, ff, rf-1, ff, closure);
+		    if(rf <= palace && !SameColor(board[rf+1][ff], piece)) callback(board, flags, NormalMove, rf, ff, rf+1, ff, closure);
+		    break;
+		}
 		Wazir(board, flags, rf, ff, callback, closure);
 		break;
 
@@ -1727,6 +1735,8 @@ CheckTest (Board board, int flags, int rf, int ff, int rt, int ft, int enPassant
 	}
     }
 
+    if(PieceToChar(king) == '.') return 0; // never in check if the royal piece does not participate
+
     if (rt >= 0) {
 	if (enPassant) {
 	    captured = board[rf][ft];
@@ -2155,6 +2165,11 @@ Disambiguate (Board board, int flags, DisambiguateClosure *closure)
 	}
     } else if(pieceDefs && closure->count > 1 && closure->rtIn >=0) { // [HGM] gen: move is ambiguous under engine-defined rules (and not one-click)
 	DisambiguateClosure spare = *closure;
+        if(gameInfo.variant == VariantXiangqi && closure->pieceIn == EmptySquare && closure->ffIn < 0) {
+            closure->ffIn = closure->ftIn; //closure->pieceIn = (flags & 1 ? BlackPawn : WhitePawn); // forward Pawn push has priority
+            Disambiguate(board, flags, closure);
+            return;
+        }
 	pieceDefs = FALSE; spare.count = 0;     // See if the (erroneous) built-in rules would resolve that
         GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) &spare, closure->pieceIn);
 	if(spare.count == 1) *closure = spare;  // It does, so use those in stead (game from file saved before gen patch?)
